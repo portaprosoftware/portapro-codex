@@ -1,8 +1,9 @@
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { X, RotateCcw, Save } from 'lucide-react';
+import { X, RotateCcw, Save, RotateCw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { isMobile, getOrientation } from '@/utils/mobileUtils';
 
 interface SignatureCaptureProps {
   open: boolean;
@@ -22,6 +23,9 @@ export const SignatureCapture: React.FC<SignatureCaptureProps> = ({
   const [isDrawing, setIsDrawing] = useState(false);
   const [hasSignature, setHasSignature] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('portrait');
+  const [showOrientationPrompt, setShowOrientationPrompt] = useState(false);
+  const [isReady, setIsReady] = useState(false);
 
   const startDrawing = useCallback((event: React.MouseEvent | React.TouchEvent) => {
     const canvas = canvasRef.current;
@@ -115,25 +119,88 @@ export const SignatureCapture: React.FC<SignatureCaptureProps> = ({
 
   const handleClose = () => {
     clearSignature();
+    setShowOrientationPrompt(false);
+    setIsReady(false);
     onClose();
   };
 
+  // Monitor orientation changes
+  useEffect(() => {
+    const handleOrientationChange = () => {
+      const currentOrientation = getOrientation();
+      setOrientation(currentOrientation);
+      
+      if (isMobile() && currentOrientation === 'landscape') {
+        setShowOrientationPrompt(false);
+        setIsReady(true);
+      }
+    };
+
+    // Initial check
+    handleOrientationChange();
+    
+    // Listen for orientation changes
+    window.addEventListener('orientationchange', handleOrientationChange);
+    window.addEventListener('resize', handleOrientationChange);
+    
+    return () => {
+      window.removeEventListener('orientationchange', handleOrientationChange);
+      window.removeEventListener('resize', handleOrientationChange);
+    };
+  }, []);
+
+  // Show orientation prompt on mobile when modal opens
+  useEffect(() => {
+    if (open && isMobile()) {
+      const currentOrientation = getOrientation();
+      if (currentOrientation === 'portrait') {
+        setShowOrientationPrompt(true);
+        setIsReady(false);
+      } else {
+        setShowOrientationPrompt(false);
+        setIsReady(true);
+      }
+    } else if (open && !isMobile()) {
+      // Desktop - skip orientation prompt
+      setShowOrientationPrompt(false);
+      setIsReady(true);
+    }
+  }, [open]);
+
   React.useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || !isReady) return;
+
+    // Adjust canvas size based on orientation and device
+    const isMobileDevice = isMobile();
+    const isLandscape = orientation === 'landscape';
+    
+    if (isMobileDevice && isLandscape) {
+      // Mobile landscape - use full width
+      canvas.width = Math.min(window.innerWidth - 40, 600);
+      canvas.height = 200;
+    } else if (isMobileDevice) {
+      // Mobile portrait
+      canvas.width = 350;
+      canvas.height = 150;
+    } else {
+      // Desktop
+      canvas.width = 500;
+      canvas.height = 200;
+    }
 
     const ctx = canvas.getContext('2d');
     if (ctx) {
       ctx.strokeStyle = '#000';
-      ctx.lineWidth = 2;
+      ctx.lineWidth = isMobileDevice ? 3 : 2;
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
     }
-  }, [open]);
+  }, [open, isReady, orientation]);
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className={`${isMobile() && orientation === 'landscape' ? 'sm:max-w-[90vw] h-[90vh]' : 'sm:max-w-[425px]'}`}>
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
             <span>Customer Signature</span>
@@ -143,51 +210,94 @@ export const SignatureCapture: React.FC<SignatureCaptureProps> = ({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4">
-          <p className="text-sm text-muted-foreground">
-            Please ask the customer to sign below
-          </p>
-
-          {/* Signature Canvas */}
-          <div className="border rounded-lg overflow-hidden">
-            <canvas
-              ref={canvasRef}
-              width={350}
-              height={200}
-              className="w-full h-50 touch-none"
-              onMouseDown={startDrawing}
-              onMouseMove={draw}
-              onMouseUp={stopDrawing}
-              onMouseLeave={stopDrawing}
-              onTouchStart={startDrawing}
-              onTouchMove={draw}
-              onTouchEnd={stopDrawing}
-              style={{ backgroundColor: '#fafafa' }}
-            />
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex space-x-2">
-            <Button
-              variant="outline"
-              onClick={clearSignature}
-              disabled={!hasSignature}
-              className="flex-1"
+        {/* Orientation Prompt for Mobile */}
+        {showOrientationPrompt && isMobile() && (
+          <div className="space-y-4 text-center py-8">
+            <div className="flex justify-center mb-4">
+              <RotateCw className="w-16 h-16 text-blue-500 animate-pulse" />
+            </div>
+            <h3 className="text-lg font-semibold">Rotate Your Device</h3>
+            <p className="text-sm text-muted-foreground">
+              Please turn your phone sideways for a better signing experience
+            </p>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowOrientationPrompt(false);
+                setIsReady(true);
+              }}
+              className="mt-4"
             >
-              <RotateCcw className="w-4 h-4 mr-2" />
-              Clear
-            </Button>
-            
-            <Button
-              onClick={saveSignature}
-              disabled={!hasSignature || isSaving}
-              className="flex-1"
-            >
-              <Save className="w-4 h-4 mr-2" />
-              {isSaving ? 'Saving...' : 'Save'}
+              Continue in Portrait
             </Button>
           </div>
-        </div>
+        )}
+
+        {/* Signature Interface */}
+        {isReady && (
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              {isMobile() && orientation === 'landscape' 
+                ? "Perfect! You now have more space to sign. Please ask the customer to sign below."
+                : "Please ask the customer to sign below"
+              }
+            </p>
+
+            {/* Signature Canvas */}
+            <div className="border rounded-lg overflow-hidden">
+              <canvas
+                ref={canvasRef}
+                className="w-full touch-none"
+                onMouseDown={startDrawing}
+                onMouseMove={draw}
+                onMouseUp={stopDrawing}
+                onMouseLeave={stopDrawing}
+                onTouchStart={startDrawing}
+                onTouchMove={draw}
+                onTouchEnd={stopDrawing}
+                style={{ 
+                  backgroundColor: '#fafafa',
+                  height: isMobile() && orientation === 'landscape' ? '200px' : '150px'
+                }}
+              />
+            </div>
+
+            {/* Action Buttons */}
+            <div className={`flex space-x-2 ${isMobile() && orientation === 'landscape' ? 'justify-center' : ''}`}>
+              <Button
+                variant="outline"
+                onClick={clearSignature}
+                disabled={!hasSignature}
+                className="flex-1"
+              >
+                <RotateCcw className="w-4 h-4 mr-2" />
+                Clear
+              </Button>
+              
+              <Button
+                onClick={saveSignature}
+                disabled={!hasSignature || isSaving}
+                className="flex-1"
+              >
+                <Save className="w-4 h-4 mr-2" />
+                {isSaving ? 'Saving...' : 'Save'}
+              </Button>
+            </div>
+
+            {isMobile() && orientation === 'portrait' && (
+              <div className="text-center">
+                <Button 
+                  variant="link" 
+                  size="sm"
+                  onClick={() => setShowOrientationPrompt(true)}
+                  className="text-xs text-muted-foreground"
+                >
+                  Want more space? Rotate your device →
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );
