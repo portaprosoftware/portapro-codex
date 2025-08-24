@@ -312,7 +312,6 @@ export const ServiceCatalogTab: React.FC = () => {
                   <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Category</th>
                   <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Rate</th>
                   <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Duration</th>
-                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Recurring</th>
                   <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Template</th>
                   <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Actions</th>
                 </tr>
@@ -336,11 +335,6 @@ export const ServiceCatalogTab: React.FC = () => {
                     </td>
                 <td className="px-6 py-4 text-sm text-gray-600">
                   {service.estimated_duration_minutes}m
-                </td>
-                <td className="px-6 py-4">
-                  <Badge variant={service.can_be_recurring ? "default" : "outline"} className="text-xs">
-                    {service.can_be_recurring ? "Yes" : "No"}
-                  </Badge>
                 </td>
                 <td className="px-6 py-4">
                   {service.default_template_id ? (
