@@ -154,26 +154,30 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate }) => {
 
           <div className="space-y-2" onClick={(e) => e.stopPropagation()}>
             {/* Primary Action Button */}
-            {job.status === 'assigned' && (
-              <Button 
-                size="lg" 
-                className="w-full bg-gradient-primary hover:bg-gradient-primary/90 text-white font-semibold py-3"
-                onClick={handleStartJob}
-              >
-                <Play className="w-5 h-5 mr-2" />
-                Start Job
-              </Button>
-            )}
-            
-            {job.status === 'in_progress' && (
-              <Button 
-                size="lg" 
-                className="w-full bg-gradient-green hover:bg-gradient-green/90 text-white font-semibold py-3"
-                onClick={handleCompleteJob}
-              >
-                <CheckCircle2 className="w-5 h-5 mr-2" />
-                Complete Job
-              </Button>
+            {(job.status === 'assigned' || job.status === 'in_progress') && (
+              <div className="mb-2">
+                {job.status === 'assigned' && (
+                  <Button 
+                    size="lg" 
+                    className="w-full bg-gradient-primary hover:bg-gradient-primary/90 text-white font-semibold py-3"
+                    onClick={handleStartJob}
+                  >
+                    <Play className="w-5 h-5 mr-2" />
+                    Start Job
+                  </Button>
+                )}
+                
+                {job.status === 'in_progress' && (
+                  <Button 
+                    size="lg" 
+                    className="w-full bg-gradient-green hover:bg-gradient-green/90 text-white font-semibold py-3"
+                    onClick={handleCompleteJob}
+                  >
+                    <CheckCircle2 className="w-5 h-5 mr-2" />
+                    Complete Job
+                  </Button>
+                )}
+              </div>
             )}
             
             {/* Secondary Actions */}
