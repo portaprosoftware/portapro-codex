@@ -492,7 +492,7 @@ const ProductListPage: React.FC<ProductListPageProps> = ({
   const [selectedProductType, setSelectedProductType] = useState('all');
 
   const { data: products = [], isLoading } = useQuery({
-    queryKey: ['products', 'for-selection', searchTerm, selectedProductType],
+    queryKey: ['products', 'for-selection', searchTerm, selectedProductType, selectedLocationId],
     queryFn: async () => {
       try {
         let data = [];
@@ -500,7 +500,18 @@ const ProductListPage: React.FC<ProductListPageProps> = ({
         // First, get products that match by name or manufacturer
         let nameQuery = supabase
           .from('products')
-          .select('id, name, stock_total, image_url, track_inventory')
+          .select(`
+            id, 
+            name, 
+            stock_total, 
+            image_url, 
+            track_inventory,
+            product_location_stock(
+              storage_location_id, 
+              quantity, 
+              storage_locations(id, name)
+            )
+          `)
           .order('name');
 
         if (searchTerm) {
@@ -534,7 +545,18 @@ const ProductListPage: React.FC<ProductListPageProps> = ({
             // Get full product data for products that have matching tool numbers
             let toolQuery = supabase
               .from('products')
-              .select('id, name, stock_total, image_url, track_inventory')
+              .select(`
+                id, 
+                name, 
+                stock_total, 
+                image_url, 
+                track_inventory,
+                product_location_stock(
+                  storage_location_id, 
+                  quantity, 
+                  storage_locations(id, name)
+                )
+              `)
               .in('id', productIds);
 
             if (selectedProductType && selectedProductType !== 'all') {
@@ -553,11 +575,38 @@ const ProductListPage: React.FC<ProductListPageProps> = ({
           }
         }
 
+        // Apply location filtering
+        if (selectedLocationId && selectedLocationId !== 'all') {
+          data = data.filter((product: any) => {
+            if (product.product_location_stock && Array.isArray(product.product_location_stock)) {
+              return product.product_location_stock.some((ls: any) => 
+                ls?.storage_location_id === selectedLocationId && (ls?.quantity || 0) > 0
+              );
+            }
+            return false;
+          });
+        }
+
         return data as Product[];
       } catch (error) {
         console.error('Error fetching products:', error);
         throw error;
       }
+    },
+  });
+
+  // Fetch storage locations for the filter dropdown
+  const { data: storageLocations = [] } = useQuery({
+    queryKey: ['storage-locations'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('storage_locations')
+        .select('id, name')
+        .eq('is_active', true)
+        .order('name');
+      
+      if (error) throw error;
+      return data || [];
     },
   });
 
@@ -580,11 +629,13 @@ const ProductListPage: React.FC<ProductListPageProps> = ({
           <SelectTrigger>
             <SelectValue placeholder="All Locations" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-background z-50">
             <SelectItem value="all">All Locations</SelectItem>
-            <SelectItem value="yard">Yard</SelectItem>
-            <SelectItem value="field">Field</SelectItem>
-            <SelectItem value="maintenance">Maintenance</SelectItem>
+            {storageLocations.map((location) => (
+              <SelectItem key={location.id} value={location.id}>
+                {location.name}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
 
