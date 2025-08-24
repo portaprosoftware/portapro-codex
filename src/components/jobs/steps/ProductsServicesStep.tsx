@@ -138,7 +138,7 @@ export const ProductsServicesStep: React.FC = () => {
               checked={state.data.zip_tied_on_dropoff || false}
               onCheckedChange={(checked) => updateData({ zip_tied_on_dropoff: checked })}
             />
-            <Label className="text-sm font-medium">Units Zip-Tied Upon Drop-off</Label>
+            <Label className="text-sm font-medium">Zip-Tie Units Upon Drop-off</Label>
           </div>
         </div>
       </div>

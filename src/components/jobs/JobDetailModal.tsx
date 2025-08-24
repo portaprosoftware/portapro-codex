@@ -768,7 +768,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                           render={({ field }) => (
                             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                               <div className="space-y-0.5">
-                                <FormLabel className="text-base">Units Zip-Tied Upon Drop-off</FormLabel>
+                                <FormLabel className="text-base">Zip-Tie Units Upon Drop-off</FormLabel>
                                 <div className="text-sm text-muted-foreground">
                                   Used primarily for event setups to prevent public usage before events start
                                 </div>
