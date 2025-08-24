@@ -1,7 +1,6 @@
 
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import React, { useState, useEffect } from 'react';
+import { useDriverJobs } from '@/hooks/useDriverJobs';
 import { useUser } from '@clerk/clerk-react';
 import { Calendar } from 'lucide-react';
 import { JobCard } from './JobCard';
@@ -16,131 +15,46 @@ export const DriverDashboard: React.FC = () => {
   const { user } = useUser();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<JobStatus | 'all' | 'priority' | 'was_overdue' | 'overdue' | 'completed_late'>('all');
+  
+  const { jobs, isLoading, error, refetch } = useDriverJobs();
 
-  const { data: jobs, isLoading, refetch } = useQuery({
-    queryKey: ['driver-jobs', user?.id],
-    queryFn: async () => {
-      if (!user?.id) throw new Error('User not authenticated');
-
-      const today = new Date().toISOString().split('T')[0];
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      const tomorrowStr = tomorrow.toISOString().split('T')[0];
+  // Clear cache on auth changes in development
+  useEffect(() => {
+    const isDevelopment = import.meta.env.DEV;
+    if (isDevelopment && user?.id) {
+      console.log('👤 Driver Dashboard: User authenticated, clearing stale cache');
       
-      // First, try to find jobs directly with Clerk user ID
-      let { data, error } = await supabase
-        .from('jobs')
-        .select(`
-          *,
-          customers (
-            id,
-            name,
-            customer_type,
-            email,
-            phone,
-            service_street,
-            service_street2,
-            service_city,
-            service_state,
-            service_zip,
-            customer_service_locations (
-              id,
-              location_name,
-              street,
-              street2,
-              city,
-              state,
-              zip,
-              contact_person,
-              contact_phone,
-              access_instructions,
-              notes,
-              is_default
-            ),
-            customer_contacts (
-              id,
-              first_name,
-              last_name,
-              contact_type,
-              email,
-              phone,
-              title,
-              is_primary
-            )
-          )
-        `)
-        .eq('driver_id', user.id)
-        .gte('scheduled_date', today)
-        .lte('scheduled_date', tomorrowStr)
-        .order('scheduled_date', { ascending: true })
-        .order('scheduled_time', { ascending: true });
-
-      // If no jobs found, try to find jobs through profiles table
-      if (!error && (!data || data.length === 0)) {
-        const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('clerk_user_id', user.id)
-          .maybeSingle();
-
-        if (!profileError && profileData) {
-          const result = await supabase
-            .from('jobs')
-            .select(`
-              *,
-              customers (
-                id,
-                name,
-                customer_type,
-                email,
-                phone,
-                service_street,
-                service_street2,
-                service_city,
-                service_state,
-                service_zip,
-                customer_service_locations (
-                  id,
-                  location_name,
-                  street,
-                  street2,
-                  city,
-                  state,
-                  zip,
-                  contact_person,
-                  contact_phone,
-                  access_instructions,
-                  notes,
-                  is_default
-                ),
-                customer_contacts (
-                  id,
-                  first_name,
-                  last_name,
-                  contact_type,
-                  email,
-                  phone,
-                  title,
-                  is_primary
-                )
-              )
-            `)
-            .eq('driver_id', profileData.id)
-            .gte('scheduled_date', today)
-            .lte('scheduled_date', tomorrowStr)
-            .order('scheduled_date', { ascending: true })
-            .order('scheduled_time', { ascending: true });
-          
-          data = result.data;
-          error = result.error;
-        }
+      // Force fresh data on auth changes
+      const queryClient = (window as any).queryClient;
+      if (queryClient) {
+        queryClient.invalidateQueries({ queryKey: ['driver-jobs'] });
       }
+    }
+  }, [user?.id]);
 
-      if (error) throw error;
-      return data || [];
-    },
-    enabled: !!user?.id
-  });
+  // Show error state in development
+  if (error) {
+    console.error('❌ Driver Dashboard Error:', error);
+    if (import.meta.env.DEV) {
+      return (
+        <div className="flex flex-col items-center justify-center h-64 px-4">
+          <div className="text-red-500 mb-2">⚠️ Development Error</div>
+          <div className="text-sm text-gray-600 text-center mb-4">
+            {error.message}
+          </div>
+          <button 
+            onClick={() => {
+              console.log('🔄 Manual refresh triggered');
+              refetch();
+            }}
+            className="px-4 py-2 bg-blue-500 text-white rounded"
+          >
+            Retry
+          </button>
+        </div>
+      );
+    }
+  }
 
   const filteredJobs = jobs?.filter(job => {
     const matchesSearch = !searchQuery || 

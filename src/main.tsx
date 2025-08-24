@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import App from './App.tsx'
 import './index.css'
 import './scanner.css'
+import './utils/devUtils.ts' // Load dev utilities
 
 const PUBLISHABLE_KEY = "pk_test_YWN0dWFsLW11dHQtOTEuY2xlcmsuYWNjb3VudHMuZGV2JA";
 
@@ -12,11 +13,14 @@ if (!PUBLISHABLE_KEY) {
   throw new Error("Missing Clerk Publishable Key");
 }
 
+// Development vs Production settings
+const isDevelopment = import.meta.env.DEV;
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      gcTime: 10 * 60 * 1000, // 10 minutes
+      staleTime: isDevelopment ? 30 * 1000 : 5 * 60 * 1000, // 30s dev, 5min prod
+      gcTime: isDevelopment ? 60 * 1000 : 10 * 60 * 1000, // 1min dev, 10min prod
       retry: (failureCount, error) => {
         // Don't retry DataCloneError or network request errors
         if (error?.name === 'DataCloneError' || 
@@ -31,9 +35,9 @@ const queryClient = new QueryClient({
           console.error('Bad request error - not retrying:', error);
           return false;
         }
-        return failureCount < 3;
+        return failureCount < (isDevelopment ? 1 : 3); // Less retry in dev
       },
-      refetchOnWindowFocus: false,
+      refetchOnWindowFocus: isDevelopment ? true : false, // Enable in dev for debugging
       refetchOnMount: true,
     },
     mutations: {
