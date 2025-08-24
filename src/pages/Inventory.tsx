@@ -324,20 +324,20 @@ const Inventory: React.FC = () => {
               Location Map
             </TabNav.Item>
             <TabNav.Item
-              to="/inventory/code-categories"
-              isActive={activeTab === 'code-categories'}
-              onClick={() => navigateToTab('code-categories')}
-            >
-              <Fingerprint className="h-4 w-4" />
-              Codes
-            </TabNav.Item>
-            <TabNav.Item
               to="/inventory/maintenance"
               isActive={activeTab === 'maintenance'}
               onClick={() => navigateToTab('maintenance')}
             >
               <Wrench className="h-4 w-4" />
               Maintenance
+            </TabNav.Item>
+            <TabNav.Item
+              to="/inventory/code-categories"
+              isActive={activeTab === 'code-categories'}
+              onClick={() => navigateToTab('code-categories')}
+            >
+              <Fingerprint className="h-4 w-4" />
+              Unit ID Setup
             </TabNav.Item>
           </TabNav>
         </div>
