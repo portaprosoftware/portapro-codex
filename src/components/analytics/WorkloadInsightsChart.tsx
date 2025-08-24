@@ -24,12 +24,15 @@ export const WorkloadInsightsChart: React.FC<WorkloadInsightsChartProps> = ({ da
     queryFn: async () => {
       const { data: jobs, error } = await supabase
         .from('jobs')
-        .select('scheduled_date, created_at, driver_id, scheduled_time')
+        .select('scheduled_date, created_at, driver_id, scheduled_time, job_type')
         .gte('scheduled_date', format(dateRange.from, 'yyyy-MM-dd'))
-        .lte('scheduled_date', format(dateRange.to, 'yyyy-MM-dd'))
-        .not('driver_id', 'is', null);
+        .lte('scheduled_date', format(dateRange.to, 'yyyy-MM-dd'));
 
       if (error) throw error;
+
+      // Count jobs with specific times vs estimated times
+      const jobsWithSpecificTimes = jobs?.filter(job => job.scheduled_time).length || 0;
+      const jobsWithoutTimes = (jobs?.length || 0) - jobsWithSpecificTimes;
 
       // Analyze by hour of day using actual scheduled times
       const hourCounts: { [hour: number]: number } = {};
@@ -71,16 +74,17 @@ export const WorkloadInsightsChart: React.FC<WorkloadInsightsChartProps> = ({ da
         return aHour - bHour;
       });
 
-      // Get driver utilization
-      const driverStats = jobs?.reduce((acc: any, job) => {
+      // Get driver utilization - only count jobs with assigned drivers
+      const jobsWithDrivers = jobs?.filter(job => job.driver_id) || [];
+      const driverStats = jobsWithDrivers.reduce((acc: any, job) => {
         if (job.driver_id) {
           acc[job.driver_id] = (acc[job.driver_id] || 0) + 1;
         }
         return acc;
-      }, {}) || {};
+      }, {});
 
       const uniqueDrivers = Object.keys(driverStats).length;
-      const averageJobsPerDriver = uniqueDrivers > 0 ? (jobs?.length || 0) / uniqueDrivers : 0;
+      const averageJobsPerDriver = uniqueDrivers > 0 ? jobsWithDrivers.length / uniqueDrivers : 0;
       const peakHour = hourlyDistribution.reduce((max, current) => 
         current.jobs > max.jobs ? current : max
       );
@@ -92,7 +96,9 @@ export const WorkloadInsightsChart: React.FC<WorkloadInsightsChartProps> = ({ da
           peakJobs: peakHour.jobs,
           activeDrivers: uniqueDrivers,
           avgJobsPerDriver: Math.round(averageJobsPerDriver * 10) / 10,
-          totalJobs: jobs?.length || 0
+          totalJobs: jobs?.length || 0,
+          jobsWithSpecificTimes,
+          jobsWithoutTimes
         }
       };
     }
@@ -148,6 +154,18 @@ export const WorkloadInsightsChart: React.FC<WorkloadInsightsChartProps> = ({ da
           </div>
           <div className="text-xs text-purple-600">
             This period
+          </div>
+        </div>
+      </div>
+
+      {/* Job Timing Information */}
+      <div className="bg-gray-50 p-3 rounded-lg mb-4">
+        <h4 className="text-sm font-medium text-gray-700 mb-2">Job Timing Analysis</h4>
+        <div className="text-xs text-gray-600 space-y-1">
+          <div>Jobs with specific times: <span className="font-medium">{insights.jobsWithSpecificTimes || 0}</span></div>
+          <div>Jobs with estimated times: <span className="font-medium">{insights.jobsWithoutTimes || 0}</span></div>
+          <div className="text-gray-500 italic">
+            * Jobs without specific times are distributed across business hours for visualization
           </div>
         </div>
       </div>

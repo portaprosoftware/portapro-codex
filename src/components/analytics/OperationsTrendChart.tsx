@@ -21,6 +21,7 @@ export const OperationsTrendChart: React.FC<OperationsTrendChartProps> = ({ date
   const { data: trendData, isLoading } = useQuery({
     queryKey: ['operations-trend', dateRange],
     queryFn: async () => {
+      console.log('Fetching operations trend data for:', dateRange);
       const { data: jobs, error } = await supabase
         .from('jobs')
         .select('job_type, scheduled_date, created_at, partial_pickups')
@@ -28,7 +29,12 @@ export const OperationsTrendChart: React.FC<OperationsTrendChartProps> = ({ date
         .lte('scheduled_date', format(dateRange.to, 'yyyy-MM-dd'))
         .order('scheduled_date');
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching jobs:', error);
+        throw error;
+      }
+
+      console.log('Fetched jobs:', jobs?.length || 0, jobs);
 
       // Create date range array
       const dates = eachDayOfInterval({
