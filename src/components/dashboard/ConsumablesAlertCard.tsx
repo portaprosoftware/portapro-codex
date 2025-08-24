@@ -97,7 +97,7 @@ export const ConsumablesAlertCard: React.FC = () => {
             <div>
               <h3 className="text-lg font-semibold text-gray-900">Consumables Alert</h3>
               <p className="text-sm text-gray-500">
-                {stockedPercentage.toFixed(0)}% of items are properly stocked (tracked by case/gallon)
+                {stockedPercentage.toFixed(0)}% of items are properly stocked (tracked by case/gallon, etc.)
               </p>
             </div>
           </div>
