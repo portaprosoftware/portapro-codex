@@ -20,6 +20,7 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
 }) => {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -71,12 +72,12 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
     onClose();
   };
 
-  const triggerFileInput = (useCamera = false) => {
-    if (fileInputRef.current) {
-      // Set capture attribute based on the option
-      fileInputRef.current.setAttribute('capture', useCamera ? 'environment' : '');
-      fileInputRef.current.click();
-    }
+  const triggerCamera = () => {
+    cameraInputRef.current?.click();
+  };
+
+  const triggerFileUpload = () => {
+    fileInputRef.current?.click();
   };
 
   return (
@@ -87,11 +88,19 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
         </DialogHeader>
 
         <div className="space-y-4">
-          {/* Hidden file input */}
+          {/* Hidden file inputs */}
           <Input
             ref={fileInputRef}
             type="file"
             accept="image/*"
+            onChange={handleFileSelect}
+            className="hidden"
+          />
+          <Input
+            ref={cameraInputRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
             onChange={handleFileSelect}
             className="hidden"
           />
@@ -127,7 +136,7 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
                 
                 <Button
                   variant="outline"
-                  onClick={() => triggerFileInput(true)}
+                  onClick={triggerCamera}
                   className="flex-1"
                 >
                   <Camera className="w-4 h-4 mr-2" />
@@ -141,7 +150,7 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
               <div className="grid grid-cols-1 gap-3">
                 {/* Take Photo Option */}
                 <div 
-                  onClick={() => triggerFileInput(true)}
+                  onClick={triggerCamera}
                   className="w-full h-32 border-2 border-dashed border-muted-foreground/25 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors"
                 >
                   <Camera className="w-8 h-8 text-muted-foreground mb-2" />
@@ -152,7 +161,7 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
 
                 {/* Upload from Album Option */}
                 <div 
-                  onClick={() => triggerFileInput(false)}
+                  onClick={triggerFileUpload}
                   className="w-full h-32 border-2 border-dashed border-muted-foreground/25 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors"
                 >
                   <Image className="w-8 h-8 text-muted-foreground mb-2" />
