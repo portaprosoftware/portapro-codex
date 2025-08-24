@@ -24,11 +24,11 @@ export const InventoryFilters: React.FC<InventoryFiltersProps> = ({
 }) => {
   return (
     <Card className="p-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_0.4fr_0.4fr] gap-4">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search Item Code, Product name, or Manufacturer..."
+            placeholder="Search code, name or manufacturer"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             className="pl-10"
