@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PhoneInput } from '@/components/ui/phone-input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
@@ -113,10 +114,10 @@ export function EditDriverProfileDialog({ isOpen, onClose, driver }: EditDriverP
             
             <div className="space-y-2">
               <Label htmlFor="phone">Phone</Label>
-              <Input
+              <PhoneInput
                 id="phone"
                 value={formData.phone}
-                onChange={(e) => handleInputChange('phone', e.target.value)}
+                onChange={(e164Value) => handleInputChange('phone', e164Value)}
               />
             </div>
             
@@ -155,10 +156,10 @@ export function EditDriverProfileDialog({ isOpen, onClose, driver }: EditDriverP
               
               <div className="space-y-2">
                 <Label htmlFor="emergency_contact_phone">Contact Phone</Label>
-                <Input
+                <PhoneInput
                   id="emergency_contact_phone"
                   value={formData.emergency_contact_phone}
-                  onChange={(e) => handleInputChange('emergency_contact_phone', e.target.value)}
+                  onChange={(e164Value) => handleInputChange('emergency_contact_phone', e164Value)}
                 />
               </div>
             </div>

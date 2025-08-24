@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { PhoneInput } from '@/components/ui/phone-input';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -102,12 +103,10 @@ export function SendInvoiceModal({ isOpen, onClose, invoice }: SendInvoiceModalP
 
           <div className="space-y-2">
             <Label htmlFor="customer-phone">Phone Number</Label>
-            <Input
+            <PhoneInput
               id="customer-phone"
-              type="tel"
               value={customerPhone}
-              onChange={(e) => setCustomerPhone(e.target.value)}
-              placeholder="Enter phone number"
+              onChange={setCustomerPhone}
               className="border-blue-200 focus:border-blue-500"
             />
           </div>

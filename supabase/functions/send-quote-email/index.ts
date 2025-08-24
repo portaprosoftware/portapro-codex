@@ -260,12 +260,25 @@ const handler = async (req: Request): Promise<Response> => {
         throw new Error('Phone number is required for SMS sending');
       }
 
+      // Validate E.164 format for Twilio
+      const phoneDigits = customerPhone.replace(/\D/g, '');
+      let twilioPhone = customerPhone;
+      if (phoneDigits.length === 10) {
+        twilioPhone = `+1${phoneDigits}`;
+      } else if (!customerPhone.startsWith('+1') && phoneDigits.length === 11 && phoneDigits.startsWith('1')) {
+        twilioPhone = `+${phoneDigits}`;
+      }
+      
+      if (!twilioPhone.match(/^\+1\d{10}$/)) {
+        throw new Error('Phone number must be a valid US number for SMS sending');
+      }
+
       // Twilio SMS functionality
       const twilioSid = Deno.env.get('TWILIO_ACCOUNT_SID');
       const twilioToken = Deno.env.get('TWILIO_AUTH_TOKEN');
-      const twilioPhone = Deno.env.get('TWILIO_PHONE_NUMBER');
+      const twilioFromPhone = Deno.env.get('TWILIO_PHONE_NUMBER');
 
-      if (!twilioSid || !twilioToken || !twilioPhone) {
+      if (!twilioSid || !twilioToken || !twilioFromPhone) {
         throw new Error('Twilio credentials not configured');
       }
 
@@ -275,8 +288,8 @@ const handler = async (req: Request): Promise<Response> => {
       const auth = btoa(`${twilioSid}:${twilioToken}`);
       
       const smsPayload = new URLSearchParams({
-        From: twilioPhone,
-        To: customerPhone,
+        From: twilioFromPhone,
+        To: twilioPhone,
         Body: smsMessage
       });
 
