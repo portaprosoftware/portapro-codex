@@ -37,23 +37,34 @@ export const ServiceCatalogTab: React.FC = () => {
   const [isCreating, setIsCreating] = useState(false);
   const [templateAssignmentService, setTemplateAssignmentService] = useState<Service | null>(null);
 
-  const { data: services, isLoading } = useQuery({
-    queryKey: ['services'],
+  const { data: services, isLoading, error, refetch } = useQuery({
+    queryKey: ['services', 'active'],
     queryFn: async () => {
+      console.log('Fetching services from database...');
       const { data, error } = await supabase
         .from('services')
         .select('*')
         .eq('is_active', true)
         .order('name');
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching services:', error);
+        throw error;
+      }
+      
+      console.log('Successfully fetched services:', data?.length || 0);
       return data?.map(service => ({
         ...service,
         eligible_targets: Array.isArray(service.eligible_targets) 
           ? service.eligible_targets 
           : (service.eligible_targets as any)?.units || []
       })) as Service[];
-    }
+    },
+    staleTime: 0, // Always refetch to ensure fresh data
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    retry: 3,
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
   const deleteServiceMutation = useMutation({
@@ -151,6 +162,21 @@ export const ServiceCatalogTab: React.FC = () => {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <p className="text-gray-600 mt-4">Loading services...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12">
+        <div className="text-red-600 mb-4">
+          <p className="text-lg font-medium">Failed to load services</p>
+          <p className="text-sm text-gray-600 mt-1">Please try again</p>
+        </div>
+        <Button onClick={() => refetch()} variant="outline">
+          Retry
+        </Button>
       </div>
     );
   }
