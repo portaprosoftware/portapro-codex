@@ -23,7 +23,7 @@ export const OperationsTrendChart: React.FC<OperationsTrendChartProps> = ({ date
     queryFn: async () => {
       const { data: jobs, error } = await supabase
         .from('jobs')
-        .select('job_type, scheduled_date, created_at')
+        .select('job_type, scheduled_date, created_at, partial_pickups')
         .gte('scheduled_date', format(dateRange.from, 'yyyy-MM-dd'))
         .lte('scheduled_date', format(dateRange.to, 'yyyy-MM-dd'))
         .order('scheduled_date');
@@ -47,9 +47,13 @@ export const OperationsTrendChart: React.FC<OperationsTrendChartProps> = ({ date
           date: format(date, 'MMM dd'),
           fullDate: dateStr,
           deliveries: dayJobs.filter(job => job.job_type === 'delivery').length,
-          pickups: dayJobs.filter(job => job.job_type === 'pickup').length,
+          pickups: dayJobs.filter(job => 
+            job.job_type === 'pickup' || 
+            job.job_type === 'partial-pickup' ||
+            (job.partial_pickups && Object.keys(job.partial_pickups).length > 0)
+          ).length,
           services: dayJobs.filter(job => job.job_type === 'service').length,
-          returns: dayJobs.filter(job => job.job_type === 'return').length,
+          surveys: dayJobs.filter(job => job.job_type === 'on-site-survey').length,
         };
       });
 
@@ -114,12 +118,12 @@ export const OperationsTrendChart: React.FC<OperationsTrendChartProps> = ({ date
           />
           <Area
             type="monotone"
-            dataKey="returns"
+            dataKey="surveys"
             stackId="1"
             stroke="#8b5cf6"
             fill="#8b5cf6"
             fillOpacity={0.7}
-            name="Returns"
+            name="On-Site Surveys"
           />
         </AreaChart>
       </ResponsiveContainer>

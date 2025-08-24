@@ -3,7 +3,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { StatCard } from '@/components/ui/StatCard';
-import { Truck, Package, Wrench, RotateCcw } from 'lucide-react';
+import { Truck, Package, Wrench, ClipboardList } from 'lucide-react';
 import { format, subDays, differenceInDays } from 'date-fns';
 import { OperationsTrendChart } from './OperationsTrendChart';
 import { WorkloadInsightsChart } from './WorkloadInsightsChart';
@@ -22,10 +22,10 @@ export const OperationsSection: React.FC<OperationsSectionProps> = ({ dateRange 
       const previousPeriodStart = subDays(dateRange.from, periodLength + 1);
       const previousPeriodEnd = subDays(dateRange.to, periodLength + 1);
 
-      // Fetch current period data
+      // Fetch current period data including jobs with partial pickups
       const { data: currentJobs, error: currentError } = await supabase
         .from('jobs')
-        .select('job_type, scheduled_date')
+        .select('job_type, scheduled_date, partial_pickups')
         .gte('scheduled_date', format(dateRange.from, 'yyyy-MM-dd'))
         .lte('scheduled_date', format(dateRange.to, 'yyyy-MM-dd'));
 
@@ -34,7 +34,7 @@ export const OperationsSection: React.FC<OperationsSectionProps> = ({ dateRange 
       // Fetch previous period data for comparison
       const { data: previousJobs, error: previousError } = await supabase
         .from('jobs')
-        .select('job_type, scheduled_date')
+        .select('job_type, scheduled_date, partial_pickups')
         .gte('scheduled_date', format(previousPeriodStart, 'yyyy-MM-dd'))
         .lte('scheduled_date', format(previousPeriodEnd, 'yyyy-MM-dd'));
 
@@ -43,17 +43,25 @@ export const OperationsSection: React.FC<OperationsSectionProps> = ({ dateRange 
       // Count current period jobs by type
       const current = {
         deliveries: currentJobs?.filter(job => job.job_type === 'delivery').length || 0,
-        pickups: currentJobs?.filter(job => job.job_type === 'pickup').length || 0,
+        pickups: currentJobs?.filter(job => 
+          job.job_type === 'pickup' || 
+          job.job_type === 'partial-pickup' ||
+          (job.partial_pickups && Object.keys(job.partial_pickups).length > 0)
+        ).length || 0,
         services: currentJobs?.filter(job => job.job_type === 'service').length || 0,
-        returns: currentJobs?.filter(job => job.job_type === 'return').length || 0,
+        surveys: currentJobs?.filter(job => job.job_type === 'on-site-survey').length || 0,
       };
 
       // Count previous period jobs by type
       const previous = {
         deliveries: previousJobs?.filter(job => job.job_type === 'delivery').length || 0,
-        pickups: previousJobs?.filter(job => job.job_type === 'pickup').length || 0,
+        pickups: previousJobs?.filter(job => 
+          job.job_type === 'pickup' || 
+          job.job_type === 'partial-pickup' ||
+          (job.partial_pickups && Object.keys(job.partial_pickups).length > 0)
+        ).length || 0,
         services: previousJobs?.filter(job => job.job_type === 'service').length || 0,
-        returns: previousJobs?.filter(job => job.job_type === 'return').length || 0,
+        surveys: previousJobs?.filter(job => job.job_type === 'on-site-survey').length || 0,
       };
 
       // Calculate percentage changes
@@ -66,13 +74,13 @@ export const OperationsSection: React.FC<OperationsSectionProps> = ({ dateRange 
         deliveries: current.deliveries,
         pickups: current.pickups,
         services: current.services,
-        returns: current.returns,
-        total: current.deliveries + current.pickups + current.services + current.returns,
+        surveys: current.surveys,
+        total: current.deliveries + current.pickups + current.services + current.surveys,
         changes: {
           deliveries: calculateChange(current.deliveries, previous.deliveries),
           pickups: calculateChange(current.pickups, previous.pickups),
           services: calculateChange(current.services, previous.services),
-          returns: calculateChange(current.returns, previous.returns),
+          surveys: calculateChange(current.surveys, previous.surveys),
         }
       };
 
@@ -92,7 +100,7 @@ export const OperationsSection: React.FC<OperationsSectionProps> = ({ dateRange 
   return (
     <div className="space-y-8">
       {/* Operations KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <StatCard
           title="Deliveries"
           value={operations?.deliveries || 0}
@@ -136,15 +144,15 @@ export const OperationsSection: React.FC<OperationsSectionProps> = ({ dateRange 
         />
         
         <StatCard
-          title="Returns"
-          value={operations?.returns || 0}
-          icon={RotateCcw}
+          title="On-Site Surveys"
+          value={operations?.surveys || 0}
+          icon={ClipboardList}
           gradientFrom="#8b5cf6"
           gradientTo="#7c3aed"
           iconBg="#8B5CF6"
           subtitle={
-            <span className={`font-semibold ${getChangeColor(operations?.changes?.returns || 0)}`}>
-              {formatPercentage(operations?.changes?.returns || 0)} vs last period
+            <span className={`font-semibold ${getChangeColor(operations?.changes?.surveys || 0)}`}>
+              {formatPercentage(operations?.changes?.surveys || 0)} vs last period
             </span>
           }
         />

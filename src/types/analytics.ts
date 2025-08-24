@@ -21,7 +21,7 @@ export interface OperationsAnalytics {
   deliveries: number;
   pickups: number;
   services: number;
-  returns: number;
+  surveys: number;
   total: number;
 }
 

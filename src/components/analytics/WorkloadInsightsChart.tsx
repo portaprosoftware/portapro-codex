@@ -24,32 +24,51 @@ export const WorkloadInsightsChart: React.FC<WorkloadInsightsChartProps> = ({ da
     queryFn: async () => {
       const { data: jobs, error } = await supabase
         .from('jobs')
-        .select('scheduled_date, created_at, driver_id')
+        .select('scheduled_date, created_at, driver_id, scheduled_time')
         .gte('scheduled_date', format(dateRange.from, 'yyyy-MM-dd'))
         .lte('scheduled_date', format(dateRange.to, 'yyyy-MM-dd'))
         .not('driver_id', 'is', null);
 
       if (error) throw error;
 
-      // Analyze by hour of day (assuming jobs are distributed throughout business hours)
-      const hourlyDistribution = Array.from({ length: 10 }, (_, i) => {
-        const hour = i + 8; // 8 AM to 5 PM
-        const hourLabel = hour <= 12 ? `${hour}AM` : `${hour - 12}PM`;
-        
-        // Simulate workload distribution based on common patterns
-        const totalJobs = jobs?.length || 0;
-        let jobCount = 0;
-        
-        if (hour >= 8 && hour <= 10) jobCount = Math.floor(totalJobs * 0.15); // Morning rush
-        else if (hour >= 11 && hour <= 14) jobCount = Math.floor(totalJobs * 0.12); // Steady midday
-        else if (hour >= 15 && hour <= 17) jobCount = Math.floor(totalJobs * 0.08); // Afternoon
-        else jobCount = Math.floor(totalJobs * 0.03); // Light hours
+      // Analyze by hour of day using actual scheduled times
+      const hourCounts: { [hour: number]: number } = {};
+      
+      // Initialize business hours (8 AM to 5 PM)
+      for (let i = 8; i <= 17; i++) {
+        hourCounts[i] = 0;
+      }
+
+      // Count jobs by actual scheduled hour, or distribute evenly if no time specified
+      jobs?.forEach(job => {
+        if (job.scheduled_time) {
+          // Parse the time and extract hour
+          const timeParts = job.scheduled_time.split(':');
+          const hour = parseInt(timeParts[0]);
+          if (hour >= 8 && hour <= 17) {
+            hourCounts[hour] = (hourCounts[hour] || 0) + 1;
+          }
+        } else {
+          // If no specific time, distribute across business hours
+          const businessHours = Object.keys(hourCounts).map(h => parseInt(h));
+          const randomHour = businessHours[Math.floor(Math.random() * businessHours.length)];
+          hourCounts[randomHour] = (hourCounts[randomHour] || 0) + 1;
+        }
+      });
+
+      const hourlyDistribution = Object.entries(hourCounts).map(([hour, jobs]) => {
+        const hourNum = parseInt(hour);
+        const hourLabel = hourNum <= 12 ? `${hourNum}AM` : `${hourNum - 12}PM`;
         
         return {
           hour: hourLabel,
-          jobs: jobCount,
-          utilization: Math.min(100, (jobCount / Math.max(1, totalJobs * 0.15)) * 100)
+          jobs: jobs,
+          utilization: Math.min(100, (jobs / Math.max(1, 5)) * 100) // Assuming max 5 jobs per hour is 100%
         };
+      }).sort((a, b) => {
+        const aHour = parseInt(a.hour.replace(/AM|PM/, ''));
+        const bHour = parseInt(b.hour.replace(/AM|PM/, ''));
+        return aHour - bHour;
       });
 
       // Get driver utilization
