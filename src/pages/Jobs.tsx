@@ -621,7 +621,7 @@ const JobsPage: React.FC = () => {
                                 ref={provided.innerRef}
                                 {...provided.droppableProps}
                                 className={cn(
-                                  "flex gap-3 h-24 border-2 border-dashed rounded-lg p-3 overflow-x-auto transition-all duration-200",
+                                  "flex gap-3 h-28 border-2 border-dashed rounded-lg p-3 overflow-x-auto transition-all duration-200",
                                   snapshot.isDraggingOver 
                                     ? "border-orange-400 bg-orange-50" 
                                     : "border-gray-300 bg-white"
