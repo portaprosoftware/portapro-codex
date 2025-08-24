@@ -270,7 +270,7 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-full h-full max-w-none md:max-w-5xl md:h-auto md:max-h-[90vh] p-0 flex flex-col">
+      <DialogContent className="w-full h-full max-w-none md:max-w-7xl md:h-auto md:max-h-[90vh] p-0 flex flex-col">
         <DialogHeader className="p-6 pb-4 border-b">
           <DialogTitle className="text-xl font-semibold flex items-center gap-2">
             {currentPage === 'tracked-units' && (
@@ -287,154 +287,169 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="flex-1 overflow-hidden flex flex-col">
+        {/* Two-column layout for main page, single column for tracked units */}
+        <div className="flex-1 overflow-hidden flex">
           {currentPage === 'main' ? (
-            <ProductListPage
-              startDate={startDate}
-              endDate={endDate}
-              onBulkSelect={handleBulkSelect}
-              onViewTrackedUnits={handleViewTrackedUnits}
-              bulkQuantities={bulkQuantities}
-              onBulkQuantityChange={setBulkQuantities}
-              selectedUnitsCollection={selectedUnitsCollection}
-              currentSelections={currentSelections}
-            />
-          ) : (
-            <TrackedUnitsPage
-              product={selectedProductForTracking!}
-              startDate={startDate}
-              endDate={endDate}
-              onUnitsSelect={handleUnitsSelect}
-              onBulkSelect={handleBulkSelect}
-              onBack={handleBackToMain}
-              existingSelectedUnits={[
-                // Include current session selections
-                ...selectedUnitsCollection,
-                // Also include units from existing job items as SelectedUnit objects
-                ...existingJobItems
-                  .filter(item => item.product_id === selectedProductForTracking?.id && item.strategy === 'specific')
-                  .flatMap(item => (item.specific_item_ids || []).map(unitId => ({
-                    unitId,
-                    itemCode: '', // Will be populated by the component
-                    productId: item.product_id
-                  })))
-              ]}
-            />
-          )}
-          
-          {/* Selected Units Summary - only show on main page */}
-          {currentPage === 'main' && selectedUnitsCollection.length > 0 && (
-            <div className="border-t bg-muted/30 p-4">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="font-medium text-sm">
-                  Selected Units ({selectedUnitsCollection.reduce((total, selection) => {
-                    return total + selection.quantity;
-                  }, 0)})
-                </h3>
-                <Button
-                  onClick={handleAddUnitsToJob}
-                  className="font-medium"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Units to Job
-                </Button>
+            <>
+              {/* Left side - Product selection */}
+              <div className="flex-1 flex flex-col overflow-hidden">
+                <ProductListPage
+                  startDate={startDate}
+                  endDate={endDate}
+                  onBulkSelect={handleBulkSelect}
+                  onViewTrackedUnits={handleViewTrackedUnits}
+                  bulkQuantities={bulkQuantities}
+                  onBulkQuantityChange={setBulkQuantities}
+                  selectedUnitsCollection={selectedUnitsCollection}
+                  currentSelections={currentSelections}
+                />
               </div>
-              <div className="space-y-2 max-h-32 overflow-y-auto">
-                {/* Group selections by product */}
-                {Object.entries(
-                  selectedUnitsCollection.reduce((acc, selection) => {
-                    if (!acc[selection.productId]) {
-                      acc[selection.productId] = {
-                        productName: selection.productName,
-                        bulk: [],
-                        specific: []
-                      };
-                    }
-                    if (selection.unitId === 'bulk') {
-                      acc[selection.productId].bulk.push(selection);
-                    } else {
-                      acc[selection.productId].specific.push(selection);
-                    }
-                    return acc;
-                  }, {} as Record<string, { productName: string; bulk: UnitSelection[]; specific: UnitSelection[] }>)
-                ).map(([productId, group]) => (
-                  <div key={productId} className="bg-background border rounded-lg p-3 space-y-2">
-                    <div className="font-medium text-sm">{group.productName}</div>
-                    
-                    {/* Show combined selection when both exist */}
-                    {group.bulk.length > 0 && group.specific.length > 0 ? (
-                      <div className="text-sm space-y-1">
-                        <div className="text-muted-foreground">
-                          Specific Units: {group.specific.map(s => s.itemCode).join(', ')}
-                        </div>
-                        <div className="text-muted-foreground">
-                          + {group.bulk[0].quantity} Additional Bulk Units
-                        </div>
-                        <div className="font-medium text-primary">
-                          Total: {group.specific.length + group.bulk[0].quantity} units
-                        </div>
-                        <div className="flex gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleRemoveProductSelections(productId, 'specific')}
-                            className="h-6 px-2 text-xs text-muted-foreground hover:text-destructive"
-                          >
-                            Remove Specific
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleRemoveProductSelections(productId, 'bulk')}
-                            className="h-6 px-2 text-xs text-muted-foreground hover:text-destructive"
-                          >
-                            Remove Bulk
-                          </Button>
-                        </div>
-                      </div>
-                    ) : (
-                      <>
-                        {group.bulk.length > 0 && (
-                          <div className="text-sm space-y-1">
-                            <div className="text-muted-foreground">
-                              Bulk Selection: {group.bulk[0].quantity} units
-                            </div>
-                            <div className="font-medium text-primary">
-                              Total: {group.bulk[0].quantity} units
-                            </div>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleRemoveProductSelections(productId, 'bulk')}
-                              className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        )}
-                        {group.specific.length > 0 && (
-                          <div className="text-sm space-y-1">
+              
+              {/* Right side - Selected units sidebar */}
+              {selectedUnitsCollection.length > 0 && (
+                <div className="w-80 border-l bg-muted/20 flex flex-col">
+                  <div className="p-4 border-b bg-background">
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="font-semibold text-base">
+                        Selected Units
+                      </h3>
+                      <Badge variant="secondary" className="font-medium">
+                        {selectedUnitsCollection.reduce((total, selection) => {
+                          return total + selection.quantity;
+                        }, 0)} units
+                      </Badge>
+                    </div>
+                    <Button
+                      onClick={handleAddUnitsToJob}
+                      className="w-full font-medium"
+                      size="sm"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Units to Job
+                    </Button>
+                  </div>
+                  
+                  <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                    {/* Group selections by product */}
+                    {Object.entries(
+                      selectedUnitsCollection.reduce((acc, selection) => {
+                        if (!acc[selection.productId]) {
+                          acc[selection.productId] = {
+                            productName: selection.productName,
+                            bulk: [],
+                            specific: []
+                          };
+                        }
+                        if (selection.unitId === 'bulk') {
+                          acc[selection.productId].bulk.push(selection);
+                        } else {
+                          acc[selection.productId].specific.push(selection);
+                        }
+                        return acc;
+                      }, {} as Record<string, { productName: string; bulk: UnitSelection[]; specific: UnitSelection[] }>)
+                    ).map(([productId, group]) => (
+                      <div key={productId} className="bg-background border rounded-lg p-3 space-y-2">
+                        <div className="font-medium text-sm">{group.productName}</div>
+                        
+                        {/* Show combined selection when both exist */}
+                        {group.bulk.length > 0 && group.specific.length > 0 ? (
+                          <div className="text-sm space-y-2">
                             <div className="text-muted-foreground">
                               Specific Units: {group.specific.map(s => s.itemCode).join(', ')}
                             </div>
-                            <div className="font-medium text-primary">
-                              Total: {group.specific.length} units
+                            <div className="text-muted-foreground">
+                              + {group.bulk[0].quantity} Additional Bulk Units
                             </div>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleRemoveProductSelections(productId, 'specific')}
-                              className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </Button>
+                            <div className="font-medium text-primary">
+                              Total: {group.specific.length + group.bulk[0].quantity} units
+                            </div>
+                            <div className="flex gap-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleRemoveProductSelections(productId, 'specific')}
+                                className="h-6 px-2 text-xs text-muted-foreground hover:text-destructive"
+                              >
+                                Remove Specific
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleRemoveProductSelections(productId, 'bulk')}
+                                className="h-6 px-2 text-xs text-muted-foreground hover:text-destructive"
+                              >
+                                Remove Bulk
+                              </Button>
+                            </div>
                           </div>
+                        ) : (
+                          <>
+                            {group.bulk.length > 0 && (
+                              <div className="text-sm space-y-1">
+                                <div className="text-muted-foreground">
+                                  Bulk Selection: {group.bulk[0].quantity} units
+                                </div>
+                                <div className="font-medium text-primary">
+                                  Total: {group.bulk[0].quantity} units
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleRemoveProductSelections(productId, 'bulk')}
+                                  className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            )}
+                            {group.specific.length > 0 && (
+                              <div className="text-sm space-y-1">
+                                <div className="text-muted-foreground">
+                                  Specific Units: {group.specific.map(s => s.itemCode).join(', ')}
+                                </div>
+                                <div className="font-medium text-primary">
+                                  Total: {group.specific.length} units
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleRemoveProductSelections(productId, 'specific')}
+                                  className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            )}
+                          </>
                         )}
-                      </>
-                    )}
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="flex-1 flex flex-col overflow-hidden">
+              <TrackedUnitsPage
+                product={selectedProductForTracking!}
+                startDate={startDate}
+                endDate={endDate}
+                onUnitsSelect={handleUnitsSelect}
+                onBulkSelect={handleBulkSelect}
+                onBack={handleBackToMain}
+                existingSelectedUnits={[
+                  // Include current session selections
+                  ...selectedUnitsCollection,
+                  // Also include units from existing job items as SelectedUnit objects
+                  ...existingJobItems
+                    .filter(item => item.product_id === selectedProductForTracking?.id && item.strategy === 'specific')
+                    .flatMap(item => (item.specific_item_ids || []).map(unitId => ({
+                      unitId,
+                      itemCode: '', // Will be populated by the component
+                      productId: item.product_id
+                    })))
+                ]}
+              />
             </div>
           )}
         </div>
