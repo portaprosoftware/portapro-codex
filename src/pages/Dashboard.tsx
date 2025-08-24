@@ -275,9 +275,14 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* Info Text */}
+      <div className="text-center">
+        <p className="text-sm text-gray-600 font-sans">Select any card to explore that section</p>
+      </div>
+
       {/* Company Overview Section */}
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-gray-900 font-sans">Company Overview</h2>
+        <h2 className="text-base font-semibold text-gray-900 font-sans">Company Overview</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3">
           <StatCard
             title="Total Inventory"
@@ -380,7 +385,7 @@ const Dashboard = () => {
 
       {/* Alerts & Expiring Documents Section */}
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-gray-900 font-sans">Alerts & Expiring Documents</h2>
+        <h2 className="text-base font-semibold text-gray-900 font-sans">Alerts & Expiring Documents</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3">
           <StatCard
             title="Maintenance Alerts"
