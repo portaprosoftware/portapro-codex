@@ -96,11 +96,99 @@ const Dashboard = () => {
       
       if (error) throw error;
       
-      // For now, assume all customers are active - you can add logic later to filter by activity
+      // Calculate active customers (those with jobs in the last 60 days)
+      const sixtyDaysAgo = new Date();
+      sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
+      
+      const { data: activeCustomers, error: activeError } = await supabase
+        .from('jobs')
+        .select('customer_id')
+        .gte('created_at', sixtyDaysAgo.toISOString());
+      
+      if (activeError) throw activeError;
+      
+      const uniqueActiveCustomers = new Set(activeCustomers?.map(job => job.customer_id));
+      
       return {
         total: count || 0,
-        active: 8 // Keeping the current active count for now
+        active: uniqueActiveCustomers.size
       };
+    }
+  });
+
+  // Fetch vehicles data
+  const { data: vehiclesData } = useQuery({
+    queryKey: ['dashboard-vehicles'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('vehicles')
+        .select('id, status');
+      
+      if (error) throw error;
+      
+      const total = data?.length || 0;
+      const active = data?.filter(v => v.status === 'active').length || 0;
+      const maintenance = data?.filter(v => v.status === 'maintenance').length || 0;
+      
+      return { total, active, maintenance };
+    }
+  });
+
+  // Fetch revenue data (last 30 days)
+  const { data: revenueData } = useQuery({
+    queryKey: ['dashboard-revenue'],
+    queryFn: async () => {
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      
+      const { data, error } = await supabase
+        .from('invoices')
+        .select('amount')
+        .eq('status', 'paid')
+        .gte('created_at', thirtyDaysAgo.toISOString());
+      
+      if (error) throw error;
+      
+      const total = data?.reduce((sum, invoice) => sum + (invoice.amount || 0), 0) || 0;
+      return { total };
+    }
+  });
+
+  // Fetch fuel costs (last 30 days)
+  const { data: fuelData } = useQuery({
+    queryKey: ['dashboard-fuel'],
+    queryFn: async () => {
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      
+      const { data, error } = await supabase
+        .from('fuel_logs')
+        .select('total_cost')
+        .gte('log_date', thirtyDaysAgo.toISOString().split('T')[0]);
+      
+      if (error) throw error;
+      
+      const total = data?.reduce((sum, log) => sum + (log.total_cost || 0), 0) || 0;
+      return { total };
+    }
+  });
+
+  // Fetch maintenance alerts
+  const { data: maintenanceData } = useQuery({
+    queryKey: ['dashboard-maintenance'],
+    queryFn: async () => {
+      const sevenDaysFromNow = new Date();
+      sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7);
+      
+      const { data, error } = await supabase
+        .from('maintenance_records')
+        .select('vehicle_id')
+        .eq('status', 'scheduled')
+        .lte('scheduled_date', sevenDaysFromNow.toISOString().split('T')[0]);
+      
+      if (error) throw error;
+      
+      return { count: data?.length || 0 };
     }
   });
 
@@ -223,7 +311,7 @@ const Dashboard = () => {
         
         <StatCard
           title="Active Customers"
-          value={customersData?.active || 8}
+          value={customersData?.active || 0}
           icon={Users}
           gradientFrom="#8b5cf6"
           gradientTo="#7c3aed"
@@ -259,43 +347,45 @@ const Dashboard = () => {
         
         <StatCard
           title="Monthly Revenue"
-          value="$8,400"
+          value={`$${(revenueData?.total || 0).toLocaleString()}`}
           icon={DollarSign}
           gradientFrom="#22c55e"
           gradientTo="#16a34a"
           iconBg="#22c55e"
+          subtitle="Last 30 days"
+          subtitleColor="text-gray-600"
           delay={300}
         />
         
         {/* Row 2 */}
         <StatCard
           title="Fleet Vehicles"
-          value={8}
+          value={vehiclesData?.total || 0}
           icon={Truck}
           gradientFrom="#6366f1"
           gradientTo="#4f46e5"
           iconBg="#6366f1"
-          subtitle="7 active, 1 maintenance"
+          subtitle={`${vehiclesData?.active || 0} active, ${vehiclesData?.maintenance || 0} maintenance`}
           subtitleColor="text-gray-600"
-          chart={<DonutChart active={7} maintenance={1} />}
+          chart={<DonutChart active={vehiclesData?.active || 0} maintenance={vehiclesData?.maintenance || 0} />}
           delay={400}
         />
         
         <StatCard
           title="Fuel Cost"
-          value="$1,245"
+          value={`$${(fuelData?.total || 0).toLocaleString()}`}
           icon={Fuel}
           gradientFrom="#eab308"
           gradientTo="#ca8a04"
           iconBg="#eab308"
-          subtitle="Month to date fuel expenses"
+          subtitle="Last 30 days fuel expenses"
           subtitleColor="text-gray-600"
           delay={500}
         />
         
         <StatCard
           title="Maintenance Alerts"
-          value={2}
+          value={maintenanceData?.count || 0}
           icon={Wrench}
           gradientFrom="#fb7c1f"
           gradientTo="#f97316"
