@@ -41,7 +41,7 @@ export const StaffCertificationsCard: React.FC = () => {
       subtitleColor="text-green-600"
       delay={400}
       clickable
-      onClick={() => navigate('/team-management')}
+      onClick={() => navigate('/team-management/training')}
     />
   );
 };

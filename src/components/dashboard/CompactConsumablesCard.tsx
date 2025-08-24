@@ -3,10 +3,12 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { StatCard } from '@/components/ui/StatCard';
 import { useUserRole } from '@/hooks/useUserRole';
+import { useNavigate } from 'react-router-dom';
 import { Droplets } from 'lucide-react';
 
 export const CompactConsumablesCard: React.FC = () => {
   const { hasAdminAccess } = useUserRole();
+  const navigate = useNavigate();
 
   const { data: totalStats } = useQuery({
     queryKey: ['dashboard-consumable-location-stats-compact'],
@@ -80,6 +82,8 @@ export const CompactConsumablesCard: React.FC = () => {
       subtitle={`${stockedPercentage.toFixed(0)}% properly stocked`}
       subtitleColor="text-orange-600"
       delay={700}
+      clickable
+      onClick={() => navigate('/inventory/consumables')}
     />
   );
 };
