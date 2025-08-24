@@ -67,7 +67,7 @@ export const AvailableNowSlider: React.FC<AvailableNowSliderProps> = ({ isOpen, 
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <Package className="w-5 h-5" />
-            Tracked Units Overview
+            All Units Overview
           </SheetTitle>
           <SheetDescription>
             View all products and their individual tracked units with detailed information
@@ -102,7 +102,7 @@ export const AvailableNowSlider: React.FC<AvailableNowSliderProps> = ({ isOpen, 
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold px-3 py-1 rounded-full text-xs">
-                        {product.items.length} Units
+                        {product.stock_total} Units
                       </div>
                       <ChevronDown 
                         className={cn(
