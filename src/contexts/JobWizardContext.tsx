@@ -99,6 +99,12 @@ export interface JobWizardData {
       [pickupId: string]: JobItemSelection[];
     };
   };
+  
+  // Lock options
+  locks_requested?: boolean;
+  locks_count?: number;
+  lock_notes?: string;
+  zip_tied_on_dropoff?: boolean;
 }
 
 interface JobWizardState {
@@ -146,6 +152,10 @@ const initialState: JobWizardState = {
     pickup_is_priority: false,
     create_partial_pickups: false,
     partial_pickups: [],
+    locks_requested: false,
+    locks_count: 0,
+    lock_notes: '',
+    zip_tied_on_dropoff: false,
   },
   errors: {},
   isLoading: false,

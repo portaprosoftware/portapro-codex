@@ -43,6 +43,7 @@ const jobEditSchema = z.object({
   notes: z.string().optional(),
   is_priority: z.boolean().optional(),
   locks_requested: z.boolean().optional(),
+  locks_count: z.number().optional(),
   lock_notes: z.string().optional(),
   zip_tied_on_dropoff: z.boolean().optional(),
 });
@@ -145,6 +146,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
         notes: job.notes || '',
         is_priority: (job as any).is_priority ?? false,
         locks_requested: (job as any).locks_requested ?? false,
+        locks_count: (job as any).locks_count || 0,
         lock_notes: (job as any).lock_notes || '',
         zip_tied_on_dropoff: (job as any).zip_tied_on_dropoff ?? false,
       });
@@ -168,6 +170,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
           notes: data.notes,
           is_priority: data.is_priority,
           locks_requested: data.locks_requested,
+          locks_count: data.locks_count,
           lock_notes: data.lock_notes,
           zip_tied_on_dropoff: data.zip_tied_on_dropoff,
           updated_at: new Date().toISOString(),
@@ -716,24 +719,47 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                         />
                         
                         {form.watch('locks_requested') && (
-                          <FormField
-                            control={form.control}
-                            name="lock_notes"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Lock Details (Optional)</FormLabel>
-                                <FormControl>
-                                  <Textarea
-                                    placeholder="Enter combination codes, key details, or lock type information..."
-                                    {...field}
-                                    value={field.value || ''}
-                                    rows={2}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
+                          <>
+                            <FormField
+                              control={form.control}
+                              name="locks_count"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Number of Locks</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      type="number"
+                                      min="1"
+                                      max="99"
+                                      {...field}
+                                      value={field.value || 1}
+                                      onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
+                                      className="w-24"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="lock_notes"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Lock Details (Optional)</FormLabel>
+                                  <FormControl>
+                                    <Textarea
+                                      placeholder="Enter combination codes, key details, or lock type information..."
+                                      {...field}
+                                      value={field.value || ''}
+                                      rows={2}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </>
                         )}
 
                         <FormField
@@ -763,6 +789,12 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                           <span className="text-sm font-medium">Locks Requested:</span>
                           <span className="text-sm">{(job as any)?.locks_requested ? 'Yes' : 'No'}</span>
                         </div>
+                        {(job as any)?.locks_requested && (
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium">Number of Locks:</span>
+                            <span className="text-sm">{(job as any)?.locks_count || 1}</span>
+                          </div>
+                        )}
                         {(job as any)?.locks_requested && (job as any)?.lock_notes && (
                           <div>
                             <span className="text-sm font-medium text-muted-foreground">Lock Details:</span>

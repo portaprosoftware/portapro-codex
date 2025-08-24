@@ -3677,6 +3677,7 @@ export type Database = {
           job_number: string
           job_type: string
           lock_notes: string | null
+          locks_count: number | null
           locks_requested: boolean | null
           notes: string | null
           parent_job_id: string | null
@@ -3714,6 +3715,7 @@ export type Database = {
           job_number?: string
           job_type: string
           lock_notes?: string | null
+          locks_count?: number | null
           locks_requested?: boolean | null
           notes?: string | null
           parent_job_id?: string | null
@@ -3751,6 +3753,7 @@ export type Database = {
           job_number?: string
           job_type?: string
           lock_notes?: string | null
+          locks_count?: number | null
           locks_requested?: boolean | null
           notes?: string | null
           parent_job_id?: string | null

@@ -214,6 +214,10 @@ export function useCreateJob() {
             }))
           }) : null,
           total_price: totalPrice,
+          locks_requested: jobData.locks_requested || false,
+          locks_count: jobData.locks_count || 0,
+          lock_notes: jobData.lock_notes || '',
+          zip_tied_on_dropoff: jobData.zip_tied_on_dropoff || false,
         })
         .select()
         .single();
