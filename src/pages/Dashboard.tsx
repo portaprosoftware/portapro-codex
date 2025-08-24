@@ -199,18 +199,76 @@ const Dashboard = () => {
       const futureDate = new Date();
       futureDate.setDate(futureDate.getDate() + 30);
       
-      const { data, error } = await supabase
+      // Fetch vehicle compliance documents
+      const { data: vehicleDocs, error: vehicleError } = await supabase
         .from('vehicle_compliance_documents')
         .select('vehicle_id, expiration_date')
         .lte('expiration_date', futureDate.toISOString().split('T')[0]);
       
-      if (error) throw error;
+      if (vehicleError) throw vehicleError;
       
-      const uniqueVehicles = new Set(data?.map(doc => doc.vehicle_id));
+      // Fetch driver documents
+      const { data: driverDocs, error: driverDocsError } = await supabase
+        .from('driver_documents')
+        .select('driver_id, expiry_date')
+        .lte('expiry_date', futureDate.toISOString().split('T')[0]);
+      
+      if (driverDocsError) throw driverDocsError;
+      
+      // Fetch driver credentials (licenses and medical cards)
+      const { data: driverCredentials, error: credentialsError } = await supabase
+        .from('driver_credentials')
+        .select('driver_id, license_expiry_date, medical_card_expiry_date')
+        .or(`license_expiry_date.lte.${futureDate.toISOString().split('T')[0]},medical_card_expiry_date.lte.${futureDate.toISOString().split('T')[0]}`);
+      
+      if (credentialsError) throw credentialsError;
+      
+      // Fetch employee certifications
+      const { data: employeeCerts, error: certsError } = await supabase
+        .from('employee_certifications')
+        .select('driver_clerk_id, expires_on')
+        .lte('expires_on', futureDate.toISOString().split('T')[0]);
+      
+      if (certsError) throw certsError;
+      
+      // Count unique vehicles
+      const uniqueVehicles = new Set(vehicleDocs?.map(doc => doc.vehicle_id));
+      
+      // Count unique drivers from documents
+      const driversWithDocs = new Set(driverDocs?.map(doc => doc.driver_id));
+      
+      // Count unique drivers from credentials
+      const driversWithCredentials = new Set(driverCredentials?.map(cred => cred.driver_id));
+      
+      // Count unique employees from certifications
+      const employeesWithCerts = new Set(employeeCerts?.map(cert => cert.driver_clerk_id));
+      
+      // Calculate totals
+      const totalVehicleDocs = vehicleDocs?.length || 0;
+      const totalDriverDocs = driverDocs?.length || 0;
+      const totalCredentialIssues = (driverCredentials?.reduce((count, cred) => {
+        let issues = 0;
+        if (cred.license_expiry_date && new Date(cred.license_expiry_date) <= futureDate) issues++;
+        if (cred.medical_card_expiry_date && new Date(cred.medical_card_expiry_date) <= futureDate) issues++;
+        return count + issues;
+      }, 0)) || 0;
+      const totalCertifications = employeeCerts?.length || 0;
+      
+      const totalDocuments = totalVehicleDocs + totalDriverDocs + totalCredentialIssues + totalCertifications;
+      const totalAffectedPeople = uniqueVehicles.size + driversWithDocs.size + driversWithCredentials.size + employeesWithCerts.size;
       
       return {
         affectedVehicles: uniqueVehicles.size,
-        totalDocuments: data?.length || 0
+        affectedDrivers: driversWithDocs.size + driversWithCredentials.size,
+        affectedEmployees: employeesWithCerts.size,
+        totalDocuments,
+        totalAffectedPeople,
+        breakdown: {
+          vehicleDocs: totalVehicleDocs,
+          driverDocs: totalDriverDocs,
+          credentials: totalCredentialIssues,
+          certifications: totalCertifications
+        }
       };
     }
   });
@@ -397,12 +455,22 @@ const Dashboard = () => {
         
         <StatCard
           title="Expiring Documents"
-          value={documentsData?.affectedVehicles || 0}
+          value={documentsData?.totalAffectedPeople || 0}
           icon={FileX}
           gradientFrom="#fbbf24"
           gradientTo="#f59e0b"
           iconBg="#fbbf24"
-          subtitle={`${documentsData?.totalDocuments || 0} documents (30 days)`}
+          subtitle={
+            <div className="space-y-1">
+              <div>{documentsData?.totalDocuments || 0} total documents expiring</div>
+              <div className="text-xs space-y-0.5">
+                <div>{documentsData?.breakdown?.vehicleDocs || 0} vehicle docs</div>
+                <div>{documentsData?.breakdown?.driverDocs || 0} driver docs</div>
+                <div>{documentsData?.breakdown?.credentials || 0} credentials</div>
+                <div>{documentsData?.breakdown?.certifications || 0} certifications</div>
+              </div>
+            </div>
+          }
           subtitleColor="text-orange-600"
           delay={700}
         />
