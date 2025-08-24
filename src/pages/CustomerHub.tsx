@@ -104,11 +104,11 @@ const CustomerHub: React.FC = () => {
     }
   };
 
-  // Fetch customers data with engagement calculations (90-day window)
+  // Fetch customers data with simplified engagement calculations
   const { data: customersData = [], isLoading, error } = useQuery({
     queryKey: ['customers-with-engagement'],
     queryFn: async () => {
-      console.log('Fetching customers with engagement data (90-day window)...');
+      console.log('Fetching customers with simplified engagement data...');
       
       // Get customers basic data first
       const { data: customers, error: customerError } = await supabase
@@ -124,39 +124,39 @@ const CustomerHub: React.FC = () => {
       // Calculate engagement based on real data from the last 90 days
       const customersWithEngagement: CustomerWithEngagement[] = await Promise.all(
         customers?.map(async (customer) => {
-          // Get jobs count from last 90 days
+          // Get jobs count from last 30 days
           const { count: jobsCount } = await supabase
             .from('jobs')
             .select('*', { count: 'exact', head: true })
             .eq('customer_id', customer.id)
-            .gte('created_at', new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString());
+            .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString());
 
-          // Get interactions count from last 90 days
-          const { count: interactionsCount } = await supabase
-            .from('customer_interaction_logs')
-            .select('*', { count: 'exact', head: true })
-            .eq('customer_id', customer.id)
-            .gte('created_at', new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString());
-
-          // Get communications and their tracking events from last 90 days
-          const { data: communications } = await supabase
+          // Get marketing campaign emails and their tracking events from last 90 days
+          const { data: campaignEmails } = await supabase
             .from('customer_communications')
-            .select('id, sent_at')
+            .select(`
+              id, 
+              sent_at,
+              template_id,
+              communication_templates!inner(name)
+            `)
             .eq('customer_id', customer.id)
+            .eq('type', 'email')
+            .not('template_id', 'is', null)
             .gte('sent_at', new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString());
 
-          // Calculate communication engagement score based on tracking events
-          let communicationScore = 0;
-          if (communications) {
-            for (const comm of communications) {
-              // Base points for sending
-              communicationScore += 2;
-              
+          // Calculate marketing engagement score
+          let marketingScore = 0;
+          let emailOpens = 0;
+          let emailClicks = 0;
+          
+          if (campaignEmails) {
+            for (const email of campaignEmails) {
               // Check for email tracking events
               const { data: trackingEvents } = await supabase
                 .from('email_tracking_events')
                 .select('event_type')
-                .eq('communication_id', comm.id)
+                .eq('communication_id', email.id)
                 .gte('occurred_at', new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString());
               
               if (trackingEvents) {
@@ -164,9 +164,11 @@ const CustomerHub: React.FC = () => {
                 const hasClicked = trackingEvents.some(event => event.event_type === 'clicked');
                 
                 if (hasClicked) {
-                  communicationScore += 13; // 15 total for clicked (2 base + 13 bonus)
+                  emailClicks++;
+                  marketingScore += 10;
                 } else if (hasOpened) {
-                  communicationScore += 6; // 8 total for opened (2 base + 6 bonus)
+                  emailOpens++;
+                  marketingScore += 5;
                 }
               }
             }
@@ -181,11 +183,10 @@ const CustomerHub: React.FC = () => {
 
           const totalBalance = invoices?.reduce((sum, invoice) => sum + (invoice.amount || 0), 0) || 0;
         
-          // Calculate engagement score (90-day activities only) - capped at 999
-          const engagementScore = Math.min(999, 
+          // Simple engagement score: jobs*10 + opens*5 + clicks*10, capped at 100
+          const engagementScore = Math.min(100, 
             (jobsCount || 0) * 10 + 
-            (interactionsCount || 0) * 15 + 
-            communicationScore);
+            marketingScore);
           
           const engagementLevel = calculateEngagementLevel(engagementScore);
           
@@ -199,7 +200,7 @@ const CustomerHub: React.FC = () => {
         }) || []
       );
       
-      console.log('Customers with 90-day engagement fetched successfully:', customersWithEngagement.length);
+      console.log('Customers with simplified engagement fetched successfully:', customersWithEngagement.length);
       return customersWithEngagement;
     },
     retry: (failureCount, error) => {
@@ -371,41 +372,31 @@ const CustomerHub: React.FC = () => {
                          <DialogTitle>Customer Engagement Scoring</DialogTitle>
                        </DialogHeader>
                         <div className="space-y-4">
-                            <div className="bg-gray-50 p-4 rounded-lg">
-                              <p className="font-medium text-gray-900 mb-2">90-Day Time Window</p>
-                              <p className="text-sm text-gray-700">
-                                Engagement scores are calculated based only on activities from the last 90 days. 
-                                This ensures we're measuring current customer engagement, not historical activity.
-                                <br /><br />
-                                <strong>Note:</strong> Scores are capped at a maximum of 999 per 90-day calculation period.
+                            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                              <p className="font-medium text-blue-900 mb-2">Simple Marketing & Jobs Focus</p>
+                              <p className="text-sm text-blue-800">
+                                Engagement scores focus on recent customer activity and marketing campaign interactions.
+                                This provides a clear, actionable view of customer engagement.
                               </p>
                             </div>
                            
                             <div className="space-y-3">
-                              <h4 className="font-medium">Scoring System:</h4>
+                              <h4 className="font-medium">Scoring System (Max 100 points):</h4>
                               <div className="grid gap-2 text-sm">
                                 <div className="flex justify-between">
-                                  <span>• Jobs completed:</span>
+                                  <span>• Recent jobs (last 30 days):</span>
                                   <span className="font-medium">10 points each</span>
                                 </div>
-                                <div className="flex justify-between">
-                                  <span>• Customer interactions:</span>
-                                  <span className="font-medium">15 points each</span>
-                                </div>
                                 <div className="space-y-1">
-                                  <div className="font-medium text-gray-900">Communications (ALL system messages):</div>
+                                  <div className="font-medium text-gray-900">Marketing Campaign Emails:</div>
                                   <div className="ml-2 space-y-1 text-sm">
                                     <div className="flex justify-between">
-                                      <span>• Sent:</span>
-                                      <span>2 points each</span>
+                                      <span>• Email opened:</span>
+                                      <span>5 points each</span>
                                     </div>
                                     <div className="flex justify-between">
-                                      <span>• Opened:</span>
-                                      <span>8 points each</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                      <span>• Clicked:</span>
-                                      <span>15 points each</span>
+                                      <span>• Email clicked:</span>
+                                      <span>10 points each</span>
                                     </div>
                                   </div>
                                   <div className="mt-2 p-2 bg-amber-50 border border-amber-200 rounded text-xs text-amber-800">
