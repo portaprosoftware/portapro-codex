@@ -184,7 +184,7 @@ export const ServiceCatalogTab: React.FC = () => {
           </div>
           <Button
             onClick={() => setIsCreating(true)}
-            className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
+            className="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold border-0 hover:from-blue-700 hover:to-blue-800"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Service

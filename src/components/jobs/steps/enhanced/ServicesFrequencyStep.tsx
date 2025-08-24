@@ -165,9 +165,9 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
 
   const fetchServices = async () => {
     try {
-      // Fetch from routine_maintenance_services table with template info
+      // Fetch from services table with template info
       const { data: servicesData } = await supabase
-        .from('routine_maintenance_services')
+        .from('services')
         .select(`
           *,
           template:maintenance_report_templates!default_template_id(
@@ -183,12 +183,12 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
         id: service.id,
         name: service.name,
         description: service.description,
-        service_code: service.service_code,
-        pricing_method: service.pricing_method as 'per_visit' | 'per_hour' | 'flat_rate',
-        per_visit_cost: service.per_visit_cost,
-        per_hour_cost: service.per_hour_cost,
-        flat_rate_cost: service.flat_rate_cost,
-        estimated_duration_hours: service.estimated_duration_hours,
+        service_code: service.code, // services table uses 'code' not 'service_code'
+        pricing_method: service.pricing_method === 'included' ? 'per_visit' : service.pricing_method as 'per_visit' | 'per_hour' | 'flat_rate',
+        per_visit_cost: service.pricing_method === 'per_visit' ? service.default_rate : 0,
+        per_hour_cost: service.pricing_method === 'per_hour' ? service.default_rate : 0,
+        flat_rate_cost: service.pricing_method === 'included' ? 0 : service.default_rate,
+        estimated_duration_hours: (service.estimated_duration_minutes || 60) / 60, // Convert minutes to hours
         selected: false,
         frequency: 'one-time' as const,
         custom_frequency_days: 1,
