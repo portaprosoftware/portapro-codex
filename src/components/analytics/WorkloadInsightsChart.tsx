@@ -34,45 +34,32 @@ export const WorkloadInsightsChart: React.FC<WorkloadInsightsChartProps> = ({ da
       const jobsWithSpecificTimes = jobs?.filter(job => job.scheduled_time).length || 0;
       const jobsWithoutTimes = (jobs?.length || 0) - jobsWithSpecificTimes;
 
-      // Analyze by hour of day using actual scheduled times
+      // Analyze by hour of day using ONLY actual scheduled times
       const hourCounts: { [hour: number]: number } = {};
       
-      // Initialize business hours (8 AM to 5 PM)
-      for (let i = 8; i <= 17; i++) {
-        hourCounts[i] = 0;
-      }
-
-      // Count jobs by actual scheduled hour, or distribute evenly if no time specified
+      // Count jobs by actual scheduled hour ONLY
       jobs?.forEach(job => {
         if (job.scheduled_time) {
-          // Parse the time and extract hour
           const timeParts = job.scheduled_time.split(':');
           const hour = parseInt(timeParts[0]);
-          if (hour >= 8 && hour <= 17) {
-            hourCounts[hour] = (hourCounts[hour] || 0) + 1;
-          }
-        } else {
-          // If no specific time, distribute across business hours
-          const businessHours = Object.keys(hourCounts).map(h => parseInt(h));
-          const randomHour = businessHours[Math.floor(Math.random() * businessHours.length)];
-          hourCounts[randomHour] = (hourCounts[randomHour] || 0) + 1;
+          hourCounts[hour] = (hourCounts[hour] || 0) + 1;
         }
+        // NO fake distribution for jobs without times
       });
 
+      // Create hourly distribution only for hours that have actual data
       const hourlyDistribution = Object.entries(hourCounts).map(([hour, jobs]) => {
         const hourNum = parseInt(hour);
-        const hourLabel = hourNum <= 12 ? `${hourNum}AM` : `${hourNum - 12}PM`;
+        const hourLabel = hourNum === 0 ? '12AM' : 
+                         hourNum <= 12 ? `${hourNum}AM` : 
+                         `${hourNum - 12}PM`;
         
         return {
           hour: hourLabel,
           jobs: jobs,
-          utilization: Math.min(100, (jobs / Math.max(1, 5)) * 100) // Assuming max 5 jobs per hour is 100%
+          hourNum: hourNum
         };
-      }).sort((a, b) => {
-        const aHour = parseInt(a.hour.replace(/AM|PM/, ''));
-        const bHour = parseInt(b.hour.replace(/AM|PM/, ''));
-        return aHour - bHour;
-      });
+      }).sort((a, b) => a.hourNum - b.hourNum);
 
       // Get driver utilization - only count jobs with assigned drivers
       const jobsWithDrivers = jobs?.filter(job => job.driver_id) || [];
@@ -85,15 +72,17 @@ export const WorkloadInsightsChart: React.FC<WorkloadInsightsChartProps> = ({ da
 
       const uniqueDrivers = Object.keys(driverStats).length;
       const averageJobsPerDriver = uniqueDrivers > 0 ? jobsWithDrivers.length / uniqueDrivers : 0;
-      const peakHour = hourlyDistribution.reduce((max, current) => 
-        current.jobs > max.jobs ? current : max
-      );
+      
+      // Only calculate peak hour if we have actual time data
+      const peakHour = hourlyDistribution.length > 0 
+        ? hourlyDistribution.reduce((max, current) => current.jobs > max.jobs ? current : max)
+        : { hour: 'N/A', jobs: 0 };
 
       return {
         hourlyDistribution,
         insights: {
           peakHour: peakHour.hour,
-          peakJobs: peakHour.jobs,
+          peakJobs: peakHour.jobs || 0,
           activeDrivers: uniqueDrivers,
           avgJobsPerDriver: Math.round(averageJobsPerDriver * 10) / 10,
           totalJobs: jobs?.length || 0,
@@ -162,45 +151,56 @@ export const WorkloadInsightsChart: React.FC<WorkloadInsightsChartProps> = ({ da
       <div className="bg-gray-50 p-3 rounded-lg mb-4">
         <h4 className="text-sm font-medium text-gray-700 mb-2">Job Timing Analysis</h4>
         <div className="text-xs text-gray-600 space-y-1">
-          <div>Jobs with specific times: <span className="font-medium">{insights.jobsWithSpecificTimes || 0}</span></div>
-          <div>Jobs with estimated times: <span className="font-medium">{insights.jobsWithoutTimes || 0}</span></div>
-          <div className="text-gray-500 italic">
-            * Jobs without specific times are distributed across business hours for visualization
-          </div>
+          <div>Jobs with scheduled times: <span className="font-medium">{insights.jobsWithSpecificTimes || 0}</span></div>
+          <div>Jobs without scheduled times: <span className="font-medium">{insights.jobsWithoutTimes || 0}</span></div>
+          {(insights.jobsWithSpecificTimes || 0) === 0 && (
+            <div className="text-amber-600 italic">
+              No hourly distribution available - no jobs have specific scheduled times
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Hourly Distribution Chart */}
-      <div className="h-64">
-        <h4 className="text-sm font-medium text-gray-700 mb-3">Hourly Job Distribution</h4>
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={hourlyDistribution}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis 
-              dataKey="hour" 
-              tick={{ fontSize: 11 }}
-            />
-            <YAxis tick={{ fontSize: 11 }} />
-            <Tooltip 
-              contentStyle={{ 
-                backgroundColor: 'white', 
-                border: '1px solid #e5e7eb',
-                borderRadius: '8px'
-              }}
-              formatter={(value: any, name: string) => [
-                value,
-                name === 'jobs' ? 'Jobs' : 'Utilization %'
-              ]}
-            />
-            <Bar 
-              dataKey="jobs" 
-              fill="#3b82f6" 
-              radius={[4, 4, 0, 0]}
-              name="Jobs"
-            />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+      {/* Hourly Distribution Chart - Only show if we have time data */}
+      {(insights.jobsWithSpecificTimes || 0) > 0 ? (
+        <div className="h-64">
+          <h4 className="text-sm font-medium text-gray-700 mb-3">Hourly Job Distribution</h4>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={hourlyDistribution}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis 
+                dataKey="hour" 
+                tick={{ fontSize: 11 }}
+              />
+              <YAxis tick={{ fontSize: 11 }} />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: 'white', 
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '8px'
+                }}
+                formatter={(value: any, name: string) => [
+                  value,
+                  name === 'jobs' ? 'Jobs' : 'Jobs'
+                ]}
+              />
+              <Bar 
+                dataKey="jobs" 
+                fill="#3b82f6" 
+                radius={[4, 4, 0, 0]}
+                name="Jobs"
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      ) : (
+        <div className="h-32 flex items-center justify-center bg-gray-50 rounded-lg">
+          <div className="text-center text-gray-500">
+            <p className="text-sm">No hourly distribution data available</p>
+            <p className="text-xs mt-1">Jobs need specific scheduled times to show this chart</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
