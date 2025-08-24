@@ -45,21 +45,25 @@ export const DriverUtilizationChart: React.FC<DriverUtilizationChartProps> = ({ 
         const dayJobs = jobs?.filter(job => job.scheduled_date === dayString) || [];
         
         const assignedDrivers = new Set(dayJobs.map(job => job.driver_id).filter(Boolean)).size;
-        const utilizationRate = totalDrivers > 0 ? (assignedDrivers / totalDrivers) * 100 : 0;
+        const utilizationRate = totalDrivers > 0 ? Math.min(100, (assignedDrivers / totalDrivers) * 100) : 0;
         
         return {
           date: format(day, 'MMM dd'),
           fullDate: dayString,
           assigned_drivers: assignedDrivers,
           total_drivers: totalDrivers,
-          utilization_rate: utilizationRate,
+          utilization_rate: Math.round(utilizationRate * 10) / 10, // Round to 1 decimal place
           jobs_count: dayJobs.length
         };
       });
 
       // Calculate summary metrics
-      const avgUtilization = chartData.reduce((sum, day) => sum + day.utilization_rate, 0) / chartData.length;
-      const peakUtilization = Math.max(...chartData.map(day => day.utilization_rate));
+      const avgUtilization = chartData.length > 0 
+        ? Math.round((chartData.reduce((sum, day) => sum + day.utilization_rate, 0) / chartData.length) * 10) / 10
+        : 0;
+      const peakUtilization = chartData.length > 0 
+        ? Math.max(...chartData.map(day => day.utilization_rate)) 
+        : 0;
       const totalJobsAssigned = chartData.reduce((sum, day) => sum + day.jobs_count, 0);
 
       return {
@@ -160,6 +164,7 @@ export const DriverUtilizationChart: React.FC<DriverUtilizationChartProps> = ({ 
                 fontSize={12}
                 tick={{ fontSize: 12 }}
                 domain={[0, 100]}
+                tickFormatter={(value) => `${value}%`}
                 label={{ value: 'Utilization %', angle: -90, position: 'insideLeft' }}
               />
               <Tooltip content={<CustomTooltip />} />

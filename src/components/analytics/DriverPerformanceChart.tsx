@@ -30,13 +30,30 @@ export const DriverPerformanceChart: React.FC<DriverPerformanceChartProps> = ({ 
 
       if (error) throw error;
 
-      // Get driver names from user_roles - we'll use user_id as driver name for now
+      // Get driver names from user_roles and try to get profile information
       const { data: drivers, error: driversError } = await supabase
         .from('user_roles')
         .select('user_id, clerk_user_id')
         .eq('role', 'driver');
 
       if (driversError) throw driversError;
+
+      // Create a mapping of driver IDs to names
+      const driverNameMap: Record<string, string> = {};
+      
+      // First, try to get driver names from any available source
+      if (drivers) {
+        for (const driver of drivers) {
+          // If clerk_user_id exists, use a simple format
+          if (driver.clerk_user_id) {
+            driverNameMap[driver.user_id] = `Driver ${driver.clerk_user_id.replace('temp_', '')}`;
+          } else {
+            // Use a shortened version of the UUID for display
+            const shortId = driver.user_id.split('-')[0];
+            driverNameMap[driver.user_id] = `Driver ${shortId.substring(0, 6).toUpperCase()}`;
+          }
+        }
+      }
 
       // Calculate performance metrics per driver
       const driverMetrics = data?.reduce((acc, job) => {
@@ -45,7 +62,7 @@ export const DriverPerformanceChart: React.FC<DriverPerformanceChartProps> = ({ 
         if (!acc[job.driver_id]) {
           acc[job.driver_id] = {
             driver_id: job.driver_id,
-            driver_name: job.driver_id.split('-')[0] || 'Driver', // Simple name extraction
+            driver_name: driverNameMap[job.driver_id] || `Driver ${job.driver_id.substring(0, 6).toUpperCase()}`,
             total_jobs: 0,
             completed_jobs: 0,
             overdue_jobs: 0,
