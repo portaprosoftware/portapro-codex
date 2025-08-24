@@ -91,11 +91,7 @@ export const TopCustomersChart: React.FC<TopCustomersChartProps> = ({ dateRange 
                 index === 0 ? 'bg-gradient-orange' :
                 index === 1 ? 'bg-gradient-secondary' :
                 index === 2 ? 'bg-gradient-purple' :
-                index === 3 ? 'bg-gradient-blue' :
-                index === 4 ? 'bg-gradient-green' :
-                index === 5 ? 'bg-gradient-red' :
-                index === 6 ? 'bg-gradient-primary' :
-                'bg-gradient-secondary'
+                'bg-gradient-blue'
               }`}>
                 {index + 1}
               </div>
