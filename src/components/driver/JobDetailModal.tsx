@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { format } from 'date-fns';
+import { formatDateSafe } from '@/lib/dateUtils';
 import { 
   MapPin, 
   Clock, 
@@ -534,7 +535,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="text-sm font-medium text-muted-foreground">Date</label>
-                      <p className="text-sm">{format(new Date(job.scheduled_date), 'EEEE, MMM d, yyyy')}</p>
+                      <p className="text-sm">{formatDateSafe(job.scheduled_date, 'long')}</p>
                     </div>
                     <div>
                       <label className="text-sm font-medium text-muted-foreground">Time</label>
