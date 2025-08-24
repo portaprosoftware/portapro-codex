@@ -2,8 +2,9 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, ChevronDown, Filter, X } from 'lucide-react';
+import { Calendar, ChevronDown, Filter, X, Info } from 'lucide-react';
 import { Card } from '@/components/ui/card';
+import { format, differenceInDays } from 'date-fns';
 
 interface GlobalFiltersProps {
   dateRange: { from: Date; to: Date };
@@ -33,6 +34,15 @@ export const GlobalFilters: React.FC<GlobalFiltersProps> = ({
     start.setDate(start.getDate() - days);
     onDateRangeChange({ from: start, to: end });
   };
+
+  // Calculate period information for clarity
+  const periodLength = differenceInDays(dateRange.to, dateRange.from);
+  const currentPeriodText = `${format(dateRange.from, 'MMM d')} - ${format(dateRange.to, 'MMM d, yyyy')}`;
+  const previousPeriodStart = new Date(dateRange.from);
+  previousPeriodStart.setDate(previousPeriodStart.getDate() - periodLength);
+  const previousPeriodEnd = new Date(dateRange.to);
+  previousPeriodEnd.setDate(previousPeriodEnd.getDate() - periodLength);
+  const previousPeriodText = `${format(previousPeriodStart, 'MMM d')} - ${format(previousPeriodEnd, 'MMM d, yyyy')}`;
 
   return (
     <Card className="p-4 mb-6 bg-gray-50 border border-gray-200">
@@ -97,6 +107,23 @@ export const GlobalFilters: React.FC<GlobalFiltersProps> = ({
               </Button>
             </>
           )}
+        </div>
+      </div>
+      
+      {/* Period Comparison Info */}
+      <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+        <div className="flex items-start gap-3">
+          <Info className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+          <div className="text-sm">
+            <p className="font-medium text-blue-900 mb-1">Period Comparison</p>
+            <div className="text-blue-700 space-y-1">
+              <p><span className="font-medium">Current Period:</span> {currentPeriodText} ({periodLength + 1} days)</p>
+              <p><span className="font-medium">Previous Period:</span> {previousPeriodText} ({periodLength + 1} days)</p>
+              <p className="text-blue-600 text-xs mt-2">
+                Percentage changes in metrics compare the current period to the previous period of equal length.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </Card>
