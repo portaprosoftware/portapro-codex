@@ -19,7 +19,17 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   }, []);
   
   const { role, user, isLoaded } = useUserRole();
-  const isMobile = useIsMobile();
+  const [isDesktop, setIsDesktop] = useState(false);
+  
+  useEffect(() => {
+    const checkIsDesktop = () => {
+      setIsDesktop(window.innerWidth >= 1024); // Show header on screens < 1024px (mobile + tablet)
+    };
+    
+    checkIsDesktop();
+    window.addEventListener('resize', checkIsDesktop);
+    return () => window.removeEventListener('resize', checkIsDesktop);
+  }, []);
 
   if (!mounted) {
     return (
@@ -67,7 +77,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           onSectionChange={setActiveSection} 
         />
         <SidebarInset className="flex-1">
-          {isMobile && (
+          {!isDesktop && (
             <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-white px-4">
               <SidebarTrigger className="-ml-1" />
             </header>
