@@ -351,180 +351,6 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                 </div>
               )}
 
-              {/* Schedule Information */}
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <Clock className="w-4 h-4" />
-                    Schedule
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Date</label>
-                      <p className="text-sm">{format(new Date(job.scheduled_date), 'EEEE, MMM d, yyyy')}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Time</label>
-                      <p className="text-sm">{job.scheduled_time || 'Any time'}</p>
-                    </div>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">Job Type</label>
-                    <p className="text-sm capitalize">{job.job_type}</p>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Assignment Information */}
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <User className="w-4 h-4" />
-                    Assignment
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">Driver</label>
-                    <p className="text-sm">
-                      {job.driver ? `${job.driver.first_name} ${job.driver.last_name}` : 'You'}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">Vehicle</label>
-                    <p className="text-sm">
-                      {job.vehicle ? `${job.vehicle.license_plate} (${job.vehicle.vehicle_type})` : 'Unassigned'}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Service Location Information */}
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <MapPin className="w-4 h-4" />
-                    Service Location
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {job.customers?.customer_service_locations && job.customers.customer_service_locations.length > 0 ? (
-                    job.customers.customer_service_locations
-                      .filter(location => location.is_default)
-                      .concat(job.customers.customer_service_locations.filter(location => !location.is_default))
-                      .slice(0, 1) // Show primary location
-                      .map((location) => (
-                        <div key={location.id} className="space-y-3">
-                          <div>
-                            <label className="text-sm font-medium text-muted-foreground">Location</label>
-                            <p className="text-sm font-medium">{location.location_name}</p>
-                            {location.is_default && (
-                              <Badge variant="secondary" className="text-xs mt-1">Default Location</Badge>
-                            )}
-                          </div>
-                          
-                          {(location.street || location.city) && (
-                            <div>
-                              <label className="text-sm font-medium text-muted-foreground">Address</label>
-                              <p className="text-sm">
-                                {location.street}
-                                {location.street2 && `, ${location.street2}`}
-                                {location.city && (
-                                  <br />
-                                )}
-                                {location.city && `${location.city}`}
-                                {location.state && `, ${location.state}`}
-                                {location.zip && ` ${location.zip}`}
-                              </p>
-                            </div>
-                          )}
-                          
-                          {location.contact_person && (
-                            <div>
-                              <label className="text-sm font-medium text-muted-foreground">Site Contact</label>
-                              <p className="text-sm">{location.contact_person}</p>
-                              {location.contact_phone && (
-                                <p className="text-xs text-muted-foreground">{location.contact_phone}</p>
-                              )}
-                            </div>
-                          )}
-                          
-                          {location.access_instructions && (
-                            <div>
-                              <label className="text-sm font-medium text-muted-foreground">Access Instructions</label>
-                              <p className="text-sm bg-blue-50 p-2 rounded border border-blue-200">{location.access_instructions}</p>
-                            </div>
-                          )}
-                          
-                          {location.notes && (
-                            <div>
-                              <label className="text-sm font-medium text-muted-foreground">Location Notes</label>
-                              <p className="text-sm bg-gray-50 p-2 rounded">{location.notes}</p>
-                            </div>
-                          )}
-                        </div>
-                      ))
-                  ) : (
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Service Address</label>
-                      <p className="text-sm">
-                        {job.customers?.service_street}
-                        {job.customers?.service_street2 && `, ${job.customers?.service_street2}`}
-                        {job.customers?.service_city && (
-                          <>
-                            <br />
-                            {job.customers.service_city}
-                            {job.customers.service_state && `, ${job.customers.service_state}`}
-                            {job.customers.service_zip && ` ${job.customers.service_zip}`}
-                          </>
-                        )}
-                      </p>
-                    </div>
-                  )}
-                  
-                  <div className="pt-2 border-t">
-                    <Button 
-                      size="sm" 
-                      onClick={handleNavigate}
-                      className="w-full"
-                    >
-                      <Navigation className="w-4 h-4 mr-2" />
-                      Navigate to Location
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Customer Information */}
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <Building className="w-4 h-4" />
-                    Customer
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">Company</label>
-                    <p className="text-sm font-medium">{customerName}</p>
-                  </div>
-                  {job.customers?.email && (
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Email</label>
-                      <p className="text-sm">{job.customers.email}</p>
-                    </div>
-                  )}
-                  {job.customers?.phone && (
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Phone</label>
-                      <p className="text-sm">{job.customers.phone}</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-
               {/* Contact Information */}
               <Card>
                 <CardHeader className="pb-3">
@@ -615,65 +441,16 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                 </CardContent>
               </Card>
 
-              {/* Special Instructions */}
-              {job.special_instructions && (
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center gap-2 text-base">
-                      <Info className="w-4 h-4" />
-                      Special Instructions
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm bg-amber-50 p-3 rounded border border-amber-200">{job.special_instructions}</p>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Lock Options */}
-              {(job.locks_requested || job.zip_tied_on_dropoff) && (
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center gap-2 text-base">
-                      <Key className="w-4 h-4" />
-                      Lock Options
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Locks Requested:</span>
-                      <span className="text-sm">{job.locks_requested ? 'Yes' : 'No'}</span>
-                    </div>
-                    {job.locks_requested && (
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">Number of Locks:</span>
-                        <span className="text-sm">{job.locks_count || 1}</span>
-                      </div>
-                    )}
-                    {job.lock_notes && (
-                      <div>
-                        <span className="text-sm font-medium text-muted-foreground">Lock Details:</span>
-                        <p className="text-sm mt-1 bg-gray-50 p-2 rounded">{job.lock_notes}</p>
-                      </div>
-                    )}
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Zip-Tied on Drop-off:</span>
-                      <span className="text-sm">{job.zip_tied_on_dropoff ? 'Yes' : 'No'}</span>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Status Update Actions */}
+              {/* Update Status */}
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center gap-2 text-base">
-                    <Shield className="w-4 h-4" />
+                    <CheckCircle className="w-4 h-4" />
                     Update Status
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="flex flex-col space-y-2">
+                  <div className="space-y-3">
                     {job.status === 'assigned' && (
                       <>
                         {hasServiceTemplates ? (
@@ -744,6 +521,82 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                   )}
                 </CardContent>
               </Card>
+
+              {/* Schedule Information */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <Clock className="w-4 h-4" />
+                    Schedule
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Date</label>
+                      <p className="text-sm">{format(new Date(job.scheduled_date), 'EEEE, MMM d, yyyy')}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Time</label>
+                      <p className="text-sm">{job.scheduled_time || 'Any time'}</p>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">Job Type</label>
+                    <p className="text-sm capitalize">{job.job_type}</p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Special Instructions */}
+              {job.special_instructions && (
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-base">
+                      <Info className="w-4 h-4" />
+                      Special Instructions
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm bg-amber-50 p-3 rounded border border-amber-200">{job.special_instructions}</p>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Lock Options */}
+              {(job.locks_requested || job.zip_tied_on_dropoff) && (
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-base">
+                      <Key className="w-4 h-4" />
+                      Lock Options
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Locks Requested:</span>
+                      <span className="text-sm">{job.locks_requested ? 'Yes' : 'No'}</span>
+                    </div>
+                    {job.locks_requested && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium">Number of Locks:</span>
+                        <span className="text-sm">{job.locks_count || 1}</span>
+                      </div>
+                    )}
+                    {job.lock_notes && (
+                      <div>
+                        <span className="text-sm font-medium text-muted-foreground">Lock Details:</span>
+                        <p className="text-sm mt-1 bg-gray-50 p-2 rounded">{job.lock_notes}</p>
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Zip-Tied on Drop-off:</span>
+                      <span className="text-sm">{job.zip_tied_on_dropoff ? 'Yes' : 'No'}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
 
               {/* Documentation Actions */}
               <Card>
