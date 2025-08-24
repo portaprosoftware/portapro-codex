@@ -38,9 +38,14 @@ export const MinimalClock: React.FC<MinimalClockProps> = ({
   const secondAngle = seconds * 6; // 6 degrees per second
 
   const center = size / 2;
-  const hourLength = center * 0.5;
-  const minuteLength = center * 0.7;
-  const secondLength = center * 0.8;
+  const hourLength = Math.round(center * 0.5);
+  const minuteLength = Math.round(center * 0.7);
+  const secondLength = Math.round(center * 0.8);
+  
+  // Scale stroke widths based on size for better rendering
+  const hourStrokeWidth = Math.max(1, Math.round(size / 40));
+  const minuteStrokeWidth = Math.max(1, Math.round(size / 50));
+  const markerStrokeWidth = Math.max(1, Math.round(size / 60));
 
   return (
     <div className={cn("flex items-center justify-center", className)}>
@@ -53,6 +58,7 @@ export const MinimalClock: React.FC<MinimalClockProps> = ({
           height={size}
           className="absolute inset-0"
           viewBox={`0 0 ${size} ${size}`}
+          shapeRendering="crispEdges"
         >
           {/* Hour markers */}
           {[0, 3, 6, 9].map((hour) => {
@@ -70,7 +76,7 @@ export const MinimalClock: React.FC<MinimalClockProps> = ({
                 x2={x2}
                 y2={y2}
                 stroke="#374151"
-                strokeWidth="2"
+                strokeWidth={markerStrokeWidth}
                 strokeLinecap="round"
               />
             );
@@ -80,10 +86,10 @@ export const MinimalClock: React.FC<MinimalClockProps> = ({
           <line
             x1={center}
             y1={center}
-            x2={center + hourLength * Math.sin(hourAngle * Math.PI / 180)}
-            y2={center - hourLength * Math.cos(hourAngle * Math.PI / 180)}
+            x2={Math.round(center + hourLength * Math.sin(hourAngle * Math.PI / 180))}
+            y2={Math.round(center - hourLength * Math.cos(hourAngle * Math.PI / 180))}
             stroke="#1f2937"
-            strokeWidth="3"
+            strokeWidth={hourStrokeWidth}
             strokeLinecap="round"
             style={{ 
               transition: 'all 0.5s ease-in-out',
@@ -94,10 +100,10 @@ export const MinimalClock: React.FC<MinimalClockProps> = ({
           <line
             x1={center}
             y1={center}
-            x2={center + minuteLength * Math.sin(minuteAngle * Math.PI / 180)}
-            y2={center - minuteLength * Math.cos(minuteAngle * Math.PI / 180)}
+            x2={Math.round(center + minuteLength * Math.sin(minuteAngle * Math.PI / 180))}
+            y2={Math.round(center - minuteLength * Math.cos(minuteAngle * Math.PI / 180))}
             stroke="#374151"
-            strokeWidth="2"
+            strokeWidth={minuteStrokeWidth}
             strokeLinecap="round"
             style={{ 
               transition: 'all 0.5s ease-in-out',
@@ -108,8 +114,8 @@ export const MinimalClock: React.FC<MinimalClockProps> = ({
           <line
             x1={center}
             y1={center}
-            x2={center + secondLength * Math.sin(secondAngle * Math.PI / 180)}
-            y2={center - secondLength * Math.cos(secondAngle * Math.PI / 180)}
+            x2={Math.round(center + secondLength * Math.sin(secondAngle * Math.PI / 180))}
+            y2={Math.round(center - secondLength * Math.cos(secondAngle * Math.PI / 180))}
             stroke="#ef4444"
             strokeWidth="1"
             strokeLinecap="round"
@@ -122,7 +128,7 @@ export const MinimalClock: React.FC<MinimalClockProps> = ({
           <circle
             cx={center}
             cy={center}
-            r="3"
+            r={Math.max(2, Math.round(size / 30))}
             fill="#1f2937"
           />
         </svg>
