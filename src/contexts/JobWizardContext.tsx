@@ -12,6 +12,7 @@ export interface JobItemSelection {
 export interface JobWizardData {
   // Step 1: Customer Selection
   customer_id?: string;
+  contact_id?: string;
   
   // Step 2: Job Type & Scheduling  
   job_type?: 'delivery' | 'pickup' | 'service' | 'on-site-survey';

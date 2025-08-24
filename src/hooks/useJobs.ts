@@ -141,6 +141,7 @@ export function useCreateJob() {
       // Create properly serialized job data to avoid DataCloneError
       const serializedJobData = {
         customer_id: jobData.customer_id,
+        contact_id: jobData.contact_id,
         job_type: jobData.job_type,
         scheduled_date: jobData.scheduled_date,
         scheduled_time: jobData.scheduled_time,
@@ -189,6 +190,7 @@ export function useCreateJob() {
         .from('jobs')
         .insert({
           customer_id: serializedJobData.customer_id!,
+          contact_id: serializedJobData.contact_id || null,
           job_type: serializedJobData.job_type!,
           job_number: jobNumber,
           scheduled_date: serializedJobData.scheduled_date!,
@@ -340,7 +342,8 @@ export function useDriverJobs(driverId?: string) {
         .from('jobs')
         .select(`
           *,
-          customers!inner(id, name, service_street, service_city, service_state),
+          customers!inner(id, name, phone, service_street, service_city, service_state),
+          customer_contacts(id, first_name, last_name, contact_type, email, phone, title),
           vehicles(id, license_plate, vehicle_type)
         `)
         .eq('driver_id', driverId)

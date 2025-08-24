@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Search, Plus, Building2, User, Phone, Mail } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, Plus, Building2, User, Phone, Mail, Users } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,9 +20,21 @@ interface Customer {
   notes?: string;
 }
 
+interface Contact {
+  id: string;
+  first_name: string;
+  last_name: string;
+  contact_type: string;
+  email?: string;
+  phone?: string;
+  title?: string;
+  is_primary: boolean;
+}
+
 export function CustomerSelectionStep() {
   const { state, updateData } = useJobWizard();
   const [searchQuery, setSearchQuery] = useState('');
+  const [showContactSelection, setShowContactSelection] = useState(false);
 
   const { data: customers = [], isLoading } = useQuery({
     queryKey: ['customers', searchQuery],
@@ -42,11 +54,53 @@ export function CustomerSelectionStep() {
     },
   });
 
+  // Fetch contacts for selected customer
+  const { data: contacts = [], isLoading: isLoadingContacts } = useQuery({
+    queryKey: ['customer-contacts', state.data.customer_id],
+    queryFn: async () => {
+      if (!state.data.customer_id) return [];
+      
+      const { data, error } = await supabase
+        .from('customer_contacts')
+        .select('id, first_name, last_name, contact_type, email, phone, title, is_primary')
+        .eq('customer_id', state.data.customer_id)
+        .order('is_primary', { ascending: false })
+        .order('first_name');
+      
+      if (error) throw error;
+      return data as Contact[];
+    },
+    enabled: !!state.data.customer_id,
+  });
+
   const handleCustomerSelect = (customer: Customer) => {
+    // Clear previous contact selection when switching customers
     updateData({
       customer_id: customer.id,
+      contact_id: undefined,
+    });
+    setShowContactSelection(true);
+  };
+
+  const handleContactSelect = (contact: Contact) => {
+    updateData({
+      contact_id: contact.id,
     });
   };
+
+  const handleSkipContactSelection = () => {
+    updateData({
+      contact_id: undefined,
+    });
+    setShowContactSelection(false);
+  };
+
+  // Auto-skip contact selection if no contacts exist
+  useEffect(() => {
+    if (state.data.customer_id && contacts.length === 0 && !isLoadingContacts) {
+      setShowContactSelection(false);
+    }
+  }, [state.data.customer_id, contacts.length, isLoadingContacts]);
 
 
   const getCustomerTypeColor = (type?: string) => {
@@ -68,92 +122,274 @@ export function CustomerSelectionStep() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-semibold mb-2">Select Customer</h2>
+        <h2 className="text-2xl font-semibold mb-2">
+          {!state.data.customer_id ? 'Select Customer' : showContactSelection ? 'Select Contact' : 'Customer & Contact Selected'}
+        </h2>
         <p className="text-muted-foreground">
-          Choose an existing customer for this job. Create customers in the Customers section first.
+          {!state.data.customer_id 
+            ? 'Choose an existing customer for this job. Create customers in the Customers section first.'
+            : showContactSelection 
+            ? 'Choose a contact person for this job from the customer\'s contact list.'
+            : 'Customer and contact have been selected for this job.'
+          }
         </p>
       </div>
 
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-        <Input
-          placeholder="Search customers by name, email, or phone..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10"
-        />
-      </div>
+      {/* Customer Selection or Contact Selection */}
+      {!state.data.customer_id ? (
+        <>
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              placeholder="Search customers by name, email, or phone..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+          </div>
 
-      {/* Customer List */}
-      <div className="space-y-3">
-        {isLoading ? (
-          <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-            <p className="text-muted-foreground mt-2">Loading customers...</p>
-          </div>
-        ) : customers.length === 0 ? (
-          <div className="text-center py-8">
-            <Building2 className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-            <p className="text-muted-foreground">
-              {searchQuery ? 'No customers found' : 'No customers available. Create customers in the Customers section first.'}
-            </p>
-          </div>
-        ) : (
-          customers.map((customer) => (
-            <Card
-              key={customer.id}
-              className={cn(
-                "cursor-pointer transition-colors hover:bg-muted/50",
-                state.data.customer_id === customer.id && "ring-2 ring-primary bg-primary/5"
-              )}
-              onClick={() => handleCustomerSelect(customer)}
-            >
-              <CardContent className="p-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-medium">{customer.name}</h3>
-                      {customer.customer_type && (
-                        <Badge className={getCustomerTypeColor(customer.customer_type)}>
-                          {formatCategoryDisplay(customer.customer_type)}
-                        </Badge>
+          {/* Customer List */}
+          <div className="space-y-3">
+            {isLoading ? (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                <p className="text-muted-foreground mt-2">Loading customers...</p>
+              </div>
+            ) : customers.length === 0 ? (
+              <div className="text-center py-8">
+                <Building2 className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                <p className="text-muted-foreground">
+                  {searchQuery ? 'No customers found' : 'No customers available. Create customers in the Customers section first.'}
+                </p>
+              </div>
+            ) : (
+              customers.map((customer) => (
+                <Card
+                  key={customer.id}
+                  className={cn(
+                    "cursor-pointer transition-colors hover:bg-muted/50",
+                    state.data.customer_id === customer.id && "ring-2 ring-primary bg-primary/5"
+                  )}
+                  onClick={() => handleCustomerSelect(customer)}
+                >
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="font-medium">{customer.name}</h3>
+                          {customer.customer_type && (
+                            <Badge className={getCustomerTypeColor(customer.customer_type)}>
+                              {formatCategoryDisplay(customer.customer_type)}
+                            </Badge>
+                          )}
+                        </div>
+                        
+                        <div className="space-y-1 text-sm text-muted-foreground">
+                          {customer.phone && (
+                            <div className="flex items-center gap-2">
+                              <Phone className="h-3 w-3" />
+                              {customer.phone}
+                            </div>
+                          )}
+                          {customer.email && (
+                            <div className="flex items-center gap-2">
+                              <Mail className="h-3 w-3" />
+                              {customer.email}
+                            </div>
+                          )}
+                          {customer.address && (
+                            <div className="flex items-center gap-2">
+                              <Building2 className="h-3 w-3" />
+                              {customer.address}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      
+                      {state.data.customer_id === customer.id && (
+                        <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground">
+                          <User className="h-3 w-3" />
+                        </div>
                       )}
                     </div>
-                    
-                    <div className="space-y-1 text-sm text-muted-foreground">
-                      {customer.phone && (
-                        <div className="flex items-center gap-2">
-                          <Phone className="h-3 w-3" />
-                          {customer.phone}
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
+        </>
+      ) : showContactSelection ? (
+        <div className="space-y-4">
+          {/* Selected Customer Display */}
+          <Card className="bg-muted/30">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <Building2 className="h-5 w-5 text-primary" />
+                <div>
+                  <p className="font-medium">Selected Customer</p>
+                  <p className="text-sm text-muted-foreground">
+                    {customers.find(c => c.id === state.data.customer_id)?.name}
+                  </p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    updateData({ customer_id: undefined, contact_id: undefined });
+                    setShowContactSelection(false);
+                  }}
+                  className="ml-auto"
+                >
+                  Change Customer
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Contact Selection */}
+          {isLoadingContacts ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+              <p className="text-muted-foreground mt-2">Loading contacts...</p>
+            </div>
+          ) : contacts.length === 0 ? (
+            <div className="text-center py-8">
+              <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <p className="text-muted-foreground mb-4">No contacts found for this customer.</p>
+              <Button
+                variant="outline"
+                onClick={handleSkipContactSelection}
+              >
+                Continue without Contact
+              </Button>
+            </div>
+          ) : (
+            <>
+              <div className="space-y-3">
+                {contacts.map((contact) => (
+                  <Card
+                    key={contact.id}
+                    className={cn(
+                      "cursor-pointer transition-colors hover:bg-muted/50",
+                      state.data.contact_id === contact.id && "ring-2 ring-primary bg-primary/5"
+                    )}
+                    onClick={() => handleContactSelect(contact)}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <h3 className="font-medium">
+                              {contact.first_name} {contact.last_name}
+                            </h3>
+                            {contact.is_primary && (
+                              <Badge variant="secondary">Primary</Badge>
+                            )}
+                            <Badge variant="outline" className="text-xs">
+                              {formatCategoryDisplay(contact.contact_type)}
+                            </Badge>
+                          </div>
+                          
+                          <div className="space-y-1 text-sm text-muted-foreground">
+                            {contact.title && (
+                              <p className="font-medium text-foreground">{contact.title}</p>
+                            )}
+                            {contact.phone && (
+                              <div className="flex items-center gap-2">
+                                <Phone className="h-3 w-3" />
+                                {contact.phone}
+                              </div>
+                            )}
+                            {contact.email && (
+                              <div className="flex items-center gap-2">
+                                <Mail className="h-3 w-3" />
+                                {contact.email}
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      )}
-                      {customer.email && (
-                        <div className="flex items-center gap-2">
-                          <Mail className="h-3 w-3" />
-                          {customer.email}
-                        </div>
-                      )}
-                      {customer.address && (
-                        <div className="flex items-center gap-2">
-                          <Building2 className="h-3 w-3" />
-                          {customer.address}
-                        </div>
-                      )}
+                        
+                        {state.data.contact_id === contact.id && (
+                          <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground">
+                            <User className="h-3 w-3" />
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              
+              <div className="flex justify-center">
+                <Button
+                  variant="ghost"
+                  onClick={handleSkipContactSelection}
+                >
+                  Skip Contact Selection
+                </Button>
+              </div>
+            </>
+          )}
+        </div>
+      ) : (
+        /* Selected Customer & Contact Display */
+        <div className="space-y-4">
+          <Card className="bg-muted/30">
+            <CardContent className="p-4">
+              <div className="space-y-3">
+                {/* Selected Customer */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Building2 className="h-5 w-5 text-primary" />
+                    <div>
+                      <p className="font-medium">Customer</p>
+                      <p className="text-sm text-muted-foreground">
+                        {customers.find(c => c.id === state.data.customer_id)?.name}
+                      </p>
                     </div>
                   </div>
-                  
-                  {state.data.customer_id === customer.id && (
-                    <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground">
-                      <User className="h-3 w-3" />
-                    </div>
-                  )}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      updateData({ customer_id: undefined, contact_id: undefined });
+                      setShowContactSelection(false);
+                    }}
+                  >
+                    Change
+                  </Button>
                 </div>
-              </CardContent>
-            </Card>
-          ))
-        )}
-      </div>
+
+                {/* Selected Contact */}
+                {state.data.contact_id && (
+                  <div className="flex items-center justify-between pt-3 border-t">
+                    <div className="flex items-center gap-3">
+                      <User className="h-5 w-5 text-primary" />
+                      <div>
+                        <p className="font-medium">Contact</p>
+                        <p className="text-sm text-muted-foreground">
+                          {(() => {
+                            const contact = contacts.find(c => c.id === state.data.contact_id);
+                            return contact ? `${contact.first_name} ${contact.last_name}` : 'Unknown Contact';
+                          })()}
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowContactSelection(true)}
+                    >
+                      Change
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* Validation Error */}
       {state.errors.customer && (

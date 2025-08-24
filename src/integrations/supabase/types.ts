@@ -3664,6 +3664,7 @@ export type Database = {
           actual_completion_time: string | null
           assigned_template_ids: Json | null
           billing_method: string | null
+          contact_id: string | null
           created_at: string
           customer_id: string
           date_returned: string | null
@@ -3700,6 +3701,7 @@ export type Database = {
           actual_completion_time?: string | null
           assigned_template_ids?: Json | null
           billing_method?: string | null
+          contact_id?: string | null
           created_at?: string
           customer_id: string
           date_returned?: string | null
@@ -3736,6 +3738,7 @@ export type Database = {
           actual_completion_time?: string | null
           assigned_template_ids?: Json | null
           billing_method?: string | null
+          contact_id?: string | null
           created_at?: string
           customer_id?: string
           date_returned?: string | null
@@ -3781,6 +3784,13 @@ export type Database = {
             columns: ["driver_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "customer_contacts"
             referencedColumns: ["id"]
           },
           {

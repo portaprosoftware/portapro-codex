@@ -36,6 +36,15 @@ interface Job {
     service_state?: string;
     service_zip?: string;
   } | null;
+  customer_contacts?: {
+    id: string;
+    first_name: string;
+    last_name: string;
+    contact_type: string;
+    email?: string;
+    phone?: string;
+    title?: string;
+  } | null;
 }
 
 interface JobCardProps {
@@ -72,11 +81,15 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate }) => {
   };
 
   const handleCall = () => {
-    const phoneNumber = job.customers?.phone;
+    // Try contact phone first, then customer phone
+    const contactPhone = job.customer_contacts?.phone;
+    const customerPhone = job.customers?.phone;
+    const phoneNumber = contactPhone || customerPhone;
+    
     if (phoneNumber) {
       window.location.href = `tel:${phoneNumber}`;
     } else {
-      toast.error('No phone number available for this customer');
+      toast.error('No phone number available for this customer or contact');
     }
   };
 
