@@ -304,9 +304,9 @@ export function QuickBooksExportModal({ isOpen, onClose, type }: QuickBooksExpor
           </div>
 
           {/* QuickBooks Import Instructions */}
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-            <h4 className="text-sm font-medium text-green-800 mb-2">QuickBooks Import Instructions:</h4>
-            <div className="text-sm text-green-700 space-y-1">
+          <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-lg p-4">
+            <h4 className="text-sm font-bold text-white mb-2">QuickBooks Import Instructions:</h4>
+            <div className="text-sm text-white font-bold space-y-1">
               <p>1. Open QuickBooks and go to File → Utilities → Import → IIF Files</p>
               <p>2. Select the downloaded .iif file</p>
               <p>3. Review the import summary and click Import</p>
