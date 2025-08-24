@@ -14,7 +14,8 @@ import {
   CheckCircle,
   PlayCircle,
   MessageSquare,
-  FileText
+  FileText,
+  RotateCcw
 } from 'lucide-react';
 import { PhotoCapture } from './PhotoCapture';
 import { SignatureCapture } from './SignatureCapture';
@@ -134,6 +135,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
   const contactEmail = job.customer_contacts?.email;
   const statusInfo = getDualJobStatusInfo(job);
   const hasServiceTemplates = assignedTemplates.length > 0;
+  const canReverseJob = job.status === 'in-progress' || job.status === 'completed';
 
   const handleStatusUpdate = async (newStatus: string) => {
     if (newStatus === 'in-progress' && hasServiceTemplates) {
@@ -163,6 +165,33 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
       toast({
         title: "Error",
         description: "Failed to update job status",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleReverseJob = async () => {
+    const newStatus = job.status === 'completed' ? 'in-progress' : 'assigned';
+    setIsUpdating(true);
+    try {
+      const { error } = await supabase
+        .from('jobs')
+        .update({ status: newStatus })
+        .eq('id', job.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Status Reversed",
+        description: `Job status changed to ${newStatus}`,
+      });
+      onStatusUpdate();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to reverse job status",
         variant: "destructive",
       });
     } finally {
@@ -358,6 +387,19 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                     </>
                   )}
                 </div>
+                
+                {/* Reverse Status Button */}
+                {canReverseJob && (
+                  <Button 
+                    onClick={handleReverseJob}
+                    disabled={isUpdating}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    <RotateCcw className="w-4 h-4 mr-2" />
+                    Reverse Status
+                  </Button>
+                )}
                 
                 {hasServiceTemplates && (
                   <p className="text-xs text-muted-foreground">
