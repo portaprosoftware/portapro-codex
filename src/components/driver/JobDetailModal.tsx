@@ -326,10 +326,10 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
     
     switch (app) {
       case 'google':
-        url = `https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}`;
+        url = `https://maps.google.com/?daddr=${encodedAddress}`;
         break;
       case 'apple':
-        url = `http://maps.apple.com/?daddr=${encodedAddress}`;
+        url = `https://maps.apple.com/?daddr=${encodedAddress}`;
         break;
       case 'waze':
         url = `https://waze.com/ul?q=${encodedAddress}&navigate=yes`;
