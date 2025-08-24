@@ -657,14 +657,18 @@ const ProductCard: React.FC<ProductCardProps> = ({
   });
 
   // Determine the actual tracking method based on product configuration
+  // This replicates the logic from get_product_availability_enhanced
   const getActualTrackingMethod = () => {
-    if (!product.track_inventory) {
-      return 'bulk_only';
-    }
-    if (individualItemsCount > 0) {
+    // Calculate potential bulk pool
+    const potentialBulkPool = Math.max(0, product.stock_total - individualItemsCount);
+    
+    if (individualItemsCount > 0 && potentialBulkPool > 0) {
       return 'hybrid_tracking';
     }
-    return 'individual_tracking';
+    if (individualItemsCount > 0 && potentialBulkPool === 0) {
+      return 'individual_tracking';
+    }
+    return 'bulk_only';
   };
   
   // Get current selections for this product from the job
