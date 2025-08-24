@@ -23,9 +23,9 @@ export function useJobSearch(jobId?: string) {
       
       console.log('Exact match result:', data);
       
-      // Only try partial match if no exact match and job ID looks complete (at least 6-7 chars like DEL-012)
-      if (!data && jobId.length >= 6 && jobId.includes('-') && /^[A-Z]{3}-\d+$/.test(jobId)) {
-        console.log('Trying partial match for:', jobId);
+      // If no exact match, try case-insensitive match of the full job number
+      if (!data) {
+        console.log('Trying case-insensitive match for:', jobId);
         ({ data, error } = await supabase
           .from('jobs')
           .select(`
@@ -34,23 +34,8 @@ export function useJobSearch(jobId?: string) {
             profiles:driver_id(id, first_name, last_name),
             vehicles(id, license_plate, vehicle_type)
           `)
-          .eq('job_number', jobId)
-          .maybeSingle()); // Try exact match again in case of case sensitivity
-        
-        // If still no match, try case-insensitive exact match
-        if (!data) {
-          ({ data, error } = await supabase
-            .from('jobs')
-            .select(`
-              *,
-              customers(id, name, service_street, service_city, service_state),
-              profiles:driver_id(id, first_name, last_name),
-              vehicles(id, license_plate, vehicle_type)
-            `)
-            .ilike('job_number', jobId)
-            .limit(1)
-            .maybeSingle());
-        }
+          .ilike('job_number', jobId)
+          .maybeSingle());
       }
       
       console.log('Final search result:', data);
