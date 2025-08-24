@@ -240,6 +240,8 @@ export function useCreateJob() {
       console.log('Processing inventory items:', jobData.items);
       if (jobData.items && jobData.items.length > 0) {
         console.log('Found', jobData.items.length, 'items to process');
+
+        // Step 1: Create equipment assignments (existing behavior)
         for (const item of jobData.items) {
           console.log('Processing item:', item);
           // Create equipment assignments based on selection strategy
@@ -270,6 +272,72 @@ export function useCreateJob() {
               status: 'assigned'
             });
           }
+        }
+
+        // Step 2: Create job_items lines for inventory so UI cards populate
+        try {
+          if (serializedJobData.job_type === 'delivery') {
+            // Build a product quantity map
+            const productQtyMap = new Map<string, number>();
+
+            // Collect specific item ids lacking product_id
+            const specificIdsToLookup: string[] = [];
+            for (const item of jobData.items) {
+              if (item.strategy === 'specific' && Array.isArray(item.specific_item_ids) && item.specific_item_ids.length > 0) {
+                // If product_id provided, just count them
+                if (item.product_id) {
+                  const prev = productQtyMap.get(item.product_id) || 0;
+                  productQtyMap.set(item.product_id, prev + item.specific_item_ids.length);
+                } else {
+                  specificIdsToLookup.push(...item.specific_item_ids);
+                }
+              } else if (item.product_id && item.quantity) {
+                const prev = productQtyMap.get(item.product_id) || 0;
+                productQtyMap.set(item.product_id, prev + item.quantity);
+              }
+            }
+
+            // Lookup missing product_ids for specific items, if any
+            if (specificIdsToLookup.length > 0) {
+              const { data: itemsLookup, error: lookupError } = await supabase
+                .from('product_items')
+                .select('id, product_id')
+                .in('id', specificIdsToLookup);
+
+              if (!lookupError && itemsLookup) {
+                // Count by product_id
+                const counts = itemsLookup.reduce((acc: Record<string, number>, row: any) => {
+                  acc[row.product_id] = (acc[row.product_id] || 0) + 1;
+                  return acc;
+                }, {} as Record<string, number>);
+                for (const [prodId, qty] of Object.entries(counts)) {
+                  const prev = productQtyMap.get(prodId) || 0;
+                  productQtyMap.set(prodId, prev + qty);
+                }
+              } else {
+                console.warn('Failed to lookup product_ids for specific items:', lookupError);
+              }
+            }
+
+            // Prepare insert payload
+            const inventoryItems = Array.from(productQtyMap.entries()).map(([product_id, quantity]) => ({
+              job_id: newJob.id,
+              product_id,
+              quantity,
+              unit_price: 0,
+              total_price: 0,
+              line_item_type: 'inventory' as const,
+            }));
+
+            if (inventoryItems.length > 0) {
+              const { error: jiError } = await supabase.from('job_items').insert(inventoryItems);
+              if (jiError) {
+                console.warn('Failed to insert job_items for inventory:', jiError);
+              }
+            }
+          }
+        } catch (e) {
+          console.warn('Non-fatal error creating job_items for inventory:', e);
         }
       }
 
