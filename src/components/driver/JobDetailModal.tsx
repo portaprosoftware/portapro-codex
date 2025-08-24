@@ -116,6 +116,19 @@ interface JobDetailModalProps {
   onStatusUpdate: () => void;
 }
 
+const formatServiceAddress = (customer: Job['customers']) => {
+  if (!customer) return 'Service Location';
+  
+  const parts = [];
+  if (customer.service_street) parts.push(customer.service_street);
+  if (customer.service_street2) parts.push(customer.service_street2);
+  if (customer.service_city) parts.push(customer.service_city);
+  if (customer.service_state) parts.push(customer.service_state);
+  if (customer.service_zip) parts.push(customer.service_zip);
+  
+  return parts.length > 0 ? parts.join(', ') : 'Service Location';
+};
+
 
 export const JobDetailModal: React.FC<JobDetailModalProps> = ({
   job,
@@ -300,8 +313,8 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
   };
 
   const handleNavigate = () => {
-    // TODO: Implement navigation functionality
-    const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(customerName)}`;
+    const serviceAddress = formatServiceAddress(job.customers);
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(serviceAddress)}`;
     window.open(url, '_blank');
   };
 
@@ -545,6 +558,20 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">Job Type</label>
                     <p className="text-sm capitalize">{job.job_type}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">Service Address</label>
+                    <p className="text-sm">{formatServiceAddress(job.customers)}</p>
+                  </div>
+                  <div className="mt-3">
+                    <Button 
+                      variant="outline" 
+                      className="w-full"
+                      onClick={handleNavigate}
+                    >
+                      <Navigation className="w-4 h-4 mr-2" />
+                      Navigate to Location
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
