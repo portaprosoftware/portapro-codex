@@ -21,6 +21,8 @@ import { InvoicesTable } from '@/components/quotes/InvoicesTable';
 import { NewQuoteWizard } from '@/components/quotes/NewQuoteWizard';
 import { QuoteDraftManagement } from '@/components/quotes/QuoteDraftManagement';
 import { InvoiceCreationWizard } from '@/components/quotes/InvoiceCreationWizard';
+import { QuotesExportModal } from '@/components/quotes/QuotesExportModal';
+import { InvoicesExportModal } from '@/components/invoices/InvoicesExportModal';
 
 const QuotesInvoices: React.FC = () => {
   const { hasAdminAccess } = useUserRole();
@@ -306,24 +308,15 @@ const QuotesInvoices: React.FC = () => {
         </div>
       )}
 
-      {/* Export Modals - Temporarily disabled until we have selected items */}
-      {/*
-      <QuoteExportModal 
+      {/* Export Modals */}
+      <QuotesExportModal 
         isOpen={showQuoteExport} 
         onClose={() => setShowQuoteExport(false)} 
-        quote={{ id: '', quote_number: '', customers: { name: '', email: '' } }}
       />
-      <QuoteExportModal 
-        isOpen={showQuickBooksExport} 
-        onClose={() => setShowQuickBooksExport(false)}
-        quote={{ id: '', quote_number: '', customers: { name: '', email: '' } }}
-      />
-      <InvoiceExportModal 
+      <InvoicesExportModal 
         isOpen={showInvoiceExport} 
         onClose={() => setShowInvoiceExport(false)} 
-        invoice={{ id: '', invoice_number: '', customers: { name: '', email: '' } }}
       />
-      */}
 
       {/* Creation Wizards */}
       <NewQuoteWizard 
