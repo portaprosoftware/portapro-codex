@@ -127,10 +127,10 @@ const Dashboard = () => {
       if (error) throw error;
       
       const total = data?.length || 0;
-      const active = data?.filter(v => v.status === 'active').length || 0;
+      const available = data?.filter(v => v.status === 'available').length || 0;
       const maintenance = data?.filter(v => v.status === 'maintenance').length || 0;
       
-      return { total, active, maintenance };
+      return { total, available, maintenance };
     }
   });
 
@@ -365,9 +365,9 @@ const Dashboard = () => {
           gradientFrom="#6366f1"
           gradientTo="#4f46e5"
           iconBg="#6366f1"
-          subtitle={`${vehiclesData?.active || 0} active, ${vehiclesData?.maintenance || 0} maintenance`}
+          subtitle={`${vehiclesData?.available || 0} available, ${vehiclesData?.maintenance || 0} maintenance`}
           subtitleColor="text-gray-600"
-          chart={<DonutChart active={vehiclesData?.active || 0} maintenance={vehiclesData?.maintenance || 0} />}
+          chart={<DonutChart active={vehiclesData?.available || 0} maintenance={vehiclesData?.maintenance || 0} />}
           delay={400}
         />
         
