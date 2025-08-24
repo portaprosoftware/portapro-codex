@@ -29,6 +29,11 @@ interface Job {
   customers: {
     name?: string;
     customer_type?: string;
+    service_street?: string;
+    service_street2?: string;
+    service_city?: string;
+    service_state?: string;
+    service_zip?: string;
   } | null;
 }
 
@@ -38,9 +43,23 @@ interface JobCardProps {
 }
 
 
+const formatServiceAddress = (customer: Job['customers']) => {
+  if (!customer) return 'Service Location';
+  
+  const parts = [];
+  if (customer.service_street) parts.push(customer.service_street);
+  if (customer.service_street2) parts.push(customer.service_street2);
+  if (customer.service_city) parts.push(customer.service_city);
+  if (customer.service_state) parts.push(customer.service_state);
+  if (customer.service_zip) parts.push(customer.service_zip);
+  
+  return parts.length > 0 ? parts.join(', ') : 'Service Location';
+};
+
 export const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate }) => {
   const [showDetail, setShowDetail] = useState(false);
   const customerName = job.customers?.name || 'Unknown Customer';
+  const serviceAddress = formatServiceAddress(job.customers);
   const statusInfo = getDualJobStatusInfo(job);
   const customerType = job.customers?.customer_type;
   const CustomerIcon = getCustomerTypeIcon(customerType);
@@ -142,7 +161,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate }) => {
             
             <div className="flex items-center text-sm text-gray-600">
               <MapPin className="w-4 h-4 mr-2" />
-              Service Location
+              <span className="truncate">{serviceAddress}</span>
             </div>
           </div>
 

@@ -34,7 +34,12 @@ export const DriverDashboard: React.FC = () => {
           *,
           customers (
             name,
-            customer_type
+            customer_type,
+            service_street,
+            service_street2,
+            service_city,
+            service_state,
+            service_zip
           )
         `)
         .eq('driver_id', user.id)
@@ -58,7 +63,12 @@ export const DriverDashboard: React.FC = () => {
               *,
               customers (
                 name,
-                customer_type
+                customer_type,
+                service_street,
+                service_street2,
+                service_city,
+                service_state,
+                service_zip
               )
             `)
             .eq('driver_id', profileData.id)
