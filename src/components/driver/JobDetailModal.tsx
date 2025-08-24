@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { format } from 'date-fns';
 import { formatDateSafe } from '@/lib/dateUtils';
 import { 
@@ -141,6 +142,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
   const [showPhotoCapture, setShowPhotoCapture] = useState(false);
   const [showSignature, setShowSignature] = useState(false);
   const [showServiceReport, setShowServiceReport] = useState(false);
+  const [showNavigationPopup, setShowNavigationPopup] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [assignedTemplates, setAssignedTemplates] = useState<any[]>([]);
   const [loadingTemplates, setLoadingTemplates] = useState(false);
@@ -313,9 +315,29 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
   };
 
   const handleNavigate = () => {
+    setShowNavigationPopup(true);
+  };
+
+  const handleNavigateToApp = (app: 'google' | 'apple' | 'waze') => {
     const serviceAddress = formatServiceAddress(job.customers);
-    const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(serviceAddress)}`;
+    const encodedAddress = encodeURIComponent(serviceAddress);
+    
+    let url = '';
+    
+    switch (app) {
+      case 'google':
+        url = `https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}`;
+        break;
+      case 'apple':
+        url = `http://maps.apple.com/?daddr=${encodedAddress}`;
+        break;
+      case 'waze':
+        url = `https://waze.com/ul?q=${encodedAddress}&navigate=yes`;
+        break;
+    }
+    
     window.open(url, '_blank');
+    setShowNavigationPopup(false);
   };
 
   const handleSendMessage = () => {
@@ -734,6 +756,49 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
           job={job}
           templates={assignedTemplates}
         />
+
+        {/* Navigation Options Dialog */}
+        <Dialog open={showNavigationPopup} onOpenChange={setShowNavigationPopup}>
+          <DialogContent className="max-w-sm mx-auto">
+            <DialogHeader>
+              <DialogTitle className="text-center">Choose Navigation App</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3 py-4">
+              <Button 
+                variant="outline" 
+                className="w-full h-12 text-left justify-start"
+                onClick={() => handleNavigateToApp('google')}
+              >
+                <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
+                  <Navigation className="w-4 h-4 text-white" />
+                </div>
+                Google Maps
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                className="w-full h-12 text-left justify-start"
+                onClick={() => handleNavigateToApp('apple')}
+              >
+                <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center mr-3">
+                  <Navigation className="w-4 h-4 text-white" />
+                </div>
+                Apple Maps
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                className="w-full h-12 text-left justify-start"
+                onClick={() => handleNavigateToApp('waze')}
+              >
+                <div className="w-8 h-8 bg-blue-400 rounded-lg flex items-center justify-center mr-3">
+                  <Navigation className="w-4 h-4 text-white" />
+                </div>
+                Waze
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </DrawerContent>
     </Drawer>
   );
