@@ -338,7 +338,7 @@ export const ServiceCatalogTab: React.FC = () => {
                 </td>
                 <td className="px-6 py-4">
                   {service.default_template_id ? (
-                    <Badge variant="outline" className="text-xs bg-blue-50 border-blue-200 text-blue-700">
+                    <Badge className="text-xs bg-gradient-to-r from-green-500 to-green-600 text-white font-bold border-0">
                       <FileText className="w-3 h-3 mr-1" />
                       Template Set
                     </Badge>
