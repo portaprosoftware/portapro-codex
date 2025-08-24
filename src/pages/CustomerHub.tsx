@@ -375,7 +375,7 @@ const CustomerHub: React.FC = () => {
                             <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
                               <p className="font-medium text-blue-900 mb-2">Simple Marketing & Jobs Focus</p>
                               <p className="text-sm text-blue-800">
-                                Engagement scores focus on recent customer activity and marketing campaign interactions.
+                                Engagement scores focus on recent job activity and marketing campaign email interactions only.
                                 This provides a clear, actionable view of customer engagement.
                               </p>
                             </div>
@@ -388,7 +388,7 @@ const CustomerHub: React.FC = () => {
                                   <span className="font-medium">10 points each</span>
                                 </div>
                                 <div className="space-y-1">
-                                  <div className="font-medium text-gray-900">Marketing Campaign Emails:</div>
+                                  <div className="font-medium text-gray-900">Marketing Campaign Emails (last 90 days):</div>
                                   <div className="ml-2 space-y-1 text-sm">
                                     <div className="flex justify-between">
                                       <span>• Email opened:</span>
@@ -399,22 +399,18 @@ const CustomerHub: React.FC = () => {
                                       <span>10 points each</span>
                                     </div>
                                   </div>
-                                  <div className="mt-2 p-2 bg-amber-50 border border-amber-200 rounded text-xs text-amber-800">
-                                    <strong>Note:</strong> Communications include job notifications, marketing campaigns, 
-                                    and all system messages. Active customers with many jobs may see exponential score growth.
-                                  </div>
                                 </div>
                               </div>
 
                               <div className="mt-4 p-3 border border-gray-200 rounded">
                                 <h5 className="font-medium text-gray-900 mb-2">Example Calculation:</h5>
                                 <div className="text-sm text-gray-700 space-y-1">
-                                  <div>Customer with 5 jobs, 3 interactions, and 8 communications (2 clicked, 3 opened, 3 sent only):</div>
+                                  <div>Customer with 3 recent jobs, 2 email clicks, and 4 email opens:</div>
                                   <div className="ml-4 space-y-1">
-                                    <div>• Jobs: 5 × 10 = 50 points</div>
-                                    <div>• Interactions: 3 × 15 = 45 points</div>
-                                    <div>• Communications: (2 × 15) + (3 × 8) + (3 × 2) = 60 points</div>
-                                    <div className="font-medium border-t border-gray-300 pt-1">Total: 155 points = High Engagement</div>
+                                    <div>• Jobs: 3 × 10 = 30 points</div>
+                                    <div>• Email clicks: 2 × 10 = 20 points</div>
+                                    <div>• Email opens: 4 × 5 = 20 points</div>
+                                    <div className="font-medium border-t border-gray-300 pt-1">Total: 70 points = High Engagement</div>
                                   </div>
                                 </div>
                               </div>
@@ -425,26 +421,26 @@ const CustomerHub: React.FC = () => {
                             <div className="space-y-2">
                               <div className="flex items-center justify-between p-3 bg-gradient-to-r from-red-500 to-red-600 rounded-lg">
                                 <span className="text-white font-bold">Low Engagement</span>
-                                <span className="text-white">0-30 points</span>
+                                <span className="text-white">0-25 points</span>
                               </div>
                               <div className="flex items-center justify-between p-3 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg">
                                 <span className="text-white font-bold">Medium Engagement</span>
-                                <span className="text-white">31-70 points</span>
+                                <span className="text-white">26-60 points</span>
                               </div>
                               <div className="flex items-center justify-between p-3 bg-gradient-to-r from-green-500 to-green-600 rounded-lg">
                                 <span className="text-white font-bold">High Engagement</span>
-                                <span className="text-white">71+ points</span>
+                                <span className="text-white">61-100 points</span>
                               </div>
                             </div>
                           </div>
 
                          <div className="bg-gray-50 p-4 rounded-lg">
-                           <h4 className="font-medium mb-2">Example:</h4>
-                           <p className="text-sm text-gray-700">
-                             A customer with 5 jobs, 3 interactions, and 2 communications in the last 90 days would have:
-                             <br />
-                             <span className="font-mono">(5 × 10) + (3 × 15) + (2 × 5) = 105 points = High Engagement</span>
-                           </p>
+                           <h4 className="font-medium mb-2">What's Included:</h4>
+                           <ul className="text-sm text-gray-700 space-y-1">
+                             <li>• Recent job bookings (indicates active business relationship)</li>
+                             <li>• Marketing email opens and clicks (shows engagement with campaigns)</li>
+                             <li>• Score is capped at 100 points for consistent comparison</li>
+                           </ul>
                          </div>
                        </div>
                      </DialogContent>
