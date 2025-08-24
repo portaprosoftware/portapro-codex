@@ -75,8 +75,17 @@ const handler = async (req: Request): Promise<Response> => {
     const companyName = companySettings?.company_name || 'PortaPro';
     const companyEmail = companySettings?.company_email || 'hello@portaprosoftware.com';
     const companyPhone = companySettings?.company_phone || '';
-
+    
+    // Determine a safe From address for Resend
+    // Use RESEND_FROM if set (e.g., no-reply@yourdomain.com with verified domain),
+    // otherwise fall back to Resend's sandbox domain for development.
+    const resendFromEnv = Deno.env.get('RESEND_FROM');
+    const fromAddress = resendFromEnv
+      ? `${companyName} <${resendFromEnv}>`
+      : `${companyName} <onboarding@resend.dev>`;
+    
     // Format currency
+    
     const formatCurrency = (amount: number) => {
       return new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -229,16 +238,22 @@ const handler = async (req: Request): Promise<Response> => {
         throw new Error('Email address is required for email sending');
       }
 
+      // Ensure Resend is configured
+      if (!Deno.env.get('RESEND_API_KEY')) {
+        throw new Error('RESEND_API_KEY is not configured. Add it in Supabase Edge Functions secrets.');
+      }
+
       emailResponse = await resend.emails.send({
-        from: `${companyName} <${companyEmail}>`,
+        from: fromAddress,
         to: [customerEmail],
+        reply_to: companyEmail ? [companyEmail] : undefined,
         subject: `Quote ${quote.quote_number} from ${companyName}`,
         html: emailHTML,
       });
 
       console.log("Quote email sent successfully:", emailResponse);
     }
-
+    
     // Send SMS if required
     if (sendMethod === 'sms' || sendMethod === 'both') {
       if (!customerPhone) {
