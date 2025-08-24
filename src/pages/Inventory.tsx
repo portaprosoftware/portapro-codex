@@ -19,6 +19,7 @@ import { InventoryFilters } from '@/components/inventory/InventoryFilters';
 
 import { CodeCategoriesView } from '@/components/inventory/CodeCategoriesView';
 import { MaintenanceTrackerTab } from '@/components/inventory/MaintenanceTrackerTab';
+import { InventoryMaintenanceOverview } from '@/components/inventory/InventoryMaintenanceOverview';
 import { ProductDetail } from '@/components/inventory/ProductDetail';
 import { AddInventoryModal } from '@/components/inventory/AddInventoryModal';
 import { QRCodeScanner } from '@/components/inventory/QRCodeScanner';
@@ -525,7 +526,7 @@ const Inventory: React.FC = () => {
 
         {activeTab === 'maintenance' && (
           <div className="bg-background rounded-2xl shadow-md p-6">
-            <MaintenanceTrackerTab productId="all" />
+            <InventoryMaintenanceOverview />
           </div>
         )}
 
