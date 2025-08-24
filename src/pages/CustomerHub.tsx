@@ -372,9 +372,9 @@ const CustomerHub: React.FC = () => {
                          <DialogTitle>Customer Engagement Scoring</DialogTitle>
                        </DialogHeader>
                         <div className="space-y-4">
-                            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                              <p className="font-medium text-blue-900 mb-2">Simple Marketing & Jobs Focus</p>
-                              <p className="text-sm text-blue-800">
+                            <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-4 rounded-lg border border-blue-300">
+                              <p className="font-medium text-white mb-2">Simple Marketing & Jobs Focus</p>
+                              <p className="text-sm text-blue-100">
                                 Engagement scores focus on recent job activity and marketing campaign email interactions only.
                                 This provides a clear, actionable view of customer engagement.
                               </p>
