@@ -357,51 +357,37 @@ const Inventory: React.FC = () => {
 
             {/* Card 3: Status Filters and Controls */}
             <div className="bg-background rounded-2xl shadow-md p-6 space-y-6">
-              {/* Action Buttons - Moved to top left */}
-              <div className="flex flex-wrap gap-2">
-                <Button 
-                  variant="outline" 
-                  onClick={() => setShowOCRSearch(true)}
-                  className="flex items-center gap-2"
-                >
-                  <Camera className="h-4 w-4" />
-                  Capture Panel
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={() => setShowQRScanner(true)}
-                  className="flex items-center gap-2"
-                >
-                  <QrCode className="h-4 w-4" />
-                  Scan QR
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={() => setShowIndividualUnitsSlider(true)}
-                  className="flex items-center gap-2"
-                >
-                  <Sliders className="h-4 w-4" />
-                  All Units
-                </Button>
-                <Button 
-                  onClick={() => setAddInventoryModalOpen(true)}
-                  className="flex items-center gap-2"
-                >
-                  <Plus className="h-4 w-4" />
-                  Add New Product
-                </Button>
-              </div>
+              {/* Top Row: Action Buttons on left, View Toggle and Add Product on right */}
+              <div className="flex justify-between items-center">
+                <div className="flex flex-wrap gap-2">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowOCRSearch(true)}
+                    className="flex items-center gap-2"
+                  >
+                    <Camera className="h-4 w-4" />
+                    Capture Panel
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowQRScanner(true)}
+                    className="flex items-center gap-2"
+                  >
+                    <QrCode className="h-4 w-4" />
+                    Scan QR
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowIndividualUnitsSlider(true)}
+                    className="flex items-center gap-2"
+                  >
+                    <Sliders className="h-4 w-4" />
+                    All Units
+                  </Button>
+                </div>
 
-              {/* Info Text */}
-              <div className="text-sm text-muted-foreground">
-                Scan QR or snap a photo of the molded tool number to search
-              </div>
-
-              {/* View Controls and Hide Inactive */}
-              <div className="flex flex-col sm:flex-row justify-between items-end gap-4">
-                {/* View Toggle */}
-                <div>
-                  <Label className="text-sm font-medium mb-2 block">View</Label>
+                <div className="flex items-center gap-3">
+                  {/* View Toggle */}
                   <div className="flex bg-muted rounded-lg p-1">
                     <Button
                       variant={viewType === 'list' ? 'default' : 'ghost'}
@@ -420,56 +406,69 @@ const Inventory: React.FC = () => {
                       <Grid3X3 className="h-4 w-4" />
                     </Button>
                   </div>
+
+                  <Button 
+                    onClick={() => setAddInventoryModalOpen(true)}
+                    className="flex items-center gap-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add New Product
+                  </Button>
+                </div>
+              </div>
+
+              {/* Info Text */}
+              <div className="text-sm text-muted-foreground">
+                Scan QR or snap a photo of the molded tool number to search
+              </div>
+
+              {/* Filter Controls Row */}
+              <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="hide-inactive"
+                    checked={hideInactive}
+                    onCheckedChange={setHideInactive}
+                  />
+                  <Label htmlFor="hide-inactive" className="text-sm">Hide Inactive</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="ghost" size="sm" className="h-auto p-0 text-xs text-gray-500 hover:text-gray-700">
+                        <Info className="w-3 h-3" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-64 text-sm">
+                      Hide products from view that have inventory tracking disabled.
+                    </PopoverContent>
+                  </Popover>
+                  {inactiveProductsCount > 0 && (
+                    <Badge 
+                      className="text-xs border-0 font-bold flex items-center justify-center min-w-[20px] h-5 bg-gray-500 text-white"
+                    >
+                      {inactiveProductsCount}
+                    </Badge>
+                  )}
                 </div>
 
-                {/* Hide Inactive Switch and Status Filter Buttons - Moved to bottom right */}
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      id="hide-inactive"
-                      checked={hideInactive}
-                      onCheckedChange={setHideInactive}
-                    />
-                    <Label htmlFor="hide-inactive" className="text-sm">Hide Inactive</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-auto p-0 text-xs text-gray-500 hover:text-gray-700">
-                          <Info className="w-3 h-3" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-64 text-sm">
-                        Hide products from view that have inventory tracking disabled.
-                      </PopoverContent>
-                    </Popover>
-                    {inactiveProductsCount > 0 && (
-                      <Badge 
-                        className="text-xs border-0 font-bold flex items-center justify-center min-w-[20px] h-5 bg-gray-500 text-white"
-                      >
-                        {inactiveProductsCount}
-                      </Badge>
-                    )}
-                  </div>
-
-                  {/* Status Filter Buttons - Moved to bottom right */}
-                  <div className="flex flex-wrap gap-3">
-                    {filters.map((filter) => (
-                      <button
-                        key={filter.key}
-                        onClick={() => handleFilterClick(filter.key)}
-                        className={cn(
-                          "px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200",
-                          getFilterStyle(filter.key)
-                        )}
-                      >
-                        {filter.label}
-                        {filter.count !== null && (
-                          <Badge variant="secondary" className="ml-2 text-xs bg-white/20">
-                            {filter.count}
-                          </Badge>
-                        )}
-                      </button>
-                    ))}
-                  </div>
+                {/* Status Filter Buttons */}
+                <div className="flex flex-wrap gap-3">
+                  {filters.map((filter) => (
+                    <button
+                      key={filter.key}
+                      onClick={() => handleFilterClick(filter.key)}
+                      className={cn(
+                        "px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200",
+                        getFilterStyle(filter.key)
+                      )}
+                    >
+                      {filter.label}
+                      {filter.count !== null && (
+                        <Badge variant="secondary" className="ml-2 text-xs bg-white/20">
+                          {filter.count}
+                        </Badge>
+                      )}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
