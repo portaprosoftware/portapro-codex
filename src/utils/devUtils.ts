@@ -75,13 +75,13 @@ export const addManualRefreshButton = () => {
   }
 };
 
-// Auto-add refresh button in development
-if (import.meta.env.DEV) {
-  document.addEventListener('DOMContentLoaded', addManualRefreshButton);
-  // Also try to add it immediately if DOM is already loaded
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', addManualRefreshButton);
-  } else {
-    addManualRefreshButton();
-  }
-}
+// Auto-add refresh button in development - DISABLED
+// if (import.meta.env.DEV) {
+//   document.addEventListener('DOMContentLoaded', addManualRefreshButton);
+//   // Also try to add it immediately if DOM is already loaded
+//   if (document.readyState === 'loading') {
+//     document.addEventListener('DOMContentLoaded', addManualRefreshButton);
+//   } else {
+//     addManualRefreshButton();
+//   }
+// }
