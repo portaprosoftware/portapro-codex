@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface JobItemSelection {
   product_id: string;
@@ -242,7 +243,7 @@ export function JobWizardProvider({
     }
   };
 
-  const previousStep = () => {
+  const previousStep = async () => {
     let prevStepNumber = state.currentStep - 1;
     
     // Skip step 5 (Products & Inventory) when going back from step 6 for service jobs
@@ -258,6 +259,23 @@ export function JobWizardProvider({
     // Skip step 6 (Services & Frequency) when going back from step 7 for pickup jobs  
     if (state.currentStep === 7 && state.data.job_type === 'pickup') {
       prevStepNumber = 5; // Go back to Products step
+    }
+    
+    // Handle going back to step 1 from step 2 - check if customer has contacts
+    if (state.currentStep === 2 && prevStepNumber === 1 && state.data.customer_id) {
+      try {
+        const { data: contacts } = await supabase
+          .from('customer_contacts')
+          .select('id')
+          .eq('customer_id', state.data.customer_id);
+        
+        // If no contacts exist, clear contact_id to ensure proper state
+        if (!contacts || contacts.length === 0) {
+          dispatch({ type: 'UPDATE_DATA', payload: { contact_id: undefined } });
+        }
+      } catch (error) {
+        console.error('Error checking customer contacts:', error);
+      }
     }
     
     dispatch({ type: 'SET_STEP', payload: Math.max(1, prevStepNumber) });
