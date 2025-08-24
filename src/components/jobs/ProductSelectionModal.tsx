@@ -17,6 +17,7 @@ interface Product {
   name: string;
   stock_total: number;
   image_url?: string;
+  track_inventory: boolean;
 }
 
 interface SelectedUnit {
@@ -477,7 +478,7 @@ const ProductListPage: React.FC<ProductListPageProps> = ({
         // First, get products that match by name or manufacturer
         let nameQuery = supabase
           .from('products')
-          .select('id, name, stock_total, image_url')
+          .select('id, name, stock_total, image_url, track_inventory')
           .order('name');
 
         if (searchTerm) {
@@ -511,7 +512,7 @@ const ProductListPage: React.FC<ProductListPageProps> = ({
             // Get full product data for products that have matching tool numbers
             let toolQuery = supabase
               .from('products')
-              .select('id, name, stock_total, image_url')
+              .select('id, name, stock_total, image_url, track_inventory')
               .in('id', productIds);
 
             if (selectedProductType && selectedProductType !== 'all') {
@@ -643,6 +644,29 @@ const ProductCard: React.FC<ProductCardProps> = ({
   currentSelections
 }) => {
   
+  // Query to get the actual individual items count for this product
+  const { data: individualItemsCount = 0 } = useQuery({
+    queryKey: ['product-individual-items-count', product.id],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from('product_items')
+        .select('*', { count: 'exact', head: true })
+        .eq('product_id', product.id);
+      return count || 0;
+    }
+  });
+
+  // Determine the actual tracking method based on product configuration
+  const getActualTrackingMethod = () => {
+    if (!product.track_inventory) {
+      return 'bulk_only';
+    }
+    if (individualItemsCount > 0) {
+      return 'hybrid_tracking';
+    }
+    return 'individual_tracking';
+  };
+  
   // Get current selections for this product from the job
   const productCurrentSelections = currentSelections[product.id] || { bulk: 0, specific: [] };
   
@@ -684,7 +708,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
   };
 
   const getTrackingMethodBadge = (method: string) => {
-    console.log('ProductSelectionModal: getTrackingMethodBadge called with method:', method);
     switch (method) {
       case 'hybrid_tracking':
         return 'Hybrid Tracking';
@@ -696,6 +719,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
         return null;
     }
   };
+
+  // Get the actual tracking method for this product
+  const actualTrackingMethod = getActualTrackingMethod();
 
 
   return (
@@ -744,12 +770,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
               >
                 {availability.data?.available ?? 0} of {availability.data?.total ?? 0} available
               </Badge>
-              {availability.data?.method && getTrackingMethodBadge(availability.data.method) && (
+              {getTrackingMethodBadge(actualTrackingMethod) && (
                 <Badge 
                   variant="info"
                   className="text-xs font-bold text-white"
                 >
-                  {getTrackingMethodBadge(availability.data.method)}
+                  {getTrackingMethodBadge(actualTrackingMethod)}
                 </Badge>
               )}
             </>
@@ -792,7 +818,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         {/* Action Buttons */}
         <div className="flex flex-col gap-2">
           {/* Only show bulk button for products that support bulk operations */}
-          {availability.data?.method !== 'individual_tracking' && (
+          {actualTrackingMethod !== 'individual_tracking' && (
             <Button
               variant="outline"
               size="sm"
