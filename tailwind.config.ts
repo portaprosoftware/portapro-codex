@@ -54,6 +54,9 @@ export default {
 				green: {
 					500: 'hsl(var(--green-500))',
 				},
+				gray: {
+					25: 'hsl(var(--gray-25))',
+				},
 				
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',

@@ -687,7 +687,7 @@ const JobsPage: React.FC = () => {
                         return (
                           <div key={driver.id} className="grid grid-cols-[250px_1fr] border-b border-gray-200 last:border-b-0 h-24">
                             {/* Left - Driver Info */}
-                            <div className="border-r border-gray-200 bg-gray-50 flex items-center p-4">
+                            <div className="border-r border-gray-200 bg-gray-50 flex items-center p-4 border-b border-gray-200">
                               <div className="flex items-center gap-3 w-full">
                                 <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
                                   <User className="w-4 h-4 text-gray-600" />
@@ -707,17 +707,17 @@ const JobsPage: React.FC = () => {
                             </div>
 
                             {/* Right - Job Assignment Area */}
-                            <div className="h-24">
+                            <div className="h-24 border-b border-gray-200 relative">
                               <Droppable droppableId={driver.id} direction="horizontal">
                                 {(provided, snapshot) => (
                                   <div
                                     ref={provided.innerRef}
                                     {...provided.droppableProps}
                                     className={cn(
-                                      "flex gap-3 h-full p-4 overflow-x-auto items-center transition-all duration-200",
+                                      "flex gap-3 h-full p-4 overflow-x-auto items-center transition-colors duration-200",
                                       snapshot.isDraggingOver 
                                         ? 'bg-blue-50 border-l-4 border-l-blue-500' 
-                                        : 'hover:bg-gray-50'
+                                        : 'hover:bg-gray-25'
                                     )}
                                   >
                                     {driverJobs.length === 0 ? (
