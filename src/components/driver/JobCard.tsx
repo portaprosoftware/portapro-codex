@@ -29,6 +29,7 @@ interface Job {
   customers: {
     name?: string;
     customer_type?: string;
+    phone?: string;
     service_street?: string;
     service_street2?: string;
     service_city?: string;
@@ -71,8 +72,12 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate }) => {
   };
 
   const handleCall = () => {
-    // This will be implemented with customer contact integration
-    console.log('Call customer for job:', job.id);
+    const phoneNumber = job.customers?.phone;
+    if (phoneNumber) {
+      window.location.href = `tel:${phoneNumber}`;
+    } else {
+      toast.error('No phone number available for this customer');
+    }
   };
 
   const handleStartJob = async () => {

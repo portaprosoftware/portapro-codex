@@ -35,6 +35,7 @@ export const DriverDashboard: React.FC = () => {
           customers (
             name,
             customer_type,
+            phone,
             service_street,
             service_street2,
             service_city,
@@ -64,6 +65,7 @@ export const DriverDashboard: React.FC = () => {
               customers (
                 name,
                 customer_type,
+                phone,
                 service_street,
                 service_street2,
                 service_city,
