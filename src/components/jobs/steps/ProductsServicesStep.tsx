@@ -79,10 +79,10 @@ export const ProductsServicesStep: React.FC = () => {
         </>
       )}
 
-      {/* Lock Options Section */}
+      {/* Lock Options Section - Always visible for delivery and pickup jobs */}
       <div className="space-y-4">
         <Separator className="my-6" />
-        <div className="space-y-4">
+        <div className="bg-card rounded-lg border p-4 space-y-4">
           <h3 className="text-lg font-medium">Lock Options</h3>
           
           {/* Provide Locks Toggle */}
