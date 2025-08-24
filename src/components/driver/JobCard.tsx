@@ -189,25 +189,6 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate }) => {
             </p>
           )}
 
-          <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
-            <Button 
-              size="sm" 
-              variant="outline"
-              className="flex-1"
-              onClick={handleNavigate}
-            >
-              <Navigation className="w-4 h-4 mr-2" />
-              Navigate
-            </Button>
-            
-            <Button 
-              size="sm" 
-              variant="outline"
-              onClick={handleCall}
-            >
-              <Phone className="w-4 h-4" />
-            </Button>
-          </div>
         </CardContent>
       </Card>
 
