@@ -107,13 +107,26 @@ export function CustomerSelectionStep() {
 
   // Auto-skip contact selection if no contacts exist, or show it if contacts do exist
   useEffect(() => {
+    console.log('CustomerSelection useEffect triggered:', {
+      customer_id: state.data.customer_id,
+      contact_id: state.data.contact_id,
+      isLoadingContacts,
+      contactsLength: contacts.length,
+      currentStep: state.currentStep
+    });
+    
     if (state.data.customer_id && !isLoadingContacts) {
       if (contacts.length === 0) {
+        console.log('No contacts found, should skip to next step');
         // No contacts exist - clear contact_id and automatically skip to next step
-        updateData({ contact_id: undefined });
-        setShowContactSelection(false);
-        nextStep();
+        // But only if we're currently on step 1 (to avoid infinite loops)
+        if (state.currentStep === 1) {
+          updateData({ contact_id: undefined });
+          setShowContactSelection(false);
+          nextStep();
+        }
       } else {
+        console.log('Contacts exist, managing contact selection UI');
         // Contacts exist - show contact selection if not already selected
         if (!state.data.contact_id) {
           setShowContactSelection(true);
@@ -122,7 +135,7 @@ export function CustomerSelectionStep() {
         }
       }
     }
-  }, [state.data.customer_id, state.data.contact_id, contacts.length, isLoadingContacts, updateData, nextStep]);
+  }, [state.data.customer_id, state.data.contact_id, contacts.length, isLoadingContacts, state.currentStep]);
 
 
   const getCustomerTypeColor = (type?: string) => {
