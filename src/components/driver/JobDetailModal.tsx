@@ -237,31 +237,33 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                 </div>
 
                 {/* Contact Actions */}
-                <div className="flex space-x-2">
-                  <Button 
-                    size="sm" 
-                    variant="outline"
-                    onClick={handleCall}
-                    className="flex-1"
-                  >
-                    <Phone className="w-4 h-4 mr-2" />
-                    Call
-                  </Button>
-                  
-                  <Button 
-                    size="sm" 
-                    variant="outline"
-                    onClick={handleSendMessage}
-                    className="flex-1"
-                  >
-                    <MessageSquare className="w-4 h-4 mr-2" />
-                    Message
-                  </Button>
+                <div className="space-y-2">
+                  <div className="flex space-x-2">
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={handleCall}
+                      className="flex-1"
+                    >
+                      <Phone className="w-4 h-4 mr-2" />
+                      Call
+                    </Button>
+                    
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={handleSendMessage}
+                      className="flex-1"
+                    >
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                      Message
+                    </Button>
+                  </div>
                   
                   <Button 
                     size="sm" 
                     onClick={handleNavigate}
-                    className="flex-1"
+                    className="w-full"
                   >
                     <Navigation className="w-4 h-4 mr-2" />
                     Navigate
