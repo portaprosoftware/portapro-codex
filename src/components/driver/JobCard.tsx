@@ -102,13 +102,20 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onStatusUpdate }) => {
       <Card className="bg-white shadow-sm" onClick={() => setShowDetail(true)}>
         <CardContent className="p-4">
           <div className="flex items-start justify-between mb-3">
-            <div className="flex-1">
-              <h3 className="font-medium text-gray-900 truncate">
-                {customerName}
-              </h3>
-              <p className="text-sm text-gray-600">
-                {job.job_number} • {job.job_type}
-              </p>
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+                <span className="text-white text-sm font-semibold">
+                  {customerInitials}
+                </span>
+              </div>
+              <div className="flex-1">
+                <h3 className="font-medium text-gray-900 truncate">
+                  {customerName}
+                </h3>
+                <p className="text-sm text-gray-600">
+                  {job.job_number} • {job.job_type}
+                </p>
+              </div>
             </div>
             
             <div className="flex flex-col gap-1">

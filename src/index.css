@@ -725,31 +725,6 @@
     stroke-width: 2.5;
     fill: none;
   }
-  
-  /* Gradient utility classes */
-  .bg-gradient-primary {
-    background: var(--gradient-primary);
-  }
-  
-  .bg-gradient-green {
-    background: var(--gradient-green);
-  }
-  
-  .bg-gradient-blue {
-    background: var(--gradient-blue);
-  }
-  
-  .bg-gradient-purple {
-    background: var(--gradient-purple);
-  }
-  
-  .bg-gradient-orange {
-    background: var(--gradient-orange);
-  }
-  
-  .bg-gradient-red {
-    background: var(--gradient-red);
-  }
 }
 
 /* Mapbox GL JS styling and z-index fixes */
