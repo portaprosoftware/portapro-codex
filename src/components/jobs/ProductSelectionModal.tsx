@@ -305,33 +305,40 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
                 />
               </div>
               
-              {/* Right side - Selected units sidebar */}
-              {selectedUnitsCollection.length > 0 && (
-                <div className="w-80 border-l bg-muted/20 flex flex-col">
-                  <div className="p-4 border-b bg-background">
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="font-semibold text-base">
-                        Selected Units
-                      </h3>
-                      <Badge variant="secondary" className="font-medium">
-                        {selectedUnitsCollection.reduce((total, selection) => {
-                          return total + selection.quantity;
-                        }, 0)} units
-                      </Badge>
-                    </div>
-                    <Button
-                      onClick={handleAddUnitsToJob}
-                      className="w-full font-medium"
-                      size="sm"
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Units to Job
-                    </Button>
+              {/* Right side - Selected units sidebar - Always visible */}
+              <div className="w-80 border-l bg-muted/20 flex flex-col">
+                <div className="p-4 border-b bg-background">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="font-semibold text-base">
+                      Selected Units
+                    </h3>
+                    <Badge variant="secondary" className="font-medium">
+                      {selectedUnitsCollection.reduce((total, selection) => {
+                        return total + selection.quantity;
+                      }, 0)} units
+                    </Badge>
                   </div>
-                  
-                  <div className="flex-1 overflow-y-auto p-4 space-y-3">
-                    {/* Group selections by product */}
-                    {Object.entries(
+                  <Button
+                    onClick={handleAddUnitsToJob}
+                    className="w-full font-medium"
+                    size="sm"
+                    disabled={selectedUnitsCollection.length === 0}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Units to Job
+                  </Button>
+                </div>
+                
+                <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                  {selectedUnitsCollection.length === 0 ? (
+                    <div className="text-center text-muted-foreground text-sm py-8">
+                      <Package className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                      <p>No units selected</p>
+                      <p className="text-xs mt-1">Add products to get started</p>
+                    </div>
+                  ) : (
+                    /* Group selections by product */
+                    Object.entries(
                       selectedUnitsCollection.reduce((acc, selection) => {
                         if (!acc[selection.productId]) {
                           acc[selection.productId] = {
@@ -423,10 +430,10 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
                           </>
                         )}
                       </div>
-                    ))}
-                  </div>
+                    ))
+                  )}
                 </div>
-              )}
+              </div>
             </>
           ) : (
             <div className="flex-1 flex flex-col overflow-hidden">
