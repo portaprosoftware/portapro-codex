@@ -231,19 +231,7 @@ const Dashboard = () => {
       
       if (certsError) throw certsError;
       
-      // Count unique vehicles
-      const uniqueVehicles = new Set(vehicleDocs?.map(doc => doc.vehicle_id));
-      
-      // Count unique drivers from documents
-      const driversWithDocs = new Set(driverDocs?.map(doc => doc.driver_id));
-      
-      // Count unique drivers from credentials
-      const driversWithCredentials = new Set(driverCredentials?.map(cred => cred.driver_id));
-      
-      // Count unique employees from certifications
-      const employeesWithCerts = new Set(employeeCerts?.map(cert => cert.driver_clerk_id));
-      
-      // Calculate totals
+      // Calculate totals first
       const totalVehicleDocs = vehicleDocs?.length || 0;
       const totalDriverDocs = driverDocs?.length || 0;
       const totalCredentialIssues = (driverCredentials?.reduce((count, cred) => {
@@ -255,14 +243,36 @@ const Dashboard = () => {
       const totalCertifications = employeeCerts?.length || 0;
       
       const totalDocuments = totalVehicleDocs + totalDriverDocs + totalCredentialIssues + totalCertifications;
-      const totalAffectedPeople = uniqueVehicles.size + driversWithDocs.size + driversWithCredentials.size + employeesWithCerts.size;
+      
+      // Count unique entities affected (for display purposes)
+      const uniqueVehicles = new Set(vehicleDocs?.map(doc => doc.vehicle_id));
+      const driversWithDocs = new Set(driverDocs?.map(doc => doc.driver_id));
+      const driversWithCredentials = new Set(driverCredentials?.map(cred => cred.driver_id));
+      const employeesWithCerts = new Set(employeeCerts?.map(cert => cert.driver_clerk_id));
+      
+      // Combine all unique people/vehicles affected
+      const allAffectedEntities = new Set([
+        ...Array.from(uniqueVehicles).map(id => `vehicle-${id}`),
+        ...Array.from(driversWithDocs).map(id => `driver-${id}`),
+        ...Array.from(driversWithCredentials).map(id => `driver-${id}`),
+        ...Array.from(employeesWithCerts).map(id => `employee-${id}`)
+      ]);
+      
+      // Debug logging
+      console.log('Expiring docs debug:', {
+        totalDocuments,
+        totalAffectedEntities: allAffectedEntities.size,
+        breakdown: {
+          vehicleDocs: totalVehicleDocs,
+          driverDocs: totalDriverDocs,
+          credentials: totalCredentialIssues,
+          certifications: totalCertifications
+        }
+      });
       
       return {
-        affectedVehicles: uniqueVehicles.size,
-        affectedDrivers: driversWithDocs.size + driversWithCredentials.size,
-        affectedEmployees: employeesWithCerts.size,
         totalDocuments,
-        totalAffectedPeople,
+        affectedEntities: allAffectedEntities.size,
         breakdown: {
           vehicleDocs: totalVehicleDocs,
           driverDocs: totalDriverDocs,
@@ -455,7 +465,7 @@ const Dashboard = () => {
         
         <StatCard
           title="Expiring Documents"
-          value={documentsData?.totalAffectedPeople || 0}
+          value={documentsData?.totalDocuments || 0}
           icon={FileX}
           gradientFrom="#fbbf24"
           gradientTo="#f59e0b"
