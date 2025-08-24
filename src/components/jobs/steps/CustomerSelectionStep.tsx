@@ -79,7 +79,9 @@ export function CustomerSelectionStep() {
       customer_id: customer.id,
       contact_id: undefined,
     });
-    setShowContactSelection(true);
+    
+    // Don't automatically show contact selection - let useEffect handle it
+    // setShowContactSelection(true); // Removed this line
   };
 
   const handleContactSelect = (contact: Contact) => {
@@ -95,12 +97,28 @@ export function CustomerSelectionStep() {
     setShowContactSelection(false);
   };
 
-  // Auto-skip contact selection if no contacts exist
+  const handleResetCustomer = () => {
+    updateData({
+      customer_id: undefined,
+      contact_id: undefined,
+    });
+    setShowContactSelection(false);
+  };
+
+  // Auto-skip contact selection if no contacts exist, or show it if contacts do exist
   useEffect(() => {
-    if (state.data.customer_id && contacts.length === 0 && !isLoadingContacts) {
-      setShowContactSelection(false);
+    if (state.data.customer_id && !isLoadingContacts) {
+      if (contacts.length === 0) {
+        // No contacts exist - skip contact selection entirely
+        setShowContactSelection(false);
+      } else {
+        // Contacts exist - show contact selection if not already selected
+        if (!state.data.contact_id) {
+          setShowContactSelection(true);
+        }
+      }
     }
-  }, [state.data.customer_id, contacts.length, isLoadingContacts]);
+  }, [state.data.customer_id, state.data.contact_id, contacts.length, isLoadingContacts]);
 
 
   const getCustomerTypeColor = (type?: string) => {
@@ -357,7 +375,7 @@ export function CustomerSelectionStep() {
                       setShowContactSelection(false);
                     }}
                   >
-                    Change
+                    Change Customer
                   </Button>
                 </div>
 
@@ -381,7 +399,7 @@ export function CustomerSelectionStep() {
                       size="sm"
                       onClick={() => setShowContactSelection(true)}
                     >
-                      Change
+                      Change Contact
                     </Button>
                   </div>
                 )}
