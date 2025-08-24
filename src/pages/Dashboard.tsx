@@ -229,7 +229,7 @@ const Dashboard = () => {
   }, [companySettings?.company_timezone]);
   
   return (
-    <div className="p-6 space-y-6 font-sans">
+    <div className="p-4 space-y-4 font-sans">
       {/* Hero Banner - Compact */}
       <div className="bg-gradient-to-b from-[#F6F9FF] to-white rounded-xl shadow-sm border border-gray-200 p-4 transition-all duration-300 hover:shadow-md">
         <div className="flex items-center justify-between">
@@ -276,7 +276,7 @@ const Dashboard = () => {
       </div>
 
       {/* Statistics Grid - All cards in single grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4"
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3"
       >
         {/* Row 1 */}
         <StatCard

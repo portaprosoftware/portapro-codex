@@ -64,7 +64,7 @@ export const StatCard: React.FC<StatCardProps> = ({
         "bg-gradient-to-b from-[#F6F9FF] to-white",
         "rounded-xl border border-gray-200 shadow-sm",
         "hover:shadow-md hover:-translate-y-1",
-        "p-3 h-28", // Slightly taller compact height
+        "p-4 h-32", // Larger cards with more space
         clickable && "cursor-pointer hover:shadow-lg hover:-translate-y-2",
         className
       )}
@@ -91,7 +91,7 @@ export const StatCard: React.FC<StatCardProps> = ({
           </div>
           
           {/* Title */}
-          <div className="text-xs font-semibold text-gray-900 font-sans truncate">
+          <div className="text-sm font-semibold text-gray-900 font-sans truncate">
             {title}
           </div>
           
@@ -105,14 +105,14 @@ export const StatCard: React.FC<StatCardProps> = ({
         
         {/* Right side - Icon */}
         <div 
-          className="w-10 h-10 rounded-lg flex items-center justify-center shadow-md transition-all duration-200 flex-shrink-0 ml-3"
+          className="w-12 h-12 rounded-lg flex items-center justify-center shadow-md transition-all duration-200 flex-shrink-0 ml-3"
           style={{ 
             background: `linear-gradient(135deg, ${gradientFrom}, ${gradientTo})`,
             animationDelay: `${delay}ms`,
             boxShadow: `0 4px 12px -4px ${gradientFrom}40`
           }}
         >
-          <Icon className="w-5 h-5 text-white" strokeWidth={2} />
+          <Icon className="w-6 h-6 text-white" strokeWidth={2} />
         </div>
       </div>
     </div>
