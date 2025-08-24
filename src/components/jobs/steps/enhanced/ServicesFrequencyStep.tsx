@@ -1161,12 +1161,6 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                         <div className="flex-1">
                           <div className="flex items-center justify-between">
                             <div className="font-medium">{service.name}</div>
-                            {service.template && (
-                              <Badge variant="outline" className="text-xs bg-blue-50 border-blue-200 text-blue-700">
-                                <FileText className="w-3 h-3 mr-1" />
-                                {service.template.name}
-                              </Badge>
-                            )}
                           </div>
                           {service.description && (
                             <div className="text-sm text-muted-foreground mt-1">
@@ -1191,6 +1185,12 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                               <Badge variant="outline" className="flex items-center space-x-1">
                                 <Clock className="w-3 h-3" />
                                 <span>{service.estimated_duration_hours}h</span>
+                              </Badge>
+                            )}
+                            {service.template && (
+                              <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0">
+                                <FileText className="w-3 h-3 mr-1" />
+                                {service.template.name}
                               </Badge>
                             )}
                           </div>
