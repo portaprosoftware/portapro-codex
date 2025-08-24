@@ -72,6 +72,30 @@ export function getQuoteStatusBadgeVariant(
 }
 
 /**
+ * Get badge variant for invoice statuses
+ */
+export function getInvoiceStatusBadgeVariant(
+  status: 'draft' | 'sent' | 'paid' | 'unpaid' | 'overdue' | 'cancelled'
+): StatusBadgeVariant {
+  switch (status) {
+    case 'draft':
+      return 'draft';
+    case 'sent':
+      return 'assigned';
+    case 'paid':
+      return 'completed';
+    case 'unpaid':
+      return 'pending';
+    case 'overdue':
+      return 'overdue';
+    case 'cancelled':
+      return 'cancelled';
+    default:
+      return 'pending'; // fallback
+  }
+}
+
+/**
  * Get badge variant for general states
  */
 export function getStateBadgeVariant(state: 'active' | 'inactive' | 'draft'): StatusBadgeVariant {

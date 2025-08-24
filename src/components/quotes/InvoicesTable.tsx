@@ -11,6 +11,7 @@ import { InvoiceDetailModal } from "./InvoiceDetailModal";
 import { CollectPaymentModal } from "./CollectPaymentModal";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { getInvoiceStatusBadgeVariant } from "@/lib/statusBadgeUtils";
 
 interface InvoicesTableProps {
   searchTerm: string;
@@ -59,6 +60,14 @@ export const InvoicesTable = ({ searchTerm }: InvoicesTableProps) => {
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
+      'draft': { 
+        gradient: 'bg-gradient-to-r from-gray-500 to-gray-600', 
+        label: 'Draft' 
+      },
+      'sent': { 
+        gradient: 'bg-gradient-to-r from-blue-500 to-blue-600', 
+        label: 'Sent' 
+      },
       'paid': { 
         gradient: 'bg-gradient-to-r from-green-500 to-green-600', 
         label: 'Paid' 
@@ -74,10 +83,6 @@ export const InvoicesTable = ({ searchTerm }: InvoicesTableProps) => {
       'cancelled': { 
         gradient: 'bg-gradient-to-r from-gray-500 to-gray-600', 
         label: 'Cancelled' 
-      },
-      'partial': { 
-        gradient: 'bg-gradient-to-r from-yellow-500 to-yellow-600', 
-        label: 'Partial' 
       }
     };
 
@@ -87,7 +92,10 @@ export const InvoicesTable = ({ searchTerm }: InvoicesTableProps) => {
     };
 
     return (
-      <Badge className={`${config.gradient} text-white border-0 font-bold px-3 py-1 rounded-full`}>
+      <Badge 
+        variant={getInvoiceStatusBadgeVariant(status as any)}
+        className={`${config.gradient} text-white border-0 font-bold px-3 py-1 rounded-full`}
+      >
         {config.label}
       </Badge>
     );
@@ -200,7 +208,7 @@ export const InvoicesTable = ({ searchTerm }: InvoicesTableProps) => {
                           <Eye className="mr-2 h-4 w-4" />
                           View Details
                         </DropdownMenuItem>
-                        {(invoice.status === 'unpaid' || invoice.status === 'partial') && (
+                        {(invoice.status === 'unpaid' || invoice.status === 'overdue') && (
                           <DropdownMenuItem 
                             className="text-blue-600 focus:text-blue-600"
                             onClick={() => setSelectedInvoiceForPayment(invoice)}
