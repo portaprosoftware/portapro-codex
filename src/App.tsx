@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
 import { useUserRole } from './hooks/useUserRole';
 import { Layout } from './components/layout/Layout';
@@ -63,8 +63,10 @@ const App = () => {
           <Route path="/landing" element={<Landing />} />
           <Route path="/help" element={<Help />} />
           <Route path="/features" element={<Features />} />
-          {/* Authentication Route */}
+          {/* Authentication Routes */}
           <Route path="/auth" element={<Auth />} />
+          {/* Fallback for legacy/cached links */}
+          <Route path="/auth-redirect" element={<Navigate to="/" replace />} />
           
           {/* Driver routes */}
           <Route
