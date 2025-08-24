@@ -81,8 +81,7 @@ export const TrendChart: React.FC<TrendChartProps> = ({ data, title, height = 30
           <Bar dataKey="pickup" stackId="a" fill="hsl(32, 95%, 44%)" name="Pickup" radius={[0, 0, 0, 0]} />
           <Bar dataKey="service" stackId="a" fill="hsl(259, 55%, 52%)" name="Service" radius={[0, 0, 0, 0]} />
           <Bar dataKey="survey" stackId="a" fill="hsl(0, 74%, 35%)" name="Survey/Estimate" radius={[0, 0, 0, 0]} />
-          <Bar dataKey="partial-pickup" stackId="a" fill="hsl(25, 95%, 53%)" name="Partial Pickup" radius={[0, 0, 0, 0]} />
-          <Bar dataKey="return" stackId="a" fill="hsl(210, 20%, 50%)" name="Return" radius={[2, 2, 0, 0]} />
+          <Bar dataKey="partial-pickup" stackId="a" fill="hsl(25, 95%, 53%)" name="Partial Pickup" radius={[2, 2, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </Card>

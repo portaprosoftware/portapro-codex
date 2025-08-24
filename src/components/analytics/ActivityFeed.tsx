@@ -63,17 +63,21 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({ dateRange }) => {
     switch (status) {
       case 'completed':
       case 'paid':
-        return 'bg-green-100 text-green-800';
+        return 'bg-gradient-to-r from-green-500 to-green-600 text-white font-bold';
       case 'assigned':
       case 'unpaid':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold';
       case 'in_progress':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-bold';
       case 'cancelled':
-        return 'bg-red-100 text-red-800';
+        return 'bg-gradient-to-r from-red-500 to-red-600 text-white font-bold';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gradient-to-r from-gray-500 to-gray-600 text-white font-bold';
     }
+  };
+
+  const capitalizeStatus = (status: string) => {
+    return status.charAt(0).toUpperCase() + status.slice(1);
   };
 
   if (isLoading) {
@@ -119,7 +123,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({ dateRange }) => {
                     className={`text-xs ${getStatusColor(activity.status)}`}
                     variant="secondary"
                   >
-                    {activity.status}
+                    {capitalizeStatus(activity.status)}
                   </Badge>
                 </div>
                 

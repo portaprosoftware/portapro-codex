@@ -232,9 +232,9 @@ export const OverviewSection: React.FC<OverviewSectionProps> = ({ dateRange }) =
       </div>
 
       {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Job Volume Trend */}
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-3">
           <TrendChart 
             data={trendData}
             title="Job Volume Over Time"
@@ -242,26 +242,7 @@ export const OverviewSection: React.FC<OverviewSectionProps> = ({ dateRange }) =
           />
         </div>
         
-        {/* Status Distribution */}
-        <div>
-          <DonutChart
-            data={statusData}
-            title="Job Status Distribution"
-            height={300}
-          />
-        </div>
-      </div>
-
-      {/* Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <div className="lg:col-span-3">
-          {/* Placeholder for additional charts */}
-          <div className="bg-white rounded-2xl shadow-md p-6 border-l-4 border-gray-300">
-            <h3 className="text-lg font-semibold mb-4">Additional Insights</h3>
-            <p className="text-gray-500">More detailed analytics coming soon...</p>
-          </div>
-        </div>
-        
+        {/* Recent Activity */}
         <div>
           <ActivityFeed dateRange={dateRange} />
         </div>
