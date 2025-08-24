@@ -4,8 +4,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { format, eachDayOfInterval, subDays } from 'date-fns';
 import {
   ResponsiveContainer,
-  AreaChart,
-  Area,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -72,7 +72,7 @@ export const OperationsTrendChart: React.FC<OperationsTrendChartProps> = ({ date
   return (
     <div className="h-80">
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={trendData}>
+        <BarChart data={trendData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis 
             dataKey="date" 
@@ -89,43 +89,31 @@ export const OperationsTrendChart: React.FC<OperationsTrendChartProps> = ({ date
             }}
           />
           <Legend />
-          <Area
-            type="monotone"
+          <Bar
             dataKey="deliveries"
-            stackId="1"
-            stroke="#3b82f6"
             fill="#3b82f6"
-            fillOpacity={0.7}
             name="Deliveries"
+            radius={[2, 2, 0, 0]}
           />
-          <Area
-            type="monotone"
+          <Bar
             dataKey="pickups"
-            stackId="1"
-            stroke="#10b981"
             fill="#10b981"
-            fillOpacity={0.7}
             name="Pickups"
+            radius={[2, 2, 0, 0]}
           />
-          <Area
-            type="monotone"
+          <Bar
             dataKey="services"
-            stackId="1"
-            stroke="#f59e0b"
             fill="#f59e0b"
-            fillOpacity={0.7}
             name="Services"
+            radius={[2, 2, 0, 0]}
           />
-          <Area
-            type="monotone"
+          <Bar
             dataKey="surveys"
-            stackId="1"
-            stroke="#8b5cf6"
             fill="#8b5cf6"
-            fillOpacity={0.7}
-            name="On-Site Surveys"
+            name="Surveys"
+            radius={[2, 2, 0, 0]}
           />
-        </AreaChart>
+        </BarChart>
       </ResponsiveContainer>
     </div>
   );

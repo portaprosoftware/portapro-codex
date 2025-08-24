@@ -100,7 +100,7 @@ export const OperationsSection: React.FC<OperationsSectionProps> = ({ dateRange 
   return (
     <div className="space-y-8">
       {/* Operations KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           title="Deliveries"
           value={operations?.deliveries || 0}
@@ -123,9 +123,12 @@ export const OperationsSection: React.FC<OperationsSectionProps> = ({ dateRange 
           gradientTo="#059669"
           iconBg="#33CC66"
           subtitle={
-            <span className={`font-semibold ${getChangeColor(operations?.changes?.pickups || 0)}`}>
-              {formatPercentage(operations?.changes?.pickups || 0)} vs last period
-            </span>
+            <div className="space-y-1">
+              <span className={`font-semibold ${getChangeColor(operations?.changes?.pickups || 0)}`}>
+                {formatPercentage(operations?.changes?.pickups || 0)} vs last period
+              </span>
+              <div className="text-xs text-gray-500">Includes partial pickups</div>
+            </div>
           }
         />
         
@@ -144,7 +147,7 @@ export const OperationsSection: React.FC<OperationsSectionProps> = ({ dateRange 
         />
         
         <StatCard
-          title="On-Site Surveys"
+          title="Surveys"
           value={operations?.surveys || 0}
           icon={ClipboardList}
           gradientFrom="#8b5cf6"
