@@ -267,7 +267,7 @@ export const useUnifiedStockManagement = (productId: string) => {
         { 
           label: 'Maintenance', 
           count: individual_items.maintenance, 
-          color: 'bg-red-500',
+          color: 'bg-orange-500',
           description: 'Individual items under maintenance (inventory not available)'
         }
       ]
