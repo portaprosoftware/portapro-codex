@@ -23,6 +23,7 @@ import { QuoteDraftManagement } from '@/components/quotes/QuoteDraftManagement';
 import { InvoiceCreationWizard } from '@/components/quotes/InvoiceCreationWizard';
 import { QuotesExportModal } from '@/components/quotes/QuotesExportModal';
 import { InvoicesExportModal } from '@/components/invoices/InvoicesExportModal';
+import { QuickBooksExportModal } from '@/components/quotes/QuickBooksExportModal';
 
 const QuotesInvoices: React.FC = () => {
   const { hasAdminAccess } = useUserRole();
@@ -30,7 +31,8 @@ const QuotesInvoices: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showQuoteExport, setShowQuoteExport] = useState(false);
   const [showInvoiceExport, setShowInvoiceExport] = useState(false);
-  const [showQuickBooksExport, setShowQuickBooksExport] = useState(false);
+  const [showQuickBooksQuoteExport, setShowQuickBooksQuoteExport] = useState(false);
+  const [showQuickBooksInvoiceExport, setShowQuickBooksInvoiceExport] = useState(false);
   const [showQuoteWizard, setShowQuoteWizard] = useState(false);
   const [showInvoiceWizard, setShowInvoiceWizard] = useState(false);
 
@@ -182,7 +184,7 @@ const QuotesInvoices: React.FC = () => {
                   Export
                 </Button>
                 <Button 
-                  onClick={() => setShowQuickBooksExport(true)}
+                  onClick={() => setShowQuickBooksQuoteExport(true)}
                   style={{ 
                     background: 'linear-gradient(to right, #059669, #047857)',
                     color: 'white',
@@ -283,7 +285,7 @@ const QuotesInvoices: React.FC = () => {
                   Export
                 </Button>
                 <Button 
-                  onClick={() => setShowQuickBooksExport(true)}
+                  onClick={() => setShowQuickBooksInvoiceExport(true)}
                   style={{ 
                     background: 'linear-gradient(to right, #059669, #047857)',
                     color: 'white',
@@ -316,6 +318,18 @@ const QuotesInvoices: React.FC = () => {
       <InvoicesExportModal 
         isOpen={showInvoiceExport} 
         onClose={() => setShowInvoiceExport(false)} 
+      />
+      
+      {/* QuickBooks Export Modals */}
+      <QuickBooksExportModal 
+        isOpen={showQuickBooksQuoteExport} 
+        onClose={() => setShowQuickBooksQuoteExport(false)}
+        type="quotes"
+      />
+      <QuickBooksExportModal 
+        isOpen={showQuickBooksInvoiceExport} 
+        onClose={() => setShowQuickBooksInvoiceExport(false)}
+        type="invoices"
       />
 
       {/* Creation Wizards */}
