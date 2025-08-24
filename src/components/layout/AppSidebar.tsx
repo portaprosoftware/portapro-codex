@@ -71,7 +71,7 @@ const dayToDayItems: NavigationItem[] = [
   },
   { 
     title: 'Customers', 
-    url: '/customer-hub', 
+    url: '/customers', 
     icon: Users2,
     permission: 'staff'
   },
@@ -113,7 +113,7 @@ const managementItems: NavigationItem[] = [
   },
   { 
     title: 'Fleet Management', 
-    url: '/fleet-management', 
+    url: '/fleet', 
     icon: Truck,
     permission: 'staff'
   },
@@ -195,7 +195,10 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
       <SidebarGroupContent>
         <SidebarMenu>
           {items.map((item) => {
-            const isActive = activeSection === item.url || location.pathname === item.url;
+            const isActive = location.pathname === item.url || 
+              (item.url === '/fleet' && location.pathname.startsWith('/fleet/')) ||
+              (item.url === '/customers' && location.pathname === '/customer-hub') ||
+              (item.url === '/quotes-invoices' && location.pathname === '/quotes-invoices');
             return (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton 
