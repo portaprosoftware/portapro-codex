@@ -7,10 +7,10 @@ import './index.css'
 import './scanner.css'
 import './utils/devUtils.ts' // Load dev utilities
 
-const PUBLISHABLE_KEY = "pk_test_YWN0dWFsLW11dHQtOTEuY2xlcmsuYWNjb3VudHMuZGV2JA";
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
 if (!PUBLISHABLE_KEY) {
-  throw new Error("Missing Clerk Publishable Key");
+  throw new Error("Missing Clerk Publishable Key - Please set VITE_CLERK_PUBLISHABLE_KEY environment variable");
 }
 
 // Development vs Production settings
