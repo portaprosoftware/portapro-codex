@@ -41,10 +41,14 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
   const saveDraft = wizardMode === 'quote' 
     ? (name: string, data: any) => {
         // For quotes, we need to extract the required data
-        const customerData = data.customers?.[0] || data.customer;
         const quoteNumber = name || `QUOTE-${Date.now()}`;
-        const customerId = customerData?.id || '';
+        const customerId = data.customer_id || '';
         const totalAmount = data.totalCost || 0;
+        
+        if (!customerId) {
+          throw new Error('Customer ID is required to save quote draft');
+        }
+        
         return saveQuoteDraft(quoteNumber, customerId, totalAmount);
       }
     : saveJobDraft;
