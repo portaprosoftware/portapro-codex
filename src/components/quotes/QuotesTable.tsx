@@ -36,6 +36,7 @@ export const QuotesTable = ({ searchTerm }: QuotesTableProps) => {
             email
           )
         `)
+        .neq('status', 'draft')  // Exclude draft quotes
         .order('created_at', { ascending: false });
 
       if (searchTerm) {
