@@ -40,12 +40,7 @@ export const QuoteDateFilters: React.FC<QuoteDateFiltersProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-lg border p-4 space-y-3">
-      <div className="flex items-center gap-2">
-        <Calendar className="h-4 w-4 text-muted-foreground" />
-        <span className="text-sm font-medium text-foreground">Date Range:</span>
-      </div>
-      
+    <div className="bg-white rounded-lg border p-4">
       {/* Quick Date Range Buttons and Custom Date Picker */}
       <div className="flex flex-wrap items-center gap-2">
         <Button
