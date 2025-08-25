@@ -73,14 +73,16 @@ export const StockAdjustmentWizard: React.FC<StockAdjustmentWizardProps> = ({
     const quantityChange = calculateNewStock() - currentStock;
     
     // Use unified stock management for proper real-time updates
-    adjustMasterStock({
-      quantityChange,
-      reason,
-      notes: notes || null,
-    });
-    
-    // Close the dialog immediately since the mutation handles success/error toasts
-    onComplete();
+    adjustMasterStock(
+      {
+        quantityChange,
+        reason,
+        notes: notes || null,
+      },
+      {
+        onSuccess: () => onComplete(),
+      }
+    );
   };
 
   // Get the current reasons based on adjustment type
