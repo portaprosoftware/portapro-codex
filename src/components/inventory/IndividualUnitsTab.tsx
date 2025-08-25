@@ -27,6 +27,7 @@ import { DeleteItemDialog } from "./DeleteItemDialog";
 import { ItemActionsMenu } from "./ItemActionsMenu";
 import { InventoryLogicPopup } from "./InventoryLogicPopup";
 import { UnitNavigationDialog } from "./UnitNavigationDialog";
+import { TrackedOperationsPanel } from "./TrackedOperationsPanel";
 
 
 interface IndividualUnitsTabProps {
@@ -419,13 +420,10 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
           <QrCode className="w-4 h-4 mr-2" />
           Print QR Codes
         </Button>
-        <Button 
-          onClick={() => setShowCreateModal(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Create Item
-        </Button>
+        <TrackedOperationsPanel
+          productId={productId}
+          productName={product?.name || "Product"}
+        />
       </div>
 
       {/* Enhanced Search Filters */}
