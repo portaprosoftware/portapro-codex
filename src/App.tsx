@@ -49,12 +49,6 @@ import CustomerPortalPage from './pages/CustomerPortalPage';
 import Features from './pages/Features';
 
 const App = () => {
-  // Ensure React is available before rendering
-  if (typeof React === 'undefined' || !React) {
-    console.error('React is not available when App component is trying to render');
-    return <div>Loading...</div>;
-  }
-
   return (
     <ErrorBoundary>
       <BrowserRouter>
