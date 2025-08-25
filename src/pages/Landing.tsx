@@ -370,7 +370,7 @@ export const Landing: React.FC = () => {
                 </h1>
                 
                 <p className="text-lg lg:text-xl text-white/90 leading-relaxed">
-                  Manage dispatch, inventory, daily service routes, quotes-to-invoices, vehicle upkeep, team coordination, and customer communication — all from one simple, powerful platform.
+                  Manage dispatch, inventory, daily service routes, quotes-to-invoices, vehicle upkeep, team coordination, certification tracking and customer communication — all from one simple, powerful platform.
                 </p>
               </div>
               
