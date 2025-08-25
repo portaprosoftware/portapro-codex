@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { FileText, X, MapPin, Phone, Mail, Calendar, DollarSign, Check, XCircle, Send, MessageSquare, ChevronDown } from "lucide-react";
+import { FileText, X, MapPin, Phone, Mail, Calendar, DollarSign, Check, XCircle, Send, MessageSquare, ChevronDown, BriefcaseIcon } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,9 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { QuoteApprovalFlow } from "./QuoteApprovalFlow";
+import { useConvertQuoteToJob } from "@/hooks/useConvertQuoteToJob";
+import { InvoiceCreationWizard } from "./InvoiceCreationWizard";
 
 interface ViewQuoteModalProps {
   isOpen: boolean;
@@ -20,12 +23,15 @@ interface ViewQuoteModalProps {
 
 export const ViewQuoteModal = ({ isOpen, onClose, quoteId }: ViewQuoteModalProps) => {
   const [showContactEdit, setShowContactEdit] = useState(false);
+  const [showApprovalFlow, setShowApprovalFlow] = useState(false);
+  const [showCreateInvoice, setShowCreateInvoice] = useState(false);
   const [contactData, setContactData] = useState({
     email: '',
     phone: '',
     name: ''
   });
   const queryClient = useQueryClient();
+  const convertToJobMutation = useConvertQuoteToJob();
   const { data: quote, isLoading } = useQuery({
     queryKey: ['quote-details', quoteId],
     queryFn: async () => {
@@ -99,6 +105,10 @@ export const ViewQuoteModal = ({ isOpen, onClose, quoteId }: ViewQuoteModalProps
       toast.success(`Quote ${status === 'accepted' ? 'approved' : 'declined'} successfully!`);
       queryClient.invalidateQueries({ queryKey: ['quotes'] });
       queryClient.invalidateQueries({ queryKey: ['quote-details', quoteId] });
+      
+      if (status === 'accepted') {
+        setShowApprovalFlow(true);
+      }
     },
     onError: (error: any) => {
       toast.error(error.message || "Failed to update quote status");
@@ -454,7 +464,7 @@ export const ViewQuoteModal = ({ isOpen, onClose, quoteId }: ViewQuoteModalProps
                   className="border-red-200 text-red-600 hover:bg-red-50"
                 >
                   <XCircle className="mr-2 h-4 w-4" />
-                  Decline Quote
+                  Quote Declined
                 </Button>
                 <Button
                   onClick={() => updateQuoteStatus.mutate('accepted')}
@@ -462,7 +472,7 @@ export const ViewQuoteModal = ({ isOpen, onClose, quoteId }: ViewQuoteModalProps
                   className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
                 >
                   <Check className="mr-2 h-4 w-4" />
-                  Approve Quote
+                  Quote Approved
                 </Button>
               </div>
             )}
@@ -563,6 +573,30 @@ export const ViewQuoteModal = ({ isOpen, onClose, quoteId }: ViewQuoteModalProps
           )}
         </div>
       </DialogContent>
+      
+      {/* Approval Flow Modal */}
+      <QuoteApprovalFlow
+        isOpen={showApprovalFlow}
+        onClose={() => setShowApprovalFlow(false)}
+        quote={quote}
+        onCreateJob={() => {
+          setShowApprovalFlow(false);
+          convertToJobMutation.mutate({ quoteId });
+        }}
+        onCreateInvoice={() => {
+          setShowApprovalFlow(false);
+          setShowCreateInvoice(true);
+        }}
+      />
+      
+      {/* Invoice Creation Modal */}
+      {showCreateInvoice && (
+        <InvoiceCreationWizard
+          isOpen={showCreateInvoice}
+          onClose={() => setShowCreateInvoice(false)}
+          fromQuoteId={quoteId}
+        />
+      )}
     </Dialog>
   );
 };
