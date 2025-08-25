@@ -42,7 +42,7 @@ export const QuoteDateFilters: React.FC<QuoteDateFiltersProps> = ({
   return (
     <div className="bg-white rounded-lg border p-4">
       {/* Quick Date Range Buttons and Custom Date Picker */}
-      <div className="flex flex-wrap items-center justify-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <Button
           variant="outline"
           size="sm"
