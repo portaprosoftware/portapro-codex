@@ -368,7 +368,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
       {/* Item Code Category Settings */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-gray-900">Item Code Category</h2>
+          <h2 className="text-lg font-bold text-gray-900">Unit ID - Number Series Selection</h2>
           <div className="flex gap-2">
             {product.default_item_code_category && (
               <Button 
