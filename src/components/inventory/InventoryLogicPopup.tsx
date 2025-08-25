@@ -7,8 +7,9 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
+  DrawerClose,
 } from "@/components/ui/drawer";
-import { Info } from "lucide-react";
+import { Info, X } from "lucide-react";
 
 export const InventoryLogicPopup: React.FC = () => {
   return (
@@ -19,15 +20,20 @@ export const InventoryLogicPopup: React.FC = () => {
           Bulk vs Tracked Unit Inventory
         </Button>
       </DrawerTrigger>
-      <DrawerContent className="max-h-[85vh] w-full md:max-w-[75vw] md:mx-auto">
-        <DrawerHeader>
+      <DrawerContent className="max-h-[85vh] w-full">
+        <DrawerHeader className="relative">
           <DrawerTitle>Understanding Operations</DrawerTitle>
+          <DrawerClose asChild>
+            <Button variant="ghost" size="sm" className="absolute top-2 right-2 p-2">
+              <X className="h-4 w-4" />
+            </Button>
+          </DrawerClose>
         </DrawerHeader>
         <div className="px-4 pb-6 overflow-y-auto">
           <div className="space-y-6 text-sm">
             <div className="bg-muted/50 p-5 rounded-lg border border-border">
               <h4 className="font-semibold text-foreground mb-3">1. Convert</h4>
-              <div className="flex gap-6">
+              <div className="flex flex-col md:flex-row gap-6">
                 <div className="flex-1">
                   <p className="text-muted-foreground mb-1">
                     <strong>Before:</strong> Bulk = 50, Tracked = 0 → Total = 50
@@ -51,7 +57,7 @@ export const InventoryLogicPopup: React.FC = () => {
             
             <div className="bg-muted/50 p-5 rounded-lg border border-border">
               <h4 className="font-semibold text-foreground mb-3">2. Add Tracked</h4>
-              <div className="flex gap-6">
+              <div className="flex flex-col md:flex-row gap-6">
                 <div className="flex-1">
                   <p className="text-muted-foreground mb-1">
                     <strong>Before:</strong> Bulk = 50, Tracked = 0 → Total = 50
@@ -75,7 +81,7 @@ export const InventoryLogicPopup: React.FC = () => {
             
             <div className="bg-muted/50 p-5 rounded-lg border border-border">
               <h4 className="font-semibold text-foreground mb-3">3. Add Bulk</h4>
-              <div className="flex gap-6">
+              <div className="flex flex-col md:flex-row gap-6">
                 <div className="flex-1">
                   <p className="text-muted-foreground mb-1">
                     <strong>Before:</strong> Bulk = 50, Tracked = 0 → Total = 50
@@ -99,7 +105,7 @@ export const InventoryLogicPopup: React.FC = () => {
             
             <div className="bg-muted/50 p-5 rounded-lg border border-border">
               <h4 className="font-semibold text-foreground mb-3">4. Remove Bulk</h4>
-              <div className="flex gap-6">
+              <div className="flex flex-col md:flex-row gap-6">
                 <div className="flex-1">
                   <p className="text-muted-foreground mb-1">
                     <strong>Before:</strong> Bulk = 50, Tracked = 0 → Total = 50
