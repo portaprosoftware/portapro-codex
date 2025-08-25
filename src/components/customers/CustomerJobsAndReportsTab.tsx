@@ -13,7 +13,7 @@ export function CustomerJobsAndReportsTab({ customerId }: CustomerJobsAndReports
   return (
     <div className="w-full">
       {/* Toggle Switch for Jobs & Reports */}
-      <div className="mb-6 flex justify-center">
+      <div className="mb-6 flex">
         <div className="bg-gray-100 p-1 rounded-lg flex">
           <button
             onClick={() => setActiveSubTab('jobs')}
