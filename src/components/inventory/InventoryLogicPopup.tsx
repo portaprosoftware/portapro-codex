@@ -22,7 +22,7 @@ export const InventoryLogicPopup: React.FC = () => {
       </DrawerTrigger>
       <DrawerContent className="max-h-[85vh] w-full">
         <DrawerHeader className="relative">
-          <DrawerTitle>Understanding Operations</DrawerTitle>
+          <DrawerTitle>Understanding Inventory Operations</DrawerTitle>
           <DrawerClose asChild>
             <Button variant="ghost" size="sm" className="absolute top-2 right-2 p-2">
               <X className="h-4 w-4" />
@@ -36,6 +36,7 @@ export const InventoryLogicPopup: React.FC = () => {
                 <ArrowRightLeft className="h-4 w-4 text-blue-600" />
                 <h4 className="font-semibold text-foreground">1. Convert Bulk Pool to Tracked Items</h4>
               </div>
+              <p className="text-xs text-muted-foreground mb-3">Convert existing bulk units to individually tracked items. Total inventory stays the same.</p>
               <div className="flex flex-col md:flex-row gap-6">
                 <div className="flex-1">
                   <p className="text-muted-foreground mb-1">
@@ -63,6 +64,7 @@ export const InventoryLogicPopup: React.FC = () => {
                 <Plus className="h-4 w-4 text-green-600" />
                 <h4 className="font-semibold text-foreground">2. Add New Tracked Inventory</h4>
               </div>
+              <p className="text-xs text-muted-foreground mb-3">Add new inventory as individually tracked items. Increases total inventory.</p>
               <div className="flex flex-col md:flex-row gap-6">
                 <div className="flex-1">
                   <p className="text-muted-foreground mb-1">
@@ -90,6 +92,7 @@ export const InventoryLogicPopup: React.FC = () => {
                 <Plus className="h-4 w-4 text-purple-600" />
                 <h4 className="font-semibold text-foreground">3. Add Bulk Inventory</h4>
               </div>
+              <p className="text-xs text-muted-foreground mb-3">Add new inventory to the bulk pool. Increases total inventory.</p>
               <div className="flex flex-col md:flex-row gap-6">
                 <div className="flex-1">
                   <p className="text-muted-foreground mb-1">
@@ -117,6 +120,7 @@ export const InventoryLogicPopup: React.FC = () => {
                 <AlertCircle className="h-4 w-4 text-orange-600" />
                 <h4 className="font-semibold text-foreground">4. Remove Bulk Inventory</h4>
               </div>
+              <p className="text-xs text-muted-foreground mb-3">Remove inventory from the bulk pool. Decreases total inventory.</p>
               <div className="flex flex-col md:flex-row gap-6">
                 <div className="flex-1">
                   <p className="text-muted-foreground mb-1">
