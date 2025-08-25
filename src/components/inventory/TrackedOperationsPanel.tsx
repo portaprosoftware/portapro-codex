@@ -184,13 +184,35 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
             </div>
           )}
 
-          {/* Understanding Operations */}
+          {/* Understanding Inventory Operations */}
           <div className="mt-8 p-4 bg-muted/50 rounded-lg border border-border">
-            <h4 className="font-semibold text-foreground mb-3">Understanding Operations:</h4>
-            <ul className="text-sm text-muted-foreground space-y-1">
-              <li>• <strong>Convert:</strong> Changes bulk units to tracked without affecting total count</li>
-              <li>• <strong>Add Tracked:</strong> Creates new tracked items and increases inventory</li>
-            </ul>
+            <h4 className="font-semibold text-foreground mb-4">Understanding Inventory Operations</h4>
+            
+            <div className="space-y-4 text-sm">
+              {/* Convert Operation */}
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="font-semibold text-foreground">1. Convert</span>
+                </div>
+                <div className="space-y-1 text-muted-foreground ml-4">
+                  <div><strong>Before:</strong> Bulk = 50, Tracked = 0 → Total = 50</div>
+                  <div>You convert 10 bulk units into tracked units.</div>
+                  <div><strong>After:</strong> Bulk = 40, Tracked = 10 → Total = 50</div>
+                </div>
+              </div>
+
+              {/* Add Tracked Operation */}
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="font-semibold text-foreground">2. Add Tracked</span>
+                </div>
+                <div className="space-y-1 text-muted-foreground ml-4">
+                  <div><strong>Before:</strong> Bulk = 50, Tracked = 0 → Total = 50</div>
+                  <div>You add 5 new tracked units with serial numbers.</div>
+                  <div><strong>After:</strong> Bulk = 50, Tracked = 5 → Total = 55</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </DrawerContent>
