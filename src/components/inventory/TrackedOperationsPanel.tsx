@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -10,8 +10,10 @@ import {
 } from "@/components/ui/drawer";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { RotateCcw, Plus, X } from "lucide-react";
+import { RotateCcw, Plus, X, Package, Hash } from "lucide-react";
 import { useUnifiedStockManagement } from "@/hooks/useUnifiedStockManagement";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 interface TrackedOperationsPanelProps {
@@ -28,6 +30,50 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
   const [selectedOperation, setSelectedOperation] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
   const { stockData, convertBulkToTracked, addTrackedInventory } = useUnifiedStockManagement(productId);
+
+  // Fetch product details for the default category
+  const { data: productDetails } = useQuery({
+    queryKey: ['product-details', productId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select('default_item_code_category')
+        .eq('id', productId)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!productId,
+  });
+
+  // Fetch preview unit codes when quantity > 0 and we have a category
+  const { data: previewCodes } = useQuery({
+    queryKey: ['preview-unit-codes', productDetails?.default_item_code_category, quantity],
+    queryFn: async () => {
+      if (!productDetails?.default_item_code_category) return [];
+      
+      const codes = [];
+      for (let i = 0; i < quantity; i++) {
+        const { data, error } = await supabase.rpc('preview_next_item_code', {
+          category_prefix: productDetails.default_item_code_category
+        });
+        
+        if (error) throw error;
+        
+        // Generate sequential codes by incrementing the base code
+        const baseCode = data;
+        const numericPart = baseCode.match(/\d+$/)?.[0] || '0001';
+        const prefix = baseCode.substring(0, baseCode.length - numericPart.length);
+        const nextNumber = parseInt(numericPart) + i;
+        const paddedNumber = nextNumber.toString().padStart(numericPart.length, '0');
+        codes.push(prefix + paddedNumber);
+      }
+      
+      return codes;
+    },
+    enabled: !!productDetails?.default_item_code_category && quantity > 0 && !!selectedOperation,
+  });
 
   const operations = [
     {
@@ -162,6 +208,42 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
                     </p>
                   )}
                 </div>
+
+                {/* Unit Preview Section */}
+                {quantity > 0 && selectedOperation && (
+                  <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Package className="h-4 w-4 text-blue-600" />
+                      <h4 className="font-semibold text-blue-900">
+                        {quantity === 1 ? 'Adding Unit:' : `Adding ${quantity} Units:`}
+                      </h4>
+                    </div>
+                    
+                    {!productDetails?.default_item_code_category ? (
+                      <div className="text-sm text-orange-700 bg-orange-100 p-2 rounded border border-orange-200">
+                        <p>No default category set for this product. Unit codes will be generated during creation.</p>
+                      </div>
+                    ) : previewCodes && previewCodes.length > 0 ? (
+                      <div className="space-y-2">
+                        <div className="flex flex-wrap gap-2">
+                          {previewCodes.map((code, index) => (
+                            <Badge key={index} variant="outline" className="bg-white border-blue-300 text-blue-700 font-mono">
+                              <Hash className="h-3 w-3 mr-1" />
+                              {code}
+                            </Badge>
+                          ))}
+                        </div>
+                        <p className="text-xs text-blue-700 mt-2">
+                          💡 Unit(s) will be added to the <strong>Tracked Units</strong> tab - in chronological order - to view and update.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="text-sm text-gray-600">
+                        <div className="animate-pulse">Generating unit codes...</div>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <div className="flex gap-3 pt-4">
                   <Button
