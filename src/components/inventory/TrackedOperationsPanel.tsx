@@ -74,7 +74,7 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
   return (
     <Drawer>
       <DrawerTrigger asChild>
-        <Button variant="outline" className="bg-blue-600 text-white border-blue-600 hover:bg-blue-700 hover:border-blue-700">
+        <Button className="bg-blue-600 text-white border border-blue-600 hover:bg-blue-700 hover:border-blue-700 transition-colors">
           <Plus className="h-4 w-4 mr-2" />
           Add Tracked Unit
         </Button>
