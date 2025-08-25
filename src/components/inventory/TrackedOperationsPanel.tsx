@@ -198,8 +198,15 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
                     type="number"
                     min="1"
                     max={selectedOperation === "convert_bulk" ? stockData?.bulk_stock?.pool_available || 0 : undefined}
-                    value={quantity}
-                    onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                    value={quantity === 0 ? "" : quantity}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value === "") {
+                        setQuantity(0);
+                      } else {
+                        setQuantity(Math.max(1, parseInt(value) || 1));
+                      }
+                    }}
                     className="w-32"
                   />
                   {selectedOperation === "convert_bulk" && stockData?.bulk_stock?.pool_available && (
@@ -211,10 +218,10 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
 
                 {/* Unit Preview Section */}
                 {quantity > 0 && selectedOperation && (
-                  <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
                     <div className="flex items-center gap-2 mb-3">
-                      <Package className="h-4 w-4 text-blue-600" />
-                      <h4 className="font-semibold text-blue-900">
+                      <Package className="h-4 w-4 text-gray-600" />
+                      <h4 className="font-semibold text-gray-900">
                         {quantity === 1 ? 'Adding Unit:' : `Adding ${quantity} Units:`}
                       </h4>
                     </div>
@@ -227,13 +234,13 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
                       <div className="space-y-2">
                         <div className="flex flex-wrap gap-2">
                           {previewCodes.map((code, index) => (
-                            <Badge key={index} variant="outline" className="bg-white border-blue-300 text-blue-700 font-mono">
+                            <Badge key={index} variant="outline" className="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold border-0">
                               <Hash className="h-3 w-3 mr-1" />
                               {code}
                             </Badge>
                           ))}
                         </div>
-                        <p className="text-xs text-blue-700 mt-2">
+                        <p className="text-xs text-gray-600 mt-2">
                           💡 Unit(s) will be added to the <strong>Tracked Units</strong> tab - in chronological order - to view and update.
                         </p>
                       </div>
