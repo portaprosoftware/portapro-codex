@@ -43,7 +43,7 @@ export default function CustomerDetail() {
         <h1 className="text-2xl font-bold text-foreground mb-4">Customer not found</h1>
         <Link to="/customer-hub">
           <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium px-4 py-2 rounded-md border-0">
-            <ArrowLeft className="w-4 h-4 mr-2" />
+            <ArrowLeft className="w-4 h-4 mr-1" />
             Back to Customer Hub
           </Button>
         </Link>
@@ -76,7 +76,7 @@ export default function CustomerDetail() {
                   size="sm"
                   className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium px-3 py-2 rounded-md border-0"
                 >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  <ArrowLeft className="w-4 h-4 mr-1" />
                   Customer Hub
                 </Button>
               </Link>
