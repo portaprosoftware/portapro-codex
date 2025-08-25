@@ -322,93 +322,93 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                 </Badge>
               )}
             </div>
+            
+            {/* Priority Toggle and Edit Button - Top Row */}
+            <div className="flex items-center gap-3">
+              {!isEditing && (
+                <>
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      checked={(job as any)?.is_priority || false}
+                      onCheckedChange={() => handleTogglePriority()}
+                      disabled={priorityMutation.isPending}
+                    />
+                    <Label className="text-sm flex items-center gap-1 cursor-pointer">
+                      <Star className="w-4 h-4 text-yellow-500" />
+                      Mark Job A Priority
+                    </Label>
+                  </div>
+                  <Button
+                    onClick={() => setIsEditing(true)}
+                    size="sm"
+                    variant="outline"
+                  >
+                    <Edit2 className="w-4 h-4 mr-1" />
+                    Edit
+                  </Button>
+                </>
+              )}
+            </div>
           </div>
         </DialogHeader>
 
         {/* Action Buttons Row */}
-        <div className="flex-shrink-0 flex items-center justify-between py-3 px-1 border-b">
-          {/* Priority Toggle - Left side */}
-          {!isEditing && (
-            <div className="flex items-center space-x-2">
-              <Switch
-                checked={(job as any)?.is_priority || false}
-                onCheckedChange={() => handleTogglePriority()}
-                disabled={priorityMutation.isPending}
-              />
-              <Label className="text-sm flex items-center gap-1 cursor-pointer">
-                <Star className="w-4 h-4 text-yellow-500" />
-                Mark Job A Priority
-              </Label>
-            </div>
-          )}
-
+        <div className="flex-shrink-0 flex items-center justify-end py-3 px-1 border-b">
           {/* Action Buttons - Right side */}
           <div className="flex items-center gap-2">
-            {!isEditing && (
+            {isEditing && (
               <>
                 <Button
-                  onClick={() => setIsEditing(true)}
+                  onClick={handleCancelEdit}
                   size="sm"
                   variant="outline"
+                  disabled={updateJobMutation.isPending}
                 >
-                  <Edit2 className="w-4 h-4 mr-1" />
-                  Edit
+                  <X className="w-4 h-4 mr-1" />
+                  Cancel
+                </Button>
+                <Button
+                  onClick={form.handleSubmit(handleSave)}
+                  size="sm"
+                  disabled={updateJobMutation.isPending}
+                >
+                  <Save className="w-4 h-4 mr-1" />
+                  {updateJobMutation.isPending ? 'Saving...' : 'Save'}
                 </Button>
               </>
             )}
-          {isEditing && (
-            <>
+            {canStartJob && !isEditing && (
               <Button
-                onClick={handleCancelEdit}
+                onClick={handleStartJob}
+                disabled={statusUpdateMutation.isPending}
+                size="sm"
+                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
+              >
+                <Play className="w-4 h-4 mr-1" />
+                {getJobButtonText()}
+              </Button>
+            )}
+            {canReverseJob && !isEditing && (
+              <Button
+                onClick={handleReverseJob}
+                disabled={statusUpdateMutation.isPending}
                 size="sm"
                 variant="outline"
-                disabled={updateJobMutation.isPending}
               >
-                <X className="w-4 h-4 mr-1" />
-                Cancel
+                <RotateCcw className="w-4 h-4 mr-1" />
+                Reverse
               </Button>
+            )}
+            {canCancelJob && !isEditing && (
               <Button
-                onClick={form.handleSubmit(handleSave)}
+                onClick={() => setShowCancelDialog(true)}
+                disabled={statusUpdateMutation.isPending}
                 size="sm"
-                disabled={updateJobMutation.isPending}
+                variant="destructive"
               >
-                <Save className="w-4 h-4 mr-1" />
-                {updateJobMutation.isPending ? 'Saving...' : 'Save'}
+                <Ban className="w-4 h-4 mr-1" />
+                Cancel Job
               </Button>
-            </>
-          )}
-          {canStartJob && !isEditing && (
-            <Button
-              onClick={handleStartJob}
-              disabled={statusUpdateMutation.isPending}
-              size="sm"
-              className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
-            >
-              <Play className="w-4 h-4 mr-1" />
-              {getJobButtonText()}
-            </Button>
-          )}
-          {canReverseJob && !isEditing && (
-            <Button
-              onClick={handleReverseJob}
-              disabled={statusUpdateMutation.isPending}
-              size="sm"
-              variant="outline"
-            >
-              <RotateCcw className="w-4 h-4 mr-1" />
-              Reverse
-            </Button>
-          )}
-          {canCancelJob && !isEditing && (
-            <Button
-              onClick={() => setShowCancelDialog(true)}
-              disabled={statusUpdateMutation.isPending}
-              size="sm"
-              variant="destructive"
-            >
-              <Ban className="w-4 h-4 mr-1" />
-              Cancel Job
-            </Button>
             )}
           </div>
         </div>
