@@ -39,21 +39,21 @@ const QuotesInvoices: React.FC = () => {
   const [showInvoiceWizard, setShowInvoiceWizard] = useState(false);
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
 
-  // Fetch quote metrics
+  // Fetch quote metrics (year-to-date)
   const { data: quoteMetrics } = useQuery({
-    queryKey: ['quote-metrics'],
+    queryKey: ['quote-metrics-ytd'],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc('get_quote_metrics');
+      const { data, error } = await supabase.rpc('get_quote_metrics_ytd');
       if (error) throw error;
       return data as any;
     }
   });
 
-  // Fetch invoice metrics
+  // Fetch invoice metrics (year-to-date)
   const { data: invoiceMetrics } = useQuery({
-    queryKey: ['invoice-metrics'],
+    queryKey: ['invoice-metrics-ytd'],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc('get_invoice_metrics');
+      const { data, error } = await supabase.rpc('get_invoice_metrics_ytd');
       if (error) throw error;
       return data as any;
     }
@@ -123,7 +123,7 @@ const QuotesInvoices: React.FC = () => {
               <CardContent className="p-6">
                 <div className="flex items-start justify-between">
                   <div className="space-y-2">
-                    <p className="text-sm font-medium text-white/90">Total Quote Value</p>
+                    <p className="text-sm font-medium text-white/90">Total Quote Value ({quoteMetrics?.year || new Date().getFullYear()} YTD)</p>
                     <p className="text-3xl font-bold text-white">
                       {formatCurrency(quoteMetrics?.total_value)}
                     </p>
@@ -138,7 +138,7 @@ const QuotesInvoices: React.FC = () => {
               <CardContent className="p-6">
                 <div className="flex items-start justify-between">
                   <div className="space-y-2">
-                    <p className="text-sm font-medium text-white/90">Pending Value</p>
+                    <p className="text-sm font-medium text-white/90">Pending Value ({quoteMetrics?.year || new Date().getFullYear()} YTD)</p>
                     <p className="text-3xl font-bold text-white">
                       {formatCurrency(quoteMetrics?.pending_value)}
                     </p>
@@ -153,7 +153,7 @@ const QuotesInvoices: React.FC = () => {
               <CardContent className="p-6">
                 <div className="flex items-start justify-between">
                   <div className="space-y-2">
-                    <p className="text-sm font-medium text-white/90">Accepted Value</p>
+                    <p className="text-sm font-medium text-white/90">Accepted Value ({quoteMetrics?.year || new Date().getFullYear()} YTD)</p>
                     <p className="text-3xl font-bold text-white">
                       {formatCurrency(quoteMetrics?.accepted_value)}
                     </p>
@@ -230,7 +230,7 @@ const QuotesInvoices: React.FC = () => {
               <CardContent className="p-6">
                 <div className="flex items-start justify-between">
                   <div className="space-y-2">
-                    <p className="text-sm font-medium text-white/90">Total Invoice Value</p>
+                    <p className="text-sm font-medium text-white/90">Total Invoice Value ({invoiceMetrics?.year || new Date().getFullYear()} YTD)</p>
                     <p className="text-3xl font-bold text-white">
                       {formatCurrency(invoiceMetrics?.total_value)}
                     </p>
@@ -245,7 +245,7 @@ const QuotesInvoices: React.FC = () => {
               <CardContent className="p-6">
                 <div className="flex items-start justify-between">
                   <div className="space-y-2">
-                    <p className="text-sm font-medium text-white/90">Unpaid Value</p>
+                    <p className="text-sm font-medium text-white/90">Unpaid Value ({invoiceMetrics?.year || new Date().getFullYear()} YTD)</p>
                     <p className="text-3xl font-bold text-white">
                       {formatCurrency(invoiceMetrics?.unpaid_value)}
                     </p>
@@ -260,7 +260,7 @@ const QuotesInvoices: React.FC = () => {
               <CardContent className="p-6">
                 <div className="flex items-start justify-between">
                   <div className="space-y-2">
-                    <p className="text-sm font-medium text-white/90">Paid Value</p>
+                    <p className="text-sm font-medium text-white/90">Paid Value ({invoiceMetrics?.year || new Date().getFullYear()} YTD)</p>
                     <p className="text-3xl font-bold text-white">
                       {formatCurrency(invoiceMetrics?.paid_value)}
                     </p>

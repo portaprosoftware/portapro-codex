@@ -9668,6 +9668,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
+      get_invoice_metrics_ytd: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       get_invoice_payment_totals: {
         Args: { invoice_uuid: string }
         Returns: Json
@@ -9781,6 +9785,10 @@ export type Database = {
         Returns: Json
       }
       get_quote_metrics: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
+      get_quote_metrics_ytd: {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
