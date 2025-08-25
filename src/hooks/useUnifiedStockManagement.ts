@@ -139,7 +139,67 @@ export const useUnifiedStockManagement = (productId: string) => {
     return stockData ? hashStockData(stockData) : null;
   }, [stockData]);
 
-  // Adjust master stock mutation
+  // Convert Bulk to Tracked Mutation
+  const convertBulkToTracked = useMutation({
+    mutationFn: async (quantity: number) => {
+      const { data, error } = await supabase.rpc('convert_bulk_to_tracked', {
+        product_uuid: productId,
+        convert_qty: quantity
+      });
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      toast({
+        title: "Conversion Successful",
+        description: "Successfully converted bulk units to individually tracked items",
+      });
+      queryClient.invalidateQueries({ queryKey: ['unified-stock', productId] });
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['product-items', productId] });
+    },
+    onError: (error: any) => {
+      console.error('Error converting bulk to tracked:', error);
+      toast({
+        title: "Conversion Failed",
+        description: error.message || 'Failed to convert units',
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Add New Tracked Inventory Mutation
+  const addTrackedInventory = useMutation({
+    mutationFn: async (quantity: number) => {
+      const { data, error } = await supabase.rpc('add_tracked_inventory', {
+        product_uuid: productId,
+        add_qty: quantity
+      });
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      toast({
+        title: "Inventory Added",
+        description: "Successfully added new tracked inventory items",
+      });
+      queryClient.invalidateQueries({ queryKey: ['unified-stock', productId] });
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['product-items', productId] });
+    },
+    onError: (error: any) => {
+      console.error('Error adding tracked inventory:', error);
+      toast({
+        title: "Add Inventory Failed",
+        description: error.message || 'Failed to add tracked inventory',
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Adjust master stock mutation (for bulk operations only)
   const adjustMasterStock = useMutation({
     mutationFn: async ({
       quantityChange,
@@ -355,14 +415,20 @@ export const useUnifiedStockManagement = (productId: string) => {
     error,
     isAdjusting: adjustMasterStock.isPending,
     isSyncing: syncStockTotals.isPending,
+    isConverting: convertBulkToTracked.isPending,
+    isAddingTracked: addTrackedInventory.isPending,
     
     // Actions
     adjustMasterStock: adjustMasterStock.mutate,
     syncStockTotals: syncStockTotals.mutate,
+    convertBulkToTracked: convertBulkToTracked.mutate,
+    addTrackedInventory: addTrackedInventory.mutate,
     
     // Quick access to key metrics
     masterStock: stockData?.master_stock || 0,
     physicallyAvailable: stockData?.totals.physically_available || 0,
+    bulkPool: stockData?.totals.bulk_pool || 0,
+    trackedAvailable: stockData?.individual_items.available || 0,
     inMaintenance: stockData?.totals.in_maintenance || 0,
     trackingMethod: stockData?.tracking_method === 'hybrid' ? 'Hybrid' : stockData?.tracking_method || 'none',
     

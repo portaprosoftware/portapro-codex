@@ -9313,6 +9313,10 @@ export type Database = {
         }
         Returns: string
       }
+      add_tracked_inventory: {
+        Args: { add_qty: number; product_uuid: string }
+        Returns: Json
+      }
       adjust_master_stock: {
         Args: {
           notes_text?: string
@@ -9430,6 +9434,10 @@ export type Database = {
       }
       complete_work_order: {
         Args: { _closed_by?: string; work_order_uuid: string }
+        Returns: Json
+      }
+      convert_bulk_to_tracked: {
+        Args: { convert_qty: number; product_uuid: string }
         Returns: Json
       }
       create_default_service_locations: {
