@@ -130,6 +130,18 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
 
   return (
     <div className="space-y-6">
+      {/* Notes Header */}
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-foreground">Customer Notes</h3>
+        <Button
+          onClick={() => handleAddNote('general')}
+          className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium px-4 py-2 rounded-md border-0"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Add Note
+        </Button>
+      </div>
+
       {/* Filters Section */}
       <Card>
         <CardContent className="space-y-4 pt-6">
@@ -183,18 +195,6 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
           </div>
         </CardContent>
       </Card>
-
-      {/* Notes Header */}
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-foreground">Customer Notes</h3>
-        <Button
-          onClick={() => handleAddNote('general')}
-          className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium px-4 py-2 rounded-md border-0"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Add Note
-        </Button>
-      </div>
 
       {/* Notes Display */}
       {filteredNotes.length === 0 ? (
