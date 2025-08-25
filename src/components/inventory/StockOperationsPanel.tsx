@@ -67,38 +67,38 @@ export function StockOperationsPanel({ productId, productName, onClose }: StockO
   const isLoading = isConverting || isAddingTracked || isAdjusting;
 
   return (
-    <Card className="w-full max-w-2xl">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Package className="w-5 h-5" />
+    <Card className="w-full max-w-lg max-h-[80vh] overflow-y-auto">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-lg">
+          <Package className="w-4 h-4" />
           Stock Operations - {productName}
         </CardTitle>
         {stockData && (
-          <div className="flex gap-2 text-sm text-muted-foreground">
-            <Badge variant="secondary">{masterStock} Total</Badge>
-            <Badge variant="secondary">{bulkPool} Bulk Pool</Badge>
-            <Badge variant="secondary">{trackedAvailable} Tracked Available</Badge>
+          <div className="flex gap-2 text-sm">
+            <Badge variant="secondary" className="text-xs">{masterStock} Total</Badge>
+            <Badge variant="secondary" className="text-xs">{bulkPool} Bulk Pool</Badge>
+            <Badge variant="secondary" className="text-xs">{trackedAvailable} Tracked Available</Badge>
           </div>
         )}
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4">
         
         {/* Operation Selection */}
-        <div className="space-y-4">
-          <Label className="text-base font-medium">Select Operation:</Label>
+        <div className="space-y-3">
+          <Label className="text-sm font-medium">Select Operation:</Label>
           
           {/* Convert Bulk to Tracked */}
           <div 
-            className={`border rounded-lg p-4 cursor-pointer transition-colors ${
+            className={`border rounded-lg p-3 cursor-pointer transition-colors ${
               selectedOperation === 'convert_bulk' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'
             }`}
             onClick={() => setSelectedOperation('convert_bulk')}
           >
-            <div className="flex items-center gap-3">
-              <ArrowRightLeft className="w-5 h-5 text-blue-500" />
+            <div className="flex items-center gap-2">
+              <ArrowRightLeft className="w-4 h-4 text-blue-500" />
               <div className="flex-1">
-                <h4 className="font-medium">Convert Bulk Pool to Tracked Items</h4>
-                <p className="text-sm text-muted-foreground">
+                <h4 className="font-medium text-sm">Convert Bulk Pool to Tracked Items</h4>
+                <p className="text-xs text-muted-foreground">
                   Convert existing bulk units to individually tracked items. Total inventory stays the same.
                 </p>
               </div>
@@ -112,36 +112,34 @@ export function StockOperationsPanel({ productId, productName, onClose }: StockO
 
           {/* Add New Tracked Inventory */}
           <div 
-            className={`border rounded-lg p-4 cursor-pointer transition-colors ${
+            className={`border rounded-lg p-3 cursor-pointer transition-colors ${
               selectedOperation === 'add_tracked' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'
             }`}
             onClick={() => setSelectedOperation('add_tracked')}
           >
-            <div className="flex items-center gap-3">
-              <Plus className="w-5 h-5 text-green-500" />
+            <div className="flex items-center gap-2">
+              <Plus className="w-4 h-4 text-green-500" />
               <div className="flex-1">
-                <h4 className="font-medium">Add New Tracked Inventory</h4>
-                <p className="text-sm text-muted-foreground">
+                <h4 className="font-medium text-sm">Add New Tracked Inventory</h4>
+                <p className="text-xs text-muted-foreground">
                   Add new inventory as individually tracked items. Increases total inventory.
                 </p>
               </div>
             </div>
           </div>
 
-          <Separator />
-
           {/* Add Bulk Inventory */}
           <div 
-            className={`border rounded-lg p-4 cursor-pointer transition-colors ${
+            className={`border rounded-lg p-3 cursor-pointer transition-colors ${
               selectedOperation === 'add_bulk' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'
             }`}
             onClick={() => setSelectedOperation('add_bulk')}
           >
-            <div className="flex items-center gap-3">
-              <Plus className="w-5 h-5 text-purple-500" />
+            <div className="flex items-center gap-2">
+              <Plus className="w-4 h-4 text-purple-500" />
               <div className="flex-1">
-                <h4 className="font-medium">Add Bulk Inventory</h4>
-                <p className="text-sm text-muted-foreground">
+                <h4 className="font-medium text-sm">Add Bulk Inventory</h4>
+                <p className="text-xs text-muted-foreground">
                   Add new inventory to the bulk pool. Increases total inventory.
                 </p>
               </div>
@@ -150,16 +148,16 @@ export function StockOperationsPanel({ productId, productName, onClose }: StockO
 
           {/* Remove Bulk Inventory */}
           <div 
-            className={`border rounded-lg p-4 cursor-pointer transition-colors ${
+            className={`border rounded-lg p-3 cursor-pointer transition-colors ${
               selectedOperation === 'remove_bulk' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'
             }`}
             onClick={() => setSelectedOperation('remove_bulk')}
           >
-            <div className="flex items-center gap-3">
-              <AlertCircle className="w-5 h-5 text-orange-500" />
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-orange-500" />
               <div className="flex-1">
-                <h4 className="font-medium">Remove Bulk Inventory</h4>
-                <p className="text-sm text-muted-foreground">
+                <h4 className="font-medium text-sm">Remove Bulk Inventory</h4>
+                <p className="text-xs text-muted-foreground">
                   Remove inventory from the bulk pool. Decreases total inventory.
                 </p>
               </div>
@@ -174,9 +172,9 @@ export function StockOperationsPanel({ productId, productName, onClose }: StockO
 
         {/* Quantity Input & Submit */}
         {selectedOperation && (
-          <div className="space-y-4 pt-4 border-t">
-            <div className="space-y-2">
-              <Label htmlFor="quantity">Quantity</Label>
+          <div className="space-y-3 pt-3 border-t">
+            <div className="space-y-1">
+              <Label htmlFor="quantity" className="text-sm">Quantity</Label>
               <Input
                 id="quantity"
                 type="number"
@@ -184,21 +182,21 @@ export function StockOperationsPanel({ productId, productName, onClose }: StockO
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
                 placeholder="Enter quantity"
-                className="w-32"
+                className="w-24 h-8"
               />
             </div>
 
             {/* Validation Warnings */}
             {selectedOperation === 'convert_bulk' && parseInt(quantity) > bulkPool && (
-              <div className="flex items-center gap-2 text-destructive text-sm">
-                <AlertCircle className="w-4 h-4" />
+              <div className="flex items-center gap-2 text-destructive text-xs">
+                <AlertCircle className="w-3 h-3" />
                 Cannot convert more than {bulkPool} units from bulk pool
               </div>
             )}
 
             {selectedOperation === 'remove_bulk' && parseInt(quantity) > bulkPool && (
-              <div className="flex items-center gap-2 text-destructive text-sm">
-                <AlertCircle className="w-4 h-4" />
+              <div className="flex items-center gap-2 text-destructive text-xs">
+                <AlertCircle className="w-3 h-3" />
                 Cannot remove more than {bulkPool} units from bulk pool
               </div>
             )}
@@ -213,12 +211,13 @@ export function StockOperationsPanel({ productId, productName, onClose }: StockO
                   (selectedOperation === 'convert_bulk' && parseInt(quantity) > bulkPool) ||
                   (selectedOperation === 'remove_bulk' && parseInt(quantity) > bulkPool)
                 }
-                className="min-w-32"
+                size="sm"
               >
-                {isLoading ? 'Processing...' : 'Apply Operation'}
+                {isLoading ? 'Processing...' : 'Apply'}
               </Button>
               <Button
                 variant="outline"
+                size="sm"
                 onClick={() => {
                   setSelectedOperation(null);
                   setQuantity('1');
@@ -231,9 +230,9 @@ export function StockOperationsPanel({ productId, productName, onClose }: StockO
         )}
 
         {/* Help Text */}
-        <div className="bg-muted/50 rounded-lg p-4 text-sm">
-          <h5 className="font-medium mb-2">Understanding Operations:</h5>
-          <ul className="space-y-1 text-muted-foreground">
+        <div className="bg-muted/50 rounded-lg p-3 text-xs">
+          <h5 className="font-medium mb-1 text-sm">Understanding Operations:</h5>
+          <ul className="space-y-0.5 text-muted-foreground">
             <li>• <strong>Convert:</strong> Changes bulk units to tracked without affecting total count</li>
             <li>• <strong>Add Tracked:</strong> Creates new tracked items and increases inventory</li>
             <li>• <strong>Add Bulk:</strong> Increases bulk pool and total inventory</li>
