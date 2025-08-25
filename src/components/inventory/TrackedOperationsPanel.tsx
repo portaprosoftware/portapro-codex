@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/drawer";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { RefreshCcw, Plus, X } from "lucide-react";
+import { RotateCcw, Plus, X } from "lucide-react";
 import { useUnifiedStockManagement } from "@/hooks/useUnifiedStockManagement";
 import { toast } from "sonner";
 
@@ -34,7 +34,7 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
       id: "convert_bulk",
       title: "Convert Bulk Pool to Tracked Items",
       description: "Convert existing bulk units to individually tracked items. Total inventory stays the same.",
-      icon: RefreshCcw,
+      icon: RotateCcw,
       color: "text-blue-600",
       disabled: !stockData?.bulk_stock?.pool_available || stockData.bulk_stock.pool_available === 0,
     },
