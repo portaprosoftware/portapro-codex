@@ -330,8 +330,9 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
               {/* Convert Operation */}
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="font-semibold text-foreground">1. Convert</span>
+                  <span className="font-semibold text-foreground">1. Convert Bulk Pool to Tracked Items</span>
                 </div>
+                <p className="text-xs text-muted-foreground mb-2 ml-4">Convert existing bulk units to individually tracked items. Total inventory stays the same.</p>
                 <div className="space-y-1 text-muted-foreground ml-4">
                   <div><strong>Before:</strong> Bulk = 50, Tracked = 0 → Total = 50</div>
                   <div>You convert 10 bulk units into tracked units.</div>
@@ -342,8 +343,9 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
               {/* Add Tracked Operation */}
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="font-semibold text-foreground">2. Add Tracked</span>
+                  <span className="font-semibold text-foreground">2. Add New Tracked Inventory</span>
                 </div>
+                <p className="text-xs text-muted-foreground mb-2 ml-4">Add new inventory as individually tracked items. Increases total inventory.</p>
                 <div className="space-y-1 text-muted-foreground ml-4">
                   <div><strong>Before:</strong> Bulk = 50, Tracked = 0 → Total = 50</div>
                   <div>You add 5 new tracked units with serial numbers.</div>
@@ -354,8 +356,9 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
               {/* Add Bulk Operation */}
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="font-semibold text-foreground">3. Add Bulk</span>
+                  <span className="font-semibold text-foreground">3. Add Bulk Inventory</span>
                 </div>
+                <p className="text-xs text-muted-foreground mb-2 ml-4">Add new inventory to the bulk pool. Increases total inventory.</p>
                 <div className="space-y-1 text-muted-foreground ml-4">
                   <div><strong>Before:</strong> Bulk = 50, Tracked = 0 → Total = 50</div>
                   <div>You add 10 new units to the bulk pool.</div>
@@ -366,8 +369,9 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
               {/* Remove Bulk Operation */}
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="font-semibold text-foreground">4. Remove Bulk</span>
+                  <span className="font-semibold text-foreground">4. Remove Bulk Inventory</span>
                 </div>
+                <p className="text-xs text-muted-foreground mb-2 ml-4">Remove inventory from the bulk pool. Decreases total inventory.</p>
                 <div className="space-y-1 text-muted-foreground ml-4">
                   <div><strong>Before:</strong> Bulk = 50, Tracked = 0 → Total = 50</div>
                   <div>You remove 10 units from the bulk pool.</div>
