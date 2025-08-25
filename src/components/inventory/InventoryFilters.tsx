@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search } from 'lucide-react';
 import { PRODUCT_TYPES, ProductType } from '@/lib/productTypes';
+import { StorageLocationSelector } from './StorageLocationSelector';
 
 interface InventoryFiltersProps {
   searchQuery: string;
@@ -35,17 +36,12 @@ export const InventoryFilters: React.FC<InventoryFiltersProps> = ({
           />
         </div>
         
-        <Select value={selectedLocationId} onValueChange={onLocationChange}>
-          <SelectTrigger>
-            <SelectValue placeholder="All Locations" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Locations</SelectItem>
-            <SelectItem value="yard">Yard</SelectItem>
-            <SelectItem value="field">Field</SelectItem>
-            <SelectItem value="maintenance">Maintenance</SelectItem>
-          </SelectContent>
-        </Select>
+        <StorageLocationSelector
+          value={selectedLocationId}
+          onValueChange={onLocationChange}
+          placeholder="All Locations"
+          includeAllSites={true}
+        />
 
         <Select value={selectedProductType} onValueChange={onProductTypeChange}>
           <SelectTrigger>
