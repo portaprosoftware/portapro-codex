@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { useUnifiedStockManagement } from "@/hooks/useUnifiedStockManagement";
 
 interface StockAdjustmentWizardProps {
   productId: string;
@@ -44,8 +44,10 @@ export const StockAdjustmentWizard: React.FC<StockAdjustmentWizardProps> = ({
   const [quantity, setQuantity] = useState<number>(1);
   const [reason, setReason] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  
+  // Use unified stock management for proper updates
+  const { adjustMasterStock, isAdjusting } = useUnifiedStockManagement(productId);
 
   const calculateNewStock = () => {
     switch (adjustmentType) {
@@ -68,48 +70,17 @@ export const StockAdjustmentWizard: React.FC<StockAdjustmentWizardProps> = ({
       return;
     }
 
-    setIsSubmitting(true);
-    try {
-      const quantityChange = calculateNewStock() - currentStock;
-      
-      // Record the stock adjustment
-      const { error: adjustmentError } = await supabase
-        .from("stock_adjustments")
-        .insert({
-          product_id: productId,
-          quantity_change: quantityChange,
-          reason: reason,
-          notes: notes || null,
-        });
-
-      if (adjustmentError) throw adjustmentError;
-
-      // Update product stock
-      const { error: updateError } = await supabase
-        .from("products")
-        .update({
-          stock_total: calculateNewStock(),
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", productId);
-
-      if (updateError) throw updateError;
-
-      toast({
-        title: "Stock Adjusted",
-        description: `${productName} stock updated from ${currentStock} to ${calculateNewStock()}`,
-      });
-
-      onComplete();
-    } catch (error) {
-      toast({
-        title: "Adjustment Failed",
-        description: "Failed to adjust stock. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+    const quantityChange = calculateNewStock() - currentStock;
+    
+    // Use unified stock management for proper real-time updates
+    adjustMasterStock({
+      quantityChange,
+      reason,
+      notes: notes || null,
+    });
+    
+    // Close the dialog immediately since the mutation handles success/error toasts
+    onComplete();
   };
 
   // Get the current reasons based on adjustment type
@@ -225,16 +196,16 @@ export const StockAdjustmentWizard: React.FC<StockAdjustmentWizardProps> = ({
             onClick={onCancel}
             variant="outline"
             className="flex-1"
-            disabled={isSubmitting}
+            disabled={isAdjusting}
           >
             Cancel
           </Button>
           <Button
             onClick={handleSubmit}
             className="flex-1"
-            disabled={isSubmitting}
+            disabled={isAdjusting}
           >
-            {isSubmitting ? "Processing..." : "Apply Adjustment"}
+            {isAdjusting ? "Processing..." : "Apply Adjustment"}
           </Button>
         </div>
       </CardContent>

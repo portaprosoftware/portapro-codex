@@ -1,4 +1,5 @@
 
+import React from 'react';
 import { useUser } from '@clerk/clerk-react';
 
 export type AppRole = 'owner' | 'dispatcher' | 'admin' | 'driver' | 'viewer' | 'unknown';
@@ -9,8 +10,9 @@ export function useUserRole() {
   // Only determine role if user is fully loaded and exists
   const role = (isLoaded && user?.publicMetadata?.role as AppRole) || 'unknown';
 
-  // Log current user info in development for debugging
-  if (process.env.NODE_ENV === 'development' && isLoaded) {
+  // Log current user info in development for debugging (only on first load)
+  const hasLoggedRef = React.useRef(false);
+  if (process.env.NODE_ENV === 'development' && isLoaded && !hasLoggedRef.current) {
     console.log('useUserRole - Current user:', {
       userId: user?.id,
       firstName: user?.firstName,
@@ -18,6 +20,7 @@ export function useUserRole() {
       role: user?.publicMetadata?.role,
       isLoaded
     });
+    hasLoggedRef.current = true;
   }
 
   const isOwner = role === 'owner';
