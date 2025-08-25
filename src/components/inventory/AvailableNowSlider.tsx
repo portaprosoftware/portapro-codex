@@ -47,6 +47,7 @@ const ProductOverviewCard: React.FC<ProductOverviewCardProps> = ({ productId, pr
   const { individual_items, totals, master_stock } = stockData;
   const totalOnJob = master_stock - totals.physically_available - totals.in_maintenance;
   const totalMaintenance = totals.in_maintenance;
+  const availableTracked = individual_items.available;
 
   return (
     <div className="bg-white rounded-lg p-4 border border-gray-200 mb-3">
@@ -56,8 +57,12 @@ const ProductOverviewCard: React.FC<ProductOverviewCardProps> = ({ productId, pr
       </div>
       
       <div className="flex flex-wrap gap-2">
-        <Badge className="bg-gradient-to-r from-green-600 to-green-700 text-white font-bold">
+        <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold">
           {totals.bulk_pool} Bulk Pool Available
+        </Badge>
+        
+        <Badge className="bg-gradient-to-r from-green-600 to-green-700 text-white font-bold">
+          {availableTracked} Available Tracked Units
         </Badge>
         
         <Badge className="bg-gradient-to-r from-yellow-600 to-yellow-700 text-white font-bold">
@@ -180,11 +185,11 @@ export const AvailableNowSlider: React.FC<AvailableNowSliderProps> = ({ isOpen, 
                          </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                       <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold px-3 py-1 rounded-full text-xs">
-                         <TotalStockDisplay productId={product.id} />
-                       </div>
-                      <ChevronDown 
+                     <div className="flex items-center gap-2">
+                        <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold">
+                          <TotalStockDisplay productId={product.id} />
+                        </Badge>
+                       <ChevronDown
                         className={cn(
                           "w-4 h-4 transition-transform duration-200",
                           openSections[product.id] && "rotate-180"
