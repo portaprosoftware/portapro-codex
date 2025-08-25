@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { useCustomerNotes } from '@/hooks/useCustomerNotes';
 import { EditNotesModal } from './EditNotesModal';
 import { ViewNoteModal } from './ViewNoteModal';
+import { DeleteConfirmationModal } from '@/components/ui/delete-confirmation-modal';
 import { format } from 'date-fns';
 
 interface CustomerNotesTabProps {
@@ -16,8 +17,10 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
   const { notes, isLoading, addNote, updateNote, deleteNote } = useCustomerNotes(customerId);
   const [showModal, setShowModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [editingNote, setEditingNote] = useState<any>(null);
   const [viewingNote, setViewingNote] = useState<any>(null);
+  const [deletingNote, setDeletingNote] = useState<any>(null);
   const [selectedNoteType, setSelectedNoteType] = useState<'general' | 'service' | 'communication'>('general');
 
   const handleAddNote = (noteType: 'general' | 'service' | 'communication') => {
@@ -64,9 +67,15 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
     }
   };
 
-  const handleDeleteNote = (noteId: string) => {
-    if (confirm('Are you sure you want to delete this note?')) {
-      deleteNote(noteId);
+  const handleDeleteNote = (note: any) => {
+    setDeletingNote(note);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteNote = () => {
+    if (deletingNote) {
+      deleteNote(deletingNote.id);
+      setDeletingNote(null);
     }
   };
 
@@ -209,7 +218,7 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => handleDeleteNote(note.id)}
+                      onClick={() => handleDeleteNote(note)}
                       className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -242,6 +251,17 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
         isOpen={showViewModal}
         onClose={() => setShowViewModal(false)}
         note={viewingNote}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={confirmDeleteNote}
+        title="Delete Note"
+        description={`Are you sure you want to delete "${deletingNote?.title || 'this note'}"? This action cannot be undone.`}
+        confirmText="Delete Note"
+        cancelText="Cancel"
       />
     </div>
   );
