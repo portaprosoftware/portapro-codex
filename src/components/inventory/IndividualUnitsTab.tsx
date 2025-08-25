@@ -86,6 +86,12 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
   const { data: items, isLoading, refetch } = useQuery({
     queryKey: ["product-items", productId, searchQuery, availabilityFilter, attributeFilters, enhancedFilters],
     queryFn: async () => {
+      console.log("IndividualUnitsTab: Query executing with filters:", {
+        availabilityFilter,
+        enhancedFilters,
+        productId
+      });
+      
       let query = supabase
         .from("product_items")
         .select("*, tool_number, vendor_id, plastic_code, manufacturing_date, mold_cavity, ocr_confidence_score, verification_status, tracking_photo_url")
@@ -112,6 +118,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
       }
 
       if (availabilityFilter !== "all") {
+        console.log("IndividualUnitsTab: Applying status filter:", availabilityFilter);
         query = query.eq("status", availabilityFilter);
       }
 
@@ -130,7 +137,11 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
       }
 
       const { data, error } = await query.order("item_code");
-      if (error) throw error;
+      if (error) {
+        console.error("IndividualUnitsTab: Query error:", error);
+        throw error;
+      }
+      console.log("IndividualUnitsTab: Query returned", data?.length, "items");
       return data || [];
     }
   });
@@ -430,9 +441,17 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
       <EnhancedSearchFilters
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
-        filters={enhancedFilters}
-        onFiltersChange={setEnhancedFilters}
-        onClearFilters={() => setEnhancedFilters({})}
+        filters={{ availability: availabilityFilter }}
+        onFiltersChange={(filters) => {
+          console.log("IndividualUnitsTab: Filters changed:", filters);
+          if (filters.availability !== undefined) {
+            setAvailabilityFilter(filters.availability);
+          }
+        }}
+        onClearFilters={() => {
+          console.log("IndividualUnitsTab: Clearing filters");
+          setAvailabilityFilter("all");
+        }}
       />
 
       {/* Units Table */}

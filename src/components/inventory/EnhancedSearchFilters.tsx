@@ -24,6 +24,7 @@ export const EnhancedSearchFilters: React.FC<EnhancedSearchFiltersProps> = ({
 }) => {
 
   const updateFilter = (key: string, value: any) => {
+    console.log("EnhancedSearchFilters: Updating filter", key, "to", value);
     onFiltersChange({
       ...filters,
       [key]: value
@@ -49,14 +50,15 @@ export const EnhancedSearchFilters: React.FC<EnhancedSearchFiltersProps> = ({
         </div>
         
         <Select value={filters.availability || "all"} onValueChange={(value) => updateFilter("availability", value)}>
-          <SelectTrigger className="w-48">
+          <SelectTrigger className="w-48 bg-white">
             <SelectValue placeholder="All Availability" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
             <SelectItem value="all">All Availability</SelectItem>
             <SelectItem value="available">Available</SelectItem>
-            <SelectItem value="assigned">Assigned</SelectItem>
-            <SelectItem value="maintenance">In Maintenance</SelectItem>
+            <SelectItem value="assigned">On Job</SelectItem>
+            <SelectItem value="maintenance">Maintenance</SelectItem>
+            <SelectItem value="out_of_service">Permanently Retired</SelectItem>
           </SelectContent>
         </Select>
 
