@@ -190,33 +190,29 @@ export const SimpleConsumablesAnalytics: React.FC<SimpleConsumablesAnalyticsProp
     <div className="space-y-6">
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Total Items</p>
-                <p className="text-2xl font-bold">{totalItems}</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Calculator className="w-6 h-6 text-blue-600" />
-              </div>
+        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg border shadow-sm p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-white/90">Total Items</p>
+              <p className="text-2xl font-bold text-white">{totalItems}</p>
             </div>
-          </CardContent>
-        </Card>
+            <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center border border-white/30">
+              <Calculator className="w-6 h-6 text-white stroke-2" />
+            </div>
+          </div>
+        </div>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Total Inventory Value</p>
-                <p className="text-2xl font-bold">${totalValue.toFixed(2)}</p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-green-600" />
-              </div>
+        <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg border shadow-sm p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-white/90">Total Inventory Value</p>
+              <p className="text-2xl font-bold text-white">${totalValue.toFixed(2)}</p>
             </div>
-          </CardContent>
-        </Card>
+            <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center border border-white/30">
+              <TrendingUp className="w-6 h-6 text-white stroke-2" />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Analytics Table */}
