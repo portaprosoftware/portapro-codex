@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { TabNav } from '@/components/ui/TabNav';
 import { User, Users, MapPin, Briefcase, DollarSign, MessageSquare, FileText, File } from 'lucide-react';
-import { CustomerInfoPanel } from './CustomerInfoPanel';
+import { CustomerOverviewTab } from './CustomerOverviewTab';
 import { CustomerContactsTab } from './CustomerContactsTab';
 import { ServiceLocationTab } from './ServiceLocationTab';
 import { CustomerJobsTab } from './CustomerJobsTab';
@@ -50,7 +50,7 @@ export function CustomerTabs({ customer }: CustomerTabsProps) {
   const renderActiveTabContent = () => {
     switch (activeTab) {
       case 'overview':
-        return <CustomerInfoPanel customer={customer} />;
+        return <CustomerOverviewTab customer={customer} />;
       case 'contacts':
         return <CustomerContactsTab customerId={customer.id} />;
       case 'locations':
@@ -64,7 +64,7 @@ export function CustomerTabs({ customer }: CustomerTabsProps) {
       case 'documents':
         return <CustomerDocumentsTab customerId={customer.id} />;
       default:
-        return <CustomerInfoPanel customer={customer} />;
+        return <CustomerOverviewTab customer={customer} />;
     }
   };
 
