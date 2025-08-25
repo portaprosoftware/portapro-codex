@@ -126,8 +126,25 @@ export function EditNotesModal({
           <div>
             <Label htmlFor="tags">Tags</Label>
             
-            {/* Quick Tags Section */}
+            {/* Dropdown for common tags */}
             <div className="mt-2 mb-3">
+              <Label className="text-sm text-muted-foreground mb-2 block">Add Common Tag</Label>
+              <Select onValueChange={(value) => handleQuickTagClick(value)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select a tag to add..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {quickTags.map((tag) => (
+                    <SelectItem key={tag} value={tag}>
+                      {tag}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {/* Quick Tags Section */}
+            <div className="mb-3">
               <Label className="text-sm text-muted-foreground mb-2 block">Quick Tags</Label>
               <div className="flex flex-wrap gap-2">
                 {quickTags.map((tag) => (
