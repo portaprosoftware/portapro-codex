@@ -7,7 +7,7 @@ import { ServiceLocationTab } from './ServiceLocationTab';
 import { CustomerJobsTab } from './CustomerJobsTab';
 import { CustomerFinancialTab } from './CustomerFinancialTab';
 import { CustomerCommunicationTab } from './CustomerCommunicationTab';
-import { CustomerServiceReportsTab } from './CustomerServiceReportsTab';
+import { CustomerJobsAndReportsTab } from './CustomerJobsAndReportsTab';
 import { CustomerDocumentsTab } from './CustomerDocumentsTab';
 
 interface Customer {
@@ -55,10 +55,8 @@ export function CustomerTabs({ customer }: CustomerTabsProps) {
         return <CustomerContactsTab customerId={customer.id} />;
       case 'locations':
         return <ServiceLocationTab customerId={customer.id} />;
-      case 'jobs':
-        return <CustomerJobsTab customerId={customer.id} />;
-      case 'reports':
-        return <CustomerServiceReportsTab customerId={customer.id} />;
+      case 'jobs-reports':
+        return <CustomerJobsAndReportsTab customerId={customer.id} />;
       case 'financial':
         return <CustomerFinancialTab customerId={customer.id} />;
       case 'communication':
@@ -100,20 +98,12 @@ export function CustomerTabs({ customer }: CustomerTabsProps) {
             Service Locations
           </TabNav.Item>
           <TabNav.Item 
-            to="#jobs" 
-            isActive={activeTab === 'jobs'}
-            onClick={() => setActiveTab('jobs')}
+            to="#jobs-reports" 
+            isActive={activeTab === 'jobs-reports'}
+            onClick={() => setActiveTab('jobs-reports')}
           >
             <Briefcase className="w-4 h-4" />
-            Jobs
-          </TabNav.Item>
-          <TabNav.Item 
-            to="#reports" 
-            isActive={activeTab === 'reports'}
-            onClick={() => setActiveTab('reports')}
-          >
-            <FileText className="w-4 h-4" />
-            Service Reports
+            Jobs & Reports
           </TabNav.Item>
           <TabNav.Item 
             to="#financial" 
