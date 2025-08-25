@@ -231,21 +231,18 @@ export const OverviewSection: React.FC<OverviewSectionProps> = ({ dateRange }) =
         />
       </div>
 
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Job Volume Trend */}
-        <div className="lg:col-span-3">
-          <TrendChart 
-            data={trendData}
-            title="Job Volume Over Time"
-            height={300}
-          />
-        </div>
-        
-        {/* Recent Activity */}
-        <div>
-          <ActivityFeed dateRange={dateRange} />
-        </div>
+      {/* Job Volume Trend */}
+      <div className="mb-6">
+        <TrendChart 
+          data={trendData}
+          title="Job Volume Over Time"
+          height={300}
+        />
+      </div>
+      
+      {/* Recent Activity - Full Width */}
+      <div>
+        <ActivityFeed dateRange={dateRange} />
       </div>
     </div>
   );
