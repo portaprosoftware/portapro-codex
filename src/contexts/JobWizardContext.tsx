@@ -217,11 +217,12 @@ export function JobWizardProvider({
 
   // Load draft data when provider mounts
   React.useEffect(() => {
-    if (initialDraftData?.job_data) {
-      console.log('Loading draft data into wizard:', initialDraftData.job_data);
+    const draftData = initialDraftData?.job_data || initialDraftData?.quote_data;
+    if (draftData) {
+      console.log('Loading draft data into wizard:', draftData);
       dispatch({ 
         type: 'UPDATE_DATA', 
-        payload: initialDraftData.job_data 
+        payload: draftData 
       });
     }
   }, [initialDraftData]);
