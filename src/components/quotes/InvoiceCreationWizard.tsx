@@ -37,9 +37,9 @@ interface InvoiceItem {
   notes?: string;
 }
 
-type Customer = { id: string };
+type Customer = { id: string; name: string; email: string | null; phone: string | null };
 type Product = { id: string; name: string; default_price_per_day: number };
-type Service = { id: string; name: string; per_visit_cost: number | null; per_hour_cost: number | null; flat_rate_cost: number | null };
+type Service = { id: string; name: string; default_rate: number | null };
 
 export function InvoiceCreationWizard({ isOpen, onClose, fromQuoteId, fromJobId }: InvoiceCreationWizardProps) {
   const [invoiceData, setInvoiceData] = useState({
@@ -70,7 +70,12 @@ export function InvoiceCreationWizard({ isOpen, onClose, fromQuoteId, fromJobId 
   const { data: customers = [] } = useQuery({
     queryKey: ['customers-simple'],
     queryFn: async () => {
-      return [] as Customer[];
+      const { data, error } = await supabase
+        .from('customers')
+        .select('id, name, email, phone')
+        .order('name');
+      if (error) throw error;
+      return data;
     }
   });
 
@@ -78,7 +83,12 @@ export function InvoiceCreationWizard({ isOpen, onClose, fromQuoteId, fromJobId 
   const { data: products = [] } = useQuery({
     queryKey: ['products'],
     queryFn: async () => {
-      return [] as Product[];
+      const { data, error } = await supabase
+        .from('products')
+        .select('id, name, default_price_per_day')
+        .order('name');
+      if (error) throw error;
+      return data;
     }
   });
 
@@ -86,7 +96,12 @@ export function InvoiceCreationWizard({ isOpen, onClose, fromQuoteId, fromJobId 
   const { data: services = [] } = useQuery({
     queryKey: ['services'],
     queryFn: async () => {
-      return [] as Service[];
+      const { data, error } = await supabase
+        .from('services')
+        .select('id, name, default_rate')
+        .order('name');
+      if (error) throw error;
+      return data;
     }
   });
 
@@ -327,7 +342,7 @@ export function InvoiceCreationWizard({ isOpen, onClose, fromQuoteId, fromJobId 
     } else if (newItem.type === 'service' && newItem.service_id) {
       const service = services.find(s => s.id === newItem.service_id);
       productName = service?.name || '';
-      unitPrice = service?.per_visit_cost || service?.per_hour_cost || service?.flat_rate_cost || 0;
+      unitPrice = service?.default_rate || 0;
     }
 
     const item: InvoiceItem = {
@@ -418,7 +433,7 @@ export function InvoiceCreationWizard({ isOpen, onClose, fromQuoteId, fromJobId 
                     <SelectContent>
                       {customers.map((customer) => (
                         <SelectItem key={customer.id} value={customer.id}>
-                          Customer {customer.id.substring(0, 8)}
+                          {customer.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -543,7 +558,7 @@ export function InvoiceCreationWizard({ isOpen, onClose, fromQuoteId, fromJobId 
                         <SelectContent>
                           {services.map((service) => (
                             <SelectItem key={service.id} value={service.id}>
-                              {service.name} - {formatCurrency(service.per_visit_cost || service.per_hour_cost || service.flat_rate_cost || 0)}
+                              {service.name} - {formatCurrency(service.default_rate || 0)}
                             </SelectItem>
                           ))}
                         </SelectContent>
