@@ -46,8 +46,8 @@ export const QuoteDateFilters: React.FC<QuoteDateFiltersProps> = ({
         <span className="text-sm font-medium text-foreground">Date Range:</span>
       </div>
       
-      {/* Quick Date Range Buttons */}
-      <div className="flex flex-wrap gap-2">
+      {/* Quick Date Range Buttons and Custom Date Picker */}
+      <div className="flex flex-wrap items-center gap-2">
         <Button
           variant="outline"
           size="sm"
@@ -80,6 +80,15 @@ export const QuoteDateFilters: React.FC<QuoteDateFiltersProps> = ({
         >
           Last Quarter
         </Button>
+        
+        {/* Custom Date Range Picker - inline */}
+        <DatePickerWithRange
+          date={dateRange}
+          onDateChange={onDateRangeChange}
+          placeholder="Select date range"
+          className="w-80"
+        />
+        
         {dateRange && (
           <Button
             variant="ghost"
@@ -90,17 +99,6 @@ export const QuoteDateFilters: React.FC<QuoteDateFiltersProps> = ({
             Clear
           </Button>
         )}
-      </div>
-
-      {/* Custom Date Range Picker */}
-      <div className="flex items-center gap-3">
-        <span className="text-sm text-muted-foreground">Custom:</span>
-        <DatePickerWithRange
-          date={dateRange}
-          onDateChange={onDateRangeChange}
-          placeholder="Select date range"
-          className="w-80"
-        />
       </div>
     </div>
   );
