@@ -19,14 +19,14 @@ interface ProductOverviewCardProps {
   productName: string;
 }
 
-const TotalStockDisplay: React.FC<{ productId: string }> = ({ productId }) => {
+const TotalStockDisplay: React.FC<{ productId: string; className?: string }> = ({ productId, className = "text-sm text-gray-600" }) => {
   const { stockData, isLoading } = useUnifiedStockManagement(productId);
   
   if (isLoading || !stockData) {
-    return <span className="text-white font-bold">Loading...</span>;
+    return <span className={className}>Loading...</span>;
   }
   
-  return <span className="text-white font-bold">{stockData.master_stock} total</span>;
+  return <span className={className}>{stockData.master_stock} total</span>;
 };
 
 const ProductOverviewCard: React.FC<ProductOverviewCardProps> = ({ productId, productName }) => {
@@ -187,7 +187,7 @@ export const AvailableNowSlider: React.FC<AvailableNowSliderProps> = ({ isOpen, 
                     </div>
                      <div className="flex items-center gap-2">
                         <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold">
-                          <TotalStockDisplay productId={product.id} />
+                          <TotalStockDisplay productId={product.id} className="text-white font-bold" />
                         </Badge>
                        <ChevronDown
                         className={cn(
