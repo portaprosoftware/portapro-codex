@@ -387,7 +387,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
               onClick={() => setShowCategoryModal(true)}
             >
               <Settings className="w-4 h-4 mr-2" />
-              Set Default Category
+              Set Default Series
             </Button>
           </div>
         </div>
