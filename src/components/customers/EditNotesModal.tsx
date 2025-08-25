@@ -36,23 +36,29 @@ export function EditNotesModal({
   const [tags, setTags] = useState(existingNote?.tags?.join(', ') || '');
   const [isImportant, setIsImportant] = useState(existingNote?.is_important || false);
 
-  // Quick tag options based on note type
-  const getQuickTags = () => {
-    const commonTags = ['Important', 'Follow-up', 'Urgent', 'Completed', 'In progress'];
-    const communicationTags = ['Call today', 'Text message', 'Email sent', 'Scheduled callback', 'No answer'];
-    const serviceTags = ['Service required', 'Issue resolved', 'Parts needed', 'Scheduled', 'Customer request'];
-    
-    switch (noteType) {
-      case 'communication':
-        return [...communicationTags, ...commonTags];
-      case 'service':
-        return [...serviceTags, ...commonTags];
-      default:
-        return commonTags;
-    }
-  };
+  // Communication-focused tags
+  const communicationTags = [
+    'Call today',
+    'Text message', 
+    'Follow-up required',
+    'Email sent',
+    'Urgent',
+    'Important',
+    'Scheduled callback',
+    'No answer'
+  ];
 
-  const quickTags = getQuickTags();
+  // General business tags
+  const businessTags = [
+    'Follow-up',
+    'Urgent', 
+    'Important',
+    'Completed',
+    'In progress',
+    'Needs attention',
+    'Customer request',
+    'Internal note'
+  ];
 
   const handleQuickTagClick = (tag: string) => {
     const currentTags = tags ? tags.split(',').map(t => t.trim()).filter(Boolean) : [];
@@ -126,15 +132,15 @@ export function EditNotesModal({
           <div>
             <Label htmlFor="tags">Tags</Label>
             
-            {/* Dropdown for common tags */}
+            {/* Communication-focused tags dropdown */}
             <div className="mt-2 mb-3">
-              <Label className="text-sm text-muted-foreground mb-2 block">Add Common Tag</Label>
+              <Label className="text-sm text-muted-foreground mb-2 block">Communication-focused tags</Label>
               <Select onValueChange={(value) => handleQuickTagClick(value)}>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select a tag to add..." />
+                  <SelectValue placeholder="Select a communication tag..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {quickTags.map((tag) => (
+                  {communicationTags.map((tag) => (
                     <SelectItem key={tag} value={tag}>
                       {tag}
                     </SelectItem>
@@ -143,25 +149,21 @@ export function EditNotesModal({
               </Select>
             </div>
             
-            {/* Quick Tags Section */}
+            {/* General business tags dropdown */}
             <div className="mb-3">
-              <Label className="text-sm text-muted-foreground mb-2 block">Quick Tags</Label>
-              <div className="flex flex-wrap gap-2">
-                {quickTags.map((tag) => (
-                  <Badge
-                    key={tag}
-                    variant={isTagSelected(tag) ? "default" : "outline"}
-                    className={`cursor-pointer transition-colors hover:bg-primary/10 ${
-                      isTagSelected(tag) 
-                        ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white' 
-                        : 'hover:border-primary/50'
-                    }`}
-                    onClick={() => handleQuickTagClick(tag)}
-                  >
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
+              <Label className="text-sm text-muted-foreground mb-2 block">General business tags</Label>
+              <Select onValueChange={(value) => handleQuickTagClick(value)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select a business tag..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {businessTags.map((tag) => (
+                    <SelectItem key={tag} value={tag}>
+                      {tag}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <Input
