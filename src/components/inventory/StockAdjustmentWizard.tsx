@@ -1,6 +1,8 @@
 
-import React from 'react';
-import { StockOperationsPanel } from './StockOperationsPanel';
+import React, { useState } from 'react';
+import { TrackedOperationsPanel } from './TrackedOperationsPanel';
+import { Button } from '@/components/ui/button';
+import { Settings } from 'lucide-react';
 
 interface StockAdjustmentWizardProps {
   productId: string;
@@ -17,11 +19,22 @@ export const StockAdjustmentWizard: React.FC<StockAdjustmentWizardProps> = ({
   onComplete,
   onCancel
 }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <StockOperationsPanel
+    <TrackedOperationsPanel
       productId={productId}
       productName={productName}
+      isOpen={isOpen}
+      onOpenChange={setIsOpen}
+      trigger={
+        <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+          <Settings className="w-4 h-4 mr-2" />
+          Adjust Stock
+        </Button>
+      }
       onClose={() => {
+        setIsOpen(false);
         onComplete?.();
         onCancel?.();
       }}

@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/drawer";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { RotateCcw, Plus, X, Package, Hash } from "lucide-react";
+import { RotateCcw, Plus, X, Package, Hash, AlertCircle } from "lucide-react";
 import { useUnifiedStockManagement } from "@/hooks/useUnifiedStockManagement";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,16 +20,22 @@ interface TrackedOperationsPanelProps {
   productId: string;
   productName: string;
   onClose?: () => void;
+  trigger?: React.ReactNode;
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
   productId,
   productName,
   onClose,
+  trigger,
+  isOpen,
+  onOpenChange,
 }) => {
   const [selectedOperation, setSelectedOperation] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
-  const { stockData, convertBulkToTracked, addTrackedInventory } = useUnifiedStockManagement(productId);
+  const { stockData, convertBulkToTracked, addTrackedInventory, adjustMasterStock } = useUnifiedStockManagement(productId);
 
   // Fetch product details for the default category
   const { data: productDetails } = useQuery({
@@ -92,6 +98,22 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
       color: "text-green-600",
       disabled: false,
     },
+    {
+      id: "add_bulk",
+      title: "Add Bulk Inventory",
+      description: "Add new inventory to the bulk pool. Increases total inventory.",
+      icon: Plus,
+      color: "text-purple-600",
+      disabled: false,
+    },
+    {
+      id: "remove_bulk",
+      title: "Remove Bulk Inventory", 
+      description: "Remove inventory from the bulk pool. Decreases total inventory.",
+      icon: AlertCircle,
+      color: "text-orange-600",
+      disabled: !stockData?.bulk_stock?.pool_available || stockData.bulk_stock.pool_available === 0,
+    },
   ];
 
   const handleSubmit = async () => {
@@ -104,6 +126,20 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
       } else if (selectedOperation === "add_tracked") {
         await addTrackedInventory(quantity);
         toast.success(`Successfully added ${quantity} new tracked items`);
+      } else if (selectedOperation === "add_bulk") {
+        await adjustMasterStock({
+          quantityChange: quantity,
+          reason: 'Added bulk inventory',
+          notes: `Added ${quantity} units to bulk pool`
+        });
+        toast.success(`Successfully added ${quantity} units to bulk pool`);
+      } else if (selectedOperation === "remove_bulk") {
+        await adjustMasterStock({
+          quantityChange: -quantity,
+          reason: 'Removed bulk inventory',
+          notes: `Removed ${quantity} units from bulk pool`
+        });
+        toast.success(`Successfully removed ${quantity} units from bulk pool`);
       }
 
       setSelectedOperation(null);
@@ -118,13 +154,17 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
   const selectedOp = operations.find(op => op.id === selectedOperation);
 
   return (
-    <Drawer>
-      <DrawerTrigger asChild>
-        <Button className="bg-blue-600 text-white border border-blue-600 hover:bg-blue-700 hover:border-blue-700 transition-colors">
-          <Plus className="h-4 w-4 mr-2" />
-          Add Tracked Unit
-        </Button>
-      </DrawerTrigger>
+    <Drawer open={isOpen} onOpenChange={onOpenChange}>
+      {trigger ? (
+        <DrawerTrigger asChild>{trigger}</DrawerTrigger>
+      ) : (
+        <DrawerTrigger asChild>
+          <Button className="bg-blue-600 text-white border border-blue-600 hover:bg-blue-700 hover:border-blue-700 transition-colors">
+            <Plus className="h-4 w-4 mr-2" />
+            Add Tracked Unit
+          </Button>
+        </DrawerTrigger>
+      )}
       <DrawerContent className="max-h-[85vh] w-full">
         <DrawerHeader className="relative">
           <DrawerTitle>Stock Operations - {productName}</DrawerTitle>
@@ -197,7 +237,11 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
                   <Input
                     type="number"
                     min="1"
-                    max={selectedOperation === "convert_bulk" ? stockData?.bulk_stock?.pool_available || 0 : undefined}
+                    max={
+                      (selectedOperation === "convert_bulk" || selectedOperation === "remove_bulk") 
+                        ? stockData?.bulk_stock?.pool_available || 0 
+                        : undefined
+                    }
                     value={quantity === 0 ? "" : quantity}
                     onChange={(e) => {
                       const value = e.target.value;
@@ -214,10 +258,15 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
                       Maximum: {stockData.bulk_stock.pool_available} bulk units available
                     </p>
                   )}
+                  {selectedOperation === "remove_bulk" && stockData?.bulk_stock?.pool_available && (
+                    <p className="text-xs text-gray-600 mt-1">
+                      Maximum: {stockData.bulk_stock.pool_available} bulk units available
+                    </p>
+                  )}
                 </div>
 
-                {/* Unit Preview Section */}
-                {quantity > 0 && selectedOperation && (
+                {/* Unit Preview Section - only for tracked operations */}
+                {quantity > 0 && (selectedOperation === "convert_bulk" || selectedOperation === "add_tracked") && (
                   <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
                     <div className="flex items-center gap-2 mb-3">
                       <Package className="h-4 w-4 text-gray-600" />
@@ -299,6 +348,30 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
                   <div><strong>Before:</strong> Bulk = 50, Tracked = 0 → Total = 50</div>
                   <div>You add 5 new tracked units with serial numbers.</div>
                   <div><strong>After:</strong> Bulk = 50, Tracked = 5 → Total = 55</div>
+                </div>
+              </div>
+
+              {/* Add Bulk Operation */}
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="font-semibold text-foreground">3. Add Bulk</span>
+                </div>
+                <div className="space-y-1 text-muted-foreground ml-4">
+                  <div><strong>Before:</strong> Bulk = 50, Tracked = 0 → Total = 50</div>
+                  <div>You add 10 new units to the bulk pool.</div>
+                  <div><strong>After:</strong> Bulk = 60, Tracked = 0 → Total = 60</div>
+                </div>
+              </div>
+
+              {/* Remove Bulk Operation */}
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="font-semibold text-foreground">4. Remove Bulk</span>
+                </div>
+                <div className="space-y-1 text-muted-foreground ml-4">
+                  <div><strong>Before:</strong> Bulk = 50, Tracked = 0 → Total = 50</div>
+                  <div>You remove 10 units from the bulk pool.</div>
+                  <div><strong>After:</strong> Bulk = 40, Tracked = 0 → Total = 40</div>
                 </div>
               </div>
             </div>
