@@ -19,6 +19,16 @@ interface ProductOverviewCardProps {
   productName: string;
 }
 
+const TotalStockDisplay: React.FC<{ productId: string }> = ({ productId }) => {
+  const { stockData, isLoading } = useUnifiedStockManagement(productId);
+  
+  if (isLoading || !stockData) {
+    return <span className="text-sm text-gray-600">Loading...</span>;
+  }
+  
+  return <span className="text-sm text-gray-600">{stockData.master_stock} total</span>;
+};
+
 const ProductOverviewCard: React.FC<ProductOverviewCardProps> = ({ productId, productName }) => {
   const { stockData, calculations, isLoading } = useUnifiedStockManagement(productId);
   
@@ -34,9 +44,9 @@ const ProductOverviewCard: React.FC<ProductOverviewCardProps> = ({ productId, pr
     );
   }
 
-  const { individual_items, totals } = stockData;
-  const totalOnJob = individual_items.assigned;
-  const totalMaintenance = individual_items.maintenance + totals.in_maintenance;
+  const { individual_items, totals, master_stock } = stockData;
+  const totalOnJob = master_stock - totals.physically_available - totals.in_maintenance;
+  const totalMaintenance = totals.in_maintenance;
 
   return (
     <div className="bg-white rounded-lg p-4 border border-gray-200 mb-3">
@@ -166,14 +176,14 @@ export const AvailableNowSlider: React.FC<AvailableNowSliderProps> = ({ isOpen, 
                       <div className="text-left">
                         <h3 className="font-semibold text-gray-900">{product.name}</h3>
                         <p className="text-sm text-gray-600">
-                          Total Stock: {product.stock_total} | Tracked Units: {product.items.length}
-                        </p>
+                           Total Stock: <TotalStockDisplay productId={product.id} /> | Tracked Units: {product.items.length}
+                         </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold px-3 py-1 rounded-full text-xs">
-                        {product.stock_total} Units
-                      </div>
+                       <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold px-3 py-1 rounded-full text-xs">
+                         <TotalStockDisplay productId={product.id} />
+                       </div>
                       <ChevronDown 
                         className={cn(
                           "w-4 h-4 transition-transform duration-200",
