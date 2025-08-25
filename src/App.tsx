@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
 import { useUserRole } from './hooks/useUserRole';
 import { Layout } from './components/layout/Layout';
@@ -49,9 +49,15 @@ import CustomerPortalPage from './pages/CustomerPortalPage';
 import Features from './pages/Features';
 
 const App = () => {
+  // Ensure React is available before rendering
+  if (typeof React === 'undefined' || !React) {
+    console.error('React is not available when App component is trying to render');
+    return <div>Loading...</div>;
+  }
+
   return (
     <ErrorBoundary>
-      <Router>
+      <BrowserRouter>
         <div className="min-h-screen bg-background font-sans antialiased">
         
         <Routes>
@@ -426,7 +432,7 @@ const App = () => {
           } />
         </Routes>
         </div>
-      </Router>
+      </BrowserRouter>
     </ErrorBoundary>
   );
 }
