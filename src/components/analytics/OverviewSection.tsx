@@ -231,7 +231,7 @@ export const OverviewSection: React.FC<OverviewSectionProps> = ({ dateRange }) =
         />
       </div>
 
-      {/* Job Volume Trend */}
+      {/* Job Volume Trend - Full Width Above */}
       <div className="mb-6">
         <TrendChart 
           data={trendData}
@@ -240,7 +240,7 @@ export const OverviewSection: React.FC<OverviewSectionProps> = ({ dateRange }) =
         />
       </div>
       
-      {/* Recent Activity - Full Width */}
+      {/* Recent Activity - Full Width Below Chart */}
       <div>
         <ActivityFeed dateRange={dateRange} />
       </div>
