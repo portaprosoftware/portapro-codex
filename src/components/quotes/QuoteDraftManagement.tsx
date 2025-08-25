@@ -59,8 +59,8 @@ export const QuoteDraftManagement: React.FC = () => {
 
   const handleResumeDraft = (draft: any) => {
     console.log('Resuming draft:', draft);
-    // Pass the quote_data from the draft
-    setSelectedDraft(draft.quote_data || draft);
+    // Pass the entire draft object to match job draft behavior
+    setSelectedDraft(draft);
     setIsResumeOpen(true);
   };
 
