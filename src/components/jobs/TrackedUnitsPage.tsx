@@ -70,6 +70,8 @@ export const TrackedUnitsPage: React.FC<TrackedUnitsPageProps> = ({
     queryFn: async () => {
       if (!product.id) return [];
       
+      console.log("TrackedUnitsPage: statusFilter =", statusFilter);
+      
       let query = supabase
         .from("product_items")
         .select("id, item_code, status")
@@ -77,11 +79,18 @@ export const TrackedUnitsPage: React.FC<TrackedUnitsPageProps> = ({
 
       // Apply status filter
       if (statusFilter !== "all") {
+        console.log("TrackedUnitsPage: Applying status filter:", statusFilter);
         query = query.eq("status", statusFilter);
       }
 
+      console.log("TrackedUnitsPage: About to execute query");
       const { data: items, error } = await query.order("item_code");
-      if (error) throw error;
+      if (error) {
+        console.error("TrackedUnitsPage: Query error:", error);
+        throw error;
+      }
+      
+      console.log("TrackedUnitsPage: Sample items:", items?.slice(0, 3));
       
       if (!items || items.length === 0) return [];
 
@@ -461,7 +470,12 @@ export const TrackedUnitsPage: React.FC<TrackedUnitsPageProps> = ({
 
         {!isLoading && filteredUnits.length === 0 && (
           <div className="text-center text-muted-foreground py-8">
-            {searchTerm ? 'No units match your search criteria' : 'No tracked units available'}
+            {statusFilter !== 'all' 
+              ? `No units found with status: ${statusFilter}` 
+              : searchTerm 
+                ? 'No units match your search criteria' 
+                : 'No tracked units available'
+            }
           </div>
         )}
       </div>
