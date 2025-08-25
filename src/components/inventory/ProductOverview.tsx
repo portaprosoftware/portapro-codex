@@ -464,7 +464,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
           <StockAdjustmentWizard
             productId={product.id}
             productName={product.name}
-            currentStock={product.stock_total}
+            currentStock={physicallyAvailable}
             onComplete={handleStockAdjustmentComplete}
             onCancel={() => setShowStockAdjustment(false)}
           />

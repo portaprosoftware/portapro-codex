@@ -197,7 +197,7 @@ export const EnhancedInventoryPage: React.FC<EnhancedInventoryPageProps> = ({ on
             <StockAdjustmentWizard
               productId={selectedProduct.id}
               productName={selectedProduct.name}
-              currentStock={selectedProduct.stock}
+              currentStock={selectedProduct.stock || 0}
               onComplete={handleAdjustmentComplete}
               onCancel={() => setShowAdjustment(false)}
             />
