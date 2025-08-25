@@ -270,7 +270,7 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-full h-full max-w-none md:max-w-[95vw] md:min-w-[1200px] md:h-auto md:max-h-[90vh] p-0 flex flex-col">
+      <DialogContent className="w-full h-full max-w-none md:max-w-[76vw] md:min-w-[960px] md:h-auto md:max-h-[72vh] p-0 flex flex-col">
         <DialogHeader className="p-6 pb-4 border-b">
           <DialogTitle className="text-xl font-semibold flex items-center gap-2">
             {currentPage === 'tracked-units' && (
