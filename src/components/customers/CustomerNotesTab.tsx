@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { FileText, Plus, Edit, Trash2, AlertCircle } from 'lucide-react';
+import { FileText, Plus, Edit, Trash2, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useCustomerNotes } from '@/hooks/useCustomerNotes';
 import { EditNotesModal } from './EditNotesModal';
+import { ViewNoteModal } from './ViewNoteModal';
 import { format } from 'date-fns';
 
 interface CustomerNotesTabProps {
@@ -14,7 +15,9 @@ interface CustomerNotesTabProps {
 export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
   const { notes, isLoading, addNote, updateNote, deleteNote } = useCustomerNotes(customerId);
   const [showModal, setShowModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
   const [editingNote, setEditingNote] = useState<any>(null);
+  const [viewingNote, setViewingNote] = useState<any>(null);
   const [selectedNoteType, setSelectedNoteType] = useState<'general' | 'service' | 'communication'>('general');
 
   const handleAddNote = (noteType: 'general' | 'service' | 'communication') => {
@@ -27,6 +30,11 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
     setEditingNote(note);
     setSelectedNoteType('general'); // Default type since we store all notes in same table
     setShowModal(true);
+  };
+
+  const handleViewNote = (note: any) => {
+    setViewingNote(note);
+    setShowViewModal(true);
   };
 
   const handleSaveNote = (noteData: {
@@ -107,64 +115,111 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-4">
-          {notes.map((note) => (
-            <Card key={note.id} className="rounded-2xl">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <div className="flex items-center gap-2">
-                  <FileText className="w-5 h-5" />
-                  <CardTitle className="text-base">
-                    {note.title || 'Customer Note'}
-                  </CardTitle>
-                   {note.is_important && (
-                     <Badge variant="destructive">
-                       Important
-                     </Badge>
-                   )}
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    onClick={() => handleEditNote(note)}
-                  >
-                    <Edit className="w-4 h-4" />
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    onClick={() => handleDeleteNote(note.id)}
-                    className="text-red-600 hover:text-red-700"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-foreground whitespace-pre-wrap mb-3">
-                  {note.note_text}
-                </p>
-                
-                {note.tags && note.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mb-3">
-                    {note.tags.map((tag, index) => (
-                      <Badge key={index} variant="outline" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
+        <Card className="rounded-2xl">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg">Notes</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-0">
+            {/* Header Row */}
+            <div className="grid grid-cols-12 gap-4 pb-3 border-b text-sm font-medium text-muted-foreground">
+              <div className="col-span-4">Title</div>
+              <div className="col-span-4">Content Preview</div>
+              <div className="col-span-2">Date</div>
+              <div className="col-span-2 text-right">Actions</div>
+            </div>
+            
+            {/* Notes List */}
+            <div className="space-y-0">
+              {notes.map((note) => (
+                <div
+                  key={note.id}
+                  className="grid grid-cols-12 gap-4 py-3 border-b last:border-b-0 hover:bg-muted/30 transition-colors"
+                >
+                  {/* Title Column */}
+                  <div className="col-span-4 space-y-1">
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleViewNote(note)}
+                        className="text-sm font-medium text-foreground hover:text-primary cursor-pointer text-left"
+                      >
+                        {note.title || 'Customer Note'}
+                      </button>
+                      {note.is_important && (
+                        <Badge variant="destructive" className="text-xs">
+                          Important
+                        </Badge>
+                      )}
+                    </div>
+                    {note.tags && note.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {note.tags.slice(0, 2).map((tag, index) => (
+                          <Badge key={index} variant="outline" className="text-xs h-5">
+                            {tag}
+                          </Badge>
+                        ))}
+                        {note.tags.length > 2 && (
+                          <Badge variant="outline" className="text-xs h-5">
+                            +{note.tags.length - 2} more
+                          </Badge>
+                        )}
+                      </div>
+                    )}
                   </div>
-                )}
-                
-                <div className="text-xs text-muted-foreground">
-                  Added {format(new Date(note.created_at), 'MMM d, yyyy \'at\' h:mm a')}
-                  {note.updated_at !== note.created_at && (
-                    <span> • Updated {format(new Date(note.updated_at), 'MMM d, yyyy \'at\' h:mm a')}</span>
-                  )}
+                  
+                  {/* Content Preview Column */}
+                  <div className="col-span-4">
+                    <p className="text-sm text-muted-foreground line-clamp-2">
+                      {note.note_text.length > 100 
+                        ? `${note.note_text.substring(0, 100)}...` 
+                        : note.note_text
+                      }
+                    </p>
+                  </div>
+                  
+                  {/* Date Column */}
+                  <div className="col-span-2">
+                    <div className="text-xs text-muted-foreground">
+                      {format(new Date(note.created_at), 'MMM d, yyyy')}
+                    </div>
+                    {note.updated_at !== note.created_at && (
+                      <div className="text-xs text-muted-foreground">
+                        Updated {format(new Date(note.updated_at), 'MMM d')}
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Actions Column */}
+                  <div className="col-span-2 flex items-center justify-end gap-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleViewNote(note)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleEditNote(note)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDeleteNote(note.id)}
+                      className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* Edit Modal */}
@@ -180,6 +235,13 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
           tags: editingNote.tags,
           is_important: editingNote.is_important,
         } : undefined}
+      />
+      
+      {/* View Note Modal */}
+      <ViewNoteModal
+        isOpen={showViewModal}
+        onClose={() => setShowViewModal(false)}
+        note={viewingNote}
       />
     </div>
   );
