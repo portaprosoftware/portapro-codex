@@ -3188,8 +3188,12 @@ export type Database = {
           additional_fees: number | null
           additional_fees_description: string | null
           amount: number
+          billing_address: string | null
           created_at: string
+          customer_email: string | null
           customer_id: string
+          customer_name: string | null
+          customer_phone: string | null
           discount_type: string | null
           discount_value: number | null
           due_date: string
@@ -3201,6 +3205,7 @@ export type Database = {
           quote_id: string | null
           recurring: boolean | null
           recurring_frequency: string | null
+          service_address: string | null
           status: string
           subtotal: number | null
           tax_amount: number | null
@@ -3211,8 +3216,12 @@ export type Database = {
           additional_fees?: number | null
           additional_fees_description?: string | null
           amount: number
+          billing_address?: string | null
           created_at?: string
+          customer_email?: string | null
           customer_id: string
+          customer_name?: string | null
+          customer_phone?: string | null
           discount_type?: string | null
           discount_value?: number | null
           due_date: string
@@ -3224,6 +3233,7 @@ export type Database = {
           quote_id?: string | null
           recurring?: boolean | null
           recurring_frequency?: string | null
+          service_address?: string | null
           status?: string
           subtotal?: number | null
           tax_amount?: number | null
@@ -3234,8 +3244,12 @@ export type Database = {
           additional_fees?: number | null
           additional_fees_description?: string | null
           amount?: number
+          billing_address?: string | null
           created_at?: string
+          customer_email?: string | null
           customer_id?: string
+          customer_name?: string | null
+          customer_phone?: string | null
           discount_type?: string | null
           discount_value?: number | null
           due_date?: string
@@ -3247,6 +3261,7 @@ export type Database = {
           quote_id?: string | null
           recurring?: boolean | null
           recurring_frequency?: string | null
+          service_address?: string | null
           status?: string
           subtotal?: number | null
           tax_amount?: number | null

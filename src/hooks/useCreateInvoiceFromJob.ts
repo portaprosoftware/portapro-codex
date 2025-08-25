@@ -17,10 +17,32 @@ export function useCreateInvoiceFromJob() {
     mutationFn: async ({ jobId, dueDate, notes, terms }: CreateInvoiceFromJobParams) => {
       console.log('Creating invoice from job:', jobId);
 
-      // Get the job details
+      // Get the job details with customer information
       const { data: job, error: jobError } = await supabase
         .from('jobs')
-        .select('*')
+        .select(`
+          *,
+          customers (
+            name,
+            email,
+            phone,
+            billing_differs_from_service,
+            billing_street,
+            billing_street2,
+            billing_city,
+            billing_state,
+            billing_zip,
+            service_street,
+            service_street2,
+            service_city,
+            service_state,
+            service_zip,
+            default_service_street,
+            default_service_city,
+            default_service_state,
+            default_service_zip
+          )
+        `)
         .eq('id', jobId)
         .single();
 
@@ -119,7 +141,15 @@ export function useCreateInvoiceFromJob() {
           due_date: dueDateString,
           status: 'unpaid',
           notes: notes || `Invoice for Job: ${job.job_number || jobId}`,
-          terms: terms || 'Net 7'
+          terms: terms || 'Net 7',
+          // Auto-fill customer contact information
+          customer_name: job.customers?.name || '',
+          customer_email: job.customers?.email || '',
+          customer_phone: job.customers?.phone || '',
+          billing_address: job.customers?.billing_differs_from_service 
+            ? [job.customers?.billing_street, job.customers?.billing_street2, job.customers?.billing_city, job.customers?.billing_state, job.customers?.billing_zip].filter(Boolean).join(', ')
+            : [job.customers?.service_street || job.customers?.default_service_street, job.customers?.service_street2, job.customers?.service_city || job.customers?.default_service_city, job.customers?.service_state || job.customers?.default_service_state, job.customers?.service_zip || job.customers?.default_service_zip].filter(Boolean).join(', '),
+          service_address: [job.customers?.service_street || job.customers?.default_service_street, job.customers?.service_street2, job.customers?.service_city || job.customers?.default_service_city, job.customers?.service_state || job.customers?.default_service_state, job.customers?.service_zip || job.customers?.default_service_zip].filter(Boolean).join(', ')
         })
         .select()
         .single();
