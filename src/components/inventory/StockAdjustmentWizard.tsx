@@ -10,6 +10,8 @@ interface StockAdjustmentWizardProps {
   currentStock: number;
   onComplete?: () => void;
   onCancel?: () => void;
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export const StockAdjustmentWizard: React.FC<StockAdjustmentWizardProps> = ({
@@ -17,16 +19,22 @@ export const StockAdjustmentWizard: React.FC<StockAdjustmentWizardProps> = ({
   productName,
   currentStock,
   onComplete,
-  onCancel
+  onCancel,
+  isOpen,
+  onOpenChange
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [localIsOpen, setLocalIsOpen] = useState(false);
+  
+  // Use passed props if available, otherwise use local state
+  const finalIsOpen = isOpen !== undefined ? isOpen : localIsOpen;
+  const finalOnOpenChange = onOpenChange || setLocalIsOpen;
 
   return (
     <TrackedOperationsPanel
       productId={productId}
       productName={productName}
-      isOpen={isOpen}
-      onOpenChange={setIsOpen}
+      isOpen={finalIsOpen}
+      onOpenChange={finalOnOpenChange}
       trigger={
         <Button className="bg-blue-600 hover:bg-blue-700 text-white">
           <Settings className="w-4 h-4 mr-2" />
@@ -34,7 +42,7 @@ export const StockAdjustmentWizard: React.FC<StockAdjustmentWizardProps> = ({
         </Button>
       }
       onClose={() => {
-        setIsOpen(false);
+        finalOnOpenChange(false);
         onComplete?.();
         onCancel?.();
       }}

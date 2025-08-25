@@ -459,17 +459,15 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
       )}
 
       {/* Stock Adjustment Wizard */}
-      <Dialog open={showStockAdjustment} onOpenChange={setShowStockAdjustment}>
-        <DialogContent className="max-w-md">
-          <StockAdjustmentWizard
-            productId={product.id}
-            productName={product.name}
-            currentStock={physicallyAvailable}
-            onComplete={handleStockAdjustmentComplete}
-            onCancel={() => setShowStockAdjustment(false)}
-          />
-        </DialogContent>
-      </Dialog>
+      <StockAdjustmentWizard
+        productId={product.id}
+        productName={product.name}
+        currentStock={physicallyAvailable}
+        onComplete={handleStockAdjustmentComplete}
+        onCancel={() => setShowStockAdjustment(false)}
+        isOpen={showStockAdjustment}
+        onOpenChange={setShowStockAdjustment}
+      />
 
       {/* Stock History Modal */}
       <Dialog open={showStockHistory} onOpenChange={setShowStockHistory}>
