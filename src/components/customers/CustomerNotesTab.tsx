@@ -233,6 +233,7 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
 
       {/* Edit Modal */}
       <EditNotesModal
+        key={editingNote?.id || 'new-note'}
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         onSave={handleSaveNote}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -34,10 +34,26 @@ export function EditNotesModal({
   noteType, 
   existingNote 
 }: EditNotesModalProps) {
-  const [title, setTitle] = useState(existingNote?.title || '');
-  const [noteText, setNoteText] = useState(existingNote?.note_text || '');
-  const [tags, setTags] = useState(existingNote?.tags?.join(', ') || '');
-  const [isImportant, setIsImportant] = useState(existingNote?.is_important || false);
+  const [title, setTitle] = useState('');
+  const [noteText, setNoteText] = useState('');
+  const [tags, setTags] = useState('');
+  const [isImportant, setIsImportant] = useState(false);
+
+  // Sync state with existingNote changes
+  useEffect(() => {
+    if (existingNote) {
+      setTitle(existingNote.title || '');
+      setNoteText(existingNote.note_text || '');
+      setTags(existingNote.tags?.join(', ') || '');
+      setIsImportant(existingNote.is_important || false);
+    } else {
+      // Reset for new notes
+      setTitle('');
+      setNoteText('');
+      setTags('');
+      setIsImportant(false);
+    }
+  }, [existingNote]);
 
   // Communication-focused tags
   const communicationTags = [
@@ -102,10 +118,18 @@ export function EditNotesModal({
   };
 
   const handleClose = () => {
-    setTitle(existingNote?.title || '');
-    setNoteText(existingNote?.note_text || '');
-    setTags(existingNote?.tags?.join(', ') || '');
-    setIsImportant(existingNote?.is_important || false);
+    // Reset form to original state or clear for new notes
+    if (existingNote) {
+      setTitle(existingNote.title || '');
+      setNoteText(existingNote.note_text || '');
+      setTags(existingNote.tags?.join(', ') || '');
+      setIsImportant(existingNote.is_important || false);
+    } else {
+      setTitle('');
+      setNoteText('');
+      setTags('');
+      setIsImportant(false);
+    }
     onClose();
   };
 
