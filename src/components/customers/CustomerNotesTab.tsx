@@ -31,6 +31,7 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
 
   const handleSaveNote = (noteData: {
     note_type: 'general' | 'service' | 'communication';
+    title?: string;
     note_text: string;
     tags?: string[];
     is_important?: boolean;
@@ -39,6 +40,7 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
       updateNote({
         noteId: editingNote.id,
         noteData: {
+          title: noteData.title,
           note_text: noteData.note_text,
           tags: noteData.tags,
           is_important: noteData.is_important,
@@ -46,6 +48,7 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
       });
     } else {
       addNote({
+        title: noteData.title,
         note_text: noteData.note_text,
         tags: noteData.tags,
         is_important: noteData.is_important,
@@ -111,7 +114,7 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
                 <div className="flex items-center gap-2">
                   <FileText className="w-5 h-5" />
                   <CardTitle className="text-base">
-                    Customer Note
+                    {note.title || 'Customer Note'}
                   </CardTitle>
                    {note.is_important && (
                      <Badge variant="destructive">
@@ -172,6 +175,7 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
         noteType={selectedNoteType}
         existingNote={editingNote ? {
           id: editingNote.id,
+          title: editingNote.title,
           note_text: editingNote.note_text,
           tags: editingNote.tags,
           is_important: editingNote.is_important,

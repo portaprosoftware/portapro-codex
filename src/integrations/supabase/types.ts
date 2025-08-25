@@ -1294,6 +1294,7 @@ export type Database = {
           is_important: boolean | null
           note_text: string
           tags: string[] | null
+          title: string | null
           updated_at: string
           user_id: string | null
         }
@@ -1305,6 +1306,7 @@ export type Database = {
           is_important?: boolean | null
           note_text: string
           tags?: string[] | null
+          title?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -1316,6 +1318,7 @@ export type Database = {
           is_important?: boolean | null
           note_text?: string
           tags?: string[] | null
+          title?: string | null
           updated_at?: string
           user_id?: string | null
         }

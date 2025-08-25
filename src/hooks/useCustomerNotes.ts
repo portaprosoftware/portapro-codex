@@ -5,6 +5,7 @@ import { toast } from '@/hooks/use-toast';
 interface CustomerNote {
   id: string;
   customer_id: string;
+  title?: string;
   note_text: string;
   tags?: string[];
   is_important?: boolean;
@@ -36,6 +37,7 @@ export function useCustomerNotes(customerId: string) {
   // Add note mutation
   const addNoteMutation = useMutation({
     mutationFn: async (noteData: {
+      title?: string;
       note_text: string;
       tags?: string[];
       is_important?: boolean;
@@ -44,6 +46,7 @@ export function useCustomerNotes(customerId: string) {
         .from('customer_notes')
         .insert({
           customer_id: customerId,
+          title: noteData.title,
           note_text: noteData.note_text,
           tags: noteData.tags || [],
           is_important: noteData.is_important || false,
@@ -79,6 +82,7 @@ export function useCustomerNotes(customerId: string) {
     }: { 
       noteId: string; 
       noteData: {
+        title?: string;
         note_text: string;
         tags?: string[];
         is_important?: boolean;
@@ -87,6 +91,7 @@ export function useCustomerNotes(customerId: string) {
       const { data, error } = await supabase
         .from('customer_notes')
         .update({
+          title: noteData.title,
           note_text: noteData.note_text,
           tags: noteData.tags || [],
           is_important: noteData.is_important || false,

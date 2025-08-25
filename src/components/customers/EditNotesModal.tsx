@@ -12,6 +12,7 @@ interface EditNotesModalProps {
   onClose: () => void;
   onSave: (noteData: {
     note_type: 'general' | 'service' | 'communication';
+    title?: string;
     note_text: string;
     tags?: string[];
     is_important?: boolean;
@@ -19,6 +20,7 @@ interface EditNotesModalProps {
   noteType: 'general' | 'service' | 'communication';
   existingNote?: {
     id: string;
+    title?: string;
     note_text: string;
     tags?: string[];
     is_important?: boolean;
@@ -32,6 +34,7 @@ export function EditNotesModal({
   noteType, 
   existingNote 
 }: EditNotesModalProps) {
+  const [title, setTitle] = useState(existingNote?.title || '');
   const [noteText, setNoteText] = useState(existingNote?.note_text || '');
   const [tags, setTags] = useState(existingNote?.tags?.join(', ') || '');
   const [isImportant, setIsImportant] = useState(existingNote?.is_important || false);
@@ -84,12 +87,14 @@ export function EditNotesModal({
 
     onSave({
       note_type: noteType,
+      title: title.trim() || undefined,
       note_text: noteText.trim(),
       tags: tags ? tags.split(',').map(tag => tag.trim()).filter(Boolean) : [],
       is_important: isImportant,
     });
 
     // Reset form
+    setTitle('');
     setNoteText('');
     setTags('');
     setIsImportant(false);
@@ -97,6 +102,7 @@ export function EditNotesModal({
   };
 
   const handleClose = () => {
+    setTitle(existingNote?.title || '');
     setNoteText(existingNote?.note_text || '');
     setTags(existingNote?.tags?.join(', ') || '');
     setIsImportant(existingNote?.is_important || false);
@@ -117,6 +123,17 @@ export function EditNotesModal({
         </DialogHeader>
         
         <div className="space-y-4 py-4">
+          <div>
+            <Label htmlFor="note-title">Note Title</Label>
+            <Input
+              id="note-title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Enter a title for this note..."
+              className="mt-1"
+            />
+          </div>
+
           <div>
             <Label htmlFor="note-text">Note Content *</Label>
             <Textarea
