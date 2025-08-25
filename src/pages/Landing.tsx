@@ -388,21 +388,30 @@ export const Landing: React.FC = () => {
               </div>
               
               <div className="space-y-6 mt-8">
-                <div className="flex items-center gap-6 flex-wrap opacity-90">
-                  <span className="text-white/80 text-sm">Trusted by operators across North America</span>
-                  <button
-                    onClick={() => {
-                      if (isMobile) {
-                        setFeaturesSheetOpen(true);
-                      } else {
-                        featuresMegaMenuRef.current?.triggerOpen();
-                      }
-                    }}
-                    className="flex items-center gap-2 text-white/80 text-sm font-medium hover:text-white transition-all duration-200"
-                  >
-                    <Compass className="w-4 h-4 animate-[spin_3s_linear_infinite]" />
-                    Explore All Features
-                  </button>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-6 flex-wrap opacity-90">
+                    <span className="text-white/80 text-sm">Trusted by operators across North America</span>
+                    <button
+                      onClick={() => {
+                        if (isMobile) {
+                          setFeaturesSheetOpen(true);
+                        } else {
+                          featuresMegaMenuRef.current?.triggerOpen();
+                        }
+                      }}
+                      className="flex items-center gap-2 text-white/80 text-sm font-medium hover:text-white transition-all duration-200"
+                    >
+                      <Compass className="w-4 h-4 animate-[spin_3s_linear_infinite]" />
+                      Explore All Features
+                    </button>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <h3 className="text-white/90 text-sm font-semibold">4 User Roles Included:</h3>
+                    <ul className="text-white/80 text-sm space-y-1">
+                      <li>• Admin, Driver/Tech, Dispatcher & Customers (for unique customer portals)</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
@@ -412,22 +421,22 @@ export const Landing: React.FC = () => {
             </div>
           </div>
           
-          {/* Feature badges - moved to blue background */}
-          <div className="container mx-auto max-w-6xl px-6 mt-6">
-            <div className="flex flex-wrap justify-center gap-2 mb-6">
-              <span className="px-3 py-1 rounded-full bg-gradient-blue text-white text-xs font-bold">
-                ✓ 14 Day Free Trial
-              </span>
-              <span className="px-3 py-1 rounded-full bg-gradient-blue text-white text-xs font-bold">
-                ✓ No setup fees
-              </span>
-              <span className="px-3 py-1 rounded-full bg-gradient-blue text-white text-xs font-bold">
-                ✓ Support included
-              </span>
-              <span className="px-3 py-1 rounded-full bg-gradient-blue text-white text-xs font-bold">
-                ✓ Unlimited users, trucks & units
-              </span>
-            </div>
+            {/* Feature badges - moved to blue background */}
+            <div className="container mx-auto max-w-6xl px-6 mt-6">
+              <div className="flex flex-wrap justify-center gap-2 mb-6">
+                <span className="px-3 py-1 rounded-full bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground text-xs font-bold">
+                  ✓ 14 Day Free Trial
+                </span>
+                <span className="px-3 py-1 rounded-full bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground text-xs font-bold">
+                  ✓ No setup fees
+                </span>
+                <span className="px-3 py-1 rounded-full bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground text-xs font-bold">
+                  ✓ Support included
+                </span>
+                <span className="px-3 py-1 rounded-full bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground text-xs font-bold">
+                  ✓ Unlimited users, trucks & units
+                </span>
+              </div>
             
             {/* Proof Bar - moved to blue background */}
             <div>
