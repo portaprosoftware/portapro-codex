@@ -1,6 +1,5 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ServiceAddressesSection } from './ServiceAddressesSection';
 import { MapPin, Navigation, Trash2, Search, Target, Plus, Edit2, X, Layers } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -692,31 +691,49 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
 };
 
 export function ServiceLocationTab({ customerId }: ServiceLocationTabProps) {
+  const [activeTab, setActiveTab] = useState('addresses');
+
   return (
     <div className="space-y-6">
       <div className="bg-card rounded-2xl p-6">
         <h3 className="text-lg font-semibold text-foreground mb-4">Service Locations</h3>
         
-        <Tabs defaultValue="addresses" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="addresses" className="flex items-center gap-2">
+        {/* Toggle Switch for Service Locations */}
+        <div className="mb-6 flex">
+          <div className="bg-gray-100 p-1 rounded-lg flex">
+            <button
+              onClick={() => setActiveTab('addresses')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-md font-medium text-sm transition-all duration-200 ${
+                activeTab === 'addresses'
+                  ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-sm'
+                  : 'text-gray-600 hover:text-gray-800'
+              }`}
+            >
               <MapPin className="w-4 h-4" />
               Physical Addresses
-            </TabsTrigger>
-            <TabsTrigger value="pins" className="flex items-center gap-2">
+            </button>
+            <button
+              onClick={() => setActiveTab('pins')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-md font-medium text-sm transition-all duration-200 ${
+                activeTab === 'pins'
+                  ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-sm'
+                  : 'text-gray-600 hover:text-gray-800'
+              }`}
+            >
               <Navigation className="w-4 h-4" />
               Drop Map Pins
-            </TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="addresses" className="mt-6">
+            </button>
+          </div>
+        </div>
+        
+        {/* Active Tab Content */}
+        <div className="mt-6">
+          {activeTab === 'addresses' ? (
             <ServiceAddressesSection customerId={customerId} />
-          </TabsContent>
-          
-          <TabsContent value="pins" className="mt-6">
+          ) : (
             <DropMapPinsSection customerId={customerId} />
-          </TabsContent>
-        </Tabs>
+          )}
+        </div>
       </div>
     </div>
   );
