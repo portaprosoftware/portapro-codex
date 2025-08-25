@@ -27,6 +27,23 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
 }) => {
   const queryClient = useQueryClient();
 
+  // Fetch storage locations for display names
+  const { data: storageLocations } = useQuery({
+    queryKey: ['storage-locations'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('storage_locations')
+        .select('id, name')
+        .order('name');
+      
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  // Get selected location name for display
+  const selectedLocationName = storageLocations?.find(loc => loc.id === selectedLocationId)?.name;
+
   // Set up real-time subscription for product_items changes
   useEffect(() => {
     console.log("ProductGrid: Setting up real-time subscription for product_items");
@@ -241,6 +258,8 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
             key={product.id}
             product={product}
             onSelect={() => onProductSelect(product.id)}
+            selectedLocationId={selectedLocationId}
+            selectedLocationName={selectedLocationName}
           />
         ))}
       </div>
@@ -254,6 +273,8 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
           key={product.id}
           product={product}
           onSelect={() => onProductSelect(product.id)}
+          selectedLocationId={selectedLocationId}
+          selectedLocationName={selectedLocationName}
         />
       ))}
     </div>

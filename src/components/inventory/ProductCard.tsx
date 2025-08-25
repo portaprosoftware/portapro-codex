@@ -38,13 +38,17 @@ interface ProductCardProps {
   onSelect: (selectedUnit?: SelectedUnit) => void;
   startDate?: string;
   endDate?: string;
+  selectedLocationId?: string;
+  selectedLocationName?: string;
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ 
   product, 
   onSelect, 
   startDate, 
-  endDate 
+  endDate,
+  selectedLocationId,
+  selectedLocationName
 }) => {
   const queryClient = useQueryClient();
   const [showLocationBreakdown, setShowLocationBreakdown] = useState(false);
@@ -359,10 +363,19 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       </div>
 
       {/* Available Count Badge */}
-      <div className="flex justify-center mb-3">
+      <div className="flex flex-col items-center mb-3 space-y-1">
         <Badge variant="success" className="text-xs px-2 py-1">
           {availableCount} Available
         </Badge>
+        {selectedLocationId && selectedLocationId !== "all" && selectedLocationName && (() => {
+          const locationStock = locationStocks?.find(ls => ls.storage_location_id === selectedLocationId);
+          const locationCount = locationStock?.quantity || 0;
+          return (
+            <div className="text-xs text-muted-foreground">
+              {locationCount} at {selectedLocationName}
+            </div>
+          );
+        })()}
       </div>
 
       {/* Product Info */}

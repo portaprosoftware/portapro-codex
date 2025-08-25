@@ -24,6 +24,8 @@ interface Product {
 interface ProductListItemProps {
   product: Product;
   onSelect: () => void;
+  selectedLocationId?: string;
+  selectedLocationName?: string;
 }
 
 interface LocationStock {
@@ -45,7 +47,12 @@ interface QuickStats {
   recentActivity: number;
 }
 
-export const ProductListItem: React.FC<ProductListItemProps> = ({ product, onSelect }) => {
+export const ProductListItem: React.FC<ProductListItemProps> = ({ 
+  product, 
+  onSelect, 
+  selectedLocationId, 
+  selectedLocationName 
+}) => {
   const queryClient = useQueryClient();
   const [showLocationBreakdown, setShowLocationBreakdown] = useState(false);
   const [showEquipmentBreakdown, setShowEquipmentBreakdown] = useState(false);
@@ -174,10 +181,19 @@ export const ProductListItem: React.FC<ProductListItemProps> = ({ product, onSel
         </div>
 
         {/* Available Count Badge */}
-        <div className="mr-2">
+        <div className="mr-2 flex flex-col items-center space-y-1">
           <Badge variant="success" className="text-xs px-2 py-1">
             {availableCount} Available
           </Badge>
+          {selectedLocationId && selectedLocationId !== "all" && selectedLocationName && (() => {
+            const locationStock = locationStocks?.find(ls => ls.storage_location_id === selectedLocationId);
+            const locationCount = locationStock?.quantity || 0;
+            return (
+              <div className="text-xs text-muted-foreground">
+                {locationCount} at {selectedLocationName}
+              </div>
+            );
+          })()}
         </div>
 
         {/* Status badge removed - will be replaced with unified badge system */}
