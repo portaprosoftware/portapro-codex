@@ -14,10 +14,11 @@ interface CustomerJobsTabProps {
 }
 
 const JOB_STATUSES = {
-  assigned: { label: 'Assigned', color: 'bg-blue-500' },
-  in_progress: { label: 'In Progress', color: 'bg-yellow-500' },
-  completed: { label: 'Completed', color: 'bg-green-500' },
-  cancelled: { label: 'Cancelled', color: 'bg-red-500' },
+  assigned: { label: 'Assigned', gradient: 'bg-gradient-to-r from-blue-500 to-blue-600' },
+  unassigned: { label: 'Unassigned', gradient: 'bg-gradient-to-r from-gray-500 to-gray-600' },
+  in_progress: { label: 'In Progress', gradient: 'bg-gradient-to-r from-yellow-500 to-yellow-600' },
+  completed: { label: 'Completed', gradient: 'bg-gradient-to-r from-green-500 to-green-600' },
+  cancelled: { label: 'Cancelled', gradient: 'bg-gradient-to-r from-red-500 to-red-600' },
 } as const;
 
 const JOB_TYPES = {
@@ -146,7 +147,7 @@ export function CustomerJobsTab({ customerId }: CustomerJobsTabProps) {
                   </TableCell>
                   <TableCell>
                     <Badge 
-                      className={`text-white ${JOB_STATUSES[job.status as keyof typeof JOB_STATUSES]?.color || 'bg-gray-500'}`}
+                      className={`text-white font-medium ${JOB_STATUSES[job.status as keyof typeof JOB_STATUSES]?.gradient || 'bg-gradient-to-r from-gray-500 to-gray-600'}`}
                     >
                       {JOB_STATUSES[job.status as keyof typeof JOB_STATUSES]?.label || job.status}
                     </Badge>
