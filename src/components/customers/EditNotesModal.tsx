@@ -184,6 +184,11 @@ export function EditNotesModal({
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             />
             <Label htmlFor="is-important">Mark as important</Label>
+            {isImportant && (
+              <Badge variant="destructive" className="ml-2">
+                Important
+              </Badge>
+            )}
           </div>
         </div>
 

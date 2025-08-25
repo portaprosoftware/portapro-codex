@@ -113,12 +113,11 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
                   <CardTitle className="text-base">
                     Customer Note
                   </CardTitle>
-                  {note.is_important && (
-                    <Badge variant="destructive" className="flex items-center gap-1">
-                      <AlertCircle className="w-3 h-3" />
-                      Important
-                    </Badge>
-                  )}
+                   {note.is_important && (
+                     <Badge variant="destructive">
+                       Important
+                     </Badge>
+                   )}
                 </div>
                 <div className="flex items-center gap-2">
                   <Button 
