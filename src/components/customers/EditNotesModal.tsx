@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 
 interface EditNotesModalProps {
   isOpen: boolean;
@@ -34,6 +35,43 @@ export function EditNotesModal({
   const [noteText, setNoteText] = useState(existingNote?.note_text || '');
   const [tags, setTags] = useState(existingNote?.tags?.join(', ') || '');
   const [isImportant, setIsImportant] = useState(existingNote?.is_important || false);
+
+  // Quick tag options based on note type
+  const getQuickTags = () => {
+    const commonTags = ['Important', 'Follow-up', 'Urgent', 'Completed', 'In progress'];
+    const communicationTags = ['Call today', 'Text message', 'Email sent', 'Scheduled callback', 'No answer'];
+    const serviceTags = ['Service required', 'Issue resolved', 'Parts needed', 'Scheduled', 'Customer request'];
+    
+    switch (noteType) {
+      case 'communication':
+        return [...communicationTags, ...commonTags];
+      case 'service':
+        return [...serviceTags, ...commonTags];
+      default:
+        return commonTags;
+    }
+  };
+
+  const quickTags = getQuickTags();
+
+  const handleQuickTagClick = (tag: string) => {
+    const currentTags = tags ? tags.split(',').map(t => t.trim()).filter(Boolean) : [];
+    
+    if (currentTags.includes(tag)) {
+      // Remove tag if already present
+      const newTags = currentTags.filter(t => t !== tag);
+      setTags(newTags.join(', '));
+    } else {
+      // Add tag if not present
+      const newTags = [...currentTags, tag];
+      setTags(newTags.join(', '));
+    }
+  };
+
+  const isTagSelected = (tag: string) => {
+    const currentTags = tags ? tags.split(',').map(t => t.trim()).filter(Boolean) : [];
+    return currentTags.includes(tag);
+  };
 
   const handleSave = () => {
     if (!noteText.trim()) return;
@@ -86,12 +124,34 @@ export function EditNotesModal({
           </div>
 
           <div>
-            <Label htmlFor="tags">Tags (comma-separated)</Label>
+            <Label htmlFor="tags">Tags</Label>
+            
+            {/* Quick Tags Section */}
+            <div className="mt-2 mb-3">
+              <Label className="text-sm text-muted-foreground mb-2 block">Quick Tags</Label>
+              <div className="flex flex-wrap gap-2">
+                {quickTags.map((tag) => (
+                  <Badge
+                    key={tag}
+                    variant={isTagSelected(tag) ? "default" : "outline"}
+                    className={`cursor-pointer transition-colors hover:bg-primary/10 ${
+                      isTagSelected(tag) 
+                        ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white' 
+                        : 'hover:border-primary/50'
+                    }`}
+                    onClick={() => handleQuickTagClick(tag)}
+                  >
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+
             <Input
               id="tags"
               value={tags}
               onChange={(e) => setTags(e.target.value)}
-              placeholder="e.g., urgent, follow-up, important"
+              placeholder="Add custom tags (comma-separated)"
               className="mt-1"
             />
           </div>
