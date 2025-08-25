@@ -5,16 +5,11 @@ import { supabase } from '@/integrations/supabase/client';
 
 interface QuoteDraft {
   id: string;
-  quote_number: string;
-  customer_id: string;
-  total_amount: number;
-  status: string;
+  name: string;
+  quote_data: any;
+  created_by: string;
   created_at: string;
   updated_at: string;
-  customers?: {
-    name: string;
-    email: string;
-  };
 }
 
 export const useQuoteDrafts = () => {
@@ -28,15 +23,9 @@ export const useQuoteDrafts = () => {
       if (!user?.id) throw new Error('User not authenticated');
       
       const { data, error } = await supabase
-        .from('quotes')
-        .select(`
-          *,
-          customers:customer_id (
-            name,
-            email
-          )
-        `)
-        .eq('status', 'draft')
+        .from('quote_drafts')
+        .select('*')
+        .eq('created_by', user.id)
         .order('updated_at', { ascending: false });
 
       if (error) throw error;
@@ -45,47 +34,53 @@ export const useQuoteDrafts = () => {
     enabled: !!user?.id,
   });
 
-  // Save draft mutation - now works with quotes table
+  // Save draft mutation
   const saveDraftMutation = useMutation({
-    mutationFn: async ({ quoteNumber, customerId, totalAmount, quoteId }: { 
-      quoteNumber: string; 
-      customerId: string; 
-      totalAmount: number; 
-      quoteId?: string; 
-    }) => {
+    mutationFn: async ({ name, data, draftId }: { name: string; data: any; draftId?: string }) => {
+      console.log('saveDraftMutation called with:', { name, data, draftId });
       if (!user?.id) throw new Error('User not authenticated');
 
-      if (quoteId) {
-        // Update existing draft quote
+      console.log('User ID:', user.id);
+      console.log('Draft data:', JSON.stringify(data, null, 2));
+
+      if (draftId) {
+        // Update existing draft
+        console.log('Updating existing draft:', draftId);
         const { error } = await supabase
-          .from('quotes')
+          .from('quote_drafts')
           .update({
-            quote_number: quoteNumber,
-            customer_id: customerId,
-            total_amount: totalAmount,
+            name,
+            quote_data: data,
             updated_at: new Date().toISOString(),
           })
-          .eq('id', quoteId)
-          .eq('status', 'draft');
+          .eq('id', draftId)
+          .eq('created_by', user.id);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Update draft error:', error);
+          throw error;
+        }
+        console.log('Draft updated successfully');
       } else {
-        // Create new draft quote
+        // Create new draft
+        console.log('Creating new draft');
         const { error } = await supabase
-          .from('quotes')
+          .from('quote_drafts')
           .insert({
-            quote_number: quoteNumber,
-            customer_id: customerId,
-            total_amount: totalAmount,
-            status: 'draft',
+            name,
+            quote_data: data,
+            created_by: user.id,
           });
 
-        if (error) throw error;
+        if (error) {
+          console.error('Create draft error:', error);
+          throw error;
+        }
+        console.log('Draft created successfully');
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['quote-drafts'] });
-      queryClient.invalidateQueries({ queryKey: ['quotes'] });
     },
   });
 
@@ -95,22 +90,21 @@ export const useQuoteDrafts = () => {
       if (!user?.id) throw new Error('User not authenticated');
 
       const { error } = await supabase
-        .from('quotes')
+        .from('quote_drafts')
         .delete()
         .eq('id', draftId)
-        .eq('status', 'draft');
+        .eq('created_by', user.id);
 
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['quote-drafts'] });
-      queryClient.invalidateQueries({ queryKey: ['quotes'] });
     },
   });
 
   const saveDraft = useCallback(
-    (quoteNumber: string, customerId: string, totalAmount: number, quoteId?: string) => {
-      return saveDraftMutation.mutateAsync({ quoteNumber, customerId, totalAmount, quoteId });
+    (name: string, data: any, draftId?: string) => {
+      return saveDraftMutation.mutateAsync({ name, data, draftId });
     },
     [saveDraftMutation]
   );

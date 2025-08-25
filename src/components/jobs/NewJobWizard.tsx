@@ -39,18 +39,7 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
   
   // Create wrapper function to handle different signatures
   const saveDraft = wizardMode === 'quote' 
-    ? (name: string, data: any) => {
-        // For quotes, we need to extract the required data
-        const quoteNumber = name || `QUOTE-${Date.now()}`;
-        const customerId = data.customer_id || '';
-        const totalAmount = data.totalCost || 0;
-        
-        if (!customerId) {
-          throw new Error('Customer ID is required to save quote draft');
-        }
-        
-        return saveQuoteDraft(quoteNumber, customerId, totalAmount);
-      }
+    ? saveQuoteDraft
     : saveJobDraft;
   const isSaving = wizardMode === 'quote' ? isSavingQuote : isSavingJob;
   const createJobMutation = useCreateJob();

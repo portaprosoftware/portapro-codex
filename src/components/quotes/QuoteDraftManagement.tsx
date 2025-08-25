@@ -58,7 +58,9 @@ export const QuoteDraftManagement: React.FC = () => {
   }
 
   const handleResumeDraft = (draft: any) => {
-    setSelectedDraft(draft);
+    console.log('Resuming draft:', draft);
+    // Pass the quote_data from the draft
+    setSelectedDraft(draft.quote_data || draft);
     setIsResumeOpen(true);
   };
 
@@ -118,9 +120,9 @@ export const QuoteDraftManagement: React.FC = () => {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
-                    <h4 className="font-semibold text-foreground">{draft.quote_number || `Draft Quote ${draft.id.slice(0, 8)}`}</h4>
+                    <h4 className="font-semibold text-foreground">{draft.name}</h4>
                     <p className="text-sm text-muted-foreground">
-                      {draft.customers?.name || 'No customer assigned'} • ${(draft.total_amount || 0).toFixed(2)}
+                      {(draft.quote_data as any)?.customer?.name || 'No customer assigned'} • ${((draft.quote_data as any)?.totalCost || 0).toFixed(2)}
                     </p>
                     <p className="text-sm text-muted-foreground">
                       Last updated {formatDistanceToNow(new Date(draft.updated_at), { addSuffix: true })}
