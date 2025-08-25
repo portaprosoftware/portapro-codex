@@ -152,14 +152,10 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
             
             // Handle location-specific filtering
             if (selectedLocationId && selectedLocationId !== "all") {
-              console.log("ProductGrid: Filtering by location", selectedLocationId);
-              console.log("ProductGrid: Product location stock data", product.product_location_stock);
-              
               if (product.product_location_stock && Array.isArray(product.product_location_stock)) {
                 const locationData = product.product_location_stock.find(
                   (ls: any) => ls?.storage_location_id === selectedLocationId
                 );
-                console.log("ProductGrid: Found location data", locationData);
                 
                 if (locationData) {
                   // For location-specific view, use the location quantity directly
@@ -172,6 +168,11 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
                 // No location stock data - show product but with 0 count for location-specific view
                 availableCount = 0;
               }
+            }
+            
+            // If filtering by location and product has no stock at that location, exclude it
+            if (selectedLocationId && selectedLocationId !== "all" && availableCount === 0) {
+              return false;
             }
             
             const lowStockThreshold = product.low_stock_threshold || 5;
