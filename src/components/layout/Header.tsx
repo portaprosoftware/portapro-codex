@@ -25,6 +25,21 @@ export const Header: React.FC = () => {
     }
   };
 
+  const getRoleDisplayName = (role: string) => {
+    switch (role) {
+      case "owner":
+        return "Admin";
+      case "dispatch":
+        return "Dispatch";
+      case "driver":
+        return "Driver";
+      case "customer":
+        return "Customer";
+      default:
+        return "User";
+    }
+  };
+
   return (
     <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -33,7 +48,7 @@ export const Header: React.FC = () => {
         <div className="flex items-center gap-4">
           {user && role && (
             <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium capitalize shadow-sm">
-              {role}
+              {getRoleDisplayName(role)}
             </div>
           )}
           
