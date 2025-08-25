@@ -5,13 +5,62 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, Package, MapPin, Hash } from "lucide-react";
+import { ChevronDown, Package, MapPin, Hash, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useUnifiedStockManagement } from "@/hooks/useUnifiedStockManagement";
 
 interface AvailableNowSliderProps {
   isOpen: boolean;
   onClose: () => void;
 }
+
+interface ProductOverviewCardProps {
+  productId: string;
+  productName: string;
+}
+
+const ProductOverviewCard: React.FC<ProductOverviewCardProps> = ({ productId, productName }) => {
+  const { stockData, calculations, isLoading } = useUnifiedStockManagement(productId);
+  
+  if (isLoading || !stockData || !calculations) {
+    return (
+      <div className="bg-white rounded-lg p-4 border border-gray-200 mb-3">
+        <div className="flex items-center gap-2 mb-3">
+          <BarChart3 className="w-4 h-4 text-blue-600" />
+          <span className="font-medium text-gray-900">Inventory Overview</span>
+        </div>
+        <div className="text-sm text-gray-500">Loading overview...</div>
+      </div>
+    );
+  }
+
+  const { individual_items, totals } = stockData;
+  const totalOnJob = individual_items.assigned;
+  const totalMaintenance = individual_items.maintenance + totals.in_maintenance;
+
+  return (
+    <div className="bg-white rounded-lg p-4 border border-gray-200 mb-3">
+      <div className="flex items-center gap-2 mb-3">
+        <BarChart3 className="w-4 h-4 text-blue-600" />
+        <span className="font-medium text-gray-900">Inventory Overview</span>
+      </div>
+      
+      <div className="flex flex-wrap gap-2">
+        <Badge className="bg-gradient-to-r from-green-600 to-green-700 text-white font-bold">
+          {totals.bulk_pool} Bulk Pool Available
+        </Badge>
+        
+        <Badge className="bg-gradient-to-r from-yellow-600 to-yellow-700 text-white font-bold">
+          {totalOnJob} Total On Job
+        </Badge>
+        
+        <Badge className="bg-gradient-to-r from-orange-600 to-orange-700 text-white font-bold">
+          {totalMaintenance} Total Maintenance
+        </Badge>
+      </div>
+    </div>
+  );
+};
 
 export const AvailableNowSlider: React.FC<AvailableNowSliderProps> = ({ isOpen, onClose }) => {
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
@@ -40,7 +89,7 @@ export const AvailableNowSlider: React.FC<AvailableNowSliderProps> = ({ isOpen, 
 
   // Fetch all products with their inventory data
   const { data: productsWithItems = [], isLoading } = useQuery({
-    queryKey: ['products-with-items'],
+    queryKey: ['products-with-items-all'],
     queryFn: async () => {
       const { data: products, error } = await supabase
         .from('products')
@@ -61,7 +110,6 @@ export const AvailableNowSlider: React.FC<AvailableNowSliderProps> = ({ isOpen, 
             winterized
           )
         `)
-        .eq('track_inventory', true)
         .order('name');
       
       if (error) throw error;
@@ -138,8 +186,18 @@ export const AvailableNowSlider: React.FC<AvailableNowSliderProps> = ({ isOpen, 
                 
                 <CollapsibleContent>
                   <div className="border-t bg-gray-50 p-4">
-                    <div className="space-y-3">
-                      {product.items.map((item) => (
+                    {/* Product Overview Card */}
+                    <ProductOverviewCard 
+                      productId={product.id} 
+                      productName={product.name}
+                    />
+                    
+                    {/* Tracked Units Section */}
+                    {product.items.length > 0 && (
+                      <div className="mb-4">
+                        <h4 className="font-medium text-gray-900 mb-3">Individual Tracked Units</h4>
+                        <div className="space-y-3">
+                          {product.items.map((item) => (
                         <div key={item.id} className="bg-white rounded-lg p-3 border border-gray-200">
                           <div className="flex items-start justify-between">
                             <div className="space-y-1">
@@ -178,9 +236,17 @@ export const AvailableNowSlider: React.FC<AvailableNowSliderProps> = ({ isOpen, 
                               )}
                             </div>
                           </div>
+                          </div>
+                        ))}
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    )}
+                    
+                    {product.items.length === 0 && (
+                      <div className="text-center py-4 text-gray-500 text-sm">
+                        No individual tracked units for this product
+                      </div>
+                    )}
                   </div>
                 </CollapsibleContent>
               </div>
