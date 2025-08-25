@@ -3,7 +3,7 @@
  */
 
 export const clearClerkCache = () => {
-  console.log('Clearing Clerk authentication cache...');
+  console.log('Clearing authentication cache (Clerk + Supabase)...');
   
   // Clear localStorage keys related to Clerk
   const clerkKeys = Object.keys(localStorage).filter(key => 
@@ -28,8 +28,25 @@ export const clearClerkCache = () => {
     console.log('Removing sessionStorage key:', key);
     sessionStorage.removeItem(key);
   });
+
+  // Clear Supabase auth keys (avoid limbo states when switching environments)
+  const supabaseLocalKeys = Object.keys(localStorage).filter(key =>
+    key.startsWith('supabase.auth.') || key.includes('sb-')
+  );
+  supabaseLocalKeys.forEach(key => {
+    console.log('Removing Supabase localStorage key:', key);
+    localStorage.removeItem(key);
+  });
+
+  const supabaseSessionKeys = Object.keys(sessionStorage).filter(key =>
+    key.startsWith('supabase.auth.') || key.includes('sb-')
+  );
+  supabaseSessionKeys.forEach(key => {
+    console.log('Removing Supabase sessionStorage key:', key);
+    sessionStorage.removeItem(key);
+  });
   
-  console.log('Clerk cache cleared. Please refresh the page.');
+  console.log('Auth cache cleared. Please refresh the page.');
 };
 
 export const logCurrentAuthState = () => {

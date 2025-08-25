@@ -6,9 +6,20 @@ import App from './App.tsx'
 import './index.css'
 import './scanner.css'
 import './utils/devUtils.ts' // Load dev utilities
+import { clearClerkCache } from './utils/authCleanup'
 
 const envClerkKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
-const PUBLISHABLE_KEY = envClerkKey ?? "pk_test_YWN0dWFsLW11dHQtOTEuY2xlcmsuYWNjb3VudHMuZGV2JA";
+const defaultDevKey = "pk_test_YWN0dWFsLW11dHQtOTEuY2xlcmsuYWNjb3VudHMuZGV2JA";
+const isDevHost = location.hostname.includes('localhost') || location.hostname.includes('lovable.dev');
+const isLiveKey = envClerkKey?.startsWith('pk_live_') ?? false;
+
+let effectiveClerkKey = envClerkKey ?? defaultDevKey;
+if (isLiveKey && isDevHost) {
+  console.warn("Detected production Clerk key on a dev host. Falling back to dev key and clearing auth cache.");
+  try { clearClerkCache(); } catch {}
+  effectiveClerkKey = defaultDevKey;
+}
+
 if (!envClerkKey) {
   console.warn("VITE_CLERK_PUBLISHABLE_KEY not set; using provided development publishable key.");
 }
@@ -62,7 +73,7 @@ const queryClient = new QueryClient({
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
+      <ClerkProvider publishableKey={effectiveClerkKey}>
         <App />
       </ClerkProvider>
     </QueryClientProvider>
