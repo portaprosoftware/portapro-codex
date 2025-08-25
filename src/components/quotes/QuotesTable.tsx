@@ -10,12 +10,15 @@ import { ViewQuoteModal } from "./ViewQuoteModal";
 import { useConvertQuoteToJob } from "@/hooks/useConvertQuoteToJob";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { DateRange } from 'react-day-picker';
+import { format } from 'date-fns';
 
 interface QuotesTableProps {
   searchTerm: string;
+  dateRange?: DateRange;
 }
 
-export const QuotesTable = ({ searchTerm }: QuotesTableProps) => {
+export const QuotesTable = ({ searchTerm, dateRange }: QuotesTableProps) => {
   const [showCreateQuote, setShowCreateQuote] = useState(false);
   const [showCreateInvoice, setShowCreateInvoice] = useState(false);
   const [selectedQuoteForInvoice, setSelectedQuoteForInvoice] = useState<any>(null);
@@ -25,7 +28,7 @@ export const QuotesTable = ({ searchTerm }: QuotesTableProps) => {
   const convertQuoteToJob = useConvertQuoteToJob();
 
   const { data: quotes, isLoading } = useQuery({
-    queryKey: ['quotes', searchTerm],
+    queryKey: ['quotes', searchTerm, dateRange],
     queryFn: async () => {
       let query = supabase
         .from('quotes')
@@ -41,6 +44,14 @@ export const QuotesTable = ({ searchTerm }: QuotesTableProps) => {
 
       if (searchTerm) {
         query = query.or(`quote_number.ilike.%${searchTerm}%,customers.name.ilike.%${searchTerm}%`);
+      }
+
+      if (dateRange?.from) {
+        query = query.gte('created_at', format(dateRange.from, 'yyyy-MM-dd'));
+      }
+      
+      if (dateRange?.to) {
+        query = query.lte('created_at', format(dateRange.to, 'yyyy-MM-dd') + ' 23:59:59');
       }
 
       const { data, error } = await query;

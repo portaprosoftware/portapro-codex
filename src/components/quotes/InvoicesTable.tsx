@@ -12,19 +12,21 @@ import { CollectPaymentModal } from "./CollectPaymentModal";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { getInvoiceStatusBadgeVariant } from "@/lib/statusBadgeUtils";
+import { DateRange } from 'react-day-picker';
 
 interface InvoicesTableProps {
   searchTerm: string;
+  dateRange?: DateRange;
 }
 
-export const InvoicesTable = ({ searchTerm }: InvoicesTableProps) => {
+export const InvoicesTable = ({ searchTerm, dateRange }: InvoicesTableProps) => {
   const [showCreateInvoice, setShowCreateInvoice] = useState(false);
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(null);
   const [selectedInvoiceForPayment, setSelectedInvoiceForPayment] = useState<any>(null);
   const queryClient = useQueryClient();
 
   const { data: invoices = [], isLoading, error } = useQuery({
-    queryKey: ['invoices', searchTerm],
+    queryKey: ['invoices', searchTerm, dateRange],
     queryFn: async () => {
       let query = supabase
         .from('invoices')
@@ -39,6 +41,14 @@ export const InvoicesTable = ({ searchTerm }: InvoicesTableProps) => {
 
       if (searchTerm) {
         query = query.or(`invoice_number.ilike.%${searchTerm}%`);
+      }
+
+      if (dateRange?.from) {
+        query = query.gte('created_at', format(dateRange.from, 'yyyy-MM-dd'));
+      }
+      
+      if (dateRange?.to) {
+        query = query.lte('created_at', format(dateRange.to, 'yyyy-MM-dd') + ' 23:59:59');
       }
 
       const { data, error } = await query;

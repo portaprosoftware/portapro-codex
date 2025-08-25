@@ -24,6 +24,8 @@ import { InvoiceCreationWizard } from '@/components/quotes/InvoiceCreationWizard
 import { QuotesExportModal } from '@/components/quotes/QuotesExportModal';
 import { InvoicesExportModal } from '@/components/invoices/InvoicesExportModal';
 import { QuickBooksExportModal } from '@/components/quotes/QuickBooksExportModal';
+import { QuoteDateFilters } from '@/components/quotes/QuoteDateFilters';
+import { DateRange } from 'react-day-picker';
 
 const QuotesInvoices: React.FC = () => {
   const { hasAdminAccess } = useUserRole();
@@ -35,6 +37,7 @@ const QuotesInvoices: React.FC = () => {
   const [showQuickBooksInvoiceExport, setShowQuickBooksInvoiceExport] = useState(false);
   const [showQuoteWizard, setShowQuoteWizard] = useState(false);
   const [showInvoiceWizard, setShowInvoiceWizard] = useState(false);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
 
   // Fetch quote metrics
   const { data: quoteMetrics } = useQuery({
@@ -161,6 +164,12 @@ const QuotesInvoices: React.FC = () => {
             </Card>
           </div>
 
+          {/* Date Filters */}
+          <QuoteDateFilters 
+            dateRange={dateRange}
+            onDateRangeChange={setDateRange}
+          />
+
           {/* Quotes Section */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -204,7 +213,7 @@ const QuotesInvoices: React.FC = () => {
               </div>
             </div>
 
-            <QuotesTable searchTerm={searchTerm} />
+            <QuotesTable searchTerm={searchTerm} dateRange={dateRange} />
           </div>
 
           {/* Quote Drafts Section */}
@@ -262,6 +271,12 @@ const QuotesInvoices: React.FC = () => {
             </Card>
           </div>
 
+          {/* Date Filters */}
+          <QuoteDateFilters 
+            dateRange={dateRange}
+            onDateRangeChange={setDateRange}
+          />
+
           {/* Invoices Section */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -305,7 +320,7 @@ const QuotesInvoices: React.FC = () => {
               </div>
             </div>
 
-            <InvoicesTable searchTerm={searchTerm} />
+            <InvoicesTable searchTerm={searchTerm} dateRange={dateRange} />
           </div>
         </div>
       )}
