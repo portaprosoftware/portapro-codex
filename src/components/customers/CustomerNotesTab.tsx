@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { FileText, Plus, Edit, Trash2, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Eye, Edit, Trash2, Plus, Filter, FileText } from 'lucide-react';
 import { useCustomerNotes } from '@/hooks/useCustomerNotes';
 import { EditNotesModal } from './EditNotesModal';
 import { ViewNoteModal } from './ViewNoteModal';
 import { DeleteConfirmationModal } from '@/components/ui/delete-confirmation-modal';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { format } from 'date-fns';
 
 interface CustomerNotesTabProps {
@@ -22,6 +25,22 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
   const [viewingNote, setViewingNote] = useState<any>(null);
   const [deletingNote, setDeletingNote] = useState<any>(null);
   const [selectedNoteType, setSelectedNoteType] = useState<'general' | 'service' | 'communication'>('general');
+  
+  // Filter states
+  const [selectedCommunicationTag, setSelectedCommunicationTag] = useState<string>('all');
+  const [selectedGeneralTag, setSelectedGeneralTag] = useState<string>('all');
+  const [showImportantOnly, setShowImportantOnly] = useState(false);
+
+  // Tag options
+  const communicationTags = [
+    'Call today', 'Text message', 'Follow-up required', 'Email sent', 
+    'Urgent', 'Important', 'Scheduled callback', 'No answer'
+  ];
+  
+  const generalTags = [
+    'Follow-up', 'Urgent', 'Important', 'Completed', 'In progress', 
+    'Needs attention', 'Customer request', 'Internal note'
+  ];
 
   const handleAddNote = (noteType: 'general' | 'service' | 'communication') => {
     setSelectedNoteType(noteType);
@@ -79,18 +98,98 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
     }
   };
 
+  // Filter notes based on selected criteria
+  const filteredNotes = notes?.filter(note => {
+    // Filter by important status
+    if (showImportantOnly && !note.is_important) {
+      return false;
+    }
+
+    // Filter by communication tags
+    if (selectedCommunicationTag !== 'all') {
+      const hasTag = note.tags?.includes(selectedCommunicationTag);
+      if (!hasTag) return false;
+    }
+
+    // Filter by general tags
+    if (selectedGeneralTag !== 'all') {
+      const hasTag = note.tags?.includes(selectedGeneralTag);
+      if (!hasTag) return false;
+    }
+
+    return true;
+  }) || [];
+
   if (isLoading) {
     return (
-      <div className="space-y-6">
-        <div className="text-center py-8">
-          <p className="text-muted-foreground">Loading notes...</p>
-        </div>
+      <div className="flex items-center justify-center h-32">
+        <div className="text-muted-foreground">Loading notes...</div>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
+      {/* Filters Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Filter className="h-5 w-5" />
+            Filters
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Communication Tags Filter */}
+            <div className="space-y-2">
+              <Label htmlFor="communication-filter">Communication</Label>
+              <Select value={selectedCommunicationTag} onValueChange={setSelectedCommunicationTag}>
+                <SelectTrigger className="bg-background border border-border">
+                  <SelectValue placeholder="All communication tags" />
+                </SelectTrigger>
+                <SelectContent className="bg-background border border-border shadow-lg z-50">
+                  <SelectItem value="all">All communication tags</SelectItem>
+                  {communicationTags.map((tag) => (
+                    <SelectItem key={tag} value={tag}>{tag}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* General Tags Filter */}
+            <div className="space-y-2">
+              <Label htmlFor="general-filter">General</Label>
+              <Select value={selectedGeneralTag} onValueChange={setSelectedGeneralTag}>
+                <SelectTrigger className="bg-background border border-border">
+                  <SelectValue placeholder="All general tags" />
+                </SelectTrigger>
+                <SelectContent className="bg-background border border-border shadow-lg z-50">
+                  <SelectItem value="all">All general tags</SelectItem>
+                  {generalTags.map((tag) => (
+                    <SelectItem key={tag} value={tag}>{tag}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Important Toggle */}
+            <div className="space-y-2">
+              <Label htmlFor="important-toggle">Important Only</Label>
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="important-toggle"
+                  checked={showImportantOnly}
+                  onCheckedChange={setShowImportantOnly}
+                />
+                <span className="text-sm text-muted-foreground">
+                  {showImportantOnly ? 'Showing important notes only' : 'Showing all notes'}
+                </span>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Notes Header */}
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-foreground">Customer Notes</h3>
@@ -103,30 +202,37 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
         </Button>
       </div>
 
-      {/* Notes List */}
-      {notes.length === 0 ? (
+      {/* Notes Display */}
+      {filteredNotes.length === 0 ? (
         <Card className="rounded-2xl">
           <CardContent className="py-12">
             <div className="text-center">
               <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-foreground mb-2">No Notes Yet</h3>
+              <h3 className="text-lg font-medium text-foreground mb-2">
+                {notes?.length === 0 ? 'No Notes Yet' : 'No Matching Notes'}
+              </h3>
               <p className="text-muted-foreground mb-4">
-                Start by adding your first note for this customer.
+                {notes?.length === 0 
+                  ? 'Start by adding your first note for this customer.'
+                  : 'Try adjusting your filters to see more notes.'
+                }
               </p>
-              <Button
-                onClick={() => handleAddNote('general')}
-                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Add First Note
-              </Button>
+              {notes?.length === 0 && (
+                <Button
+                  onClick={() => handleAddNote('general')}
+                  className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add First Note
+                </Button>
+              )}
             </div>
           </CardContent>
         </Card>
       ) : (
         <Card className="rounded-2xl">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Notes</CardTitle>
+            <CardTitle className="text-lg">Notes ({filteredNotes.length})</CardTitle>
           </CardHeader>
           <CardContent className="space-y-0">
             {/* Header Row */}
@@ -139,7 +245,7 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
             
             {/* Notes List */}
             <div className="space-y-0">
-              {notes.map((note) => (
+              {filteredNotes.map((note) => (
                 <div
                   key={note.id}
                   className="grid grid-cols-12 gap-4 py-3 border-b last:border-b-0 hover:bg-muted/30 transition-colors"
