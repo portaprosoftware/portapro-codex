@@ -23,10 +23,10 @@ const TotalStockDisplay: React.FC<{ productId: string }> = ({ productId }) => {
   const { stockData, isLoading } = useUnifiedStockManagement(productId);
   
   if (isLoading || !stockData) {
-    return <span className="text-sm text-gray-600">Loading...</span>;
+    return <span className="text-white font-bold">Loading...</span>;
   }
   
-  return <span className="text-sm text-gray-600">{stockData.master_stock} total</span>;
+  return <span className="text-white font-bold">{stockData.master_stock} total</span>;
 };
 
 const ProductOverviewCard: React.FC<ProductOverviewCardProps> = ({ productId, productName }) => {

@@ -382,7 +382,7 @@ const Inventory: React.FC = () => {
                     onClick={() => setShowIndividualUnitsSlider(true)}
                     className="flex items-center gap-2"
                   >
-                    <Sliders className="h-4 w-4" />
+                    <Sliders className="h-4 w-4 rotate-90" />
                     All Units
                   </Button>
                 </div>
