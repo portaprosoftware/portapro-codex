@@ -46,6 +46,7 @@ export const TrackedUnitsPage: React.FC<TrackedUnitsPageProps> = ({
   existingSelectedUnits = []
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
   // Initialize with existing selected units for this product
   const [selectedUnits, setSelectedUnits] = useState<Set<string>>(() => {
     const existingForThisProduct = existingSelectedUnits
@@ -65,7 +66,7 @@ export const TrackedUnitsPage: React.FC<TrackedUnitsPageProps> = ({
 
   // Fetch units with availability check for date range
   const { data: units = [], isLoading } = useQuery({
-    queryKey: ["tracked-units", product.id, startDate, endDate],
+    queryKey: ["tracked-units", product.id, startDate, endDate, statusFilter],
     queryFn: async () => {
       if (!product.id) return [];
       
@@ -73,6 +74,11 @@ export const TrackedUnitsPage: React.FC<TrackedUnitsPageProps> = ({
         .from("product_items")
         .select("id, item_code, status")
         .eq("product_id", product.id);
+
+      // Apply status filter
+      if (statusFilter !== "all") {
+        query = query.eq("status", statusFilter);
+      }
 
       const { data: items, error } = await query.order("item_code");
       if (error) throw error;
@@ -269,15 +275,30 @@ export const TrackedUnitsPage: React.FC<TrackedUnitsPageProps> = ({
 
   return (
     <div className="p-6 space-y-4 flex-1 overflow-hidden flex flex-col">
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Search by item code, color, size, or material..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-8"
-        />
+      {/* Search and Status Filter */}
+      <div className="flex gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search by item code, color, size, or material..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-8"
+          />
+        </div>
+        
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="w-48 bg-white">
+            <SelectValue placeholder="All Availability" />
+          </SelectTrigger>
+          <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
+            <SelectItem value="all">All Availability</SelectItem>
+            <SelectItem value="available">Available</SelectItem>
+            <SelectItem value="assigned">On Job</SelectItem>
+            <SelectItem value="maintenance">Maintenance</SelectItem>
+            <SelectItem value="out_of_service">Permanently Retired</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Variation Filters */}
