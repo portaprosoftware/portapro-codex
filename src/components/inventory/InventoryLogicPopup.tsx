@@ -21,67 +21,79 @@ export const InventoryLogicPopup: React.FC = () => {
       </DialogTrigger>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>How Inventory Works in PortaPro</DialogTitle>
+          <DialogTitle>Understanding Operations</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 text-sm">
           <div className="bg-muted/50 p-4 rounded-lg border border-border">
-            <h4 className="font-semibold text-foreground mb-2">1. Converting Bulk to Tracked</h4>
+            <h4 className="font-semibold text-foreground mb-2">1. Convert</h4>
             <p className="text-muted-foreground mb-2">
-              If you already have <strong>50 bulk units</strong> and convert 10 of them to tracked, the total fleet doesn't change.
+              <strong>Before:</strong> Bulk = 50, Tracked = 0 → Total = 50
             </p>
-            <p className="text-muted-foreground">
-              <span className="font-semibold text-foreground">➡️ You'll now see <strong>10 tracked + 40 bulk = 50 total units.</strong></span>
+            <p className="text-muted-foreground mb-2">
+              You convert 10 bulk units into tracked units.
             </p>
+            <p className="text-muted-foreground mb-2">
+              <strong>After:</strong> Bulk = 40, Tracked = 10 → Total = 50
+            </p>
+            <ul className="text-muted-foreground space-y-1 ml-4">
+              <li>• Bulk decreases by 10 (50 → 40)</li>
+              <li>• Tracked increases by 10 (0 → 10)</li>
+              <li>• Total unchanged (50 → 50)</li>
+            </ul>
           </div>
           
           <div className="bg-muted/50 p-4 rounded-lg border border-border">
-            <h4 className="font-semibold text-foreground mb-2">2. Adding Bulk Inventory</h4>
+            <h4 className="font-semibold text-foreground mb-2">2. Add Tracked</h4>
             <p className="text-muted-foreground mb-2">
-              When you add new bulk units, you increase the fleet size.
+              <strong>Before:</strong> Bulk = 50, Tracked = 0 → Total = 50
             </p>
             <p className="text-muted-foreground mb-2">
-              <span className="font-semibold text-foreground">➡️ For example, adding <strong>10 new bulk units</strong> to your existing 50 gives you <strong>60 total units.</strong></span>
+              You add 5 new tracked units with serial numbers.
             </p>
-            <p className="text-muted-foreground">
-              Any of these can later be tracked individually if needed.
+            <p className="text-muted-foreground mb-2">
+              <strong>After:</strong> Bulk = 50, Tracked = 5 → Total = 55
             </p>
+            <ul className="text-muted-foreground space-y-1 ml-4">
+              <li>• Bulk unchanged (50 → 50)</li>
+              <li>• Tracked increases by 5 (0 → 5)</li>
+              <li>• Total increases by 5 (50 → 55)</li>
+            </ul>
           </div>
           
           <div className="bg-muted/50 p-4 rounded-lg border border-border">
-            <h4 className="font-semibold text-foreground mb-2">3. Starting With Tracked Units</h4>
-            <p className="text-muted-foreground mb-3">
-              You don't have to start with bulk — you can begin with tracked units, or even mix both.
+            <h4 className="font-semibold text-foreground mb-2">3. Add Bulk</h4>
+            <p className="text-muted-foreground mb-2">
+              <strong>Before:</strong> Bulk = 50, Tracked = 0 → Total = 50
             </p>
-            
-            <div className="mb-3">
-              <p className="text-muted-foreground font-semibold mb-1">Example A (Converting):</p>
-              <p className="text-muted-foreground mb-1">
-                Start with <strong>10 bulk units</strong>. If you later decide to track all of them, you'll see <strong>10 bulk + 10 tracked = 10 total units.</strong>
-              </p>
-              <p className="text-muted-foreground">
-                Nothing was added — you're just creating tracked records for the same 10 that already existed.
-              </p>
-            </div>
-            
-            <div>
-              <p className="text-muted-foreground font-semibold mb-1">Example B (Extending):</p>
-              <p className="text-muted-foreground mb-1">
-                After that, if you add <strong>5 new units directly as tracked</strong>, they stack on top of your original fleet.
-              </p>
-              <p className="text-muted-foreground mb-1">
-                Now you'll see <strong>15 tracked + 10 bulk = 15 total units.</strong>
-              </p>
-              <p className="text-muted-foreground">
-                The total reflects your real fleet size, whether units came in bulk or tracked directly.
-              </p>
-            </div>
+            <p className="text-muted-foreground mb-2">
+              You add 10 new bulk units.
+            </p>
+            <p className="text-muted-foreground mb-2">
+              <strong>After:</strong> Bulk = 60, Tracked = 0 → Total = 60
+            </p>
+            <ul className="text-muted-foreground space-y-1 ml-4">
+              <li>• Bulk increases by 10 (50 → 60)</li>
+              <li>• Tracked unchanged (0 → 0)</li>
+              <li>• Total increases by 10 (50 → 60)</li>
+            </ul>
           </div>
           
           <div className="bg-muted/50 p-4 rounded-lg border border-border">
-            <h4 className="font-semibold text-foreground mb-2">Why it works this way</h4>
-            <p className="text-muted-foreground">
-              Your fleet total <strong>always matches reality.</strong> Whether you begin bulk-first, tracked-first, or a mix, PortaPro adapts to your workflow so you can manage your inventory in the way that makes the most sense for your business.
+            <h4 className="font-semibold text-foreground mb-2">4. Remove Bulk</h4>
+            <p className="text-muted-foreground mb-2">
+              <strong>Before:</strong> Bulk = 50, Tracked = 0 → Total = 50
             </p>
+            <p className="text-muted-foreground mb-2">
+              You remove 5 bulk units from inventory.
+            </p>
+            <p className="text-muted-foreground mb-2">
+              <strong>After:</strong> Bulk = 45, Tracked = 0 → Total = 45
+            </p>
+            <ul className="text-muted-foreground space-y-1 ml-4">
+              <li>• Bulk decreases by 5 (50 → 45)</li>
+              <li>• Tracked unchanged (0 → 0)</li>
+              <li>• Total decreases by 5 (50 → 45)</li>
+            </ul>
           </div>
         </div>
       </DialogContent>
