@@ -45,7 +45,7 @@ const ProductOverviewCard: React.FC<ProductOverviewCardProps> = ({ productId, pr
   }
 
   const { individual_items, totals, master_stock } = stockData;
-  const totalOnJob = master_stock - totals.physically_available - totals.in_maintenance;
+  const totalOnJob = totals.total_reserved; // This now includes both tracked and bulk reservations
   const totalMaintenance = totals.in_maintenance;
   const availableTracked = individual_items.available;
 

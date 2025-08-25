@@ -11,12 +11,16 @@ interface UnifiedStockData {
     available: number;
     assigned: number;
     maintenance: number;
+    reserved: number;
   };
   bulk_stock: {
     pool_available: number;
+    reserved: number;
+    location_breakdown?: any[];
   };
   totals: {
     physically_available: number;
+    total_reserved: number;
     in_maintenance: number;
     tracked_individual: number;
     bulk_pool: number;
@@ -36,7 +40,7 @@ interface StockAdjustmentResult {
   error?: string;
 }
 
-// Hash function for efficient change detection
+  // Hash function for efficient change detection
 const hashStockData = (data: UnifiedStockData): string => {
   return JSON.stringify({
     master_stock: data.master_stock,
@@ -44,6 +48,8 @@ const hashStockData = (data: UnifiedStockData): string => {
     individual_assigned: data.individual_items.assigned,
     individual_maintenance: data.individual_items.maintenance,
     bulk_pool: data.totals.bulk_pool,
+    bulk_reserved: data.bulk_stock.reserved,
+    total_reserved: data.totals.total_reserved,
     physically_available: data.totals.physically_available,
   });
 };
@@ -390,9 +396,9 @@ export const useUnifiedStockManagement = (productId: string) => {
         },
         { 
           label: 'On Job', 
-          count: individual_items.assigned, 
+          count: totals.total_reserved, 
           color: 'bg-yellow-500',
-          description: 'Individual items assigned to jobs (inventory not available)'
+          description: 'Units currently assigned to jobs (includes both tracked and bulk reservations)'
         },
         { 
           label: 'Maintenance', 
