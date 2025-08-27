@@ -274,9 +274,15 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
         )}
 
         {/* No Results */}
-        {!isLoading && !error && !availability && dateRange?.from && (
+        {!isLoading && !error && !availability && !dateRange?.from && (
           <div className="text-center py-4 text-gray-500">
             Select a date range to check availability
+          </div>
+        )}
+        
+        {!isLoading && !error && !availability && dateRange?.from && (
+          <div className="text-center py-4 text-gray-500">
+            No availability data found for the selected date range
           </div>
         )}
       </CardContent>
