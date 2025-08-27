@@ -40,6 +40,7 @@ import { MapModeToggle } from '@/components/maps/MapModeToggle';
 import { MapLegend } from '@/components/maps/MapLegend';
 import { JobDraftManagement } from '@/components/jobs/JobDraftManagement';
 import { useJobDrafts } from '@/hooks/useJobDrafts';
+import { JobsCalendarAvailability } from '@/components/jobs/JobsCalendarAvailability';
 
 
 const JobsPage: React.FC = () => {
@@ -525,69 +526,77 @@ const JobsPage: React.FC = () => {
           )}
 
           {activeTab === 'calendar' && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Going Out Card */}
-              <div className="bg-white rounded-lg border shadow-sm">
-                <div className="p-6 border-b border-gray-200">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <h3 className="enterprise-card-title mb-0">Going Out ({filterJobs(outgoingJobs).length})</h3>
+            <div className="space-y-6">
+              {/* Availability Tracker */}
+              <JobsCalendarAvailability
+                selectedDate={selectedDate}
+                onDateSelect={setSelectedDate}
+              />
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Going Out Card */}
+                <div className="bg-white rounded-lg border shadow-sm">
+                  <div className="p-6 border-b border-gray-200">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <h3 className="enterprise-card-title mb-0">Going Out ({filterJobs(outgoingJobs).length})</h3>
+                      </div>
                     </div>
                   </div>
+                  
+                  <div className="p-6">
+                    {filterJobs(outgoingJobs).length > 0 ? (
+                      <div className="space-y-4">
+                        {filterJobs(outgoingJobs).map(job => (
+                          <JobCard
+                            key={job.id}
+                            job={job}
+                            onView={handleJobView}
+                            onEquipmentAssign={handleEquipmentAssign}
+                            compact
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="enterprise-empty-state">
+                        <ClipboardList className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                        <p className="text-lg font-medium text-gray-500 font-inter">No jobs scheduled</p>
+                        <p className="text-sm text-gray-400 font-inter">No outgoing jobs for this date</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                
-                <div className="p-6">
-                  {filterJobs(outgoingJobs).length > 0 ? (
-                    <div className="space-y-4">
-                      {filterJobs(outgoingJobs).map(job => (
-                        <JobCard
-                          key={job.id}
-                          job={job}
-                          onView={handleJobView}
-                          onEquipmentAssign={handleEquipmentAssign}
-                          compact
-                        />
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="enterprise-empty-state">
-                      <ClipboardList className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                      <p className="text-lg font-medium text-gray-500 font-inter">No jobs scheduled</p>
-                      <p className="text-sm text-gray-400 font-inter">No outgoing jobs for this date</p>
-                    </div>
-                  )}
-                </div>
-              </div>
 
-              {/* Coming Back Card */}
-              <div className="bg-white rounded-lg border shadow-sm">
-                <div className="p-6 border-b border-gray-200">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <h3 className="enterprise-card-title mb-0">Coming Back ({incomingJobs.length})</h3>
+                {/* Coming Back Card */}
+                <div className="bg-white rounded-lg border shadow-sm">
+                  <div className="p-6 border-b border-gray-200">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <h3 className="enterprise-card-title mb-0">Coming Back ({incomingJobs.length})</h3>
+                      </div>
                     </div>
                   </div>
-                </div>
-                
-                <div className="p-6">
-                  {incomingJobs.length > 0 ? (
-                    <div className="space-y-4">
-                      {incomingJobs.map(job => (
-                        <JobCard
-                          key={job.id}
-                          job={job}
-                          onView={handleJobView}
-                          compact
-                        />
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="enterprise-empty-state">
-                      <ClipboardList className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                      <p className="text-lg font-medium text-gray-500 font-inter">No pickups scheduled</p>
-                      <p className="text-sm text-gray-400 font-inter">No incoming jobs for this date</p>
-                    </div>
-                  )}
+                  
+                  <div className="p-6">
+                    {incomingJobs.length > 0 ? (
+                      <div className="space-y-4">
+                        {incomingJobs.map(job => (
+                          <JobCard
+                            key={job.id}
+                            job={job}
+                            onView={handleJobView}
+                            compact
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="enterprise-empty-state">
+                        <ClipboardList className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                        <p className="text-lg font-medium text-gray-500 font-inter">No pickups scheduled</p>
+                        <p className="text-sm text-gray-400 font-inter">No incoming jobs for this date</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

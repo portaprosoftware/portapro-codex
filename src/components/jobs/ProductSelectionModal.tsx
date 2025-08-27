@@ -8,9 +8,11 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { NumberInput } from '@/components/ui/number-input';
 import { useAvailabilityEngine } from '@/hooks/useAvailabilityEngine';
-import { Search, Package, Eye, Layers, ArrowLeft, Plus, Trash2 } from 'lucide-react';
+import { DateRangeAvailabilityChecker } from '@/components/inventory/DateRangeAvailabilityChecker';
+import { Search, Package, Eye, Layers, ArrowLeft, Plus, Trash2, Calendar } from 'lucide-react';
 import { PRODUCT_TYPES, type ProductType } from '@/lib/productTypes';
 import { TrackedUnitsPage } from './TrackedUnitsPage';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface Product {
   id: string;
@@ -291,18 +293,44 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
         <div className="flex-1 overflow-hidden flex">
           {currentPage === 'main' ? (
             <>
-              {/* Left side - Product selection */}
+              {/* Left side - Tabbed interface */}
               <div className="flex-1 flex flex-col overflow-hidden">
-                <ProductListPage
-                  startDate={startDate}
-                  endDate={endDate}
-                  onBulkSelect={handleBulkSelect}
-                  onViewTrackedUnits={handleViewTrackedUnits}
-                  bulkQuantities={bulkQuantities}
-                  onBulkQuantityChange={setBulkQuantities}
-                  selectedUnitsCollection={selectedUnitsCollection}
-                  currentSelections={currentSelections}
-                />
+                <Tabs defaultValue="products" className="h-full flex flex-col">
+                  <div className="p-4 border-b">
+                    <TabsList className="grid w-full grid-cols-2">
+                      <TabsTrigger value="products" className="flex items-center gap-2">
+                        <Package className="h-4 w-4" />
+                        Select Products
+                      </TabsTrigger>
+                      <TabsTrigger value="availability" className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4" />
+                        Check Availability
+                      </TabsTrigger>
+                    </TabsList>
+                  </div>
+                  
+                  <TabsContent value="products" className="flex-1 overflow-hidden m-0">
+                    <ProductListPage
+                      startDate={startDate}
+                      endDate={endDate}
+                      onBulkSelect={handleBulkSelect}
+                      onViewTrackedUnits={handleViewTrackedUnits}
+                      bulkQuantities={bulkQuantities}
+                      onBulkQuantityChange={setBulkQuantities}
+                      selectedUnitsCollection={selectedUnitsCollection}
+                      currentSelections={currentSelections}
+                    />
+                  </TabsContent>
+                  
+                  <TabsContent value="availability" className="flex-1 overflow-hidden m-0 p-4">
+                    <DateRangeAvailabilityChecker
+                      productId={selectedProductId}
+                      productName="All Products"
+                      requestedQuantity={1}
+                      className="h-full"
+                    />
+                  </TabsContent>
+                </Tabs>
               </div>
               
               {/* Right side - Selected units sidebar - Always visible */}

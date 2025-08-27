@@ -1,11 +1,14 @@
 
-import React from "react";
-import { Package, TrendingUp, AlertTriangle, Clock, DollarSign, Activity } from "lucide-react";
+import React, { useState } from "react";
+import { Package, TrendingUp, AlertTriangle, Clock, DollarSign, Activity, Calendar } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { AvailabilityCalendar } from "./AvailabilityCalendar";
+import { DateRangeAvailabilityChecker } from "./DateRangeAvailabilityChecker";
 
 interface InventoryMetrics {
   totalItems: number;
@@ -19,6 +22,8 @@ interface InventoryMetrics {
 }
 
 export const InventoryDashboard: React.FC = () => {
+  const [showAvailabilityTools, setShowAvailabilityTools] = useState(false);
+  
   const { data: metrics, isLoading } = useQuery({
     queryKey: ["inventory-metrics"],
     queryFn: async (): Promise<InventoryMetrics> => {
@@ -99,8 +104,64 @@ export const InventoryDashboard: React.FC = () => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <Card>
+    <div className="space-y-6">
+      {/* Availability Tools Toggle */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900">Inventory Dashboard</h2>
+          <p className="text-sm text-gray-600">Overview of your inventory metrics and availability</p>
+        </div>
+        <Button
+          variant={showAvailabilityTools ? "default" : "outline"}
+          onClick={() => setShowAvailabilityTools(!showAvailabilityTools)}
+          className="flex items-center gap-2"
+        >
+          <Calendar className="h-4 w-4" />
+          {showAvailabilityTools ? "Hide" : "Show"} Availability Tools
+        </Button>
+      </div>
+
+      {/* Availability Tools Section */}
+      {showAvailabilityTools && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Calendar className="h-5 w-5" />
+                Date Range Availability Checker
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="max-h-96 overflow-y-auto">
+              <DateRangeAvailabilityChecker
+                productId=""
+                productName="Select a product to check availability"
+                requestedQuantity={1}
+              />
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Calendar className="h-5 w-5" />
+                Availability Calendar
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="max-h-96 overflow-y-auto">
+              <AvailabilityCalendar
+                productId=""
+                productName="Select a product to view calendar"
+                requestedQuantity={1}
+                onDateSelect={(date) => console.log('Selected date:', date)}
+              />
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Metrics Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Total Inventory</CardTitle>
           <Package className="h-4 w-4 text-muted-foreground" />
@@ -178,6 +239,7 @@ export const InventoryDashboard: React.FC = () => {
           </p>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 };
