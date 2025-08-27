@@ -329,7 +329,7 @@ export function JobTypeSchedulingStep() {
                       placeholder="Enter days"
                     />
                     <p className="text-xs text-muted-foreground">
-                      1 day = 24 hours from your delivery time
+                      Day 1 starts on delivery date
                     </p>
                   </div>
 
@@ -347,7 +347,7 @@ export function JobTypeSchedulingStep() {
                           }
                         }}
                       />
-                      <Label className="text-sm font-medium">Track hours (less than 24 hours)</Label>
+                      <Label className="text-sm font-medium">Track Hourly (equipment billed hourly)</Label>
                     </div>
                      <p className="text-xs text-muted-foreground">
                        Use hours for rentals under 24h. Days and hours cannot be combined. To see exact start and end times in the live preview, set a delivery time.
