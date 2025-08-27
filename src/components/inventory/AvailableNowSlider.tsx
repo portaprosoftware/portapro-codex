@@ -58,7 +58,7 @@ const ProductOverviewCard: React.FC<ProductOverviewCardProps> = ({ productId, pr
       
       <div className="flex flex-wrap gap-2">
         <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold">
-          {stockData.bulk_stock.total} Available Bulk Pool
+          All Tracked Inventory
         </Badge>
         
         <Badge className="bg-gradient-to-r from-green-600 to-green-700 text-white font-bold">

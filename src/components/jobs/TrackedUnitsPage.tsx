@@ -31,7 +31,6 @@ interface TrackedUnitsPageProps {
   startDate: string;
   endDate?: string | null;
   onUnitsSelect: (units: SelectedUnit[], productName: string) => void;
-  onBulkSelect: (product: Product, quantity: number) => void;
   onBack: () => void;
   existingSelectedUnits?: SelectedUnit[];
 }
@@ -41,7 +40,6 @@ export const TrackedUnitsPage: React.FC<TrackedUnitsPageProps> = ({
   startDate,
   endDate,
   onUnitsSelect,
-  onBulkSelect,
   onBack,
   existingSelectedUnits = []
 }) => {
@@ -270,10 +268,7 @@ export const TrackedUnitsPage: React.FC<TrackedUnitsPageProps> = ({
     onUnitsSelect(selectedUnitsList, product.name);
   };
 
-  const handleBulkSelection = () => {
-    onBulkSelect(product, 1); // Default quantity of 1 for bulk from tracked units page
-    onBack();
-  };
+  // Bulk selection no longer available in tracked-only mode
 
   const handleVariationFilterChange = (variationType: string, value: string) => {
     setVariationFilters(prev => ({

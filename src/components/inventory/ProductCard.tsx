@@ -194,7 +194,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   
   // Use unified stock management for accurate calculations
   const availableCount = stockData?.unified_available || 0;
-  const inMaintenanceCount = 0; // Not available in current response
+  const inMaintenanceCount = stockData?.individual_items?.maintenance || 0;
   const onJobCount = stockData?.individual_items?.assigned || 0;
 
   // Filter individual units based on search term

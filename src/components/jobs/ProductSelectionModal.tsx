@@ -60,22 +60,16 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   const [currentPage, setCurrentPage] = useState<'main' | 'tracked-units'>('main');
   const [selectedProductForTracking, setSelectedProductForTracking] = useState<Product | null>(null);
   const [selectedUnitsCollection, setSelectedUnitsCollection] = useState<UnitSelection[]>([]);
-  const [bulkQuantities, setBulkQuantities] = useState<Record<string, number>>({});
 
   // Get current selections from existing job items for display
   const currentSelections = useMemo(() => {
-    const selections: Record<string, { bulk: number, specific: string[] }> = {};
+    const selections: Record<string, { specific: string[] }> = {};
     existingJobItems.forEach(item => {
       if (!selections[item.product_id]) {
-        selections[item.product_id] = { bulk: 0, specific: [] };
+        selections[item.product_id] = { specific: [] };
       }
-      if (item.strategy === 'bulk') {
-        selections[item.product_id].bulk += item.quantity;
-      } else if (item.strategy === 'specific' && item.specific_item_ids) {
+      if (item.strategy === 'specific' && item.specific_item_ids) {
         selections[item.product_id].specific.push(...item.specific_item_ids);
-        if (item.bulk_additional) {
-          selections[item.product_id].bulk += item.bulk_additional;
-        }
       }
     });
     return selections;
@@ -87,7 +81,6 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
       setCurrentPage('main');
       setSelectedProductForTracking(null);
       setSelectedUnitsCollection([]);
-      setBulkQuantities({});
     }
   }, [open]);
 
@@ -101,10 +94,10 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
     setSelectedProductForTracking(null);
   };
 
-  const handleBulkSelect = (product: Product, quantity: number) => {
+  const handleQuantitySelect = (product: Product, quantity: number) => {
     if (quantity <= 0) return;
     
-    // Auto-assign specific units instead of bulk selection
+    // Auto-assign specific units
     autoAssignUnits(product, quantity);
   };
 
@@ -186,10 +179,7 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
               const adjustedQuantity = remainingForBulk;
               
               // Update bulk quantities state
-              setBulkQuantities(prev => ({
-                ...prev,
-                [productId]: adjustedQuantity
-              }));
+                      // Bulk quantities no longer needed
               
               // Update the collection with adjusted bulk quantity
               setSelectedUnitsCollection(current => {
@@ -320,10 +310,8 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
                     <ProductListPage
                       startDate={startDate}
                       endDate={endDate}
-                      onBulkSelect={handleBulkSelect}
+                      onQuantitySelect={handleQuantitySelect}
                       onViewTrackedUnits={handleViewTrackedUnits}
-                      bulkQuantities={bulkQuantities}
-                      onBulkQuantityChange={setBulkQuantities}
                       selectedUnitsCollection={selectedUnitsCollection}
                       currentSelections={currentSelections}
                     />
@@ -477,7 +465,6 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
                 startDate={startDate}
                 endDate={endDate}
                 onUnitsSelect={handleUnitsSelect}
-                onBulkSelect={handleBulkSelect}
                 onBack={handleBackToMain}
                 existingSelectedUnits={[
                   // Include current session selections
@@ -504,21 +491,17 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
 interface ProductListPageProps {
   startDate: string;
   endDate?: string | null;
-  onBulkSelect: (product: Product, quantity: number) => void;
+  onQuantitySelect: (product: Product, quantity: number) => void;
   onViewTrackedUnits: (product: Product) => void;
-  bulkQuantities: Record<string, number>;
-  onBulkQuantityChange: (quantities: Record<string, number>) => void;
   selectedUnitsCollection: UnitSelection[];
-  currentSelections: Record<string, { bulk: number, specific: string[] }>;
+  currentSelections: Record<string, { specific: string[] }>;
 }
 
 const ProductListPage: React.FC<ProductListPageProps> = ({
   startDate,
   endDate,
-  onBulkSelect,
+  onQuantitySelect,
   onViewTrackedUnits,
-  bulkQuantities,
-  onBulkQuantityChange,
   selectedUnitsCollection,
   currentSelections
 }) => {
@@ -710,12 +693,7 @@ const ProductListPage: React.FC<ProductListPageProps> = ({
                 product={product}
                 startDate={startDate}
                 endDate={endDate}
-                quantity={bulkQuantities[product.id] || 1}
-                onQuantityChange={(qty) => onBulkQuantityChange({
-                  ...bulkQuantities,
-                  [product.id]: qty
-                })}
-                onBulkSelect={() => onBulkSelect(product, bulkQuantities[product.id] || 1)}
+                onQuantitySelect={onQuantitySelect}
                 onViewTrackedUnits={() => onViewTrackedUnits(product)}
                 selectedUnitsCollection={selectedUnitsCollection}
                 currentSelections={currentSelections}
@@ -732,25 +710,22 @@ interface ProductCardProps {
   product: Product;
   startDate: string;
   endDate?: string | null;
-  quantity: number;
-  onQuantityChange: (quantity: number) => void;
-  onBulkSelect: () => void;
+  onQuantitySelect: (product: Product, quantity: number) => void;
   onViewTrackedUnits: () => void;
   selectedUnitsCollection: UnitSelection[];
-  currentSelections: Record<string, { bulk: number, specific: string[] }>;
+  currentSelections: Record<string, { specific: string[] }>;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
   product,
   startDate,
   endDate,
-  quantity,
-  onQuantityChange,
-  onBulkSelect,
+  onQuantitySelect,
   onViewTrackedUnits,
   selectedUnitsCollection,
   currentSelections
 }) => {
+  const [quantity, setQuantity] = React.useState(1);
   
   // Query to get the actual individual items count for this product
   const { data: individualItemsCount = 0 } = useQuery({
@@ -780,7 +755,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   };
   
   // Get current selections for this product from the job
-  const productCurrentSelections = currentSelections[product.id] || { bulk: 0, specific: [] };
+  const productCurrentSelections = currentSelections[product.id] || { specific: [] };
   
   const getMethodDisplayText = (method: string) => {
     switch (method) {
@@ -806,12 +781,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
     selection => selection.productId === product.id && selection.unitId !== 'bulk'
   ).length;
 
-  // Calculate remaining available units for bulk selection
+  // Calculate remaining available units
   const totalAvailable = availability.data?.available ?? 0;
   const alreadySelectedSpecific = productCurrentSelections.specific.length;
-  const alreadySelectedBulk = productCurrentSelections.bulk;
-  const totalAlreadySelected = alreadySelectedSpecific + alreadySelectedBulk;
-  const remainingForBulk = Math.max(0, totalAvailable - selectedSpecificUnits - totalAlreadySelected);
+  const totalAlreadySelected = alreadySelectedSpecific;
+  const remainingAvailable = Math.max(0, totalAvailable - selectedSpecificUnits - totalAlreadySelected);
 
   const getAvailabilityColor = (available: number, total: number) => {
     if (available === 0) return 'destructive';
@@ -901,27 +875,24 @@ const ProductCard: React.FC<ProductCardProps> = ({
             {alreadySelectedSpecific > 0 && (
               <div>• {alreadySelectedSpecific} specific units</div>
             )}
-            {alreadySelectedBulk > 0 && (
-              <div>• {alreadySelectedBulk} bulk units</div>
-            )}
           </div>
         )}
 
         {/* Quantity Input */}
         <div className="space-y-3">
           <label className="text-xs font-medium block text-center">
-            Additional Quantity {selectedSpecificUnits > 0 && `(${remainingForBulk} remaining after ${selectedSpecificUnits} specific)`}
+            Quantity {selectedSpecificUnits > 0 && `(${remainingAvailable} remaining after ${selectedSpecificUnits} specific)`}
           </label>
           <div className="flex flex-col items-center space-y-2">
             <NumberInput
               value={quantity}
-              onChange={(value) => onQuantityChange(Math.min(value || 1, remainingForBulk))}
+              onChange={(value) => setQuantity(Math.min(value || 1, remainingAvailable))}
               min={0}
-              max={remainingForBulk}
+              max={remainingAvailable}
               step={1}
               size="default"
               className="w-32 text-center"
-              disabled={remainingForBulk <= 0}
+              disabled={remainingAvailable <= 0}
               placeholder="0"
             />
           </div>
@@ -929,19 +900,16 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Action Buttons */}
         <div className="flex flex-col gap-2">
-          {/* Only show bulk button for products that support bulk operations */}
-          {actualTrackingMethod !== 'individual_tracking' && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full text-xs"
-              onClick={onBulkSelect}
-              disabled={!availability.data || quantity <= 0 || quantity > remainingForBulk || remainingForBulk <= 0}
-            >
-              <Layers className="h-3 w-3 mr-1" />
-              Add Bulk ({quantity})
-            </Button>
-          )}
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full text-xs"
+            onClick={() => onQuantitySelect(product, quantity)}
+            disabled={!availability.data || quantity <= 0 || quantity > remainingAvailable || remainingAvailable <= 0}
+          >
+            <Layers className="h-3 w-3 mr-1" />
+            Auto-Assign ({quantity}) Units
+          </Button>
           
           {availability.data?.individual_items && availability.data.individual_items.length > 0 && (
             <Button

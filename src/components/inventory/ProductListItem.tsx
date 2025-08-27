@@ -61,7 +61,7 @@ export const ProductListItem: React.FC<ProductListItemProps> = ({
   const { stockData, calculations, isLoading: isStockLoading } = useUnifiedStockManagement(product.id);
   
   const availableCount = stockData?.unified_available || 0;
-  const inMaintenanceCount = 0; // Not available in current response
+  const inMaintenanceCount = stockData?.individual_items?.maintenance || 0;
   const onJobCount = stockData?.individual_items?.assigned || 0;
   
   

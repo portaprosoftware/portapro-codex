@@ -10,13 +10,10 @@ interface UnifiedStockData {
     total_tracked: number;
     available: number;
     assigned: number;
-  };
-  bulk_stock: {
-    total: number;
-    location_breakdown?: any[];
+    maintenance: number;
   };
   unified_available: number;
-  tracking_method: 'individual' | 'bulk' | 'hybrid' | 'none';
+  tracking_method: 'tracked_only';
 }
 
 interface StockAdjustmentResult {
@@ -36,7 +33,7 @@ const hashStockData = (data: UnifiedStockData): string => {
     master_stock: data.master_stock_total,
     individual_available: data.individual_items.available,
     individual_assigned: data.individual_items.assigned,
-    bulk_total: data.bulk_stock.total,
+    individual_maintenance: data.individual_items.maintenance,
     unified_available: data.unified_available,
   });
 };
@@ -352,7 +349,6 @@ export const useUnifiedStockManagement = (productId: string) => {
     const {
       master_stock_total,
       individual_items,
-      bulk_stock,
       unified_available
     } = stockData;
 
@@ -360,16 +356,14 @@ export const useUnifiedStockManagement = (productId: string) => {
       // Progress bar calculations
       availablePercentage: master_stock_total > 0 ? (unified_available / master_stock_total) * 100 : 0,
       onJobPercentage: master_stock_total > 0 ? (individual_items.assigned / master_stock_total) * 100 : 0,
-      reservedPercentage: 0, // Not available in current response
-      maintenancePercentage: 0, // Not available in current response
-      bulkPoolPercentage: master_stock_total > 0 ? (bulk_stock.total / master_stock_total) * 100 : 0,
+      maintenancePercentage: master_stock_total > 0 ? (individual_items.maintenance / master_stock_total) * 100 : 0,
       
       // Status indicators
       isLowStock: unified_available < (master_stock_total * 0.2), // Less than 20%
       isCriticalStock: unified_available < (master_stock_total * 0.1), // Less than 10%
-      hasInconsistency: (individual_items.total_tracked + bulk_stock.total) !== master_stock_total,
+      hasInconsistency: individual_items.total_tracked !== master_stock_total,
       
-      // Breakdown display - always show all statuses
+      // Breakdown display - tracked units only
       statusBreakdown: [
         { 
           label: 'Available', 
@@ -385,15 +379,9 @@ export const useUnifiedStockManagement = (productId: string) => {
         },
         { 
           label: 'Maintenance', 
-          count: 0, // Not available in current response
+          count: individual_items.maintenance || 0, 
           color: 'bg-orange-500',
           description: 'Individual items under maintenance'
-        },
-        { 
-          label: 'Bulk Pool', 
-          count: bulk_stock.total, 
-          color: 'bg-purple-500',
-          description: 'Available units in bulk inventory'
         }
       ]
     };
@@ -418,7 +406,7 @@ export const useUnifiedStockManagement = (productId: string) => {
     // Quick access to key metrics - simplified for tracked-only
     masterStock: stockData?.master_stock_total || 0,
     physicallyAvailable: stockData?.individual_items?.available || 0,
-    inMaintenance: 0, // Maintenance tracking will be handled separately
+    inMaintenance: stockData?.individual_items?.maintenance || 0,
     trackingMethod: 'tracked_only',
     
     // Status checks

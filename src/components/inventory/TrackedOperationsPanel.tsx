@@ -88,7 +88,7 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
       description: "Convert existing bulk units to individually tracked items. Total inventory stays the same.",
       icon: RotateCcw,
       color: "text-blue-600",
-      disabled: !stockData?.bulk_stock?.total || stockData.bulk_stock.total === 0,
+      disabled: true, // Bulk operations no longer available
     },
     {
       id: "add_tracked",
@@ -112,7 +112,7 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
       description: "Remove inventory from the bulk pool. Decreases total inventory.",
       icon: AlertCircle,
       color: "text-orange-600",
-      disabled: !stockData?.bulk_stock?.total || stockData.bulk_stock.total === 0,
+      disabled: true, // Bulk operations no longer available
     },
   ];
 
@@ -184,7 +184,7 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
               {stockData?.master_stock_total || 0} Total
             </Badge>
             <Badge variant="outline" className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0">
-              {stockData?.bulk_stock?.total || 0} Bulk Pool
+              Tracked Only
             </Badge>
             <Badge variant="outline" className="bg-gradient-to-r from-green-600 to-green-700 text-white font-bold border-0">
               {stockData?.individual_items?.available || 0} Tracked Available
@@ -239,11 +239,7 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
                   <Input
                     type="number"
                     min="1"
-                    max={
-                      (selectedOperation === "convert_bulk" || selectedOperation === "remove_bulk") 
-                        ? stockData?.bulk_stock?.total || 0 
-                        : undefined
-                    }
+                    max={undefined}
                     value={quantity === 0 ? "" : quantity}
                     onChange={(e) => {
                       const value = e.target.value;
@@ -255,16 +251,6 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
                     }}
                     className="w-32"
                   />
-                  {selectedOperation === "convert_bulk" && stockData?.bulk_stock?.total && (
-                    <p className="text-xs text-gray-600 mt-1">
-                      Maximum: {stockData.bulk_stock.total} bulk units available
-                    </p>
-                  )}
-                  {selectedOperation === "remove_bulk" && stockData?.bulk_stock?.total && (
-                    <p className="text-xs text-gray-600 mt-1">
-                      Maximum: {stockData.bulk_stock.total} bulk units available
-                    </p>
-                  )}
                 </div>
 
                 {/* Unit Preview Section - only for tracked operations */}
