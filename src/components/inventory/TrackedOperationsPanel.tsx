@@ -83,36 +83,18 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
 
   const operations = [
     {
-      id: "convert_bulk",
-      title: "Convert Bulk Pool to Tracked Items",
-      description: "Convert existing bulk units to individually tracked items. Total inventory stays the same.",
-      icon: RotateCcw,
-      color: "text-blue-600",
-      disabled: true, // Bulk operations no longer available
-    },
-    {
-      id: "add_tracked",
-      title: "Add New Tracked Inventory",
-      description: "Add new inventory as individually tracked items. Increases total inventory.",
+      id: "add_units",
+      title: "Add Units",
+      description: "Add new tracked inventory units with auto-generated codes.",
       icon: Plus,
       color: "text-green-600",
-      disabled: false,
     },
     {
-      id: "add_bulk",
-      title: "Add Bulk Inventory",
-      description: "Add new inventory to the bulk pool. Increases total inventory.",
-      icon: Plus,
-      color: "text-purple-600",
-      disabled: false,
-    },
-    {
-      id: "remove_bulk",
-      title: "Remove Bulk Inventory", 
-      description: "Remove inventory from the bulk pool. Decreases total inventory.",
+      id: "remove_units",
+      title: "Remove Units",
+      description: "Remove tracked inventory units from available stock.",
       icon: AlertCircle,
       color: "text-orange-600",
-      disabled: true, // Bulk operations no longer available
     },
   ];
 
@@ -120,28 +102,20 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
     if (!selectedOperation || quantity <= 0) return;
 
     try {
-      if (selectedOperation === "convert_bulk") {
-        // Convert functionality will be handled by migration tool
-        toast.info("Bulk conversion is now handled by the migration tool");
-        return;
-      } else if (selectedOperation === "add_tracked") {
-        // Add tracked functionality will be handled by migration tool
-        toast.info("Adding tracked inventory is now handled by the migration tool");
-        return;
-      } else if (selectedOperation === "add_bulk") {
+      if (selectedOperation === "add_units") {
         await adjustMasterStock({
           quantityChange: quantity,
-          reason: 'Added bulk inventory',
-          notes: `Added ${quantity} units to bulk pool`
+          reason: 'Added tracked units',
+          notes: `Added ${quantity} tracked units`
         });
-        toast.success(`Successfully added ${quantity} units to bulk pool`);
-      } else if (selectedOperation === "remove_bulk") {
+        toast.success(`Successfully added ${quantity} tracked units`);
+      } else if (selectedOperation === "remove_units") {
         await adjustMasterStock({
           quantityChange: -quantity,
-          reason: 'Removed bulk inventory',
-          notes: `Removed ${quantity} units from bulk pool`
+          reason: 'Removed tracked units',
+          notes: `Removed ${quantity} tracked units`
         });
-        toast.success(`Successfully removed ${quantity} units from bulk pool`);
+        toast.success(`Successfully removed ${quantity} tracked units`);
       }
 
       setSelectedOperation(null);
@@ -192,34 +166,25 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
           {!selectedOperation ? (
             <div className="space-y-4">
               <h3 className="text-lg font-semibold mb-4">Select Operation:</h3>
-              {operations.map((operation) => (
-                <div
-                  key={operation.id}
-                  className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                    operation.disabled
-                      ? "border-gray-200 bg-gray-50 opacity-50 cursor-not-allowed"
-                      : "border-gray-200 hover:border-blue-300 hover:bg-blue-50"
-                  }`}
-                  onClick={() => !operation.disabled && setSelectedOperation(operation.id)}
-                >
-                  <div className="flex items-start gap-3">
-                    <operation.icon className={`h-6 w-6 mt-1 ${operation.color}`} />
-                    <div className="flex-1">
-                      <h4 className="text-base font-semibold text-gray-900 mb-1">
-                        {operation.title}
-                      </h4>
-                      <p className="text-sm text-gray-600">
-                        {operation.description}
-                      </p>
-                      {operation.disabled && operation.id === "convert_bulk" && (
-                        <p className="text-xs text-red-600 mt-1">
-                          No bulk units available to convert
+                {operations.map((operation) => (
+                  <div
+                    key={operation.id}
+                    className="p-4 border-2 rounded-lg cursor-pointer transition-all border-gray-200 hover:border-blue-300 hover:bg-blue-50"
+                    onClick={() => setSelectedOperation(operation.id)}
+                  >
+                    <div className="flex items-start gap-3">
+                      <operation.icon className={`h-6 w-6 mt-1 ${operation.color}`} />
+                      <div className="flex-1">
+                        <h4 className="text-base font-semibold text-gray-900 mb-1">
+                          {operation.title}
+                        </h4>
+                        <p className="text-sm text-gray-600">
+                          {operation.description}
                         </p>
-                      )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           ) : (
             <div className="space-y-4">
@@ -250,8 +215,8 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
                   />
                 </div>
 
-                {/* Unit Preview Section - only for tracked operations */}
-                {quantity > 0 && (selectedOperation === "convert_bulk" || selectedOperation === "add_tracked") && (
+                {/* Unit Preview Section - only for add units operation */}
+                {quantity > 0 && selectedOperation === "add_units" && (
                   <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
                     <div className="flex items-center gap-2 mb-3">
                       <Package className="h-4 w-4 text-gray-600" />
@@ -307,64 +272,6 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
             </div>
           )}
 
-          {/* Understanding Inventory Operations */}
-          <div className="mt-8 p-4 bg-muted/50 rounded-lg border border-border">
-            <h4 className="font-semibold text-foreground mb-4">Understanding Inventory Operations</h4>
-            
-            <div className="space-y-4 text-sm">
-              {/* Convert Operation */}
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="font-semibold text-foreground">1. Convert Bulk Pool to Tracked Items</span>
-                </div>
-                <p className="text-xs text-muted-foreground mb-2 ml-4">Convert existing bulk units to individually tracked items. Total inventory stays the same.</p>
-                <div className="space-y-1 text-muted-foreground ml-4">
-                  <div><strong>Before:</strong> Bulk = 50, Tracked = 0 → Total = 50</div>
-                  <div>You convert 10 bulk units into tracked units.</div>
-                  <div><strong>After:</strong> Bulk = 40, Tracked = 10 → Total = 50</div>
-                </div>
-              </div>
-
-              {/* Add Tracked Operation */}
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="font-semibold text-foreground">2. Add New Tracked Inventory</span>
-                </div>
-                <p className="text-xs text-muted-foreground mb-2 ml-4">Add new inventory as individually tracked items. Increases total inventory.</p>
-                <div className="space-y-1 text-muted-foreground ml-4">
-                  <div><strong>Before:</strong> Bulk = 50, Tracked = 0 → Total = 50</div>
-                  <div>You add 5 new tracked units with serial numbers.</div>
-                  <div><strong>After:</strong> Bulk = 50, Tracked = 5 → Total = 55</div>
-                </div>
-              </div>
-
-              {/* Add Bulk Operation */}
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="font-semibold text-foreground">3. Add Bulk Inventory</span>
-                </div>
-                <p className="text-xs text-muted-foreground mb-2 ml-4">Add new inventory to the bulk pool. Increases total inventory.</p>
-                <div className="space-y-1 text-muted-foreground ml-4">
-                  <div><strong>Before:</strong> Bulk = 50, Tracked = 0 → Total = 50</div>
-                  <div>You add 10 new units to the bulk pool.</div>
-                  <div><strong>After:</strong> Bulk = 60, Tracked = 0 → Total = 60</div>
-                </div>
-              </div>
-
-              {/* Remove Bulk Operation */}
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="font-semibold text-foreground">4. Remove Bulk Inventory</span>
-                </div>
-                <p className="text-xs text-muted-foreground mb-2 ml-4">Remove inventory from the bulk pool. Decreases total inventory.</p>
-                <div className="space-y-1 text-muted-foreground ml-4">
-                  <div><strong>Before:</strong> Bulk = 50, Tracked = 0 → Total = 50</div>
-                  <div>You remove 10 units from the bulk pool.</div>
-                  <div><strong>After:</strong> Bulk = 40, Tracked = 0 → Total = 40</div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </DrawerContent>
     </Drawer>
