@@ -116,3 +116,24 @@ export const formatTimestampToAMPMInTimezone = (timestamp: number, timezone?: st
   const tz = timezone || getCompanyTimezone();
   return formatInTimeZone(new Date(timestamp * 1000), tz, 'h:mm a');
 };
+
+/**
+ * Calculate job dates using inclusive logic (industry standard)
+ * "3 days" means delivery day + 2 more days = 3 total calendar days
+ */
+export const calculateJobDates = (startDate: Date, days: number) => {
+  const endDate = addDays(startDate, days - 1); // -1 because we count inclusively
+  return {
+    startDate,
+    endDate,
+    totalDays: days
+  };
+};
+
+/**
+ * Calculate rental duration between two dates (inclusive)
+ * Returns the number of rental days including both start and end dates
+ */
+export const calculateRentalDuration = (startDate: Date, endDate: Date): number => {
+  return differenceInDays(endDate, startDate) + 1;
+};

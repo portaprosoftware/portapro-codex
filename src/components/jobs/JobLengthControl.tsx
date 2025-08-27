@@ -52,7 +52,7 @@ export const JobLengthControl: React.FC<JobLengthControlProps> = ({ jobId }) => 
     : scheduledDate ? addDays(scheduledDate, 3) : null; // Default to 3 days
   
   const currentJobLength = scheduledDate && currentReturnDate 
-    ? differenceInDays(currentReturnDate, scheduledDate)
+    ? differenceInDays(currentReturnDate, scheduledDate) + 1  // Inclusive counting
     : 3;
 
   const newJobLength = currentJobLength + adjustmentDays;

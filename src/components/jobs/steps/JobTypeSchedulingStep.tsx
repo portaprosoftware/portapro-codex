@@ -389,7 +389,7 @@ export function JobTypeSchedulingStep() {
                         let billingType = '';
                         
                         if (days > 0) {
-                          returnDateTime.setTime(startDateTime.getTime() + (days * 24 * 60 * 60 * 1000));
+                          returnDateTime = addDays(startDateTime, days - 1); // Inclusive: 3 days = start + 2 more days
                           billingType = 'Daily';
                         } else if (hours > 0) {
                           returnDateTime.setTime(startDateTime.getTime() + (hours * 60 * 60 * 1000));
