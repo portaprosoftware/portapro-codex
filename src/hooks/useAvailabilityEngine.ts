@@ -14,12 +14,28 @@ export interface AvailabilityUnit {
   } | null;
 }
 
-interface AvailabilityBreakdown {
-  bulk_pool: number;
-  available_tracked: number;
-  assigned_tracked: number;
-  maintenance_tracked: number;
+interface DailyAvailability {
+  date: string;
+  bulk_available: number;
   bulk_assigned: number;
+  tracked_available: number;
+  tracked_assigned: number;
+  total_available: number;
+  conflicts: Array<{
+    assignment_id: string;
+    job_number?: string;
+    customer_name?: string;
+    item_id?: string;
+    status: string;
+  }>;
+}
+
+interface AvailabilitySummary {
+  min_available: number;
+  max_available: number;
+  avg_available: number;
+  bulk_pool: number;
+  tracked_units: number;
 }
 
 interface AvailabilityResult {
@@ -27,9 +43,8 @@ interface AvailabilityResult {
   total: number;
   method: string;
   individual_items?: AvailabilityUnit[];
-  breakdown?: AvailabilityBreakdown;
-  bulk_assigned?: number;
-  specific_assigned?: number;
+  daily_breakdown?: DailyAvailability[];
+  summary?: AvailabilitySummary;
 }
 
 export function useAvailabilityEngine(
@@ -45,25 +60,27 @@ export function useAvailabilityEngine(
     : null;
 
   return useQuery<AvailabilityResult>({
-    queryKey: ['availability', productId, start, end, filters],
+    queryKey: ['availability-enhanced', productId, start, end, filters],
     queryFn: async () => {
       if (!productId || !start) return { available: 0, total: 0, method: 'none', individual_items: [] };
+      
       const { data, error } = await supabase.rpc('get_product_availability_enhanced', {
         product_type_id: productId,
         start_date: start,
         end_date: end || start,
         filter_attributes: filters,
       });
+      
       if (error) throw error;
       const avail: any = data || {};
+      
       return {
         available: Number(avail.available) || 0,
         total: Number(avail.total) || 0,
         method: String(avail.method || 'stock_total'),
         individual_items: Array.isArray(avail.individual_items) ? (avail.individual_items as AvailabilityUnit[]) : [],
-        breakdown: typeof avail.breakdown === 'object' && avail.breakdown !== null ? (avail.breakdown as AvailabilityBreakdown) : undefined,
-        bulk_assigned: Number(avail.bulk_assigned) || 0,
-        specific_assigned: Number(avail.specific_assigned) || 0,
+        daily_breakdown: Array.isArray(avail.daily_breakdown) ? (avail.daily_breakdown as DailyAvailability[]) : [],
+        summary: typeof avail.summary === 'object' && avail.summary !== null ? (avail.summary as AvailabilitySummary) : undefined,
       };
     },
     enabled: !!productId && !!start,

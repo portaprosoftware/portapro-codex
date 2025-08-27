@@ -46,7 +46,6 @@ const ProductOverviewCard: React.FC<ProductOverviewCardProps> = ({ productId, pr
 
   const { individual_items, totals, master_stock } = stockData;
   const totalOnJob = totals.on_job_today; // Units currently deployed
-  const totalReserved = totals.reserved_future; // Units reserved for future jobs
   const totalMaintenance = totals.in_maintenance;
   const availableTracked = individual_items.available;
 
@@ -68,10 +67,6 @@ const ProductOverviewCard: React.FC<ProductOverviewCardProps> = ({ productId, pr
         
         <Badge className="bg-gradient-to-r from-yellow-600 to-yellow-700 text-white font-bold">
           {totalOnJob} On Job (Today)
-        </Badge>
-        
-        <Badge className="bg-gradient-to-r from-purple-600 to-purple-700 text-white font-bold">
-          {totalReserved} Reserved (Future)
         </Badge>
         
         <Badge className="bg-gradient-to-r from-orange-600 to-orange-700 text-white font-bold">

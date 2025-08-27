@@ -401,12 +401,6 @@ export const useUnifiedStockManagement = (productId: string) => {
           description: 'Units currently deployed on jobs'
         },
         { 
-          label: 'Reserved (Future)', 
-          count: totals.reserved_future, 
-          color: 'bg-blue-500',
-          description: 'Units reserved for future jobs'
-        },
-        { 
           label: 'Maintenance', 
           count: individual_items.maintenance, 
           color: 'bg-orange-500',
