@@ -45,7 +45,8 @@ const ProductOverviewCard: React.FC<ProductOverviewCardProps> = ({ productId, pr
   }
 
   const { individual_items, totals, master_stock } = stockData;
-  const totalOnJob = totals.total_reserved; // This now includes both tracked and bulk reservations
+  const totalOnJob = totals.on_job_today; // Units currently deployed
+  const totalReserved = totals.reserved_future; // Units reserved for future jobs
   const totalMaintenance = totals.in_maintenance;
   const availableTracked = individual_items.available;
 
@@ -58,7 +59,7 @@ const ProductOverviewCard: React.FC<ProductOverviewCardProps> = ({ productId, pr
       
       <div className="flex flex-wrap gap-2">
         <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold">
-          {totals.bulk_pool} Bulk Pool Available
+          {stockData.bulk_stock.pool_available} Available Bulk Pool
         </Badge>
         
         <Badge className="bg-gradient-to-r from-green-600 to-green-700 text-white font-bold">
@@ -66,11 +67,15 @@ const ProductOverviewCard: React.FC<ProductOverviewCardProps> = ({ productId, pr
         </Badge>
         
         <Badge className="bg-gradient-to-r from-yellow-600 to-yellow-700 text-white font-bold">
-          {totalOnJob} Total On Job
+          {totalOnJob} On Job (Today)
+        </Badge>
+        
+        <Badge className="bg-gradient-to-r from-purple-600 to-purple-700 text-white font-bold">
+          {totalReserved} Reserved (Future)
         </Badge>
         
         <Badge className="bg-gradient-to-r from-orange-600 to-orange-700 text-white font-bold">
-          {totalMaintenance} Total Maintenance
+          {totalMaintenance} Maintenance
         </Badge>
       </div>
     </div>

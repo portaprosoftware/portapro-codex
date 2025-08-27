@@ -11,22 +11,25 @@ interface UnifiedStockData {
     available: number;
     assigned: number;
     maintenance: number;
+    on_job: number;
     reserved: number;
   };
   bulk_stock: {
     pool_available: number;
+    on_job: number;
     reserved: number;
     location_breakdown?: any[];
   };
   totals: {
     physically_available: number;
-    total_reserved: number;
+    on_job_today: number;
+    reserved_future: number;
     in_maintenance: number;
     tracked_individual: number;
     bulk_pool: number;
   };
   tracking_method: 'individual' | 'bulk' | 'hybrid' | 'none';
-  last_updated: string;
+  generated_at: string;
 }
 
 interface StockAdjustmentResult {
@@ -49,7 +52,8 @@ const hashStockData = (data: UnifiedStockData): string => {
     individual_maintenance: data.individual_items.maintenance,
     bulk_pool: data.totals.bulk_pool,
     bulk_reserved: data.bulk_stock.reserved,
-    total_reserved: data.totals.total_reserved,
+    on_job_today: data.totals.on_job_today,
+    reserved_future: data.totals.reserved_future,
     physically_available: data.totals.physically_available,
   });
 };
@@ -365,13 +369,15 @@ export const useUnifiedStockManagement = (productId: string) => {
     const {
       master_stock,
       individual_items,
+      bulk_stock,
       totals
     } = stockData;
 
     return {
       // Progress bar calculations
       availablePercentage: master_stock > 0 ? (totals.physically_available / master_stock) * 100 : 0,
-      assignedPercentage: master_stock > 0 ? (individual_items.assigned / master_stock) * 100 : 0,
+      onJobPercentage: master_stock > 0 ? (totals.on_job_today / master_stock) * 100 : 0,
+      reservedPercentage: master_stock > 0 ? (totals.reserved_future / master_stock) * 100 : 0,
       maintenancePercentage: master_stock > 0 ? (individual_items.maintenance / master_stock) * 100 : 0,
       bulkPoolPercentage: master_stock > 0 ? (totals.bulk_pool / master_stock) * 100 : 0,
       
@@ -383,28 +389,34 @@ export const useUnifiedStockManagement = (productId: string) => {
       // Breakdown display - always show all statuses
       statusBreakdown: [
         { 
-          label: 'Available Tracked (Individual)', 
-          count: individual_items.available, 
+          label: 'Available', 
+          count: totals.physically_available, 
           color: 'bg-green-500',
-          description: 'Individual items ready for assignment'
+          description: 'Units ready for deployment'
         },
         { 
-          label: 'Available Bulk Pool', 
-          count: totals.bulk_pool, 
-          color: 'bg-blue-500',
-          description: 'Units available for bulk assignment'
-        },
-        { 
-          label: 'On Job', 
-          count: totals.total_reserved, 
+          label: 'On Job (Today)', 
+          count: totals.on_job_today, 
           color: 'bg-yellow-500',
-          description: 'Units currently assigned to jobs (includes both tracked and bulk reservations)'
+          description: 'Units currently deployed on jobs'
+        },
+        { 
+          label: 'Reserved (Future)', 
+          count: totals.reserved_future, 
+          color: 'bg-blue-500',
+          description: 'Units reserved for future jobs'
         },
         { 
           label: 'Maintenance', 
           count: individual_items.maintenance, 
           color: 'bg-orange-500',
-          description: 'Individual items under maintenance (inventory not available)'
+          description: 'Individual items under maintenance'
+        },
+        { 
+          label: 'Bulk Pool', 
+          count: bulk_stock.pool_available, 
+          color: 'bg-purple-500',
+          description: 'Available units in bulk inventory'
         }
       ]
     };
@@ -433,8 +445,11 @@ export const useUnifiedStockManagement = (productId: string) => {
     // Quick access to key metrics
     masterStock: stockData?.master_stock || 0,
     physicallyAvailable: stockData?.totals.physically_available || 0,
+    bulkPoolAvailable: stockData?.bulk_stock?.pool_available || 0,
     bulkPool: stockData?.totals.bulk_pool || 0,
     trackedAvailable: stockData?.individual_items.available || 0,
+    onJobToday: stockData?.totals.on_job_today || 0,
+    reservedFuture: stockData?.totals.reserved_future || 0,
     inMaintenance: stockData?.totals.in_maintenance || 0,
     trackingMethod: stockData?.tracking_method === 'hybrid' ? 'Hybrid' : stockData?.tracking_method || 'none',
     
