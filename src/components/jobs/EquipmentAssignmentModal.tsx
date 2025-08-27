@@ -487,7 +487,7 @@ export const EquipmentAssignmentModal: React.FC<EquipmentAssignmentModalProps> =
                               assignment.status === 'delivered' && 'bg-green-500 text-white',
                               assignment.status === 'returned' && 'bg-gray-500 text-white'
                             )}>
-                              {assignment.status.replace('_', ' ').toUpperCase()}
+                              {(assignment.status || 'unknown').replace('_', ' ').toUpperCase()}
                             </Badge>
                             
                             <Button
