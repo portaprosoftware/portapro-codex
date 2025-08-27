@@ -131,6 +131,7 @@ export const JobLengthControl: React.FC<JobLengthControlProps> = ({ jobId }) => 
         {/* Duration controls */}
         <div className="flex items-center gap-3">
           <Button
+            type="button"
             onClick={() => adjustJobLength(-1)}
             disabled={newJobLength <= 1}
             size="sm"
@@ -150,6 +151,7 @@ export const JobLengthControl: React.FC<JobLengthControlProps> = ({ jobId }) => 
           </div>
           
           <Button
+            type="button"
             onClick={() => adjustJobLength(1)}
             size="sm"
             variant="outline"
@@ -175,6 +177,7 @@ export const JobLengthControl: React.FC<JobLengthControlProps> = ({ jobId }) => 
         {/* Apply button */}
         {adjustmentDays !== 0 && (
           <Button
+            type="button"
             onClick={handleApplyToEquipment}
             disabled={updateEquipmentMutation.isPending}
             size="sm"
