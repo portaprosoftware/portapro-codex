@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -103,19 +104,48 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   const handleBulkSelect = (product: Product, quantity: number) => {
     if (quantity <= 0) return;
     
-    const selection: UnitSelection = {
-      unitId: 'bulk',
-      itemCode: 'BULK',
-      productId: product.id,
-      productName: product.name,
-      quantity
-    };
-    
-    setSelectedUnitsCollection(prev => {
-      // Remove any existing BULK selections for this product, but keep specific unit selections
-      const filtered = prev.filter(s => !(s.productId === product.id && s.unitId === 'bulk'));
-      return [...filtered, selection];
-    });
+    // Auto-assign specific units instead of bulk selection
+    autoAssignUnits(product, quantity);
+  };
+
+  const autoAssignUnits = async (product: Product, quantity: number) => {
+    try {
+      // Get available units for this product
+      const { data: availableUnits, error } = await supabase
+        .from('product_items')
+        .select('id, item_code')
+        .eq('product_id', product.id)
+        .eq('status', 'available')
+        .limit(quantity);
+      
+      if (error) throw error;
+      
+      if (!availableUnits || availableUnits.length < quantity) {
+        toast.error(`Only ${availableUnits?.length || 0} units available, requested ${quantity}`);
+        return;
+      }
+      
+      // Convert to unit selections
+      const selections: UnitSelection[] = availableUnits.map(unit => ({
+        unitId: unit.id,
+        itemCode: unit.item_code,
+        productId: product.id,
+        productName: product.name,
+        quantity: 1,
+        attributes: {}
+      }));
+      
+      setSelectedUnitsCollection(prev => {
+        // Remove any existing selections for this product
+        const filtered = prev.filter(s => s.productId !== product.id);
+        return [...filtered, ...selections];
+      });
+      
+      toast.success(`Auto-assigned ${quantity} specific units for ${product.name}`);
+      
+    } catch (error: any) {
+      toast.error(`Failed to auto-assign units: ${error.message}`);
+    }
   };
 
   const handleUnitsSelect = (units: SelectedUnit[], productName: string) => {
@@ -227,41 +257,18 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
       }
     });
 
-    // Convert groups to JobItemSelection format
+    // Convert groups to JobItemSelection format - always use specific strategy
     Object.entries(productGroups).forEach(([productId, groups]) => {
       const hasSpecific = groups.specific && groups.specific.length > 0;
-      const hasBulk = groups.bulk && groups.bulk.length > 0;
       
-      if (hasSpecific && hasBulk) {
-        // Combine specific units + bulk quantity into one job item
-        const bulkQuantity = groups.bulk![0].quantity;
-        const totalQuantity = groups.specific!.length + bulkQuantity;
-        
-        jobItems.push({
-          product_id: productId,
-          quantity: totalQuantity,
-          strategy: 'specific' as const,
-          specific_item_ids: groups.specific!.map(s => s.unitId),
-          bulk_additional: bulkQuantity, // Track how many additional bulk units
-          attributes: groups.specific![0].attributes
-        });
-      } else if (hasSpecific) {
-        // Only specific units
+      if (hasSpecific) {
+        // Always create specific assignments
         jobItems.push({
           product_id: productId,
           quantity: groups.specific!.length,
           strategy: 'specific' as const,
           specific_item_ids: groups.specific!.map(s => s.unitId),
           attributes: groups.specific![0].attributes
-        });
-      } else if (hasBulk) {
-        // Only bulk units
-        jobItems.push({
-          product_id: productId,
-          quantity: groups.bulk![0].quantity,
-          strategy: 'bulk' as const,
-          specific_item_ids: undefined,
-          attributes: groups.bulk![0].attributes
         });
       }
     });

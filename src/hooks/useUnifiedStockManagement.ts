@@ -410,25 +410,16 @@ export const useUnifiedStockManagement = (productId: string) => {
     error,
     isAdjusting: adjustMasterStock.isPending,
     isSyncing: syncStockTotals.isPending,
-    isConverting: convertBulkToTracked.isPending,
-    isAddingTracked: addTrackedInventory.isPending,
     
     // Actions
     adjustMasterStock: adjustMasterStock.mutate,
     syncStockTotals: syncStockTotals.mutate,
-    convertBulkToTracked: convertBulkToTracked.mutate,
-    addTrackedInventory: addTrackedInventory.mutate,
     
-    // Quick access to key metrics
+    // Quick access to key metrics - simplified for tracked-only
     masterStock: stockData?.master_stock_total || 0,
-    physicallyAvailable: stockData?.unified_available || 0,
-    bulkPoolAvailable: stockData?.bulk_stock?.total || 0,
-    bulkPool: stockData?.bulk_stock?.total || 0,
-    trackedAvailable: stockData?.individual_items.available || 0,
-    onJobToday: stockData?.individual_items.assigned || 0,
-    reservedFuture: 0, // Not available in current response
-    inMaintenance: 0, // Not available in current response
-    trackingMethod: stockData?.tracking_method === 'hybrid' ? 'Hybrid' : stockData?.tracking_method || 'none',
+    physicallyAvailable: stockData?.individual_items?.available || 0,
+    inMaintenance: 0, // Maintenance tracking will be handled separately
+    trackingMethod: 'tracked_only',
     
     // Status checks
     isConsistent: !calculations?.hasInconsistency,

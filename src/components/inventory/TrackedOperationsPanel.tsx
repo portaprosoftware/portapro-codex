@@ -35,7 +35,7 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
 }) => {
   const [selectedOperation, setSelectedOperation] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
-  const { stockData, convertBulkToTracked, addTrackedInventory, adjustMasterStock } = useUnifiedStockManagement(productId);
+  const { stockData, adjustMasterStock } = useUnifiedStockManagement(productId);
 
   // Fetch product details for the default category
   const { data: productDetails } = useQuery({
@@ -121,11 +121,13 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
 
     try {
       if (selectedOperation === "convert_bulk") {
-        await convertBulkToTracked(quantity);
-        toast.success(`Successfully converted ${quantity} bulk units to tracked items`);
+        // Convert functionality will be handled by migration tool
+        toast.info("Bulk conversion is now handled by the migration tool");
+        return;
       } else if (selectedOperation === "add_tracked") {
-        await addTrackedInventory(quantity);
-        toast.success(`Successfully added ${quantity} new tracked items`);
+        // Add tracked functionality will be handled by migration tool
+        toast.info("Adding tracked inventory is now handled by the migration tool");
+        return;
       } else if (selectedOperation === "add_bulk") {
         await adjustMasterStock({
           quantityChange: quantity,
