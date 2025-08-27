@@ -60,8 +60,8 @@ export const ProductListItem: React.FC<ProductListItemProps> = ({
   // Use unified stock management for accurate calculations
   const { stockData, calculations, isLoading: isStockLoading } = useUnifiedStockManagement(product.id);
   
-  const availableCount = stockData?.totals?.physically_available || 0;
-  const inMaintenanceCount = stockData?.individual_items?.maintenance || 0;
+  const availableCount = stockData?.unified_available || 0;
+  const inMaintenanceCount = 0; // Not available in current response
   const onJobCount = stockData?.individual_items?.assigned || 0;
   
   

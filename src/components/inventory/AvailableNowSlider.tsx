@@ -26,7 +26,7 @@ const TotalStockDisplay: React.FC<{ productId: string; className?: string }> = (
     return <span className={className}>Loading...</span>;
   }
   
-  return <span className={className}>{stockData.master_stock} total</span>;
+  return <span className={className}>{stockData.master_stock_total} total</span>;
 };
 
 const ProductOverviewCard: React.FC<ProductOverviewCardProps> = ({ productId, productName }) => {
@@ -44,9 +44,9 @@ const ProductOverviewCard: React.FC<ProductOverviewCardProps> = ({ productId, pr
     );
   }
 
-  const { individual_items, totals, master_stock } = stockData;
-  const totalOnJob = totals.on_job_today; // Units currently deployed
-  const totalMaintenance = totals.in_maintenance;
+  const { individual_items, master_stock_total } = stockData;
+  const totalOnJob = individual_items.assigned; // Units currently deployed
+  const totalMaintenance = 0; // Not available in current response
   const availableTracked = individual_items.available;
 
   return (
@@ -58,7 +58,7 @@ const ProductOverviewCard: React.FC<ProductOverviewCardProps> = ({ productId, pr
       
       <div className="flex flex-wrap gap-2">
         <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold">
-          {stockData.bulk_stock.pool_available} Available Bulk Pool
+          {stockData.bulk_stock.total} Available Bulk Pool
         </Badge>
         
         <Badge className="bg-gradient-to-r from-green-600 to-green-700 text-white font-bold">
