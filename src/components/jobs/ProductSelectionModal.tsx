@@ -272,8 +272,8 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-full h-full max-w-none md:max-w-[76vw] md:min-w-[960px] md:h-auto md:max-h-[72vh] p-0 flex flex-col">
-        <DialogHeader className="p-6 pb-4 border-b">
+      <DialogContent className="w-full h-full max-w-none md:max-w-[76vw] md:min-w-[960px] md:h-auto md:max-h-[72vh] p-0 flex flex-col overflow-hidden">
+        <DialogHeader className="p-6 pb-4 border-b flex-shrink-0">
           <DialogTitle className="text-xl font-semibold flex items-center gap-2">
             {currentPage === 'tracked-units' && (
               <Button
@@ -290,7 +290,7 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
         </DialogHeader>
 
         {/* Two-column layout for main page, single column for tracked units */}
-        <div className="flex-1 overflow-hidden flex">
+        <div className="flex-1 min-h-0 flex overflow-hidden">
           {currentPage === 'main' ? (
             <>
               {/* Left side - Tabbed interface */}
