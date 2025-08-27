@@ -3701,6 +3701,7 @@ export type Database = {
           parent_job_id: string | null
           partial_pickups: Json | null
           quote_id: string | null
+          rental_duration_days: number | null
           scheduled_date: string
           scheduled_time: string | null
           service_due_date: string | null
@@ -3739,6 +3740,7 @@ export type Database = {
           parent_job_id?: string | null
           partial_pickups?: Json | null
           quote_id?: string | null
+          rental_duration_days?: number | null
           scheduled_date: string
           scheduled_time?: string | null
           service_due_date?: string | null
@@ -3777,6 +3779,7 @@ export type Database = {
           parent_job_id?: string | null
           partial_pickups?: Json | null
           quote_id?: string | null
+          rental_duration_days?: number | null
           scheduled_date?: string
           scheduled_time?: string | null
           service_due_date?: string | null

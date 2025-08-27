@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { addDays } from 'date-fns';
 import { Calendar, Clock, Package, Truck, ClipboardCheck, Crosshair, Star, CalendarDays, Plus, Trash2, ChevronUp, ChevronDown } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,7 +12,7 @@ import { TimePicker } from '@/components/ui/time-picker';
 import { TimePresetButtons } from '@/components/ui/time-preset-buttons';
 import { useJobWizard } from '@/contexts/JobWizardContext';
 import { cn } from '@/lib/utils';
-import { format, addDays } from 'date-fns';
+import { format } from 'date-fns';
 import { formatDateForQuery, formatDateSafe } from '@/lib/dateUtils';
 
 const jobTypes = [

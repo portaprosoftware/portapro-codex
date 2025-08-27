@@ -1,4 +1,5 @@
 
+import { addDays } from 'date-fns';
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -247,8 +248,7 @@ export function useCreateJob() {
           // Calculate return date based on rental duration
           const scheduledDate = new Date(serializedJobData.scheduled_date);
           const rentalDays = jobData.rental_duration_days || 1;
-          const returnDate = new Date(scheduledDate);
-          returnDate.setDate(scheduledDate.getDate() + rentalDays);
+          const returnDate = addDays(scheduledDate, rentalDays - 1); // Inclusive: 3 days = start + 2 more days
           const returnDateString = returnDate.toISOString().split('T')[0];
 
           // Create equipment assignments based on selection strategy
