@@ -17,7 +17,7 @@ import { toast } from "sonner";
 import { ItemCodeCategorySelect } from "@/components/ui/ItemCodeCategorySelect";
 import { useItemCodeCategories } from "@/hooks/useCompanySettings";
 import { useUnifiedStockManagement } from "@/hooks/useUnifiedStockManagement";
-import { InventoryLogicPopup } from "./InventoryLogicPopup";
+
 
 interface Product {
   id: string;
@@ -275,7 +275,6 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
               )}
             </div>
             <div className="flex items-center gap-4">
-              <InventoryLogicPopup />
               <Button 
                 variant="outline" 
                 className="text-blue-600 border-blue-600 hover:bg-blue-50"

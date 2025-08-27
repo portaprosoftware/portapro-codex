@@ -181,13 +181,10 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
           {/* Stock Summary */}
           <div className="flex gap-4 mb-6">
             <Badge variant="outline" className="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold border-0">
-              {stockData?.master_stock_total || 0} Total
-            </Badge>
-            <Badge variant="outline" className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0">
-              Tracked Only
+              {stockData?.master_stock_total || 0} Total Units
             </Badge>
             <Badge variant="outline" className="bg-gradient-to-r from-green-600 to-green-700 text-white font-bold border-0">
-              {stockData?.individual_items?.available || 0} Tracked Available
+              {stockData?.individual_items?.available || 0} Available
             </Badge>
           </div>
 
