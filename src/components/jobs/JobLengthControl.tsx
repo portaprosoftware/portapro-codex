@@ -49,14 +49,14 @@ export const JobLengthControl: React.FC<JobLengthControlProps> = ({ jobId }) => 
   const scheduledDate = jobData?.scheduled_date ? new Date(jobData.scheduled_date) : null;
   const currentReturnDate = equipmentData?.length > 0 
     ? new Date(equipmentData[0].return_date) 
-    : scheduledDate ? addDays(scheduledDate, 2) : null; // Default to 3 days (scheduled + 2)
+    : scheduledDate ? addDays(scheduledDate, 3) : null; // Default to 3 days
   
   const currentJobLength = scheduledDate && currentReturnDate 
     ? differenceInDays(currentReturnDate, scheduledDate) + 1
     : 3;
 
   const newJobLength = currentJobLength + adjustmentDays;
-  const newReturnDate = scheduledDate ? addDays(scheduledDate, newJobLength - 1) : null;
+  const newReturnDate = scheduledDate ? addDays(scheduledDate, newJobLength) : null;
 
   // Reset adjustment when job data changes
   useEffect(() => {
@@ -69,7 +69,7 @@ export const JobLengthControl: React.FC<JobLengthControlProps> = ({ jobId }) => 
       if (!jobId || !scheduledDate) throw new Error('No job ID or scheduled date');
 
       // Calculate new return date
-      const returnDate = format(addDays(scheduledDate, newJobLength - 1), 'yyyy-MM-dd');
+      const returnDate = format(addDays(scheduledDate, newJobLength), 'yyyy-MM-dd');
 
       // Update all equipment assignments for this job
       const { error } = await supabase
