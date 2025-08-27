@@ -244,6 +244,13 @@ export function useCreateJob() {
         // Step 1: Create equipment assignments (existing behavior)
         for (const item of jobData.items) {
           console.log('Processing item:', item);
+          // Calculate return date based on rental duration
+          const scheduledDate = new Date(serializedJobData.scheduled_date);
+          const rentalDays = jobData.rental_duration_days || 1;
+          const returnDate = new Date(scheduledDate);
+          returnDate.setDate(scheduledDate.getDate() + rentalDays);
+          const returnDateString = returnDate.toISOString().split('T')[0];
+
           // Create equipment assignments based on selection strategy
           if (item.strategy === 'specific' && item.specific_item_ids) {
             // Handle specific unit assignments
@@ -253,6 +260,7 @@ export function useCreateJob() {
                 product_item_id: itemId,
                 quantity: 1,
                 assigned_date: serializedJobData.scheduled_date,
+                return_date: returnDateString,
                 status: 'assigned'
               });
 
@@ -269,6 +277,7 @@ export function useCreateJob() {
               product_id: item.product_id,
               quantity: item.quantity || 1,
               assigned_date: serializedJobData.scheduled_date,
+              return_date: returnDateString,
               status: 'assigned'
             });
           }
