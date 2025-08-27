@@ -61,6 +61,15 @@ export const addDaysToDate = (date: Date, days: number): Date => {
 };
 
 /**
+ * Safely parses a date string (YYYY-MM-DD) without timezone conversion issues
+ * This avoids the Date constructor's UTC interpretation of date strings
+ */
+export const parseDateSafe = (dateString: string): Date => {
+  const [year, month, day] = dateString.split('-').map(Number);
+  return new Date(year, month - 1, day); // month is 0-indexed
+};
+
+/**
  * Formats a date string (YYYY-MM-DD) to display format without timezone issues
  * This function parses the date string directly and formats it using the date components
  */

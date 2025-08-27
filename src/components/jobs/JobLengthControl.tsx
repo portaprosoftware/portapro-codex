@@ -5,6 +5,7 @@ import { Calendar, Package, Plus, Minus } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { format, addDays, differenceInDays } from 'date-fns';
+import { parseDateSafe } from '@/lib/dateUtils';
 
 interface JobLengthControlProps {
   jobId: string | null;
@@ -46,9 +47,9 @@ export const JobLengthControl: React.FC<JobLengthControlProps> = ({ jobId }) => 
   });
 
   // Calculate current job length and dates
-  const scheduledDate = jobData?.scheduled_date ? new Date(jobData.scheduled_date) : null;
+  const scheduledDate = jobData?.scheduled_date ? parseDateSafe(jobData.scheduled_date) : null;
   const currentReturnDate = equipmentData?.length > 0 
-    ? new Date(equipmentData[0].return_date) 
+    ? parseDateSafe(equipmentData[0].return_date) 
     : scheduledDate ? addDays(scheduledDate, 3) : null; // Default to 3 days
   
   const currentJobLength = scheduledDate && currentReturnDate 
