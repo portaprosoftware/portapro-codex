@@ -178,14 +178,36 @@ export const EquipmentAssignmentModal: React.FC<EquipmentAssignmentModalProps> =
     }
   });
 
+  // Fetch job details to get scheduled date for defaults
+  const { data: job } = useQuery({
+    queryKey: ['job-detail', jobId],
+    queryFn: async () => {
+      if (!jobId) return null;
+      
+      const { data, error } = await supabase
+        .from('jobs')
+        .select('scheduled_date')
+        .eq('id', jobId)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!jobId && open
+  });
+
   const addEquipmentItem = (productId: string, productName: string) => {
+    // Default to job's scheduled date, fallback to today
+    const defaultDate = job?.scheduled_date || new Date().toISOString().split('T')[0];
+    
     const newItem: EquipmentItem = {
       productId,
       productName,
       quantity: 1,
       assignmentType: 'bulk',
       specificItems: [],
-      assignmentDate: new Date().toISOString().split('T')[0],
+      assignmentDate: defaultDate,
+      returnDate: undefined, // Will be set by duration input
     };
     
     setEquipmentItems(prev => [...prev, newItem]);
@@ -195,6 +217,13 @@ export const EquipmentAssignmentModal: React.FC<EquipmentAssignmentModalProps> =
     setEquipmentItems(prev => 
       prev.map((item, i) => i === index ? { ...item, ...updates } : item)
     );
+  };
+
+  // Helper to calculate return date from assignment date + duration
+  const calculateReturnDate = (assignmentDate: string, durationDays: number) => {
+    const date = new Date(assignmentDate);
+    date.setDate(date.getDate() + durationDays - 1);
+    return date.toISOString().split('T')[0];
   };
 
   const removeEquipmentItem = (index: number) => {
@@ -309,7 +338,7 @@ export const EquipmentAssignmentModal: React.FC<EquipmentAssignmentModalProps> =
                         </Button>
                       </div>
                       
-                      <div className="grid grid-cols-3 gap-4">
+                      <div className="grid grid-cols-4 gap-4">
                         <div>
                           <Label htmlFor={`quantity-${index}`}>Quantity</Label>
                           <Input
@@ -328,6 +357,22 @@ export const EquipmentAssignmentModal: React.FC<EquipmentAssignmentModalProps> =
                             type="date"
                             value={item.assignmentDate}
                             onChange={(e) => updateEquipmentItem(index, { assignmentDate: e.target.value })}
+                          />
+                        </div>
+
+                        <div>
+                          <Label htmlFor={`duration-${index}`}>Duration (days)</Label>
+                          <Input
+                            id={`duration-${index}`}
+                            type="number"
+                            min="1"
+                            max="365"
+                            placeholder="3"
+                            onChange={(e) => {
+                              const duration = parseInt(e.target.value) || 3;
+                              const returnDate = calculateReturnDate(item.assignmentDate, duration);
+                              updateEquipmentItem(index, { returnDate });
+                            }}
                           />
                         </div>
                         

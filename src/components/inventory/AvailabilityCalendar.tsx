@@ -29,11 +29,46 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
   const monthEnd = endOfMonth(currentMonth);
   const monthDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
 
+  // Get current month availability
   const { data: availability, isLoading } = useAvailabilityEngine(
     productId,
     format(monthStart, 'yyyy-MM-dd'),
     format(monthEnd, 'yyyy-MM-dd')
   );
+
+  // Get next month availability to check for next available date
+  const nextMonthStart = addMonths(monthStart, 1);
+  const nextMonthEnd = endOfMonth(nextMonthStart);
+  const { data: nextMonthAvailability } = useAvailabilityEngine(
+    productId,
+    format(nextMonthStart, 'yyyy-MM-dd'),
+    format(nextMonthEnd, 'yyyy-MM-dd')
+  );
+
+  // Find next available date
+  const getNextAvailableDate = () => {
+    // Check current month first
+    if (availability?.daily_breakdown) {
+      for (const day of availability.daily_breakdown) {
+        if (day.total_available >= requestedQuantity) {
+          return parseISO(day.date);
+        }
+      }
+    }
+    
+    // Check next month if nothing found in current month
+    if (nextMonthAvailability?.daily_breakdown) {
+      for (const day of nextMonthAvailability.daily_breakdown) {
+        if (day.total_available >= requestedQuantity) {
+          return parseISO(day.date);
+        }
+      }
+    }
+    
+    return null;
+  };
+
+  const nextAvailableDate = getNextAvailableDate();
 
   const navigateMonth = (direction: 'prev' | 'next') => {
     setCurrentMonth(prev => direction === 'prev' ? subMonths(prev, 1) : addMonths(prev, 1));
@@ -83,6 +118,15 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
       </CardHeader>
       
       <CardContent className="space-y-4">
+        {/* Next Available Date Chip */}
+        {nextAvailableDate && (
+          <div className="flex justify-center">
+            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+              Next available: {format(nextAvailableDate, 'MMM d')} ({requestedQuantity}+ units)
+            </Badge>
+          </div>
+        )}
+
         {/* Calendar Header */}
         <div className="flex items-center justify-between">
           <Button

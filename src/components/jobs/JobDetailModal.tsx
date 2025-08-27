@@ -18,6 +18,7 @@ import { TimePicker } from '@/components/ui/time-picker';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Switch } from '@/components/ui/switch';
 import { CalendarDays, Clock, User, MapPin, FileText, Play, RotateCcw, Edit2, Save, X, Star, Ban, Package, Truck, Wrench } from 'lucide-react';
+import { JobLengthControl } from './JobLengthControl';
 import { toast } from 'sonner';
 import { getJobStatusInfo } from '@/lib/jobStatusUtils';
 import { formatDateForQuery, formatDateSafe } from '@/lib/dateUtils';
@@ -560,6 +561,9 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                           <label className="text-sm font-medium text-muted-foreground">Job Type</label>
                           <p className="text-sm capitalize">{jobTypes.find(t => t.value === job?.job_type)?.label || 'Not specified'}</p>
                         </div>
+
+                        {/* Job Length Control */}
+                        <JobLengthControl jobId={jobId} />
                       </>
                     )}
                   </CardContent>

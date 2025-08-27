@@ -174,7 +174,22 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
                   ) : availability.summary.min_available > 0 ? (
                     `⚠️ Only ${availability.summary.min_available} units available (${requestedQuantity} requested)`
                   ) : (
-                    `❌ No units available for some days in the selected period`
+                    <>
+                      {`❌ No units available for some days in the selected period`}
+                      {(() => {
+                        // Find next date with sufficient availability
+                        const nextDate = availability.daily_breakdown?.find(day => 
+                          day.total_available >= requestedQuantity
+                        );
+                        return nextDate ? (
+                          <div className="mt-2">
+                            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                              Next date with {requestedQuantity} available: {format(parseISO(nextDate.date), 'MMM d, yyyy')}
+                            </Badge>
+                          </div>
+                        ) : null;
+                      })()}
+                    </>
                   )}
                 </AlertDescription>
               </Alert>
