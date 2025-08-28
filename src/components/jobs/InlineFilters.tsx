@@ -296,9 +296,9 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
             variant="outline"
             size="sm"
             onClick={() => setShowAvailabilityTracker(true)}
-            className="text-xs px-3 py-1"
+            className="flex items-center gap-2"
           >
-            <Calendar className="h-4 w-4 mr-1" />
+            <Calendar className="h-4 w-4" />
             Product Availability
           </Button>
 
