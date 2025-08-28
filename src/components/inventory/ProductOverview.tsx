@@ -226,27 +226,27 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
             </p>
           </div>
           <div className="flex gap-2">
-            <TrackedOperationsPanel
-              productId={product.id}
-              productName={product.name}
-              trigger={
-                <Button 
-                  variant="outline" 
-                  className="border-green-600 text-green-600 hover:bg-green-50"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Units
-                </Button>
-              }
-            />
             <Button 
               variant="outline" 
               className="border-blue-600 text-blue-600 hover:bg-blue-50"
               onClick={() => setShowEditModal(true)}
             >
               <Edit className="w-4 h-4 mr-2" />
-              Edit Product Info
+              Edit Product
             </Button>
+            <TrackedOperationsPanel
+              productId={product.id}
+              productName={product.name}
+              trigger={
+                <Button 
+                  variant="outline" 
+                  className="border-blue-600 text-blue-600 hover:bg-blue-50"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Units
+                </Button>
+              }
+            />
           </div>
         </div>
       </div>
