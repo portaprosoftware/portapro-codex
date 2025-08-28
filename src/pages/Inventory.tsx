@@ -390,16 +390,6 @@ const Inventory: React.FC = () => {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  {/* Availability Tracker */}
-                  <Button 
-                    variant="outline"
-                    onClick={() => setShowAvailabilityTracker(true)}
-                    className="flex items-center gap-2 text-blue-600 border-blue-600 hover:bg-blue-50"
-                  >
-                    <BarChart3 className="h-4 w-4" />
-                    Availability Tracker
-                  </Button>
-
                   {/* View Toggle */}
                   <div className="flex bg-muted rounded-lg p-1">
                     <Button
@@ -419,6 +409,16 @@ const Inventory: React.FC = () => {
                       <Grid3X3 className="h-4 w-4" />
                     </Button>
                   </div>
+
+                  {/* Availability Tracker */}
+                  <Button 
+                    variant="outline"
+                    onClick={() => setShowAvailabilityTracker(true)}
+                    className="flex items-center gap-2 text-blue-600 border-blue-600 hover:bg-blue-50"
+                  >
+                    <BarChart3 className="h-4 w-4" />
+                    Availability Tracker
+                  </Button>
 
                   <Button 
                     onClick={() => setAddInventoryModalOpen(true)}
