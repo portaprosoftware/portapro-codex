@@ -10,6 +10,8 @@ import { CalendarDays, ChevronDown, AlertTriangle, CheckCircle, Info } from 'luc
 import { DateRange } from 'react-day-picker';
 import { format, parseISO } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 interface DateRangeAvailabilityCheckerProps {
   productId: string;
@@ -40,11 +42,50 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
     endDate
   );
 
+  // Collect unique item IDs appearing in conflicts so we can show their custom attributes
+  const conflictItemIds = React.useMemo(() => {
+    const ids = new Set<string>();
+    availability?.daily_breakdown?.forEach((day) => {
+      day.conflicts?.forEach((c: any) => {
+        if (c.item_id) ids.add(c.item_id);
+      });
+    });
+    return Array.from(ids);
+  }, [availability]);
+
+  const { data: conflictAttributesMap } = useQuery<{ [itemId: string]: Array<{ name: string; value: string }>}>({
+    queryKey: ['conflict-item-attributes', productId, startDate, endDate, conflictItemIds.join(',')],
+    enabled: conflictItemIds.length > 0,
+    queryFn: async () => {
+      const { data: attrs, error: attrError } = await supabase
+        .from('product_item_attributes')
+        .select('item_id, property_id, property_value')
+        .in('item_id', conflictItemIds);
+      if (attrError) throw attrError;
+      if (!attrs || attrs.length === 0) return {};
+
+      const propertyIds = Array.from(new Set(attrs.map((a: any) => a.property_id)));
+      const { data: props, error: propError } = await supabase
+        .from('product_properties')
+        .select('id, attribute_name')
+        .in('id', propertyIds);
+      if (propError) throw propError;
+
+      const nameById = new Map<string, string>((props || []).map((p: any) => [p.id, p.attribute_name]));
+      const map: { [itemId: string]: Array<{ name: string; value: string }> } = {};
+      for (const a of attrs) {
+        const name = nameById.get(a.property_id) || 'Attribute';
+        if (!map[a.item_id]) map[a.item_id] = [];
+        map[a.item_id].push({ name, value: a.property_value });
+      }
+      return map;
+    },
+  });
+
   const handleDateRangeChange = (newDateRange: DateRange | undefined) => {
     setDateRange(newDateRange);
     onDateRangeChange?.(newDateRange);
   };
-
   const toggleDayExpansion = (date: string) => {
     setExpandedDays(prev => ({
       ...prev,
@@ -264,14 +305,25 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
                               <div className="mt-3 pt-3 border-t border-gray-200">
                                 <h5 className="font-medium text-gray-700 mb-2">Conflicts:</h5>
                                 <div className="space-y-1">
-                                  {day.conflicts.map((conflict, idx) => (
-                                     <div key={idx} className="flex items-center gap-2 text-xs bg-white p-2 rounded border">
-                                       <span className="font-medium">
-                                         {conflict.job_number || 'Job'}:
-                                       </span>
-                                       <span>{conflict.customer_name || 'Unknown Customer'}</span>
-                                     </div>
-                                  ))}
+                                  {day.conflicts.map((conflict: any, idx) => {
+                                      const attrs = conflict.item_id ? conflictAttributesMap?.[conflict.item_id] : undefined;
+                                      const attrsText = attrs?.map((a) => `${a.name}: ${a.value}`).join(', ');
+                                      const unitLabel = conflict.item_code || (conflict.item_id ? conflict.item_id.slice(-6) : null);
+                                      return (
+                                        <div key={idx} className="flex flex-wrap items-center gap-2 text-xs bg-white p-2 rounded border">
+                                          <span className="font-medium">{conflict.job_number || 'Job'}:</span>
+                                          <span>{conflict.customer_name || 'Unknown Customer'}</span>
+                                          {unitLabel && (
+                                            <Badge variant="outline" className="text-xs bg-gradient-secondary text-white border-gray-500 font-bold">
+                                              Unit: {unitLabel}
+                                            </Badge>
+                                          )}
+                                          {attrsText && (
+                                            <span className="text-gray-600">{attrsText}</span>
+                                          )}
+                                        </div>
+                                      );
+                                    })}
                                 </div>
                               </div>
                             )}
