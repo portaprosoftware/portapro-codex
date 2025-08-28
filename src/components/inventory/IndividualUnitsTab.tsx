@@ -404,32 +404,46 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
       )}
 
       {/* Header Controls */}
-      <div className="flex items-center gap-4">
-        <Button
-          variant="outline" 
-          onClick={() => setShowOCRSearch(true)}
-          className="border-purple-600 text-purple-600 hover:bg-purple-50"
-          title="Search by photographing tool number"
-        >
-          <Camera className="w-4 h-4 mr-2" />
-          Capture Panel
-        </Button>
-        <Button 
-          variant="outline" 
-          onClick={() => setShowScanner(true)}
-          className="border-blue-600 text-blue-600 hover:bg-blue-50"
-        >
-          <QrCode className="w-4 h-4 mr-2" />
-          Scan QR
-        </Button>
-        <Button 
-          variant="outline"
-          onClick={() => setShowPrintQRModal(true)}
-          className="border-green-600 text-green-600 hover:bg-green-50"
-        >
-          <QrCode className="w-4 h-4 mr-2" />
-          Print QR Codes
-        </Button>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Button
+            variant="outline" 
+            onClick={() => setShowOCRSearch(true)}
+            className="border-purple-600 text-purple-600 hover:bg-purple-50"
+            title="Search by photographing tool number"
+          >
+            <Camera className="w-4 h-4 mr-2" />
+            Capture Panel
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={() => setShowScanner(true)}
+            className="border-blue-600 text-blue-600 hover:bg-blue-50"
+          >
+            <QrCode className="w-4 h-4 mr-2" />
+            Scan QR
+          </Button>
+          <Button 
+            variant="outline"
+            onClick={() => setShowPrintQRModal(true)}
+            className="border-green-600 text-green-600 hover:bg-green-50"
+          >
+            <QrCode className="w-4 h-4 mr-2" />
+            Print QR Codes
+          </Button>
+        </div>
+        <TrackedOperationsPanel
+          productId={productId}
+          productName={product?.name || "Product"}
+          trigger={
+            <Button 
+              className="bg-blue-600 text-white hover:bg-blue-700 border-0"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Add Units
+            </Button>
+          }
+        />
       </div>
 
       {/* Enhanced Search Filters */}
