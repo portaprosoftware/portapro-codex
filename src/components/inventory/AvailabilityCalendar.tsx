@@ -283,9 +283,9 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
                                <div className="font-medium">{conflict.job_number || 'Unknown Job'}</div>
                                <div className="text-gray-500">{conflict.customer_name || 'Unknown Customer'}</div>
                              </div>
-                               {conflict.item_id && (
+                               {conflict.item_code && (
                                  <Badge variant="outline" className="bg-blue-600 text-white border-blue-600 text-xs">
-                                   Unit: {conflict.item_id.length > 8 ? conflict.item_id.slice(0, 8) : conflict.item_id}
+                                   Unit: {conflict.item_code}
                                  </Badge>
                                )}
                            </div>

@@ -26,6 +26,7 @@ interface DailyAvailability {
     job_number?: string;
     customer_name?: string;
     item_id?: string;
+    item_code?: string;
     status: string;
   }>;
 }
