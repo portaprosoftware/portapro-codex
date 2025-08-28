@@ -316,25 +316,35 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
         {/* Selected Date Info */}
         {selectedDate && (
           <div className="bg-gray-50 p-4 rounded-lg">
-            <h4 className="font-medium mb-2">
-              {format(selectedDate, 'EEEE, MMMM d, yyyy')}
-            </h4>
             {(() => {
               const dayAvailability = getAvailabilityForDate(selectedDate);
               if (!dayAvailability) {
-                return <p className="text-gray-600">No availability data for this date</p>;
+                return (
+                  <>
+                    <h4 className="font-medium mb-2">
+                      {format(selectedDate, 'EEEE, MMMM d, yyyy')}
+                    </h4>
+                    <p className="text-gray-600">No availability data for this date</p>
+                  </>
+                );
               }
 
               const status = getAvailabilityStatus(dayAvailability.total_available, requestedQuantity);
               
               return (
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
+                <div className="space-y-3">
+                  {/* Date row with badges */}
+                  <div className="flex flex-wrap items-center gap-3">
+                    <h4 className="font-medium">
+                      {format(selectedDate, 'EEEE, MMMM d, yyyy')}
+                    </h4>
                     <Badge variant="outline" className={getStatusColor(status)}>
                       {dayAvailability.total_available} units available
                     </Badge>
                     {status === 'available' && (
-                      <span className="text-green-600 text-sm">✅ Meets your request</span>
+                      <div className="flex items-center gap-1 text-green-600 text-sm">
+                        <span>✅ Meets your request</span>
+                      </div>
                     )}
                     {status === 'partial' && (
                       <span className="text-yellow-600 text-sm">⚠️ Partially available</span>
@@ -343,20 +353,13 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
                       <span className="text-red-600 text-sm">❌ Not available</span>
                     )}
                   </div>
-                  
-                  <div className="text-sm">
-                    <div>
-                      <span className="text-gray-600">Tracked Units:</span>
-                      <span className="ml-2 font-medium">{dayAvailability.tracked_available}</span>
-                    </div>
-                  </div>
 
                   {dayAvailability.conflicts && dayAvailability.conflicts.length > 0 && (
                     <div className="mt-3 pt-3 border-t border-gray-200">
                       <p className="text-sm font-medium text-gray-700 mb-2">
                         {dayAvailability.conflicts.length} active assignments:
                       </p>
-                      <div className="max-h-32 overflow-y-auto space-y-1 bg-white p-2 rounded border">
+                      <div className="max-h-48 overflow-y-auto space-y-1 bg-white p-2 rounded border">
                         {dayAvailability.conflicts.map((conflict: any, idx) => {
                           const attrs = conflict.item_id ? conflictAttributesMap?.[conflict.item_id] : undefined;
                           const attrsText = attrs?.map((a) => `${a.name}: ${a.value}`).join(', ');
