@@ -38,6 +38,14 @@ export function BulkLocationTransferModal({
       locationId: string; 
       transferNotes?: string;
     }) => {
+      // Get current locations for each item first
+      const { data: currentItems, error: fetchError } = await supabase
+        .from('product_items')
+        .select('id, current_storage_location_id, product_id')
+        .in('id', itemIds);
+      
+      if (fetchError) throw fetchError;
+
       // Update all selected items to new location
       const { error: updateError } = await supabase
         .from('product_items')
@@ -50,17 +58,26 @@ export function BulkLocationTransferModal({
       if (updateError) throw updateError;
 
       // Log each transfer individually for history tracking
-      const transfers = itemIds.map(itemId => ({
-        product_item_id: itemId,
-        from_location_id: null, // We'll need to get this from the original items
+      const transfers = currentItems?.map(item => ({
+        product_item_id: item.id,
+        product_id: item.product_id,
+        from_location_id: item.current_storage_location_id,
         to_location_id: locationId,
         transferred_at: new Date().toISOString(),
         notes: transferNotes || null,
         transferred_by: null // Could be set to current user ID if available
-      }));
+      })) || [];
 
-      // Note: We'd need to modify this to get the original location_id for proper logging
-      // For now, we'll create a simplified log entry
+      if (transfers.length > 0) {
+        const { error: logError } = await supabase
+          .from('product_item_location_transfers')
+          .insert(transfers);
+        
+        if (logError) {
+          console.error('Error logging transfers:', logError);
+          // Don't throw error here as the main transfer succeeded
+        }
+      }
       
       return itemIds.length;
     },
@@ -68,7 +85,9 @@ export function BulkLocationTransferModal({
       toast.success(`Successfully transferred ${transferredCount} item${transferredCount > 1 ? 's' : ''} to new location`);
       queryClient.invalidateQueries({ queryKey: ["product-items"] });
       queryClient.invalidateQueries({ queryKey: ["individual-units-count"] });
-      queryClient.invalidateQueries({ queryKey: ["product-location-stock"] });
+      queryClient.invalidateQueries({ queryKey: ["product-individual-location-stock"] });
+      queryClient.invalidateQueries({ queryKey: ["product-location-transfers"] });
+      queryClient.invalidateQueries({ queryKey: ["available-individual-units-by-location"] });
       onClose();
       setNewLocationId("");
       setNotes("");
