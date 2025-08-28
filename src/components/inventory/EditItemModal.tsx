@@ -113,8 +113,8 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
       // Normalize the payload - convert empty strings to null for UUID/date fields
       const normalizedData = {
         ...updateData,
-        vendor_id: updateData.vendor_id === '' ? null : updateData.vendor_id,
-        current_storage_location_id: updateData.current_storage_location_id === '' ? null : updateData.current_storage_location_id,
+        vendor_id: (updateData.vendor_id === '' || updateData.vendor_id === 'no-vendor') ? null : updateData.vendor_id,
+        current_storage_location_id: (updateData.current_storage_location_id === '' || updateData.current_storage_location_id === 'no-location') ? null : updateData.current_storage_location_id,
         expected_return_date: updateData.expected_return_date === '' ? null : updateData.expected_return_date,
         manufacturing_date: updateData.manufacturing_date === '' ? null : updateData.manufacturing_date,
       };
@@ -283,7 +283,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
                   <SelectValue placeholder="Select storage location" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">No storage location</SelectItem>
+                  <SelectItem value="no-location">No storage location</SelectItem>
                   {storageLocations?.map((location) => (
                     <SelectItem key={location.id} value={location.id}>
                       {location.name}

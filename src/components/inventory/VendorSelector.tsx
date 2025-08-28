@@ -17,7 +17,7 @@ export const VendorSelector: React.FC<VendorSelectorProps> = ({
         <SelectValue placeholder="Select vendor" />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="">No vendor</SelectItem>
+        <SelectItem value="no-vendor">No vendor</SelectItem>
       </SelectContent>
     </Select>
   );
