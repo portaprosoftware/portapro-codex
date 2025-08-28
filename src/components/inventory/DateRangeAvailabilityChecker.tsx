@@ -72,13 +72,13 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case 'available':
-        return 'bg-green-100 text-green-800 border-green-200';
+        return 'bg-gradient-green text-white border-green-500 font-bold';
       case 'partial':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+        return 'bg-gradient-orange text-white border-orange-500 font-bold';
       case 'unavailable':
-        return 'bg-red-100 text-red-800 border-red-200';
+        return 'bg-gradient-red text-white border-red-500 font-bold';
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return 'bg-gradient-secondary text-white border-gray-500 font-bold';
     }
   };
 
@@ -183,7 +183,7 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
                         );
                         return nextDate ? (
                           <div className="mt-2">
-                            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                            <Badge variant="outline" className="bg-gradient-primary text-white border-blue-500 font-bold">
                               Next date with {requestedQuantity} available: {format(parseISO(nextDate.date), 'MMM d, yyyy')}
                             </Badge>
                           </div>
@@ -222,7 +222,7 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
                             </div>
                             <div className="flex items-center gap-2">
                               {hasConflicts && (
-                                <Badge variant="outline" className="bg-orange-100 text-orange-800">
+                                <Badge variant="outline" className="bg-gradient-orange text-white border-orange-500 font-bold">
                                   {day.conflicts.length} conflicts
                                 </Badge>
                               )}
@@ -267,8 +267,8 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
                                         {conflict.job_number || 'Job'}:
                                       </span>
                                       <span>{conflict.customer_name || 'Unknown Customer'}</span>
-                                      {conflict.item_id && (
-                                        <Badge variant="outline" className="text-xs">
+                                       {conflict.item_id && (
+                                        <Badge variant="outline" className="text-xs bg-gradient-secondary text-white border-gray-500 font-bold">
                                           Item: {conflict.item_id.slice(-8)}
                                         </Badge>
                                       )}
