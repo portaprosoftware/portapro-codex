@@ -197,7 +197,7 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
                   variant="ghost"
                   onClick={() => handleDateClick(date)}
                   className={cn(
-                    "relative h-16 p-2 flex flex-col items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 text-gray-800 border border-gray-300 hover:from-gray-200 hover:to-gray-300",
+                    "relative h-16 p-2 flex flex-col items-center justify-center bg-gradient-to-br from-gray-300 to-gray-400 text-gray-800 border border-gray-400 hover:from-gray-400 hover:to-gray-500",
                     isSelected && "ring-2 ring-blue-500",
                     isCurrentDay && "ring-2 ring-blue-400"
                   )}
