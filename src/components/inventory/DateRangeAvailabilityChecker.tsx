@@ -265,17 +265,12 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
                                 <h5 className="font-medium text-gray-700 mb-2">Conflicts:</h5>
                                 <div className="space-y-1">
                                   {day.conflicts.map((conflict, idx) => (
-                                    <div key={idx} className="flex items-center gap-2 text-xs bg-white p-2 rounded border">
-                                      <span className="font-medium">
-                                        {conflict.job_number || 'Job'}:
-                                      </span>
-                                      <span>{conflict.customer_name || 'Unknown Customer'}</span>
-                                       {conflict.item_id && (
-                                        <Badge variant="outline" className="text-xs bg-gradient-secondary text-white border-gray-500 font-bold">
-                                          Item: {conflict.item_id.slice(-8)}
-                                        </Badge>
-                                      )}
-                                    </div>
+                                     <div key={idx} className="flex items-center gap-2 text-xs bg-white p-2 rounded border">
+                                       <span className="font-medium">
+                                         {conflict.job_number || 'Job'}:
+                                       </span>
+                                       <span>{conflict.customer_name || 'Unknown Customer'}</span>
+                                     </div>
                                   ))}
                                 </div>
                               </div>
