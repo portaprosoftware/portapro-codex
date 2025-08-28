@@ -28,7 +28,7 @@ interface Product {
   stock_in_service: number;
   low_stock_threshold: number;
   track_inventory: boolean;
-  includes_lock: boolean;
+  
   charge_for_product?: boolean;
   pricing_method?: string;
   daily_rate?: number;
@@ -123,24 +123,6 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
     }
   });
 
-  const updateIncludesLockMutation = useMutation({
-    mutationFn: async (includesLock: boolean) => {
-      const { error } = await supabase
-        .from("products")
-        .update({ includes_lock: includesLock })
-        .eq("id", product.id);
-      
-      if (error) throw error;
-    },
-    onSuccess: (_, includesLock) => {
-      queryClient.invalidateQueries({ queryKey: ["product", product.id] });
-      toast.success(`Lock inclusion ${includesLock ? "enabled" : "disabled"}`);
-    },
-    onError: (error) => {
-      toast.error("Failed to update lock inclusion");
-      console.error(error);
-    }
-  });
 
   const updateCategoryMutation = useMutation({
     mutationFn: async (category: string | null) => {
@@ -200,9 +182,6 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
     updateTrackingMutation.mutate(!checked);
   };
 
-  const handleIncludesLockToggle = (checked: boolean) => {
-    updateIncludesLockMutation.mutate(checked);
-  };
 
   const handleStockAdjustmentComplete = () => {
     setShowStockAdjustment(false);
@@ -280,8 +259,8 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
                 onClick={() => setShowStockAdjustment(true)}
                 disabled={!product.track_inventory}
               >
-                <Settings className="w-4 h-4 mr-2" />
-                Adjust Stock
+                <Plus className="w-4 h-4 mr-2" />
+                + Add Units
               </Button>
             </div>
         </div>
@@ -431,17 +410,6 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
           />
         </div>
         
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="font-medium text-gray-900 mb-1">Includes Lock and Key</h3>
-            <p className="text-sm text-gray-600">Enable if this product type comes with a lock and key</p>
-          </div>
-          <Switch
-            checked={product.includes_lock}
-            onCheckedChange={handleIncludesLockToggle}
-            disabled={updateIncludesLockMutation.isPending}
-          />
-        </div>
       </div>
 
       {/* Edit Product Modal */}

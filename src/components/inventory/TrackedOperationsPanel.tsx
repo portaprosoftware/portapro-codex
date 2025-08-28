@@ -89,13 +89,6 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
       icon: Plus,
       color: "text-green-600",
     },
-    {
-      id: "remove_units",
-      title: "Remove Units",
-      description: "Remove tracked inventory units from available stock.",
-      icon: AlertCircle,
-      color: "text-orange-600",
-    },
   ];
 
   const handleSubmit = async () => {

@@ -430,10 +430,6 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
           <QrCode className="w-4 h-4 mr-2" />
           Print QR Codes
         </Button>
-        <TrackedOperationsPanel
-          productId={productId}
-          productName={product?.name || "Product"}
-        />
       </div>
 
       {/* Enhanced Search Filters */}

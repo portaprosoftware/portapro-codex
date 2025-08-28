@@ -78,8 +78,8 @@ export const EnhancedInventoryPage: React.FC<EnhancedInventoryPageProps> = ({ on
             onClick={() => openAdjustment({ id: "sample", name: "Sample Product", stock: 10 })}
             className="bg-blue-600 hover:bg-blue-700 text-white"
           >
-            <Settings className="w-4 h-4 mr-2" />
-            Adjust Stock
+            <Plus className="w-4 h-4 mr-2" />
+            + Add Units
           </Button>
         </div>
       </div>
@@ -191,7 +191,7 @@ export const EnhancedInventoryPage: React.FC<EnhancedInventoryPageProps> = ({ on
       <Dialog open={showAdjustment} onOpenChange={setShowAdjustment}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Adjust Stock</DialogTitle>
+            <DialogTitle>+ Add Units</DialogTitle>
           </DialogHeader>
           {selectedProduct && (
             <StockAdjustmentWizard
