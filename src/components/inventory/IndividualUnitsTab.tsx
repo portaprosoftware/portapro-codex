@@ -1,814 +1,436 @@
-
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Plus, QrCode, Search, Filter, Edit, Trash, ChevronDown, ChevronRight, Settings, Camera, Shield, AlertTriangle, Settings2, ArrowLeftRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { EditItemModal } from "./EditItemModal";
-import { CreateItemModal } from "./CreateItemModal";
-import { SimpleQRCode } from "./SimpleQRCode";
-import { QRCodeScanner } from "./QRCodeScanner";
-import { PrintQRModal } from "./PrintQRModal";
-
-import { AttributeFilters } from "./AttributeFilters";
-import { OCRPhotoCapture } from "./OCRPhotoCapture";
-import { OCRSearchCapture } from "./OCRSearchCapture";
-import { EnhancedSearchFilters } from "./EnhancedSearchFilters";
-import { MobilePWAOptimizedOCR } from "./MobilePWAOptimizedOCR";
-import { DeleteItemDialog } from "./DeleteItemDialog";
-import { ItemActionsMenu } from "./ItemActionsMenu";
-
-import { UnitNavigationDialog } from "./UnitNavigationDialog";
-import { TrackedOperationsPanel } from "./TrackedOperationsPanel";
-import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
-import { BulkLocationTransferModal } from "./BulkLocationTransferModal";
-
+import React, { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { Edit, Scan, Plus, MoreHorizontal, Copy, ArrowDown, ArrowUp } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { EditItemModal } from './EditItemModal';
+import { generateRandomString } from '@/lib/utils';
+import { ConfirmDeleteModal } from '../ui/ConfirmDeleteModal';
 
 interface IndividualUnitsTabProps {
   productId: string;
-  toolNumberToFind?: string | null;
 }
 
-export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productId, toolNumberToFind }) => {
+interface ProductItem {
+  id: string;
+  product_id: string;
+  barcode: string;
+  status: string;
+  condition: string;
+  location: string;
+  current_storage_location_id: string | null;
+  color: string;
+  size: string;
+  material: string;
+  notes: string;
+  maintenance_reason: string;
+  expected_return_date: string | null;
+  maintenance_notes: string;
+  tool_number: string;
+  vendor_id: string | null;
+  plastic_code: string;
+  manufacturing_date: string | null;
+  mold_cavity: string;
+}
+
+interface FilterOptions {
+  status: string;
+  condition: string;
+  storageLocation: string;
+}
+
+interface SortOptions {
+  field: string;
+  order: 'asc' | 'desc';
+}
+
+export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productId }) => {
+  const [selectedUnit, setSelectedUnit] = useState<string | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterOptions, setFilterOptions] = useState<FilterOptions>({
+    status: 'all',
+    condition: 'all',
+    storageLocation: 'all',
+  });
+  const [sortOptions, setSortOptions] = useState<SortOptions>({
+    field: 'barcode',
+    order: 'asc',
+  });
+  const [selectedUnits, setSelectedUnits] = useState<Set<string>>(new Set());
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [availabilityFilter, setAvailabilityFilter] = useState("all");
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [expandedRows, setExpandedRows] = useState<string[]>([]);
-  const [editingItem, setEditingItem] = useState<string | null>(null);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showScanner, setShowScanner] = useState(false);
-  const [showPrintQRModal, setShowPrintQRModal] = useState(false);
-  
-  const [showOCRCapture, setShowOCRCapture] = useState(false);
-  const [showOCRSearch, setShowOCRSearch] = useState(false);
-  const [showMobileOCR, setShowMobileOCR] = useState(false);
-  const [ocrItemId, setOcrItemId] = useState<string | null>(null);
-  const [ocrItemCode, setOcrItemCode] = useState<string>("");
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<{id: string, code: string} | null>(null);
-  const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
-  const [bulkTransferDialogOpen, setBulkTransferDialogOpen] = useState(false);
-  const [showNavigationDialog, setShowNavigationDialog] = useState(false);
-  const [selectedUnitForNavigation, setSelectedUnitForNavigation] = useState<{id: string, code: string} | null>(null);
-  
-  const [attributeFilters, setAttributeFilters] = useState<{
-    color?: string;
-    size?: string;
-    material?: string;
-    condition?: string;
-  }>({});
-  const [enhancedFilters, setEnhancedFilters] = useState<{
-    availability?: string;
-    toolNumber?: string;
-    vendorId?: string;
-    verificationStatus?: string;
-    manufacturingDateRange?: any;
-    confidenceRange?: [number, number];
-    attributes?: Record<string, string>;
-  }>({});
 
-  // Auto-set tool number filter when navigating from OCR search
-  useEffect(() => {
-    if (toolNumberToFind) {
-      setEnhancedFilters(prev => ({
-        ...prev,
-        toolNumber: toolNumberToFind
-      }));
-    }
-  }, [toolNumberToFind]);
-
-  const { data: items, isLoading, refetch } = useQuery({
-    queryKey: ["product-items", productId, searchQuery, availabilityFilter, attributeFilters, enhancedFilters],
+  const { data: productItems, isLoading, refetch } = useQuery({
+    queryKey: ['product-items', productId, searchQuery, filterOptions, sortOptions],
     queryFn: async () => {
-      console.log("IndividualUnitsTab: Query executing with filters:", {
-        availabilityFilter,
-        enhancedFilters,
-        productId
-      });
-      
       let query = supabase
-        .from("product_items")
-        .select("*, tool_number, vendor_id, plastic_code, manufacturing_date, mold_cavity, ocr_confidence_score, verification_status, tracking_photo_url")
-        .eq("product_id", productId);
+        .from('product_items')
+        .select('*')
+        .eq('product_id', productId);
 
       if (searchQuery) {
-        query = query.or(`item_code.ilike.%${searchQuery}%,qr_code_data.ilike.%${searchQuery}%,location.ilike.%${searchQuery}%,tool_number.ilike.%${searchQuery}%,vendor_id.ilike.%${searchQuery}%`);
+        query = query.ilike('barcode', `%${searchQuery}%`);
       }
 
-      // Apply enhanced filters
-      if (enhancedFilters.toolNumber) {
-        query = query.ilike("tool_number", `%${enhancedFilters.toolNumber}%`);
+      if (filterOptions.status !== 'all') {
+        query = query.eq('status', filterOptions.status);
       }
-      if (enhancedFilters.vendorId) {
-        query = query.ilike("vendor_id", `%${enhancedFilters.vendorId}%`);
+      if (filterOptions.condition !== 'all') {
+        query = query.eq('condition', filterOptions.condition);
       }
-      if (enhancedFilters.verificationStatus && enhancedFilters.verificationStatus !== "all") {
-        query = query.eq("verification_status", enhancedFilters.verificationStatus);
-      }
-      if (enhancedFilters.confidenceRange) {
-        query = query
-          .gte("ocr_confidence_score", enhancedFilters.confidenceRange[0] / 100)
-          .lte("ocr_confidence_score", enhancedFilters.confidenceRange[1] / 100);
+      if (filterOptions.storageLocation !== 'all') {
+        query = query.eq('current_storage_location_id', filterOptions.storageLocation);
       }
 
-      if (availabilityFilter !== "all") {
-        console.log("IndividualUnitsTab: Applying status filter:", availabilityFilter);
-        query = query.eq("status", availabilityFilter);
-      }
+      query = query.order(sortOptions.field, { ascending: sortOptions.order === 'asc' });
 
-      // Apply attribute filters
-      if (attributeFilters.color) {
-        query = query.eq("color", attributeFilters.color);
-      }
-      if (attributeFilters.size) {
-        query = query.eq("size", attributeFilters.size);
-      }
-      if (attributeFilters.material) {
-        query = query.eq("material", attributeFilters.material);
-      }
-      if (attributeFilters.condition) {
-        query = query.eq("condition", attributeFilters.condition);
-      }
-
-      const { data, error } = await query.order("item_code");
-      if (error) {
-        console.error("IndividualUnitsTab: Query error:", error);
-        throw error;
-      }
-      console.log("IndividualUnitsTab: Query returned", data?.length, "items");
-      return data || [];
-    }
+      const { data, error } = await query;
+      if (error) throw error;
+      return data as ProductItem[];
+    },
   });
 
-  const { data: product } = useQuery({
-    queryKey: ["product", productId],
+  const { data: storageLocations } = useQuery({
+    queryKey: ['storage-locations'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("products")
-        .select("name, stock_total, default_item_code_category")
-        .eq("id", productId)
-        .single();
+        .from('storage_locations')
+        .select('id, name')
+        .eq('is_active', true)
+        .order('name');
       
       if (error) throw error;
       return data;
     }
   });
 
-  // Bulk-fetch item variation attributes for display
-  const { data: itemAttributesMap = {} } = useQuery({
-    queryKey: ["item-attributes-bulk", productId, items?.map((i: any) => i.id).join(",")],
-    enabled: !!items && items.length > 0,
-    queryFn: async () => {
-      const ids = (items as any[]).map(i => i.id);
-      const { data: attributes, error: attrError } = await supabase
-        .from("product_item_attributes")
-        .select("item_id, property_id, property_value")
-        .in("item_id", ids);
-      if (attrError) throw attrError;
-      if (!attributes || attributes.length === 0) return {};
-
-      const propIds = Array.from(new Set(attributes.map(a => a.property_id)));
-      const { data: properties, error: propError } = await supabase
-        .from("product_properties")
-        .select("id, attribute_name")
-        .in("id", propIds);
-      if (propError) throw propError;
-
-      const map: Record<string, Record<string, string>> = {};
-      attributes.forEach((attr) => {
-        const prop = properties?.find((p) => p.id === attr.property_id);
-        if (prop?.attribute_name) {
-          const key = prop.attribute_name.toLowerCase();
-          if (!map[attr.item_id]) map[attr.item_id] = {};
-          map[attr.item_id][key] = attr.property_value;
-        }
-      });
-
-      return map;
-    }
-  });
-
-  // Delete item mutation
-  const deleteItemMutation = useMutation({
-    mutationFn: async (itemId: string) => {
-      const { error } = await supabase
+  const createMutation = useMutation({
+    mutationFn: async () => {
+      const newBarcode = generateRandomString(8);
+      const { data, error } = await supabase
         .from('product_items')
-        .delete()
-        .eq('id', itemId);
-      
+        .insert({ product_id: productId, barcode: newBarcode })
+        .select()
+        .single();
+
       if (error) throw error;
+      return data as ProductItem;
     },
-    onSuccess: () => {
-      toast.success('Item deleted successfully');
-      queryClient.invalidateQueries({ queryKey: ["product-items", productId] });
-      setDeleteDialogOpen(false);
-      setItemToDelete(null);
+    onSuccess: (newItem) => {
+      queryClient.invalidateQueries({ queryKey: ['product-items', productId] });
+      toast.success(`Unit ${newItem.barcode} created`);
     },
     onError: (error) => {
-      console.error('Error deleting item:', error);
-      toast.error('Failed to delete item');
-    }
+      console.error('Create error details:', error);
+      toast.error('Failed to create unit');
+    },
   });
 
-  // Bulk delete mutation
-  const bulkDeleteMutation = useMutation({
+  const deleteMutation = useMutation({
     mutationFn: async (itemIds: string[]) => {
       const { error } = await supabase
         .from('product_items')
         .delete()
         .in('id', itemIds);
-      
+
       if (error) throw error;
-      return itemIds.length;
     },
-    onSuccess: (deletedCount) => {
-      toast.success(`Successfully deleted ${deletedCount} item${deletedCount > 1 ? 's' : ''}`);
-      queryClient.invalidateQueries({ queryKey: ["product-items", productId] });
-      setSelectedItems([]);
-      setBulkDeleteDialogOpen(false);
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['product-items', productId] });
+      toast.success('Units deleted successfully');
+      setSelectedUnits(new Set());
     },
     onError: (error) => {
-      console.error('Error bulk deleting items:', error);
-      toast.error('Failed to delete items');
-    }
+      console.error('Delete error details:', error);
+      toast.error('Failed to delete units');
+    },
+    onSettled: () => {
+      setIsDeleteModalOpen(false);
+    },
   });
 
-  // Fetch storage locations for name lookup
-  const { data: storageLocations } = useQuery({
-    queryKey: ["storage-locations"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("storage_locations")
-        .select("id, name");
-      
-      if (error) throw error;
-      return data || [];
-    }
-  });
-
-  // Helper function to get storage location name
-  const getStorageLocationName = (locationId: string | null) => {
-    if (!locationId || !storageLocations) return "Not set";
-    const location = storageLocations.find(loc => loc.id === locationId);
-    return location?.name || locationId.substring(0, 8) + "...";
+  const handleEditUnit = (unitId: string) => {
+    setSelectedUnit(unitId);
+    setIsEditModalOpen(true);
   };
 
-  const toggleRowExpansion = (itemId: string) => {
-    setExpandedRows(prev => 
-      prev.includes(itemId) 
-        ? prev.filter(id => id !== itemId)
-        : [...prev, itemId]
-    );
+  const handleCloseEditModal = () => {
+    setSelectedUnit(null);
+    setIsEditModalOpen(false);
   };
 
-  const toggleItemSelection = (itemId: string) => {
-    setSelectedItems(prev => 
-      prev.includes(itemId)
-        ? prev.filter(id => id !== itemId)
-        : [...prev, itemId]
-    );
+  const handleFilterChange = (field: string, value: string) => {
+    setFilterOptions(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSelectAll = () => {
-    const visibleItemIds = items?.map(item => item.id) || [];
-    const allSelected = visibleItemIds.length > 0 && visibleItemIds.every(id => selectedItems.includes(id));
-    
-    if (allSelected) {
-      // Deselect all visible items
-      setSelectedItems(prev => prev.filter(id => !visibleItemIds.includes(id)));
-    } else {
-      // Select all visible items
-      setSelectedItems(prev => {
-        const newSelection = [...prev];
-        visibleItemIds.forEach(id => {
-          if (!newSelection.includes(id)) {
-            newSelection.push(id);
-          }
-        });
-        return newSelection;
-      });
-    }
-  };
-
-  const handleBulkDelete = () => {
-    if (selectedItems.length > 0) {
-      setBulkDeleteDialogOpen(true);
-    }
-  };
-
-  const handleBulkTransfer = () => {
-    if (selectedItems.length > 0) {
-      setBulkTransferDialogOpen(true);
-    }
-  };
-
-  const confirmBulkDelete = () => {
-    if (selectedItems.length > 0) {
-      bulkDeleteMutation.mutate(selectedItems);
-    }
-  };
-
-  // Clear selections when filters change
-  useEffect(() => {
-    setSelectedItems([]);
-  }, [searchQuery, availabilityFilter, attributeFilters, enhancedFilters]);
-
-  const handleAttributeFilterChange = (key: string, value: string | undefined) => {
-    setAttributeFilters(prev => ({
-      ...prev,
-      [key]: value
+  const handleSortChange = (field: string) => {
+    setSortOptions(prev => ({
+      field: field,
+      order: prev.field === field && prev.order === 'asc' ? 'desc' : 'asc',
     }));
   };
 
-  const handleClearFilters = () => {
-    setAttributeFilters({});
-  };
-
-  const handleScanResult = (result: string) => {
-    console.log("Scanned QR code:", result);
-    setShowScanner(false);
-    
-    // Parse the QR code and find the item
-    try {
-      const data = JSON.parse(result);
-      if (data.type === "inventory_item" && data.itemCode) {
-        setSearchQuery(data.itemCode);
-      }
-    } catch (error) {
-      // If not JSON, treat as direct item code search
-      setSearchQuery(result);
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      const allUnitIds = productItems?.map(item => item.id) || [];
+      setSelectedUnits(new Set(allUnitIds));
+    } else {
+      setSelectedUnits(new Set());
     }
   };
 
-  const handleQRUpdate = (itemId: string, qrData: string) => {
-    refetch();
+  const handleSelectUnit = (unitId: string, checked: boolean) => {
+    const newSelectedUnits = new Set(selectedUnits);
+    if (checked) {
+      newSelectedUnits.add(unitId);
+    } else {
+      newSelectedUnits.delete(unitId);
+    }
+    setSelectedUnits(newSelectedUnits);
   };
 
-  const handleOCRCapture = (itemId: string, itemCode: string) => {
-    setOcrItemId(itemId);
-    setOcrItemCode(itemCode);
-    setShowOCRCapture(true);
+  const handleDeleteSelected = () => {
+    setIsDeleteModalOpen(true);
   };
 
-  const handleOCRComplete = (ocrData: any) => {
-    console.log('OCR completed for item:', ocrItemId, ocrData);
-    setShowOCRCapture(false);
-    setOcrItemId(null);
-    setOcrItemCode("");
-    refetch();
-  };
-
-  const handleOCRSearchResult = (searchTerm: string, confidence?: number) => {
-    setSearchQuery(searchTerm);
-    setShowOCRSearch(false);
-  };
-
-  const handleDeleteItem = (itemId: string, itemCode: string) => {
-    setItemToDelete({ id: itemId, code: itemCode });
-    setDeleteDialogOpen(true);
-  };
-
-  const confirmDelete = () => {
-    if (itemToDelete) {
-      deleteItemMutation.mutate(itemToDelete.id);
+  const confirmDelete = async () => {
+    if (selectedUnits.size > 0) {
+      await deleteMutation.mutateAsync(Array.from(selectedUnits));
     }
   };
 
-  const handleUnitCodeClick = (itemId: string, itemCode: string) => {
-    setSelectedUnitForNavigation({ id: itemId, code: itemCode });
-    setShowNavigationDialog(true);
-  };
-
-  const getStatusBadge = (status: string) => {
-    const gradients = {
-      available: "bg-gradient-to-r from-green-600 to-green-700 text-white font-bold",
-      assigned: "bg-gradient-to-r from-yellow-600 to-yellow-700 text-white font-bold",
-      maintenance: "bg-gradient-to-r from-orange-600 to-orange-700 text-white font-bold",
-      out_of_service: "bg-gradient-to-r from-gray-600 to-gray-700 text-white font-bold"
-    };
-
-    const statusLabels = {
-      available: "Available",
-      assigned: "On Job", 
-      maintenance: "Maintenance",
-      out_of_service: "Permanently Retired"
-    };
-
-    return (
-      <Badge className={gradients[status as keyof typeof gradients] || gradients.available}>
-        {statusLabels[status as keyof typeof statusLabels] || status}
-      </Badge>
-    );
-  };
-
-  const getVariationText = (item: any) => {
-    const attrs = (itemAttributesMap as Record<string, Record<string, string> | undefined>)[item.id];
-    const color = attrs?.color || item.color;
-    const size = attrs?.size || item.size;
-    const material = attrs?.material || item.material;
-
-    const variations = [];
-    if (color) variations.push({ name: "Color", value: color });
-    if (size) variations.push({ name: "Size", value: size });
-    if (material) variations.push({ name: "Material", value: material });
-    
-    if (variations.length === 0) return "Not set";
-
-    return (
-      <div className="space-y-1">
-        {variations.map((variation, index) => (
-          <div key={index} className="text-sm">
-            <span className="font-semibold">{variation.name}:</span> {variation.value}
-          </div>
-        ))}
-      </div>
-    );
-  };
-
-  const getVerificationBadge = (status: string | null, confidence: number | null) => {
-    if (!status) return null;
-    
-    const badges = {
-      manual_verified: <Badge className="bg-green-100 text-green-700"><Shield className="w-3 h-3 mr-1" />Verified</Badge>,
-      auto_detected: confidence && confidence > 0.8 
-        ? <Badge className="bg-blue-100 text-blue-700">Auto-detected</Badge>
-        : <Badge className="bg-yellow-100 text-yellow-700"><AlertTriangle className="w-3 h-3 mr-1" />Needs Review</Badge>,
-      needs_review: <Badge className="bg-red-100 text-red-700"><AlertTriangle className="w-3 h-3 mr-1" />Needs Review</Badge>
-    };
-
-    return badges[status as keyof typeof badges] || null;
-  };
-
-  if (isLoading) {
-    return <div className="p-6">Loading units...</div>;
-  }
+  const isAllSelected = productItems && selectedUnits.size === productItems.length;
+  const hasSelection = selectedUnits.size > 0;
 
   return (
-    <div className="space-y-6">
-      {/* Category Info Banner */}
-      {product?.default_item_code_category && (
-        <div className="bg-white border border-gray-200 rounded-lg p-4">
-          <div className="flex items-center justify-between">
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <Input
+          type="search"
+          placeholder="Search by barcode..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+
+        <Button onClick={() => createMutation.mutate()} disabled={createMutation.isLoading}>
+          <Plus className="w-4 h-4 mr-2" />
+          Add Unit
+        </Button>
+      </div>
+
+      <Card>
+        <CardContent className="p-4 space-y-4">
+          <div className="grid grid-cols-3 gap-4">
             <div>
-              <p className="font-medium text-gray-900">
-                {product.name} items use: <span className="font-bold">{product.default_item_code_category}s</span> category
-              </p>
-              <p className="text-sm text-gray-600 mt-1">
-                New individual items will automatically use this category for item codes.
-              </p>
+              <Label htmlFor="status-filter">Status</Label>
+              <Select
+                id="status-filter"
+                value={filterOptions.status}
+                onValueChange={(value) => handleFilterChange('status', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="All Statuses" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="available">Available</SelectItem>
+                  <SelectItem value="rented">Rented</SelectItem>
+                  <SelectItem value="maintenance">Maintenance</SelectItem>
+                  <SelectItem value="retired">Retired</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-            <Badge className="bg-blue-600 text-white font-medium">
-              {product.default_item_code_category}s
-            </Badge>
+
+            <div>
+              <Label htmlFor="condition-filter">Condition</Label>
+              <Select
+                id="condition-filter"
+                value={filterOptions.condition}
+                onValueChange={(value) => handleFilterChange('condition', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="All Conditions" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Conditions</SelectItem>
+                  <SelectItem value="excellent">Excellent</SelectItem>
+                  <SelectItem value="good">Good</SelectItem>
+                  <SelectItem value="fair">Fair</SelectItem>
+                  <SelectItem value="needs_repair">Needs Repair</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="storage-location-filter">Storage Location</Label>
+              <Select
+                id="storage-location-filter"
+                value={filterOptions.storageLocation}
+                onValueChange={(value) => handleFilterChange('storageLocation', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="All Locations" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Locations</SelectItem>
+                  {storageLocations?.map((location) => (
+                    <SelectItem key={location.id} value={location.id}>
+                      {location.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
+        </CardContent>
+      </Card>
+
+      {hasSelection && (
+        <div className="flex items-center justify-between px-2">
+          <p className="text-sm text-muted-foreground">
+            {selectedUnits.size} unit(s) selected
+          </p>
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={handleDeleteSelected}
+            disabled={deleteMutation.isLoading}
+          >
+            Delete Selected
+          </Button>
         </div>
       )}
 
-      {/* Header Controls */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="outline" 
-            onClick={() => setShowOCRSearch(true)}
-            className="border-purple-600 text-purple-600 hover:bg-purple-50"
-            title="Search by photographing tool number"
-          >
-            <Camera className="w-4 h-4 mr-2" />
-            Capture Panel
-          </Button>
-          <Button 
-            variant="outline" 
-            onClick={() => setShowScanner(true)}
-            className="border-blue-600 text-blue-600 hover:bg-blue-50"
-          >
-            <QrCode className="w-4 h-4 mr-2" />
-            Scan QR
-          </Button>
-          <Button 
-            variant="outline"
-            onClick={() => setShowPrintQRModal(true)}
-            className="border-green-600 text-green-600 hover:bg-green-50"
-          >
-            <QrCode className="w-4 h-4 mr-2" />
-            Print QR Codes
-          </Button>
-          {selectedItems.length > 0 && (
-            <>
-              <Button
-                variant="outline"
-                onClick={handleBulkTransfer}
-                className="border-blue-600 text-blue-600 hover:bg-blue-50"
-              >
-                <ArrowLeftRight className="w-4 h-4 mr-2" />
-                Transfer Locations ({selectedItems.length})
-              </Button>
-              <Button
-                variant="outline"
-                onClick={handleBulkDelete}
-                className="border-red-600 text-red-600 hover:bg-red-50"
-              >
-                <Trash className="w-4 h-4 mr-2" />
-                Delete Selected ({selectedItems.length})
-              </Button>
-            </>
-          )}
-        </div>
-        <TrackedOperationsPanel
-          productId={productId}
-          productName={product?.name || "Product"}
-          trigger={
-            <Button 
-              className="bg-blue-600 text-white hover:bg-blue-700 border-0"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Units
-            </Button>
-          }
-        />
-      </div>
-
-      {/* Enhanced Search Filters */}
-      <EnhancedSearchFilters
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        filters={{ availability: availabilityFilter }}
-        onFiltersChange={(filters) => {
-          console.log("IndividualUnitsTab: Filters changed:", filters);
-          if (filters.availability !== undefined) {
-            setAvailabilityFilter(filters.availability);
-          }
-        }}
-        onClearFilters={() => {
-          console.log("IndividualUnitsTab: Clearing filters");
-          setAvailabilityFilter("all");
-        }}
-      />
-
-      {/* Units Table */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+      <div className="overflow-x-auto">
         <Table>
           <TableHeader>
-            <TableRow className="bg-gray-50">
-              <TableHead className="w-12">
+            <TableRow>
+              <TableHead className="w-[50px]">
                 <Checkbox
-                  checked={items && items.length > 0 && items.every(item => selectedItems.includes(item.id))}
+                  checked={isAllSelected && productItems?.length > 0}
                   onCheckedChange={handleSelectAll}
+                  aria-label="Select all"
                 />
               </TableHead>
-              <TableHead className="w-12"></TableHead>
-              <TableHead className="font-medium">Unit Code</TableHead>
-              <TableHead className="font-medium">Status</TableHead>
-              <TableHead className="font-medium">Variations</TableHead>
-              <TableHead className="font-medium">Tool Number</TableHead>
-              <TableHead className="w-12">QR</TableHead>
-              <TableHead className="w-32">Actions</TableHead>
+              <TableHead>
+                <Button variant="ghost" onClick={() => handleSortChange('barcode')}>
+                  Barcode
+                  {sortOptions.field === 'barcode' && (
+                    sortOptions.order === 'asc' ? <ArrowDown className="ml-2 h-4 w-4" /> : <ArrowUp className="ml-2 h-4 w-4" />
+                  )}
+                </Button>
+              </TableHead>
+              <TableHead>
+                <Button variant="ghost" onClick={() => handleSortChange('status')}>
+                  Status
+                  {sortOptions.field === 'status' && (
+                    sortOptions.order === 'asc' ? <ArrowDown className="ml-2 h-4 w-4" /> : <ArrowUp className="ml-2 h-4 w-4" />
+                  )}
+                </Button>
+              </TableHead>
+              <TableHead>
+                <Button variant="ghost" onClick={() => handleSortChange('condition')}>
+                  Condition
+                  {sortOptions.field === 'condition' && (
+                    sortOptions.order === 'asc' ? <ArrowDown className="ml-2 h-4 w-4" /> : <ArrowUp className="ml-2 h-4 w-4" />
+                  )}
+                </Button>
+              </TableHead>
+              <TableHead>Location</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {items?.map((item, index) => [
-              <TableRow key={item.id} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                  <TableCell>
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-4">Loading...</TableCell>
+              </TableRow>
+            ) : productItems?.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-4">No units found.</TableCell>
+              </TableRow>
+            ) : (
+              productItems?.map((item) => (
+                <TableRow key={item.id}>
+                  <TableCell className="w-[50px]">
                     <Checkbox
-                      checked={selectedItems.includes(item.id)}
-                      onCheckedChange={() => toggleItemSelection(item.id)}
+                      checked={selectedUnits.has(item.id)}
+                      onCheckedChange={(checked) => handleSelectUnit(item.id, checked)}
+                      aria-label={`Select unit ${item.barcode}`}
                     />
                   </TableCell>
-                  <TableCell>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="w-6 h-6 p-0"
-                      onClick={() => toggleRowExpansion(item.id)}
-                    >
-                      {expandedRows.includes(item.id) ? (
-                        <ChevronDown className="w-4 h-4" />
-                      ) : (
-                        <ChevronRight className="w-4 h-4" />
-                      )}
-                    </Button>
+                  <TableCell>{item.barcode}</TableCell>
+                  <TableCell>{item.status}</TableCell>
+                  <TableCell>{item.condition}</TableCell>
+                  <TableCell>{item.location}</TableCell>
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                          <span className="sr-only">Open menu</span>
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleEditUnit(item.id)}>
+                          <Edit className="mr-2 h-4 w-4" /> Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <Scan className="mr-2 h-4 w-4" /> Scan
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem>
+                          <Copy className="mr-2 h-4 w-4" /> Copy
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
-                   <TableCell>
-                     <Button 
-                       variant="link" 
-                       className="p-0 h-auto font-medium text-blue-600 hover:text-blue-800"
-                       onClick={() => handleUnitCodeClick(item.id, item.item_code)}
-                     >
-                       {item.item_code}
-                     </Button>
-                   </TableCell>
-                  <TableCell>{getStatusBadge(item.status)}</TableCell>
-                  <TableCell className="text-gray-600">{getVariationText(item)}</TableCell>
-                  <TableCell className="text-gray-600 font-mono text-xs">
-                    {item.tool_number || "—"}
-                  </TableCell>
-                  <TableCell>
-                    <SimpleQRCode 
-                      itemCode={item.item_code} 
-                      qrCodeData={item.qr_code_data}
-                      showAsButton={true}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <ItemActionsMenu
-                      itemId={item.id}
-                      itemCode={item.item_code}
-                      onEdit={() => setEditingItem(item.id)}
-                      onDelete={() => handleDeleteItem(item.id, item.item_code)}
-                      qrCodeData={item.qr_code_data}
-                    />
-                  </TableCell>
-                </TableRow>,
-                
-                // Expanded Row Details
-                expandedRows.includes(item.id) ? (
-                <TableRow key={`${item.id}-expanded`} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                    <TableCell colSpan={8} className="border-t">
-                      <div className="py-4 space-y-4 text-sm">
-                        {/* OCR Tracking Information */}
-                        {(item.tool_number || item.vendor_id || item.plastic_code) && (
-                          <div className="p-3 bg-white border border-gray-200 rounded-lg">
-                            <h4 className="font-medium text-gray-900 mb-2 flex items-center">
-                              <Camera className="w-4 h-4 mr-2" />
-                              Tool Tracking Information
-                            </h4>
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                              <div>
-                                <span className="font-medium text-gray-700">Tool Number:</span>
-                                <p className="text-gray-600 mt-1 font-mono">{item.tool_number || "—"}</p>
-                              </div>
-                              <div>
-                                <span className="font-medium text-blue-700">Vendor ID:</span>
-                                <p className="text-blue-600 mt-1 font-mono">{item.vendor_id || "—"}</p>
-                              </div>
-                              <div>
-                                <span className="font-medium text-blue-700">Plastic Code:</span>
-                                <p className="text-blue-600 mt-1">{item.plastic_code || "—"}</p>
-                              </div>
-                              <div>
-                                <span className="font-medium text-blue-700">Mfg Date:</span>
-                                <p className="text-blue-600 mt-1">{item.manufacturing_date || "—"}</p>
-                              </div>
-                              <div>
-                                <span className="font-medium text-blue-700">Mold Cavity:</span>
-                                <p className="text-blue-600 mt-1">{item.mold_cavity || "—"}</p>
-                              </div>
-                              {item.ocr_confidence_score && (
-                                <div>
-                                  <span className="font-medium text-blue-700">OCR Confidence:</span>
-                                  <p className="text-blue-600 mt-1">{Math.round(item.ocr_confidence_score * 100)}%</p>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        )}
-
-                        
-                        {/* Standard Item Details */}
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                          <div>
-                            <span className="font-medium text-gray-700">Created:</span>
-                            <p className="text-gray-600 mt-1">{new Date(item.created_at).toLocaleDateString()}</p>
-                          </div>
-                          <div>
-                            <span className="font-medium text-gray-700">Updated:</span>
-                            <p className="text-gray-600 mt-1">{new Date(item.updated_at).toLocaleDateString()}</p>
-                          </div>
-                          <div>
-                            <span className="font-medium text-gray-700">Last Location:</span>
-                            <p className="text-gray-600 mt-1">{item.last_known_location ? String(item.last_known_location) : "Not set"}</p>
-                          </div>
-                          <div>
-                            <span className="font-medium text-gray-700">Storage Location:</span>
-                            <p className="text-gray-600 mt-1">{getStorageLocationName(item.current_storage_location_id)}</p>
-                          </div>
-                        </div>
-                        
-                        {item.notes && (
-                          <div>
-                            <span className="font-medium text-gray-700">Notes:</span>
-                            <p className="text-gray-600 mt-1">{item.notes}</p>
-                          </div>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ) : null
-            ].filter(Boolean))}
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
-
-        {(!items || items.length === 0) && (
-          <div className="p-8 text-center text-gray-500">
-            No tracked units found. Create your first tracked item to get started.
-          </div>
-        )}
       </div>
-
-      {/* Edit Item Modal */}
-      {editingItem && (
+      
+      {selectedUnit && (
         <EditItemModal
-          itemId={editingItem}
-          onClose={() => setEditingItem(null)}
+          itemId={selectedUnit}
+          isOpen={isEditModalOpen}
+          onClose={handleCloseEditModal}
         />
       )}
 
-      {/* Create Item Modal */}
-      {showCreateModal && (
-        <CreateItemModal
-          productId={productId}
-          onClose={() => setShowCreateModal(false)}
-        />
-      )}
-
-      {/* QR Scanner Dialog */}
-      <Dialog open={showScanner} onOpenChange={setShowScanner}>
-        <DialogContent className="sm:max-w-md">
-          <QRCodeScanner
-            onScan={handleScanResult}
-            onClose={() => setShowScanner(false)}
-          />
-        </DialogContent>
-      </Dialog>
-
-
-      {/* OCR Photo Capture Dialog */}
-      {showOCRCapture && ocrItemId && (
-        <OCRPhotoCapture
-          open={showOCRCapture}
-          onClose={() => setShowOCRCapture(false)}
-          itemId={ocrItemId}
-          itemCode={ocrItemCode}
-          onComplete={handleOCRComplete}
-        />
-      )}
-
-      {/* OCR Search Dialog */}
-      <OCRSearchCapture
-        open={showOCRSearch}
-        onClose={() => setShowOCRSearch(false)}
-        onSearchResult={handleOCRSearchResult}
-      />
-
-      {/* Delete Confirmation Dialog */}
-      <DeleteItemDialog
-        open={deleteDialogOpen}
-        onOpenChange={setDeleteDialogOpen}
+      <ConfirmDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={confirmDelete}
-        itemCode={itemToDelete?.code || ""}
-        isDeleting={deleteItemMutation.isPending}
-      />
-
-      {/* Print QR Modal */}
-      <PrintQRModal
-        isOpen={showPrintQRModal}
-        onClose={() => setShowPrintQRModal(false)}
-        productId={productId}
-      />
-
-      {/* Unit Navigation Dialog */}
-      <UnitNavigationDialog
-        isOpen={showNavigationDialog}
-        onClose={() => setShowNavigationDialog(false)}
-        itemId={selectedUnitForNavigation?.id || ""}
-        itemCode={selectedUnitForNavigation?.code || ""}
-        showManageOption={false}
-        onEditDetails={() => {
-          if (selectedUnitForNavigation?.id) {
-            setEditingItem(selectedUnitForNavigation.id);
-          }
-        }}
-      />
-
-      {/* Bulk Delete Confirmation Dialog */}
-      <DeleteConfirmationModal
-        isOpen={bulkDeleteDialogOpen}
-        onClose={() => setBulkDeleteDialogOpen(false)}
-        onConfirm={confirmBulkDelete}
-        title="Delete Selected Items"
-        description={`Are you sure you want to delete ${selectedItems.length} selected item${selectedItems.length > 1 ? 's' : ''}? This action cannot be undone and will permanently remove ${selectedItems.length > 1 ? 'these items' : 'this item'} from your inventory.`}
-        confirmText="Delete Items"
-        isDestructive={true}
-      />
-
-      {/* Bulk Location Transfer Modal */}
-      <BulkLocationTransferModal
-        isOpen={bulkTransferDialogOpen}
-        onClose={() => {
-          setBulkTransferDialogOpen(false);
-          setSelectedItems([]); // Clear selections after transfer
-        }}
-        selectedItemIds={selectedItems}
-        productName={product?.name || "Product"}
+        isLoading={deleteMutation.isLoading}
+        itemType="units"
       />
     </div>
   );
