@@ -40,7 +40,7 @@ import { MapModeToggle } from '@/components/maps/MapModeToggle';
 import { MapLegend } from '@/components/maps/MapLegend';
 import { JobDraftManagement } from '@/components/jobs/JobDraftManagement';
 import { useJobDrafts } from '@/hooks/useJobDrafts';
-import { JobsCalendarAvailability } from '@/components/jobs/JobsCalendarAvailability';
+
 
 
 const JobsPage: React.FC = () => {
@@ -527,11 +527,6 @@ const JobsPage: React.FC = () => {
 
           {activeTab === 'calendar' && (
             <div className="space-y-6">
-              {/* Availability Tracker */}
-              <JobsCalendarAvailability
-                selectedDate={selectedDate}
-                onDateSelect={setSelectedDate}
-              />
               
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Going Out Card */}

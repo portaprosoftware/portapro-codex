@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Check, Info, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, Check, Info, X, ChevronDown, ChevronUp, Calendar } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ import { Separator } from '@/components/ui/separator';
 import { EnhancedDateNavigator } from './EnhancedDateNavigator';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { AvailabilityTrackerSheet } from '@/components/inventory/AvailabilityTrackerSheet';
 
 interface InlineFiltersProps {
   searchTerm: string;
@@ -50,6 +51,7 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
   const [showRouteStock, setShowRouteStock] = useState(false);
   const [stockVehicleId, setStockVehicleId] = useState<string>('');
   const [stockServiceDate, setStockServiceDate] = useState<string>(new Date().toISOString().slice(0, 10));
+  const [showAvailabilityTracker, setShowAvailabilityTracker] = useState(false);
 
   // Route vs Truck Stock queries
   const { data: vehicles } = useQuery({
@@ -289,12 +291,23 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
           </div>
           )}
 
+          {/* Availability Tracker Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowAvailabilityTracker(true)}
+            className="flex items-center gap-2 bg-gradient-primary text-white hover:bg-gradient-primary/90 border-primary font-bold"
+          >
+            <Calendar className="h-4 w-4" />
+            Availability
+          </Button>
+
           {/* Route vs Truck Stock Toggle */}
           <Button
             variant="outline"
             size="sm"
             onClick={() => setShowRouteStock(!showRouteStock)}
-            className="flex items-center gap-2 ml-auto"
+            className="flex items-center gap-2"
           >
             {showRouteStock ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
             Route vs Truck Stock
@@ -389,6 +402,14 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
             )}
           </Card>
         )}
+        
+        {/* Availability Tracker Sheet */}
+        <AvailabilityTrackerSheet
+          open={showAvailabilityTracker}
+          onOpenChange={setShowAvailabilityTracker}
+          selectedDate={selectedDate}
+          onDateSelect={onDateChange}
+        />
       </div>
     </TooltipProvider>
   );
