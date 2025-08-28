@@ -95,13 +95,13 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'available':
-        return 'bg-green-100 border-green-300 text-green-800';
+        return 'bg-gradient-green text-white border-green-500';
       case 'partial':
-        return 'bg-yellow-100 border-yellow-300 text-yellow-800';
+        return 'bg-gradient-orange text-white border-orange-500';
       case 'unavailable':
-        return 'bg-red-100 border-red-300 text-red-800';
+        return 'bg-gradient-red text-white border-red-500';
       default:
-        return 'bg-gray-100 border-gray-300 text-gray-600';
+        return 'bg-gradient-secondary text-white border-gray-500';
     }
   };
 
@@ -121,7 +121,7 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
         {/* Next Available Date Chip */}
         {nextAvailableDate && (
           <div className="flex justify-center">
-            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+            <Badge variant="outline" className="bg-gradient-green text-white border-green-500">
               Next available: {format(nextAvailableDate, 'MMM d')} ({requestedQuantity}+ units)
             </Badge>
           </div>
@@ -204,15 +204,15 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
         {/* Legend */}
         <div className="flex flex-wrap gap-4 text-sm">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-green-100 border border-green-300 rounded" />
+            <div className="w-4 h-4 bg-gradient-green text-white border border-green-500 rounded flex items-center justify-center text-xs font-bold">✓</div>
             <span>Available ({requestedQuantity}+ units)</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-yellow-100 border border-yellow-300 rounded" />
+            <div className="w-4 h-4 bg-gradient-orange text-white border border-orange-500 rounded flex items-center justify-center text-xs font-bold">~</div>
             <span>Partial (1-{requestedQuantity - 1} units)</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-red-100 border border-red-300 rounded" />
+            <div className="w-4 h-4 bg-gradient-red text-white border border-red-500 rounded flex items-center justify-center text-xs font-bold">✕</div>
             <span>Unavailable (0 units)</span>
           </div>
         </div>
