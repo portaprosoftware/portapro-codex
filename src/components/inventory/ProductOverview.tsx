@@ -239,8 +239,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
               productName={product.name}
               trigger={
                 <Button 
-                  variant="outline" 
-                  className="border-blue-600 text-blue-600 hover:bg-blue-50"
+                  className="bg-blue-600 text-white hover:bg-blue-700 border-0"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Add Units
