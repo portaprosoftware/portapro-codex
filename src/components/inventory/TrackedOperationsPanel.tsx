@@ -111,11 +111,11 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
         });
       }
 
-      // Reset state and close drawer immediately
-      setSelectedOperation(null);
-      setQuantity(1);
+      // Close drawer and reset state
       onOpenChange?.(false);
       onClose?.();
+      setSelectedOperation(null);
+      setQuantity(1);
       
     } catch (error) {
       console.error("Stock operation failed:", error);
