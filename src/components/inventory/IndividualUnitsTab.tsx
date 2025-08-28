@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, QrCode, Search, Filter, Edit, Trash, ChevronDown, ChevronRight, Settings, Camera, Shield, AlertTriangle, Settings2 } from "lucide-react";
+import { Plus, QrCode, Search, Filter, Edit, Trash, ChevronDown, ChevronRight, Settings, Camera, Shield, AlertTriangle, Settings2, ArrowLeftRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -29,6 +29,7 @@ import { ItemActionsMenu } from "./ItemActionsMenu";
 import { UnitNavigationDialog } from "./UnitNavigationDialog";
 import { TrackedOperationsPanel } from "./TrackedOperationsPanel";
 import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
+import { BulkLocationTransferModal } from "./BulkLocationTransferModal";
 
 
 interface IndividualUnitsTabProps {
@@ -56,6 +57,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<{id: string, code: string} | null>(null);
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
+  const [bulkTransferDialogOpen, setBulkTransferDialogOpen] = useState(false);
   const [showNavigationDialog, setShowNavigationDialog] = useState(false);
   const [selectedUnitForNavigation, setSelectedUnitForNavigation] = useState<{id: string, code: string} | null>(null);
   
@@ -304,6 +306,12 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
     }
   };
 
+  const handleBulkTransfer = () => {
+    if (selectedItems.length > 0) {
+      setBulkTransferDialogOpen(true);
+    }
+  };
+
   const confirmBulkDelete = () => {
     if (selectedItems.length > 0) {
       bulkDeleteMutation.mutate(selectedItems);
@@ -495,14 +503,24 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
             Print QR Codes
           </Button>
           {selectedItems.length > 0 && (
-            <Button
-              variant="outline"
-              onClick={handleBulkDelete}
-              className="border-red-600 text-red-600 hover:bg-red-50"
-            >
-              <Trash className="w-4 h-4 mr-2" />
-              Delete Selected ({selectedItems.length})
-            </Button>
+            <>
+              <Button
+                variant="outline"
+                onClick={handleBulkTransfer}
+                className="border-blue-600 text-blue-600 hover:bg-blue-50"
+              >
+                <ArrowLeftRight className="w-4 h-4 mr-2" />
+                Transfer Locations ({selectedItems.length})
+              </Button>
+              <Button
+                variant="outline"
+                onClick={handleBulkDelete}
+                className="border-red-600 text-red-600 hover:bg-red-50"
+              >
+                <Trash className="w-4 h-4 mr-2" />
+                Delete Selected ({selectedItems.length})
+              </Button>
+            </>
           )}
         </div>
         <TrackedOperationsPanel
@@ -780,6 +798,17 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
         description={`Are you sure you want to delete ${selectedItems.length} selected item${selectedItems.length > 1 ? 's' : ''}? This action cannot be undone and will permanently remove ${selectedItems.length > 1 ? 'these items' : 'this item'} from your inventory.`}
         confirmText="Delete Items"
         isDestructive={true}
+      />
+
+      {/* Bulk Location Transfer Modal */}
+      <BulkLocationTransferModal
+        isOpen={bulkTransferDialogOpen}
+        onClose={() => {
+          setBulkTransferDialogOpen(false);
+          setSelectedItems([]); // Clear selections after transfer
+        }}
+        selectedItemIds={selectedItems}
+        productName={product?.name || "Product"}
       />
     </div>
   );

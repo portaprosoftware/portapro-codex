@@ -38,22 +38,64 @@ interface ProductLocationStock {
 export function LocationAwareAvailableSlider({ isOpen, onClose }: LocationAwareAvailableSliderProps) {
   const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({});
 
-  // Fetch all available stock by location
+  // Fetch all available individual units by location
   const { data: locationStocks, isLoading } = useQuery({
-    queryKey: ['available-now-stock'],
+    queryKey: ['available-individual-units-by-location'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('product_location_stock')
+        .from('product_items')
         .select(`
-          *,
-          storage_location:storage_locations(id, name, description),
-          product:products(id, name, default_price_per_day, track_inventory)
+          product_id,
+          current_storage_location_id,
+          status,
+          products!inner(id, name, default_price_per_day),
+          storage_locations!inner(id, name, description)
         `)
-        .gt('quantity', 0)
-        .order('quantity', { ascending: false });
+        .eq('status', 'available')
+        .not('current_storage_location_id', 'is', null);
 
       if (error) throw error;
-      return data as ProductLocationStock[];
+
+      // Group by storage location and product
+      const locationMap: { [key: string]: { location: any; products: { [key: string]: ProductLocationStock } } } = {};
+      
+      data.forEach((item) => {
+        const locationId = item.current_storage_location_id;
+        const productId = item.product_id;
+        
+        const location = Array.isArray(item.storage_locations) ? item.storage_locations[0] : item.storage_locations;
+        const product = Array.isArray(item.products) ? item.products[0] : item.products;
+        
+        if (!locationMap[locationId]) {
+          locationMap[locationId] = {
+            location: location,
+            products: {}
+          };
+        }
+        
+        if (!locationMap[locationId].products[productId]) {
+          locationMap[locationId].products[productId] = {
+            id: `${locationId}-${productId}`,
+            product_id: productId,
+            storage_location_id: locationId,
+            quantity: 0,
+            storage_location: location,
+            product: product
+          };
+        }
+        
+        locationMap[locationId].products[productId].quantity += 1;
+      });
+
+      // Convert to flat array
+      const result: ProductLocationStock[] = [];
+      Object.values(locationMap).forEach(locationData => {
+        Object.values(locationData.products).forEach(productStock => {
+          result.push(productStock);
+        });
+      });
+
+      return result.sort((a, b) => b.quantity - a.quantity);
     },
     enabled: isOpen
   });
