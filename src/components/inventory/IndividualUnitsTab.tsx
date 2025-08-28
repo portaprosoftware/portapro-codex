@@ -40,10 +40,8 @@ interface ProductItem {
   item_code: string;
   status: string;
   condition: string;
-  location: string;
   current_storage_location_id: string | null;
   storage_location_name?: string;
-  storage_locations?: { name: string } | null;
   color: string;
   size: string;
   material: string;
@@ -88,51 +86,89 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
 
   const queryClient = useQueryClient();
 
-  const { data: productItems, isLoading, refetch } = useQuery({
+  const { data: productItems, isLoading, error, refetch } = useQuery({
     queryKey: ['product-items', productId, searchQuery, filterOptions, sortOptions],
     queryFn: async () => {
-      console.log('IndividualUnitsTab: Query executing with filters:', { searchQuery, filterOptions, sortOptions });
-      
-      let query = supabase
-        .from('product_items')
-        .select(`
-          *,
-          storage_locations!current_storage_location_id(
-            name
-          )
-        `)
-        .eq('product_id', productId);
+      try {
+        console.log('IndividualUnitsTab: Query executing with filters:', { searchQuery, filterOptions, sortOptions });
+        
+        // Step 1: Fetch product items with simpler query
+        let query = supabase
+          .from('product_items')
+          .select('*')
+          .eq('product_id', productId);
 
-      if (searchQuery) {
-        query = query.ilike('item_code', `%${searchQuery}%`);
-      }
+        if (searchQuery) {
+          query = query.ilike('item_code', `%${searchQuery}%`);
+        }
 
-      if (filterOptions.status !== 'all') {
-        query = query.eq('status', filterOptions.status);
-      }
-      if (filterOptions.condition !== 'all') {
-        query = query.eq('condition', filterOptions.condition);
-      }
-      if (filterOptions.storageLocation !== 'all') {
-        query = query.eq('current_storage_location_id', filterOptions.storageLocation);
-      }
+        if (filterOptions.status !== 'all') {
+          query = query.eq('status', filterOptions.status);
+        }
+        if (filterOptions.condition !== 'all') {
+          query = query.eq('condition', filterOptions.condition);
+        }
+        if (filterOptions.storageLocation !== 'all') {
+          query = query.eq('current_storage_location_id', filterOptions.storageLocation);
+        }
 
-      query = query.order(sortOptions.field, { ascending: sortOptions.order === 'asc' });
+        query = query.order(sortOptions.field, { ascending: sortOptions.order === 'asc' });
 
-      const { data, error } = await query;
-      if (error) throw error;
-      
-      // Transform the data to include storage location name
-      const transformedData = data?.map((item: any) => ({
-        ...item,
-        storage_location_name: Array.isArray(item.storage_locations) 
-          ? item.storage_locations[0]?.name || 'No Location'
-          : item.storage_locations?.name || 'No Location'
-      }));
-      
-      console.log('IndividualUnitsTab: Query returned', transformedData?.length, 'items');
-      return transformedData as ProductItem[];
+        const { data: items, error: itemsError } = await query;
+        if (itemsError) {
+          console.error('Product items query error:', itemsError);
+          throw itemsError;
+        }
+
+        console.log('IndividualUnitsTab: Fetched', items?.length, 'product items');
+
+        // Step 2: If we have items, fetch storage locations separately
+        if (!items || items.length === 0) {
+          console.log('IndividualUnitsTab: No items found');
+          return [];
+        }
+
+        // Get unique location IDs
+        const locationIds = [...new Set(items
+          .map(item => item.current_storage_location_id)
+          .filter(Boolean)
+        )];
+
+        let locationMap = new Map();
+        
+        if (locationIds.length > 0) {
+          const { data: locations, error: locationsError } = await supabase
+            .from('storage_locations')
+            .select('id, name')
+            .in('id', locationIds);
+          
+          if (locationsError) {
+            console.error('Storage locations query error:', locationsError);
+            // Don't throw here, just log and continue without location names
+          } else {
+            console.log('IndividualUnitsTab: Fetched', locations?.length, 'storage locations');
+            locations?.forEach(loc => locationMap.set(loc.id, loc.name));
+          }
+        }
+
+        // Step 3: Combine the data
+        const transformedData = items.map((item: any) => ({
+          ...item,
+          storage_location_name: item.current_storage_location_id 
+            ? locationMap.get(item.current_storage_location_id) || 'Unknown Location'
+            : 'No Location'
+        }));
+        
+        console.log('IndividualUnitsTab: Successfully transformed', transformedData.length, 'items');
+        return transformedData as ProductItem[];
+
+      } catch (error) {
+        console.error('IndividualUnitsTab: Query failed:', error);
+        throw error;
+      }
     },
+    retry: 2,
+    retryDelay: 1000,
   });
 
   const { data: storageLocations } = useQuery({
@@ -246,6 +282,38 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
 
   const isAllSelected = productItems && selectedUnits.size === productItems.length;
   const hasSelection = selectedUnits.size > 0;
+
+  // Show error state if query failed
+  if (error) {
+    console.error('IndividualUnitsTab render error:', error);
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <Input
+            type="search"
+            placeholder="Search by unit code..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <Button onClick={() => createMutation.mutate()} disabled={createMutation.isPending}>
+            <Plus className="w-4 h-4 mr-2" />
+            Add Unit
+          </Button>
+        </div>
+        
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-center py-8">
+              <p className="text-red-600 mb-4">Failed to load inventory data</p>
+              <Button onClick={() => refetch()} variant="outline">
+                Try Again
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
