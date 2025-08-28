@@ -49,35 +49,61 @@ export function ProductLocationStock({ productId, productName }: ProductLocation
   const { data: locationStocks, isLoading } = useQuery({
     queryKey: ['product-individual-location-stock', productId],
     queryFn: async () => {
+      console.log('ProductLocationStock query starting for productId:', productId);
+      
+      // Use a simpler query approach that we know works
       const { data, error } = await supabase
         .from('product_items')
         .select(`
           current_storage_location_id,
-          storage_locations!inner(id, name, description)
+          storage_locations (
+            id,
+            name,
+            description
+          )
         `)
         .eq('product_id', productId)
         .not('current_storage_location_id', 'is', null);
 
-      if (error) throw error;
+      console.log('ProductLocationStock query response:', { data, error, productId });
+
+      if (error) {
+        console.error('Query error:', error);
+        throw error;
+      }
+
+      if (!data || data.length === 0) {
+        console.log('No units found with locations for product:', productId);
+        return [];
+      }
 
       // Group by location and count
-      const locationCounts = data.reduce((acc: { [key: string]: LocationStock }, item) => {
+      const locationCounts: { [key: string]: LocationStock } = {};
+      
+      data.forEach((item) => {
         const locationId = item.current_storage_location_id;
-        const location = Array.isArray(item.storage_locations) ? item.storage_locations[0] : item.storage_locations;
+        const location = Array.isArray(item.storage_locations) 
+          ? item.storage_locations[0] 
+          : item.storage_locations;
         
-        if (!acc[locationId]) {
-          acc[locationId] = {
-            location_id: locationId,
-            location_name: location?.name || 'Unknown Location',
-            location_description: location?.description,
-            unit_count: 0
-          };
+        console.log('Processing item:', { locationId, location, item });
+        
+        if (locationId && location) {
+          if (!locationCounts[locationId]) {
+            locationCounts[locationId] = {
+              location_id: locationId,
+              location_name: location.name || 'Unknown Location',
+              location_description: location.description || undefined,
+              unit_count: 0
+            };
+          }
+          locationCounts[locationId].unit_count += 1;
         }
-        acc[locationId].unit_count += 1;
-        return acc;
-      }, {});
+      });
 
-      return Object.values(locationCounts).sort((a, b) => a.location_name.localeCompare(b.location_name));
+      const result = Object.values(locationCounts).sort((a, b) => a.location_name.localeCompare(b.location_name));
+      console.log('Final location stocks:', result);
+      return result;
     },
     refetchInterval: 30000, // Refresh every 30 seconds
     staleTime: 10000 // Data considered fresh for 10 seconds

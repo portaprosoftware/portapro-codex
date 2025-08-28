@@ -38,13 +38,20 @@ export function BulkLocationTransferModal({
       locationId: string; 
       transferNotes?: string;
     }) => {
+      console.log('BulkLocationTransferModal starting transfer:', { itemIds, locationId, transferNotes });
+      
       // Get current locations for each item first
       const { data: currentItems, error: fetchError } = await supabase
         .from('product_items')
         .select('id, current_storage_location_id, product_id')
         .in('id', itemIds);
       
-      if (fetchError) throw fetchError;
+      console.log('Current items fetched:', { currentItems, fetchError });
+      
+      if (fetchError) {
+        console.error('Error fetching current items:', fetchError);
+        throw fetchError;
+      }
 
       // Update all selected items to new location
       const { error: updateError } = await supabase
@@ -55,7 +62,12 @@ export function BulkLocationTransferModal({
         })
         .in('id', itemIds);
       
-      if (updateError) throw updateError;
+      console.log('Items update result:', { updateError, itemIds, locationId });
+      
+      if (updateError) {
+        console.error('Error updating items:', updateError);
+        throw updateError;
+      }
 
       // Log each transfer individually for history tracking
       const transfers = currentItems?.map(item => ({
@@ -69,13 +81,19 @@ export function BulkLocationTransferModal({
       })) || [];
 
       if (transfers.length > 0) {
+        console.log('Attempting to log transfers:', transfers);
+        
         const { error: logError } = await supabase
           .from('product_item_location_transfers')
           .insert(transfers);
         
+        console.log('Transfer logging result:', { logError, transfersCount: transfers.length });
+        
         if (logError) {
           console.error('Error logging transfers:', logError);
           // Don't throw error here as the main transfer succeeded
+        } else {
+          console.log('Successfully logged transfers');
         }
       }
       
