@@ -96,26 +96,48 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
 
     try {
       if (selectedOperation === "add_units") {
-        await addTrackedInventory(quantity);
-        toast.success(`Successfully added ${quantity} tracked unit${quantity > 1 ? 's' : ''} to inventory`, {
-          duration: 3000,
+        await new Promise((resolve, reject) => {
+          addTrackedInventory(quantity, {
+            onSuccess: () => {
+              toast.success(`Successfully added ${quantity} tracked unit${quantity > 1 ? 's' : ''} to inventory`, {
+                duration: 3000,
+              });
+              // Close drawer and reset state after successful mutation
+              onOpenChange?.(false);
+              onClose?.();
+              setSelectedOperation(null);
+              setQuantity(1);
+              resolve(undefined);
+            },
+            onError: (error: any) => {
+              reject(error);
+            }
+          });
         });
       } else if (selectedOperation === "remove_units") {
-        await adjustMasterStock({
-          quantityChange: -quantity,
-          reason: 'Removed tracked units',
-          notes: `Removed ${quantity} tracked units`
-        });
-        toast.success(`Successfully removed ${quantity} tracked unit${quantity > 1 ? 's' : ''}`, {
-          duration: 3000,
+        await new Promise((resolve, reject) => {
+          adjustMasterStock({
+            quantityChange: -quantity,
+            reason: 'Removed tracked units',
+            notes: `Removed ${quantity} tracked units`
+          }, {
+            onSuccess: () => {
+              toast.success(`Successfully removed ${quantity} tracked unit${quantity > 1 ? 's' : ''}`, {
+                duration: 3000,
+              });
+              // Close drawer and reset state after successful mutation
+              onOpenChange?.(false);
+              onClose?.();
+              setSelectedOperation(null);
+              setQuantity(1);
+              resolve(undefined);
+            },
+            onError: (error: any) => {
+              reject(error);
+            }
+          });
         });
       }
-
-      // Close drawer and reset state
-      onOpenChange?.(false);
-      onClose?.();
-      setSelectedOperation(null);
-      setQuantity(1);
       
     } catch (error) {
       console.error("Stock operation failed:", error);
