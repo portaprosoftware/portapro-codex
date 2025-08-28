@@ -240,19 +240,11 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
                           <div className="bg-gray-50 p-3 rounded-md space-y-2 text-sm">
                             <div className="grid grid-cols-2 gap-4">
                               <div>
-                                <span className="text-gray-600">Bulk Available:</span>
-                                <span className="ml-2 font-medium">{day.bulk_available}</span>
-                              </div>
-                              <div>
-                                <span className="text-gray-600">Tracked Available:</span>
+                                <span className="text-gray-600">Available:</span>
                                 <span className="ml-2 font-medium">{day.tracked_available}</span>
                               </div>
                               <div>
-                                <span className="text-gray-600">Bulk Assigned:</span>
-                                <span className="ml-2 font-medium">{day.bulk_assigned}</span>
-                              </div>
-                              <div>
-                                <span className="text-gray-600">Tracked Assigned:</span>
+                                <span className="text-gray-600">Assigned:</span>
                                 <span className="ml-2 font-medium">{day.tracked_assigned}</span>
                               </div>
                             </div>
