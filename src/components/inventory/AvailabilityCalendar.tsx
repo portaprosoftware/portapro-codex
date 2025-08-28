@@ -280,14 +280,9 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
                          {dayAvailability.conflicts.map((conflict, idx) => (
                            <div key={idx} className="text-xs text-gray-600 py-1 border-b border-gray-100 last:border-b-0 flex items-center justify-between">
                              <div>
-                               <div className="font-medium">{conflict.job_number || 'Unknown Job'}</div>
-                               <div className="text-gray-500">{conflict.customer_name || 'Unknown Customer'}</div>
-                             </div>
-                               {conflict.item_code && (
-                                 <Badge variant="outline" className="bg-blue-600 text-white border-blue-600 text-xs">
-                                   Unit: {conflict.item_code}
-                                 </Badge>
-                               )}
+                              <div className="font-medium">{conflict.job_number || 'Unknown Job'}</div>
+                              <div className="text-gray-500">{conflict.customer_name || 'Unknown Customer'}</div>
+                            </div>
                            </div>
                          ))}
                        </div>
