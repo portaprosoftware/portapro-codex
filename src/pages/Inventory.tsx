@@ -25,6 +25,7 @@ import { AddInventoryModal } from '@/components/inventory/AddInventoryModal';
 import { QRCodeScanner } from '@/components/inventory/QRCodeScanner';
 import { OCRSearchCapture } from '@/components/inventory/OCRSearchCapture';
 import { AvailableNowSlider } from '@/components/inventory/AvailableNowSlider';
+import { AvailabilityTrackerSheet } from '@/components/inventory/AvailabilityTrackerSheet';
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
@@ -50,6 +51,7 @@ const Inventory: React.FC = () => {
   const [showOCRSearch, setShowOCRSearch] = useState(false);
   const [showQRScanner, setShowQRScanner] = useState(false);
   const [showIndividualUnitsSlider, setShowIndividualUnitsSlider] = useState(false);
+  const [showAvailabilityTracker, setShowAvailabilityTracker] = useState(false);
   
   
 
@@ -388,6 +390,16 @@ const Inventory: React.FC = () => {
                 </div>
 
                 <div className="flex items-center gap-3">
+                  {/* Availability Tracker */}
+                  <Button 
+                    variant="outline"
+                    onClick={() => setShowAvailabilityTracker(true)}
+                    className="flex items-center gap-2 text-blue-600 border-blue-600 hover:bg-blue-50"
+                  >
+                    <BarChart3 className="h-4 w-4" />
+                    Availability Tracker
+                  </Button>
+
                   {/* View Toggle */}
                   <div className="flex bg-muted rounded-lg p-1">
                     <Button
@@ -560,6 +572,12 @@ const Inventory: React.FC = () => {
         <AvailableNowSlider
           isOpen={showIndividualUnitsSlider}
           onClose={() => setShowIndividualUnitsSlider(false)}
+        />
+
+        {/* Availability Tracker Sheet */}
+        <AvailabilityTrackerSheet
+          open={showAvailabilityTracker}
+          onOpenChange={setShowAvailabilityTracker}
         />
 
       </div>
