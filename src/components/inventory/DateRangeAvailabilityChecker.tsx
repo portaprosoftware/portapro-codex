@@ -42,16 +42,52 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
     endDate
   );
 
+  // Build an augmented daily breakdown where conflicts include ALL unavailable units
+  const augmentedDailyBreakdown = React.useMemo(() => {
+    if (!availability?.daily_breakdown) return [] as typeof availability.daily_breakdown;
+
+    // Collect units that are unavailable for other reasons (not 'available')
+    const unavailableUnits = new Map(
+      (availability.individual_items || [])
+        .filter((u) => u.status && u.status !== 'available')
+        .map((u) => [u.item_id, u])
+    );
+
+    return availability.daily_breakdown.map((day) => {
+      const existing = day.conflicts || [];
+      const existingIds = new Set<string>(
+        existing.map((c: any) => c.item_id).filter(Boolean)
+      );
+
+      // Candidates are unavailable units not already represented in conflicts
+      const candidates = Array.from(unavailableUnits.values()).filter(
+        (u) => !existingIds.has(u.item_id)
+      );
+
+      const deficit = Math.max(0, (day.tracked_assigned || 0) - existing.length);
+      const extras = candidates.slice(0, deficit).map((u) => ({
+        assignment_id: `unavailable:${u.item_id}`,
+        job_number: 'Unavailable',
+        customer_name: u.status ? u.status.charAt(0).toUpperCase() + u.status.slice(1) : 'Unavailable',
+        item_id: u.item_id,
+        item_code: u.item_code,
+        status: u.status || 'unavailable',
+      }));
+
+      return { ...day, conflicts: [...existing, ...extras] };
+    });
+  }, [availability]);
+
   // Collect unique item IDs appearing in conflicts so we can show their custom attributes
   const conflictItemIds = React.useMemo(() => {
     const ids = new Set<string>();
-    availability?.daily_breakdown?.forEach((day) => {
+    augmentedDailyBreakdown?.forEach((day) => {
       day.conflicts?.forEach((c: any) => {
         if (c.item_id) ids.add(c.item_id);
       });
     });
     return Array.from(ids);
-  }, [availability]);
+  }, [augmentedDailyBreakdown]);
 
   const { data: conflictAttributesMap } = useQuery<{ [itemId: string]: Array<{ name: string; value: string }>}>({
     queryKey: ['conflict-item-attributes', productId, startDate, endDate, conflictItemIds.join(',')],
@@ -248,11 +284,11 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
             )}
 
             {/* Daily Breakdown */}
-            {availability.daily_breakdown && availability.daily_breakdown.length > 0 && (
+            {augmentedDailyBreakdown && augmentedDailyBreakdown.length > 0 && (
               <div className="space-y-2">
                 <h4 className="font-medium">Daily Availability Breakdown</h4>
                 <div className="space-y-1">
-                  {availability.daily_breakdown.map((day, index) => {
+                  {augmentedDailyBreakdown.map((day, index) => {
                     const dayDate = format(parseISO(day.date), 'MMM dd, yyyy');
                     const status = getAvailabilityStatus(day.total_available, requestedQuantity);
                     const hasConflicts = day.conflicts && day.conflicts.length > 0;
@@ -311,8 +347,8 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
                                       const unitLabel = conflict.item_code || (conflict.item_id ? conflict.item_id.slice(-6) : null);
                                       return (
                                         <div key={idx} className="flex flex-wrap items-center gap-2 text-xs bg-white p-2 rounded border">
-                                          <span className="font-medium">{conflict.job_number || 'Job'}:</span>
-                                          <span>{conflict.customer_name || 'Unknown Customer'}</span>
+                                          <span className="font-medium">{conflict.job_number || 'Unavailable'}:</span>
+                                          <span>{conflict.customer_name || 'Unavailable'}</span>
                                           {unitLabel && (
                                             <Badge variant="outline" className="text-xs bg-gradient-secondary text-white border-gray-500 font-bold">
                                               Unit: {unitLabel}
