@@ -37,10 +37,13 @@ interface ProductItem {
   id: string;
   product_id: string;
   barcode: string;
+  item_code: string;
   status: string;
   condition: string;
   location: string;
   current_storage_location_id: string | null;
+  storage_location_name?: string;
+  storage_locations?: { name: string } | null;
   color: string;
   size: string;
   material: string;
@@ -77,7 +80,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
     storageLocation: 'all',
   });
   const [sortOptions, setSortOptions] = useState<SortOptions>({
-    field: 'barcode',
+    field: 'item_code',
     order: 'asc',
   });
   const [selectedUnits, setSelectedUnits] = useState<Set<string>>(new Set());
@@ -88,13 +91,20 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
   const { data: productItems, isLoading, refetch } = useQuery({
     queryKey: ['product-items', productId, searchQuery, filterOptions, sortOptions],
     queryFn: async () => {
+      console.log('IndividualUnitsTab: Query executing with filters:', { searchQuery, filterOptions, sortOptions });
+      
       let query = supabase
         .from('product_items')
-        .select('*')
+        .select(`
+          *,
+          storage_locations!current_storage_location_id(
+            name
+          )
+        `)
         .eq('product_id', productId);
 
       if (searchQuery) {
-        query = query.ilike('barcode', `%${searchQuery}%`);
+        query = query.ilike('item_code', `%${searchQuery}%`);
       }
 
       if (filterOptions.status !== 'all') {
@@ -111,7 +121,17 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
 
       const { data, error } = await query;
       if (error) throw error;
-      return data as ProductItem[];
+      
+      // Transform the data to include storage location name
+      const transformedData = data?.map((item: any) => ({
+        ...item,
+        storage_location_name: Array.isArray(item.storage_locations) 
+          ? item.storage_locations[0]?.name || 'No Location'
+          : item.storage_locations?.name || 'No Location'
+      }));
+      
+      console.log('IndividualUnitsTab: Query returned', transformedData?.length, 'items');
+      return transformedData as ProductItem[];
     },
   });
 
@@ -143,7 +163,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
     },
     onSuccess: (newItem) => {
       queryClient.invalidateQueries({ queryKey: ['product-items', productId] });
-      toast.success(`Unit ${newItem.barcode} created`);
+      toast.success(`Unit ${newItem.item_code || newItem.barcode} created`);
     },
     onError: (error) => {
       console.error('Create error details:', error);
@@ -232,7 +252,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
       <div className="flex items-center justify-between">
         <Input
           type="search"
-          placeholder="Search by barcode..."
+          placeholder="Search by unit code..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -335,9 +355,9 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
                 />
               </TableHead>
               <TableHead>
-                <Button variant="ghost" onClick={() => handleSortChange('barcode')}>
-                  Barcode
-                  {sortOptions.field === 'barcode' && (
+                <Button variant="ghost" onClick={() => handleSortChange('item_code')}>
+                  Unit Code
+                  {sortOptions.field === 'item_code' && (
                     sortOptions.order === 'asc' ? <ArrowDown className="ml-2 h-4 w-4" /> : <ArrowUp className="ml-2 h-4 w-4" />
                   )}
                 </Button>
@@ -378,13 +398,13 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
                     <Checkbox
                       checked={selectedUnits.has(item.id)}
                       onCheckedChange={(checked) => handleSelectUnit(item.id, !!checked)}
-                      aria-label={`Select unit ${item.barcode}`}
+                      aria-label={`Select unit ${item.item_code || item.barcode}`}
                     />
                   </TableCell>
-                  <TableCell>{item.barcode}</TableCell>
+                  <TableCell>{item.item_code || item.barcode}</TableCell>
                   <TableCell>{item.status}</TableCell>
                   <TableCell>{item.condition}</TableCell>
-                  <TableCell>{item.location}</TableCell>
+                  <TableCell>{item.storage_location_name}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
