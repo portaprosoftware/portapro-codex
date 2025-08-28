@@ -105,6 +105,19 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
     }
   };
 
+  const getBadgeColor = (status: string) => {
+    switch (status) {
+      case 'available':
+        return 'bg-green-100 text-green-800 border-green-300';
+      case 'partial':
+        return 'bg-orange-100 text-orange-800 border-orange-300';
+      case 'unavailable':
+        return 'bg-red-100 text-red-800 border-red-300';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-300';
+    }
+  };
+
   return (
     <Card className={cn("w-full", className)}>
       <CardHeader>
@@ -184,15 +197,16 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
                   variant="ghost"
                   onClick={() => handleDateClick(date)}
                   className={cn(
-                    "relative h-12 p-1 flex flex-col items-center justify-center border-2 border-transparent font-bold",
-                    getStatusColor(status),
+                    "relative h-16 p-2 flex flex-col items-center justify-center bg-gradient-secondary text-white border border-gray-300 hover:bg-gray-100 hover:text-gray-900",
                     isSelected && "ring-2 ring-blue-500",
-                    isCurrentDay && "font-bold"
+                    isCurrentDay && "ring-2 ring-blue-400"
                   )}
                 >
-                  <span className="text-sm font-bold">{format(date, 'd')}</span>
+                  <span className="text-sm font-bold mb-1">{format(date, 'd')}</span>
                   {dayAvailability && (
-                    <span className="text-xs font-bold">{available}</span>
+                    <Badge variant="outline" className={cn("text-xs px-1 py-0", getBadgeColor(status))}>
+                      Available: {available}
+                    </Badge>
                   )}
                   {isCurrentDay && (
                     <div className="absolute top-1 right-1 w-2 h-2 bg-blue-600 rounded-full" />
