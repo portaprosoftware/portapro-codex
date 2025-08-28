@@ -35,12 +35,7 @@ export const StockAdjustmentWizard: React.FC<StockAdjustmentWizardProps> = ({
       productName={productName}
       isOpen={finalIsOpen}
       onOpenChange={finalOnOpenChange}
-      trigger={
-        <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-          <Settings className="w-4 h-4 mr-2" />
-          Adjust Stock
-        </Button>
-      }
+      trigger={null}
       onClose={() => {
         finalOnOpenChange(false);
         onComplete?.();

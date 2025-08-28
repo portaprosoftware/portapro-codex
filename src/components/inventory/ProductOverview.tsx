@@ -276,8 +276,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
             </div>
             <div className="flex items-center gap-4">
               <Button 
-                variant="outline" 
-                className="text-blue-600 border-blue-600 hover:bg-blue-50"
+                className="bg-blue-600 hover:bg-blue-700 text-white"
                 onClick={() => setShowStockAdjustment(true)}
                 disabled={!product.track_inventory}
               >
