@@ -113,6 +113,19 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
               type="number"
               min="1"
               value={requestedQuantity}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value === '') {
+                  // Allow empty field temporarily during editing
+                  return;
+                }
+                const num = parseInt(value);
+                if (!isNaN(num) && num >= 1) {
+                  // This would need to be handled by parent component in real implementation
+                  // For now, this is read-only as indicated by the readOnly prop
+                }
+              }}
+              onFocus={(e) => e.target.select()}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               readOnly
             />

@@ -97,7 +97,16 @@ export const JobsCalendarAvailability: React.FC<JobsCalendarAvailabilityProps> =
                 type="number"
                 min="1"
                 value={requestedQuantity}
-                onChange={(e) => setRequestedQuantity(parseInt(e.target.value) || 1)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === '') {
+                    setRequestedQuantity(1);
+                  } else {
+                    const num = parseInt(value);
+                    setRequestedQuantity(isNaN(num) || num < 1 ? 1 : num);
+                  }
+                }}
+                onFocus={(e) => e.target.select()}
                 placeholder="Quantity"
                 className="w-full font-bold"
               />
