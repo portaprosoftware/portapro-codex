@@ -97,20 +97,30 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
     try {
       if (selectedOperation === "add_units") {
         await addTrackedInventory(quantity);
-        toast.success(`Successfully added ${quantity} tracked units`);
+        toast.success(`Successfully added ${quantity} tracked unit${quantity > 1 ? 's' : ''} to inventory`, {
+          duration: 3000,
+        });
       } else if (selectedOperation === "remove_units") {
         await adjustMasterStock({
           quantityChange: -quantity,
           reason: 'Removed tracked units',
           notes: `Removed ${quantity} tracked units`
         });
-        toast.success(`Successfully removed ${quantity} tracked units`);
+        toast.success(`Successfully removed ${quantity} tracked unit${quantity > 1 ? 's' : ''}`, {
+          duration: 3000,
+        });
       }
 
+      // Reset state and close drawer
       setSelectedOperation(null);
       setQuantity(1);
-      onOpenChange?.(false);
-      onClose?.();
+      
+      // Close the drawer after a brief delay to show success
+      setTimeout(() => {
+        onOpenChange?.(false);
+        onClose?.();
+      }, 500);
+      
     } catch (error) {
       console.error("Stock operation failed:", error);
       toast.error("Operation failed. Please try again.");
@@ -253,6 +263,8 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
                     onClick={() => {
                       setSelectedOperation(null);
                       setQuantity(1);
+                      onOpenChange?.(false);
+                      onClose?.();
                     }}
                   >
                     Cancel
