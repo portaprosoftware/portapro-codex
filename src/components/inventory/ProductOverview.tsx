@@ -300,7 +300,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
               onClick={() => setShowStockHistory(true)}
             >
               <History className="w-4 h-4 mr-2" />
-              View Stock History
+              Stock History
             </Button>
             <Button 
               variant="outline" 
@@ -308,7 +308,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
               onClick={() => navigate(`/inventory/products?selectedProduct=${product.id}&tab=units`)}
             >
               <Box className="w-4 h-4 mr-2" />
-              View Tracked Units
+              View Units
             </Button>
             <TrackedOperationsPanel
               productId={product.id}
