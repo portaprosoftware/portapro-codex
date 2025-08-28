@@ -167,8 +167,6 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
         status: updateData.status
       });
       
-      // Storage location is optional for maintenance status
-
       // Validate required attributes
       const requiredAttributes = productAttributes.filter(attr => attr.is_required);
       const validationErrors: Record<string, string> = {};
@@ -226,10 +224,13 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
       
       console.log('Sending safe update data:', JSON.stringify(safeUpdateData, null, 2));
 
+      // Handle the update with proper error handling
       const { error } = await supabase
         .from("product_items")
         .update(safeUpdateData)
-        .eq("id", itemId);
+        .eq("id", itemId)
+        .select()
+        .single();
       
       if (error) throw error;
 
@@ -423,21 +424,13 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="storage_location">
-              Storage Location 
-              {formData.status === "maintenance" && (
-                <Badge variant="outline" className="ml-2 text-xs">Optional for maintenance</Badge>
-              )}
-            </Label>
+            <Label htmlFor="storage_location">Storage Location</Label>
             <StorageLocationSelector
               value={formData.current_storage_location_id}
               onValueChange={(value) => handleInputChange("current_storage_location_id", value)}
-              placeholder={formData.status === "maintenance" ? "Optional for maintenance items" : "Select storage location"}
+              placeholder="Select storage location"
               disabled={false}
             />
-            {formData.status === "maintenance" && (
-              <p className="text-xs text-muted-foreground">Storage location is locked during maintenance. Update from the maintenance tracker to change location.</p>
-            )}
           </div>
 
 
