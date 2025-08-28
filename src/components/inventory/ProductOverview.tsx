@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Edit, Settings, Wrench, Plus, Minus, History, AlertTriangle, RefreshCw, Loader2, Box } from "lucide-react";
 import { EditProductModal } from "./EditProductModal";
 import { TrackedOperationsPanel } from "./TrackedOperationsPanel";
-import { StockAdjustmentWizard } from "./StockAdjustmentWizard";
+
 import { ProductStockHistory } from "./ProductStockHistory";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -66,7 +66,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
     isSyncing
   } = useUnifiedStockManagement(product.id);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [showStockAdjustment, setShowStockAdjustment] = useState(false);
+  
   const [showStockHistory, setShowStockHistory] = useState(false);
   const [showMaintenanceModal, setShowMaintenanceModal] = useState(false);
   const [maintenanceQuantity, setMaintenanceQuantity] = useState(1);
@@ -184,11 +184,6 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
   };
 
 
-  const handleStockAdjustmentComplete = () => {
-    setShowStockAdjustment(false);
-    queryClient.invalidateQueries({ queryKey: ["product", product.id] });
-    queryClient.invalidateQueries({ queryKey: ["products"] });
-  };
 
   const handleMoveToMaintenance = () => {
     if (maintenanceQuantity <= 0) {
@@ -423,16 +418,6 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
         />
       )}
 
-      {/* Stock Adjustment Wizard */}
-      <StockAdjustmentWizard
-        productId={product.id}
-        productName={product.name}
-        currentStock={physicallyAvailable}
-        onComplete={handleStockAdjustmentComplete}
-        onCancel={() => setShowStockAdjustment(false)}
-        isOpen={showStockAdjustment}
-        onOpenChange={setShowStockAdjustment}
-      />
 
       {/* Stock History Modal */}
       <Dialog open={showStockHistory} onOpenChange={setShowStockHistory}>
