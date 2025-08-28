@@ -1,516 +1,598 @@
-import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, X } from 'lucide-react';
-import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
-import { VendorSelector } from '@/components/inventory/VendorSelector';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+
+import React, { useState } from "react";
+import { X, QrCode, ExternalLink, Camera, Shield, AlertTriangle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { OCRPhotoCapture } from "./OCRPhotoCapture";
+import { ProductVariationsFields } from "./ProductVariationsFields";
+import { SimpleQRCode } from "./SimpleQRCode";
+import { StorageLocationSelector } from "./StorageLocationSelector";
+
 
 interface EditItemModalProps {
   itemId: string;
-  isOpen?: boolean;
   onClose: () => void;
 }
 
-interface ProductItem {
-  id: string;
-  product_id: string;
-  barcode: string;
-  status: string;
-  condition: string;
-  location: string;
-  current_storage_location_id: string | null;
-  color: string;
-  size: string;
-  material: string;
-  notes: string;
-  maintenance_reason: string;
-  expected_return_date: string | null;
-  maintenance_notes: string;
-  tool_number: string;
-  vendor_id: string | null;
-  plastic_code: string;
-  manufacturing_date: string | null;
-  mold_cavity: string;
-}
-
-export const EditItemModal: React.FC<EditItemModalProps> = ({
-  itemId,
-  isOpen = true,
-  onClose,
-}) => {
+export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose }) => {
   const queryClient = useQueryClient();
-  const [formData, setFormData] = useState<Partial<ProductItem>>({});
-  const [originalData, setOriginalData] = useState<Partial<ProductItem>>({});
-
-  const { data: item, isLoading } = useQuery({
-    queryKey: ['product-item', itemId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('product_items')
-        .select('*')
-        .eq('id', itemId)
-        .single();
-      
-      if (error) throw error;
-      return data as ProductItem;
-    },
-    enabled: !!itemId,
+  const [showOCRCapture, setShowOCRCapture] = useState(false);
+  const [attributeValues, setAttributeValues] = useState<Record<string, string>>({});
+  const [attributeErrors, setAttributeErrors] = useState<Record<string, string>>({});
+  const [formData, setFormData] = useState({
+    status: "",
+    condition: "",
+    location: "",
+    current_storage_location_id: "",
+    color: "",
+    size: "",
+    material: "",
+    notes: "",
+    // Maintenance fields
+    maintenance_reason: "",
+    expected_return_date: "",
+    maintenance_notes: "",
+    // OCR fields
+    tool_number: "",
+    vendor_id: "",
+    plastic_code: "",
+    manufacturing_date: "",
+    mold_cavity: ""
   });
 
-  const { data: storageLocations } = useQuery({
-    queryKey: ['storage-locations'],
+  const { data: item, isLoading } = useQuery({
+    queryKey: ["product-item", itemId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('storage_locations')
-        .select('id, name')
-        .eq('is_active', true)
-        .order('name');
+        .from("product_items")
+        .select("*, tool_number, vendor_id, plastic_code, manufacturing_date, mold_cavity, ocr_confidence_score, verification_status, tracking_photo_url, product_id, maintenance_reason, expected_return_date, maintenance_notes, maintenance_start_date, current_storage_location_id")
+        .eq("id", itemId)
+        .single();
       
       if (error) throw error;
       return data;
     }
   });
 
-  useEffect(() => {
+  // Fetch product attributes
+  const { data: productAttributes = [] } = useQuery({
+    queryKey: ['product-attributes', item?.product_id],
+    queryFn: async () => {
+      if (!item?.product_id) return [];
+      const { data, error } = await supabase
+        .from('product_properties')
+        .select('*')
+        .eq('product_id', item.product_id);
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!item?.product_id
+  });
+
+  // Fetch current item attributes
+  const { data: itemAttributes = [] } = useQuery({
+    queryKey: ['item-attributes', itemId],
+    queryFn: async () => {
+      // First get the item attributes
+      const { data: attributes, error: attrError } = await supabase
+        .from('product_item_attributes')
+        .select('property_id, property_value')
+        .eq('item_id', itemId);
+      
+      if (attrError) throw attrError;
+      
+      if (!attributes || attributes.length === 0) return [];
+
+      // Then get the property details for each attribute
+      const propertyIds = attributes.map(attr => attr.property_id);
+      const { data: properties, error: propError } = await supabase
+        .from('product_properties')
+        .select('id, attribute_name, attribute_value')
+        .in('id', propertyIds);
+      
+      if (propError) throw propError;
+
+      // Combine the data
+      return attributes.map(attr => {
+        const property = properties?.find(p => p.id === attr.property_id);
+        return {
+          ...attr,
+          product_properties: property
+        };
+      });
+    }
+  });
+
+  React.useEffect(() => {
     if (item) {
-      const itemData = {
-        status: item.status || '',
-        condition: item.condition || '',
-        location: item.location || '',
-        current_storage_location_id: item.current_storage_location_id || '',
-        color: item.color || '',
-        size: item.size || '',
-        material: item.material || '',
-        notes: item.notes || '',
-        maintenance_reason: item.maintenance_reason || '',
-        expected_return_date: item.expected_return_date || null,
-        maintenance_notes: item.maintenance_notes || '',
-        tool_number: item.tool_number || '',
-        vendor_id: item.vendor_id || '',
-        plastic_code: item.plastic_code || '',
-        manufacturing_date: item.manufacturing_date || null,
-        mold_cavity: item.mold_cavity || '',
-      };
-      setFormData(itemData);
-      setOriginalData(itemData);
+      setFormData({
+        status: item.status || "",
+        condition: item.condition || "",
+        location: item.location || "",
+        current_storage_location_id: item.current_storage_location_id || "",
+        color: item.color || "",
+        size: item.size || "",
+        material: item.material || "",
+        notes: item.notes || "",
+        // Maintenance fields
+        maintenance_reason: item.maintenance_reason || "",
+        expected_return_date: item.expected_return_date ? item.expected_return_date.split('T')[0] : "",
+        maintenance_notes: item.maintenance_notes || "",
+        // OCR fields
+        tool_number: item.tool_number || "",
+        vendor_id: item.vendor_id || "",
+        plastic_code: item.plastic_code || "",
+        manufacturing_date: item.manufacturing_date || "",
+        mold_cavity: item.mold_cavity || ""
+      });
     }
   }, [item]);
 
+  React.useEffect(() => {
+    if (itemAttributes.length > 0) {
+      const attributes: Record<string, string> = {};
+      itemAttributes.forEach(attr => {
+        if (attr.product_properties) {
+          const attrName = attr.product_properties.attribute_name.toLowerCase();
+          attributes[attrName] = attr.property_value;
+        }
+      });
+      setAttributeValues(attributes);
+    }
+  }, [itemAttributes]);
+
+  // Auto-set condition to "needs_repair" when status is set to "maintenance"
+  React.useEffect(() => {
+    if (formData.status === "maintenance" && formData.condition !== "needs_repair") {
+      setFormData(prev => ({ ...prev, condition: "needs_repair" }));
+      toast.info("Condition automatically set to 'Needs Repair' for maintenance items");
+    }
+  }, [formData.status]);
+
   const updateMutation = useMutation({
-    mutationFn: async (updateData: Partial<ProductItem>) => {
-      console.log('EditItemModal mutation starting with data:', updateData);
+    mutationFn: async (data: { updateData: typeof formData }) => {
+      const { updateData } = data;
       
-      // Normalize the payload - convert empty strings to null for UUID/date fields
-      const normalizedData = {
-        ...updateData,
-        vendor_id: (updateData.vendor_id === '' || updateData.vendor_id === 'no-vendor') ? null : updateData.vendor_id,
-        current_storage_location_id: (updateData.current_storage_location_id === '' || updateData.current_storage_location_id === 'no-location') ? null : updateData.current_storage_location_id,
-        expected_return_date: updateData.expected_return_date === '' ? null : updateData.expected_return_date,
-        manufacturing_date: updateData.manufacturing_date === '' ? null : updateData.manufacturing_date,
-      };
+      console.log('EditItemModal mutation starting with data:', {
+        updateData,
+        status: updateData.status
+      });
+      
+      // Storage location is optional for maintenance status
 
-      console.log('Sending update data:', updateData);
-      console.log('Sending safe update data:', normalizedData);
+      // Validate required attributes
+      const requiredAttributes = productAttributes.filter(attr => attr.is_required);
+      const validationErrors: Record<string, string> = {};
+      
+      requiredAttributes.forEach(attr => {
+        const fieldKey = attr.attribute_name.toLowerCase();
+        if (!attributeValues[fieldKey]) {
+          validationErrors[fieldKey] = `${attr.attribute_name} is required`;
+        }
+      });
 
-      // Log location transfer if applicable
-      if (originalData.current_storage_location_id !== normalizedData.current_storage_location_id &&
-          originalData.current_storage_location_id && 
-          normalizedData.current_storage_location_id) {
-        try {
-          const { error: transferError } = await supabase
-            .from('product_item_location_transfers')
-            .insert({
-              product_id: item.product_id,
-              product_item_id: itemId,
-              from_location_id: originalData.current_storage_location_id,
-              to_location_id: normalizedData.current_storage_location_id,
-              transferred_by: 'system', // TODO: Get actual user
-              notes: `Status changed to ${normalizedData.status}`,
-            });
+      if (Object.keys(validationErrors).length > 0) {
+        setAttributeErrors(validationErrors);
+        throw new Error("Please fill in all required attributes");
+      }
 
-          if (transferError) {
-            console.log('Failed to create transfer record:', transferError);
-          }
-        } catch (transferError) {
-          console.log('Failed to create transfer record:', transferError);
+      setAttributeErrors({});
+
+      // Check if location changed to create transfer record
+      const originalLocation = item?.current_storage_location_id;
+      const newLocation = updateData.current_storage_location_id;
+      const locationChanged = originalLocation !== newLocation;
+
+      // Prepare update data, handling empty strings properly for PostgreSQL
+      const cleanUpdateData = { ...updateData };
+      
+      // Convert empty date strings to null for PostgreSQL
+      if (cleanUpdateData.expected_return_date === "") {
+        cleanUpdateData.expected_return_date = null;
+      }
+      
+      // Convert empty UUID strings to null for PostgreSQL
+      if (cleanUpdateData.current_storage_location_id === "") {
+        cleanUpdateData.current_storage_location_id = null;
+      }
+      
+      // Clean date fields - convert empty strings to null
+      if (cleanUpdateData.manufacturing_date === "") {
+        cleanUpdateData.manufacturing_date = null;
+      }
+
+      // Sync known variation attributes to top-level columns for list display/filters
+      const knownKeys = ["color", "size", "material"] as const;
+      knownKeys.forEach((key) => {
+        if (Object.prototype.hasOwnProperty.call(attributeValues, key)) {
+          const v = (attributeValues as Record<string, string | undefined>)[key];
+          (cleanUpdateData as any)[key] = v && v.trim() !== "" ? v : null;
+        }
+      });
+      
+      console.log('Sending update data:', JSON.stringify(cleanUpdateData, null, 2));
+
+      // Remove any fields that might not exist in the database schema
+      const { photos, ...safeUpdateData } = cleanUpdateData as any;
+      
+      console.log('Sending safe update data:', JSON.stringify(safeUpdateData, null, 2));
+
+      const { error } = await supabase
+        .from("product_items")
+        .update(safeUpdateData)
+        .eq("id", itemId);
+      
+      if (error) throw error;
+
+      // Automatically log transfer record if location changed
+      if (locationChanged && item?.product_id) {
+        const { error: transferError } = await supabase
+          .from('product_item_location_transfers')
+          .insert({
+            product_item_id: itemId,
+            product_id: item.product_id,
+            from_location_id: originalLocation,
+            to_location_id: newLocation,
+            notes: `Unit moved via edit - ${updateData.status === 'maintenance' ? 'moved to maintenance' : 'location update'}`
+          });
+
+        if (transferError) {
+          console.error('Failed to create transfer record:', transferError);
+          // Don't throw error here to avoid blocking the update
         }
       }
 
-      // Update the item - removed .select().single() to avoid casting issues
-      const { error } = await supabase
-        .from('product_items')
-        .update(normalizedData)
-        .eq('id', itemId);
+      // Update item attributes
+      if (Object.keys(attributeValues).length > 0) {
+        // First, delete existing attributes
+        await supabase
+          .from('product_item_attributes')
+          .delete()
+          .eq('item_id', itemId);
 
-      if (error) throw error;
-      
-      return normalizedData;
+        // Then insert new attributes
+        const attributeRecords = [];
+        for (const [attrName, attrValue] of Object.entries(attributeValues)) {
+          if (attrValue) {
+            const property = productAttributes.find(attr => 
+              attr.attribute_name.toLowerCase() === attrName && 
+              attr.attribute_value === attrValue
+            );
+            
+            if (property) {
+              attributeRecords.push({
+                item_id: itemId,
+                property_id: property.id,
+                property_value: attrValue
+              });
+            }
+          }
+        }
+
+        if (attributeRecords.length > 0) {
+          const { error: attrError } = await supabase
+            .from('product_item_attributes')
+            .insert(attributeRecords);
+          
+          if (attrError) {
+            console.error('Error saving attributes:', attrError);
+          }
+        }
+      }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['product-item', itemId] });
-      queryClient.invalidateQueries({ queryKey: ['product-items'] });
-      toast.success('Item updated successfully');
+      queryClient.invalidateQueries({ queryKey: ["product-items"] });
+      queryClient.invalidateQueries({ queryKey: ["product-item", itemId] });
+      queryClient.invalidateQueries({ queryKey: ["item-attributes", itemId] });
+      queryClient.invalidateQueries({ queryKey: ["individual-units-count"] });
+      queryClient.invalidateQueries({ queryKey: ["product-individual-location-stock"] });
+      queryClient.invalidateQueries({ queryKey: ["product-location-transfers"] });
+      queryClient.invalidateQueries({ queryKey: ["available-individual-units-by-location"] });
+      toast.success("Item updated successfully");
       onClose();
     },
     onError: (error) => {
-      console.log('Update error details:', error);
-      toast.error('Failed to update item');
-    },
+      console.error('Update error details:', error);
+      toast.error(`Failed to update item: ${error.message}`);
+    }
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('EditItemModal handleSubmit:', formData);
     
-    // Auto-set condition to "needs_repair" when status is "maintenance"
-    const finalFormData = {
-      ...formData,
-      condition: formData.status === 'maintenance' ? 'needs_repair' : formData.condition,
-    };
+    console.log('EditItemModal handleSubmit:', {
+      originalLocation: item?.current_storage_location_id,
+      newLocation: formData.current_storage_location_id,
+      currentStatus: item?.status,
+      newStatus: formData.status,
+      formData
+    });
     
-    updateMutation.mutate(finalFormData);
+    // Always proceed directly - no confirmation dialog needed
+    updateMutation.mutate({ updateData: formData });
   };
 
-  const handleInputChange = (field: keyof ProductItem, value: string | null) => {
+  const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleDateChange = (field: keyof ProductItem, date: Date | undefined) => {
-    setFormData(prev => ({ 
-      ...prev, 
-      [field]: date ? format(date, 'yyyy-MM-dd') : null 
-    }));
+  const handleAttributeChange = (attributeId: string, value: string) => {
+    setAttributeValues(prev => ({ ...prev, [attributeId]: value }));
+    // Clear error when user selects a value
+    if (attributeErrors[attributeId]) {
+      setAttributeErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[attributeId];
+        return newErrors;
+      });
+    }
   };
 
-  if (isLoading) {
+  const handleOCRComplete = (ocrData: any) => {
+    console.log('OCR completed for edit:', ocrData);
+    
+    // Update form with OCR results
+    if (ocrData.toolNumber) handleInputChange("tool_number", ocrData.toolNumber);
+    if (ocrData.vendorId) handleInputChange("vendor_id", ocrData.vendorId);
+    if (ocrData.plasticCode) handleInputChange("plastic_code", ocrData.plasticCode);
+    if (ocrData.manufacturingDate) handleInputChange("manufacturing_date", ocrData.manufacturingDate);
+    if (ocrData.moldCavity) handleInputChange("mold_cavity", ocrData.moldCavity);
+    
+    setShowOCRCapture(false);
+    toast.success("OCR data captured and applied");
+  };
+
+
+
+  if (isLoading || !item) {
     return (
-      <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent>
-          <div className="flex items-center justify-center p-6">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-          </div>
+      <Dialog open onOpenChange={onClose}>
+        <DialogContent className="max-w-2xl">
+          <div className="p-6">Loading...</div>
         </DialogContent>
       </Dialog>
     );
   }
 
-  if (!item) {
-    return null;
-  }
-
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Edit Unit - {item.barcode}</DialogTitle>
+          <DialogTitle className="text-xl font-bold">Edit Item: {item.item_code}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Status and Condition */}
+          {/* Basic Information */}
           <div className="grid grid-cols-2 gap-4">
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="status">Status</Label>
-              <Select
-                value={formData.status || ''}
-                onValueChange={(value) => handleInputChange('status', value)}
+              <Select 
+                value={formData.status} 
+                onValueChange={(value) => handleInputChange("status", value)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white">
                   <SelectItem value="available">Available</SelectItem>
-                  <SelectItem value="rented">Rented</SelectItem>
+                  <SelectItem value="assigned">On Job</SelectItem>
                   <SelectItem value="maintenance">Maintenance</SelectItem>
-                  <SelectItem value="retired">Retired</SelectItem>
+                  <SelectItem value="out_of_service">Permanently Retired</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            <div>
-              <Label htmlFor="condition">Condition</Label>
-              <Select
-                value={formData.condition || ''}
-                onValueChange={(value) => handleInputChange('condition', value)}
-                disabled={formData.status === 'maintenance'}
+            <div className="space-y-2">
+              <Label htmlFor="condition">
+                Condition 
+                {formData.status === "maintenance" && (
+                  <Badge variant="secondary" className="ml-2 text-xs">Auto-set for maintenance</Badge>
+                )}
+              </Label>
+              <Select 
+                value={formData.condition} 
+                onValueChange={(value) => handleInputChange("condition", value)}
+                disabled={formData.status === "maintenance"}
               >
-                <SelectTrigger>
+                <SelectTrigger className={formData.status === "maintenance" ? "bg-muted/50 text-muted-foreground cursor-not-allowed" : ""}>
                   <SelectValue placeholder="Select condition" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white">
                   <SelectItem value="excellent">Excellent</SelectItem>
                   <SelectItem value="good">Good</SelectItem>
                   <SelectItem value="fair">Fair</SelectItem>
+                  <SelectItem value="poor">Poor</SelectItem>
                   <SelectItem value="needs_repair">Needs Repair</SelectItem>
                 </SelectContent>
               </Select>
-              {formData.status === 'maintenance' && (
+              {formData.status === "maintenance" && (
                 <p className="text-xs text-muted-foreground mt-1">
-                  Automatically set to "Needs Repair" for maintenance items
+                  Condition automatically set to "Needs Repair" for maintenance items
                 </p>
               )}
             </div>
           </div>
 
-          {/* Location Fields */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="location">Location (Text)</Label>
-              <Input
-                id="location"
-                value={formData.location || ''}
-                onChange={(e) => handleInputChange('location', e.target.value)}
-                placeholder="e.g., Warehouse A, Section 2"
-              />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="storage_location">
+              Storage Location 
+              {formData.status === "maintenance" && (
+                <Badge variant="outline" className="ml-2 text-xs">Optional for maintenance</Badge>
+              )}
+            </Label>
+            <StorageLocationSelector
+              value={formData.current_storage_location_id}
+              onValueChange={(value) => handleInputChange("current_storage_location_id", value)}
+              placeholder={formData.status === "maintenance" ? "Optional for maintenance items" : "Select storage location"}
+              disabled={false}
+            />
+            {formData.status === "maintenance" && (
+              <p className="text-xs text-muted-foreground">Storage location is locked during maintenance. Update from the maintenance tracker to change location.</p>
+            )}
+          </div>
 
-            <div>
-              <Label htmlFor="storage_location">Storage Location</Label>
-              <Select
-                value={formData.current_storage_location_id || ''}
-                onValueChange={(value) => handleInputChange('current_storage_location_id', value)}
+
+          {/* QR Code Section */}
+          <div className="space-y-3 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <QrCode className="w-4 h-4 text-gray-600" />
+                <Label className="font-medium text-gray-900">QR Code</Label>
+              </div>
+            </div>
+            <p className="text-sm text-gray-600 mb-3">
+              QR code contains: {item.qr_code_data || item.item_code}
+            </p>
+            {item.qr_code_data && (
+              <SimpleQRCode 
+                itemCode={item.item_code} 
+                qrCodeData={item.qr_code_data}
+                showAsButton={false}
+              />
+            )}
+          </div>
+
+          {/* Product Variations */}
+          <ProductVariationsFields
+            productId={item?.product_id || ""}
+            attributes={productAttributes}
+            values={attributeValues}
+            onChange={handleAttributeChange}
+            errors={attributeErrors}
+          />
+
+          {/* OCR Tool Tracking Section */}
+          <div className="space-y-4 p-4 bg-card border border-border rounded-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-medium text-foreground flex items-center gap-2">
+                  <Camera className="w-4 h-4" />
+                  Tool Tracking Information
+                </h3>
+                <p className="text-sm text-muted-foreground">Capture or update tool information using OCR</p>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowOCRCapture(true)}
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select storage location" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="no-location">No storage location</SelectItem>
-                  {storageLocations?.map((location) => (
-                    <SelectItem key={location.id} value={location.id}>
-                      {location.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                <Camera className="w-4 h-4 mr-2" />
+                {formData.tool_number ? "Update OCR" : "Scan Tool Info"}
+              </Button>
             </div>
-          </div>
-
-          {/* Physical Properties */}
-          <div className="grid grid-cols-3 gap-4">
-            <div>
-              <Label htmlFor="color">Color</Label>
-              <Input
-                id="color"
-                value={formData.color || ''}
-                onChange={(e) => handleInputChange('color', e.target.value)}
-                placeholder="Blue, Green, etc."
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="size">Size</Label>
-              <Input
-                id="size"
-                value={formData.size || ''}
-                onChange={(e) => handleInputChange('size', e.target.value)}
-                placeholder="Small, Medium, Large"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="material">Material</Label>
-              <Input
-                id="material"
-                value={formData.material || ''}
-                onChange={(e) => handleInputChange('material', e.target.value)}
-                placeholder="Plastic, Metal, etc."
-              />
-            </div>
-          </div>
-
-          {/* Manufacturing Details */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="tool_number">Tool Number</Label>
-              <Input
-                id="tool_number"
-                value={formData.tool_number || ''}
-                onChange={(e) => handleInputChange('tool_number', e.target.value)}
-                placeholder="Tool/Mold identifier"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="plastic_code">Plastic Code</Label>
-              <Input
-                id="plastic_code"
-                value={formData.plastic_code || ''}
-                onChange={(e) => handleInputChange('plastic_code', e.target.value)}
-                placeholder="Plastic type code"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-3 gap-4">
-            <div>
-              <Label htmlFor="manufacturing_date">Manufacturing Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !formData.manufacturing_date && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {formData.manufacturing_date ? (
-                      format(new Date(formData.manufacturing_date), "PP")
-                    ) : (
-                      <span>Pick a date</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={formData.manufacturing_date ? new Date(formData.manufacturing_date) : undefined}
-                    onSelect={(date) => handleDateChange('manufacturing_date', date)}
-                    initialFocus
-                  />
-                  {formData.manufacturing_date && (
-                    <div className="p-2 border-t">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDateChange('manufacturing_date', undefined)}
-                        className="w-full"
-                      >
-                        <X className="h-4 w-4 mr-2" />
-                        Clear Date
-                      </Button>
-                    </div>
-                  )}
-                </PopoverContent>
-              </Popover>
-            </div>
-
-            <div>
-              <Label htmlFor="mold_cavity">Mold Cavity</Label>
-              <Input
-                id="mold_cavity"
-                value={formData.mold_cavity || ''}
-                onChange={(e) => handleInputChange('mold_cavity', e.target.value)}
-                placeholder="Cavity number"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="vendor">Vendor</Label>
-              <VendorSelector
-                value={formData.vendor_id || ''}
-                onValueChange={(value) => handleInputChange('vendor_id', value)}
-              />
-            </div>
-          </div>
-
-          {/* Maintenance Fields */}
-          {formData.status === 'maintenance' && (
-            <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
-              <h3 className="font-medium">Maintenance Information</h3>
-              
-              <div>
-                <Label htmlFor="maintenance_reason">Maintenance Reason</Label>
+            
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="tool_number">Tool Number</Label>
                 <Input
-                  id="maintenance_reason"
-                  value={formData.maintenance_reason || ''}
-                  onChange={(e) => handleInputChange('maintenance_reason', e.target.value)}
-                  placeholder="Reason for maintenance"
+                  id="tool_number"
+                  value={formData.tool_number}
+                  onChange={(e) => handleInputChange("tool_number", e.target.value)}
+                  placeholder="e.g., T-20788-1A"
+                  className="font-mono text-sm"
                 />
               </div>
 
-              <div>
-                <Label htmlFor="expected_return_date">Expected Return Date</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !formData.expected_return_date && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {formData.expected_return_date ? (
-                        format(new Date(formData.expected_return_date), "PP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={formData.expected_return_date ? new Date(formData.expected_return_date) : undefined}
-                      onSelect={(date) => handleDateChange('expected_return_date', date)}
-                      initialFocus
-                    />
-                    {formData.expected_return_date && (
-                      <div className="p-2 border-t">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDateChange('expected_return_date', undefined)}
-                          className="w-full"
-                        >
-                          <X className="h-4 w-4 mr-2" />
-                          Clear Date
-                        </Button>
-                      </div>
-                    )}
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              <div>
-                <Label htmlFor="maintenance_notes">Maintenance Notes</Label>
-                <Textarea
-                  id="maintenance_notes"
-                  value={formData.maintenance_notes || ''}
-                  onChange={(e) => handleInputChange('maintenance_notes', e.target.value)}
-                  placeholder="Additional maintenance notes"
-                  rows={3}
+              <div className="space-y-2">
+                <Label htmlFor="vendor_id">Vendor ID</Label>
+                <Input
+                  id="vendor_id"
+                  value={formData.vendor_id}
+                  onChange={(e) => handleInputChange("vendor_id", e.target.value)}
+                  placeholder="e.g., 32933"
+                  className="font-mono text-sm"
                 />
               </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="plastic_code">Plastic Code</Label>
+                <Input
+                  id="plastic_code"
+                  value={formData.plastic_code}
+                  onChange={(e) => handleInputChange("plastic_code", e.target.value)}
+                  placeholder="e.g., 2 HDPE"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="manufacturing_date">Mfg Date</Label>
+                <Input
+                  id="manufacturing_date"
+                  value={formData.manufacturing_date}
+                  onChange={(e) => handleInputChange("manufacturing_date", e.target.value)}
+                  placeholder="e.g., 01/24"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="mold_cavity">Mold Cavity</Label>
+                <Input
+                  id="mold_cavity"
+                  value={formData.mold_cavity}
+                  onChange={(e) => handleInputChange("mold_cavity", e.target.value)}
+                  placeholder="e.g., CAV 1"
+                />
+              </div>
+
+              {item?.ocr_confidence_score && (
+                <div className="space-y-2">
+                  <Label>OCR Confidence</Label>
+                  <div className="px-3 py-2 bg-white border rounded-md text-sm font-mono">
+                    {Math.round(item.ocr_confidence_score * 100)}%
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+          </div>
 
           {/* General Notes */}
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="notes">General Notes</Label>
             <Textarea
               id="notes"
-              value={formData.notes || ''}
-              onChange={(e) => handleInputChange('notes', e.target.value)}
-              placeholder="Additional notes about this unit"
+              value={formData.notes}
+              onChange={(e) => handleInputChange("notes", e.target.value)}
+              placeholder="Add any additional notes about this item..."
               rows={3}
             />
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex justify-end space-x-2 pt-4">
+          {/* Form Actions */}
+          <div className="flex justify-end gap-3 pt-4 border-t">
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
             <Button 
               type="submit" 
-              disabled={updateMutation.isPending}
-              className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white"
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+              disabled={updateMutation.isPending || Object.keys(attributeErrors).length > 0}
             >
-              {updateMutation.isPending ? 'Saving...' : 'Save Changes'}
+              {updateMutation.isPending ? "Updating Unit..." : "Update Unit"}
             </Button>
           </div>
         </form>
       </DialogContent>
+      
+      {/* OCR Photo Capture Modal */}
+      {showOCRCapture && item && (
+        <OCRPhotoCapture
+          open={showOCRCapture}
+          onClose={() => setShowOCRCapture(false)}
+          itemId={item.id}
+          itemCode={item.item_code}
+          onComplete={handleOCRComplete}
+        />
+      )}
+
     </Dialog>
   );
 };
