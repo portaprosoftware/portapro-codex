@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
+
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { StorageLocationSelector } from "./StorageLocationSelector";
@@ -37,8 +37,6 @@ interface ProductFormData {
   lowStockThreshold: number;
   storageLocationId: string;
   locationQuantity: number;
-  createIndividualItems: boolean;
-  trackingMethod: 'bulk' | 'individual' | 'both';
   selectedCategory: string;
   productType: ProductType;
   productVariant: string;
@@ -57,8 +55,6 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
     lowStockThreshold: 5,
     storageLocationId: '',
     locationQuantity: 0,
-    createIndividualItems: false,
-    trackingMethod: 'bulk',
     selectedCategory: '',
     productType: 'standard_toilet' as ProductType,
     productVariant: '',
@@ -117,10 +113,10 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
         if (stockError) throw stockError;
       }
 
-      // 4. Optionally create individual items
-      if (data.createIndividualItems && data.locationQuantity > 0) {
+      // 4. Always create individual tracked items
+      if (data.locationQuantity > 0) {
         if (!data.selectedCategory) {
-          throw new Error('Item code category is required when creating individual items');
+          throw new Error('Item code category is required');
         }
 
         const individualItems = [];
@@ -177,8 +173,8 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
       return;
     }
 
-    if (formData.createIndividualItems && !formData.selectedCategory) {
-      toast.error("Please select an item code category when creating individual items");
+    if (!formData.selectedCategory) {
+      toast.error("Please select an item code category");
       return;
     }
 
@@ -201,8 +197,6 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
       lowStockThreshold: 5,
       storageLocationId: '',
       locationQuantity: 0,
-      createIndividualItems: false,
-      trackingMethod: 'bulk',
       selectedCategory: '',
       productType: 'standard_toilet' as ProductType,
       productVariant: '',
@@ -224,7 +218,7 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
             Add New Inventory Product
           </DialogTitle>
           <DialogDescription>
-            Create a new product and assign it to a storage location. Choose between bulk tracking, individual item tracking.
+            Create a new product and assign it to a storage location. All products will have individual tracking items created automatically.
           </DialogDescription>
         </DialogHeader>
 
@@ -376,50 +370,35 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
 
           <Separator />
 
-          {/* Tracking Options */}
+          {/* Item Code Category */}
           <div className="space-y-4">
             <h3 className="text-sm font-medium text-foreground flex items-center gap-2">
               <Hash className="h-4 w-4" />
-              Item Tracking
+              Item Code Category
             </h3>
             
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="createIndividualItems">Create Individual Tracking Items</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Generate individual items with unique codes for detailed tracking
-                  </p>
-                </div>
-                <Switch
-                  id="createIndividualItems"
-                  checked={formData.createIndividualItems}
-                  onCheckedChange={(checked) => updateFormData('createIndividualItems', checked)}
+              <div className="space-y-2">
+                <Label>Item Code Category *</Label>
+                <ItemCodeCategorySelect
+                  value={formData.selectedCategory}
+                  onValueChange={(value) => updateFormData('selectedCategory', value)}
+                  placeholder="Select item code category"
                 />
+                <p className="text-sm text-muted-foreground">
+                  Individual tracking items will be created automatically with unique codes
+                </p>
               </div>
 
-              {formData.createIndividualItems && (
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Item Code Category *</Label>
-                    <ItemCodeCategorySelect
-                      value={formData.selectedCategory}
-                      onValueChange={(value) => updateFormData('selectedCategory', value)}
-                      placeholder="Select item code category"
-                    />
-                  </div>
-
-                  {formData.selectedCategory && (
-                    <div className="p-4 bg-muted/50 rounded-lg space-y-2">
-                      <p className="text-sm font-medium">Individual Item Codes</p>
-                       <p className="text-sm text-muted-foreground">
-                         {formData.locationQuantity} individual items will be created with sequential 4-digit codes starting from:{' '}
-                         <code className="bg-background px-1 py-0.5 rounded text-xs">
-                           {formData.selectedCategory}, {(parseInt(formData.selectedCategory) + 1).toString()}, etc.
-                         </code>
-                       </p>
-                    </div>
-                  )}
+              {formData.selectedCategory && formData.locationQuantity > 0 && (
+                <div className="p-4 bg-muted/50 rounded-lg space-y-2">
+                  <p className="text-sm font-medium">Individual Item Codes Preview</p>
+                   <p className="text-sm text-muted-foreground">
+                     {formData.locationQuantity} individual items will be created with sequential 4-digit codes starting from:{' '}
+                     <code className="bg-background px-1 py-0.5 rounded text-xs">
+                       {formData.selectedCategory}, {(parseInt(formData.selectedCategory) + 1).toString()}, etc.
+                     </code>
+                   </p>
                 </div>
               )}
             </div>
