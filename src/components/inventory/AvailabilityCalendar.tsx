@@ -45,6 +45,44 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
     format(nextMonthEnd, 'yyyy-MM-dd')
   );
 
+  // Build an augmented daily breakdown where conflicts include ALL unavailable units
+  const augmentedAvailability = React.useMemo(() => {
+    if (!availability?.daily_breakdown) return availability;
+
+    // Collect units that are unavailable for other reasons (not 'available')
+    const unavailableUnits = new Map(
+      (availability.individual_items || [])
+        .filter((u) => u.status && u.status !== 'available')
+        .map((u) => [u.item_id, u])
+    );
+
+    const augmentedBreakdown = availability.daily_breakdown.map((day) => {
+      const existing = day.conflicts || [];
+      const existingIds = new Set<string>(
+        existing.map((c: any) => c.item_id).filter(Boolean)
+      );
+
+      // Candidates are unavailable units not already represented in conflicts
+      const candidates = Array.from(unavailableUnits.values()).filter(
+        (u) => !existingIds.has(u.item_id)
+      );
+
+      const deficit = Math.max(0, (day.tracked_assigned || 0) - existing.length);
+      const extras = candidates.slice(0, deficit).map((u) => ({
+        assignment_id: `unavailable:${u.item_id}`,
+        job_number: 'Unavailable',
+        customer_name: u.status ? u.status.charAt(0).toUpperCase() + u.status.slice(1) : 'Unavailable',
+        item_id: u.item_id,
+        item_code: u.item_code,
+        status: u.status || 'unavailable',
+      }));
+
+      return { ...day, conflicts: [...existing, ...extras] };
+    });
+
+    return { ...availability, daily_breakdown: augmentedBreakdown };
+  }, [availability]);
+
   // Find next available date
   const getNextAvailableDate = () => {
     // Check current month first
@@ -80,10 +118,10 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
   };
 
   const getAvailabilityForDate = (date: Date) => {
-    if (!availability?.daily_breakdown) return null;
+    if (!augmentedAvailability?.daily_breakdown) return null;
     
     const dateStr = format(date, 'yyyy-MM-dd');
-    return availability.daily_breakdown.find(day => day.date === dateStr);
+    return augmentedAvailability.daily_breakdown.find(day => day.date === dateStr);
   };
 
   const getAvailabilityStatus = (available: number, requested: number) => {
