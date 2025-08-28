@@ -141,7 +141,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
     },
     {
       value: "units",
-      label: "Tracked Units",
+      label: "Stock List",
       icon: QrCode,
       badge: individualUnitsCount
     },
