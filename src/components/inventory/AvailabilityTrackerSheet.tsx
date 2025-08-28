@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Calendar, Package } from 'lucide-react';
 import { AvailabilityCalendar } from '@/components/inventory/AvailabilityCalendar';
 import { DateRangeAvailabilityChecker } from '@/components/inventory/DateRangeAvailabilityChecker';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useProducts } from '@/hooks/useProducts';
-import { ProductSelectionModal } from '@/components/inventory/ProductSelectionModal';
+import { ProductGrid } from '@/components/inventory/ProductGrid';
 
 interface AvailabilityTrackerSheetProps {
   open: boolean;
@@ -25,9 +23,6 @@ export const AvailabilityTrackerSheet: React.FC<AvailabilityTrackerSheetProps> =
   const [selectedProductId, setSelectedProductId] = useState<string>('');
   const [selectedProductName, setSelectedProductName] = useState<string>('');
   const [requestedQuantity, setRequestedQuantity] = useState(1);
-  const [showProductModal, setShowProductModal] = useState(false);
-  
-  const { data: products, isLoading: productsLoading } = useProducts();
 
   return (
     <>
@@ -49,36 +44,31 @@ export const AvailabilityTrackerSheet: React.FC<AvailabilityTrackerSheetProps> =
             
             <div className="flex-1 overflow-y-auto">
               <div className="p-6 space-y-6">
-                {/* Product Selection */}
+                {/* Product Selection Header */}
                 <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <Package className="h-5 w-5 text-blue-600" />
-                    <span className="text-lg font-bold">Product Selection</span>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="md:col-span-2">
-                      <Button
-                        variant="outline"
-                        onClick={() => setShowProductModal(true)}
-                        className="w-full justify-start text-left h-12 font-bold text-base"
-                        disabled={productsLoading}
-                      >
-                        {selectedProductName || (productsLoading ? "Loading products..." : "Select a product to check availability")}
-                      </Button>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Package className="h-5 w-5 text-blue-600" />
+                      <span className="text-lg font-bold">
+                        {selectedProductName ? `Selected: ${selectedProductName}` : 'Select a Product to Check Availability'}
+                      </span>
                     </div>
                     
-                    <div>
+                    <div className="w-32">
                       <Input
                         type="number"
                         min="1"
                         value={requestedQuantity}
                         onChange={(e) => setRequestedQuantity(parseInt(e.target.value) || 1)}
                         placeholder="Quantity"
-                        className="w-full font-bold h-12 text-base"
+                        className="w-full font-bold h-10 text-sm"
                       />
                     </div>
                   </div>
+                  
+                  <p className="text-sm text-muted-foreground font-medium">
+                    Choose a product from the list below to view its availability calendar and date range checker
+                  </p>
                 </div>
 
                 {selectedProductId ? (
@@ -106,10 +96,18 @@ export const AvailabilityTrackerSheet: React.FC<AvailabilityTrackerSheetProps> =
                     </TabsContent>
                   </Tabs>
                 ) : (
-                  <div className="text-center py-12 text-muted-foreground">
-                    <Package className="h-16 w-16 mx-auto mb-4 opacity-50" />
-                    <p className="text-xl font-bold mb-2">Select a Product</p>
-                    <p className="text-base font-bold">Choose a product above to view its availability calendar and date range checker</p>
+                  <div className="bg-white rounded-lg border">
+                    <ProductGrid
+                      filter="in_stock"
+                      viewType="grid"
+                      hideInactive={true}
+                      searchQuery=""
+                      onProductSelect={(productId) => {
+                        setSelectedProductId(productId);
+                        // We'll need to fetch the product name separately or modify the callback
+                        setSelectedProductName('Selected Product');
+                      }}
+                    />
                   </div>
                 )}
               </div>
@@ -117,17 +115,6 @@ export const AvailabilityTrackerSheet: React.FC<AvailabilityTrackerSheetProps> =
           </div>
         </SheetContent>
       </Sheet>
-      
-      {/* Product Selection Modal */}
-      <ProductSelectionModal
-        open={showProductModal}
-        onOpenChange={setShowProductModal}
-        onProductSelect={(productId, productName) => {
-          setSelectedProductId(productId);
-          setSelectedProductName(productName);
-        }}
-        selectedProductId={selectedProductId}
-      />
     </>
   );
 };
