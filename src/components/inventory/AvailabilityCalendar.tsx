@@ -181,16 +181,16 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
                   variant="ghost"
                   onClick={() => handleDateClick(date)}
                   className={cn(
-                    "relative h-12 p-1 flex flex-col items-center justify-center border-2 border-transparent",
+                    "relative h-12 p-1 flex flex-col items-center justify-center border-2 border-transparent font-bold",
                     getStatusColor(status),
                     isSelected && "ring-2 ring-blue-500",
                     isCurrentDay && "font-bold",
-                    "hover:opacity-80"
+                    "hover:opacity-80 hover:shadow-lg"
                   )}
                 >
-                  <span className="text-sm">{format(date, 'd')}</span>
+                  <span className="text-sm font-bold">{format(date, 'd')}</span>
                   {dayAvailability && (
-                    <span className="text-xs">{available}</span>
+                    <span className="text-xs font-bold">{available}</span>
                   )}
                   {isCurrentDay && (
                     <div className="absolute top-1 right-1 w-2 h-2 bg-blue-600 rounded-full" />

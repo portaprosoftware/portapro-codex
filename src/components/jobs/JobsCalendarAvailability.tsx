@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Calendar, Eye, EyeOff, Package } from 'lucide-react';
 import { AvailabilityCalendar } from '@/components/inventory/AvailabilityCalendar';
 import { DateRangeAvailabilityChecker } from '@/components/inventory/DateRangeAvailabilityChecker';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useProducts } from '@/hooks/useProducts';
+import { ProductSelectionModal } from '@/components/inventory/ProductSelectionModal';
 
 interface JobsCalendarAvailabilityProps {
   selectedDate: Date;
@@ -20,7 +20,9 @@ export const JobsCalendarAvailability: React.FC<JobsCalendarAvailabilityProps> =
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState<string>('');
+  const [selectedProductName, setSelectedProductName] = useState<string>('');
   const [requestedQuantity, setRequestedQuantity] = useState(1);
+  const [showProductModal, setShowProductModal] = useState(false);
   
   const { data: products, isLoading: productsLoading } = useProducts();
 
@@ -75,27 +77,19 @@ export const JobsCalendarAvailability: React.FC<JobsCalendarAvailabilityProps> =
         <div className="space-y-4 mb-6">
           <div className="flex items-center gap-2 mb-3">
             <Package className="h-4 w-4 text-blue-600" />
-            <span className="text-sm font-medium">Product Selection</span>
+            <span className="text-sm font-bold">Product Selection</span>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="md:col-span-2">
-              <Select 
-                value={selectedProductId} 
-                onValueChange={setSelectedProductId}
+              <Button
+                variant="outline"
+                onClick={() => setShowProductModal(true)}
+                className="w-full justify-start text-left h-10 font-bold"
                 disabled={productsLoading}
               >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder={productsLoading ? "Loading products..." : "Select a product to check availability"} />
-                </SelectTrigger>
-                <SelectContent>
-                  {products?.map((product) => (
-                    <SelectItem key={product.id} value={product.id}>
-                      {product.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                {selectedProductName || (productsLoading ? "Loading products..." : "Select a product to check availability")}
+              </Button>
             </div>
             
             <div>
@@ -105,7 +99,7 @@ export const JobsCalendarAvailability: React.FC<JobsCalendarAvailabilityProps> =
                 value={requestedQuantity}
                 onChange={(e) => setRequestedQuantity(parseInt(e.target.value) || 1)}
                 placeholder="Quantity"
-                className="w-full"
+                className="w-full font-bold"
               />
             </div>
           </div>
@@ -114,14 +108,14 @@ export const JobsCalendarAvailability: React.FC<JobsCalendarAvailabilityProps> =
         {selectedProductId ? (
           <Tabs defaultValue="calendar" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="calendar">Calendar View</TabsTrigger>
-              <TabsTrigger value="range">Date Range</TabsTrigger>
+              <TabsTrigger value="calendar" className="font-bold">Calendar View</TabsTrigger>
+              <TabsTrigger value="range" className="font-bold">Date Range</TabsTrigger>
             </TabsList>
             
             <TabsContent value="calendar" className="mt-4">
               <AvailabilityCalendar
                 productId={selectedProductId}
-                productName={products?.find(p => p.id === selectedProductId)?.name || 'Selected Product'}
+                productName={selectedProductName || 'Selected Product'}
                 requestedQuantity={requestedQuantity}
                 onDateSelect={onDateSelect}
                 className="max-h-80 overflow-y-auto"
@@ -131,7 +125,7 @@ export const JobsCalendarAvailability: React.FC<JobsCalendarAvailabilityProps> =
             <TabsContent value="range" className="mt-4">
               <DateRangeAvailabilityChecker
                 productId={selectedProductId}
-                productName={products?.find(p => p.id === selectedProductId)?.name || 'Selected Product'}
+                productName={selectedProductName || 'Selected Product'}
                 requestedQuantity={requestedQuantity}
                 className="max-h-80 overflow-y-auto"
               />
@@ -140,10 +134,21 @@ export const JobsCalendarAvailability: React.FC<JobsCalendarAvailabilityProps> =
         ) : (
           <div className="text-center py-8 text-muted-foreground">
             <Package className="h-12 w-12 mx-auto mb-3 opacity-50" />
-            <p className="text-lg font-medium mb-2">Select a Product</p>
-            <p className="text-sm">Choose a product above to view its availability calendar and date range checker</p>
+            <p className="text-lg font-bold mb-2">Select a Product</p>
+            <p className="text-sm font-bold">Choose a product above to view its availability calendar and date range checker</p>
           </div>
         )}
+        
+        {/* Product Selection Modal */}
+        <ProductSelectionModal
+          open={showProductModal}
+          onOpenChange={setShowProductModal}
+          onProductSelect={(productId, productName) => {
+            setSelectedProductId(productId);
+            setSelectedProductName(productName);
+          }}
+          selectedProductId={selectedProductId}
+        />
       </CardContent>
     </Card>
   );
