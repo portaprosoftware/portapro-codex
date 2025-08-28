@@ -15,7 +15,7 @@ import { OCRPhotoCapture } from "./OCRPhotoCapture";
 import { ProductVariationsFields } from "./ProductVariationsFields";
 import { SimpleQRCode } from "./SimpleQRCode";
 import { StorageLocationSelector } from "./StorageLocationSelector";
-import { LocationTransferConfirmDialog } from "./LocationTransferConfirmDialog";
+
 
 interface EditItemModalProps {
   itemId: string;
@@ -25,9 +25,6 @@ interface EditItemModalProps {
 export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose }) => {
   const queryClient = useQueryClient();
   const [showOCRCapture, setShowOCRCapture] = useState(false);
-  const [showLocationConfirm, setShowLocationConfirm] = useState(false);
-  const [pendingFormData, setPendingFormData] = useState<typeof formData | null>(null);
-  const [locationNames, setLocationNames] = useState<{from?: string, to?: string}>({});
   const [attributeValues, setAttributeValues] = useState<Record<string, string>>({});
   const [attributeErrors, setAttributeErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState({
@@ -162,13 +159,11 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
   }, [formData.status]);
 
   const updateMutation = useMutation({
-    mutationFn: async (data: { updateData: typeof formData; recordTransfer?: boolean; transferNotes?: string }) => {
-      const { updateData, recordTransfer, transferNotes } = data;
+    mutationFn: async (data: { updateData: typeof formData }) => {
+      const { updateData } = data;
       
       console.log('EditItemModal mutation starting with data:', {
         updateData,
-        recordTransfer,
-        transferNotes,
         status: updateData.status
       });
       
@@ -233,8 +228,8 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
       
       if (error) throw error;
 
-      // Create transfer record if location changed and user confirmed
-      if (locationChanged && recordTransfer && item?.product_id) {
+      // Automatically log transfer record if location changed
+      if (locationChanged && item?.product_id) {
         const { error: transferError } = await supabase
           .from('product_item_location_transfers')
           .insert({
@@ -242,7 +237,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
             product_id: item.product_id,
             from_location_id: originalLocation,
             to_location_id: newLocation,
-            notes: transferNotes || `Unit moved via edit - ${updateData.status === 'maintenance' ? 'moved to maintenance' : 'location update'}`
+            notes: `Unit moved via edit - ${updateData.status === 'maintenance' ? 'moved to maintenance' : 'location update'}`
           });
 
         if (transferError) {
@@ -293,6 +288,10 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
       queryClient.invalidateQueries({ queryKey: ["product-items"] });
       queryClient.invalidateQueries({ queryKey: ["product-item", itemId] });
       queryClient.invalidateQueries({ queryKey: ["item-attributes", itemId] });
+      queryClient.invalidateQueries({ queryKey: ["individual-units-count"] });
+      queryClient.invalidateQueries({ queryKey: ["product-individual-location-stock"] });
+      queryClient.invalidateQueries({ queryKey: ["product-location-transfers"] });
+      queryClient.invalidateQueries({ queryKey: ["available-individual-units-by-location"] });
       toast.success("Item updated successfully");
       onClose();
     },
@@ -305,61 +304,16 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Check if location changed
-    const originalLocation = item?.current_storage_location_id;
-    const newLocation = formData.current_storage_location_id;
-    const locationChanged = originalLocation !== newLocation;
-    
     console.log('EditItemModal handleSubmit:', {
-      originalLocation,
-      newLocation,
-      locationChanged,
+      originalLocation: item?.current_storage_location_id,
+      newLocation: formData.current_storage_location_id,
       currentStatus: item?.status,
       newStatus: formData.status,
       formData
     });
     
-    // Skip location confirmation dialog when setting status to maintenance or when no actual location change required
-    if (locationChanged && formData.status !== "maintenance" && formData.current_storage_location_id) {
-      // Fetch location names for the confirmation dialog
-      try {
-        const locations = [];
-        if (originalLocation) {
-          const { data: fromLocation } = await supabase
-            .from('storage_locations')
-            .select('name')
-            .eq('id', originalLocation)
-            .single();
-          if (fromLocation) locations.push({ id: originalLocation, name: fromLocation.name });
-        }
-        if (newLocation) {
-          const { data: toLocation } = await supabase
-            .from('storage_locations')
-            .select('name')
-            .eq('id', newLocation)
-            .single();
-          if (toLocation) locations.push({ id: newLocation, name: toLocation.name });
-        }
-        
-        const fromLocationName = locations.find(l => l.id === originalLocation)?.name;
-        const toLocationName = locations.find(l => l.id === newLocation)?.name;
-        
-        setLocationNames({ from: fromLocationName, to: toLocationName });
-        setPendingFormData(formData);
-        setShowLocationConfirm(true);
-      } catch (error) {
-        console.error('Failed to fetch location names:', error);
-        // Proceed without names
-        setLocationNames({});
-        setPendingFormData(formData);
-        setShowLocationConfirm(true);
-      }
-    } else {
-      // No location change or maintenance status, proceed directly
-      // For maintenance status, storage location is optional
-      const recordTransfer = locationChanged && formData.status === "maintenance" && !!formData.current_storage_location_id;
-      updateMutation.mutate({ updateData: formData, recordTransfer });
-    }
+    // Always proceed directly - no confirmation dialog needed
+    updateMutation.mutate({ updateData: formData });
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -392,17 +346,6 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
     toast.success("OCR data captured and applied");
   };
 
-  const handleLocationTransferConfirm = (recordTransfer: boolean, notes?: string) => {
-    if (pendingFormData) {
-      updateMutation.mutate({ 
-        updateData: pendingFormData, 
-        recordTransfer, 
-        transferNotes: notes 
-      });
-      setPendingFormData(null);
-    }
-    setShowLocationConfirm(false);
-  };
 
 
   if (isLoading || !item) {
@@ -416,7 +359,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
   }
 
   return (
-    <Dialog open={!showLocationConfirm} onOpenChange={onClose}>
+    <Dialog open onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">Edit Item: {item.item_code}</DialogTitle>
@@ -645,15 +588,6 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
         />
       )}
 
-      {/* Location Transfer Confirmation Dialog */}
-      <LocationTransferConfirmDialog
-        isOpen={showLocationConfirm}
-        onClose={() => setShowLocationConfirm(false)}
-        onConfirm={handleLocationTransferConfirm}
-        fromLocationName={locationNames.from}
-        toLocationName={locationNames.to}
-        itemCode={item?.item_code || ""}
-      />
     </Dialog>
   );
 };

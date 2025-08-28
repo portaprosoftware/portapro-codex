@@ -37,6 +37,15 @@ export function ItemTransferModal({
         throw new Error("Please select a different location");
       }
 
+      // Get product_id first
+      const { data: item, error: itemError } = await supabase
+        .from('product_items')
+        .select('product_id')
+        .eq('id', itemId)
+        .single();
+
+      if (itemError) throw itemError;
+
       // Update item location
       const { error } = await supabase
         .from('product_items')
@@ -48,13 +57,32 @@ export function ItemTransferModal({
 
       if (error) throw error;
 
+      // Log the transfer
+      const { error: transferError } = await supabase
+        .from('product_item_location_transfers')
+        .insert({
+          product_item_id: itemId,
+          product_id: item.product_id,
+          from_location_id: currentLocationId,
+          to_location_id: newLocationId,
+          notes: `Item transferred via quick transfer modal`
+        });
+
+      if (transferError) {
+        console.error('Failed to create transfer record:', transferError);
+        // Don't throw error here as the main transfer succeeded
+      }
+
       return { itemId, newLocationId };
     },
     onSuccess: () => {
       toast.success(`Item ${itemCode} transferred successfully`);
       queryClient.invalidateQueries({ queryKey: ['product-items'] });
       queryClient.invalidateQueries({ queryKey: ['individual-units'] });
-      queryClient.invalidateQueries({ queryKey: ['product-location-stock'] });
+      queryClient.invalidateQueries({ queryKey: ["individual-units-count"] });
+      queryClient.invalidateQueries({ queryKey: ["product-individual-location-stock"] });
+      queryClient.invalidateQueries({ queryKey: ["product-location-transfers"] });
+      queryClient.invalidateQueries({ queryKey: ["available-individual-units-by-location"] });
       handleClose();
     },
     onError: (error) => {

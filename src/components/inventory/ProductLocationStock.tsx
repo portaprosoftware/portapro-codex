@@ -45,7 +45,7 @@ export function ProductLocationStock({ productId, productName }: ProductLocation
   const [transferQuantity, setTransferQuantity] = useState(0);
   const [transferNotes, setTransferNotes] = useState("");
 
-  // Fetch individual units count by location for this product
+  // Fetch individual units count by location for this product - optimized query
   const { data: locationStocks, isLoading } = useQuery({
     queryKey: ['product-individual-location-stock', productId],
     queryFn: async () => {
@@ -77,8 +77,10 @@ export function ProductLocationStock({ productId, productName }: ProductLocation
         return acc;
       }, {});
 
-      return Object.values(locationCounts).sort((a, b) => b.unit_count - a.unit_count);
-    }
+      return Object.values(locationCounts).sort((a, b) => a.location_name.localeCompare(b.location_name));
+    },
+    refetchInterval: 30000, // Refresh every 30 seconds
+    staleTime: 10000 // Data considered fresh for 10 seconds
   });
 
 
