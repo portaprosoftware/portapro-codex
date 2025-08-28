@@ -254,10 +254,6 @@ export const ProductListItem: React.FC<ProductListItemProps> = ({
                       <span className="text-gray-500">Storage Sites:</span>
                       <span className="ml-1 font-medium">{locationStocks?.length || 0}</span>
                     </div>
-                    <div>
-                      <span className="text-gray-500">Tracked Units:</span>
-                      <span className="ml-1 font-medium">{quickStats.totalItems}</span>
-                    </div>
                   </div>
                 </div>
               </HoverCardContent>
