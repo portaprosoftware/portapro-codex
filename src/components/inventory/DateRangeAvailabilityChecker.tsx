@@ -16,6 +16,7 @@ interface DateRangeAvailabilityCheckerProps {
   productName: string;
   requestedQuantity?: number;
   onDateRangeChange?: (dateRange: DateRange | undefined) => void;
+  onQuantityChange?: (quantity: number) => void;
   className?: string;
 }
 
@@ -24,6 +25,7 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
   productName,
   requestedQuantity = 1,
   onDateRangeChange,
+  onQuantityChange,
   className
 }) => {
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
@@ -116,18 +118,14 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
               onChange={(e) => {
                 const value = e.target.value;
                 if (value === '') {
-                  // Allow empty field temporarily during editing
-                  return;
-                }
-                const num = parseInt(value);
-                if (!isNaN(num) && num >= 1) {
-                  // This would need to be handled by parent component in real implementation
-                  // For now, this is read-only as indicated by the readOnly prop
+                  onQuantityChange?.(1);
+                } else {
+                  const num = parseInt(value);
+                  onQuantityChange?.(isNaN(num) || num < 1 ? 1 : num);
                 }
               }}
               onFocus={(e) => e.target.select()}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              readOnly
             />
           </div>
         </div>

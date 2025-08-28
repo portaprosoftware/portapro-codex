@@ -136,6 +136,7 @@ export const JobsCalendarAvailability: React.FC<JobsCalendarAvailabilityProps> =
                 productId={selectedProductId}
                 productName={selectedProductName || 'Selected Product'}
                 requestedQuantity={requestedQuantity}
+                onQuantityChange={setRequestedQuantity}
                 className="max-h-80 overflow-y-auto"
               />
             </TabsContent>
