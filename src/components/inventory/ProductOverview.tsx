@@ -7,8 +7,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Edit, Settings, Wrench, Plus, Minus, History, AlertTriangle, RefreshCw, Loader2 } from "lucide-react";
+import { Edit, Settings, Wrench, Plus, Minus, History, AlertTriangle, RefreshCw, Loader2, Box } from "lucide-react";
 import { EditProductModal } from "./EditProductModal";
+import { TrackedOperationsPanel } from "./TrackedOperationsPanel";
 import { StockAdjustmentWizard } from "./StockAdjustmentWizard";
 import { ProductStockHistory } from "./ProductStockHistory";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
@@ -247,11 +248,6 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
         <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
               <h2 className="text-lg font-bold text-gray-900">Inventory Status</h2>
-              {stockData && (
-                <Badge variant="outline" className="text-xs">
-                  {trackingMethod} tracking
-                </Badge>
-              )}
             </div>
         </div>
 
@@ -311,9 +307,13 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
               className="text-purple-600 border-purple-600 hover:bg-purple-50"
               onClick={() => navigate(`/inventory/products?selectedProduct=${product.id}&tab=units`)}
             >
-              <Settings className="w-4 h-4 mr-2" />
+              <Box className="w-4 h-4 mr-2" />
               View Tracked Units
             </Button>
+            <TrackedOperationsPanel
+              productId={product.id}
+              productName={product.name}
+            />
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg">
