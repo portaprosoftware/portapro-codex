@@ -178,6 +178,8 @@ export const useUnifiedStockManagement = (productId: string) => {
       queryClient.invalidateQueries({ queryKey: ['unified-stock', productId] });
       queryClient.invalidateQueries({ queryKey: ['products'] });
       queryClient.invalidateQueries({ queryKey: ['product-items', productId] });
+      queryClient.invalidateQueries({ queryKey: ['individual-units-count', productId] });
+      queryClient.invalidateQueries({ queryKey: ['maintenance-count', productId] });
     },
     onError: (error: any) => {
       console.error('Error adding tracked inventory:', error);
