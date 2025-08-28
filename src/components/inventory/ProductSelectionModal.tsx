@@ -53,12 +53,12 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
                 onClick={() => handleProductClick(product.id, product.name)}
               >
                 <CardContent className="p-4">
-                  <div className="aspect-square bg-gradient-primary rounded-lg mb-3 flex items-center justify-center overflow-hidden">
+                  <div className="aspect-square bg-white border rounded-lg mb-3 flex items-center justify-center overflow-hidden">
                     {product.image_url ? (
                       <img
                         src={product.image_url}
                         alt={product.name}
-                        className="w-full h-full object-cover rounded-lg"
+                        className="w-full h-full object-contain"
                         onError={(e) => {
                           // Fallback to icon if image fails to load
                           e.currentTarget.style.display = 'none';
@@ -67,10 +67,14 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
                         }}
                       />
                     ) : (
-                      <Package className="h-12 w-12 text-white" />
+                      <div className="w-full h-full bg-gradient-primary rounded-lg flex items-center justify-center">
+                        <Package className="h-12 w-12 text-white" />
+                      </div>
                     )}
                     {product.image_url && (
-                      <Package className="h-12 w-12 text-white hidden" />
+                      <div className="w-full h-full bg-gradient-primary rounded-lg items-center justify-center hidden">
+                        <Package className="h-12 w-12 text-white" />
+                      </div>
                     )}
                   </div>
                   
