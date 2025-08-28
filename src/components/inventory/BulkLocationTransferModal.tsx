@@ -101,11 +101,17 @@ export function BulkLocationTransferModal({
     },
     onSuccess: (transferredCount) => {
       toast.success(`Successfully transferred ${transferredCount} item${transferredCount > 1 ? 's' : ''} to new location`);
+      
+      // Invalidate all relevant queries immediately
       queryClient.invalidateQueries({ queryKey: ["product-items"] });
       queryClient.invalidateQueries({ queryKey: ["individual-units-count"] });
       queryClient.invalidateQueries({ queryKey: ["product-individual-location-stock"] });
       queryClient.invalidateQueries({ queryKey: ["product-location-transfers"] });
       queryClient.invalidateQueries({ queryKey: ["available-individual-units-by-location"] });
+      
+      // Force refetch of location stock data for immediate UI update
+      queryClient.refetchQueries({ queryKey: ["product-individual-location-stock"] });
+      
       onClose();
       setNewLocationId("");
       setNotes("");

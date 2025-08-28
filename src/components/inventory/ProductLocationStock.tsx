@@ -45,68 +45,81 @@ export function ProductLocationStock({ productId, productName }: ProductLocation
   const [transferQuantity, setTransferQuantity] = useState(0);
   const [transferNotes, setTransferNotes] = useState("");
 
-  // Fetch individual units count by location for this product - optimized query
+  // Fetch individual units count by location for this product - fixed query without foreign key join
   const { data: locationStocks, isLoading } = useQuery({
     queryKey: ['product-individual-location-stock', productId],
     queryFn: async () => {
       console.log('ProductLocationStock query starting for productId:', productId);
       
-      // Use a simpler query approach that we know works
-      const { data, error } = await supabase
+      // First get all items with their location IDs
+      const { data: items, error: itemsError } = await supabase
         .from('product_items')
-        .select(`
-          current_storage_location_id,
-          storage_locations (
-            id,
-            name,
-            description
-          )
-        `)
+        .select('current_storage_location_id')
         .eq('product_id', productId)
         .not('current_storage_location_id', 'is', null);
 
-      console.log('ProductLocationStock query response:', { data, error, productId });
+      console.log('ProductLocationStock items query:', { items, itemsError, productId });
 
-      if (error) {
-        console.error('Query error:', error);
-        throw error;
+      if (itemsError) {
+        console.error('Items query error:', itemsError);
+        throw itemsError;
       }
 
-      if (!data || data.length === 0) {
+      if (!items || items.length === 0) {
         console.log('No units found with locations for product:', productId);
         return [];
+      }
+
+      // Get unique location IDs
+      const locationIds = [...new Set(items.map(item => item.current_storage_location_id))];
+      
+      if (locationIds.length === 0) {
+        return [];
+      }
+
+      // Get location details for all unique location IDs
+      const { data: locations, error: locationsError } = await supabase
+        .from('storage_locations')
+        .select('id, name, description')
+        .in('id', locationIds);
+
+      console.log('ProductLocationStock locations query:', { locations, locationsError });
+
+      if (locationsError) {
+        console.error('Locations query error:', locationsError);
+        throw locationsError;
       }
 
       // Group by location and count
       const locationCounts: { [key: string]: LocationStock } = {};
       
-      data.forEach((item) => {
+      // Initialize location counts
+      locations?.forEach(location => {
+        locationCounts[location.id] = {
+          location_id: location.id,
+          location_name: location.name || 'Unknown Location',
+          location_description: location.description || undefined,
+          unit_count: 0
+        };
+      });
+
+      // Count items by location
+      items.forEach((item) => {
         const locationId = item.current_storage_location_id;
-        const location = Array.isArray(item.storage_locations) 
-          ? item.storage_locations[0] 
-          : item.storage_locations;
-        
-        console.log('Processing item:', { locationId, location, item });
-        
-        if (locationId && location) {
-          if (!locationCounts[locationId]) {
-            locationCounts[locationId] = {
-              location_id: locationId,
-              location_name: location.name || 'Unknown Location',
-              location_description: location.description || undefined,
-              unit_count: 0
-            };
-          }
+        if (locationId && locationCounts[locationId]) {
           locationCounts[locationId].unit_count += 1;
         }
       });
 
-      const result = Object.values(locationCounts).sort((a, b) => a.location_name.localeCompare(b.location_name));
+      const result = Object.values(locationCounts)
+        .filter(loc => loc.unit_count > 0)
+        .sort((a, b) => a.location_name.localeCompare(b.location_name));
+      
       console.log('Final location stocks:', result);
       return result;
     },
-    refetchInterval: 30000, // Refresh every 30 seconds
-    staleTime: 10000 // Data considered fresh for 10 seconds
+    refetchInterval: 5000, // Refresh every 5 seconds for faster updates
+    staleTime: 1000 // Data considered fresh for 1 second
   });
 
 
