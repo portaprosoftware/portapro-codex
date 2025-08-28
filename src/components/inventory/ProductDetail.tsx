@@ -135,7 +135,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
     },
     {
       value: "locations",
-      label: "Site Stock", 
+      label: "Storage Sites", 
       icon: Building,
       badge: null
     },
