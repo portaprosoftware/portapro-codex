@@ -5,6 +5,7 @@ export interface Product {
   id: string;
   name: string;
   stock_total: number;
+  image_url?: string;
 }
 
 export function useProducts() {
@@ -13,7 +14,7 @@ export function useProducts() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('products')
-        .select('id, name, stock_total')
+        .select('id, name, stock_total, image_url')
         .order('name');
       
       if (error) throw error;

@@ -53,20 +53,31 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
                 onClick={() => handleProductClick(product.id, product.name)}
               >
                 <CardContent className="p-4">
-                  <div className="aspect-square bg-gradient-primary rounded-lg mb-3 flex items-center justify-center">
-                    <Package className="h-12 w-12 text-white" />
+                  <div className="aspect-square bg-gradient-primary rounded-lg mb-3 flex items-center justify-center overflow-hidden">
+                    {product.image_url ? (
+                      <img
+                        src={product.image_url}
+                        alt={product.name}
+                        className="w-full h-full object-cover rounded-lg"
+                        onError={(e) => {
+                          // Fallback to icon if image fails to load
+                          e.currentTarget.style.display = 'none';
+                          const iconElement = e.currentTarget.nextElementSibling as HTMLElement;
+                          if (iconElement) iconElement.style.display = 'flex';
+                        }}
+                      />
+                    ) : (
+                      <Package className="h-12 w-12 text-white" />
+                    )}
+                    {product.image_url && (
+                      <Package className="h-12 w-12 text-white hidden" />
+                    )}
                   </div>
                   
                   <div className="space-y-2">
                     <h3 className="font-semibold text-sm truncate" title={product.name}>
                       {product.name}
                     </h3>
-                    
-                    <div className="flex items-center justify-between">
-                      <ModernBadge variant="secondary" size="sm">
-                        Product
-                      </ModernBadge>
-                    </div>
                   </div>
                 </CardContent>
               </Card>
