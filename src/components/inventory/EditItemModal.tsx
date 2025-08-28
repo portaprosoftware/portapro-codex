@@ -221,9 +221,14 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
       
       console.log('Sending update data:', JSON.stringify(cleanUpdateData, null, 2));
 
+      // Remove any fields that might not exist in the database schema
+      const { photos, ...safeUpdateData } = cleanUpdateData as any;
+      
+      console.log('Sending safe update data:', JSON.stringify(safeUpdateData, null, 2));
+
       const { error } = await supabase
         .from("product_items")
-        .update(cleanUpdateData)
+        .update(safeUpdateData)
         .eq("id", itemId);
       
       if (error) throw error;
