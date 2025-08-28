@@ -253,16 +253,6 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
                 </Badge>
               )}
             </div>
-            <div className="flex items-center gap-4">
-              <Button 
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-                onClick={() => setShowStockAdjustment(true)}
-                disabled={!product.track_inventory}
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                + Add Units
-              </Button>
-            </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

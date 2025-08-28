@@ -74,13 +74,6 @@ export const EnhancedInventoryPage: React.FC<EnhancedInventoryPageProps> = ({ on
             <QrCode className="w-4 h-4 mr-2" />
             Scan QR Code
           </Button>
-          <Button
-            onClick={() => openAdjustment({ id: "sample", name: "Sample Product", stock: 10 })}
-            className="bg-blue-600 hover:bg-blue-700 text-white"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            + Add Units
-          </Button>
         </div>
       </div>
 
