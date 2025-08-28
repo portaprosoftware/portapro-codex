@@ -247,11 +247,7 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
                     )}
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="text-gray-600">Bulk Pool:</span>
-                      <span className="ml-2 font-medium">{dayAvailability.bulk_available}</span>
-                    </div>
+                  <div className="text-sm">
                     <div>
                       <span className="text-gray-600">Tracked Units:</span>
                       <span className="ml-2 font-medium">{dayAvailability.tracked_available}</span>
@@ -260,20 +256,16 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
 
                   {dayAvailability.conflicts && dayAvailability.conflicts.length > 0 && (
                     <div className="mt-3 pt-3 border-t border-gray-200">
-                      <p className="text-sm font-medium text-gray-700 mb-1">
+                      <p className="text-sm font-medium text-gray-700 mb-2">
                         {dayAvailability.conflicts.length} active assignments:
                       </p>
-                      <div className="space-y-1">
-                        {dayAvailability.conflicts.slice(0, 3).map((conflict, idx) => (
-                          <div key={idx} className="text-xs text-gray-600">
-                            • {conflict.job_number || 'Unknown Job'} - {conflict.customer_name || 'Unknown Customer'}
+                      <div className="max-h-32 overflow-y-auto space-y-1 bg-white p-2 rounded border">
+                        {dayAvailability.conflicts.map((conflict, idx) => (
+                          <div key={idx} className="text-xs text-gray-600 py-1 border-b border-gray-100 last:border-b-0">
+                            <div className="font-medium">{conflict.job_number || 'Unknown Job'}</div>
+                            <div className="text-gray-500">{conflict.customer_name || 'Unknown Customer'}</div>
                           </div>
                         ))}
-                        {dayAvailability.conflicts.length > 3 && (
-                          <div className="text-xs text-gray-500">
-                            ... and {dayAvailability.conflicts.length - 3} more
-                          </div>
-                        )}
                       </div>
                     </div>
                   )}
