@@ -252,7 +252,7 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
                     onClick={handleSubmit}
                     className="bg-blue-600 hover:bg-blue-700 text-white"
                   >
-                    Confirm Operation
+                    Confirm
                   </Button>
                   <Button
                     variant="outline"
