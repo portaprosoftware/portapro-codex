@@ -205,8 +205,8 @@ export const useUnifiedStockManagement = (productId: string) => {
         const { data, error } = await (supabase.rpc as any)('adjust_master_stock', {
           product_uuid: productId,
           quantity_change: quantityChange,
-          reason: reason,
-          notes: notes || null
+          reason_text: reason,
+          notes_text: notes || null
         });
         if (error) throw error;
         return data as unknown as StockAdjustmentResult;
@@ -402,6 +402,7 @@ export const useUnifiedStockManagement = (productId: string) => {
     // Actions
     adjustMasterStock: adjustMasterStock.mutate,
     syncStockTotals: syncStockTotals.mutate,
+    addTrackedInventory: addTrackedInventory.mutate,
     
     // Quick access to key metrics - simplified for tracked-only
     masterStock: stockData?.master_stock_total || 0,

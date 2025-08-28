@@ -35,7 +35,7 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
 }) => {
   const [selectedOperation, setSelectedOperation] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
-  const { stockData, adjustMasterStock } = useUnifiedStockManagement(productId);
+  const { stockData, adjustMasterStock, addTrackedInventory } = useUnifiedStockManagement(productId);
 
   // Fetch product details for the default category
   const { data: productDetails } = useQuery({
@@ -96,11 +96,7 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
 
     try {
       if (selectedOperation === "add_units") {
-        await adjustMasterStock({
-          quantityChange: quantity,
-          reason: 'Added tracked units',
-          notes: `Added ${quantity} tracked units`
-        });
+        await addTrackedInventory(quantity);
         toast.success(`Successfully added ${quantity} tracked units`);
       } else if (selectedOperation === "remove_units") {
         await adjustMasterStock({
@@ -113,6 +109,7 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
 
       setSelectedOperation(null);
       setQuantity(1);
+      onOpenChange?.(false);
       onClose?.();
     } catch (error) {
       console.error("Stock operation failed:", error);
