@@ -296,10 +296,10 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
             variant="outline"
             size="sm"
             onClick={() => setShowAvailabilityTracker(true)}
-            className="flex items-center gap-2 bg-gradient-primary text-white hover:bg-gradient-primary/90 border-primary font-bold"
+            className="flex items-center gap-2 bg-gradient-primary text-white hover:bg-gradient-primary/90 border-primary font-bold hover:text-white"
           >
             <Calendar className="h-4 w-4" />
-            Availability
+            Product Availability
           </Button>
 
           {/* Route vs Truck Stock Toggle */}

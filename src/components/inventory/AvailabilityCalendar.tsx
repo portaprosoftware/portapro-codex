@@ -184,8 +184,7 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
                     "relative h-12 p-1 flex flex-col items-center justify-center border-2 border-transparent font-bold",
                     getStatusColor(status),
                     isSelected && "ring-2 ring-blue-500",
-                    isCurrentDay && "font-bold",
-                    "hover:opacity-80 hover:shadow-lg"
+                    isCurrentDay && "font-bold"
                   )}
                 >
                   <span className="text-sm font-bold">{format(date, 'd')}</span>
