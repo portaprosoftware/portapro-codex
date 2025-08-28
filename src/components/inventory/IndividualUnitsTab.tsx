@@ -28,6 +28,7 @@ import { ItemActionsMenu } from "./ItemActionsMenu";
 
 import { UnitNavigationDialog } from "./UnitNavigationDialog";
 import { TrackedOperationsPanel } from "./TrackedOperationsPanel";
+import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
 
 
 interface IndividualUnitsTabProps {
@@ -54,6 +55,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
   const [ocrItemCode, setOcrItemCode] = useState<string>("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<{id: string, code: string} | null>(null);
+  const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
   const [showNavigationDialog, setShowNavigationDialog] = useState(false);
   const [selectedUnitForNavigation, setSelectedUnitForNavigation] = useState<{id: string, code: string} | null>(null);
   
@@ -216,6 +218,29 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
     }
   });
 
+  // Bulk delete mutation
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (itemIds: string[]) => {
+      const { error } = await supabase
+        .from('product_items')
+        .delete()
+        .in('id', itemIds);
+      
+      if (error) throw error;
+      return itemIds.length;
+    },
+    onSuccess: (deletedCount) => {
+      toast.success(`Successfully deleted ${deletedCount} item${deletedCount > 1 ? 's' : ''}`);
+      queryClient.invalidateQueries({ queryKey: ["product-items", productId] });
+      setSelectedItems([]);
+      setBulkDeleteDialogOpen(false);
+    },
+    onError: (error) => {
+      console.error('Error bulk deleting items:', error);
+      toast.error('Failed to delete items');
+    }
+  });
+
   // Fetch storage locations for name lookup
   const { data: storageLocations } = useQuery({
     queryKey: ["storage-locations"],
@@ -251,6 +276,44 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
         : [...prev, itemId]
     );
   };
+
+  const handleSelectAll = () => {
+    const visibleItemIds = items?.map(item => item.id) || [];
+    const allSelected = visibleItemIds.length > 0 && visibleItemIds.every(id => selectedItems.includes(id));
+    
+    if (allSelected) {
+      // Deselect all visible items
+      setSelectedItems(prev => prev.filter(id => !visibleItemIds.includes(id)));
+    } else {
+      // Select all visible items
+      setSelectedItems(prev => {
+        const newSelection = [...prev];
+        visibleItemIds.forEach(id => {
+          if (!newSelection.includes(id)) {
+            newSelection.push(id);
+          }
+        });
+        return newSelection;
+      });
+    }
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedItems.length > 0) {
+      setBulkDeleteDialogOpen(true);
+    }
+  };
+
+  const confirmBulkDelete = () => {
+    if (selectedItems.length > 0) {
+      bulkDeleteMutation.mutate(selectedItems);
+    }
+  };
+
+  // Clear selections when filters change
+  useEffect(() => {
+    setSelectedItems([]);
+  }, [searchQuery, availabilityFilter, attributeFilters, enhancedFilters]);
 
   const handleAttributeFilterChange = (key: string, value: string | undefined) => {
     setAttributeFilters(prev => ({
@@ -431,6 +494,16 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
             <QrCode className="w-4 h-4 mr-2" />
             Print QR Codes
           </Button>
+          {selectedItems.length > 0 && (
+            <Button
+              variant="outline"
+              onClick={handleBulkDelete}
+              className="border-red-600 text-red-600 hover:bg-red-50"
+            >
+              <Trash className="w-4 h-4 mr-2" />
+              Delete Selected ({selectedItems.length})
+            </Button>
+          )}
         </div>
         <TrackedOperationsPanel
           productId={productId}
@@ -469,7 +542,10 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
           <TableHeader>
             <TableRow className="bg-gray-50">
               <TableHead className="w-12">
-                <Checkbox />
+                <Checkbox
+                  checked={items && items.length > 0 && items.every(item => selectedItems.includes(item.id))}
+                  onCheckedChange={handleSelectAll}
+                />
               </TableHead>
               <TableHead className="w-12"></TableHead>
               <TableHead className="font-medium">Unit Code</TableHead>
@@ -693,6 +769,17 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
             setEditingItem(selectedUnitForNavigation.id);
           }
         }}
+      />
+
+      {/* Bulk Delete Confirmation Dialog */}
+      <DeleteConfirmationModal
+        isOpen={bulkDeleteDialogOpen}
+        onClose={() => setBulkDeleteDialogOpen(false)}
+        onConfirm={confirmBulkDelete}
+        title="Delete Selected Items"
+        description={`Are you sure you want to delete ${selectedItems.length} selected item${selectedItems.length > 1 ? 's' : ''}? This action cannot be undone and will permanently remove ${selectedItems.length > 1 ? 'these items' : 'this item'} from your inventory.`}
+        confirmText="Delete Items"
+        isDestructive={true}
       />
     </div>
   );
