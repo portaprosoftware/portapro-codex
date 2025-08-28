@@ -276,14 +276,21 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
                       <p className="text-sm font-medium text-gray-700 mb-2">
                         {dayAvailability.conflicts.length} active assignments:
                       </p>
-                      <div className="max-h-32 overflow-y-auto space-y-1 bg-white p-2 rounded border">
-                        {dayAvailability.conflicts.map((conflict, idx) => (
-                          <div key={idx} className="text-xs text-gray-600 py-1 border-b border-gray-100 last:border-b-0">
-                            <div className="font-medium">{conflict.job_number || 'Unknown Job'}</div>
-                            <div className="text-gray-500">{conflict.customer_name || 'Unknown Customer'}</div>
-                          </div>
-                        ))}
-                      </div>
+                       <div className="max-h-32 overflow-y-auto space-y-1 bg-white p-2 rounded border">
+                         {dayAvailability.conflicts.map((conflict, idx) => (
+                           <div key={idx} className="text-xs text-gray-600 py-1 border-b border-gray-100 last:border-b-0 flex items-center justify-between">
+                             <div>
+                               <div className="font-medium">{conflict.job_number || 'Unknown Job'}</div>
+                               <div className="text-gray-500">{conflict.customer_name || 'Unknown Customer'}</div>
+                             </div>
+                              {conflict.item_id && (
+                                <Badge variant="outline" className="bg-blue-600 text-white border-blue-600 text-xs">
+                                  Unit: {conflict.item_id}
+                                </Badge>
+                              )}
+                           </div>
+                         ))}
+                       </div>
                     </div>
                   )}
                 </div>
