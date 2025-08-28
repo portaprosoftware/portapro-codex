@@ -204,9 +204,9 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
                 >
                   <span className="text-sm font-bold mb-1">{format(date, 'd')}</span>
                   {dayAvailability && (
-                    <Badge variant="outline" className={cn("text-xs px-1 py-0", getBadgeColor(status))}>
-                      Available: {available}
-                    </Badge>
+                     <Badge variant="outline" className={cn("text-sm px-1 py-0", getBadgeColor(status))}>
+                       Available: {available}
+                     </Badge>
                   )}
                   {isCurrentDay && (
                     <div className="absolute top-1 right-1 w-2 h-2 bg-blue-600 rounded-full" />
