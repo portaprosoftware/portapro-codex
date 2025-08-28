@@ -134,7 +134,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
       const newBarcode = generateRandomString(8);
       const { data, error } = await supabase
         .from('product_items')
-        .insert({ product_id: productId, barcode: newBarcode })
+        .insert({ product_id: productId, barcode: newBarcode, item_code: newBarcode })
         .select()
         .single();
 
@@ -237,7 +237,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
           onChange={(e) => setSearchQuery(e.target.value)}
         />
 
-        <Button onClick={() => createMutation.mutate()} disabled={createMutation.isLoading}>
+        <Button onClick={() => createMutation.mutate()} disabled={createMutation.isPending}>
           <Plus className="w-4 h-4 mr-2" />
           Add Unit
         </Button>
@@ -249,7 +249,6 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
             <div>
               <Label htmlFor="status-filter">Status</Label>
               <Select
-                id="status-filter"
                 value={filterOptions.status}
                 onValueChange={(value) => handleFilterChange('status', value)}
               >
@@ -269,7 +268,6 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
             <div>
               <Label htmlFor="condition-filter">Condition</Label>
               <Select
-                id="condition-filter"
                 value={filterOptions.condition}
                 onValueChange={(value) => handleFilterChange('condition', value)}
               >
@@ -289,7 +287,6 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
             <div>
               <Label htmlFor="storage-location-filter">Storage Location</Label>
               <Select
-                id="storage-location-filter"
                 value={filterOptions.storageLocation}
                 onValueChange={(value) => handleFilterChange('storageLocation', value)}
               >
@@ -319,7 +316,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
             variant="destructive"
             size="sm"
             onClick={handleDeleteSelected}
-            disabled={deleteMutation.isLoading}
+            disabled={deleteMutation.isPending}
           >
             Delete Selected
           </Button>
@@ -380,7 +377,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
                   <TableCell className="w-[50px]">
                     <Checkbox
                       checked={selectedUnits.has(item.id)}
-                      onCheckedChange={(checked) => handleSelectUnit(item.id, checked)}
+                      onCheckedChange={(checked) => handleSelectUnit(item.id, !!checked)}
                       aria-label={`Select unit ${item.barcode}`}
                     />
                   </TableCell>
@@ -429,7 +426,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={confirmDelete}
-        isLoading={deleteMutation.isLoading}
+        isLoading={deleteMutation.isPending}
         itemType="units"
       />
     </div>

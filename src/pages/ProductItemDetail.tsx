@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Edit, Loader2 } from 'lucide-react';
 import { EditItemModal } from '@/components/inventory/EditItemModal';
 
-export const ProductItemDetail: React.FC = () => {
+const ProductItemDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
@@ -127,3 +127,5 @@ export const ProductItemDetail: React.FC = () => {
     </div>
   );
 };
+
+export default ProductItemDetail;

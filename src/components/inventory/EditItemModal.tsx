@@ -10,7 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { CalendarIcon, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { VendorSelector } from './VendorSelector';
+import { VendorSelector } from '@/components/inventory/VendorSelector';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -130,6 +130,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
           const { error: transferError } = await supabase
             .from('product_item_location_transfers')
             .insert({
+              product_id: item.product_id,
               product_item_id: itemId,
               from_location_id: originalData.current_storage_location_id,
               to_location_id: normalizedData.current_storage_location_id,
