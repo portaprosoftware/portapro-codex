@@ -120,9 +120,12 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
       <CardContent className="space-y-4">
         {/* Next Available Date Chip */}
         {nextAvailableDate && (
-          <div className="flex justify-center">
+          <div className="flex justify-center items-center gap-2">
+            <span className="text-sm font-medium text-gray-700">
+              Next available: {format(nextAvailableDate, 'MMM d')}
+            </span>
             <Badge variant="outline" className="bg-gradient-green text-white border-green-500">
-              Next available: {format(nextAvailableDate, 'MMM d')} ({requestedQuantity}+ units)
+              {requestedQuantity}+ units
             </Badge>
           </div>
         )}
