@@ -34,7 +34,7 @@ export const AvailabilityTrackerSheet: React.FC<AvailabilityTrackerSheetProps> =
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent 
           side="bottom" 
-          className="h-[100vh] md:h-[75vh] w-full border-t-4 border-t-blue-500 rounded-t-2xl md:rounded-t-3xl p-0 overflow-hidden"
+          className="h-[100vh] md:h-[90vh] w-full border-t-4 border-t-blue-500 rounded-t-2xl md:rounded-t-3xl p-0 overflow-hidden"
         >
           <div className="flex flex-col h-full">
             <SheetHeader className="px-6 py-4 border-b bg-gradient-to-r from-blue-50 to-purple-50">
