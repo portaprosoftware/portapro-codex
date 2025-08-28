@@ -108,13 +108,13 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
   const getBadgeColor = (status: string) => {
     switch (status) {
       case 'available':
-        return 'bg-green-100 text-green-800 border-green-300';
+        return 'bg-gradient-green text-white border-green-500 font-bold';
       case 'partial':
-        return 'bg-orange-100 text-orange-800 border-orange-300';
+        return 'bg-gradient-orange text-white border-orange-500 font-bold';
       case 'unavailable':
-        return 'bg-red-100 text-red-800 border-red-300';
+        return 'bg-gradient-red text-white border-red-500 font-bold';
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-300';
+        return 'bg-gradient-secondary text-white border-gray-500 font-bold';
     }
   };
 
@@ -197,7 +197,7 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
                   variant="ghost"
                   onClick={() => handleDateClick(date)}
                   className={cn(
-                    "relative h-16 p-2 flex flex-col items-center justify-center bg-gradient-secondary text-white border border-gray-300 hover:bg-gray-100 hover:text-gray-900",
+                    "relative h-16 p-2 flex flex-col items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 text-gray-800 border border-gray-300 hover:from-gray-200 hover:to-gray-300",
                     isSelected && "ring-2 ring-blue-500",
                     isCurrentDay && "ring-2 ring-blue-400"
                   )}
