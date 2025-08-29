@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, MoreVertical, Search, ArrowUpDown, ArrowUp, ArrowDown, AlertTriangle, ChevronRight, ChevronDown, Eye, ScanLine, Info } from 'lucide-react';
+import { Plus, Edit, Trash2, MoreVertical, Search, ArrowUpDown, ArrowUp, ArrowDown, AlertTriangle, ChevronRight, ChevronDown, Eye, ScanLine, Info, Package, DollarSign } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
@@ -432,31 +432,57 @@ export const SimpleConsumablesInventory: React.FC = () => {
         {/* Content based on active tab */}
         {activeTab === 'inventory' ? (
           <div className="space-y-6">
-            {/* Low Stock Alert Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg border shadow-sm p-6">
+            {/* Inventory Summary Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div style={{ background: 'linear-gradient(135deg, hsl(210, 15%, 94%), hsl(210, 15%, 98%))' }} className="rounded-lg border border-gray-200 shadow-sm p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-white/90">Low Stock Alerts</p>
-                    <p className="text-2xl font-bold text-white">
+                    <p className="text-sm font-medium text-muted-foreground mb-1">Total Items</p>
+                    <p className="text-2xl font-bold text-foreground">{filteredConsumables.length}</p>
+                  </div>
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                    <Package className="w-6 h-6 text-white stroke-2" />
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ background: 'linear-gradient(135deg, hsl(210, 15%, 94%), hsl(210, 15%, 98%))' }} className="rounded-lg border border-gray-200 shadow-sm p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground mb-1">Total Inventory Value</p>
+                    <p className="text-2xl font-bold text-foreground">
+                      ${filteredConsumables.reduce((sum, c) => sum + (c.on_hand_qty * c.unit_cost), 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </p>
+                  </div>
+                  <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
+                    <DollarSign className="w-6 h-6 text-white stroke-2" />
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ background: 'linear-gradient(135deg, hsl(210, 15%, 94%), hsl(210, 15%, 98%))' }} className="rounded-lg border border-gray-200 shadow-sm p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground mb-1">Low Stock Alerts</p>
+                    <p className="text-2xl font-bold text-foreground">
                       {filteredConsumables.filter(c => c.on_hand_qty <= c.reorder_threshold && c.on_hand_qty > 0).length}
                     </p>
                   </div>
-                  <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center border border-white/30">
+                  <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
                     <AlertTriangle className="w-6 h-6 text-white stroke-2" />
                   </div>
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-lg border shadow-sm p-6">
+              <div style={{ background: 'linear-gradient(135deg, hsl(210, 15%, 94%), hsl(210, 15%, 98%))' }} className="rounded-lg border border-gray-200 shadow-sm p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-white/90">Out of Stock</p>
-                    <p className="text-2xl font-bold text-white">
+                    <p className="text-sm font-medium text-muted-foreground mb-1">Out of Stock</p>
+                    <p className="text-2xl font-bold text-foreground">
                       {filteredConsumables.filter(c => c.on_hand_qty <= 0).length}
                     </p>
                   </div>
-                  <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center border border-white/30">
+                  <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center">
                     <AlertTriangle className="w-6 h-6 text-white stroke-2" />
                   </div>
                 </div>
