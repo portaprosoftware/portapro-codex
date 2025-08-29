@@ -156,8 +156,8 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
     if (!productId) return;
     
     setSelectedUnitsCollection(prev => {
-      // Remove any existing SPECIFIC unit selections for this product, but keep bulk selections
-      const filtered = prev.filter(s => !(s.productId === productId && s.unitId !== 'bulk'));
+      // Remove any existing selections for this product (including auto-assigned)
+      const filtered = prev.filter(s => s.productId !== productId);
       const newCollection = [...filtered, ...selections];
       
       // Check if there are existing bulk selections for this product that need adjustment
