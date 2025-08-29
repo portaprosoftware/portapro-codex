@@ -199,6 +199,17 @@ const FleetComplianceContent: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Add Document Button */}
+      <div className="flex justify-end">
+        <Button 
+          onClick={() => setIsAddDocumentModalOpen(true)}
+          className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Add Document
+        </Button>
+      </div>
+      
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="p-4 bg-gradient-to-r from-red-500 to-red-600 border-0 text-white">
@@ -236,13 +247,6 @@ const FleetComplianceContent: React.FC = () => {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-gray-900">All Compliance Documents</h3>
-          <Button 
-            onClick={() => setIsAddDocumentModalOpen(true)}
-            className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Add Document
-          </Button>
         </div>
         
         {documents?.map((document) => {
