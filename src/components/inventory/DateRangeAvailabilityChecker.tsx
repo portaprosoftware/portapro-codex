@@ -230,20 +230,19 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
           </div>
         )}
 
-        {/* Date Range Picker */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Select Date Range</label>
-          <DatePickerWithRange
-            date={dateRange}
-            onDateChange={handleDateRangeChange}
-            placeholder="Select availability period"
-          />
-        </div>
-
-        {/* Requested Quantity Input */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Requested Quantity</label>
-          <div className="w-20">
+        {/* Date Range Picker and Requested Quantity - Same Row */}
+        <div className="flex gap-4 items-end">
+          <div className="flex-1 space-y-2">
+            <label className="text-sm font-medium">Select Date Range</label>
+            <DatePickerWithRange
+              date={dateRange}
+              onDateChange={handleDateRangeChange}
+              placeholder="Select availability period"
+            />
+          </div>
+          
+          <div className="space-y-2 w-32">
+            <label className="text-sm font-medium">Requested Quantity</label>
             <Input
               type="number"
               min="1"
