@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -28,6 +28,13 @@ export const AvailabilityTrackerSheet: React.FC<AvailabilityTrackerSheetProps> =
   const [showProductModal, setShowProductModal] = useState(false);
   
   const { data: products, isLoading: productsLoading } = useProducts();
+
+  // Auto-open product modal when the availability tracker sheet opens
+  useEffect(() => {
+    if (open && !selectedProductId) {
+      setShowProductModal(true);
+    }
+  }, [open, selectedProductId]);
 
   return (
     <>
