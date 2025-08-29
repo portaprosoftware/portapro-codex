@@ -94,7 +94,7 @@ export const StockVehicleSelectionModal: React.FC<StockVehicleSelectionModalProp
                 <CardContent className="p-0">
                   <div className="flex flex-col">
                     {/* Vehicle Image */}
-                    <div className="relative h-32 bg-gray-100 rounded-t-lg overflow-hidden">
+                    <div className="relative h-32 bg-white rounded-t-lg overflow-hidden">
                        {getVehicleImageUrl(vehicle) ? (
                          <img 
                            src={getVehicleImageUrl(vehicle)!} 
