@@ -232,7 +232,7 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
 
         {/* Date Range Picker and Requested Quantity - Same Row */}
         <div className="flex gap-4 items-end">
-          <div className="flex-1 space-y-2">
+          <div className="flex-1 max-w-xs space-y-2">
             <label className="text-sm font-medium">Select Date Range</label>
             <DatePickerWithRange
               date={dateRange}
@@ -241,7 +241,7 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
             />
           </div>
           
-          <div className="space-y-2 w-32">
+          <div className="space-y-2 w-36">
             <label className="text-sm font-medium">Requested Quantity</label>
             <Input
               type="number"
