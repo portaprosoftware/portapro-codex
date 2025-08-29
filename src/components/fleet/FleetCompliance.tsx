@@ -30,8 +30,6 @@ interface ComplianceDocument {
 }
 
 export const FleetCompliance: React.FC = () => {
-  const [isAddDocumentModalOpen, setIsAddDocumentModalOpen] = useState(false);
-
   return (
     <div className="space-y-6">
       <div className="bg-white border border-gray-200 rounded-2xl shadow-sm">
@@ -86,24 +84,14 @@ export const FleetCompliance: React.FC = () => {
           </div>
 
           <Tabs defaultValue="documents" className="space-y-6">
-            <div className="flex items-center justify-between">
-              <TabsList className="bg-white rounded-full p-1 shadow-sm border w-fit overflow-x-auto">
-                <TabsTrigger value="documents" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Documents</TabsTrigger>
-                <TabsTrigger value="types" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Document Types</TabsTrigger>
-                <TabsTrigger value="spill-kits" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Spill Kits</TabsTrigger>
-                <TabsTrigger value="incidents" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Incidents</TabsTrigger>
-                <TabsTrigger value="decon" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Decon Logs</TabsTrigger>
-                <TabsTrigger value="reports" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Reports</TabsTrigger>
-              </TabsList>
-              
-              <Button 
-                onClick={() => setIsAddDocumentModalOpen(true)}
-                className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Add Document
-              </Button>
-            </div>
+            <TabsList className="bg-white rounded-full p-1 shadow-sm border w-fit overflow-x-auto">
+              <TabsTrigger value="documents" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Documents</TabsTrigger>
+              <TabsTrigger value="types" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Document Types</TabsTrigger>
+              <TabsTrigger value="spill-kits" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Spill Kits</TabsTrigger>
+              <TabsTrigger value="incidents" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Incidents</TabsTrigger>
+              <TabsTrigger value="decon" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Decon Logs</TabsTrigger>
+              <TabsTrigger value="reports" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Reports</TabsTrigger>
+            </TabsList>
             
             <TabsContent value="documents">
               <FleetComplianceContent />
@@ -131,16 +119,12 @@ export const FleetCompliance: React.FC = () => {
           </Tabs>
         </div>
       </div>
-
-      <AddDocumentModal 
-        isOpen={isAddDocumentModalOpen}
-        onClose={() => setIsAddDocumentModalOpen(false)}
-      />
     </div>
   );
 };
 
 const FleetComplianceContent: React.FC = () => {
+  const [isAddDocumentModalOpen, setIsAddDocumentModalOpen] = useState(false);
   const { data: documents, isLoading } = useQuery({
     queryKey: ["vehicle-compliance"],
     queryFn: async () => {
@@ -215,6 +199,17 @@ const FleetComplianceContent: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Add Document Button */}
+      <div className="flex justify-end">
+        <Button 
+          onClick={() => setIsAddDocumentModalOpen(true)}
+          className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Add Document
+        </Button>
+      </div>
+      
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="p-4 bg-gradient-to-r from-red-500 to-red-600 border-0 text-white">
@@ -294,6 +289,11 @@ const FleetComplianceContent: React.FC = () => {
           </Card>
         )}
       </div>
+
+      <AddDocumentModal 
+        isOpen={isAddDocumentModalOpen}
+        onClose={() => setIsAddDocumentModalOpen(false)}
+      />
     </div>
   );
 };
