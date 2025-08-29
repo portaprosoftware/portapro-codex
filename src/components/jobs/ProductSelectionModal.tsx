@@ -745,20 +745,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
     }
   });
 
-  // Determine the actual tracking method based on product configuration
-  // This replicates the logic from get_product_availability_enhanced
-  const getActualTrackingMethod = () => {
-    // Calculate potential bulk pool
-    const potentialBulkPool = Math.max(0, product.stock_total - individualItemsCount);
-    
-    if (individualItemsCount > 0 && potentialBulkPool > 0) {
-      return 'hybrid_tracking';
-    }
-    if (individualItemsCount > 0 && potentialBulkPool === 0) {
-      return 'individual_tracking';
-    }
-    return 'bulk_only';
-  };
   
   // Get current selections for this product from the job
   const productCurrentSelections = currentSelections[product.id] || { specific: [] };
@@ -799,21 +785,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     return 'success';
   };
 
-  const getTrackingMethodBadge = (method: string) => {
-    switch (method) {
-      case 'hybrid_tracking':
-        return 'Hybrid Tracking';
-      case 'bulk_only':
-        return 'Bulk Only';
-      case 'individual_tracking':
-        return 'Individual Tracking';
-      default:
-        return null;
-    }
-  };
 
-  // Get the actual tracking method for this product
-  const actualTrackingMethod = getActualTrackingMethod();
 
 
   return (
@@ -852,25 +824,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
               Loading...
             </Badge>
           ) : (
-            <>
-              <Badge 
-                variant={getAvailabilityColor(
-                  availability.data?.available ?? 0, 
-                  availability.data?.total ?? 0
-                )}
-                className="text-xs font-bold text-white"
-              >
-                {availability.data?.available ?? 0} of {availability.data?.total ?? 0} available
-              </Badge>
-              {getTrackingMethodBadge(actualTrackingMethod) && (
-                <Badge 
-                  variant="info"
-                  className="text-xs font-bold text-white"
-                >
-                  {getTrackingMethodBadge(actualTrackingMethod)}
-                </Badge>
+            <Badge 
+              variant={getAvailabilityColor(
+                availability.data?.available ?? 0, 
+                availability.data?.total ?? 0
               )}
-            </>
+              className="text-xs font-bold text-white"
+            >
+              {availability.data?.available ?? 0} of {availability.data?.total ?? 0} available
+            </Badge>
           )}
         </div>
 
