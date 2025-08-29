@@ -269,7 +269,9 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-full h-full max-w-none md:max-w-[76vw] md:min-w-[960px] md:h-auto md:max-h-[72vh] p-0 flex flex-col overflow-hidden">
+      <DialogContent className="w-full h-full max-w-none md:max-w-[76vw] md:min-w-[960px] md:h-auto md:max-h-[72vh] p-0 flex flex-col"
+        hideCloseButton={false}
+      >
         <DialogHeader className="p-6 pb-4 border-b flex-shrink-0">
           <DialogTitle className="text-xl font-semibold flex items-center gap-2">
             {currentPage === 'tracked-units' && (
@@ -287,11 +289,13 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
         </DialogHeader>
 
         {/* Two-column layout for main page, single column for tracked units */}
-        <div className="flex-1 min-h-0 flex overflow-hidden">
+        <div className="flex-1 min-h-0 flex"
+        >
           {currentPage === 'main' ? (
             <>
               {/* Left side - Tabbed interface */}
-              <div className="flex-1 flex flex-col overflow-hidden">
+              <div className="flex-1 flex flex-col"
+              >
                 <Tabs defaultValue="products" className="h-full flex flex-col">
                   <div className="p-4 border-b">
                     <TabsList className="grid w-full grid-cols-2">
@@ -306,7 +310,7 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
                     </TabsList>
                   </div>
                   
-                  <TabsContent value="products" className="flex-1 overflow-hidden m-0">
+                  <TabsContent value="products" className="flex-1 m-0 overflow-y-auto">
                     <ProductListPage
                       startDate={startDate}
                       endDate={endDate}
@@ -317,7 +321,7 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
                     />
                   </TabsContent>
                   
-                  <TabsContent value="availability" className="flex-1 overflow-hidden m-0 p-4">
+                  <TabsContent value="availability" className="flex-1 m-0 p-4 overflow-y-auto">
                     <DateRangeAvailabilityChecker
                       productId={selectedProductId}
                       productName="All Products"
@@ -629,7 +633,8 @@ const ProductListPage: React.FC<ProductListPageProps> = ({
   });
 
   return (
-    <div className="p-6 space-y-4 flex-1 overflow-hidden flex flex-col">
+    <div className="p-6 space-y-4 flex-1 flex flex-col h-full"
+    >
       {/* Search */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -673,7 +678,8 @@ const ProductListPage: React.FC<ProductListPageProps> = ({
       </div>
 
       {/* Products Grid */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-y-auto min-h-0"
+      >
         {isLoading ? (
           <div className="flex items-center justify-center h-64">
             <div className="text-muted-foreground">Loading products...</div>
