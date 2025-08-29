@@ -410,6 +410,38 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
                               </div>
                             </div>
                             
+                            {/* Show available units */}
+                            {availability.individual_items && availability.individual_items.length > 0 && (
+                              <div className="mt-3 pt-3 border-t border-gray-200">
+                                <h5 className="font-medium text-gray-700 mb-2">Available Units:</h5>
+                                <div className="space-y-1">
+                                  {availability.individual_items
+                                    .filter(item => item.status === 'available')
+                                    .slice(0, day.tracked_available)
+                                    .map((item, itemIndex) => {
+                                      const attrs = item.attributes;
+                                      const attrsText = attrs ? Object.entries(attrs)
+                                        .filter(([_, value]) => value)
+                                        .map(([key, value]) => `${key}: ${value}`)
+                                        .join(', ') : '';
+                                      
+                                      return (
+                                        <div key={itemIndex} className="flex flex-wrap items-center gap-2 text-xs bg-white p-2 rounded border">
+                                          <span className="font-medium">Available:</span>
+                                          <span>Unit Available</span>
+                                          <Badge variant="outline" className="text-xs bg-gradient-green text-white border-green-500 font-bold">
+                                            Unit: {item.item_code}
+                                          </Badge>
+                                          {attrsText && (
+                                            <span className="text-gray-600">{attrsText}</span>
+                                          )}
+                                        </div>
+                                      );
+                                    })}
+                                </div>
+                              </div>
+                            )}
+                            
                             {hasConflicts && (
                               <div className="mt-3 pt-3 border-t border-gray-200">
                                 <h5 className="font-medium text-gray-700 mb-2">Conflicts:</h5>
@@ -423,7 +455,7 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
                                           <span className="font-medium">{conflict.job_number || 'Unavailable'}:</span>
                                           <span>{conflict.customer_name || 'Unavailable'}</span>
                                           {unitLabel && (
-                                            <Badge variant="outline" className="text-xs bg-gradient-secondary text-white border-gray-500 font-bold">
+                                            <Badge variant="outline" className="text-xs bg-gradient-red text-white border-red-500 font-bold">
                                               Unit: {unitLabel}
                                             </Badge>
                                           )}
