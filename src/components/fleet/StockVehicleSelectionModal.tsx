@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Truck, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Vehicle {
   id: string;
@@ -51,8 +52,9 @@ export const StockVehicleSelectionModal: React.FC<StockVehicleSelectionModalProp
     if (!vehicle.vehicle_image) return null;
     // If it's already a full URL, return as is
     if (vehicle.vehicle_image.startsWith('http')) return vehicle.vehicle_image;
-    // Otherwise, construct the Supabase storage URL
-    return `https://unpnuonbndubcuzxfnmg.supabase.co/storage/v1/object/public/vehicle_images/${vehicle.vehicle_image}`;
+    // Otherwise, use Supabase storage API to get the public URL
+    const { data } = supabase.storage.from('vehicle-images').getPublicUrl(vehicle.vehicle_image);
+    return data.publicUrl;
   };
 
   return (
