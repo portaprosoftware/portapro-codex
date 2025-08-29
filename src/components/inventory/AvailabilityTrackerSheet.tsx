@@ -14,13 +14,17 @@ interface AvailabilityTrackerSheetProps {
   onOpenChange: (open: boolean) => void;
   selectedDate?: Date;
   onDateSelect?: (date: Date) => void;
+  initialProductId?: string;
+  initialProductName?: string;
 }
 
 export const AvailabilityTrackerSheet: React.FC<AvailabilityTrackerSheetProps> = ({
   open,
   onOpenChange,
   selectedDate,
-  onDateSelect
+  onDateSelect,
+  initialProductId,
+  initialProductName
 }) => {
   const [selectedProductId, setSelectedProductId] = useState<string>('');
   const [selectedProductName, setSelectedProductName] = useState<string>('');
@@ -30,12 +34,20 @@ export const AvailabilityTrackerSheet: React.FC<AvailabilityTrackerSheetProps> =
   
   const { data: products, isLoading: productsLoading } = useProducts();
 
-  // Auto-open product modal when the availability tracker sheet opens
+  // Set initial product if provided
   useEffect(() => {
-    if (open && !selectedProductId) {
+    if (initialProductId && initialProductName) {
+      setSelectedProductId(initialProductId);
+      setSelectedProductName(initialProductName);
+    }
+  }, [initialProductId, initialProductName]);
+
+  // Auto-open product modal when the availability tracker sheet opens (only if no initial product)
+  useEffect(() => {
+    if (open && !selectedProductId && !initialProductId) {
       setShowProductModal(true);
     }
-  }, [open, selectedProductId]);
+  }, [open, selectedProductId, initialProductId]);
 
   return (
     <>

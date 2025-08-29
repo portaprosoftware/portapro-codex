@@ -18,6 +18,8 @@ import { toast } from "sonner";
 import { ItemCodeCategorySelect } from "@/components/ui/ItemCodeCategorySelect";
 import { useItemCodeCategories } from "@/hooks/useCompanySettings";
 import { useUnifiedStockManagement } from "@/hooks/useUnifiedStockManagement";
+import { AvailabilityTrackerSheet } from "./AvailabilityTrackerSheet";
+import { Calendar } from "lucide-react";
 
 
 interface Product {
@@ -73,6 +75,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
   const [maintenanceNotes, setMaintenanceNotes] = useState("");
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(product.default_item_code_category || "");
+  const [showAvailabilityTracker, setShowAvailabilityTracker] = useState(false);
 
   const { categories } = useItemCodeCategories();
 
@@ -312,6 +315,14 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
             <Button 
               variant="outline" 
               className="text-purple-600 border-purple-600 hover:bg-purple-50"
+              onClick={() => setShowAvailabilityTracker(true)}
+            >
+              <Calendar className="w-4 h-4 mr-2" />
+              Availability Tracker
+            </Button>
+            <Button 
+              variant="outline" 
+              className="text-purple-600 border-purple-600 hover:bg-purple-50"
               onClick={() => navigate(`/inventory/products?selectedProduct=${product.id}&tab=units`)}
             >
               <Box className="w-4 h-4 mr-2" />
@@ -404,6 +415,14 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
         </div>
         
       </div>
+
+      {/* Availability Tracker Sheet */}
+      <AvailabilityTrackerSheet
+        open={showAvailabilityTracker}
+        onOpenChange={setShowAvailabilityTracker}
+        initialProductId={product.id}
+        initialProductName={product.name}
+      />
 
       {/* Edit Product Modal */}
       {showEditModal && (
