@@ -33,6 +33,12 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
 }) => {
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [expandedDays, setExpandedDays] = useState<Record<string, boolean>>({});
+  const [quantityInput, setQuantityInput] = useState(requestedQuantity.toString());
+
+  // Update quantityInput when requestedQuantity prop changes
+  React.useEffect(() => {
+    setQuantityInput(requestedQuantity.toString());
+  }, [requestedQuantity]);
 
   const startDate = dateRange?.from ? format(dateRange.from, 'yyyy-MM-dd') : undefined;
   const endDate = dateRange?.to ? format(dateRange.to, 'yyyy-MM-dd') : undefined;
@@ -192,14 +198,21 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
             <Input
               type="number"
               min="1"
-              value={requestedQuantity}
+              value={quantityInput}
               onChange={(e) => {
+                setQuantityInput(e.target.value);
+                const num = parseInt(e.target.value);
+                if (!isNaN(num) && num > 0) {
+                  onQuantityChange?.(num);
+                }
+              }}
+              onBlur={(e) => {
                 const value = e.target.value;
-                if (value === '') {
+                if (!value || parseInt(value) < 1) {
+                  setQuantityInput('1');
                   onQuantityChange?.(1);
                 } else {
-                  const num = parseInt(value);
-                  onQuantityChange?.(isNaN(num) || num < 1 ? 1 : num);
+                  setQuantityInput(parseInt(value).toString());
                 }
               }}
               className="w-full font-bold text-center"

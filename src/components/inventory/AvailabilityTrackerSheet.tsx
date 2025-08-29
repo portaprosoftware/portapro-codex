@@ -25,6 +25,7 @@ export const AvailabilityTrackerSheet: React.FC<AvailabilityTrackerSheetProps> =
   const [selectedProductId, setSelectedProductId] = useState<string>('');
   const [selectedProductName, setSelectedProductName] = useState<string>('');
   const [requestedQuantity, setRequestedQuantity] = useState(1);
+  const [quantityInput, setQuantityInput] = useState('1');
   const [showProductModal, setShowProductModal] = useState(false);
   
   const { data: products, isLoading: productsLoading } = useProducts();
@@ -79,11 +80,23 @@ export const AvailabilityTrackerSheet: React.FC<AvailabilityTrackerSheetProps> =
                       <Input
                         type="number"
                         min="1"
-                        value={requestedQuantity}
-                        onChange={(e) => setRequestedQuantity(parseInt(e.target.value) || 1)}
+                        value={quantityInput}
+                        onChange={(e) => {
+                          setQuantityInput(e.target.value);
+                          const num = parseInt(e.target.value);
+                          if (!isNaN(num) && num > 0) {
+                            setRequestedQuantity(num);
+                          }
+                        }}
+                        onBlur={(e) => {
+                          const value = e.target.value;
+                          if (!value || parseInt(value) < 1) {
+                            setQuantityInput('1');
+                            setRequestedQuantity(1);
+                          }
+                        }}
                         placeholder="Quantity"
                         className="w-full font-bold h-12 text-base text-center"
-                        onFocus={(e) => e.target.select()}
                       />
                     </div>
                   </div>
