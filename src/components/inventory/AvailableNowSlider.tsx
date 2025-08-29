@@ -181,7 +181,7 @@ export const AvailableNowSlider: React.FC<AvailableNowSliderProps> = ({ isOpen, 
                       <div className="text-left">
                         <h3 className="font-semibold text-gray-900">{product.name}</h3>
                         <p className="text-sm text-gray-600">
-                           Total Stock: <TotalStockDisplay productId={product.id} /> | Tracked Units: {product.items.length}
+                           Total Stock: <TotalStockDisplay productId={product.id} />
                          </p>
                       </div>
                     </div>
