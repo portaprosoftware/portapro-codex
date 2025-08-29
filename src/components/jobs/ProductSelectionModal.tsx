@@ -323,8 +323,6 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
                   
                   <TabsContent value="availability" className="flex-1 m-0 p-4 overflow-y-auto">
                     <DateRangeAvailabilityChecker
-                      productId={selectedProductId}
-                      productName="All Products"
                       requestedQuantity={1}
                       className="h-full"
                     />

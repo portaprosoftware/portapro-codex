@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAvailabilityEngine } from '@/hooks/useAvailabilityEngine';
+import { useProducts } from '@/hooks/useProducts';
 import { DatePickerWithRange } from '@/components/ui/DatePickerWithRange';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,7 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { CalendarDays, ChevronDown, AlertTriangle, CheckCircle, Info } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { CalendarDays, ChevronDown, AlertTriangle, CheckCircle, Info, Package } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
 import { format, parseISO } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -15,25 +17,31 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
 interface DateRangeAvailabilityCheckerProps {
-  productId: string;
-  productName: string;
+  productId?: string;
+  productName?: string;
   requestedQuantity?: number;
   onDateRangeChange?: (dateRange: DateRange | undefined) => void;
   onQuantityChange?: (quantity: number) => void;
+  onProductChange?: (productId: string, productName: string) => void;
   className?: string;
 }
 
 export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityCheckerProps> = ({
-  productId,
-  productName,
+  productId: initialProductId,
+  productName: initialProductName,
   requestedQuantity = 1,
   onDateRangeChange,
   onQuantityChange,
+  onProductChange,
   className
 }) => {
+  const [selectedProductId, setSelectedProductId] = useState<string | undefined>(initialProductId);
+  const [selectedProductName, setSelectedProductName] = useState<string | undefined>(initialProductName);
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [expandedDays, setExpandedDays] = useState<Record<string, boolean>>({});
   const [quantityInput, setQuantityInput] = useState(requestedQuantity.toString());
+
+  const { data: products, isLoading: productsLoading } = useProducts();
 
   // Update quantityInput when requestedQuantity prop changes
   React.useEffect(() => {
@@ -44,7 +52,7 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
   const endDate = dateRange?.to ? format(dateRange.to, 'yyyy-MM-dd') : undefined;
 
   const { data: availability, isLoading, error } = useAvailabilityEngine(
-    productId,
+    selectedProductId,
     startDate,
     endDate
   );
@@ -97,7 +105,7 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
   }, [augmentedDailyBreakdown]);
 
   const { data: conflictAttributesMap } = useQuery<{ [itemId: string]: Array<{ name: string; value: string }>}>({
-    queryKey: ['conflict-item-attributes', productId, startDate, endDate, conflictItemIds.join(',')],
+    queryKey: ['conflict-item-attributes', selectedProductId, startDate, endDate, conflictItemIds.join(',')],
     enabled: conflictItemIds.length > 0,
     queryFn: async () => {
       const { data: attrs, error: attrError } = await supabase
@@ -129,6 +137,16 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
     setDateRange(newDateRange);
     onDateRangeChange?.(newDateRange);
   };
+
+  const handleProductChange = (productId: string) => {
+    const product = products?.find(p => p.id === productId);
+    if (product) {
+      setSelectedProductId(productId);
+      setSelectedProductName(product.name);
+      onProductChange?.(productId, product.name);
+    }
+  };
+
   const toggleDayExpansion = (date: string) => {
     setExpandedDays(prev => ({
       ...prev,
@@ -176,11 +194,42 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
           Date Range Availability Checker
         </CardTitle>
         <CardDescription>
-          Check availability for {productName} over a specific date range
+          {selectedProductName 
+            ? `Check availability for ${selectedProductName} over a specific date range`
+            : "Select a product and date range to check availability"
+          }
         </CardDescription>
       </CardHeader>
       
       <CardContent className="space-y-4">
+        {/* Product Selection */}
+        {!initialProductId && (
+          <div className="space-y-2">
+            <label className="text-sm font-medium flex items-center gap-2">
+              <Package className="w-4 h-4" />
+              Select Product
+            </label>
+            <Select value={selectedProductId || ""} onValueChange={handleProductChange}>
+              <SelectTrigger>
+                <SelectValue placeholder="Choose a product to check availability" />
+              </SelectTrigger>
+              <SelectContent className="bg-background border border-border shadow-lg z-[99999] pointer-events-auto">
+                {productsLoading ? (
+                  <SelectItem value="" disabled>Loading products...</SelectItem>
+                ) : products && products.length > 0 ? (
+                  products.map((product) => (
+                    <SelectItem key={product.id} value={product.id}>
+                      {product.name}
+                    </SelectItem>
+                  ))
+                ) : (
+                  <SelectItem value="" disabled>No products available</SelectItem>
+                )}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
         {/* Date Range Picker */}
         <div className="space-y-2">
           <label className="text-sm font-medium">Select Date Range</label>
@@ -238,7 +287,7 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
         )}
 
         {/* Results */}
-        {availability && !isLoading && !error && (
+        {availability && !isLoading && !error && selectedProductId && (
           <div className="space-y-4">
             {/* Summary */}
             {availability.summary && (
@@ -388,13 +437,21 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
         )}
 
         {/* No Results */}
-        {!isLoading && !error && !availability && !dateRange?.from && (
+        {!selectedProductId && (
+          <div className="text-center py-8 text-gray-500">
+            <Package className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+            <p className="font-medium">Select a product to check availability</p>
+            <p className="text-sm">Choose from the dropdown above to see detailed availability information</p>
+          </div>
+        )}
+        
+        {selectedProductId && !isLoading && !error && !availability && !dateRange?.from && (
           <div className="text-center py-4 text-gray-500">
             Select a date range to check availability
           </div>
         )}
         
-        {!isLoading && !error && !availability && dateRange?.from && (
+        {selectedProductId && !isLoading && !error && !availability && dateRange?.from && (
           <div className="text-center py-4 text-gray-500">
             No availability data found for the selected date range
           </div>
