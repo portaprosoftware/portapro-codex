@@ -3,17 +3,17 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { FleetLayout } from "@/components/fleet/FleetLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Package, Truck, ArrowLeftRight, PlusCircle, MinusCircle, Sparkles } from "lucide-react";
 import { RouteStockCheck } from "@/components/fleet/RouteStockCheck";
+import { StockVehicleSelectionModal } from "@/components/fleet/StockVehicleSelectionModal";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface Vehicle { id: string; license_plate: string | null; vehicle_type?: string | null }
 interface BalanceRow { consumable_id: string; balance_qty: number }
@@ -30,6 +30,7 @@ const FleetTruckStock: React.FC = () => {
   const [quantity, setQuantity] = useState<string>("");
   const [destVehicleId, setDestVehicleId] = useState<string>("");
   const [sourceLocationId, setSourceLocationId] = useState<string>("");
+  const [isVehicleModalOpen, setIsVehicleModalOpen] = useState<boolean>(false);
 
   // Fetch all vehicles
   const { data: vehicles = [] } = useQuery({
@@ -142,18 +143,23 @@ const FleetTruckStock: React.FC = () => {
             {/* Vehicle Selection */}
             <div className="space-y-3">
               <Label htmlFor="vehicle">Select Vehicle</Label>
-              <Select value={vehicleId} onValueChange={setVehicleId}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Choose a vehicle" />
-                </SelectTrigger>
-                <SelectContent>
-                  {vehicles?.map(v => (
-                    <SelectItem key={v.id} value={v.id}>
-                      {v.license_plate || v.id} {v.vehicle_type && `(${v.vehicle_type})`}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Button
+                variant="outline"
+                onClick={() => setIsVehicleModalOpen(true)}
+                className="w-full justify-start h-10 px-3 font-normal bg-white"
+              >
+                <Truck className="h-4 w-4 mr-2 text-blue-600" />
+                {vehicleId ? (
+                  <>
+                    {vehicles.find(v => v.id === vehicleId)?.license_plate || `Vehicle ${vehicleId.slice(0, 8)}`}
+                    {vehicles.find(v => v.id === vehicleId)?.vehicle_type && 
+                      ` (${vehicles.find(v => v.id === vehicleId)?.vehicle_type})`
+                    }
+                  </>
+                ) : (
+                  "Choose a vehicle"
+                )}
+              </Button>
             </div>
 
             {vehicleId && (
@@ -279,6 +285,15 @@ const FleetTruckStock: React.FC = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Vehicle Selection Modal */}
+        <StockVehicleSelectionModal
+          isOpen={isVehicleModalOpen}
+          onClose={() => setIsVehicleModalOpen(false)}
+          vehicles={vehicles}
+          selectedVehicleId={vehicleId}
+          onSelectVehicle={setVehicleId}
+        />
       </div>
     </FleetLayout>
   );
