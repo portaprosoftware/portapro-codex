@@ -249,6 +249,14 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
                 </Button>
               }
             />
+            <Button 
+              variant="outline" 
+              className="text-purple-600 border-purple-600 hover:bg-purple-50"
+              onClick={() => setShowAvailabilityTracker(true)}
+            >
+              <Calendar className="w-4 h-4 mr-2" />
+              Availability Tracker
+            </Button>
           </div>
         </div>
       </div>
@@ -311,14 +319,6 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
             >
               <History className="w-4 h-4 mr-2" />
               Stock History
-            </Button>
-            <Button 
-              variant="outline" 
-              className="text-purple-600 border-purple-600 hover:bg-purple-50"
-              onClick={() => setShowAvailabilityTracker(true)}
-            >
-              <Calendar className="w-4 h-4 mr-2" />
-              Availability Tracker
             </Button>
             <Button 
               variant="outline" 
