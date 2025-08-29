@@ -148,7 +148,8 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
       ...unit,
       productName,
       quantity: 1, // Each specific unit has quantity 1
-      attributes: {}
+      attributes: {},
+      autoAssigned: false // Mark as manually selected
     }));
     
     const productId = units[0]?.productId;

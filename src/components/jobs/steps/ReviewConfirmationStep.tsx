@@ -48,6 +48,7 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
   const [pickupVehicleDetails, setPickupVehicleDetails] = useState<string>('');
   const [partialPickupAssignments, setPartialPickupAssignments] = useState<Record<string, { driver: string; vehicle: string }>>({});
   const [productDetails, setProductDetails] = useState<Record<string, { name: string; price_per_day: number }>>({});
+  const [itemCodes, setItemCodes] = useState<Record<string, string>>({});
 
   const startDate = d.scheduled_date || '';
   const endDate = d.return_date || d.scheduled_date || '';
@@ -234,6 +235,32 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
 
     fetchNames();
   }, [d.customer_id, d.contact_id, d.driver_id, d.vehicle_id, d.pickup_driver_id, d.pickup_vehicle_id, d.partial_pickup_assignments, d.partial_pickups, items]);
+
+  // Fetch item codes for all specific item IDs
+  useEffect(() => {
+    const fetchItemCodes = async () => {
+      const allItemIds = items
+        .filter(item => item.specific_item_ids && item.specific_item_ids.length > 0)
+        .flatMap(item => item.specific_item_ids || []);
+      
+      if (allItemIds.length === 0) return;
+      
+      const { data: productItems } = await supabase
+        .from('product_items')
+        .select('id, item_code')
+        .in('id', allItemIds);
+      
+      if (productItems) {
+        const codeMap: Record<string, string> = {};
+        productItems.forEach(item => {
+          codeMap[item.id] = item.item_code;
+        });
+        setItemCodes(codeMap);
+      }
+    };
+
+    fetchItemCodes();
+  }, [items]);
   
   // Calculate rental period in days
   const rentalDays = useMemo(() => {
@@ -442,7 +469,9 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
                     <span className="font-medium">{productName}</span> × {it.quantity} × {rentalDays} day{rentalDays !== 1 ? 's' : ''} = {formatCurrency(itemCost)}
                     {it.strategy === 'specific' && it.specific_item_ids && it.specific_item_ids.length > 0 ? (
                       <div className="text-xs text-muted-foreground ml-4">
-                        {it.auto_assigned ? 'Auto-assigned units' : 'Specific Units'}: {it.specific_item_ids.join(', ')}
+                        {it.auto_assigned ? 'Auto-assigned units' : 'Specific Units'}: {
+                          it.specific_item_ids.map(id => itemCodes[id] || id).join(', ')
+                        }
                       </div>
                     ) : it.strategy === 'bulk' ? (
                       <div className="text-xs text-muted-foreground ml-4">Bulk assignment</div>
