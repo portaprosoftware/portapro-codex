@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Check, Info, X, ChevronDown, ChevronUp, Calendar } from 'lucide-react';
+import { Search, Check, Info, X, ChevronDown, ChevronUp, Calendar, Truck } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,7 @@ import { EnhancedDateNavigator } from './EnhancedDateNavigator';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { AvailabilityTrackerSheet } from '@/components/inventory/AvailabilityTrackerSheet';
+import { StockVehicleSelectionModal } from '@/components/fleet/StockVehicleSelectionModal';
 
 interface InlineFiltersProps {
   searchTerm: string;
@@ -52,17 +53,26 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
   const [stockVehicleId, setStockVehicleId] = useState<string>('');
   const [stockServiceDate, setStockServiceDate] = useState<string>(new Date().toISOString().slice(0, 10));
   const [showAvailabilityTracker, setShowAvailabilityTracker] = useState(false);
+  const [showVehicleModal, setShowVehicleModal] = useState(false);
 
   // Route vs Truck Stock queries
   const { data: vehicles } = useQuery({
-    queryKey: ['vehicles-basic'],
+    queryKey: ['vehicles-for-stock'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('vehicles' as any)
-        .select('id, license_plate, vehicle_type')
+        .from('vehicles')
+        .select('id, license_plate, make, model, year, vehicle_image, vehicle_type')
         .order('license_plate');
       if (error) throw error;
-      return data || [];
+      return (data || []) as Array<{
+        id: string;
+        license_plate: string;
+        make?: string;
+        model?: string;
+        year?: number;
+        vehicle_image?: string;
+        vehicle_type?: string;
+      }>;
     },
   });
 
@@ -347,18 +357,17 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <div className="space-y-1">
                 <label className="text-sm text-muted-foreground">Vehicle</label>
-                <Select value={stockVehicleId} onValueChange={setStockVehicleId}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select vehicle" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {vehicles?.map((v: any) => (
-                      <SelectItem key={v.id} value={v.id}>
-                        {v.license_plate || v.id}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowVehicleModal(true)}
+                  className="justify-start h-10"
+                >
+                  <Truck className="h-4 w-4 mr-2" />
+                  {stockVehicleId ? 
+                    vehicles?.find(v => v.id === stockVehicleId)?.license_plate || 'Selected Vehicle' : 
+                    'Select Vehicle'
+                  }
+                </Button>
               </div>
               <div className="space-y-1">
                 <label className="text-sm text-muted-foreground">Service Date</label>
@@ -403,6 +412,18 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
           </Card>
         )}
         
+        {/* Vehicle Selection Modal */}
+        <StockVehicleSelectionModal
+          isOpen={showVehicleModal}
+          onClose={() => setShowVehicleModal(false)}
+          vehicles={vehicles || []}
+          selectedVehicleId={stockVehicleId}
+          onSelectVehicle={(vehicleId) => {
+            setStockVehicleId(vehicleId);
+            setShowVehicleModal(false);
+          }}
+        />
+
         {/* Availability Tracker Sheet */}
         <AvailabilityTrackerSheet
           open={showAvailabilityTracker}
