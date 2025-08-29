@@ -8,6 +8,7 @@ export interface JobItemSelection {
   specific_item_ids?: string[];
   attributes?: Record<string, string | boolean>;
   bulk_additional?: number; // Additional bulk units when mixing specific + bulk
+  auto_assigned?: boolean; // Flag to indicate items were auto-assigned and skip conflict checks
 }
 
 export interface JobWizardData {

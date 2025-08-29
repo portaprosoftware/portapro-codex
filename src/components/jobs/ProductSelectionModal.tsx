@@ -36,6 +36,7 @@ interface UnitSelection {
   productName: string;
   quantity: number;
   attributes?: Record<string, any>;
+  autoAssigned?: boolean; // Flag to track if this unit was auto-assigned
 }
 
 interface ProductSelectionModalProps {
@@ -125,7 +126,8 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
         productId: product.id,
         productName: product.name,
         quantity: 1,
-        attributes: {}
+        attributes: {},
+        autoAssigned: true // Mark as auto-assigned
       }));
       
       setSelectedUnitsCollection(prev => {
@@ -252,13 +254,17 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
       const hasSpecific = groups.specific && groups.specific.length > 0;
       
       if (hasSpecific) {
+        // Check if these are auto-assigned units (all units have the same source)
+        const isAutoAssigned = groups.specific!.every(s => s.autoAssigned === true);
+        
         // Always create specific assignments
         jobItems.push({
           product_id: productId,
           quantity: groups.specific!.length,
           strategy: 'specific' as const,
           specific_item_ids: groups.specific!.map(s => s.unitId),
-          attributes: groups.specific![0].attributes
+          attributes: groups.specific![0].attributes,
+          auto_assigned: isAutoAssigned
         });
       }
     });
