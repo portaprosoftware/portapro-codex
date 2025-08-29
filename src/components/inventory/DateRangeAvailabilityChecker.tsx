@@ -325,13 +325,16 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
                 {/* Availability Status Message */}
                 <div className="mt-3 pt-3 border-t border-gray-200">
                   <div className="flex items-center gap-2 text-sm">
-                    {getStatusIcon(getAvailabilityStatus(availability.summary.min_available, requestedQuantity))}
                     {availability.summary.min_available >= requestedQuantity ? (
                       `✅ ${requestedQuantity} units are available for the entire selected period`
                     ) : availability.summary.min_available > 0 ? (
-                      `⚠️ Only ${availability.summary.min_available} units available (${requestedQuantity} requested)`
+                      <>
+                        {getStatusIcon(getAvailabilityStatus(availability.summary.min_available, requestedQuantity))}
+                        {`⚠️ Only ${availability.summary.min_available} units available (${requestedQuantity} requested)`}
+                      </>
                     ) : (
                       <>
+                        {getStatusIcon(getAvailabilityStatus(availability.summary.min_available, requestedQuantity))}
                         {`❌ No units available for some days in the selected period`}
                         {(() => {
                           // Find next date with sufficient availability
