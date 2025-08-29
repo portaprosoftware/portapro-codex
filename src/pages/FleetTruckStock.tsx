@@ -15,7 +15,7 @@ import { RouteStockCheck } from "@/components/fleet/RouteStockCheck";
 import { StockVehicleSelectionModal } from "@/components/fleet/StockVehicleSelectionModal";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-interface Vehicle { id: string; license_plate: string | null; vehicle_type?: string | null }
+interface Vehicle { id: string; license_plate: string | null; vehicle_type?: string | null; make?: string | null; model?: string | null; year?: number | null; vehicle_image?: string | null }
 interface BalanceRow { consumable_id: string; balance_qty: number }
 interface Consumable { id: string; name: string; base_unit: string; unit_price?: number }
 interface StorageLocation { id: string; name: string }
@@ -36,7 +36,7 @@ const FleetTruckStock: React.FC = () => {
   const { data: vehicles = [] } = useQuery({
     queryKey: ["vehicles"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("vehicles").select("id, license_plate, vehicle_type");
+      const { data, error } = await supabase.from("vehicles").select("id, license_plate, vehicle_type, make, model, year, vehicle_image");
       if (error) throw error;
       return data as Vehicle[];
     }

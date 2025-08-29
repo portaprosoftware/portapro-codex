@@ -11,6 +11,10 @@ interface Vehicle {
   id: string;
   license_plate: string | null;
   vehicle_type?: string | null;
+  make?: string | null;
+  model?: string | null;
+  year?: number | null;
+  vehicle_image?: string | null;
 }
 
 interface StockVehicleSelectionModalProps {
@@ -32,7 +36,9 @@ export const StockVehicleSelectionModal: React.FC<StockVehicleSelectionModalProp
 
   const filteredVehicles = vehicles.filter(vehicle =>
     (vehicle.license_plate?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
-    (vehicle.vehicle_type?.toLowerCase().includes(searchTerm.toLowerCase()) || false)
+    (vehicle.vehicle_type?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
+    (vehicle.make?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
+    (vehicle.model?.toLowerCase().includes(searchTerm.toLowerCase()) || false)
   );
 
   const handleSelectVehicle = (vehicleId: string) => {
@@ -74,26 +80,57 @@ export const StockVehicleSelectionModal: React.FC<StockVehicleSelectionModalProp
                 }`}
                 onClick={() => handleSelectVehicle(vehicle.id)}
               >
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <Truck className="h-5 w-5 text-blue-600" />
+                <CardContent className="p-0">
+                  <div className="flex flex-col">
+                    {/* Vehicle Image */}
+                    <div className="relative h-32 bg-gray-100 rounded-t-lg overflow-hidden">
+                      {vehicle.vehicle_image ? (
+                        <img 
+                          src={vehicle.vehicle_image} 
+                          alt={`${vehicle.license_plate} vehicle`}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                          }}
+                        />
+                      ) : null}
+                      <div className={`${vehicle.vehicle_image ? 'hidden' : ''} w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-blue-200`}>
+                        <Truck className="h-8 w-8 text-blue-600" />
                       </div>
-                      <div>
-                        <h4 className="font-semibold text-gray-900">
-                          {vehicle.license_plate || `Vehicle ${vehicle.id.slice(0, 8)}`}
-                        </h4>
-                        {vehicle.vehicle_type && (
-                          <p className="text-sm text-gray-600">{vehicle.vehicle_type}</p>
-                        )}
-                      </div>
+                      {selectedVehicleId === vehicle.id && (
+                        <div className="absolute top-2 right-2">
+                          <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0">
+                            Selected
+                          </Badge>
+                        </div>
+                      )}
                     </div>
-                    {selectedVehicleId === vehicle.id && (
-                      <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0">
-                        Selected
-                      </Badge>
-                    )}
+                    
+                    {/* Vehicle Details */}
+                    <div className="p-4 space-y-2">
+                      <h4 className="font-bold text-lg text-gray-900">
+                        {vehicle.license_plate || `Vehicle ${vehicle.id.slice(0, 8)}`}
+                      </h4>
+                      
+                      {(vehicle.make || vehicle.model || vehicle.year) && (
+                        <div className="space-y-1">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-gray-600 font-medium">Make/Model:</span>
+                            <span className="text-sm text-gray-900">
+                              {[vehicle.make, vehicle.model, vehicle.year].filter(Boolean).join(' ')}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {vehicle.vehicle_type && (
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-gray-600 font-medium">Type:</span>
+                          <span className="text-sm text-gray-900 capitalize">{vehicle.vehicle_type}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
