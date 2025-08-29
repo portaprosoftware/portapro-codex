@@ -223,7 +223,7 @@ export const SimpleConsumablesAnalytics: React.FC<SimpleConsumablesAnalyticsProp
               <p className="text-2xl font-bold text-foreground">{lowStockItems}</p>
             </div>
             <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
-              <AlertTriangle className="w-6 h-6 text-white stroke-2" />
+              <span className="text-xs font-bold text-white text-center leading-tight">Low<br/>Stock</span>
             </div>
           </div>
         </div>
