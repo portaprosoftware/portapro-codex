@@ -610,23 +610,25 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
         <div className="space-y-4">
           <div className="text-center">
             <p className="text-sm text-muted-foreground mb-4">
-              Choose how you'd like to save this job: create a quote for customer approval, create both a quote and an active job, or skip quoting and create a job directly.
+              Choose how you'd like to save this job: create a job with immediate invoice generation, or create both a quote and an active job.
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card className="cursor-pointer hover:shadow-md transition-shadow">
               <CardContent className="p-4 text-center">
-                <FileText className="h-8 w-8 mx-auto mb-2 text-blue-600" />
-                <h3 className="font-medium mb-1">Create Quote</h3>
-                <p className="text-xs text-muted-foreground mb-3">Save as quote only for customer approval</p>
+                <div className="flex justify-center mb-2">
+                  <BriefcaseIcon className="h-6 w-6 text-emerald-600" />
+                  <Receipt className="h-6 w-6 text-emerald-600 -ml-2" />
+                </div>
+                <h3 className="font-medium mb-1">Create Job + Invoice</h3>
+                <p className="text-xs text-muted-foreground mb-3">Create job and immediately generate invoice</p>
                 <Button
-                  onClick={onCreateQuote}
-                  disabled={creatingQuote}
-                  variant="outline"
-                  className="w-full border-blue-600 text-blue-600 hover:bg-blue-50"
+                  onClick={onCreateInvoice}
+                  disabled={creating}
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
                 >
-                  {creatingQuote ? 'Creating...' : 'Quote Only'}
+                  {creating ? 'Creating...' : 'Job + Invoice'}
                 </Button>
               </CardContent>
             </Card>
@@ -648,42 +650,8 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
                 </Button>
               </CardContent>
             </Card>
-
-            <Card className="cursor-pointer hover:shadow-md transition-shadow">
-              <CardContent className="p-4 text-center">
-                <BriefcaseIcon className="h-8 w-8 mx-auto mb-2 text-purple-600" />
-                <h3 className="font-medium mb-1">Create Job</h3>
-                <p className="text-xs text-muted-foreground mb-3">Skip quoting and create job immediately</p>
-                <Button
-                  onClick={onCreateJob}
-                  disabled={creating}
-                  variant="outline"
-                  className="w-full border-purple-600 text-purple-600 hover:bg-purple-50"
-                >
-                  {creating ? 'Creating...' : 'Job Only'}
-                </Button>
-              </CardContent>
-            </Card>
           </div>
 
-          {/* Create Invoice Section - shows after job creation would be useful */}
-          {onCreateInvoice && (
-            <div className="pt-6 border-t border-border">
-              <div className="text-center">
-                <p className="text-sm text-muted-foreground mb-4">
-                  After creating your job, you can immediately generate an invoice for this work.
-                </p>
-                <Button
-                  onClick={onCreateInvoice}
-                  variant="outline"
-                  className="border-emerald-600 text-emerald-600 hover:bg-emerald-50"
-                >
-                  <Receipt className="h-4 w-4 mr-2" />
-                  Create Invoice
-                </Button>
-              </div>
-            </div>
-          )}
         </div>
       )}
     </div>
