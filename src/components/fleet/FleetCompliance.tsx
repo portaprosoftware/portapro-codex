@@ -199,8 +199,12 @@ const FleetComplianceContent: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Add Document Button */}
-      <div className="flex justify-end">
+      {/* Header with Add Document Button */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900">All Compliance Documents</h3>
+          <p className="text-sm text-gray-600">Track permits, certifications, and required paperwork</p>
+        </div>
         <Button 
           onClick={() => setIsAddDocumentModalOpen(true)}
           className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
@@ -245,9 +249,6 @@ const FleetComplianceContent: React.FC = () => {
 
       {/* Document List */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-900">All Compliance Documents</h3>
-        </div>
         
         {documents?.map((document) => {
           const urgency = getUrgencyLevel(document.expiration_date);
