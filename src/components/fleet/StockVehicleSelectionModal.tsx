@@ -46,6 +46,15 @@ export const StockVehicleSelectionModal: React.FC<StockVehicleSelectionModalProp
     onClose();
   };
 
+  // Helper function to get the proper image URL from Supabase storage
+  const getVehicleImageUrl = (vehicle: Vehicle) => {
+    if (!vehicle.vehicle_image) return null;
+    // If it's already a full URL, return as is
+    if (vehicle.vehicle_image.startsWith('http')) return vehicle.vehicle_image;
+    // Otherwise, construct the Supabase storage URL
+    return `https://unpnuonbndubcuzxfnmg.supabase.co/storage/v1/object/public/vehicle_images/${vehicle.vehicle_image}`;
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-2xl max-h-[80vh] flex flex-col bg-white">
@@ -61,7 +70,7 @@ export const StockVehicleSelectionModal: React.FC<StockVehicleSelectionModalProp
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search by license plate or vehicle type..."
+              placeholder="Search by license plate, vehicle type, make or model..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 bg-white"
@@ -84,20 +93,20 @@ export const StockVehicleSelectionModal: React.FC<StockVehicleSelectionModalProp
                   <div className="flex flex-col">
                     {/* Vehicle Image */}
                     <div className="relative h-32 bg-gray-100 rounded-t-lg overflow-hidden">
-                      {vehicle.vehicle_image ? (
-                        <img 
-                          src={vehicle.vehicle_image} 
-                          alt={`${vehicle.license_plate} vehicle`}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.currentTarget.style.display = 'none';
-                            e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                          }}
-                        />
-                      ) : null}
-                      <div className={`${vehicle.vehicle_image ? 'hidden' : ''} w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-blue-200`}>
-                        <Truck className="h-8 w-8 text-blue-600" />
-                      </div>
+                       {getVehicleImageUrl(vehicle) ? (
+                         <img 
+                           src={getVehicleImageUrl(vehicle)!} 
+                           alt={`${vehicle.license_plate} vehicle`}
+                           className="w-full h-full object-cover"
+                           onError={(e) => {
+                             e.currentTarget.style.display = 'none';
+                             e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                           }}
+                         />
+                       ) : null}
+                       <div className={`${getVehicleImageUrl(vehicle) ? 'hidden' : ''} w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-blue-200`}>
+                         <Truck className="h-8 w-8 text-blue-600" />
+                       </div>
                       {selectedVehicleId === vehicle.id && (
                         <div className="absolute top-2 right-2">
                           <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0">
