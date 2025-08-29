@@ -445,13 +445,13 @@ export const EnhancedJobFilters: React.FC<EnhancedJobFiltersProps> = ({
                 </Tooltip>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-sm text-muted-foreground">Vehicle</label>
                   <Button
                     variant="outline"
                     onClick={() => setShowVehicleModal(true)}
-                    className="justify-start h-10"
+                    className="justify-start h-10 w-full"
                   >
                     <Truck className="h-4 w-4 mr-2" />
                     {stockVehicleId ? 
@@ -460,9 +460,11 @@ export const EnhancedJobFilters: React.FC<EnhancedJobFiltersProps> = ({
                     }
                   </Button>
                 </div>
-                <div className="space-y-1">
-                  <label className="text-sm text-muted-foreground">Service Date</label>
-                  <Input type="date" value={stockServiceDate} onChange={(e) => setStockServiceDate(e.target.value)} />
+                <div className="flex items-end gap-2">
+                  <div className="flex-1">
+                    <label className="text-sm text-muted-foreground">Service Date</label>
+                    <Input type="date" value={stockServiceDate} onChange={(e) => setStockServiceDate(e.target.value)} />
+                  </div>
                 </div>
               </div>
 
