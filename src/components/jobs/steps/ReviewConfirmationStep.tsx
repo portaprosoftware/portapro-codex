@@ -639,8 +639,8 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
                   <FileText className="h-6 w-6 text-green-600" />
                   <BriefcaseIcon className="h-6 w-6 text-green-600 -ml-2" />
                 </div>
-                <h3 className="font-medium mb-1">Create Both</h3>
-                <p className="text-xs text-muted-foreground mb-3">Generate quote and create active job</p>
+                <h3 className="font-medium mb-1">Create Job + Quote</h3>
+                <p className="text-xs text-muted-foreground mb-3">Create both a job and quote simultaneously</p>
                 <Button
                   onClick={onCreateJobAndQuote}
                   disabled={creatingJobAndQuote}

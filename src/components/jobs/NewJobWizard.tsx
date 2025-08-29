@@ -277,6 +277,140 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
     }
   };
 
+  const handleCreateJobAndInvoice = async () => {
+    if (!validateCurrentStep()) return;
+
+    try {
+      console.log('Creating job and invoice with wizard data:', state.data);
+      
+      // First create the job
+      const job = await createJobMutation.mutateAsync(state.data);
+
+      // Create pickup job if requested
+      let pickupJob = null;
+      if (state.data.create_pickup_job && state.data.pickup_date) {
+        const pickupItems = state.data.pickup_inventory_selections?.main_pickup || state.data.items;
+        
+        const pickupJobData = {
+          customer_id: state.data.customer_id,
+          job_type: 'pickup' as const,
+          scheduled_date: state.data.pickup_date,
+          scheduled_time: state.data.pickup_time,
+          timezone: state.data.timezone,
+          notes: state.data.pickup_notes || '',
+          is_priority: state.data.pickup_is_priority || false,
+          selected_coordinate_ids: state.data.selected_coordinate_ids,
+          driver_id: state.data.driver_id,
+          vehicle_id: state.data.vehicle_id,
+          items: pickupItems,
+          create_daily_assignment: state.data.create_daily_assignment,
+        };
+        
+        pickupJob = await createJobMutation.mutateAsync(pickupJobData);
+      }
+
+      // Create partial pickup jobs if requested
+      const partialPickupJobs = [];
+      if (state.data.create_partial_pickups && state.data.partial_pickups) {
+        for (const partialPickup of state.data.partial_pickups) {
+          if (partialPickup.date) {
+            const partialPickupItems = state.data.pickup_inventory_selections?.partial_pickups?.[partialPickup.id] || state.data.items;
+            
+            const partialPickupJobData = {
+              customer_id: state.data.customer_id,
+              job_type: 'pickup' as const,
+              scheduled_date: partialPickup.date,
+              scheduled_time: partialPickup.time,
+              timezone: state.data.timezone,
+              notes: partialPickup.notes ? `PARTIAL PICKUP: ${partialPickup.notes}` : 'PARTIAL PICKUP',
+              is_priority: partialPickup.is_priority || false,
+              selected_coordinate_ids: state.data.selected_coordinate_ids,
+              driver_id: state.data.driver_id,
+              vehicle_id: state.data.vehicle_id,
+              items: partialPickupItems,
+              create_daily_assignment: state.data.create_daily_assignment,
+            };
+            
+            const partialJob = await createJobMutation.mutateAsync(partialPickupJobData);
+            partialPickupJobs.push(partialJob);
+          }
+        }
+      }
+
+      // Insert service job items if any services were selected
+      if (state.data.servicesData && state.data.servicesData.selectedServices?.length) {
+        const serviceItems = state.data.servicesData.selectedServices.map((s: any) => ({
+          job_id: job.id,
+          line_item_type: 'service',
+          service_id: s.id,
+          service_frequency: s.frequency,
+          service_hours: s.estimated_duration_hours ?? null,
+          service_config: {
+            pricing_method: s.pricing_method,
+            custom_type: s.custom_type,
+            custom_frequency_days: s.custom_frequency_days,
+            custom_days_of_week: s.custom_days_of_week,
+            calculated_cost: s.calculated_cost,
+          },
+          service_custom_dates: Array.isArray(s.custom_specific_dates)
+            ? s.custom_specific_dates.map((d: any) => ({
+                date: d?.date instanceof Date ? d.date.toISOString() : d?.date,
+                time: d?.time || null,
+                notes: d?.notes || null,
+              }))
+            : null,
+          unit_price: Number(s.calculated_cost || 0),
+          total_price: Number(s.calculated_cost || 0),
+          quantity: 1,
+        }));
+        const { error: svcError } = await supabase.from('job_items').insert(serviceItems);
+        if (svcError) throw svcError;
+      }
+
+      // Create daily assignment if needed
+      try {
+        if (state.data.create_daily_assignment && state.data.driver_id && state.data.vehicle_id && state.data.scheduled_date) {
+          const date = state.data.scheduled_date;
+          const { data: existing, error: checkError } = await supabase
+            .from('daily_vehicle_assignments')
+            .select('id')
+            .eq('assignment_date', date)
+            .or(`driver_id.eq.${state.data.driver_id},vehicle_id.eq.${state.data.vehicle_id}`)
+            .maybeSingle();
+          if (!checkError && !existing) {
+            const { error: insertError } = await supabase.from('daily_vehicle_assignments').insert({
+              driver_id: state.data.driver_id,
+              vehicle_id: state.data.vehicle_id,
+              assignment_date: date,
+              notes: `Auto-assigned for job ${job.id}`,
+            });
+            if (insertError) {
+              console.warn('Daily assignment insert failed:', insertError);
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Daily assignment step skipped due to error:', e);
+      }
+
+      // Now create the invoice from the main job
+      console.log('Creating invoice for job:', job.id);
+      await createInvoiceFromJobMutation.mutateAsync({
+        jobId: job.id,
+        notes: `Invoice for Job: ${job.job_number}`
+      });
+
+      const totalJobsCreated = 1 + (pickupJob ? 1 : 0) + partialPickupJobs.length;
+      toast.success(`Job${totalJobsCreated > 1 ? 's' : ''} and invoice created successfully!`);
+      
+      reset();
+      onClose();
+    } catch (error) {
+      console.error('Error creating job and invoice:', error);
+      toast.error('Failed to create job and invoice. Please try again.');
+    }
+  };
+
   const handleCreateJobAndQuote = async () => {
     if (!validateCurrentStep()) return;
 
@@ -445,7 +579,7 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
               onCreateJob={handleCreateJob} 
               onCreateQuote={handleCreateQuote}
               onCreateJobAndQuote={handleCreateJobAndQuote}
-              onCreateInvoice={handleCreateInvoice}
+              onCreateInvoice={handleCreateJobAndInvoice}
               creating={createJobMutation.isPending}
               creatingQuote={createQuoteMutation.isPending}
               creatingJobAndQuote={createJobMutation.isPending || createQuoteMutation.isPending}
@@ -469,7 +603,7 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
             onCreateJob={handleCreateJob} 
             onCreateQuote={handleCreateQuote}
             onCreateJobAndQuote={handleCreateJobAndQuote}
-            onCreateInvoice={handleCreateInvoice}
+            onCreateInvoice={handleCreateJobAndInvoice}
             creating={createJobMutation.isPending}
             creatingQuote={createQuoteMutation.isPending}
             creatingJobAndQuote={createJobMutation.isPending || createQuoteMutation.isPending}
