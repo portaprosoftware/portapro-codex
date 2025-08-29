@@ -280,6 +280,10 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
   const handleCreateJobAndInvoice = async () => {
     if (!validateCurrentStep()) return;
 
+    // Close wizard immediately for better user experience
+    reset();
+    onClose();
+
     try {
       console.log('Creating job and invoice with wizard data:', state.data);
       
@@ -403,8 +407,6 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
       const totalJobsCreated = 1 + (pickupJob ? 1 : 0) + partialPickupJobs.length;
       toast.success(`Job${totalJobsCreated > 1 ? 's' : ''} and invoice created successfully!`);
       
-      reset();
-      onClose();
     } catch (error) {
       console.error('Error creating job and invoice:', error);
       toast.error('Failed to create job and invoice. Please try again.');

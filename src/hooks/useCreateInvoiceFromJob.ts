@@ -125,7 +125,7 @@ export function useCreateInvoiceFromJob() {
       const taxAmount = subtotal * taxRate;
       const totalAmount = subtotal + taxAmount;
 
-      const dueDateString = (dueDate || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000))
+      const dueDateString = (dueDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000))
         .toISOString().split('T')[0];
 
       // Create the invoice
@@ -141,7 +141,7 @@ export function useCreateInvoiceFromJob() {
           due_date: dueDateString,
           status: 'unpaid',
           notes: notes || `Invoice for Job: ${job.job_number || jobId}`,
-          terms: terms || 'Net 7',
+          terms: terms || 'Net 30',
           // Auto-fill customer contact information
           customer_name: job.customers?.name || '',
           customer_email: job.customers?.email || '',
