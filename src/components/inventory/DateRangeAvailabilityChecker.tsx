@@ -286,28 +286,39 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
           </Alert>
         )}
 
+        {/* Empty State - Show when no product is selected */}
+        {!selectedProductId && !isLoading && (
+          <div className="text-center py-8 space-y-3">
+            <Package className="w-12 h-12 text-gray-400 mx-auto" />
+            <div className="text-gray-500">
+              <p className="font-medium">Select a product to check availability</p>
+              <p className="text-sm">Choose a product and date range to see detailed availability information</p>
+            </div>
+          </div>
+        )}
+
         {/* Results */}
         {availability && !isLoading && !error && selectedProductId && (
           <div className="space-y-4">
-            {/* Summary */}
+            {/* Period Summary - Now inside the main card */}
             {availability.summary && (
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h4 className="font-medium mb-2">Period Summary</h4>
+              <div className="p-4 rounded-lg border bg-muted/50">
+                <h4 className="font-medium mb-3">Period Summary</h4>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <span className="text-gray-600">Min Available:</span>
+                    <span className="text-muted-foreground">Min Available:</span>
                     <span className="ml-2 font-medium">{availability.summary.min_available}</span>
                   </div>
                   <div>
-                    <span className="text-gray-600">Max Available:</span>
+                    <span className="text-muted-foreground">Max Available:</span>
                     <span className="ml-2 font-medium">{availability.summary.max_available}</span>
                   </div>
                   <div>
-                    <span className="text-gray-600">Avg Available:</span>
+                    <span className="text-muted-foreground">Avg Available:</span>
                     <span className="ml-2 font-medium">{availability.summary.avg_available}</span>
                   </div>
                   <div>
-                    <span className="text-gray-600">Total Stock:</span>
+                    <span className="text-muted-foreground">Total Stock:</span>
                     <span className="ml-2 font-medium">{availability.total}</span>
                   </div>
                 </div>
@@ -436,26 +447,6 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
           </div>
         )}
 
-        {/* No Results */}
-        {!selectedProductId && (
-          <div className="text-center py-8 text-gray-500">
-            <Package className="w-12 h-12 mx-auto mb-2 text-gray-300" />
-            <p className="font-medium">Select a product to check availability</p>
-            <p className="text-sm">Choose from the dropdown above to see detailed availability information</p>
-          </div>
-        )}
-        
-        {selectedProductId && !isLoading && !error && !availability && !dateRange?.from && (
-          <div className="text-center py-4 text-gray-500">
-            Select a date range to check availability
-          </div>
-        )}
-        
-        {selectedProductId && !isLoading && !error && !availability && dateRange?.from && (
-          <div className="text-center py-4 text-gray-500">
-            No availability data found for the selected date range
-          </div>
-        )}
       </CardContent>
     </Card>
   );
