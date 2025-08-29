@@ -652,7 +652,7 @@ const ProductListPage: React.FC<ProductListPageProps> = ({
           <SelectTrigger>
             <SelectValue placeholder="All Locations" />
           </SelectTrigger>
-          <SelectContent className="bg-background z-50">
+          <SelectContent className="bg-background border border-border shadow-lg z-[99999] pointer-events-auto">
             <SelectItem value="all">All Locations</SelectItem>
             {storageLocations.map((location) => (
               <SelectItem key={location.id} value={location.id}>
@@ -666,7 +666,7 @@ const ProductListPage: React.FC<ProductListPageProps> = ({
           <SelectTrigger>
             <SelectValue placeholder="All Product Types" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-background border border-border shadow-lg z-[99999] pointer-events-auto">
             <SelectItem value="all">All Product Types</SelectItem>
             {PRODUCT_TYPES.map((type) => (
               <SelectItem key={type.value} value={type.value}>
