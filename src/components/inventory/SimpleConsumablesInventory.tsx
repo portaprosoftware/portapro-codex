@@ -666,11 +666,11 @@ export const SimpleConsumablesInventory: React.FC = () => {
                                   const isLowStock = loc.lowStockThreshold && loc.quantity <= loc.lowStockThreshold;
                                   return (
                                     <div key={index} className={`flex items-center justify-between bg-gray-50 rounded-md px-3 py-2 text-sm ${isLowStock ? 'border border-orange-200 bg-orange-50' : ''}`}>
-                                      <span className="text-gray-700 truncate flex-1 mr-2" title={loc.locationName}>{loc.locationName}</span>
-                                      <div className="flex items-center gap-1 flex-shrink-0">
-                                        <span className="font-medium text-gray-900">{loc.quantity}</span>
-                                        {isLowStock && <AlertTriangle className="w-3 h-3 text-orange-500" />}
-                                      </div>
+                                       <span className="text-gray-700 truncate flex-1 mr-2" title={loc.locationName}>{loc.locationName}</span>
+                                       <div className="flex items-center gap-1 flex-shrink-0">
+                                         <span className="font-medium text-gray-900">{loc.quantity}</span>
+                                         {isLowStock && <span className="text-xs text-orange-600 font-medium">Low Stock</span>}
+                                       </div>
                                     </div>
                                   );
                                 })}
