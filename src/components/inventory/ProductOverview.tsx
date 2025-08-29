@@ -237,6 +237,14 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
               <Edit className="w-4 h-4 mr-2" />
               Edit Product
             </Button>
+            <Button 
+              variant="outline" 
+              className="text-purple-600 border-purple-600 hover:bg-purple-50"
+              onClick={() => setShowAvailabilityTracker(true)}
+            >
+              <Calendar className="w-4 h-4 mr-2" />
+              Availability Tracker
+            </Button>
             <TrackedOperationsPanel
               productId={product.id}
               productName={product.name}
@@ -249,14 +257,6 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
                 </Button>
               }
             />
-            <Button 
-              variant="outline" 
-              className="text-purple-600 border-purple-600 hover:bg-purple-50"
-              onClick={() => setShowAvailabilityTracker(true)}
-            >
-              <Calendar className="w-4 h-4 mr-2" />
-              Availability Tracker
-            </Button>
           </div>
         </div>
       </div>
