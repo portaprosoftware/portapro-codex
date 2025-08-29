@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAvailabilityEngine } from '@/hooks/useAvailabilityEngine';
 import { DatePickerWithRange } from '@/components/ui/DatePickerWithRange';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -188,7 +189,7 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
         <div className="space-y-2">
           <label className="text-sm font-medium">Requested Quantity</label>
           <div className="w-20">
-            <input
+            <Input
               type="number"
               min="1"
               value={requestedQuantity}
@@ -201,8 +202,7 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
                   onQuantityChange?.(isNaN(num) || num < 1 ? 1 : num);
                 }
               }}
-              onFocus={(e) => e.target.select()}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full font-bold text-center"
             />
           </div>
         </div>

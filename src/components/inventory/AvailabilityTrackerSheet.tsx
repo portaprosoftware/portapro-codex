@@ -110,6 +110,7 @@ export const AvailabilityTrackerSheet: React.FC<AvailabilityTrackerSheetProps> =
                         productId={selectedProductId}
                         productName={selectedProductName || 'Selected Product'}
                         requestedQuantity={requestedQuantity}
+                        onQuantityChange={setRequestedQuantity}
                       />
                     </TabsContent>
                   </Tabs>
