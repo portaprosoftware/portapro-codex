@@ -30,8 +30,6 @@ interface ComplianceDocument {
 }
 
 export const FleetCompliance: React.FC = () => {
-  const [isAddDocumentModalOpen, setIsAddDocumentModalOpen] = useState(false);
-
   return (
     <div className="space-y-6">
       <div className="bg-white border border-gray-200 rounded-2xl shadow-sm">
@@ -83,13 +81,6 @@ export const FleetCompliance: React.FC = () => {
               </div>
               <p className="text-base text-gray-600 font-inter mt-1">DOT/FMCSA, state permits, spill readiness, and EPA/OSHA docs</p>
             </div>
-            <Button 
-              onClick={() => setIsAddDocumentModalOpen(true)}
-              className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Document
-            </Button>
           </div>
 
           <Tabs defaultValue="documents" className="space-y-6">
@@ -128,16 +119,12 @@ export const FleetCompliance: React.FC = () => {
           </Tabs>
         </div>
       </div>
-
-      <AddDocumentModal 
-        isOpen={isAddDocumentModalOpen}
-        onClose={() => setIsAddDocumentModalOpen(false)}
-      />
     </div>
   );
 };
 
 const FleetComplianceContent: React.FC = () => {
+  const [isAddDocumentModalOpen, setIsAddDocumentModalOpen] = useState(false);
   const { data: documents, isLoading } = useQuery({
     queryKey: ["vehicle-compliance"],
     queryFn: async () => {
@@ -249,6 +236,13 @@ const FleetComplianceContent: React.FC = () => {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-gray-900">All Compliance Documents</h3>
+          <Button 
+            onClick={() => setIsAddDocumentModalOpen(true)}
+            className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add Document
+          </Button>
         </div>
         
         {documents?.map((document) => {
@@ -291,6 +285,11 @@ const FleetComplianceContent: React.FC = () => {
           </Card>
         )}
       </div>
+
+      <AddDocumentModal 
+        isOpen={isAddDocumentModalOpen}
+        onClose={() => setIsAddDocumentModalOpen(false)}
+      />
     </div>
   );
 };
