@@ -107,14 +107,14 @@ export const SimpleLocationStockManager: React.FC<SimpleLocationStockManagerProp
                 const isLowStock = item.lowStockThreshold && item.quantity <= item.lowStockThreshold;
                 return (
                   <TableRow key={index} className={isLowStock ? "bg-orange-50" : ""}>
-                    <TableCell className="font-medium">
-                      {item.locationName}
-                      {isLowStock && (
-                        <div className="text-xs text-orange-600 font-medium mt-1">
-                          Low Stock
-                        </div>
-                      )}
-                    </TableCell>
+                  <TableCell className="font-medium">
+                    {item.locationName}
+                    {isLowStock && (
+                      <div className="text-xs text-orange-600 font-medium mt-1">
+                        Low Stock
+                      </div>
+                    )}
+                  </TableCell>
                     <TableCell>
                       <Input
                         type="number"
