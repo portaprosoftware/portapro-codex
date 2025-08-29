@@ -5,7 +5,8 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AlertTriangle, Calendar, FileText, Plus, Settings, Upload } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertTriangle, Calendar, FileText, Plus, Settings, Upload, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DocumentTypeManagement } from "./DocumentTypeManagement";
 import { AddDocumentModal } from "./AddDocumentModal";
@@ -13,7 +14,6 @@ import { SpillKitsTab } from "./compliance/SpillKitsTab";
 import { IncidentsTab } from "./compliance/IncidentsTab";
 import { DeconLogsTab } from "./compliance/DeconLogsTab";
 import { ComplianceReporting } from "./ComplianceReporting";
-import { ComplianceHelpPanel } from "./ComplianceHelpPanel";
 
 interface ComplianceDocument {
   id: string;
@@ -38,7 +38,49 @@ export const FleetCompliance: React.FC = () => {
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-2xl font-semibold text-gray-900 font-inter">Transport & Spill Compliance</h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl font-semibold text-gray-900 font-inter">Transport & Spill Compliance</h1>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <button className="p-1 hover:bg-muted rounded-full transition-colors">
+                      <Info className="h-4 w-4 text-muted-foreground" />
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>How this works</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-3">
+                      <p className="text-sm text-muted-foreground">
+                        Quick guide for roles and usage:
+                      </p>
+                      <ul className="space-y-2 text-sm">
+                        <li>
+                          <span className="font-medium">Documents</span> — Track permits and required paperwork. Audience: Dispatch, Admins.
+                        </li>
+                        <li>
+                          <span className="font-medium">Types</span> — Manage the list of compliance document types. Audience: Admins.
+                        </li>
+                        <li>
+                          <span className="font-medium">Spill Kits</span> — Check which vehicles have spill kits. Drivers verify in DVIR; Dispatch can record checks directly.
+                        </li>
+                        <li>
+                          <span className="font-medium">Incidents</span> — Log spills or exposures. Audience: Dispatch; Drivers may report in field.
+                        </li>
+                        <li>
+                          <span className="font-medium">Decon Logs</span> — Record decontamination after incidents. Audience: Dispatch, Safety.
+                        </li>
+                        <li>
+                          <span className="font-medium">Reports</span> — Generate daily compliance summaries when needed. Audience: Admins.
+                        </li>
+                      </ul>
+                      <div className="mt-4 text-sm text-muted-foreground">
+                        Tip: Use "Log Incident" and "Record Spill Kit Check" to add data without waiting on DVIRs.
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
               <p className="text-base text-gray-600 font-inter mt-1">DOT/FMCSA, state permits, spill readiness, and EPA/OSHA docs</p>
             </div>
             <Button 
@@ -85,10 +127,6 @@ export const FleetCompliance: React.FC = () => {
             </TabsContent>
           </Tabs>
         </div>
-      </div>
-
-      <div>
-        <ComplianceHelpPanel />
       </div>
 
       <AddDocumentModal 
