@@ -1,12 +1,37 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useJobWizard } from '@/contexts/JobWizardContext';
+import { supabase } from '@/integrations/supabase/client';
 
 export const WizardPreviewSummary: React.FC = () => {
   const { state } = useJobWizard();
   const items = state.data.items || [];
   const totalUnits = items.reduce((sum, i) => sum + (i.quantity || 0), 0);
   const services = state.data.servicesData || { selectedServices: [], servicesSubtotal: 0 };
+  const [productNames, setProductNames] = useState<Record<string, string>>({});
+
+  // Fetch product names for display
+  useEffect(() => {
+    const fetchProductNames = async () => {
+      if (items.length === 0) return;
+      
+      const productIds = [...new Set(items.map(item => item.product_id))];
+      const { data: products } = await supabase
+        .from('products')
+        .select('id, name')
+        .in('id', productIds);
+      
+      if (products) {
+        const nameMap: Record<string, string> = {};
+        products.forEach(product => {
+          nameMap[product.id] = product.name;
+        });
+        setProductNames(nameMap);
+      }
+    };
+
+    fetchProductNames();
+  }, [items]);
 
   return (
     <Card>
@@ -41,7 +66,7 @@ export const WizardPreviewSummary: React.FC = () => {
             <ul className="space-y-1">
               {items.slice(0, 4).map((i, idx) => (
                 <li key={idx} className="text-sm flex items-center justify-between">
-                  <span className="truncate max-w-[60%]">{i.product_id}</span>
+                  <span className="truncate max-w-[60%]">{productNames[i.product_id] || i.product_id}</span>
                   <span className="text-muted-foreground">× {i.quantity}</span>
                 </li>
               ))}

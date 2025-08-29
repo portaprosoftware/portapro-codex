@@ -277,9 +277,18 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
       setDriverConflict(null);
       setVehicleConflict(null);
       try {
-        // 1) Items availability
+        // 1) Items availability - only check for manually selected specific items
         const newConflicts: ItemConflict[] = [];
         for (const it of items) {
+          // Skip conflict checks for auto-assigned items (items without specific_item_ids but with strategy 'specific')
+          // Auto-assignment already verifies availability during selection
+          const isAutoAssigned = it.strategy === 'specific' && (!it.specific_item_ids || it.specific_item_ids.length === 0);
+          
+          if (isAutoAssigned) {
+            // Skip conflict checking for auto-assigned items
+            continue;
+          }
+          
           if (it.strategy === 'bulk') {
             const { data, error } = await supabase.rpc('get_product_availability_enhanced', {
               product_type_id: it.product_id,
@@ -435,9 +444,11 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
                 return (
                   <li key={i}>
                     <span className="font-medium">{productName}</span> × {it.quantity} × {rentalDays} day{rentalDays !== 1 ? 's' : ''} = {formatCurrency(itemCost)}
-                    {it.specific_item_ids && it.specific_item_ids.length > 0 && (
-                      <div className="text-xs text-muted-foreground ml-4">Units: {it.specific_item_ids.join(', ')}</div>
-                    )}
+                    {it.specific_item_ids && it.specific_item_ids.length > 0 ? (
+                      <div className="text-xs text-muted-foreground ml-4">Specific Units: {it.specific_item_ids.join(', ')}</div>
+                    ) : it.strategy === 'specific' ? (
+                      <div className="text-xs text-muted-foreground ml-4">Auto-assigned units</div>
+                    ) : null}
                     {conflict && (
                       <div className="text-xs text-red-600 ml-4">{conflict.message}</div>
                     )}
