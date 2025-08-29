@@ -271,8 +271,7 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
 
         {/* Empty State - Show when no product is selected */}
         {!selectedProductId && !isLoading && (
-          <div className="text-center py-6 space-y-3">
-            <Package className="w-12 h-12 text-gray-400 mx-auto" />
+          <div className="text-center py-6 space-y-2">
             <div className="text-gray-500">
               <p className="font-medium">Select a product to check availability</p>
               <p className="text-sm">Choose a product and date range to see detailed availability information</p>
