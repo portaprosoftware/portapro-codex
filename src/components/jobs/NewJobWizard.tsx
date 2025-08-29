@@ -220,7 +220,18 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
   };
 
   const handleCreateQuote = async (sendOptions?: QuoteSendOptions) => {
-    if (!validateCurrentStep()) return;
+    console.log('handleCreateQuote called with sendOptions:', sendOptions);
+    
+    const isValid = validateCurrentStep();
+    console.log('Validation result:', isValid);
+    console.log('Current state data:', state.data);
+    console.log('Current step:', state.currentStep);
+    console.log('Current errors:', state.errors);
+    
+    if (!isValid) {
+      console.log('Validation failed, exiting handleCreateQuote');
+      return;
+    }
 
     try {
       console.log('Creating quote with wizard data:', state.data);
