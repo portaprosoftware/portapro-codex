@@ -82,7 +82,8 @@ export const AvailabilityTrackerSheet: React.FC<AvailabilityTrackerSheetProps> =
                         value={requestedQuantity}
                         onChange={(e) => setRequestedQuantity(parseInt(e.target.value) || 1)}
                         placeholder="Quantity"
-                        className="w-full font-bold h-12 text-base"
+                        className="w-full font-bold h-12 text-base text-center"
+                        onFocus={(e) => e.target.select()}
                       />
                     </div>
                   </div>
