@@ -256,9 +256,6 @@ export const DocumentTypeManagement: React.FC = () => {
               <div className="flex-1">
                 <div className="flex items-center gap-3">
                   <h4 className="font-medium text-gray-900">{docType.name}</h4>
-                  <Badge variant={docType.is_active ? "default" : "secondary"}>
-                    {docType.is_active ? "Active" : "Inactive"}
-                  </Badge>
                 </div>
                 {docType.description && (
                   <p className="text-sm text-gray-600 mt-1">{docType.description}</p>
