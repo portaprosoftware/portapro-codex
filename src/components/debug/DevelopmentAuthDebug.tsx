@@ -8,6 +8,21 @@ export const DevelopmentAuthDebug: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const { user, role, isLoaded } = useUserRole();
   
+  const getRoleDisplayName = (role: string) => {
+    switch (role) {
+      case "owner":
+        return "Admin";
+      case "dispatcher":
+        return "Dispatch";
+      case "driver":
+        return "Driver";
+      case "customer":
+        return "Customer";
+      default:
+        return "User";
+    }
+  };
+  
   // Only show in development
   if (process.env.NODE_ENV !== 'development') {
     return null;
@@ -58,7 +73,7 @@ export const DevelopmentAuthDebug: React.FC = () => {
               <strong>Email:</strong> {user?.primaryEmailAddress?.emailAddress || 'None'}
             </div>
             <div>
-              <strong>Role:</strong> {role}
+              <strong>Role:</strong> {getRoleDisplayName(role)}
             </div>
           </div>
           
