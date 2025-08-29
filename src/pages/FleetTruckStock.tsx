@@ -10,7 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Package, Truck, ArrowLeftRight, PlusCircle, MinusCircle, Sparkles } from "lucide-react";
+import { Package, Truck, ArrowLeftRight, PlusCircle, MinusCircle, Droplets } from "lucide-react";
 import { RouteStockCheck } from "@/components/fleet/RouteStockCheck";
 import { StockVehicleSelectionModal } from "@/components/fleet/StockVehicleSelectionModal";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -169,7 +169,7 @@ const FleetTruckStock: React.FC = () => {
                 {/* Current Stock Display */}
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <Sparkles className="h-5 w-5 text-purple-600" />
+                    <Droplets className="h-5 w-5 text-purple-600" />
                     Current Stock
                   </h3>
                   
@@ -195,6 +195,13 @@ const FleetTruckStock: React.FC = () => {
                       </AlertDescription>
                     </Alert>
                   )}
+                </div>
+
+                <Separator />
+
+                {/* Route vs Truck Stock Check */}
+                <div className="space-y-4">
+                  <RouteStockCheck selectedVehicleId={vehicleId} />
                 </div>
 
                 <Separator />
@@ -279,10 +286,6 @@ const FleetTruckStock: React.FC = () => {
                 </div>
               </div>
             )}
-            
-            <div className="mt-6">
-              <RouteStockCheck />
-            </div>
           </CardContent>
         </Card>
 

@@ -9,8 +9,11 @@ import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Info } from 'lucide-react';
 
-export const RouteStockCheck: React.FC = () => {
-  const [vehicleId, setVehicleId] = useState<string>('');
+interface RouteStockCheckProps {
+  selectedVehicleId?: string;
+}
+
+export const RouteStockCheck: React.FC<RouteStockCheckProps> = ({ selectedVehicleId }) => {
   const [serviceDate, setServiceDate] = useState<string>(new Date().toISOString().slice(0, 10));
 
   const { data: vehicles } = useQuery({
@@ -26,17 +29,17 @@ export const RouteStockCheck: React.FC = () => {
   });
 
   const { data: routeStatus, isLoading } = useQuery({
-    queryKey: ['route-stock-status', vehicleId, serviceDate],
+    queryKey: ['route-stock-status', selectedVehicleId, serviceDate],
     queryFn: async () => {
-      if (!vehicleId || !serviceDate) return [];
+      if (!selectedVehicleId || !serviceDate) return [];
       const { data, error } = await supabase.rpc('get_route_stock_status', {
-        vehicle_uuid: vehicleId,
+        vehicle_uuid: selectedVehicleId,
         service_date: serviceDate,
       });
       if (error) throw error;
       return (data || []) as any[];
     },
-    enabled: !!vehicleId && !!serviceDate,
+    enabled: !!selectedVehicleId && !!serviceDate,
     staleTime: 30000, // Cache for 30 seconds
     refetchOnWindowFocus: false, // Don't refetch on window focus
   });
@@ -73,30 +76,15 @@ export const RouteStockCheck: React.FC = () => {
         {/* SEO: canonical and h1 in parent page; this is a sub-card */}
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
-          <div className="space-y-1">
-            <label className="text-sm text-muted-foreground">Vehicle</label>
-            <Select value={vehicleId} onValueChange={setVehicleId}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select vehicle" />
-              </SelectTrigger>
-              <SelectContent>
-                {vehicles?.map((v: any) => (
-                  <SelectItem key={v.id} value={v.id}>
-                    {v.license_plate || v.id}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
           <div className="space-y-1">
             <label className="text-sm text-muted-foreground">Service Date</label>
             <Input type="date" value={serviceDate} onChange={(e) => setServiceDate(e.target.value)} />
           </div>
         </div>
 
-        {!vehicleId ? (
-          <div className="text-sm text-muted-foreground">Pick a vehicle and date to check stock readiness.</div>
+        {!selectedVehicleId ? (
+          <div className="text-sm text-muted-foreground">Select a vehicle above to check stock readiness.</div>
         ) : isLoading ? (
           <div className="text-sm text-muted-foreground">Checking stock...</div>
         ) : (
