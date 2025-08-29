@@ -304,14 +304,11 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
       setDriverConflict(null);
       setVehicleConflict(null);
       try {
-        // 1) Items availability - skip conflict checks for auto-assigned items
+        // 1) Items availability - only check bulk items for conflicts
         const newConflicts: ItemConflict[] = [];
         for (const it of items) {
-          // Skip conflict checking for auto-assigned items - they were already validated during selection
-          if (it.auto_assigned) {
-            continue;
-          }
-          
+          // Only check bulk strategy items for conflicts
+          // Specific items (both auto-assigned and manually selected) are already validated
           if (it.strategy === 'bulk') {
             const { data, error } = await supabase.rpc('get_product_availability_enhanced', {
               product_type_id: it.product_id,
@@ -324,19 +321,6 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
               const available = Number(avail.available || 0);
               if (available < it.quantity) {
                 newConflicts.push({ product_id: it.product_id, type: 'bulk', message: `Only ${available} available; requested ${it.quantity}` });
-              }
-            }
-          } else if (it.strategy === 'specific' && it.specific_item_ids?.length) {
-            const { data, error } = await supabase.rpc('get_available_units', {
-              product_type_id: it.product_id,
-              start_date: startDate,
-              end_date: endDate,
-            });
-            if (!error) {
-              const availableIds = new Set((data as any[])?.map((u) => u.item_id) || []);
-              const missing = it.specific_item_ids.filter((id) => !availableIds.has(id));
-              if (missing.length > 0) {
-                newConflicts.push({ product_id: it.product_id, type: 'specific', message: `Units not available: ${missing.join(', ')}` });
               }
             }
           }
