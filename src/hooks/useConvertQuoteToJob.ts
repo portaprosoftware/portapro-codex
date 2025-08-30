@@ -61,12 +61,19 @@ export function useConvertQuoteToJob() {
       // Calculate rental duration from quote items (use first inventory item's rental duration)
       const rentalDuration = inventoryItems.length > 0 ? inventoryItems[0].rental_duration_days : undefined;
       
+      // Generate job number
+      const { data: jobNumber, error: numberError } = await supabase
+        .rpc('get_next_job_number', { job_type_param: jobType });
+
+      if (numberError) throw numberError;
+
       // Create the job
       const { data: job, error: jobError } = await supabase
         .from('jobs')
         .insert({
           customer_id: quote.customer_id,
           quote_id: quoteId,
+          job_number: jobNumber,
           job_type: jobType,
           scheduled_date: new Date().toISOString().split('T')[0], // Today's date as default
           scheduled_time: '09:00', // Default time

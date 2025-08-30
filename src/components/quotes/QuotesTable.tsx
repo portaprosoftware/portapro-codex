@@ -192,8 +192,10 @@ export const QuotesTable = ({ searchTerm, dateRange }: QuotesTableProps) => {
                     {quote.status === 'accepted' && (
                       <>
                         <DropdownMenuItem 
-                          onClick={() => createInvoiceFromQuote.mutate(quote.id)}
-                          disabled={createInvoiceFromQuote.isPending}
+                          onClick={() => {
+                            setSelectedQuoteForInvoice(quote);
+                            setShowCreateInvoice(true);
+                          }}
                         >
                           <FileText className="mr-2 h-4 w-4" />
                           Convert to Invoice
