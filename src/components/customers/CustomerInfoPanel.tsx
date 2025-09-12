@@ -319,15 +319,15 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
       </Card>
 
       {/* Delete Customer Card */}
-      <Card className="border-red-200 bg-red-50">
+      <Card className="border-gray-200 bg-gray-100">
         <CardHeader className="pb-3">
-          <CardTitle className="text-red-700 text-lg flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5" />
+          <CardTitle className="text-black text-lg flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5 text-gray-600" />
             Delete Customer Profile
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-red-600 mb-4">
+          <p className="text-sm text-gray-600 mb-4">
             Permanently delete this customer and all associated data. This action cannot be undone.
           </p>
           <Button
