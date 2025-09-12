@@ -23,7 +23,8 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { geocodeAddress } from '@/services/geocoding';
+import { geocodeAddress } from '@/utils/geocoding';
+import { FormDescription } from '@/components/ui/form';
 
 const US_STATES = [
   { value: 'AL', label: 'Alabama' },
@@ -90,6 +91,7 @@ const serviceLocationSchema = z.object({
   contact_person: z.string().optional(),
   contact_phone: z.string().optional(),
   is_active: z.boolean().default(true),
+  is_default: z.boolean().default(false),
 });
 
 type ServiceLocationForm = z.infer<typeof serviceLocationSchema>;
@@ -127,22 +129,34 @@ export function EditServiceLocationModal({
         contact_person: location.contact_person || '',
         contact_phone: location.contact_phone || '',
         is_active: location.is_active ?? true,
+        is_default: location.is_default ?? false,
       });
     }
   }, [location, isOpen, form]);
 
   const onSubmit = async (data: ServiceLocationForm) => {
     try {
-      // Get Mapbox token and geocode the address
-      const { data: tokenData } = await supabase.functions.invoke('get-mapbox-token');
-      let gpsCoordinates = null;
+      // If setting as default, first unset existing default for this customer
+      if (data.is_default) {
+        await supabase
+          .from('customer_service_locations')
+          .update({ is_default: false })
+          .eq('customer_id', location.customer_id)
+          .eq('is_default', true)
+          .neq('id', location.id);
+      }
 
-      if (tokenData?.token) {
-        const fullAddress = `${data.street} ${data.street2 || ''} ${data.city} ${data.state} ${data.zip}`.trim();
-        const coordinates = await geocodeAddress(fullAddress, tokenData.token);
-        if (coordinates) {
-          gpsCoordinates = `point(${coordinates[0]} ${coordinates[1]})`;
-        }
+      // Geocode the address using the updated function
+      const geocodeResult = await geocodeAddress(
+        data.street,
+        data.city,
+        data.state,
+        data.zip
+      );
+
+      let gpsCoordinates = null;
+      if (geocodeResult.success && geocodeResult.coordinates) {
+        gpsCoordinates = `(${geocodeResult.coordinates[0]},${geocodeResult.coordinates[1]})`;
       }
 
       const updateData = {
@@ -357,6 +371,22 @@ export function EditServiceLocationModal({
                       />
                     </FormControl>
                     <FormLabel>Active Location</FormLabel>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="is_default"
+                render={({ field }) => (
+                  <FormItem className="flex items-center space-x-2">
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormLabel>Default Location</FormLabel>
                   </FormItem>
                 )}
               />

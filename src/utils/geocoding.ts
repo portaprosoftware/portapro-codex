@@ -78,6 +78,13 @@ export async function createServiceLocationWithGeocoding(
   // First geocode the address
   const geocodeResult = await geocodeAddress(street, city, state, zip);
   
+  // First, unset any existing default for this customer
+  await supabase
+    .from('customer_service_locations')
+    .update({ is_default: false })
+    .eq('customer_id', customerId)
+    .eq('is_default', true);
+
   const locationData = {
     customer_id: customerId,
     location_name: locationName,
