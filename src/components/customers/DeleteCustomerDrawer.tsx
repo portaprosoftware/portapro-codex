@@ -157,7 +157,7 @@ export function DeleteCustomerDrawer({ isOpen, onClose, customer }: DeleteCustom
         <DrawerHeader className="text-center">
           <div className="flex items-center justify-center mb-2">
             <div className="bg-gradient-to-br from-red-500 to-red-600 p-3 rounded-full">
-              <AlertTriangle className="h-6 w-6 text-white fill-current" />
+              <AlertTriangle className="h-6 w-6 text-white" />
             </div>
           </div>
           <DrawerTitle className="text-red-600 text-xl font-bold">
