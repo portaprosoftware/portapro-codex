@@ -105,12 +105,6 @@ export function ServiceLocationCard({ location, onUpdate, onDelete }: ServiceLoc
                     Locked
                   </Badge>
                  )}
-                {hasGpsCoordinates && (
-                  <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 font-bold px-3 py-1 rounded-full">
-                    <MapPin className="w-3 h-3 mr-1" />
-                    GPS Ready
-                  </Badge>
-                )}
               </div>
             </div>
 
