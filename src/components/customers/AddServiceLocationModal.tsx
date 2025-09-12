@@ -151,7 +151,7 @@ export function AddServiceLocationModal({
         const fullAddress = `${data.street} ${data.street2 || ''} ${data.city} ${data.state} ${data.zip}`.trim();
         const coordinates = await geocodeAddress(fullAddress, tokenData.token);
         if (coordinates) {
-          gpsCoordinates = `point(${coordinates[0]} ${coordinates[1]})`;
+          gpsCoordinates = `(${coordinates[0]},${coordinates[1]})`;
         }
       }
 
