@@ -157,7 +157,7 @@ export function DeleteCustomerDrawer({ isOpen, onClose, customer }: DeleteCustom
         <DrawerHeader className="text-center">
           <div className="flex items-center justify-center mb-2">
             <div className="bg-gradient-to-br from-red-500 to-red-600 p-3 rounded-full">
-              <AlertTriangle className="h-6 w-6 text-white stroke-[3]" />
+              <AlertTriangle className="h-6 w-6 text-white" />
             </div>
           </div>
           <DrawerTitle className="text-red-600 text-xl font-bold">
@@ -171,9 +171,9 @@ export function DeleteCustomerDrawer({ isOpen, onClose, customer }: DeleteCustom
 
         <div className="px-6 py-4 flex-1">
           <div className="space-y-4">
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="bg-gray-100 border border-gray-200 rounded-lg p-4">
               <div className="flex items-center gap-3">
-                <Trash2 className="h-5 w-5 text-red-600" />
+                <Trash2 className="h-5 w-5 text-gray-600" />
                 <div>
                   <h4 className="font-semibold text-black">Warning</h4>
                   <p className="text-sm text-gray-600">
@@ -191,7 +191,7 @@ export function DeleteCustomerDrawer({ isOpen, onClose, customer }: DeleteCustom
                 value={confirmText}
                 onChange={(e) => setConfirmText(e.target.value)}
                 placeholder="delete"
-                className="border-red-300 focus:border-red-500 focus:ring-red-500"
+                className="border-gray-300 focus:border-gray-500 focus:ring-gray-500"
               />
             </div>
           </div>
