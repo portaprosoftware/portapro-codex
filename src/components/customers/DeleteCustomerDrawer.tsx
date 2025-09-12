@@ -156,8 +156,8 @@ export function DeleteCustomerDrawer({ isOpen, onClose, customer }: DeleteCustom
       <DrawerContent className="h-[90vh] max-h-[90vh]">
         <DrawerHeader className="text-center">
           <div className="flex items-center justify-center mb-2">
-            <div className="bg-red-100 p-3 rounded-full">
-              <AlertTriangle className="h-6 w-6 text-red-600" />
+            <div className="bg-gradient-to-br from-red-500 to-red-600 p-3 rounded-full">
+              <AlertTriangle className="h-6 w-6 text-white stroke-[3]" />
             </div>
           </div>
           <DrawerTitle className="text-red-600 text-xl font-bold">
@@ -175,8 +175,8 @@ export function DeleteCustomerDrawer({ isOpen, onClose, customer }: DeleteCustom
               <div className="flex items-center gap-3">
                 <Trash2 className="h-5 w-5 text-red-600" />
                 <div>
-                  <h4 className="font-semibold text-red-800">Warning</h4>
-                  <p className="text-sm text-red-700">
+                  <h4 className="font-semibold text-black">Warning</h4>
+                  <p className="text-sm text-gray-600">
                     This will delete all jobs, quotes, invoices, and related data.
                   </p>
                 </div>
