@@ -153,7 +153,7 @@ export function DeleteCustomerDrawer({ isOpen, onClose, customer }: DeleteCustom
 
   return (
     <Drawer open={isOpen} onOpenChange={handleClose}>
-      <DrawerContent className="h-[50vh] max-h-[50vh]">
+      <DrawerContent className="h-[90vh] max-h-[90vh]">
         <DrawerHeader className="text-center">
           <div className="flex items-center justify-center mb-2">
             <div className="bg-red-100 p-3 rounded-full">
