@@ -872,26 +872,6 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                  />
                </div>
 
-              {/* Danger Zone */}
-              <div className="space-y-6 pt-6 border-t border-destructive/20">
-                <div className="bg-destructive/5 border border-destructive/20 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold text-destructive mb-4">Danger Zone</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Once you delete a customer, there is no going back. Please be certain.
-                  </p>
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => {
-                      console.log('Delete button clicked, showing confirmation');
-                      setShowDeleteConfirm(true);
-                    }}
-                  >
-                    Delete Customer
-                  </Button>
-                </div>
-              </div>
 
               {/* Form Actions */}
               <div className="flex justify-end space-x-2 pt-6 border-t border-border">
@@ -907,37 +887,6 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the customer
-              and all associated data.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <div className="my-4">
-            <label className="text-sm font-medium">
-              Type "delete customer" to confirm:
-            </label>
-            <Input
-              value={deleteConfirmText}
-              onChange={(e) => setDeleteConfirmText(e.target.value)}
-              placeholder="delete customer"
-            />
-          </div>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteCustomer}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Delete Customer
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
 
       {/* Deposit Confirmation Dialog */}
       <AlertDialog open={showDepositConfirm} onOpenChange={setShowDepositConfirm}>
