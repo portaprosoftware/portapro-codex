@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Edit, MapPin, ExternalLink, Navigation, Copy, FileText } from 'lucide-react';
+import { Edit, MapPin, ExternalLink, Navigation, Copy, FileText, Trash2, AlertTriangle } from 'lucide-react';
 import { EditCustomerModal } from './EditCustomerModal';
+import { DeleteCustomerDrawer } from './DeleteCustomerDrawer';
 import { toast } from '@/hooks/use-toast';
 import { formatCategoryDisplay } from '@/lib/categoryUtils';
 import { formatPhoneNumber } from '@/lib/utils';
@@ -53,6 +54,7 @@ interface CustomerInfoPanelProps {
 export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showNotesModal, setShowNotesModal] = useState(false);
+  const [showDeleteDrawer, setShowDeleteDrawer] = useState(false);
 
   const copyToClipboard = async (text: string, label: string) => {
     try {
@@ -316,6 +318,29 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
         </CardContent>
       </Card>
 
+      {/* Delete Customer Card */}
+      <Card className="border-red-200 bg-red-50">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-red-700 text-lg flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5" />
+            Delete Customer Profile
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-red-600 mb-4">
+            Permanently delete this customer and all associated data. This action cannot be undone.
+          </p>
+          <Button
+            onClick={() => setShowDeleteDrawer(true)}
+            variant="destructive"
+            className="bg-red-600 hover:bg-red-700 text-white"
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Delete Customer Profile
+          </Button>
+        </CardContent>
+      </Card>
+
       {/* Notes Modal */}
       {customer.notes && (
         <Dialog open={showNotesModal} onOpenChange={setShowNotesModal}>
@@ -338,6 +363,12 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
       <EditCustomerModal
         isOpen={showEditModal}
         onClose={() => setShowEditModal(false)}
+        customer={customer}
+      />
+
+      <DeleteCustomerDrawer
+        isOpen={showDeleteDrawer}
+        onClose={() => setShowDeleteDrawer(false)}
         customer={customer}
       />
     </div>
