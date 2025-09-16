@@ -13,6 +13,7 @@ interface EnhancedSearchFiltersProps {
   };
   onFiltersChange: (filters: any) => void;
   onClearFilters: () => void;
+  rightContent?: React.ReactNode;
 }
 
 export const EnhancedSearchFilters: React.FC<EnhancedSearchFiltersProps> = ({
@@ -20,7 +21,8 @@ export const EnhancedSearchFilters: React.FC<EnhancedSearchFiltersProps> = ({
   onSearchChange,
   filters,
   onFiltersChange,
-  onClearFilters
+  onClearFilters,
+  rightContent
 }) => {
 
   const updateFilter = (key: string, value: any) => {
@@ -69,6 +71,8 @@ export const EnhancedSearchFilters: React.FC<EnhancedSearchFiltersProps> = ({
             Clear
           </Button>
         )}
+        
+        {rightContent}
       </div>
 
     </div>

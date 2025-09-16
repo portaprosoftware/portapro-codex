@@ -521,34 +521,20 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
                 Transfer Locations ({selectedItems.length})
               </Button>
             )}
-          </div>
-          <TrackedOperationsPanel
-            productId={productId}
-            productName={product?.name || "Product"}
-            trigger={
-              <Button 
-                className="bg-blue-600 text-white hover:bg-blue-700 border-0"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Add Units
-              </Button>
-            }
-          />
         </div>
-        
-        {/* Delete Selected Button - Moved below Add Units for better spacing */}
-        {selectedItems.length > 0 && (
-          <div className="flex justify-end">
-            <Button
-              variant="outline"
-              onClick={handleBulkDelete}
-              className="border-red-600 text-red-600 hover:bg-red-50"
+        <TrackedOperationsPanel
+          productId={productId}
+          productName={product?.name || "Product"}
+          trigger={
+            <Button 
+              className="bg-blue-600 text-white hover:bg-blue-700 border-0"
             >
-              <Trash className="w-4 h-4 mr-2" />
-              Delete Selected ({selectedItems.length})
+              <Plus className="w-4 h-4 mr-2" />
+              Add Units
             </Button>
-          </div>
-        )}
+          }
+        />
+      </div>
       </div>
 
       {/* Enhanced Search Filters */}
@@ -566,6 +552,18 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
           console.log("IndividualUnitsTab: Clearing filters");
           setAvailabilityFilter("all");
         }}
+        rightContent={
+          selectedItems.length > 0 ? (
+            <Button
+              variant="outline"
+              onClick={handleBulkDelete}
+              className="border-red-600 text-red-600 hover:bg-red-50"
+            >
+              <Trash className="w-4 h-4 mr-2" />
+              Delete Selected ({selectedItems.length})
+            </Button>
+          ) : null
+        }
       />
 
       {/* Units Table */}
