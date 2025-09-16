@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { useQuoteDrafts } from '@/hooks/useQuoteDrafts';
 import { formatDistanceToNow } from 'date-fns';
-import { FileText, Trash2, Play, Loader2 } from 'lucide-react';
+import { FileText, Trash2, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { NewQuoteWizard } from './NewQuoteWizard';
 
@@ -134,7 +134,6 @@ export const QuoteDraftManagement: React.FC = () => {
                       onClick={() => handleResumeDraft(draft)}
                       className="bg-primary hover:bg-primary/90"
                     >
-                      <Play className="h-4 w-4 mr-2" />
                       Resume
                     </Button>
                     <Button
