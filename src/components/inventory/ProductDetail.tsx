@@ -187,64 +187,39 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
         <span className="text-gray-900 font-medium">{product.name}</span>
       </div>
 
-      {/* Pill Menu Navigation */}
+      {/* Navigation */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        {/* Desktop/Tablet - 2 rows of 3 pills */}
-        <div className="hidden sm:block mb-6">
-          <div className="space-y-3">
-            {/* First Row: Overview, Site Stock, Tracked Units */}
-            <TabsList className="bg-white rounded-full p-1 shadow-sm border w-fit">
-              {tabs.slice(0, 3).map((tab) => {
-                const IconComponent = tab.icon;
-                return (
-                  <TabsTrigger 
-                    key={tab.value} 
-                    value={tab.value}
-                    className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-4 py-2 text-sm whitespace-nowrap flex items-center gap-2"
-                  >
-                    <IconComponent className="w-4 h-4 flex-shrink-0" />
-                    <span>{tab.label}</span>
-                    {tab.badge !== null && tab.badge !== undefined && (
-                      <Badge className="ml-auto border-0 text-xs bg-gray-200 text-gray-800">
-                        {tab.badge}
-                      </Badge>
-                    )}
-                  </TabsTrigger>
-                );
-              })}
-            </TabsList>
-            
-            {/* Second Row: Compliance, Maintenance, Variations */}
-            <TabsList className="bg-white rounded-full p-1 shadow-sm border w-fit">
-              {tabs.slice(3, 6).map((tab) => {
-                const IconComponent = tab.icon;
-                return (
-                  <TabsTrigger 
-                    key={tab.value} 
-                    value={tab.value}
-                    className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-4 py-2 text-sm whitespace-nowrap flex items-center gap-2"
-                  >
-                    <IconComponent className="w-4 h-4 flex-shrink-0" />
-                    <span>{tab.label}</span>
-                    {tab.badge !== null && tab.badge !== undefined && (
-                      <Badge className="ml-auto border-0 text-xs bg-gray-200 text-gray-800">
-                        {tab.badge}
-                      </Badge>
-                    )}
-                  </TabsTrigger>
-                );
-              })}
-            </TabsList>
-          </div>
+        {/* Desktop - Single row with all tabs */}
+        <div className="hidden lg:block mb-6">
+          <TabsList className="bg-white rounded-full p-1 shadow-sm border w-fit">
+            {tabs.map((tab) => {
+              const IconComponent = tab.icon;
+              return (
+                <TabsTrigger 
+                  key={tab.value} 
+                  value={tab.value}
+                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-4 py-2 text-sm whitespace-nowrap flex items-center gap-2"
+                >
+                  <IconComponent className="w-4 h-4 flex-shrink-0" />
+                  <span>{tab.label}</span>
+                  {tab.badge !== null && tab.badge !== undefined && (
+                    <Badge className="ml-auto border-0 text-xs bg-gray-200 text-gray-800">
+                      {tab.badge}
+                    </Badge>
+                  )}
+                </TabsTrigger>
+              );
+            })}
+          </TabsList>
         </div>
 
-        {/* Mobile Dropdown */}
-        <div className="block sm:hidden">
+        {/* Tablet and Mobile - Dropdown */}
+        <div className="block lg:hidden mb-6">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button 
                 variant="outline" 
-                className="w-full justify-between bg-white"
+                className="w-full justify-between bg-white border border-gray-200 shadow-sm"
               >
                 <div className="flex items-center gap-2">
                   {activeTabData && (
