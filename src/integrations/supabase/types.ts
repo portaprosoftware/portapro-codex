@@ -3682,6 +3682,9 @@ export type Database = {
           actual_completion_time: string | null
           assigned_template_ids: Json | null
           billing_method: string | null
+          cancellation_reason: string | null
+          cancelled_at: string | null
+          cancelled_by: string | null
           contact_id: string | null
           created_at: string
           customer_id: string
@@ -3721,6 +3724,9 @@ export type Database = {
           actual_completion_time?: string | null
           assigned_template_ids?: Json | null
           billing_method?: string | null
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          cancelled_by?: string | null
           contact_id?: string | null
           created_at?: string
           customer_id: string
@@ -3760,6 +3766,9 @@ export type Database = {
           actual_completion_time?: string | null
           assigned_template_ids?: Json | null
           billing_method?: string | null
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          cancelled_by?: string | null
           contact_id?: string | null
           created_at?: string
           customer_id?: string
@@ -10039,7 +10048,7 @@ export type Database = {
               user_uuid?: string
             }
           | { template_uuid: string }
-        Returns: undefined
+        Returns: boolean
       }
       transition_report_status: {
         Args: {

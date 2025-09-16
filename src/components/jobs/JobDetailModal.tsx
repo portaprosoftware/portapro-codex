@@ -17,12 +17,14 @@ import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { TimePicker } from '@/components/ui/time-picker';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Switch } from '@/components/ui/switch';
-import { CalendarDays, Clock, User, MapPin, FileText, RotateCcw, Edit2, Save, X, Star, Package, Truck, Wrench } from 'lucide-react';
+import { CalendarDays, Clock, User, MapPin, FileText, RotateCcw, Edit2, Save, X, Star, Package, Truck, Wrench, Ban } from 'lucide-react';
 import { JobLengthControl } from './JobLengthControl';
 import { toast } from 'sonner';
 import { getJobStatusInfo } from '@/lib/jobStatusUtils';
 import { formatDateForQuery, formatDateSafe } from '@/lib/dateUtils';
 import { cn } from '@/lib/utils';
+import { CancelJobModal } from './CancelJobModal';
+import { useUser } from '@clerk/clerk-react';
 
 
 // Job types from wizard for consistency
@@ -59,8 +61,9 @@ interface JobDetailModalProps {
 
 export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProps) {
   const queryClient = useQueryClient();
+  const { user } = useUser();
   const [isEditing, setIsEditing] = useState(false);
-  
+  const [showCancelModal, setShowCancelModal] = useState(false);
   const [showTimeSelector, setShowTimeSelector] = useState(false);
 
   // Fetch job data
@@ -279,6 +282,30 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
     priorityMutation.mutate({ is_priority: !(job as any)?.is_priority });
   };
 
+  const handleCancelJob = async (reason: string) => {
+    try {
+      const { error } = await supabase
+        .from('jobs')
+        .update({ 
+          status: 'cancelled',
+          cancelled_by: user?.id || null,
+          cancellation_reason: reason,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', jobId);
+
+      if (error) throw error;
+
+      queryClient.invalidateQueries({ queryKey: ['job-detail', jobId] });
+      queryClient.invalidateQueries({ queryKey: ['jobs'] });
+      toast.success('Job cancelled successfully');
+      setShowCancelModal(false);
+    } catch (error) {
+      console.error('Error cancelling job:', error);
+      toast.error('Failed to cancel job');
+    }
+  };
+
   const getJobButtonText = () => {
     if (!job) return 'Start Job';
     return job.status === 'assigned' ? 'Start Job' : 'Complete Job';
@@ -296,6 +323,8 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
   // Permissions for actions
   const canStartJob = job?.status === 'assigned' || job?.status === 'in-progress';
   const canReverseJob = job?.status === 'in-progress' || job?.status === 'completed';
+  const canCancelJob = job?.status === 'assigned' || job?.status === 'in-progress';
+  const isCancelledJob = job?.status === 'cancelled';
 
   if (!job && !isLoading) return null;
 
@@ -919,6 +948,14 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
         </div>
       </DialogContent>
 
+      {/* Cancel Job Modal */}
+      <CancelJobModal
+        isOpen={showCancelModal}
+        onClose={() => setShowCancelModal(false)}
+        onConfirm={handleCancelJob}
+        jobNumber={job?.job_number}
+        customerName={job?.customer?.name}
+      />
     </Dialog>
   );
 }

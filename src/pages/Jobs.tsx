@@ -40,6 +40,7 @@ import { MapModeToggle } from '@/components/maps/MapModeToggle';
 import { MapLegend } from '@/components/maps/MapLegend';
 import { JobDraftManagement } from '@/components/jobs/JobDraftManagement';
 import { useJobDrafts } from '@/hooks/useJobDrafts';
+import { FilterToggle } from '@/components/jobs/FilterToggle';
 
 
 
@@ -61,6 +62,7 @@ const JobsPage: React.FC = () => {
   const [selectedDriver, setSelectedDriver] = useState('all');
   const [selectedJobType, setSelectedJobType] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
+  const [showCancelledJobs, setShowCancelledJobs] = useState(false);
 
   // Custom date range filters
   const [customDateRange, setCustomDateRange] = useState<DateRange | undefined>();
@@ -161,12 +163,25 @@ const JobsPage: React.FC = () => {
 
   // Get jobs for all views using unified date (convert Date to string at query boundary)
   // Only pass database-queryable filters to the hook
-  const { data: allJobs = [] } = useJobs({
+  const { data: allJobsRaw = [] } = useJobs({
     date: formatDateForQuery(selectedDate), // Convert Date to string here
     job_type: selectedJobType !== 'all' ? selectedJobType : undefined,
     status: ['assigned', 'unassigned', 'in_progress', 'completed', 'cancelled'].includes(selectedStatus) ? selectedStatus : undefined,
     driver_id: selectedDriver !== 'all' ? selectedDriver : undefined
   });
+
+  // Filter out cancelled jobs by default (unless specifically filtering for them or toggle is on)
+  const allJobs = React.useMemo(() => {
+    if (selectedStatus === 'cancelled' || showCancelledJobs) {
+      return allJobsRaw; // Show cancelled jobs when specifically filtered or toggle is on
+    }
+    return allJobsRaw.filter(job => job.status !== 'cancelled');
+  }, [allJobsRaw, selectedStatus, showCancelledJobs]);
+
+  // Count cancelled jobs for the toggle
+  const cancelledJobsCount = React.useMemo(() => {
+    return allJobsRaw.filter(job => job.status === 'cancelled').length;
+  }, [allJobsRaw]);
 
   // Separate jobs by type for calendar view
   const outgoingJobs = allJobs.filter(job => 
@@ -181,7 +196,7 @@ const JobsPage: React.FC = () => {
   const dispatchJobs = allJobs;
 
   // Custom date range jobs
-  const { data: customJobs = [] } = useJobsWithDateRange({
+  const { data: customJobsRaw = [] } = useJobsWithDateRange({
     startDate: customDateRange?.from ? formatDateForQuery(customDateRange.from) : undefined,
     endDate: customDateRange?.to ? formatDateForQuery(customDateRange.to) : undefined,
     job_type: customSelectedJobType !== 'all' ? customSelectedJobType : undefined,
@@ -189,6 +204,14 @@ const JobsPage: React.FC = () => {
     driver_id: customSelectedDriver !== 'all' ? customSelectedDriver : undefined,
     job_id: customSearchTerm || undefined
   });
+
+  // Filter out cancelled jobs from custom view by default (unless specifically filtering for them)
+  const customJobs = React.useMemo(() => {
+    if (customSelectedStatus === 'cancelled') {
+      return customJobsRaw; // Show cancelled jobs when specifically filtered
+    }
+    return customJobsRaw.filter(job => job.status !== 'cancelled');
+  }, [customJobsRaw, customSelectedStatus]);
 
   // Get drivers for filter
   const { data: drivers = [] } = useQuery({
@@ -609,15 +632,22 @@ const JobsPage: React.FC = () => {
                   <div className="col-span-2 border-b border-gray-200 bg-gray-50">
                     <div className="w-full">
                       <div className="border-none">
-                        <div className="px-4 pt-3 pb-2">
-                          <div className="flex items-center gap-2">
-                            <AlertTriangle className="h-4 w-4 text-orange-500" />
-                            <span className="font-medium text-sm">Unassigned Jobs</span>
-                            <Badge variant="secondary" className="text-xs">
-                              {filterJobs(unassignedJobs).length}
-                            </Badge>
-                          </div>
-                        </div>
+                         <div className="px-4 pt-3 pb-2">
+                           <div className="flex items-center justify-between">
+                             <div className="flex items-center gap-2">
+                               <AlertTriangle className="h-4 w-4 text-orange-500" />
+                               <span className="font-medium text-sm">Unassigned Jobs</span>
+                               <Badge variant="secondary" className="text-xs">
+                                 {filterJobs(unassignedJobs).length}
+                               </Badge>
+                             </div>
+                             <FilterToggle
+                               showCancelled={showCancelledJobs}
+                               onToggle={setShowCancelledJobs}
+                               cancelledCount={cancelledJobsCount}
+                             />
+                           </div>
+                         </div>
                         <div className="pb-3 px-4">
                           <Droppable droppableId="unassigned" direction="horizontal">
                             {(provided, snapshot) => (

@@ -147,7 +147,8 @@ export const JobCard: React.FC<JobCardProps> = ({
         className={cn(
           "enterprise-job-card group cursor-pointer border-l-4",
           jobTypeInfo.borderColor,
-          job.job_type
+          job.job_type,
+          job.status === 'cancelled' && 'cancelled'
         )}
         tabIndex={0}
         role="button"
@@ -237,7 +238,8 @@ export const JobCard: React.FC<JobCardProps> = ({
       className={cn(
         "enterprise-job-card group cursor-pointer border-l-4",
         jobTypeInfo.borderColor,
-        job.job_type
+        job.job_type,
+        job.status === 'cancelled' && 'cancelled'
       )}
       tabIndex={0}
       role="button"
