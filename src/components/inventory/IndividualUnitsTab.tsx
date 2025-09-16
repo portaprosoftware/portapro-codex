@@ -211,6 +211,10 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
     onSuccess: () => {
       toast.success('Item deleted successfully');
       queryClient.invalidateQueries({ queryKey: ["product-items", productId] });
+      queryClient.invalidateQueries({ queryKey: ['unified-stock', productId] });
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['individual-units-count', productId] });
+      queryClient.invalidateQueries({ queryKey: ['maintenance-count', productId] });
       setDeleteDialogOpen(false);
       setItemToDelete(null);
     },
@@ -234,6 +238,10 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
     onSuccess: (deletedCount) => {
       toast.success(`Successfully deleted ${deletedCount} item${deletedCount > 1 ? 's' : ''}`);
       queryClient.invalidateQueries({ queryKey: ["product-items", productId] });
+      queryClient.invalidateQueries({ queryKey: ['unified-stock', productId] });
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['individual-units-count', productId] });
+      queryClient.invalidateQueries({ queryKey: ['maintenance-count', productId] });
       setSelectedItems([]);
       setBulkDeleteDialogOpen(false);
     },
