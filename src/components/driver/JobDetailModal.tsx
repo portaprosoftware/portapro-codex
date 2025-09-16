@@ -15,7 +15,6 @@ import {
   Camera, 
   FileSignature,
   CheckCircle,
-  PlayCircle,
   MessageSquare,
   FileText,
   RotateCcw,
@@ -589,7 +588,6 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                             disabled={isUpdating}
                             className="w-full"
                           >
-                            <PlayCircle className="w-4 h-4 mr-2" />
                             Start Job
                           </Button>
                         )}

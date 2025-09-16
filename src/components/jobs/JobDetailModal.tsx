@@ -17,7 +17,7 @@ import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { TimePicker } from '@/components/ui/time-picker';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Switch } from '@/components/ui/switch';
-import { CalendarDays, Clock, User, MapPin, FileText, Play, RotateCcw, Edit2, Save, X, Star, Ban, Package, Truck, Wrench } from 'lucide-react';
+import { CalendarDays, Clock, User, MapPin, FileText, RotateCcw, Edit2, Save, X, Star, Ban, Package, Truck, Wrench } from 'lucide-react';
 import { JobLengthControl } from './JobLengthControl';
 import { toast } from 'sonner';
 import { getJobStatusInfo } from '@/lib/jobStatusUtils';
@@ -385,7 +385,6 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                 size="sm"
                 className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
               >
-                <Play className="w-4 h-4 mr-1" />
                 {getJobButtonText()}
               </Button>
             )}
