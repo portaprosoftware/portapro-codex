@@ -68,6 +68,11 @@ export const RouteStockCheck: React.FC<RouteStockCheckProps> = ({ selectedVehicl
                     <p><strong>Deficit:</strong> How many more items you need to load</p>
                     <p><strong>Status:</strong> "OK" means you're ready, "Replenish" means load more supplies</p>
                   </div>
+                  <div className="pt-2 mt-2 border-t border-border">
+                    <p className="text-xs text-muted-foreground italic">
+                      Note: This feature requires you to assign vehicles to jobs for each day.
+                    </p>
+                  </div>
                 </div>
               </PopoverContent>
             </Popover>
