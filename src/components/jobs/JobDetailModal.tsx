@@ -399,17 +399,6 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                 Reverse
               </Button>
             )}
-            {canCancelJob && !isEditing && (
-              <Button
-                onClick={() => setShowCancelDialog(true)}
-                disabled={statusUpdateMutation.isPending}
-                size="sm"
-                variant="destructive"
-              >
-                <Ban className="w-4 h-4 mr-1" />
-                Cancel Job
-              </Button>
-            )}
           </div>
         </div>
 
@@ -926,6 +915,22 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                     )}
                   </CardContent>
                 </Card>
+
+                {/* Cancel Job Button - Moved to bottom */}
+                {canCancelJob && !isEditing && (
+                  <div className="pt-4">
+                    <Button
+                      onClick={() => setShowCancelDialog(true)}
+                      disabled={statusUpdateMutation.isPending}
+                      size="sm"
+                      variant="destructive"
+                      className="w-full"
+                    >
+                      <Ban className="w-4 h-4 mr-1" />
+                      Cancel Job
+                    </Button>
+                  </div>
+                )}
 
               </form>
             </Form>
