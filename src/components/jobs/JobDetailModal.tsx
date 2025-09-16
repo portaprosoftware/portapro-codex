@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { supabase } from '@/integrations/supabase/client';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -333,6 +333,9 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col">
+        <DialogDescription className="sr-only">
+          Job details and management interface for {job?.job_number || 'job'}
+        </DialogDescription>
         <DialogHeader className="flex-shrink-0 pb-2 border-b">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -908,7 +911,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                   </CardContent>
                 </Card>
 
-                 {/* Notes */}
+                  {/* Notes */}
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-base">
@@ -940,6 +943,39 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                     )}
                   </CardContent>
                 </Card>
+
+                {/* Job Cancellation - Show if cancelled or can cancel */}
+                {(isCancelledJob || (canCancelJob && !isEditing)) && (
+                  <Card>
+                    <CardContent className="pt-6">
+                      {isCancelledJob ? (
+                        <div className="text-center space-y-2 p-4 bg-destructive/10 rounded-lg">
+                          <div className="flex items-center justify-center gap-2 text-destructive font-medium">
+                            <Ban className="w-5 h-5" />
+                            Job Cancelled
+                          </div>
+                          {job?.cancellation_reason && (
+                            <p className="text-sm text-muted-foreground">
+                              Reason: {job.cancellation_reason}
+                            </p>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="text-center">
+                          <Button
+                            onClick={() => setShowCancelModal(true)}
+                            variant="destructive"
+                            size="sm"
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            <Ban className="w-4 h-4 mr-2" />
+                            Cancel Job
+                          </Button>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
 
 
               </form>

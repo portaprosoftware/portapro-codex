@@ -64,7 +64,7 @@ export const CancelJobModal: React.FC<CancelJobModalProps> = ({
 
   return (
     <AlertDialog open={isOpen} onOpenChange={handleClose}>
-      <AlertDialogContent className="sm:max-w-[500px]">
+      <AlertDialogContent className="sm:max-w-[500px] z-[60]">
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center gap-2 text-destructive">
             <Ban className="w-5 h-5" />
