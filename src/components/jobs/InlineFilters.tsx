@@ -106,7 +106,7 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
   });
   return (
     <TooltipProvider>
-      <div className="space-y-3">
+      <div className="space-y-2">
         {/* Universal Jobs Header */}
         {showUniversalHeader && selectedDate && (
           <UniversalJobsHeader
@@ -114,16 +114,10 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
             jobsCount={jobsCount}
           />
         )}
-        {/* Instructions */}
-        <div className="text-xs text-muted-foreground bg-muted/30 rounded-md p-2 border">
-          <span>
-            <strong>Quick Job Search:</strong> Typing searches today's date. Press Enter to search job IDs across all dates.
-          </span>
-        </div>
 
         <div className="flex items-center gap-4 flex-wrap">
           {/* Search Input */}
-          <div className="flex-1 min-w-96">
+          <div className="flex-1 min-w-80">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input
@@ -358,7 +352,7 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
 
         {/* Route vs Truck Stock Section */}
         {showRouteStock && (
-          <Card className="p-4 space-y-4">
+          <Card className="p-4 space-y-3 mt-2">
             <div className="flex items-center gap-2">
               <h3 className="text-sm font-medium text-muted-foreground">Route vs Truck Stock</h3>
               <Dialog>
