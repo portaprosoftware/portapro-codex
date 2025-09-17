@@ -624,9 +624,9 @@ const JobsPage: React.FC = () => {
           {activeTab === 'dispatch' && (
             <DragDropContext 
               onDragEnd={handleDragEnd}
-              key={`drag-context-${dragContextKey}`}
+              key={`drag-context-${dragContextKey}-v2`}
             >
-              <div className="min-h-screen">
+              <div className="min-h-screen" key="new-dispatch-layout-v2">
                 {/* Date Header - Fixed at top */}
                 <div className="bg-white border border-gray-200 rounded-lg p-4 mb-4 sticky top-0 z-30">
                   <div className="flex items-center justify-between">
@@ -645,8 +645,8 @@ const JobsPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Two Column Layout */}
-                <div className="grid grid-cols-[300px_1fr] gap-4">
+                {/* Two Column Layout - NEW VERSION */}
+                <div className="grid grid-cols-[300px_1fr] gap-4" key="new-two-column-layout">
                   
                   {/* Left Column - Unassigned Jobs */}
                   <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
