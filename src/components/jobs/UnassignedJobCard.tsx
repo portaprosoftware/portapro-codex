@@ -153,7 +153,7 @@ export const UnassignedJobCard: React.FC<UnassignedJobCardProps> = ({
               variant="outline"
               size="sm"
               onClick={handleViewJob}
-              className="px-3 py-1 text-xs border-gray-300 hover:bg-gray-50 w-auto mx-auto"
+              className="px-3 py-1 text-xs border-gray-300 hover:bg-gray-50 w-full"
               aria-label={`View job ${job.job_number}`}
             >
               View Details
