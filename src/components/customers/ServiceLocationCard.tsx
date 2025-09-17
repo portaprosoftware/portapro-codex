@@ -72,17 +72,38 @@ export function ServiceLocationCard({ location, onUpdate, onDelete }: ServiceLoc
 
   const openInGoogleMaps = () => {
     const encoded = encodeURIComponent(fullAddress);
-    window.open(`https://maps.google.com/?q=${encoded}`, '_blank');
+    const url = `https://maps.google.com/?q=${encoded}`;
+    const link = document.createElement('a');
+    link.href = url;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const openInAppleMaps = () => {
     const encoded = encodeURIComponent(fullAddress);
-    window.open(`http://maps.apple.com/?q=${encoded}`, '_blank');
+    const url = `https://maps.apple.com/?q=${encoded}`;
+    const link = document.createElement('a');
+    link.href = url;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const openInWaze = () => {
     const encoded = encodeURIComponent(fullAddress);
-    window.open(`https://www.waze.com/ul?q=${encoded}`, '_blank');
+    const url = `https://www.waze.com/ul?q=${encoded}`;
+    const link = document.createElement('a');
+    link.href = url;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (

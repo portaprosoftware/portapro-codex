@@ -356,11 +356,18 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
         url = `https://maps.apple.com/?daddr=${encodedAddress}`;
         break;
       case 'waze':
-        url = `https://waze.com/ul?q=${encodedAddress}&navigate=yes`;
+        url = `https://www.waze.com/ul?q=${encodedAddress}&navigate=yes`;
         break;
     }
     
-    window.open(url, '_blank');
+    // Try to open in app first, then fallback to web
+    const link = document.createElement('a');
+    link.href = url;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
     setShowNavigationPopup(false);
   };
 
