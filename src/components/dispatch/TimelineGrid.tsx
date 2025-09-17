@@ -25,8 +25,16 @@ export const TIME_SLOTS = [
 export const getTimeSlotForJob = (scheduledTime: string | null): string => {
   if (!scheduledTime) return 'no-time';
   
-  const [hours, minutes] = scheduledTime.split(':').map(Number);
-  const timeInMinutes = hours * 60 + minutes;
+  try {
+    const [hours, minutes] = scheduledTime.split(':').map(Number);
+    
+    // Validate parsed values
+    if (isNaN(hours) || isNaN(minutes) || hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+      console.warn('Invalid time format:', scheduledTime);
+      return 'no-time';
+    }
+    
+    const timeInMinutes = hours * 60 + minutes;
   
   // Handle special cases
   if (timeInMinutes < 6 * 60) return 'no-time'; // Before 6am
@@ -45,6 +53,10 @@ export const getTimeSlotForJob = (scheduledTime: string | null): string => {
   }
   
   return 'no-time';
+  } catch (error) {
+    console.warn('Error parsing scheduled time:', scheduledTime, error);
+    return 'no-time';
+  }
 };
 
 // Utility function to get 15-minute intervals within an hour

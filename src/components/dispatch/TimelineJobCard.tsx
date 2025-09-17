@@ -48,9 +48,30 @@ export const TimelineJobCard: React.FC<TimelineJobCardProps> = ({
   const isOverdue = isJobOverdue(job);
   const isPriority = shouldShowPriorityBadge(job);
 
-  const scheduledTime = job.scheduled_time 
-    ? format(new Date(`2000-01-01T${job.scheduled_time}`), 'h:mm a')
-    : null;
+  // Safe date formatting utility
+  const formatDateSafe = (dateString: string | null) => {
+    if (!dateString) return null;
+    try {
+      return format(new Date(dateString), 'MMM d');
+    } catch (error) {
+      console.warn('Invalid date format:', dateString);
+      return null;
+    }
+  };
+
+  // Safe time formatting utility
+  const formatTimeSafe = (timeString: string | null) => {
+    if (!timeString) return null;
+    try {
+      return format(new Date(`2000-01-01T${timeString}`), 'h:mm a');
+    } catch (error) {
+      console.warn('Invalid time format:', timeString);
+      return null;
+    }
+  };
+
+  const scheduledTime = formatTimeSafe(job.scheduled_time);
+  const scheduledDate = formatDateSafe(job.scheduled_date);
 
   return (
     <Card
@@ -100,7 +121,7 @@ export const TimelineJobCard: React.FC<TimelineJobCardProps> = ({
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <Clock className="h-3 w-3" />
           <span>
-            {scheduledTime || (job.scheduled_date ? format(new Date(job.scheduled_date), 'MMM d') : 'Unscheduled')}
+            {scheduledTime || scheduledDate || 'Unscheduled'}
           </span>
         </div>
 

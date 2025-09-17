@@ -19,6 +19,7 @@ import { DriverSwimLane } from './DriverSwimLane';
 import { DriverOrderModal } from './DriverOrderModal';
 import { DragDropContext, DropResult, Droppable, Draggable } from '@hello-pangea/dnd';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 interface FullScreenDispatchViewProps {
   jobs: any[];
@@ -41,6 +42,7 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
   const [currentTime, setCurrentTime] = useState(new Date());
   const [timeFilter, setTimeFilter] = useState<'all' | 'morning' | 'afternoon'>('all');
   const [isDriverOrderModalOpen, setIsDriverOrderModalOpen] = useState(false);
+  const { toast } = useToast();
 
   // Update drivers when prop changes
   useEffect(() => {
@@ -85,6 +87,15 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
       const jobId = result.draggableId;
       
       console.log('Timeline drop:', { jobId, driverId, timeSlotId });
+      
+      // Show informational toast for no-time drops
+      if (timeSlotId === 'no-time') {
+        toast({
+          title: "Job moved to unscheduled",
+          description: "To remove the time completely, click 'View Job' and turn off the time toggle.",
+          duration: 4000,
+        });
+      }
       
       // Call parent with driver assignment and time slot info
       onJobAssignment(jobId, driverId === 'unassigned' ? null : driverId, timeSlotId);
@@ -207,7 +218,7 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                       const positionPercent = (timeInMinutes - timelineStart) / timelineRange;
                       
                       const driverColumnWidth = 128;
-                      const noTimeSlotWidth = 200;
+                      const noTimeSlotWidth = 600; // Updated to match the new 600px width
                       const timeSlotWidth = 200;
                       const slotsBeforeCurrentTime = Math.floor(positionPercent * 14);
                       const positionWithinSlot = (positionPercent * 14) - slotsBeforeCurrentTime;

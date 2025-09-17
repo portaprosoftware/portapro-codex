@@ -34,10 +34,20 @@ export const DriverSwimLane: React.FC<DriverSwimLaneProps> = ({
       grouped[slot.id] = [];
     });
     
-    // Group jobs by their time slots
+    // Group jobs by their time slots with error handling
     jobs.forEach(job => {
-      const timeSlot = getTimeSlotForJob(job.scheduled_time);
-      grouped[timeSlot].push(job);
+      try {
+        const timeSlot = getTimeSlotForJob(job.scheduled_time);
+        if (grouped[timeSlot]) {
+          grouped[timeSlot].push(job);
+        } else {
+          // Fallback to no-time if slot doesn't exist
+          grouped['no-time'].push(job);
+        }
+      } catch (error) {
+        console.warn('Error grouping job by time slot:', job.id, error);
+        grouped['no-time'].push(job);
+      }
     });
     
     return grouped;
