@@ -1,6 +1,6 @@
 import React from 'react';
 import { format } from 'date-fns';
-import { Clock, MapPin, AlertTriangle, CheckCircle, GripVertical } from 'lucide-react';
+import { AlertTriangle, CheckCircle, GripVertical } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -55,9 +55,9 @@ export const TimelineJobCard: React.FC<TimelineJobCardProps> = ({
   return (
     <Card
       className={cn(
-        "p-3 transition-all border-l-4 relative",
+        "p-2 transition-all border-l-4 relative",
         jobTypeConfig.color.replace('bg-', 'border-l-'),
-        timelineView ? "min-w-[240px] max-w-[280px]" : "w-full",
+        timelineView ? "w-[110px] flex-shrink-0" : "w-full",
         isOverdue && "border-red-500 bg-red-50",
         job.status === 'completed' && "bg-green-50 border-green-500",
         isDragging && "ring-2 ring-blue-300 shadow-lg bg-white"
@@ -66,83 +66,64 @@ export const TimelineJobCard: React.FC<TimelineJobCardProps> = ({
       {/* Drag Handle */}
       <div 
         {...dragHandleProps}
-        className="absolute top-2 right-2 cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded opacity-60 hover:opacity-100 transition-opacity"
+        className="absolute top-1 right-1 cursor-grab active:cursor-grabbing p-0.5 hover:bg-muted rounded opacity-60 hover:opacity-100 transition-opacity"
       >
-        <GripVertical className="h-4 w-4 text-muted-foreground" />
+        <GripVertical className="h-3 w-3 text-muted-foreground" />
       </div>
       
-      <div className="space-y-2 pr-8">
-        {/* Header */}
+      <div className="space-y-1 pr-4">
+        {/* Job ID */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-lg">{jobTypeConfig.icon}</span>
-            <span className="font-semibold text-sm">{job.job_number}</span>
-          </div>
-          <div className="flex gap-1">
+          <span className="font-bold text-sm truncate">{job.job_number}</span>
+          <div className="flex gap-0.5">
             {job.status === 'completed' && (
-              <CheckCircle className="h-4 w-4 text-green-500" />
+              <CheckCircle className="h-3 w-3 text-green-500" />
             )}
             {isOverdue && (
-              <AlertTriangle className="h-4 w-4 text-red-500" />
+              <AlertTriangle className="h-3 w-3 text-red-500" />
             )}
           </div>
         </div>
 
-        {/* Status and Time */}
-        <div className="flex items-center justify-between">
-          <Badge variant={statusConfig.color} className="text-xs">
-            {statusConfig.label}
-          </Badge>
-          {scheduledTime && (
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <Clock className="h-3 w-3" />
-              {scheduledTime}
-            </div>
-          )}
-        </div>
+        {/* Time */}
+        {scheduledTime && (
+          <div className="text-xs text-muted-foreground font-medium">
+            {scheduledTime}
+          </div>
+        )}
 
-        {/* Customer */}
-        <div className="space-y-1">
-          <p className="font-medium text-sm truncate">
-            {job.customers?.name || 'Unknown Customer'}
-          </p>
-          {job.customers?.service_street && (
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <MapPin className="h-3 w-3 flex-shrink-0" />
-              <span className="truncate">
-                {job.customers.service_street}, {job.customers.service_city}
-              </span>
-            </div>
-          )}
-        </div>
+        {/* Status Badge */}
+        <Badge variant={statusConfig.color} className="text-xs w-full justify-center">
+          {statusConfig.label}
+        </Badge>
 
-        {/* Priority Indicators */}
+        {/* Priority/Overdue Badge */}
         {(isPriority || isOverdue) && (
-          <div className="flex gap-1">
+          <div className="space-y-1">
             {isPriority && (
-              <Badge variant="destructive" className="text-xs">
+              <Badge variant="destructive" className="text-xs w-full justify-center">
                 Priority
               </Badge>
             )}
             {isOverdue && (
-              <Badge variant="destructive" className="text-xs">
+              <Badge variant="destructive" className="text-xs w-full justify-center">
                 Overdue
               </Badge>
             )}
           </div>
         )}
 
-        {/* Action Button */}
+        {/* View Button */}
         <Button
           variant="outline"
           size="sm"
-          className="w-full text-xs"
+          className="w-full text-xs h-6 px-2"
           onClick={(e) => {
             e.stopPropagation();
             onJobView(job.id);
           }}
         >
-          View Details
+          View
         </Button>
       </div>
     </Card>
