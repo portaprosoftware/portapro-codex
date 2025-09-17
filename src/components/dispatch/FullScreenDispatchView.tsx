@@ -47,6 +47,7 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
   const { toast } = useToast();
   const horizontalScrollRef = useRef<HTMLDivElement>(null);
   const verticalScrollRef = useRef<HTMLDivElement>(null);
+  const stickyColumnRef = useRef<HTMLDivElement>(null);
 
   // Update drivers when prop changes
   useEffect(() => {
@@ -124,6 +125,17 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
     setDrivers(orderedDrivers);
   };
 
+  // Sync vertical scrolling between sticky column and main content
+  const syncVerticalScroll = (source: 'sticky' | 'main') => {
+    if (!stickyColumnRef.current || !verticalScrollRef.current) return;
+    
+    if (source === 'sticky') {
+      verticalScrollRef.current.scrollTop = stickyColumnRef.current.scrollTop;
+    } else {
+      stickyColumnRef.current.scrollTop = verticalScrollRef.current.scrollTop;
+    }
+  };
+
   // Scroll functions
   const scrollHorizontal = (direction: 'left' | 'right') => {
     if (horizontalScrollRef.current) {
@@ -134,10 +146,11 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
   };
 
   const scrollVertical = (direction: 'up' | 'down') => {
-    if (verticalScrollRef.current) {
+    if (verticalScrollRef.current && stickyColumnRef.current) {
       const scrollAmount = 200;
       const newScrollTop = verticalScrollRef.current.scrollTop + (direction === 'down' ? scrollAmount : -scrollAmount);
       verticalScrollRef.current.scrollTo({ top: newScrollTop, behavior: 'smooth' });
+      stickyColumnRef.current.scrollTo({ top: newScrollTop, behavior: 'smooth' });
     }
   };
 
@@ -269,20 +282,59 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
             <div className="flex-1 overflow-hidden relative">
               {timelineView ? (
                 <div className="h-full relative">
+                  {/* Sticky driver names column */}
+                  <div className="absolute left-0 top-0 bottom-0 w-32 bg-background border-r z-10">
+                    <div 
+                      ref={stickyColumnRef}
+                      className="h-full overflow-y-auto"
+                      onScroll={() => syncVerticalScroll('sticky')}
+                    >
+                      {/* Unassigned header */}
+                      <div className="h-[61px] border-b bg-muted/10 flex items-center justify-center px-2">
+                        <div className="text-xs font-medium text-center">Unassigned</div>
+                      </div>
+                      
+                      {/* Timeline grid header */}
+                      <div className="h-[40px] border-b bg-muted/5 flex items-center justify-center px-2">
+                        <div className="text-xs text-muted-foreground">Drivers</div>
+                      </div>
+                      
+                      {/* Driver names */}
+                      <div className="space-y-2 pt-2 pb-4">
+                        {drivers.map((driver) => (
+                          <div key={driver.id} className="h-[120px] border-b-2 p-2 flex items-center">
+                            <div className="flex flex-col gap-1 w-full">
+                              <div className="font-medium text-xs text-center">
+                                {driver.first_name} {driver.last_name}
+                              </div>
+                              <Badge variant={jobsByDriver.get(driver.id)?.length > 3 ? 'destructive' : jobsByDriver.get(driver.id)?.length > 1 ? 'default' : 'secondary'} className="text-xs self-center">
+                                {jobsByDriver.get(driver.id)?.length || 0} jobs
+                              </Badge>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Scrollable timeline content */}
                   <div 
                     ref={horizontalScrollRef}
-                    className="h-full overflow-x-auto overflow-y-hidden"
+                    className="h-full overflow-x-auto overflow-y-hidden pl-32"
                   >
                     <div 
                       ref={verticalScrollRef}
                       className="min-w-max h-full overflow-y-auto"
+                      onScroll={() => syncVerticalScroll('main')}
                     >
-                      {/* Unassigned Jobs Section - Now at the top */}
-                      <UnassignedJobsSection
-                        jobs={unassignedJobs}
-                        onJobView={onJobView}
-                        timelineView={timelineView}
-                      />
+                      {/* Unassigned Jobs Section */}
+                      <div className="border-b">
+                        <UnassignedJobsSection
+                          jobs={unassignedJobs}
+                          onJobView={onJobView}
+                          timelineView={timelineView}
+                        />
+                      </div>
                       
                       <TimelineGrid />
                       
@@ -294,6 +346,7 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                             jobs={jobsByDriver.get(driver.id) || []}
                             onJobView={onJobView}
                             timelineView={timelineView}
+                            hideDriverInfo={true}
                           />
                         ))}
                       </div>
@@ -312,18 +365,18 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                       const timelineRange = timelineEnd - timelineStart;
                       const positionPercent = (timeInMinutes - timelineStart) / timelineRange;
                       
-                      const driverColumnWidth = 128;
-                      const noTimeSlotWidth = 800; // Updated to match the new 800px width
+                      const noTimeSlotWidth = 800;
                       const timeSlotWidth = 200;
                       const slotsBeforeCurrentTime = Math.floor(positionPercent * 14);
                       const positionWithinSlot = (positionPercent * 14) - slotsBeforeCurrentTime;
                       
-                      const leftPosition = driverColumnWidth + noTimeSlotWidth + (slotsBeforeCurrentTime * timeSlotWidth) + (positionWithinSlot * timeSlotWidth);
+                      // Calculate position relative to the scrollable content (exclude sticky driver column)
+                      const leftPosition = noTimeSlotWidth + (slotsBeforeCurrentTime * timeSlotWidth) + (positionWithinSlot * timeSlotWidth);
                       
                       return (
                         <div 
-                          className="absolute top-[61px] bottom-0 w-0.5 bg-red-500 z-30 pointer-events-none"
-                          style={{ left: `${leftPosition}px` }}
+                          className="absolute top-[101px] bottom-0 w-0.5 bg-red-500 z-20 pointer-events-none"
+                          style={{ left: `${leftPosition + 128}px` }}
                         >
                           <div className="absolute -top-1 -left-1 w-2 h-2 bg-red-500 rounded-full"></div>
                         </div>
