@@ -133,8 +133,8 @@ export const DriverSwimLane: React.FC<DriverSwimLaneProps> = ({
             </div>
           </div>
 
-          {/* Time Slots Area - Scrollable */}
-          <div className="flex flex-1 min-w-max overflow-x-auto">
+          {/* Time Slots Area - EXACT same layout as TimelineGrid */}
+          <div className="flex">{/* Removed overflow-x-auto to prevent double scrollbars */}
             {TIME_SLOTS.map((slot) => (
               <div
                 key={slot.id}

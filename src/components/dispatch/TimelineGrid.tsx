@@ -79,18 +79,18 @@ export const getCurrentTimePosition = () => {
 
 export const TimelineGrid: React.FC = () => {
   return (
-    <div className="border-b bg-background sticky top-0 z-10">
-      <div className="flex overflow-x-auto">
-        {/* Driver name column spacer */}
+    <div className="border-b bg-background sticky top-0 z-20">
+      <div className="flex">
+        {/* Driver name column spacer - EXACT same width as DriverSwimLane */}
         <div className="w-32 flex-shrink-0 border-r bg-background">
           <div className="py-3 px-2 text-center text-xs font-medium text-muted-foreground">
             Drivers
           </div>
         </div>
         
-        {/* Timeline slots */}
-        <div className="flex flex-1 min-w-max">
-          {TIME_SLOTS.map((slot, index) => (
+        {/* Timeline slots - EXACT same widths as DriverSwimLane */}
+        <div className="flex">
+          {TIME_SLOTS.map((slot) => (
             <div
               key={slot.id}
               className={cn(

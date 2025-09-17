@@ -177,56 +177,61 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
 
             {/* Main Content - Horizontal Scrollable Timeline */}
             <div className="flex-1 flex flex-col overflow-hidden relative">
-              {timelineView && <TimelineGrid />}
-              
-              <div className="flex-1 overflow-x-auto overflow-y-auto">
-                <div className="space-y-1 p-2 min-w-max">
-                  {drivers.map((driver) => (
-                    <DriverSwimLane
-                      key={driver.id}
-                      driver={driver}
-                      jobs={jobsByDriver.get(driver.id) || []}
-                      onJobView={onJobView}
-                      timelineView={timelineView}
-                    />
-                  ))}
-                </div>
-                
-                {/* Current time indicator for timeline view */}
-                {timelineView && (() => {
-                  const currentHour = currentTime.getHours();
-                  const currentMinutes = currentTime.getMinutes();
+              {/* Timeline header and content - synchronized scrolling */}
+              {timelineView && (
+                <div className="flex flex-col relative">
+                  <TimelineGrid />
+                  <div className="flex-1 overflow-x-auto overflow-y-auto" id="timeline-content">
+                    <div className="space-y-1 p-2 min-w-max">
+                      {drivers.map((driver) => (
+                        <DriverSwimLane
+                          key={driver.id}
+                          driver={driver}
+                          jobs={jobsByDriver.get(driver.id) || []}
+                          onJobView={onJobView}
+                          timelineView={timelineView}
+                        />
+                      ))}
+                    </div>
+                  </div>
                   
-                  if (currentHour >= 6 && currentHour < 20) {
-                    // Calculate position within the timeline (excluding no-time section)
-                    const timeInMinutes = currentHour * 60 + currentMinutes;
-                    const timelineStart = 6 * 60; // 6am in minutes
-                    const timelineEnd = 20 * 60; // 8pm in minutes
-                    const timelineRange = timelineEnd - timelineStart;
+                  {/* Current time indicator for timeline view */}
+                  {(() => {
+                    const currentHour = currentTime.getHours();
+                    const currentMinutes = currentTime.getMinutes();
                     
-                    const positionPercent = (timeInMinutes - timelineStart) / timelineRange;
-                    
-                    // Calculate actual left position
-                    // 128px (w-32 driver column) + 33% (no-time section) + position within remaining 67%
-                    const driverColumnWidth = 128;
-                    const noTimeWidth = 33; // 33% of remaining width
-                    const timelineWidth = 67; // 67% of remaining width
-                    
-                    const leftPosition = `calc(${driverColumnWidth}px + 33% + ${positionPercent * timelineWidth}%)`;
-                    
-                    return (
-                      <div 
-                        className="absolute top-0 bottom-0 w-0.5 bg-red-500 z-20 pointer-events-none"
-                        style={{ left: leftPosition }}
-                      >
-                        <div className="absolute -top-1 -left-1 w-2 h-2 bg-red-500 rounded-full"></div>
-                        <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-red-500 rounded-full"></div>
-                      </div>
-                    );
-                  }
-                  return null;
-                })()}
-              </div>
+                    if (currentHour >= 6 && currentHour < 20) {
+                      // Calculate position within fixed-width timeline
+                      const timeInMinutes = currentHour * 60 + currentMinutes;
+                      const timelineStart = 6 * 60; // 6am in minutes
+                      const timelineEnd = 20 * 60; // 8pm in minutes
+                      const timelineRange = timelineEnd - timelineStart;
+                      
+                      const positionPercent = (timeInMinutes - timelineStart) / timelineRange;
+                      
+                      // Calculate actual left position with fixed widths
+                      const driverColumnWidth = 128; // w-32 = 128px
+                      const noTimeSlotWidth = 200; // 200px
+                      const timeSlotWidth = 200; // 200px per slot
+                      const slotsBeforeCurrentTime = Math.floor(positionPercent * 14); // 14 time slots from 6am-8pm
+                      const positionWithinSlot = (positionPercent * 14) - slotsBeforeCurrentTime;
+                      
+                      const leftPosition = driverColumnWidth + noTimeSlotWidth + (slotsBeforeCurrentTime * timeSlotWidth) + (positionWithinSlot * timeSlotWidth);
+                      
+                      return (
+                        <div 
+                          className="absolute top-0 bottom-0 w-0.5 bg-red-500 z-30 pointer-events-none"
+                          style={{ left: `${leftPosition}px` }}
+                        >
+                          <div className="absolute -top-1 -left-1 w-2 h-2 bg-red-500 rounded-full"></div>
+                          <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-red-500 rounded-full"></div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
+                </div>
+              )}
             </div>
           </div>
         </DragDropContext>
