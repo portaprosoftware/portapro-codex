@@ -83,9 +83,13 @@ export const DriverOrderModal: React.FC<DriverOrderModalProps> = ({
                         <Card
                           ref={provided.innerRef}
                           {...provided.draggableProps}
+                          style={{
+                            ...(provided.draggableProps.style as React.CSSProperties),
+                            zIndex: snapshot.isDragging ? 10000 : 'auto',
+                          }}
                           className={cn(
                             "p-3 transition-all",
-                            snapshot.isDragging && "ring-2 ring-primary shadow-xl bg-background z-[10000] transform rotate-2"
+                            snapshot.isDragging && "ring-2 ring-primary shadow-xl bg-background transform rotate-2"
                           )}
                         >
                           <div className="flex items-center gap-3">
