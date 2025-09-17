@@ -377,7 +377,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
         </DialogHeader>
 
         {/* Action Buttons Row */}
-        <div className="flex-shrink-0 flex items-center justify-between py-3 px-1 border-b">
+        <div className="flex-shrink-0 flex items-center justify-between py-2 px-1 border-b">
           {/* Priority Toggle - Left side */}
           {!isEditing && (
             <div className="flex items-center space-x-2">
@@ -385,6 +385,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                 checked={(job as any)?.is_priority || false}
                 onCheckedChange={() => handleTogglePriority()}
                 disabled={priorityMutation.isPending}
+                className="data-[state=checked]:bg-blue-600"
               />
               <Label className="text-sm flex items-center gap-1 cursor-pointer">
                 <Star className="w-4 h-4 text-yellow-500" />
