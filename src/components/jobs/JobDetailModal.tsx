@@ -581,9 +581,9 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                             <label className="text-sm font-medium text-muted-foreground">Time</label>
                             <p className="text-sm">{job?.scheduled_time || 'No specific time selected'}</p>
                             {!job?.scheduled_time && (
-                              <p className="text-xs text-muted-foreground/70 mt-1">
-                                Edit job to add or change specified time of day for arrival
-                              </p>
+              <p className="text-xs text-muted-foreground/70 mt-1">
+                Edit to update assigned time of day
+              </p>
                             )}
                           </div>
                         </div>
