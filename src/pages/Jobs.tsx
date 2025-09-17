@@ -326,9 +326,11 @@ const JobsPage: React.FC = () => {
     } else if (location.pathname.includes('/drafts')) {
       setActiveTab('drafts');
     } else if (location.pathname === '/jobs') {
-      // Default to calendar view for /jobs route
+      // Default to calendar view for /jobs route, preserve query params
       setActiveTab('calendar');
-      navigate('/jobs/calendar', { replace: true });
+      const searchParamsString = searchParams.toString();
+      const redirectUrl = searchParamsString ? `/jobs/calendar?${searchParamsString}` : '/jobs/calendar';
+      navigate(redirectUrl, { replace: true });
     }
   }, [location.pathname, navigate, dispatchFullscreen]);
 
