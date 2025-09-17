@@ -30,7 +30,7 @@ export const UniversalJobsHeader: React.FC<UniversalJobsHeaderProps> = ({
             </Badge>
             <div className="text-xs text-muted-foreground bg-muted/30 rounded-md px-3 py-1 border">
               <span>
-                <strong>Quick Job Search:</strong> Type job IDs to filter for today; select enter/return to find matches from any date.
+                <strong>Quick Job Search:</strong> Type job ID to search today; select enter to filter matches for any date.
               </span>
             </div>
           </div>
