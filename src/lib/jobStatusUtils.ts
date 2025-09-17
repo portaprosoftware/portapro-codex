@@ -142,7 +142,7 @@ export const getJobStatusInfo = (job: Job) => {
   const displayStatus = getDisplayStatus(job);
   const statusConfig = getJobStatusConfig();
   
-  return statusConfig[displayStatus as keyof typeof statusConfig] || statusConfig.assigned;
+  return statusConfig[displayStatus as keyof typeof statusConfig] || statusConfig.unassigned;
 };
 
 /**
@@ -168,7 +168,7 @@ export const getDualJobStatusInfo = (job: Job) => {
     // Currently overdue: show "Overdue" as primary status
     return {
       primary: statusConfig.overdue,
-      secondary: statusConfig[job.status as keyof typeof statusConfig] || statusConfig.assigned,
+      secondary: statusConfig[job.status as keyof typeof statusConfig] || statusConfig.unassigned,
       wasOverdue: null,
       priority: shouldShowPriorityBadge(job) ? statusConfig.priority : null
     };
@@ -176,7 +176,7 @@ export const getDualJobStatusInfo = (job: Job) => {
   
   // For jobs not currently overdue, show primary status + optional badges
   return {
-    primary: statusConfig[job.status as keyof typeof statusConfig] || statusConfig.assigned,
+    primary: statusConfig[job.status as keyof typeof statusConfig] || statusConfig.unassigned,
     secondary: null,
     wasOverdue: shouldShowWasOverdueBadge(job) ? statusConfig.was_overdue : null,
     priority: shouldShowPriorityBadge(job) ? statusConfig.priority : null

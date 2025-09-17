@@ -86,6 +86,7 @@ export const JobLengthControl: React.FC<JobLengthControlProps> = ({ jobId }) => 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['job-equipment', jobId] });
       queryClient.invalidateQueries({ queryKey: ['job-detail'] });
+      queryClient.invalidateQueries({ queryKey: ['jobs'] });
       setAdjustmentDays(0);
       toast.success('Equipment assignment dates updated successfully');
     },
