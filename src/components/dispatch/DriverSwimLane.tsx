@@ -139,7 +139,7 @@ export const DriverSwimLane: React.FC<DriverSwimLaneProps> = ({
               <div
                 key={slot.id}
                 className="border-r min-h-[120px]"
-                style={{ flexBasis: slot.flexBasis, minWidth: slot.id === 'no-time' ? '200px' : '80px' }}
+                style={{ width: slot.width, minWidth: slot.width, flexShrink: 0 }}
               >
                 <Droppable droppableId={`${driver.id}-${slot.id}`} direction="vertical" type="JOB">
                   {(provided, snapshot) => (

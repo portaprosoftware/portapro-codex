@@ -24,7 +24,7 @@ interface FullScreenDispatchViewProps {
   jobs: any[];
   drivers: any[];
   selectedDate: Date;
-  onJobAssignment: (result: DropResult) => void;
+  onJobAssignment: (jobId: string, driverId: string | null, timeSlotId?: string | null) => void;
   onJobView: (jobId: string) => void;
 }
 
@@ -82,21 +82,20 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
     if (destinationId.includes('-')) {
       // Timeline view: droppableId format is "driverId-timeSlotId"
       const [driverId, timeSlotId] = destinationId.split('-');
+      const jobId = result.draggableId;
       
-      // Create enhanced result with time slot information
-      const enhancedResult = {
-        ...result,
-        destination: {
-          ...result.destination,
-          droppableId: driverId // Set driver ID as main destination
-        },
-        timeSlot: timeSlotId // Add time slot information
-      };
+      console.log('Timeline drop:', { jobId, driverId, timeSlotId });
       
-      onJobAssignment(enhancedResult);
+      // Call parent with driver assignment and time slot info
+      onJobAssignment(jobId, driverId === 'unassigned' ? null : driverId, timeSlotId);
     } else {
-      // Regular driver assignment (non-timeline view)
-      onJobAssignment(result);
+      // Regular driver assignment (no time slot)
+      const driverId = destinationId === 'unassigned' ? null : destinationId;
+      const jobId = result.draggableId;
+      
+      console.log('Regular drop:', { jobId, driverId });
+      
+      onJobAssignment(jobId, driverId, null);
     }
   };
 

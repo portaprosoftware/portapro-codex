@@ -1,24 +1,24 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 
-// New horizontal timeline structure with 15-minute precision
+// Fixed-width timeline structure for consistent horizontal scrolling
 export const TIME_SLOTS = [
-  { id: 'no-time', label: 'No Time', startHour: null, endHour: null, flexBasis: '33%' },
-  { id: '6-7', label: '6-7am', startHour: 6, endHour: 7, flexBasis: 'calc(67% / 15)' },
-  { id: '7-8', label: '7-8am', startHour: 7, endHour: 8, flexBasis: 'calc(67% / 15)' },
-  { id: '8-9', label: '8-9am', startHour: 8, endHour: 9, flexBasis: 'calc(67% / 15)' },
-  { id: '9-10', label: '9-10am', startHour: 9, endHour: 10, flexBasis: 'calc(67% / 15)' },
-  { id: '10-11', label: '10-11am', startHour: 10, endHour: 11, flexBasis: 'calc(67% / 15)' },
-  { id: '11-12', label: '11am-12pm', startHour: 11, endHour: 12, flexBasis: 'calc(67% / 15)' },
-  { id: '12-13', label: '12-1pm', startHour: 12, endHour: 13, flexBasis: 'calc(67% / 15)' },
-  { id: '13-14', label: '1-2pm', startHour: 13, endHour: 14, flexBasis: 'calc(67% / 15)' },
-  { id: '14-15', label: '2-3pm', startHour: 14, endHour: 15, flexBasis: 'calc(67% / 15)' },
-  { id: '15-16', label: '3-4pm', startHour: 15, endHour: 16, flexBasis: 'calc(67% / 15)' },
-  { id: '16-17', label: '4-5pm', startHour: 16, endHour: 17, flexBasis: 'calc(67% / 15)' },
-  { id: '17-18', label: '5-6pm', startHour: 17, endHour: 18, flexBasis: 'calc(67% / 15)' },
-  { id: '18-19', label: '6-7pm', startHour: 18, endHour: 19, flexBasis: 'calc(67% / 15)' },
-  { id: '19-20', label: '7-8pm', startHour: 19, endHour: 20, flexBasis: 'calc(67% / 15)' },
-  { id: 'after-20', label: 'After 8pm', startHour: 20, endHour: null, flexBasis: 'calc(67% / 15)' },
+  { id: 'no-time', label: 'No Time', startHour: null, endHour: null, width: '200px' },
+  { id: '6-7', label: '6-7am', startHour: 6, endHour: 7, width: '200px' },
+  { id: '7-8', label: '7-8am', startHour: 7, endHour: 8, width: '200px' },
+  { id: '8-9', label: '8-9am', startHour: 8, endHour: 9, width: '200px' },
+  { id: '9-10', label: '9-10am', startHour: 9, endHour: 10, width: '200px' },
+  { id: '10-11', label: '10-11am', startHour: 10, endHour: 11, width: '200px' },
+  { id: '11-12', label: '11am-12pm', startHour: 11, endHour: 12, width: '200px' },
+  { id: '12-13', label: '12-1pm', startHour: 12, endHour: 13, width: '200px' },
+  { id: '13-14', label: '1-2pm', startHour: 13, endHour: 14, width: '200px' },
+  { id: '14-15', label: '2-3pm', startHour: 14, endHour: 15, width: '200px' },
+  { id: '15-16', label: '3-4pm', startHour: 15, endHour: 16, width: '200px' },
+  { id: '16-17', label: '4-5pm', startHour: 16, endHour: 17, width: '200px' },
+  { id: '17-18', label: '5-6pm', startHour: 17, endHour: 18, width: '200px' },
+  { id: '18-19', label: '6-7pm', startHour: 18, endHour: 19, width: '200px' },
+  { id: '19-20', label: '7-8pm', startHour: 19, endHour: 20, width: '200px' },
+  { id: 'after-20', label: 'After 8pm', startHour: 20, endHour: null, width: '200px' },
 ];
 
 // Utility function to determine which time slot a job belongs to based on scheduled_time
@@ -94,10 +94,10 @@ export const TimelineGrid: React.FC = () => {
             <div
               key={slot.id}
               className={cn(
-                "border-r text-center py-3 px-2 text-xs font-medium bg-muted/50 text-muted-foreground min-w-0",
+                "border-r text-center py-3 px-2 text-xs font-medium bg-muted/50 text-muted-foreground",
                 slot.id === 'no-time' && "bg-muted/30"
               )}
-              style={{ flexBasis: slot.flexBasis, minWidth: slot.id === 'no-time' ? '200px' : '80px' }}
+              style={{ width: slot.width, minWidth: slot.width, flexShrink: 0 }}
             >
               {slot.label}
             </div>

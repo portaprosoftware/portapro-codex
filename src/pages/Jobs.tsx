@@ -162,16 +162,31 @@ const JobsPage: React.FC = () => {
     }
   }, [foundJob, shouldTriggerSmartSearch, handleSmartSearch]);
 
-  // Mutation to update job assignment
+  // Mutation to update job assignment with optional time slot
   const updateJobAssignmentMutation = useMutation({
-    mutationFn: async ({ jobId, driverId }: { jobId: string; driverId: string | null }) => {
+    mutationFn: async ({ jobId, driverId, timeSlotId }: { jobId: string; driverId: string | null; timeSlotId?: string | null }) => {
+      const updateData: any = { 
+        driver_id: driverId,
+        status: driverId ? 'assigned' : 'unassigned',
+        updated_at: new Date().toISOString()
+      };
+
+      // Handle scheduled_time based on time slot
+      if (timeSlotId) {
+        if (timeSlotId === 'no-time') {
+          updateData.scheduled_time = null;
+        } else if (timeSlotId === 'after-20') {
+          updateData.scheduled_time = '20:00';
+        } else {
+          // Extract start hour from time slot ID (e.g., '9-10' -> '09:00')
+          const startHour = timeSlotId.split('-')[0];
+          updateData.scheduled_time = `${startHour.padStart(2, '0')}:00`;
+        }
+      }
+
       const { error } = await supabase
         .from('jobs')
-        .update({ 
-          driver_id: driverId,
-          status: driverId ? 'assigned' : 'unassigned',
-          updated_at: new Date().toISOString()
-        })
+        .update(updateData)
         .eq('id', jobId);
       
       if (error) throw error;
@@ -411,6 +426,21 @@ const JobsPage: React.FC = () => {
     });
     
     updateJobAssignmentMutation.mutate({ jobId, driverId: newDriverId });
+  }, [updateJobAssignmentMutation, dispatchJobs]);
+
+  // Wrapper function for timeline view job assignments
+  const handleTimelineJobAssignment = useCallback((jobId: string, driverId: string | null, timeSlotId?: string | null) => {
+    console.log('Timeline job assignment:', { jobId, driverId, timeSlotId });
+    
+    // Validate job exists in current data
+    const jobExists = dispatchJobs.find(job => job.id === jobId);
+    if (!jobExists) {
+      console.error('Job not found in dispatchJobs:', jobId);
+      toast.error('Job not found. Please refresh the page.');
+      return;
+    }
+
+    updateJobAssignmentMutation.mutate({ jobId, driverId, timeSlotId });
   }, [updateJobAssignmentMutation, dispatchJobs]);
 
   // Filter jobs based on search and filters
@@ -758,7 +788,7 @@ const JobsPage: React.FC = () => {
                             jobs={dispatchJobs}
                             drivers={drivers}
                             selectedDate={selectedDate}
-                            onJobAssignment={handleDragEnd}
+                            onJobAssignment={handleTimelineJobAssignment}
                             onJobView={handleJobView}
                           />
                         </div>
