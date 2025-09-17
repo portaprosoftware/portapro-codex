@@ -103,27 +103,6 @@ export const DriverOrderModal: React.FC<DriverOrderModalProps> = ({
             {orderedDrivers.map((driver, index) => (
               <Card key={driver.id} className="p-3">
                 <div className="flex items-center gap-3">
-                  <div className="flex flex-col gap-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => moveDriverUp(index)}
-                      disabled={index === 0}
-                      className="h-6 w-6 p-0"
-                    >
-                      <ChevronUp className="h-3 w-3" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => moveDriverDown(index)}
-                      disabled={index === orderedDrivers.length - 1}
-                      className="h-6 w-6 p-0"
-                    >
-                      <ChevronDown className="h-3 w-3" />
-                    </Button>
-                  </div>
-                  
                   <div className="flex-1">
                     <div className="font-medium text-sm">
                       {driver.first_name} {driver.last_name}
