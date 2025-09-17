@@ -17,12 +17,12 @@ interface TimelineJobCardProps {
 
 const getJobTypeConfig = (jobType: string) => {
   const configs = {
-    delivery: { color: 'bg-blue-500', label: 'Delivery', icon: '📦' },
-    pickup: { color: 'bg-orange-500', label: 'Pickup', icon: '🔄' },
-    service: { color: 'bg-purple-500', label: 'Service', icon: '🔧' },
-    'on-site-survey': { color: 'bg-red-800', label: 'Survey', icon: '📋' }
+    delivery: { color: 'border-l-blue-500', label: 'Delivery', icon: '📦' },
+    pickup: { color: 'border-l-orange-500', label: 'Pickup', icon: '🔄' },
+    service: { color: 'border-l-purple-500', label: 'Service', icon: '🔧' },
+    'on-site-survey': { color: 'border-l-red-800', label: 'Survey', icon: '📋' }
   };
-  return configs[jobType] || { color: 'bg-gray-500', label: 'Job', icon: '📋' };
+  return configs[jobType] || { color: 'border-l-gray-500', label: 'Job', icon: '📋' };
 };
 
 const getStatusConfig = (status: string) => {
@@ -77,7 +77,7 @@ export const TimelineJobCard: React.FC<TimelineJobCardProps> = ({
     <Card
       className={cn(
         "p-3 transition-all border-l-4 relative bg-white shadow-sm",
-        jobTypeConfig.color.replace('bg-', 'border-l-'),
+        jobTypeConfig.color,
         timelineView ? "w-[180px] flex-shrink-0 mx-auto" : "w-full",
         isOverdue && "border-red-500",
         job.status === 'completed' && "border-green-500",
