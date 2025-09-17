@@ -190,11 +190,23 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                   const currentMinutes = currentTime.getMinutes();
                   
                   if (currentHour >= timelineStart && currentHour <= timelineEnd) {
-                    const hoursFromStart = currentHour - timelineStart;
-                    const minutesAsHours = currentMinutes / 60;
-                    const totalHoursFromStart = hoursFromStart + minutesAsHours;
-                    const timelineHours = timelineEnd - timelineStart;
-                    const position = (totalHoursFromStart / timelineHours) * 100;
+                    const totalColumns = 11; // Before 8am + 8am-4pm (9 hours) + After 5pm
+                    let position;
+                    
+                    if (currentHour < 8) {
+                      // Before 8am column
+                      const positionInColumn = ((currentHour - 6) + currentMinutes / 60) / 2; // 2 hours in before 8am
+                      position = positionInColumn * (1 / totalColumns) * 100;
+                    } else if (currentHour >= 17) {
+                      // After 5pm column  
+                      const lastColumnStart = 10 / totalColumns; // Start of last column
+                      const positionInColumn = ((currentHour - 17) + currentMinutes / 60) / 3; // 3 hours in after 5pm
+                      position = (lastColumnStart + positionInColumn * (1 / totalColumns)) * 100;
+                    } else {
+                      // Regular hourly columns (8am-4pm)
+                      const columnIndex = currentHour - 7; // 8am = column 1, 9am = column 2, etc.
+                      position = (columnIndex / totalColumns + (currentMinutes / 60) * (1 / totalColumns)) * 100;
+                    }
                     
                     // Calculate position relative to the timeline area (after 192px driver column)
                     const leftOffset = 192; // 48 * 4 (w-48 = 192px)
