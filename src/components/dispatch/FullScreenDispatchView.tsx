@@ -147,7 +147,7 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
 
   const scrollVertical = (direction: 'up' | 'down') => {
     if (verticalScrollRef.current && stickyColumnRef.current) {
-      const scrollAmount = 200;
+      const scrollAmount = 300;
       const newScrollTop = verticalScrollRef.current.scrollTop + (direction === 'down' ? scrollAmount : -scrollAmount);
       verticalScrollRef.current.scrollTo({ top: newScrollTop, behavior: 'smooth' });
       stickyColumnRef.current.scrollTo({ top: newScrollTop, behavior: 'smooth' });
