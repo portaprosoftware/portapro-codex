@@ -13,13 +13,15 @@ interface DriverSwimLaneProps {
   jobs: any[];
   onJobView: (jobId: string) => void;
   timelineView: boolean;
+  dragHandleProps?: any;
 }
 
 export const DriverSwimLane: React.FC<DriverSwimLaneProps> = ({
   driver,
   jobs,
   onJobView,
-  timelineView
+  timelineView,
+  dragHandleProps
 }) => {
   const driverName = `${driver.first_name} ${driver.last_name}`;
   const workloadColor = jobs.length > 3 ? 'destructive' : jobs.length > 1 ? 'default' : 'secondary';
@@ -34,10 +36,12 @@ export const DriverSwimLane: React.FC<DriverSwimLaneProps> = ({
           timelineView ? "flex-row" : "flex-col"
         )}>
           {/* Driver Info Column */}
-          <div className={cn(
-            "border-r bg-background p-4 flex items-center gap-3",
-            timelineView ? "w-48 flex-shrink-0" : "w-full border-b"
-          )}>
+          <div 
+            {...dragHandleProps}
+            className={cn(
+              "border-r bg-background p-4 flex items-center gap-3 cursor-move",
+              timelineView ? "w-48 flex-shrink-0" : "w-full border-b"
+            )}>
             <Avatar className="h-8 w-8">
               <AvatarFallback className="text-xs">
                 {driver.first_name?.[0]}{driver.last_name?.[0]}
