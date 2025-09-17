@@ -15,26 +15,6 @@ interface DriverSwimLaneProps {
   timelineView: boolean;
 }
 
-// Calculate position based on scheduled time
-const getJobTimePosition = (scheduledTime: string) => {
-  if (!scheduledTime) return 0;
-  
-  const [hours, minutes] = scheduledTime.split(':').map(Number);
-  const timelineStart = 6; // 6 AM
-  const timelineEnd = 20; // 8 PM
-  const timelineHours = timelineEnd - timelineStart;
-  
-  if (hours < timelineStart || hours > timelineEnd) {
-    return 0;
-  }
-  
-  const hoursFromStart = hours - timelineStart;
-  const minutesAsHours = minutes / 60;
-  const totalHoursFromStart = hoursFromStart + minutesAsHours;
-  
-  return (totalHoursFromStart / timelineHours) * 100;
-};
-
 export const DriverSwimLane: React.FC<DriverSwimLaneProps> = ({
   driver,
   jobs,
@@ -80,104 +60,54 @@ export const DriverSwimLane: React.FC<DriverSwimLaneProps> = ({
 
           {/* Jobs Area */}
           <div className={cn(
-            "flex-1 p-2 relative",
-            timelineView ? "min-h-[120px]" : "flex flex-col gap-2"
+            "flex-1 p-2",
+            timelineView ? "flex flex-row gap-2 min-h-[120px] items-center overflow-x-auto" : "flex flex-col gap-2"
           )}>
-            {timelineView ? (
-              // Timeline view with positioned jobs
-              <>
-                <Droppable droppableId={driver.id} direction="horizontal">
-                  {(provided, snapshot) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                      className={cn(
-                        "w-full h-full relative",
-                        snapshot.isDraggingOver && "bg-muted/50"
+            <Droppable droppableId={driver.id} direction={timelineView ? "horizontal" : "vertical"}>
+              {(provided, snapshot) => (
+                <div
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                  className={cn(
+                    timelineView ? "flex flex-row gap-2" : "flex flex-col gap-2",
+                    snapshot.isDraggingOver && "bg-muted/50"
+                  )}
+                >
+                  {jobs.map((job, index) => (
+                    <Draggable key={job.id} draggableId={job.id} index={index}>
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          className={cn(
+                            "transition-all",
+                            snapshot.isDragging && "opacity-95 rotate-1 scale-105 z-50 shadow-lg ring-2 ring-primary/20"
+                          )}
+                        >
+                          <TimelineJobCard
+                            job={job}
+                            onJobView={onJobView}
+                            timelineView={timelineView}
+                          />
+                        </div>
                       )}
-                    >
-                      {jobs.map((job, index) => {
-                        const position = getJobTimePosition(job.scheduled_time);
-                        return (
-                          <Draggable key={job.id} draggableId={job.id} index={index}>
-                            {(provided, snapshot) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                className={cn(
-                                  "absolute transition-all",
-                                  snapshot.isDragging && "opacity-95 rotate-1 scale-105 z-50 shadow-lg ring-2 ring-primary/20"
-                                )}
-                                style={{
-                                  left: `${position}%`,
-                                  top: '8px',
-                                  ...provided.draggableProps.style
-                                }}
-                              >
-                                <TimelineJobCard
-                                  job={job}
-                                  onJobView={onJobView}
-                                  timelineView={timelineView}
-                                />
-                              </div>
-                            )}
-                          </Draggable>
-                        );
-                      })}
-                      {provided.placeholder}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                  
+                  {/* Empty state */}
+                  {jobs.length === 0 && (
+                    <div className={cn(
+                      "flex items-center justify-center text-muted-foreground text-sm border-2 border-dashed border-muted rounded-lg",
+                      timelineView ? "min-w-[200px] h-16" : "h-16"
+                    )}>
+                      Drop jobs here
                     </div>
                   )}
-                </Droppable>
-              </>
-            ) : (
-              // List view
-              <Droppable droppableId={driver.id} direction="vertical">
-                {(provided, snapshot) => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                    className={cn(
-                      "flex flex-col gap-2",
-                      snapshot.isDraggingOver && "bg-muted/50"
-                    )}
-                  >
-                    {jobs.map((job, index) => (
-                      <Draggable key={job.id} draggableId={job.id} index={index}>
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            className={cn(
-                              "transition-all",
-                              snapshot.isDragging && "opacity-95 rotate-1 scale-105 z-50 shadow-lg ring-2 ring-primary/20"
-                            )}
-                          >
-                            <TimelineJobCard
-                              job={job}
-                              onJobView={onJobView}
-                              timelineView={timelineView}
-                            />
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            )}
-            
-            {/* Empty state */}
-            {jobs.length === 0 && (
-              <div className={cn(
-                "flex items-center justify-center text-muted-foreground text-sm border-2 border-dashed border-muted rounded-lg",
-                timelineView ? "w-full h-16 absolute inset-2" : "h-16"
-              )}>
-                Drop jobs here
-              </div>
-            )}
+                </div>
+              )}
+            </Droppable>
           </div>
         </div>
       </div>
