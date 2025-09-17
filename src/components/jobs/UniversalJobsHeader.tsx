@@ -14,7 +14,7 @@ export const UniversalJobsHeader: React.FC<UniversalJobsHeaderProps> = ({
   jobsCount
 }) => {
   return (
-    <div className="p-4 pb-2 mb-2">
+    <div className="pt-4 px-4 pb-1">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">

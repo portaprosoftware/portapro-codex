@@ -526,7 +526,7 @@ const JobsPage: React.FC = () => {
         
         {/* Conditional Filters Bar */}
         {activeTab !== 'custom' && activeTab !== 'drafts' && (
-          <div className="bg-white rounded-lg border shadow-sm p-6">
+          <div className="bg-white rounded-lg border shadow-sm px-6 py-2">
             <div className="flex items-center justify-between">
               <InlineFilters
                 searchTerm={searchTerm}

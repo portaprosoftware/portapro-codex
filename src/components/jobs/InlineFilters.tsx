@@ -106,7 +106,7 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
   });
   return (
     <TooltipProvider>
-      <div className="space-y-2">
+      <div className="space-y-1">
         {/* Universal Jobs Header */}
         {showUniversalHeader && selectedDate && (
           <UniversalJobsHeader
