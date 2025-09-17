@@ -21,50 +21,49 @@ export const DispatchMetrics: React.FC<DispatchMetricsProps> = ({ metrics }) => 
       label: 'Total Jobs',
       value: metrics.totalJobs,
       icon: ClipboardList,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50'
+      gradient: 'bg-gradient-to-br from-blue-500 to-blue-600'
     },
     {
       label: 'Completed',
       value: metrics.completedJobs,
       icon: CheckCircle,
-      color: 'text-green-600',
-      bgColor: 'bg-green-50'
+      gradient: 'bg-gradient-to-br from-green-500 to-green-600'
     },
     {
       label: 'Active Drivers',
       value: `${metrics.activeDrivers}/${metrics.totalDrivers}`,
       icon: Users,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50'
+      gradient: 'bg-gradient-to-br from-purple-500 to-purple-600'
     },
     {
       label: 'Unassigned',
       value: metrics.unassignedCount,
       icon: AlertTriangle,
-      color: metrics.unassignedCount > 0 ? 'text-red-600' : 'text-gray-600',
-      bgColor: metrics.unassignedCount > 0 ? 'bg-red-50' : 'bg-gray-50'
+      gradient: metrics.unassignedCount > 0 ? 'bg-gradient-to-br from-red-500 to-red-600' : 'bg-gradient-to-br from-gray-500 to-gray-600'
     },
     {
       label: 'Completion Rate',
       value: `${metrics.completionRate}%`,
       icon: TrendingUp,
-      color: metrics.completionRate >= 80 ? 'text-green-600' : metrics.completionRate >= 60 ? 'text-yellow-600' : 'text-red-600',
-      bgColor: metrics.completionRate >= 80 ? 'bg-green-50' : metrics.completionRate >= 60 ? 'bg-yellow-50' : 'bg-red-50'
+      gradient: metrics.completionRate >= 80 
+        ? 'bg-gradient-to-br from-green-500 to-green-600' 
+        : metrics.completionRate >= 60 
+        ? 'bg-gradient-to-br from-yellow-500 to-yellow-600' 
+        : 'bg-gradient-to-br from-red-500 to-red-600'
     }
   ];
 
   return (
     <div className="grid grid-cols-5 gap-4 mt-4">
       {metricCards.map((metric, index) => (
-        <Card key={index} className={cn("p-3", metric.bgColor)}>
+        <Card key={index} className={cn("p-3 border-0", metric.gradient)}>
           <div className="flex items-center gap-2">
-            <metric.icon className={cn("h-4 w-4", metric.color)} />
+            <metric.icon className="h-4 w-4 text-white" />
             <div>
-              <p className="text-xs text-muted-foreground font-medium">
+              <p className="text-xs text-white/80 font-medium">
                 {metric.label}
               </p>
-              <p className={cn("text-lg font-semibold", metric.color)}>
+              <p className="text-lg font-semibold text-white">
                 {metric.value}
               </p>
             </div>
