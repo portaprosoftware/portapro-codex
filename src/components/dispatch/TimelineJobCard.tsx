@@ -11,6 +11,7 @@ interface TimelineJobCardProps {
   job: any;
   onJobView: (jobId: string) => void;
   timelineView: boolean;
+  isDragging?: boolean;
 }
 
 const getJobTypeConfig = (jobType: string) => {
@@ -37,7 +38,8 @@ const getStatusConfig = (status: string) => {
 export const TimelineJobCard: React.FC<TimelineJobCardProps> = ({
   job,
   onJobView,
-  timelineView
+  timelineView,
+  isDragging = false
 }) => {
   const jobTypeConfig = getJobTypeConfig(job.job_type);
   const statusConfig = getStatusConfig(job.status);
@@ -55,7 +57,8 @@ export const TimelineJobCard: React.FC<TimelineJobCardProps> = ({
         jobTypeConfig.color.replace('bg-', 'border-l-'),
         timelineView ? "min-w-[240px] max-w-[280px]" : "w-full",
         isOverdue && "border-red-500 bg-red-50",
-        job.status === 'completed' && "bg-green-50 border-green-500"
+        job.status === 'completed' && "bg-green-50 border-green-500",
+        isDragging && "shadow-lg border-blue-300 bg-blue-50"
       )}
     >
       <div className="space-y-2">
