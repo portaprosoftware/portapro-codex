@@ -74,7 +74,7 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <DrawerTitle className="text-2xl font-semibold">
-                    Dispatch Control Center
+                    Dispatch Center
                   </DrawerTitle>
                   <Badge variant="outline" className="gap-1">
                     <Calendar className="h-3 w-3" />
