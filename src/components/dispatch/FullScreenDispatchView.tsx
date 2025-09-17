@@ -388,10 +388,21 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                           const slotsBeforeCurrentTime = Math.floor(positionPercent * 14);
                           const positionWithinSlot = positionPercent * 14 - slotsBeforeCurrentTime;
                           const leftPosition = noTimeSlotWidth + slotsBeforeCurrentTime * timeSlotWidth + positionWithinSlot * timeSlotWidth;
+                          
+                          // Calculate full height: unassigned (160px) + blue header (40px) + all driver rows (160px each)
+                          const unassignedHeight = 160;
+                          const headerHeight = 40;
+                          const driverRowHeight = 160;
+                          const totalHeight = unassignedHeight + headerHeight + (drivers.length * driverRowHeight);
+                          
                           return (
                             <div
-                              className="absolute top-0 bottom-0 w-0.5 bg-red-500 z-20 pointer-events-none"
-                              style={{ left: `${leftPosition}px` }}
+                              className="absolute w-0.5 bg-red-500 z-20 pointer-events-none"
+                              style={{ 
+                                left: `${leftPosition}px`,
+                                top: 0,
+                                height: `${totalHeight}px`
+                              }}
                             >
                               <div className="absolute -top-1 -left-1 w-2 h-2 bg-red-500 rounded-full" />
                             </div>
