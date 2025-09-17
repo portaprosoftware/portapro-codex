@@ -96,17 +96,13 @@ export const TimelineGrid: React.FC = () => {
   return (
     <div className="border-b bg-gradient-to-r from-blue-600 to-blue-700 sticky top-[120px] z-10">
       <div className="flex">
-        {/* No content - the sticky column handles the driver label */}
-        <div className="w-32 flex-shrink-0 border-r border-blue-500/30 bg-gradient-to-r from-blue-600 to-blue-700">
-        </div>
-        
-        {/* Timeline slots - EXACT same widths as DriverSwimLane */}
+        {/* Timeline slots start directly after sticky column */}
         <div className="flex">
           {TIME_SLOTS.map((slot) => (
             <div
               key={slot.id}
               className={cn(
-                "border-r border-blue-500/30 text-center py-3 px-2 text-xs font-medium text-white",
+                "border-r border-blue-500/30 text-center py-3 px-2 text-xs font-medium text-white flex items-center justify-center",
                 slot.id === 'no-time' ? "bg-blue-700" : "bg-gradient-to-r from-blue-600 to-blue-700"
               )}
               style={{ width: slot.width, minWidth: slot.width, flexShrink: 0 }}
