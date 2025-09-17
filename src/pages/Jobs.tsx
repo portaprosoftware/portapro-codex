@@ -21,6 +21,7 @@ import { JobCard } from '@/components/jobs/JobCard';
 import { DispatchJobCard } from '@/components/jobs/DispatchJobCard';
 import { DispatchJobCardList } from '@/components/jobs/DispatchJobCardList';
 import { DispatchJobCardCompact } from '@/components/jobs/DispatchJobCardCompact';
+import { UnassignedJobCard } from '@/components/jobs/UnassignedJobCard';
 import { EnhancedDateNavigator } from '@/components/jobs/EnhancedDateNavigator';
 import { InlineFilters } from '@/components/jobs/InlineFilters';
 import { useJobs, useUpdateJobStatus, useCreateJob } from '@/hooks/useJobs';
@@ -692,11 +693,11 @@ const JobsPage: React.FC = () => {
                                         {...provided.dragHandleProps}
                                         className={snapshot.isDragging ? 'opacity-50' : ''}
                                       >
-                                        <DispatchJobCardList
-                                          job={job}
-                                          onView={handleJobView}
-                                          isDragging={snapshot.isDragging}
-                                        />
+                                         <UnassignedJobCard
+                                           job={job}
+                                           onView={handleJobView}
+                                           isDragging={snapshot.isDragging}
+                                         />
                                       </div>
                                     )}
                                   </Draggable>
