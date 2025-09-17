@@ -185,6 +185,52 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                 </div>
                 
                 <div className="flex items-center gap-2">
+                  {/* Scroll Controls - only show in timeline view */}
+                  {timelineView && (
+                    <div className="flex items-center gap-1 mr-2">
+                      <div className="flex gap-1">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-8 w-8 p-0"
+                          onClick={() => scrollHorizontal('left')}
+                          title="Scroll left"
+                        >
+                          <ChevronLeft className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-8 w-8 p-0"
+                          onClick={() => scrollHorizontal('right')}
+                          title="Scroll right"
+                        >
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <div className="flex gap-1 ml-1">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-8 w-8 p-0"
+                          onClick={() => scrollVertical('up')}
+                          title="Scroll up"
+                        >
+                          <ChevronUp className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-8 w-8 p-0"
+                          onClick={() => scrollVertical('down')}
+                          title="Scroll down"
+                        >
+                          <ChevronDown className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                  
                   <Button 
                     variant="outline" 
                     size="sm"
@@ -229,46 +275,6 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                           />
                         ))}
                       </div>
-                    </div>
-                  </div>
-                  
-                  {/* Scroll Controls */}
-                  <div className="absolute top-4 right-4 flex flex-col gap-2 z-40">
-                    <div className="flex gap-1">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-8 w-8 p-0 bg-background/80 backdrop-blur-sm"
-                        onClick={() => scrollHorizontal('left')}
-                      >
-                        <ChevronLeft className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-8 w-8 p-0 bg-background/80 backdrop-blur-sm"
-                        onClick={() => scrollHorizontal('right')}
-                      >
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <div className="flex gap-1">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-8 w-8 p-0 bg-background/80 backdrop-blur-sm"
-                        onClick={() => scrollVertical('up')}
-                      >
-                        <ChevronUp className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-8 w-8 p-0 bg-background/80 backdrop-blur-sm"
-                        onClick={() => scrollVertical('down')}
-                      >
-                        <ChevronDown className="h-4 w-4" />
-                      </Button>
                     </div>
                   </div>
                   
