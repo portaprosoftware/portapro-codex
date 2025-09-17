@@ -761,6 +761,16 @@ const JobsPage: React.FC = () => {
                             onDateChange={setSelectedDate}
                             onJobAssignment={handleDragEnd}
                             onJobView={handleJobView}
+                            dateRange={customDateRange}
+                            onDateRangeChange={setCustomDateRange}
+                            searchTerm={customSearchTerm}
+                            onSearchTermChange={setCustomSearchTerm}
+                            selectedDriver={customSelectedDriver}
+                            onDriverChange={setCustomSelectedDriver}
+                            selectedJobType={customSelectedJobType}
+                            onJobTypeChange={setCustomSelectedJobType}
+                            selectedStatus={customSelectedStatus}
+                            onStatusChange={setCustomSelectedStatus}
                           />
                         </div>
                       </div>
