@@ -691,7 +691,7 @@ const JobsPage: React.FC = () => {
                                         ref={provided.innerRef}
                                         {...provided.draggableProps}
                                         {...provided.dragHandleProps}
-                                        className={snapshot.isDragging ? 'opacity-50' : ''}
+                                        className={cn('w-full', snapshot.isDragging ? 'opacity-50' : '')}
                                       >
                                          <UnassignedJobCard
                                            job={job}
