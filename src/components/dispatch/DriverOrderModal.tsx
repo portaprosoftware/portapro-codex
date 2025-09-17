@@ -121,18 +121,25 @@ export const DriverOrderModal: React.FC<DriverOrderModalProps> = ({
             {orderedDrivers.map((driver, index) => (
               <Card key={driver.id} className="p-3">
                 <div className="flex items-center gap-3">
-                  <div className="flex-1">
+                  <div className="min-w-0 flex-shrink-0">
                     <div className="font-medium text-sm">
                       {driver.first_name} {driver.last_name}
                     </div>
-                    {driver.phone && (
-                      <div className="text-xs text-muted-foreground">
-                        {driver.phone}
-                      </div>
-                    )}
+                    <div className="flex items-center gap-2 mt-1">
+                      {driver.phone && (
+                        <div className="text-xs text-muted-foreground">
+                          {driver.phone}
+                        </div>
+                      )}
+                      <Badge variant="outline" className="text-xs">
+                        #{index + 1}
+                      </Badge>
+                    </div>
                   </div>
 
-                  <div className="flex gap-1">
+                  <div className="flex-1"></div>
+
+                  <div className="flex gap-1 flex-shrink-0">
                     <Button
                       variant="ghost"
                       size="sm"
@@ -154,10 +161,6 @@ export const DriverOrderModal: React.FC<DriverOrderModalProps> = ({
                       <ArrowDown className="h-3 w-3" />
                     </Button>
                   </div>
-
-                  <Badge variant="outline" className="text-xs">
-                    #{index + 1}
-                  </Badge>
                 </div>
               </Card>
             ))}
