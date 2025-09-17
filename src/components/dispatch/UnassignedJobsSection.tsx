@@ -138,12 +138,20 @@ export const UnassignedJobsSection: React.FC<UnassignedJobsSectionProps> = ({
 
   // Horizontal timeline view - just slots, no wrapper
   return (
-    <div className="h-[120px] flex">
+    <div className="h-[160px] flex">
       {TIME_SLOTS.map((slot) => (
         <div
           key={slot.id}
-          className="border-r h-full bg-card"
-          style={{ width: slot.width, minWidth: slot.width, flexShrink: 0 }}
+          className={cn(
+            "border-r h-full",
+            slot.id === 'no-time' ? "bg-card" : "bg-card"
+          )}
+          style={{ 
+            width: slot.width, 
+            minWidth: slot.width, 
+            flexShrink: 0,
+            borderRadius: slot.id === 'no-time' ? '0' : undefined
+          }}
         >
           <Droppable droppableId={`unassigned-${slot.id}`} direction="vertical" type="JOB">
             {(provided, snapshot) => (
@@ -151,7 +159,7 @@ export const UnassignedJobsSection: React.FC<UnassignedJobsSectionProps> = ({
                 ref={provided.innerRef}
                 {...provided.droppableProps}
                 className={cn(
-                  "h-full p-1 flex flex-col gap-1",
+                  "h-full p-2 flex flex-col gap-2 overflow-y-auto",
                   snapshot.isDraggingOver && "bg-primary/10 ring-2 ring-primary/20"
                 )}
               >

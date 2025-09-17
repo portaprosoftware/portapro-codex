@@ -124,12 +124,20 @@ export const DriverSwimLane: React.FC<DriverSwimLaneProps> = ({
 
   // Horizontal timeline view - just slots, no card wrapper
   return (
-    <div className="h-[120px] border-b flex">
+    <div className="h-[160px] border-b flex">
       {TIME_SLOTS.map((slot) => (
         <div
           key={slot.id}
-          className="border-r h-full bg-card"
-          style={{ width: slot.width, minWidth: slot.width, flexShrink: 0 }}
+          className={cn(
+            "border-r h-full",
+            slot.id === 'no-time' ? "bg-card" : "bg-card"
+          )}
+          style={{ 
+            width: slot.width, 
+            minWidth: slot.width, 
+            flexShrink: 0,
+            borderRadius: slot.id === 'no-time' ? '0' : undefined
+          }}
         >
           <Droppable droppableId={`${driver.id}-${slot.id}`} direction="vertical" type="JOB">
             {(provided, snapshot) => (
@@ -137,12 +145,12 @@ export const DriverSwimLane: React.FC<DriverSwimLaneProps> = ({
                 ref={provided.innerRef}
                 {...provided.droppableProps}
                 className={cn(
-                  "h-full p-1",
+                  "h-full p-2 overflow-y-auto",
                   snapshot.isDraggingOver && "bg-primary/10 ring-2 ring-primary/20"
                 )}
               >
                 {slot.id === 'no-time' ? (
-                  <div className="grid grid-cols-4 gap-1 h-full">
+                  <div className="grid grid-cols-3 gap-2 h-full">
                     {jobsByTimeSlot[slot.id]?.map((job, index) => (
                       <Draggable key={job.id} draggableId={job.id} index={index}>
                         {(provided, snapshot) => (
@@ -164,7 +172,7 @@ export const DriverSwimLane: React.FC<DriverSwimLaneProps> = ({
                     ))}
                   </div>
                 ) : (
-                  <div className="flex flex-col gap-1">
+                  <div className="flex flex-col gap-2">
                     {jobsByTimeSlot[slot.id]?.map((job, index) => (
                       <Draggable key={job.id} draggableId={job.id} index={index}>
                         {(provided, snapshot) => (

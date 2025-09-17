@@ -285,7 +285,7 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                   {/* Row 1: Sticky Unassigned Header + Timeline Slots */}
                   <div className="sticky top-0 z-20 bg-background border-b flex">
                     {/* Sticky Unassigned Label */}
-                    <div className="w-32 flex-shrink-0 h-[120px] border-r bg-card flex items-center justify-center">
+                    <div className="w-32 flex-shrink-0 h-[160px] border-r bg-card flex items-center justify-center">
                       <div className="text-xs font-medium text-center">
                         <div className="mb-1">Unassigned</div>
                         <Badge variant="secondary" className="text-xs">
@@ -304,7 +304,7 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                   </div>
 
                   {/* Row 2: Sticky Drivers Header + Time Slot Headers */}
-                  <div className="sticky top-[120px] z-10 bg-gradient-to-r from-blue-600 to-blue-700 border-b flex">
+                  <div className="sticky top-[160px] z-10 bg-gradient-to-r from-blue-600 to-blue-700 border-b flex">
                     {/* Sticky Drivers Label */}
                     <div className="w-32 flex-shrink-0 h-[40px] border-r border-blue-500/30 bg-gradient-to-r from-blue-600 to-blue-700 text-white flex items-center justify-center">
                       <div className="text-xs font-medium">Drivers</div>
@@ -336,7 +336,7 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                         onScroll={() => syncVerticalScroll('sticky')}
                       >
                         {drivers.map((driver) => (
-                          <div key={driver.id} className="h-[120px] border-b p-2 flex items-center">
+                          <div key={driver.id} className="h-[160px] border-b p-2 flex items-center bg-card">
                             <div className="flex flex-col gap-1 w-full">
                               <div className="font-medium text-xs text-center">
                                 {driver.first_name} {driver.last_name}
@@ -399,7 +399,7 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                       
                       return (
                         <div 
-                          className="absolute top-[160px] bottom-0 w-0.5 bg-red-500 z-20 pointer-events-none"
+                          className="absolute top-[200px] bottom-0 w-0.5 bg-red-500 z-20 pointer-events-none"
                           style={{ left: `${leftPosition}px` }}
                         >
                           <div className="absolute -top-1 -left-1 w-2 h-2 bg-red-500 rounded-full"></div>
