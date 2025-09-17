@@ -137,7 +137,7 @@ export const UnassignedJobCard: React.FC<UnassignedJobCardProps> = ({
           </div>
 
           {/* Bottom Section - Badges & Button */}
-          <div className="flex items-center justify-between gap-2">
+          <div className="space-y-2">
             <div className="flex flex-wrap gap-1">
               <Badge className={cn("text-xs px-2 py-0.5 font-bold whitespace-nowrap", statusInfo.primary.gradient)}>
                 {statusInfo.primary.label}
@@ -153,7 +153,7 @@ export const UnassignedJobCard: React.FC<UnassignedJobCardProps> = ({
               variant="outline"
               size="sm"
               onClick={handleViewJob}
-              className="px-3 py-1 text-xs border-gray-300 hover:bg-gray-50 flex-shrink-0"
+              className="px-3 py-1 text-xs border-gray-300 hover:bg-gray-50 w-full"
               aria-label={`View job ${job.job_number}`}
             >
               View Details
