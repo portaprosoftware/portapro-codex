@@ -268,12 +268,20 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
   });
 
   const handleStartJob = () => {
-    const newStatus = job?.status === 'assigned' ? 'in-progress' : 'completed';
+    // Allow starting jobs from unassigned status too
+    const newStatus = (job?.status === 'assigned' || job?.status === 'unassigned') ? 'in-progress' : 'completed';
     statusUpdateMutation.mutate({ status: newStatus });
   };
 
   const handleReverseJob = () => {
-    const newStatus = job?.status === 'completed' ? 'in-progress' : 'assigned';
+    // Allow reversing from in-progress back to assigned or unassigned
+    let newStatus = 'assigned';
+    if (job?.status === 'completed') {
+      newStatus = 'in-progress';
+    } else if (job?.status === 'in-progress') {
+      // If job has no driver, revert to unassigned, otherwise to assigned
+      newStatus = job?.driver_id ? 'assigned' : 'unassigned';
+    }
     statusUpdateMutation.mutate({ status: newStatus });
   };
 
@@ -308,7 +316,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
 
   const getJobButtonText = () => {
     if (!job) return 'Start Job';
-    return job.status === 'assigned' ? 'Start Job' : 'Complete Job';
+    return (job.status === 'assigned' || job.status === 'unassigned') ? 'Start Job' : 'Complete Job';
   };
 
   const handleSave = (data: JobEditForm) => {
@@ -320,10 +328,10 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
     setIsEditing(false);
   };
 
-  // Permissions for actions
-  const canStartJob = job?.status === 'assigned' || job?.status === 'in-progress';
+  // Permissions for actions - include unassigned jobs
+  const canStartJob = job?.status === 'assigned' || job?.status === 'unassigned' || job?.status === 'in-progress';
   const canReverseJob = job?.status === 'in-progress' || job?.status === 'completed';
-  const canCancelJob = job?.status === 'assigned' || job?.status === 'in-progress';
+  const canCancelJob = job?.status === 'assigned' || job?.status === 'unassigned' || job?.status === 'in-progress';
   const isCancelledJob = job?.status === 'cancelled';
 
   if (!job && !isLoading) return null;
