@@ -100,7 +100,7 @@ export const TimelineJobCard: React.FC<TimelineJobCardProps> = ({
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <Clock className="h-3 w-3" />
           <span>
-            {scheduledTime || format(new Date(job.scheduled_date), 'h:mm a')}
+            {scheduledTime || (job.scheduled_date ? format(new Date(job.scheduled_date), 'MMM d') : 'Unscheduled')}
           </span>
         </div>
 
