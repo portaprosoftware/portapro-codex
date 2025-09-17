@@ -54,7 +54,7 @@ export const DriverOrderModal: React.FC<DriverOrderModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md bg-background border sm:max-h-[70vh] max-h-[75vh] overflow-y-auto">
+      <DialogContent className="max-w-md bg-background border sm:max-h-[80vh] max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <User className="h-5 w-5" />
@@ -85,7 +85,7 @@ export const DriverOrderModal: React.FC<DriverOrderModalProps> = ({
                           {...provided.draggableProps}
                           className={cn(
                             "p-3 transition-all",
-                            snapshot.isDragging && "ring-2 ring-primary shadow-lg bg-background"
+                            snapshot.isDragging && "ring-2 ring-primary shadow-xl bg-background z-[10000] transform rotate-2"
                           )}
                         >
                           <div className="flex items-center gap-3">
