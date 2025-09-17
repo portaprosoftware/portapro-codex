@@ -4,6 +4,8 @@ import { cn } from '@/lib/utils';
 // Fixed-width timeline structure for consistent horizontal scrolling
 export const TIME_SLOTS = [
   { id: 'no-time', label: 'No Time', startHour: null, endHour: null, width: '800px' },
+  { id: 'early', label: 'Early', startHour: null, endHour: 5, width: '200px' },
+  { id: '5-6', label: '5-6am', startHour: 5, endHour: 6, width: '200px' },
   { id: '6-7', label: '6-7am', startHour: 6, endHour: 7, width: '200px' },
   { id: '7-8', label: '7-8am', startHour: 7, endHour: 8, width: '200px' },
   { id: '8-9', label: '8-9am', startHour: 8, endHour: 9, width: '200px' },
@@ -18,7 +20,9 @@ export const TIME_SLOTS = [
   { id: '17-18', label: '5-6pm', startHour: 17, endHour: 18, width: '200px' },
   { id: '18-19', label: '6-7pm', startHour: 18, endHour: 19, width: '200px' },
   { id: '19-20', label: '7-8pm', startHour: 19, endHour: 20, width: '200px' },
-  { id: 'after-20', label: 'After 8pm', startHour: 20, endHour: null, width: '200px' },
+  { id: '20-21', label: '8-9pm', startHour: 20, endHour: 21, width: '200px' },
+  { id: '21-22', label: '9-10pm', startHour: 21, endHour: 22, width: '200px' },
+  { id: 'late', label: 'Late', startHour: 22, endHour: null, width: '200px' },
 ];
 
 // Utility function to determine which time slot a job belongs to based on scheduled_time
@@ -37,8 +41,8 @@ export const getTimeSlotForJob = (scheduledTime: string | null): string => {
     const timeInMinutes = hours * 60 + minutes;
   
   // Handle special cases
-  if (timeInMinutes < 6 * 60) return 'no-time'; // Before 6am
-  if (timeInMinutes >= 20 * 60) return 'after-20'; // After 8pm
+  if (timeInMinutes < 5 * 60) return 'early'; // Before 5am
+  if (timeInMinutes >= 22 * 60) return 'late'; // After 10pm
   
   // Find the appropriate hourly slot
   for (let i = 1; i < TIME_SLOTS.length - 1; i++) {
