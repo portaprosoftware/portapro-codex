@@ -136,67 +136,50 @@ export const UnassignedJobsSection: React.FC<UnassignedJobsSectionProps> = ({
     );
   }
 
-  // Horizontal timeline view
+  // Horizontal timeline view - just slots, no wrapper
   return (
-    <div className="sticky top-0 z-20 bg-background border-b border-border">
-      <Card className="p-0 overflow-hidden rounded-none border-x-0 border-t-0">
-        <div className="h-[120px]">
-          <div className="flex flex-row h-full">
-            {/* Time Slots Area - Same layout as DriverSwimLane */}
-            <div className="flex h-full">
-              {TIME_SLOTS.map((slot) => (
-                <div
-                  key={slot.id}
-                  className="border-r h-full"
-                  style={{ width: slot.width, minWidth: slot.width, flexShrink: 0 }}
-                >
-                  <Droppable droppableId={`unassigned-${slot.id}`} direction="vertical" type="JOB">
+    <div className="h-[120px] flex">
+      {TIME_SLOTS.map((slot) => (
+        <div
+          key={slot.id}
+          className="border-r h-full bg-card"
+          style={{ width: slot.width, minWidth: slot.width, flexShrink: 0 }}
+        >
+          <Droppable droppableId={`unassigned-${slot.id}`} direction="vertical" type="JOB">
+            {(provided, snapshot) => (
+              <div
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+                className={cn(
+                  "h-full p-1 flex flex-col gap-1",
+                  snapshot.isDraggingOver && "bg-primary/10 ring-2 ring-primary/20"
+                )}
+              >
+                {jobsByTimeSlot[slot.id]?.map((job, index) => (
+                  <Draggable key={job.id} draggableId={job.id} index={index}>
                     {(provided, snapshot) => (
                       <div
                         ref={provided.innerRef}
-                        {...provided.droppableProps}
-                        className={cn(
-                          "h-full p-1 flex flex-col gap-1",
-                          snapshot.isDraggingOver && "bg-primary/10 ring-2 ring-primary/20",
-                          slot.id === 'no-time' && "bg-muted/10"
-                        )}
+                        {...provided.draggableProps}
+                        className="w-full"
                       >
-                        {jobsByTimeSlot[slot.id]?.map((job, index) => (
-                          <Draggable key={job.id} draggableId={job.id} index={index}>
-                            {(provided, snapshot) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                className="w-full"
-                              >
-                                <TimelineJobCard
-                                  job={job}
-                                  onJobView={onJobView}
-                                  timelineView={true}
-                                  isDragging={snapshot.isDragging}
-                                  dragHandleProps={provided.dragHandleProps}
-                                />
-                              </div>
-                            )}
-                          </Draggable>
-                        ))}
-                        {provided.placeholder}
-                        
-                        {/* Empty state for time slots */}
-                        {jobsByTimeSlot[slot.id]?.length === 0 && (
-                          <div className="flex items-center justify-center text-muted-foreground text-xs border border-dashed border-muted/50 rounded h-8 text-center">
-                            {slot.id === 'no-time' ? 'Drop here' : 'Available'}
-                          </div>
-                        )}
+                        <TimelineJobCard
+                          job={job}
+                          onJobView={onJobView}
+                          timelineView={true}
+                          isDragging={snapshot.isDragging}
+                          dragHandleProps={provided.dragHandleProps}
+                        />
                       </div>
                     )}
-                  </Droppable>
-                </div>
-              ))}
-            </div>
-          </div>
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
         </div>
-      </Card>
+      ))}
     </div>
   );
 };
