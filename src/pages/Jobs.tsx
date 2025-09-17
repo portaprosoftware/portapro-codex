@@ -89,6 +89,28 @@ const JobsPage: React.FC = () => {
   const searchLooksLikeJobId = searchTerm.length >= 6 && /^[A-Z]{3}-\d+$/i.test(searchTerm);
   const { data: foundJob } = useJobSearch(shouldTriggerSmartSearch && searchLooksLikeJobId ? searchTerm : undefined);
 
+  // Ensure no stale SW cache in Lovable preview
+  useEffect(() => {
+    const host = typeof window !== 'undefined' ? window.location.host : '';
+    if (host.includes('lovable.app')) {
+      (async () => {
+        try {
+          if ('serviceWorker' in navigator) {
+            const regs = await navigator.serviceWorker.getRegistrations();
+            await Promise.all(regs.map(r => r.unregister()));
+          }
+          if ('caches' in window) {
+            const names = await caches.keys();
+            await Promise.all(names.map(n => caches.delete(n)));
+          }
+          console.log('Preview: SW unregistered and caches cleared');
+        } catch (e) {
+          console.warn('Preview cleanup failed', e);
+        }
+      })();
+    }
+  }, []);
+
   // Handle smart job search and date navigation
   const handleSmartSearch = useCallback(() => {
     if (!foundJob) {

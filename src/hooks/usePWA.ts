@@ -18,10 +18,29 @@ export const usePWA = () => {
   const [isInstalled, setIsInstalled] = useState(false);
 
   useEffect(() => {
-    // Only register service worker in production
+    // Only register service worker in production AND not on Lovable preview domains
     const isDevelopment = import.meta.env.DEV;
+    const host = typeof window !== 'undefined' ? window.location.host : '';
+    const isPreviewDomain = host.includes('lovable.app');
+
+    const unregisterPreviewSW = async () => {
+      try {
+        if ('serviceWorker' in navigator) {
+          const regs = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(regs.map(r => r.unregister()));
+          console.log('SW unregistered on preview domain');
+        }
+        if ('caches' in window) {
+          const names = await caches.keys();
+          await Promise.all(names.map(n => caches.delete(n)));
+          console.log('All caches cleared on preview domain');
+        }
+      } catch (e) {
+        console.warn('Failed to unregister SW on preview domain', e);
+      }
+    };
     
-    if (!isDevelopment && 'serviceWorker' in navigator) {
+    if (!isDevelopment && !isPreviewDomain && 'serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')
         .then(registration => {
           console.log('SW registered: ', registration);
@@ -29,6 +48,9 @@ export const usePWA = () => {
         .catch(registrationError => {
           console.log('SW registration failed: ', registrationError);
         });
+    } else if (isPreviewDomain) {
+      // Ensure no SW caching interferes with preview refreshes
+      unregisterPreviewSW();
     } else if (isDevelopment) {
       console.log('Service Worker disabled in development mode');
     }
