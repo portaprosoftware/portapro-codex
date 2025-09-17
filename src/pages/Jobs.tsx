@@ -631,8 +631,8 @@ const JobsPage: React.FC = () => {
                   
                   {/* Left Column - Drivers & Assigned Jobs */}
                   <div className="flex flex-col">
-                    {/* Date Header */}
-                    <div className="bg-white border border-gray-200 rounded-lg p-4 mb-4">
+                    {/* Date Header - Sticky */}
+                    <div className="bg-white border border-gray-200 rounded-lg p-4 mb-4 sticky top-0 z-20">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <CalendarIcon className="h-4 w-4 text-gray-600" />
@@ -651,7 +651,7 @@ const JobsPage: React.FC = () => {
 
                     {/* Drivers Section */}
                     <div className="bg-white border border-gray-200 rounded-lg flex-1 overflow-hidden">
-                      <div className="border-b border-gray-200 bg-gray-50 p-4">
+                      <div className="border-b border-gray-200 bg-gray-50 p-4 sticky top-[88px] z-10">
                         <h3 className="font-medium text-gray-900">Drivers</h3>
                       </div>
                       
@@ -740,8 +740,8 @@ const JobsPage: React.FC = () => {
                   {/* Right Column - Unassigned Jobs */}
                   <div className="flex flex-col">
                     <div className="bg-white border border-gray-200 rounded-lg flex-1 overflow-hidden">
-                      {/* Unassigned Jobs Header */}
-                      <div className="border-b border-gray-200 bg-orange-50 p-4">
+                      {/* Unassigned Jobs Header - Sticky */}
+                      <div className="border-b border-gray-200 bg-orange-50 p-4 sticky top-0 z-20">
                         <div className="flex items-center gap-2">
                           <AlertTriangle className="h-4 w-4 text-orange-500" />
                           <span className="font-medium text-gray-900">Unassigned Jobs</span>
