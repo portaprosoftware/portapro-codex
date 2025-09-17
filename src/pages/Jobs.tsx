@@ -717,7 +717,7 @@ const JobsPage: React.FC = () => {
                     {/* Scrollable Drivers Content */}
                     <div className="overflow-y-auto max-h-[calc(100vh-180px)]">
                       {/* Drivers Title */}
-                      <div className="p-4 border-b border-gray-200 bg-gray-50">
+                      <div className="sticky top-0 z-20 p-4 border-b border-gray-200 bg-gray-50">
                         <h3 className="font-medium text-gray-900">Drivers</h3>
                       </div>
                       {drivers.map(driver => {
