@@ -53,7 +53,7 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
 
 
   return (
-    <Drawer open={isOpen} onOpenChange={setIsOpen}>
+    <Drawer open={isOpen} onOpenChange={setIsOpen} dismissible={false}>
       <DrawerTrigger asChild>
         <Button 
           variant="outline" 
@@ -66,7 +66,7 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
         </Button>
       </DrawerTrigger>
       
-      <DrawerContent className="h-[100vh] max-h-[100vh]">
+      <DrawerContent className="h-[100vh] max-h-[100vh]" onPointerDownOutside={(e) => e.preventDefault()}>
         <DragDropContext onDragEnd={onJobAssignment}>
           <div className="flex flex-col h-full">
             {/* Header */}
