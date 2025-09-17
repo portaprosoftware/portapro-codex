@@ -16,7 +16,6 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { TimelineGrid } from './TimelineGrid';
 import { DriverSwimLane } from './DriverSwimLane';
-import { DispatchMetrics } from './DispatchMetrics';
 import { DragDropContext, DropResult } from '@hello-pangea/dnd';
 
 interface FullScreenDispatchViewProps {
@@ -52,23 +51,6 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
     return grouped;
   }, [jobs]);
 
-  // Calculate metrics
-  const metrics = useMemo(() => {
-    const totalJobs = jobs.length;
-    const completedJobs = jobs.filter(job => job.status === 'completed').length;
-    const assignedJobs = jobs.filter(job => job.driver_id);
-    const activeDrivers = new Set(assignedJobs.map(job => job.driver_id)).size;
-    const completionRate = totalJobs > 0 ? Math.round((completedJobs / totalJobs) * 100) : 0;
-
-    return {
-      totalJobs,
-      completedJobs,
-      activeDrivers,
-      totalDrivers: drivers.length,
-      unassignedCount: jobs.filter(job => !job.driver_id).length,
-      completionRate
-    };
-  }, [jobs, drivers]);
 
   return (
     <Drawer open={isOpen} onOpenChange={setIsOpen}>
@@ -98,6 +80,9 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                     <Calendar className="h-3 w-3" />
                     {format(selectedDate, 'MMM d, yyyy')}
                   </Badge>
+                  <Badge variant="secondary" className="gap-1">
+                    {jobs.length} Jobs
+                  </Badge>
                 </div>
                 
                 <div className="flex items-center gap-2">
@@ -119,9 +104,6 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                   </DrawerClose>
                 </div>
               </div>
-              
-              {/* Metrics Row */}
-              <DispatchMetrics metrics={metrics} />
             </DrawerHeader>
 
             {/* Main Content - Full Width Driver Swim Lanes */}
