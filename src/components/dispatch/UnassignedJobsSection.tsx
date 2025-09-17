@@ -119,8 +119,8 @@ export const UnassignedJobsSection: React.FC<UnassignedJobsSectionProps> = ({
 
   // Horizontal timeline view
   return (
-    <div className="sticky top-[61px] z-10 bg-background border-b border-border mb-2">
-      <Card className="p-0 overflow-hidden rounded-none border-x-0">
+    <div className="sticky top-[61px] z-10 bg-background border-b border-border">
+      <Card className="p-0 overflow-hidden rounded-none border-x-0 border-t-0">
         <div className="min-h-[120px]">
           <div className="flex flex-row">
             {/* Unassigned Header - Fixed width to match driver columns */}
