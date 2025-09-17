@@ -134,29 +134,16 @@ export const LiveClock: React.FC<LiveClockProps> = ({
       {showDigital && (
         <div className="text-center">
           <div className={cn(
-            "font-mono font-bold text-gray-800",
-            size === 'sm' && "text-lg",
-            size === 'md' && "text-2xl",
-            size === 'lg' && "text-3xl"
+            "font-sans font-semibold text-foreground tracking-wider",
+            size === 'sm' && "text-xl",
+            size === 'md' && "text-3xl",
+            size === 'lg' && "text-4xl"
           )}>
             {localTime.toLocaleTimeString('en-US', {
               hour12: true,
               hour: 'numeric',
               minute: '2-digit',
               ...(showSeconds && { second: '2-digit' })
-            })}
-          </div>
-          <div className={cn(
-            "text-gray-500 font-medium",
-            size === 'sm' && "text-xs",
-            size === 'md' && "text-sm",
-            size === 'lg' && "text-base"
-          )}>
-            {localTime.toLocaleDateString('en-US', {
-              weekday: 'short',
-              month: 'short',
-              day: 'numeric',
-              year: 'numeric'
             })}
           </div>
         </div>
