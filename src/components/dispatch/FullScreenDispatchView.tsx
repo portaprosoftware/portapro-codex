@@ -138,10 +138,10 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
 
   // Scroll functions
   const scrollHorizontal = (direction: 'left' | 'right') => {
-    if (horizontalScrollRef.current) {
+    if (verticalScrollRef.current) {
       const scrollAmount = 300;
-      const newScrollLeft = horizontalScrollRef.current.scrollLeft + (direction === 'right' ? scrollAmount : -scrollAmount);
-      horizontalScrollRef.current.scrollTo({ left: newScrollLeft, behavior: 'smooth' });
+      const newScrollLeft = verticalScrollRef.current.scrollLeft + (direction === 'right' ? scrollAmount : -scrollAmount);
+      verticalScrollRef.current.scrollTo({ left: newScrollLeft, behavior: 'smooth' });
     }
   };
 
@@ -281,109 +281,86 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
             {/* Main Content */}
             <div className="flex-1 overflow-hidden relative">
               {timelineView ? (
-                <div className="h-full flex flex-col">
-                  {/* Completely Sticky Blue Header Row - Never moves */}
-                  <div className="flex-shrink-0 flex sticky top-0 z-30 bg-background">
-                    {/* Unassigned Header Section */}
-                    <div className="w-32 h-[160px] border-b border-r bg-card flex items-center justify-center">
-                      <div className="text-xs font-medium text-center">
-                        <div className="mb-1">Unassigned</div>
-                        <Badge variant="secondary" className="text-xs">
-                          {unassignedJobs.length} jobs
-                        </Badge>
+                <div className="h-full flex">
+                  {/* Left Sticky Column */}
+                  <div className="w-32 flex-shrink-0 bg-background border-r flex flex-col">
+                    <div className="sticky top-0 z-30 bg-background">
+                      {/* Unassigned Header (left cell) */}
+                      <div className="h-[160px] border-b bg-card flex items-center justify-center">
+                        <div className="text-xs font-medium text-center">
+                          <div className="mb-1">Unassigned</div>
+                          <Badge variant="secondary" className="text-xs">
+                            {unassignedJobs.length} jobs
+                          </Badge>
+                        </div>
+                      </div>
+                      {/* Drivers label (left cell of blue row) */}
+                      <div className="h-[40px] border-b bg-gradient-to-r from-blue-600 to-blue-700 text-white flex items-center justify-center">
+                        <div className="text-xs font-medium">Drivers</div>
                       </div>
                     </div>
-                    
-                    {/* Unassigned Timeline Content - Scrolls horizontally */}
-                    <div className="flex-1 h-[160px] border-b overflow-x-auto" 
-                         ref={horizontalScrollRef}
-                         onScroll={(e) => {
-                           // Sync horizontal scroll with main content
-                           const mainContent = document.querySelector('[data-timeline-content]') as HTMLElement;
-                           if (mainContent) {
-                             mainContent.scrollLeft = e.currentTarget.scrollLeft;
-                           }
-                         }}>
-                      <UnassignedJobsSection
-                        jobs={unassignedJobs}
-                        onJobView={onJobView}
-                        timelineView={timelineView}
-                      />
-                    </div>
-                  </div>
-                  
-                  {/* Blue Drivers Header Row - Sticky under the Unassigned row */}
-                  <div className="flex-shrink-0 flex sticky top-[160px] z-20 bg-gradient-to-r from-blue-600 to-blue-700">
-                    {/* Drivers Label */}
-                    <div className="w-32 h-[40px] border-r border-blue-500/30 text-white flex items-center justify-center">
-                      <div className="text-xs font-medium">Drivers</div>
-                    </div>
-                    
-                    {/* Time Slot Headers - Scrolls horizontally */}
-                    <div className="flex-1 h-[40px] overflow-x-auto"
-                         onScroll={(e) => {
-                           // Sync with other horizontal scroll areas
-                           if (horizontalScrollRef.current) {
-                             horizontalScrollRef.current.scrollLeft = e.currentTarget.scrollLeft;
-                           }
-                           const mainContent = document.querySelector('[data-timeline-content]') as HTMLElement;
-                           if (mainContent) {
-                             mainContent.scrollLeft = e.currentTarget.scrollLeft;
-                           }
-                         }}>
-                      <div className="flex min-w-max">
-                        {TIME_SLOTS.map((slot) => (
-                          <div
-                            key={slot.id}
-                            className={cn(
-                              "border-r border-blue-500/30 text-center py-3 px-2 text-xs font-medium text-white flex items-center justify-center",
-                              slot.id === 'no-time' ? "bg-blue-700" : "bg-gradient-to-r from-blue-600 to-blue-700"
-                            )}
-                            style={{ width: slot.width, minWidth: slot.width, flexShrink: 0 }}
-                          >
-                            {slot.id === 'no-time' ? 'No Time Selected' : slot.label}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Scrollable Content Area */}
-                  <div className="flex-1 flex overflow-hidden">
-                    {/* Sticky Driver Names Column */}
-                    <div className="w-32 flex-shrink-0 bg-background border-r overflow-y-auto"
-                         ref={stickyColumnRef}
-                         onScroll={() => syncVerticalScroll('sticky')}>
+
+                    {/* Driver Names (scroll vertically) */}
+                    <div
+                      ref={stickyColumnRef}
+                      className="flex-1 overflow-y-auto"
+                      onScroll={() => syncVerticalScroll('sticky')}
+                    >
                       {drivers.map((driver) => (
                         <div key={driver.id} className="h-[160px] border-b p-2 flex items-center bg-card">
                           <div className="flex flex-col gap-1 w-full">
                             <div className="font-medium text-xs text-center">
                               {driver.first_name} {driver.last_name}
                             </div>
-                            <Badge variant={jobsByDriver.get(driver.id)?.length > 3 ? 'destructive' : jobsByDriver.get(driver.id)?.length > 1 ? 'default' : 'secondary'} className="text-xs self-center">
+                            <Badge
+                              variant={jobsByDriver.get(driver.id)?.length > 3 ? 'destructive' : jobsByDriver.get(driver.id)?.length > 1 ? 'default' : 'secondary'}
+                              className="text-xs self-center"
+                            >
                               {jobsByDriver.get(driver.id)?.length || 0} jobs
                             </Badge>
                           </div>
                         </div>
                       ))}
                     </div>
-                    
-                    {/* Driver Timeline Content - Scrolls both ways */}
-                    <div className="flex-1 overflow-auto relative"
-                         ref={verticalScrollRef}
-                         data-timeline-content
-                         onScroll={(e) => {
-                           syncVerticalScroll('main');
-                           // Sync horizontal scroll with headers
-                           if (horizontalScrollRef.current) {
-                             horizontalScrollRef.current.scrollLeft = e.currentTarget.scrollLeft;
-                           }
-                           const headerScroll = document.querySelector('[data-timeline-content]')?.previousElementSibling?.lastElementChild as HTMLElement;
-                           if (headerScroll) {
-                             headerScroll.scrollLeft = e.currentTarget.scrollLeft;
-                           }
-                         }}>
+                  </div>
+
+                  {/* Right side: single scroll container for both directions */}
+                  <div className="flex-1 overflow-hidden">
+                    <div
+                      ref={verticalScrollRef}
+                      className="h-full overflow-auto relative"
+                      data-timeline-content
+                      onScroll={() => syncVerticalScroll('main')}
+                    >
                       <div className="min-w-max">
+                        {/* Sticky top: Unassigned timeline row + blue time headers row */}
+                        <div className="sticky top-0 z-20 bg-background">
+                          {/* Unassigned timeline (scrolls horizontally with content) */}
+                          <div className="h-[160px] border-b">
+                            <UnassignedJobsSection
+                              jobs={unassignedJobs}
+                              onJobView={onJobView}
+                              timelineView={timelineView}
+                            />
+                          </div>
+                          {/* Time slot headers (scroll horizontally with content) */}
+                          <div className="h-[40px] border-b bg-gradient-to-r from-blue-600 to-blue-700 flex">
+                            {TIME_SLOTS.map((slot) => (
+                              <div
+                                key={slot.id}
+                                className={cn(
+                                  'border-r border-blue-500/30 text-center py-3 px-2 text-xs font-medium text-white flex items-center justify-center',
+                                  slot.id === 'no-time' ? 'bg-blue-700' : 'bg-gradient-to-r from-blue-600 to-blue-700'
+                                )}
+                                style={{ width: slot.width, minWidth: slot.width, flexShrink: 0 }}
+                              >
+                                {slot.id === 'no-time' ? 'No Time Selected' : slot.label}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Driver swim lanes */}
                         {drivers.map((driver) => (
                           <DriverSwimLane
                             key={driver.id}
@@ -395,33 +372,28 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                           />
                         ))}
                       </div>
-                      
-                      {/* Current time indicator */}
+
+                      {/* Current time indicator aligned with grid */}
                       {(() => {
                         const currentHour = currentTime.getHours();
                         const currentMinutes = currentTime.getMinutes();
-                        
                         if (currentHour >= 6 && currentHour < 20) {
                           const timeInMinutes = currentHour * 60 + currentMinutes;
                           const timelineStart = 6 * 60;
                           const timelineEnd = 20 * 60;
                           const timelineRange = timelineEnd - timelineStart;
                           const positionPercent = (timeInMinutes - timelineStart) / timelineRange;
-                          
                           const noTimeSlotWidth = 800;
                           const timeSlotWidth = 200;
                           const slotsBeforeCurrentTime = Math.floor(positionPercent * 14);
-                          const positionWithinSlot = (positionPercent * 14) - slotsBeforeCurrentTime;
-                          
-                          // Position relative to the scrollable content area
-                          const leftPosition = noTimeSlotWidth + (slotsBeforeCurrentTime * timeSlotWidth) + (positionWithinSlot * timeSlotWidth);
-                          
+                          const positionWithinSlot = positionPercent * 14 - slotsBeforeCurrentTime;
+                          const leftPosition = noTimeSlotWidth + slotsBeforeCurrentTime * timeSlotWidth + positionWithinSlot * timeSlotWidth;
                           return (
-                            <div 
-                              className="absolute top-0 bottom-0 w-0.5 bg-red-500 z-20 pointer-events-none"
+                            <div
+                              className="absolute top-[200px] bottom-0 w-0.5 bg-red-500 z-20 pointer-events-none"
                               style={{ left: `${leftPosition}px` }}
                             >
-                              <div className="absolute -top-1 -left-1 w-2 h-2 bg-red-500 rounded-full"></div>
+                              <div className="absolute -top-1 -left-1 w-2 h-2 bg-red-500 rounded-full" />
                             </div>
                           );
                         }
