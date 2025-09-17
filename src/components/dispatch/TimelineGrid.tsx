@@ -7,15 +7,39 @@ const TIMELINE_HOURS = [
   '6 PM', '7 PM', '8 PM'
 ];
 
+// Get current time position as percentage
+const getCurrentTimePosition = () => {
+  const now = new Date();
+  const currentHour = now.getHours();
+  const currentMinutes = now.getMinutes();
+  
+  // Timeline starts at 6 AM (hour 6) and goes to 8 PM (hour 20)
+  const timelineStart = 6;
+  const timelineEnd = 20;
+  const timelineHours = timelineEnd - timelineStart;
+  
+  if (currentHour < timelineStart || currentHour > timelineEnd) {
+    return null; // Current time is outside timeline range
+  }
+  
+  const hoursFromStart = currentHour - timelineStart;
+  const minutesAsHours = currentMinutes / 60;
+  const totalHoursFromStart = hoursFromStart + minutesAsHours;
+  
+  return (totalHoursFromStart / timelineHours) * 100;
+};
+
 export const TimelineGrid: React.FC = () => {
+  const currentTimePosition = getCurrentTimePosition();
+  
   return (
-    <div className="border-b bg-background">
+    <div className="border-b bg-background relative">
       <div className="flex">
         {/* Driver name column spacer */}
         <div className="w-48 border-r"></div>
         
         {/* Timeline hours */}
-        <div className="flex-1 flex">
+        <div className="flex-1 flex relative">
           {TIMELINE_HOURS.map((hour, index) => (
             <div
               key={hour}
@@ -27,6 +51,16 @@ export const TimelineGrid: React.FC = () => {
               {hour}
             </div>
           ))}
+          
+          {/* Current time indicator */}
+          {currentTimePosition !== null && (
+            <div 
+              className="absolute top-0 bottom-0 w-0.5 bg-red-500 z-10"
+              style={{ left: `${currentTimePosition}%` }}
+            >
+              <div className="absolute -top-1 -left-1 w-2 h-2 bg-red-500 rounded-full"></div>
+            </div>
+          )}
         </div>
       </div>
     </div>
