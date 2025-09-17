@@ -21,6 +21,7 @@ interface UnassignedJobCardProps {
       service_street?: string;
       service_city?: string;
       service_state?: string;
+      service_zip?: string;
     };
     profiles?: {
       id: string;
@@ -109,14 +110,24 @@ export const UnassignedJobCard: React.FC<UnassignedJobCardProps> = ({
               </span>
             </div>
 
-            {/* Address */}
+            {/* Address - Multi-line display */}
             {job.customers.service_street && (
-              <div className="flex items-center gap-1 text-sm text-gray-600">
-                <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                <span className="truncate">
-                  {job.customers.service_street}
-                  {job.customers.service_city && `, ${job.customers.service_city}`}
-                </span>
+              <div className="space-y-1">
+                <div className="flex items-start gap-1 text-sm text-gray-600">
+                  <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" />
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-sm">
+                      {job.customers.service_street}
+                    </span>
+                    {job.customers.service_city && (
+                      <span className="text-sm">
+                        {job.customers.service_city}
+                        {job.customers.service_state && `, ${job.customers.service_state}`}
+                        {job.customers.service_zip && ` ${job.customers.service_zip}`}
+                      </span>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
 
