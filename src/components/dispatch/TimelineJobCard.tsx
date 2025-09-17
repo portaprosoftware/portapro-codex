@@ -18,9 +18,9 @@ interface TimelineJobCardProps {
 const getJobTypeConfig = (jobType: string) => {
   const configs = {
     delivery: { color: 'bg-blue-500', label: 'Delivery', icon: '📦' },
-    pickup: { color: 'bg-green-500', label: 'Pickup', icon: '🔄' },
+    pickup: { color: 'bg-orange-500', label: 'Pickup', icon: '🔄' },
     service: { color: 'bg-purple-500', label: 'Service', icon: '🔧' },
-    'on-site-survey': { color: 'bg-orange-500', label: 'Survey', icon: '📋' }
+    'on-site-survey': { color: 'bg-red-800', label: 'Survey', icon: '📋' }
   };
   return configs[jobType] || { color: 'bg-gray-500', label: 'Job', icon: '📋' };
 };
