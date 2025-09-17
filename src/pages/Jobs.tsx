@@ -650,7 +650,7 @@ const JobsPage: React.FC = () => {
                   {/* Left Column - Drivers & Assigned Jobs */}
                   <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
                     {/* Drivers Header - Sticky below date */}
-                    <div className="border-b border-gray-200 bg-gray-50 p-4 sticky top-[88px] z-20">
+                    <div className="border-b border-gray-200 bg-gray-50 p-4 sticky top-[72px] z-20">
                       <h3 className="font-medium text-gray-900">Drivers</h3>
                     </div>
                     
@@ -739,7 +739,7 @@ const JobsPage: React.FC = () => {
                   {/* Right Column - Unassigned Jobs */}
                   <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
                     {/* Unassigned Jobs Header - Sticky at column top */}
-                    <div className="border-b border-gray-200 bg-orange-50 p-4 sticky top-[88px] z-20">
+                    <div className="border-b border-gray-200 bg-orange-50 p-4 sticky top-[72px] z-20">
                       <div className="flex items-center gap-2">
                         <AlertTriangle className="h-4 w-4 text-orange-500" />
                         <span className="font-medium text-gray-900">Unassigned Jobs</span>
