@@ -683,7 +683,7 @@ const JobsPage: React.FC = () => {
                                 </div>
                               </div>
                             ) : (
-                              <div className="space-y-3">
+                              <div className="space-y-3 flex flex-col items-center">
                                 {filterJobs(unassignedJobs).map((job, index) => (
                                   <Draggable key={job.id} draggableId={job.id} index={index}>
                                     {(provided, snapshot) => (
