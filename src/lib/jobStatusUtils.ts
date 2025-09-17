@@ -3,7 +3,7 @@
  * across all job views (calendar, dispatch, map)
  */
 
-import { toZonedTime } from 'date-fns-tz';
+import { toZonedTime, formatInTimeZone } from 'date-fns-tz';
 import { getCompanyTimezone } from '@/lib/timezoneUtils';
 
 export interface Job {
@@ -39,20 +39,15 @@ export const isJobCompletedLate = (job: Job): boolean => {
   
   const companyTimezone = getCompanyTimezone();
   
-  // Parse the scheduled date (YYYY-MM-DD format)
-  const scheduledDate = new Date(job.scheduled_date);
+  // Parse scheduled date string as canonical date (no time)
+  const scheduledDateStr = job.scheduled_date; // 'YYYY-MM-DD'
   const completionTime = new Date(job.actual_completion_time);
-  
-  // Convert both dates to company timezone for comparison
-  const scheduledInTimezone = toZonedTime(scheduledDate, companyTimezone);
-  const completionInTimezone = toZonedTime(completionTime, companyTimezone);
-  
-  // Extract just the date parts (ignore time)
-  const scheduledDateOnly = new Date(scheduledInTimezone.getFullYear(), scheduledInTimezone.getMonth(), scheduledInTimezone.getDate());
-  const completionDateOnly = new Date(completionInTimezone.getFullYear(), completionInTimezone.getMonth(), completionInTimezone.getDate());
-  
-  // Job is completed late only if completed on a day AFTER the scheduled date
-  return completionDateOnly > scheduledDateOnly;
+
+  // Format completion date in company timezone as 'YYYY-MM-DD'
+  const completionDateStr = formatInTimeZone(completionTime, companyTimezone, 'yyyy-MM-dd');
+
+  // Completed late ONLY if completion happened on a day AFTER the scheduled date
+  return completionDateStr > scheduledDateStr;
 };
 
 /**
