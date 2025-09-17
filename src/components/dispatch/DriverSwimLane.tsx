@@ -61,16 +61,13 @@ export const DriverSwimLane: React.FC<DriverSwimLaneProps> = ({
           <div className="flex flex-col">
             {/* Driver Info Column */}
             <div className="w-full border-b bg-background p-4">
-              <div className="flex items-center h-full">
-                <div className="flex flex-col items-center justify-center gap-1 w-full">
-                  <div className="flex flex-col items-center">
-                    <div className="font-medium text-sm text-center">{driver.first_name}</div>
-                    <div className="font-medium text-sm text-center">{driver.last_name}</div>
-                  </div>
-                  <Badge variant={workloadColor} className="text-xs">
-                    {jobs.length}
-                  </Badge>
+              <div className="flex items-center justify-between h-full">
+                <div className="font-medium text-sm">
+                  {driver.first_name} {driver.last_name}
                 </div>
+                <Badge variant={workloadColor} className="text-xs">
+                  {jobs.length} jobs
+                </Badge>
               </div>
             </div>
 
@@ -131,13 +128,12 @@ export const DriverSwimLane: React.FC<DriverSwimLaneProps> = ({
           {/* Driver Info Column - Fixed width */}
           <div className="w-32 flex-shrink-0 border-r bg-background p-2">
             <div className="flex items-center h-full">
-              <div className="flex flex-col items-center justify-center gap-1 w-full">
-                <div className="flex flex-col items-center">
-                  <div className="font-medium text-xs text-center">{driver.first_name}</div>
-                  <div className="font-medium text-xs text-center">{driver.last_name}</div>
+              <div className="flex flex-col gap-1 w-full">
+                <div className="font-medium text-xs text-center">
+                  {driver.first_name} {driver.last_name}
                 </div>
-                <Badge variant={workloadColor} className="text-xs">
-                  {jobs.length}
+                <Badge variant={workloadColor} className="text-xs self-center">
+                  {jobs.length} jobs
                 </Badge>
               </div>
             </div>
