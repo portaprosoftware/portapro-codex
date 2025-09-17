@@ -22,7 +22,7 @@ export const FilterToggle: React.FC<FilterToggleProps> = ({
           <EyeOff className="w-4 h-4 text-gray-600" />
         )}
         <span className="text-sm text-gray-700">
-          Show Cancelled Jobs {cancelledCount > 0 && `(${cancelledCount})`}
+          Cancelled Jobs {cancelledCount > 0 && `(${cancelledCount})`}
         </span>
       </div>
       <Switch
