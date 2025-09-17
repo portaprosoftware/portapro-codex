@@ -48,8 +48,8 @@ export const DriverSwimLane: React.FC<DriverSwimLaneProps> = ({
             </div>
             
             {/* Driver Names and Badge */}
-            <div className="ml-6 flex flex-col">
-              <div className="flex items-center justify-between gap-2">
+            <div className="ml-6 flex items-center h-full">
+              <div className="flex items-center justify-between gap-2 w-full">
                 <div className="flex flex-col min-w-0 flex-1">
                   <div className="font-medium text-sm text-left">{driver.first_name}</div>
                   <div className="font-medium text-sm text-left">{driver.last_name}</div>
