@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { UserX, ChevronDown, ChevronUp } from 'lucide-react';
+import React, { useMemo } from 'react';
+import { UserX } from 'lucide-react';
 import { Droppable, Draggable } from '@hello-pangea/dnd';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
@@ -18,7 +18,6 @@ export const UnassignedJobsSection: React.FC<UnassignedJobsSectionProps> = ({
   onJobView,
   timelineView
 }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
   // Group unassigned jobs by time slots for timeline view
   const jobsByTimeSlot = useMemo(() => {
     if (!timelineView) return { 'all': jobs };
@@ -52,77 +51,66 @@ export const UnassignedJobsSection: React.FC<UnassignedJobsSectionProps> = ({
     // Vertical list view
     return (
       <Card className="p-0 overflow-hidden mb-4">
-        <div className={cn("transition-all duration-200", isExpanded ? "min-h-[120px]" : "h-[60px]")}>
+        <div className="min-h-[120px]">
           <div className="flex flex-col">
             {/* Unassigned Header */}
             <div className="w-full border-b bg-muted/30 p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <UserX className="h-4 w-4 text-muted-foreground" />
-                  <div className="font-medium text-sm">Unassigned</div>
+              <div className="flex items-center h-full">
+                <div className="flex flex-col items-center justify-center gap-1 w-full">
+                  <div className="flex items-center gap-2">
+                    <UserX className="h-4 w-4 text-muted-foreground" />
+                    <div className="font-medium text-sm text-center">Unassigned</div>
+                  </div>
                   <Badge variant="secondary" className="text-xs">
                     {jobs.length}
                   </Badge>
                 </div>
-                <button
-                  onClick={() => setIsExpanded(!isExpanded)}
-                  className="p-1 hover:bg-muted rounded transition-colors"
-                  aria-label={isExpanded ? "Collapse unassigned jobs" : "Expand unassigned jobs"}
-                >
-                  {isExpanded ? (
-                    <ChevronUp className="h-4 w-4 text-muted-foreground" />
-                  ) : (
-                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                  )}
-                </button>
               </div>
             </div>
 
-            {/* Jobs Area - Conditionally rendered based on expanded state */}
-            {isExpanded && (
-              <div className="flex-1 p-2">
-                <Droppable droppableId="unassigned" direction="vertical" type="JOB">
-                  {(provided, snapshot) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                      className={cn(
-                        "min-h-[80px] p-2 rounded-md flex flex-col gap-2",
-                        snapshot.isDraggingOver && "bg-muted/50 ring-2 ring-primary/20"
-                      )}
-                    >
-                      {jobs.map((job, index) => (
-                        <Draggable key={job.id} draggableId={job.id} index={index}>
-                          {(provided, snapshot) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              className="w-full"
-                            >
-                              <TimelineJobCard
-                                job={job}
-                                onJobView={onJobView}
-                                timelineView={false}
-                                isDragging={snapshot.isDragging}
-                                dragHandleProps={provided.dragHandleProps}
-                              />
-                            </div>
-                          )}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
-                      
-                      {/* Empty state */}
-                      {jobs.length === 0 && (
-                        <div className="flex items-center justify-center text-muted-foreground text-sm border-2 border-dashed border-muted rounded-lg h-16">
-                          All jobs assigned
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </Droppable>
-              </div>
-            )}
+            {/* Jobs Area */}
+            <div className="flex-1 p-2">
+              <Droppable droppableId="unassigned" direction="vertical" type="JOB">
+                {(provided, snapshot) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                    className={cn(
+                      "min-h-[80px] p-2 rounded-md flex flex-col gap-2",
+                      snapshot.isDraggingOver && "bg-muted/50 ring-2 ring-primary/20"
+                    )}
+                  >
+                    {jobs.map((job, index) => (
+                      <Draggable key={job.id} draggableId={job.id} index={index}>
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            className="w-full"
+                          >
+                            <TimelineJobCard
+                              job={job}
+                              onJobView={onJobView}
+                              timelineView={false}
+                              isDragging={snapshot.isDragging}
+                              dragHandleProps={provided.dragHandleProps}
+                            />
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                    
+                    {/* Empty state */}
+                    {jobs.length === 0 && (
+                      <div className="flex items-center justify-center text-muted-foreground text-sm border-2 border-dashed border-muted rounded-lg h-16">
+                        All jobs assigned
+                      </div>
+                    )}
+                  </div>
+                )}
+              </Droppable>
+            </div>
           </div>
         </div>
       </Card>
@@ -133,88 +121,75 @@ export const UnassignedJobsSection: React.FC<UnassignedJobsSectionProps> = ({
   return (
     <div className="sticky top-0 z-20 bg-background border-b border-border">
       <Card className="p-0 overflow-hidden rounded-none border-x-0 border-t-0">
-        <div className={cn("transition-all duration-200", isExpanded ? "min-h-[120px]" : "h-[60px]")}>
+        <div className="min-h-[120px]">
           <div className="flex flex-row">
             {/* Unassigned Header - Fixed width to match driver columns */}
             <div className="w-32 flex-shrink-0 border-r bg-muted/30 p-2">
-              <div className="flex items-center justify-between h-full">
-                <div className="flex flex-col items-center gap-1">
-                  <div className="flex items-center gap-1">
-                    <UserX className="h-4 w-4 text-muted-foreground" />
-                    <div className="font-medium text-xs">Unassigned</div>
+              <div className="flex items-center h-full">
+                <div className="flex flex-col items-center justify-center gap-1 w-full">
+                  <div className="flex flex-col items-center">
+                    <UserX className="h-4 w-4 text-muted-foreground mb-1" />
+                    <div className="font-medium text-xs text-center">Unassigned</div>
                   </div>
                   <Badge variant="secondary" className="text-xs">
                     {jobs.length}
                   </Badge>
                 </div>
-                <button
-                  onClick={() => setIsExpanded(!isExpanded)}
-                  className="p-1 hover:bg-muted rounded transition-colors"
-                  aria-label={isExpanded ? "Collapse unassigned jobs" : "Expand unassigned jobs"}
-                >
-                  {isExpanded ? (
-                    <ChevronUp className="h-3 w-3 text-muted-foreground" />
-                  ) : (
-                    <ChevronDown className="h-3 w-3 text-muted-foreground" />
-                  )}
-                </button>
               </div>
             </div>
 
-            {/* Time Slots Area - Conditionally rendered based on expanded state */}
-            {isExpanded && (
-              <div className="flex">
-                {TIME_SLOTS.map((slot) => (
-                  <div
-                    key={slot.id}
-                    className="border-r min-h-[120px]"
-                    style={{ width: slot.width, minWidth: slot.width, flexShrink: 0 }}
-                  >
-                    <Droppable droppableId={`unassigned-${slot.id}`} direction="vertical" type="JOB">
-                      {(provided, snapshot) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.droppableProps}
-                          className={cn(
-                            "h-full p-1 flex flex-col gap-1",
-                            snapshot.isDraggingOver && "bg-primary/10 ring-2 ring-primary/20",
-                            slot.id === 'no-time' && "bg-muted/10"
-                          )}
-                        >
-                          {jobsByTimeSlot[slot.id]?.map((job, index) => (
-                            <Draggable key={job.id} draggableId={job.id} index={index}>
-                              {(provided, snapshot) => (
-                                <div
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  className="w-full"
-                                >
-                                  <TimelineJobCard
-                                    job={job}
-                                    onJobView={onJobView}
-                                    timelineView={true}
-                                    isDragging={snapshot.isDragging}
-                                    dragHandleProps={provided.dragHandleProps}
-                                  />
-                                </div>
-                              )}
-                            </Draggable>
-                          ))}
-                          {provided.placeholder}
-                          
-                          {/* Empty state for time slots */}
-                          {jobsByTimeSlot[slot.id]?.length === 0 && (
-                            <div className="flex items-center justify-center text-muted-foreground text-xs border border-dashed border-muted/50 rounded h-8 text-center">
-                              {slot.id === 'no-time' ? 'Drop here' : 'Available'}
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </Droppable>
-                  </div>
-                ))}
-              </div>
-            )}
+            {/* Time Slots Area - Same layout as DriverSwimLane */}
+            <div className="flex">
+              {TIME_SLOTS.map((slot) => (
+                <div
+                  key={slot.id}
+                  className="border-r min-h-[120px]"
+                  style={{ width: slot.width, minWidth: slot.width, flexShrink: 0 }}
+                >
+                  <Droppable droppableId={`unassigned-${slot.id}`} direction="vertical" type="JOB">
+                    {(provided, snapshot) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
+                        className={cn(
+                          "h-full p-1 flex flex-col gap-1",
+                          snapshot.isDraggingOver && "bg-primary/10 ring-2 ring-primary/20",
+                          slot.id === 'no-time' && "bg-muted/10"
+                        )}
+                      >
+                        {jobsByTimeSlot[slot.id]?.map((job, index) => (
+                          <Draggable key={job.id} draggableId={job.id} index={index}>
+                            {(provided, snapshot) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                className="w-full"
+                              >
+                                <TimelineJobCard
+                                  job={job}
+                                  onJobView={onJobView}
+                                  timelineView={true}
+                                  isDragging={snapshot.isDragging}
+                                  dragHandleProps={provided.dragHandleProps}
+                                />
+                              </div>
+                            )}
+                          </Draggable>
+                        ))}
+                        {provided.placeholder}
+                        
+                        {/* Empty state for time slots */}
+                        {jobsByTimeSlot[slot.id]?.length === 0 && (
+                          <div className="flex items-center justify-center text-muted-foreground text-xs border border-dashed border-muted/50 rounded h-8 text-center">
+                            {slot.id === 'no-time' ? 'Drop here' : 'Available'}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </Droppable>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </Card>
