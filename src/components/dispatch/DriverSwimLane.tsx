@@ -1,0 +1,113 @@
+import React from 'react';
+import { format } from 'date-fns';
+import { User, MapPin, Clock, Truck } from 'lucide-react';
+import { Droppable, Draggable } from '@hello-pangea/dnd';
+import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { TimelineJobCard } from './TimelineJobCard';
+import { cn } from '@/lib/utils';
+
+interface DriverSwimLaneProps {
+  driver: any;
+  jobs: any[];
+  onJobView: (jobId: string) => void;
+  timelineView: boolean;
+}
+
+export const DriverSwimLane: React.FC<DriverSwimLaneProps> = ({
+  driver,
+  jobs,
+  onJobView,
+  timelineView
+}) => {
+  const driverName = `${driver.first_name} ${driver.last_name}`;
+  const workloadColor = jobs.length > 3 ? 'destructive' : jobs.length > 1 ? 'default' : 'secondary';
+
+  return (
+    <Card className="p-0 overflow-hidden">
+      <Droppable droppableId={driver.id} direction={timelineView ? 'horizontal' : 'vertical'}>
+        {(provided, snapshot) => (
+          <div
+            ref={provided.innerRef}
+            {...provided.droppableProps}
+            className={cn(
+              "min-h-[80px]",
+              snapshot.isDraggingOver && "bg-muted/50"
+            )}
+          >
+            <div className={cn(
+              "flex",
+              timelineView ? "flex-row" : "flex-col"
+            )}>
+              {/* Driver Info Column */}
+              <div className={cn(
+                "border-r bg-background p-4 flex items-center gap-3",
+                timelineView ? "w-48 flex-shrink-0" : "w-full border-b"
+              )}>
+                <Avatar className="h-8 w-8">
+                  <AvatarFallback className="text-xs">
+                    {driver.first_name?.[0]}{driver.last_name?.[0]}
+                  </AvatarFallback>
+                </Avatar>
+                
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-medium text-sm truncate">{driverName}</h4>
+                    <Badge variant={workloadColor} className="text-xs">
+                      {jobs.length}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <Truck className="h-3 w-3" />
+                    <span>Available</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Jobs Area */}
+              <div className={cn(
+                "flex-1 p-2",
+                timelineView ? "flex flex-row gap-2 min-h-[80px] items-center" : "flex flex-col gap-2"
+              )}>
+                {jobs.map((job, index) => (
+                  <Draggable key={job.id} draggableId={job.id} index={index}>
+                    {(provided, snapshot) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        className={cn(
+                          "transition-all",
+                          snapshot.isDragging && "opacity-75 rotate-2 scale-105 z-50"
+                        )}
+                      >
+                        <TimelineJobCard
+                          job={job}
+                          onJobView={onJobView}
+                          timelineView={timelineView}
+                        />
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+                
+                {provided.placeholder}
+                
+                {/* Empty state */}
+                {jobs.length === 0 && (
+                  <div className={cn(
+                    "flex items-center justify-center text-muted-foreground text-sm border-2 border-dashed border-muted rounded-lg",
+                    timelineView ? "min-w-[200px] h-16" : "h-16"
+                  )}>
+                    Drop jobs here
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </Droppable>
+    </Card>
+  );
+};

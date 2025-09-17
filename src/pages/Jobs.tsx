@@ -23,6 +23,7 @@ import { DispatchJobCard } from '@/components/jobs/DispatchJobCard';
 import { DispatchJobCardList } from '@/components/jobs/DispatchJobCardList';
 import { DispatchJobCardCompact } from '@/components/jobs/DispatchJobCardCompact';
 import { UnassignedJobCard } from '@/components/jobs/UnassignedJobCard';
+import { FullScreenDispatchView } from '@/components/dispatch/FullScreenDispatchView';
 import { EnhancedDateNavigator } from '@/components/jobs/EnhancedDateNavigator';
 import { InlineFilters } from '@/components/jobs/InlineFilters';
 import { useJobs, useUpdateJobStatus, useCreateJob } from '@/hooks/useJobs';
@@ -672,11 +673,23 @@ const JobsPage: React.FC = () => {
           )}
           
           {activeTab === 'dispatch' && (
-            <DragDropContext 
-              onDragEnd={handleDragEnd}
-              key={`drag-context-${dragContextKey}-v2`}
-            >
-              <div className="min-h-screen" key="new-dispatch-layout-v2">
+            <div className="space-y-4">
+              {/* Full Screen Dispatch View Button */}
+              <div className="flex justify-end">
+                <FullScreenDispatchView
+                  jobs={dispatchJobs}
+                  drivers={drivers}
+                  selectedDate={selectedDate}
+                  onJobAssignment={handleDragEnd}
+                  onJobView={handleJobView}
+                />
+              </div>
+
+              <DragDropContext 
+                onDragEnd={handleDragEnd}
+                key={`drag-context-${dragContextKey}-v2`}
+              >
+                <div className="min-h-screen" key="new-dispatch-layout-v2">
 
                 {/* Two Column Layout - NEW VERSION */}
                 <div className="grid grid-cols-[300px_1fr] gap-4" key="new-two-column-layout">
@@ -834,8 +847,9 @@ const JobsPage: React.FC = () => {
                   </div>
 
                 </div>
-              </div>
-            </DragDropContext>
+                </div>
+              </DragDropContext>
+            </div>
           )}
           
           {activeTab === 'map' && (
