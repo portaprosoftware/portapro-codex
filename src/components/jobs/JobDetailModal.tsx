@@ -360,37 +360,38 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
               )}
             </div>
             
-            {/* Priority Toggle and Edit Button - Top Row */}
+            {/* Edit Button - Top Row */}
             <div className="flex items-center gap-3 mr-8">
               {!isEditing && (
-                <>
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      checked={(job as any)?.is_priority || false}
-                      onCheckedChange={() => handleTogglePriority()}
-                      disabled={priorityMutation.isPending}
-                    />
-                    <Label className="text-sm flex items-center gap-1 cursor-pointer">
-                      <Star className="w-4 h-4 text-yellow-500" />
-                      Mark Job with Priority Badge
-                    </Label>
-                  </div>
-                  <Button
-                    onClick={() => setIsEditing(true)}
-                    size="sm"
-                    variant="outline"
-                  >
-                    <Edit2 className="w-4 h-4 mr-1" />
-                    Edit
-                  </Button>
-                </>
+                <Button
+                  onClick={() => setIsEditing(true)}
+                  size="sm"
+                  variant="outline"
+                >
+                  <Edit2 className="w-4 h-4 mr-1" />
+                  Edit
+                </Button>
               )}
             </div>
           </div>
         </DialogHeader>
 
         {/* Action Buttons Row */}
-        <div className="flex-shrink-0 flex items-center justify-end py-3 px-1 border-b">
+        <div className="flex-shrink-0 flex items-center justify-between py-3 px-1 border-b">
+          {/* Priority Toggle - Left side */}
+          {!isEditing && (
+            <div className="flex items-center space-x-2">
+              <Switch
+                checked={(job as any)?.is_priority || false}
+                onCheckedChange={() => handleTogglePriority()}
+                disabled={priorityMutation.isPending}
+              />
+              <Label className="text-sm flex items-center gap-1 cursor-pointer">
+                <Star className="w-4 h-4 text-yellow-500" />
+                Mark Job with Priority Badge
+              </Label>
+            </div>
+          )}
           {/* Action Buttons - Right side */}
           <div className="flex items-center gap-2">
             {isEditing && (
