@@ -35,16 +35,16 @@ export const DriverSwimLane: React.FC<DriverSwimLaneProps> = ({
           {/* Driver Info Column */}
           <div className={cn(
             "border-r bg-background p-4",
-            timelineView ? "w-48 flex-shrink-0" : "w-full border-b"
+            timelineView ? "w-32 flex-shrink-0" : "w-full border-b"
           )}>
             {/* Driver Names and Badge */}
             <div className="flex items-center h-full">
-              <div className="flex items-center justify-between gap-2 w-full">
-                <div className="flex flex-col min-w-0 flex-1 justify-center">
-                  <div className="font-medium text-sm text-left">{driver.first_name}</div>
-                  <div className="font-medium text-sm text-left">{driver.last_name}</div>
+              <div className="flex flex-col items-center justify-center gap-1 w-full">
+                <div className="flex flex-col items-center">
+                  <div className="font-medium text-sm text-center">{driver.first_name}</div>
+                  <div className="font-medium text-sm text-center">{driver.last_name}</div>
                 </div>
-                <Badge variant={workloadColor} className="text-xs flex-shrink-0">
+                <Badge variant={workloadColor} className="text-xs">
                   {jobs.length}
                 </Badge>
               </div>
