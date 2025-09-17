@@ -654,7 +654,7 @@ const JobsPage: React.FC = () => {
                     {/* Scrollable Unassigned Jobs List */}
                     <div className="overflow-y-auto max-h-[calc(100vh-180px)]">
                       {/* Unassigned Jobs Title */}
-                      <div className="p-4 border-b border-gray-200 bg-orange-50">
+                      <div className="sticky top-0 z-20 p-4 border-b border-gray-200 bg-orange-50">
                         <div className="flex items-center gap-2">
                           <AlertTriangle className="h-4 w-4 text-orange-500" />
                           <span className="font-medium text-gray-900">Unassigned Jobs</span>
