@@ -187,40 +187,34 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                 <TimelineGrid timeFilter={timeFilter} />
               )}
               
-              <ScrollArea className="flex-1 relative">
-                <Droppable droppableId="drivers-list" direction="vertical">
-                  {(provided, snapshot) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                      className="space-y-2 p-4"
-                    >
-                      {drivers.map((driver, index) => (
-                        <Draggable key={driver.id} draggableId={`driver-${driver.id}`} index={index}>
-                          {(provided, snapshot) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              className={cn(
-                                "transition-all",
-                                snapshot.isDragging && "opacity-95 rotate-1 scale-105 z-50 shadow-lg ring-2 ring-primary/20"
-                              )}
-                            >
+                <ScrollArea className="flex-1 relative">
+                  <Droppable droppableId="drivers-list" direction="vertical">
+                    {(provided, snapshot) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
+                        className="space-y-2 p-4"
+                      >
+                        {drivers.map((driver, index) => (
+                          <Draggable key={driver.id} draggableId={`driver-${driver.id}`} index={index}>
+                            {(provided, snapshot) => (
                               <DriverSwimLane
                                 driver={driver}
                                 jobs={jobsByDriver.get(driver.id) || []}
                                 onJobView={onJobView}
                                 timelineView={timelineView}
                                 dragHandleProps={provided.dragHandleProps}
+                                draggableProps={provided.draggableProps}
+                                innerRef={provided.innerRef}
+                                isDragging={snapshot.isDragging}
                               />
-                            </div>
-                          )}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
+                            )}
+                          </Draggable>
+                        ))}
+                        {provided.placeholder}
+                      </div>
+                    )}
+                  </Droppable>
                 
                 {/* Current time indicator spanning all drivers */}
                 {timelineView && (() => {

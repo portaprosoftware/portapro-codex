@@ -13,6 +13,9 @@ interface DriverSwimLaneProps {
   onJobView: (jobId: string) => void;
   timelineView: boolean;
   dragHandleProps?: any;
+  draggableProps?: any;
+  innerRef?: any;
+  isDragging?: boolean;
 }
 
 export const DriverSwimLane: React.FC<DriverSwimLaneProps> = ({
@@ -20,13 +23,23 @@ export const DriverSwimLane: React.FC<DriverSwimLaneProps> = ({
   jobs,
   onJobView,
   timelineView,
-  dragHandleProps
+  dragHandleProps,
+  draggableProps,
+  innerRef,
+  isDragging = false
 }) => {
   const driverName = `${driver.first_name} ${driver.last_name}`;
   const workloadColor = jobs.length > 3 ? 'destructive' : jobs.length > 1 ? 'default' : 'secondary';
 
   return (
-    <Card className="p-0 overflow-hidden">
+    <Card 
+      ref={innerRef}
+      {...draggableProps}
+      className={cn(
+        "p-0 overflow-hidden transition-all",
+        isDragging && "opacity-95 rotate-1 scale-105 z-50 shadow-lg ring-2 ring-primary/20"
+      )}
+    >
       <div className={cn(
         "min-h-[120px]"
       )}>
@@ -50,7 +63,7 @@ export const DriverSwimLane: React.FC<DriverSwimLaneProps> = ({
             {/* Driver Names and Badge */}
             <div className="ml-6 flex items-center h-full">
               <div className="flex items-center justify-between gap-2 w-full">
-                <div className="flex flex-col min-w-0 flex-1">
+                <div className="flex flex-col min-w-0 flex-1 justify-center">
                   <div className="font-medium text-sm text-left">{driver.first_name}</div>
                   <div className="font-medium text-sm text-left">{driver.last_name}</div>
                 </div>
