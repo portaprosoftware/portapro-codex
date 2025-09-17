@@ -15,6 +15,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { AvailabilityTrackerSheet } from '@/components/inventory/AvailabilityTrackerSheet';
 import { StockVehicleSelectionModal } from '@/components/fleet/StockVehicleSelectionModal';
 import { UniversalJobsHeader } from './UniversalJobsHeader';
+import { FilterToggle } from './FilterToggle';
 
 interface InlineFiltersProps {
   searchTerm: string;
@@ -107,13 +108,10 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
     <TooltipProvider>
       <div className="space-y-3">
         {/* Universal Jobs Header */}
-        {showUniversalHeader && selectedDate && onToggleCancelled && (
+        {showUniversalHeader && selectedDate && (
           <UniversalJobsHeader
             selectedDate={selectedDate}
             jobsCount={jobsCount}
-            showCancelled={showCancelled}
-            onToggleCancelled={onToggleCancelled}
-            cancelledCount={cancelledCount}
           />
         )}
         {/* Instructions */}
@@ -347,6 +345,15 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
             {showRouteStock ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
             Route vs Truck Stock
           </Button>
+
+          {/* Show Cancelled Jobs Toggle */}
+          {onToggleCancelled && (
+            <FilterToggle
+              showCancelled={showCancelled}
+              onToggle={onToggleCancelled}
+              cancelledCount={cancelledCount}
+            />
+          )}
         </div>
 
         {/* Route vs Truck Stock Section */}
