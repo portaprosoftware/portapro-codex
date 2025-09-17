@@ -16,6 +16,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { TimelineGrid } from './TimelineGrid';
 import { DriverSwimLane } from './DriverSwimLane';
+import { UnassignedJobsSection } from './UnassignedJobsSection';
 import { DriverOrderModal } from './DriverOrderModal';
 import { DragDropContext, DropResult, Droppable, Draggable } from '@hello-pangea/dnd';
 import { cn } from '@/lib/utils';
@@ -74,6 +75,11 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
     return grouped;
   }, [jobs]);
 
+  // Get unassigned jobs
+  const unassignedJobs = useMemo(() => {
+    return jobs.filter(job => !job.driver_id);
+  }, [jobs]);
+
   // Handle job assignment with time slot logic
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) {
@@ -84,7 +90,7 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
     const destinationId = result.destination.droppableId;
     
     if (destinationId.includes('-')) {
-      // Timeline view: droppableId format is "driverId-timeSlotId"
+      // Timeline view: droppableId format is "driverId-timeSlotId" or "unassigned-timeSlotId"
       const [driverId, timeSlotId] = destinationId.split('-');
       const jobId = result.draggableId;
       
@@ -163,7 +169,7 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                     {format(selectedDate, 'MMM d, yyyy')}
                   </Badge>
                   <Badge variant="secondary" className="gap-1">
-                    {jobs.length} Jobs
+                    {jobs.length} Jobs ({unassignedJobs.length} unassigned)
                   </Badge>
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
@@ -264,6 +270,14 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                       className="min-w-max h-full overflow-y-auto"
                     >
                       <TimelineGrid />
+                      
+                      {/* Unassigned Jobs Section - Sticky below timeline grid */}
+                      <UnassignedJobsSection
+                        jobs={unassignedJobs}
+                        onJobView={onJobView}
+                        timelineView={timelineView}
+                      />
+                      
                       <div className="space-y-2 pb-4">
                         {drivers.map((driver) => (
                           <DriverSwimLane
@@ -312,16 +326,25 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                 </div>
               ) : (
                 <ScrollArea className="h-full">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4">
-                    {drivers.map((driver) => (
-                      <DriverSwimLane
-                        key={driver.id}
-                        driver={driver}
-                        jobs={jobsByDriver.get(driver.id) || []}
-                        onJobView={onJobView}
-                        timelineView={timelineView}
-                      />
-                    ))}
+                  <div className="p-4 space-y-4">
+                    {/* Unassigned Jobs in Grid View */}
+                    <UnassignedJobsSection
+                      jobs={unassignedJobs}
+                      onJobView={onJobView}
+                      timelineView={timelineView}
+                    />
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                      {drivers.map((driver) => (
+                        <DriverSwimLane
+                          key={driver.id}
+                          driver={driver}
+                          jobs={jobsByDriver.get(driver.id) || []}
+                          onJobView={onJobView}
+                          timelineView={timelineView}
+                        />
+                      ))}
+                    </div>
                   </div>
                 </ScrollArea>
               )}
