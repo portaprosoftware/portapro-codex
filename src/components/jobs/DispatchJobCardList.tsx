@@ -157,8 +157,18 @@ export const DispatchJobCardList: React.FC<DispatchJobCardListProps> = ({
           </div>
         </div>
 
-        {/* Right Column - Status & Actions */}
-        <div className="flex flex-col items-end gap-1 justify-center">
+        {/* Right Column - Actions & Status */}
+        <div className="flex items-center gap-2 justify-end">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleViewJob}
+            className="h-6 px-2 text-xs border-gray-300 hover:bg-gray-50 flex-shrink-0"
+            aria-label={`View job ${job.job_number}`}
+          >
+            <Eye className="w-3 h-3 mr-1" />
+            View
+          </Button>
           <div className="flex flex-col gap-1">
             <Badge className={cn("text-xs px-2 py-0.5 font-bold text-center whitespace-nowrap", statusInfo.primary.gradient)}>
               {statusInfo.primary.label}
@@ -169,16 +179,6 @@ export const DispatchJobCardList: React.FC<DispatchJobCardListProps> = ({
               </Badge>
             )}
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleViewJob}
-            className="h-6 px-2 text-xs border-gray-300 hover:bg-gray-50"
-            aria-label={`View job ${job.job_number}`}
-          >
-            <Eye className="w-3 h-3 mr-1" />
-            View
-          </Button>
         </div>
       </div>
     </div>
