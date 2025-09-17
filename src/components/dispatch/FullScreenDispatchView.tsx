@@ -1,6 +1,6 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { format } from 'date-fns';
-import { Clock, Maximize2, X, Calendar, Users } from 'lucide-react';
+import { Clock, Maximize2, X, Calendar, Users, ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from 'lucide-react';
 import {
   Drawer,
   DrawerContent,
@@ -43,6 +43,8 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
   const [timeFilter, setTimeFilter] = useState<'all' | 'morning' | 'afternoon'>('all');
   const [isDriverOrderModalOpen, setIsDriverOrderModalOpen] = useState(false);
   const { toast } = useToast();
+  const horizontalScrollRef = useRef<HTMLDivElement>(null);
+  const verticalScrollRef = useRef<HTMLDivElement>(null);
 
   // Update drivers when prop changes
   useEffect(() => {
@@ -113,6 +115,23 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
   // Handle driver order update
   const handleDriverOrderUpdate = (orderedDrivers: any[]) => {
     setDrivers(orderedDrivers);
+  };
+
+  // Scroll functions
+  const scrollHorizontal = (direction: 'left' | 'right') => {
+    if (horizontalScrollRef.current) {
+      const scrollAmount = 300;
+      const newScrollLeft = horizontalScrollRef.current.scrollLeft + (direction === 'right' ? scrollAmount : -scrollAmount);
+      horizontalScrollRef.current.scrollTo({ left: newScrollLeft, behavior: 'smooth' });
+    }
+  };
+
+  const scrollVertical = (direction: 'up' | 'down') => {
+    if (verticalScrollRef.current) {
+      const scrollAmount = 200;
+      const newScrollTop = verticalScrollRef.current.scrollTop + (direction === 'down' ? scrollAmount : -scrollAmount);
+      verticalScrollRef.current.scrollTo({ top: newScrollTop, behavior: 'smooth' });
+    }
   };
 
   return (
@@ -189,19 +208,67 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
             {/* Main Content - Unified Timeline */}
             <div className="flex-1 overflow-hidden relative">
               {timelineView ? (
-                <div className="h-full overflow-x-auto overflow-y-auto">
-                  <div className="min-w-max">
-                    <TimelineGrid />
-                    <div className="space-y-2">
-                      {drivers.map((driver) => (
-                        <DriverSwimLane
-                          key={driver.id}
-                          driver={driver}
-                          jobs={jobsByDriver.get(driver.id) || []}
-                          onJobView={onJobView}
-                          timelineView={timelineView}
-                        />
-                      ))}
+                <div className="h-full relative">
+                  <div 
+                    ref={horizontalScrollRef}
+                    className="h-full overflow-x-auto overflow-y-hidden"
+                  >
+                    <div 
+                      ref={verticalScrollRef}
+                      className="min-w-max h-full overflow-y-auto"
+                    >
+                      <TimelineGrid />
+                      <div className="space-y-2 pb-4">
+                        {drivers.map((driver) => (
+                          <DriverSwimLane
+                            key={driver.id}
+                            driver={driver}
+                            jobs={jobsByDriver.get(driver.id) || []}
+                            onJobView={onJobView}
+                            timelineView={timelineView}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Scroll Controls */}
+                  <div className="absolute top-4 right-4 flex flex-col gap-2 z-40">
+                    <div className="flex gap-1">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-8 w-8 p-0 bg-background/80 backdrop-blur-sm"
+                        onClick={() => scrollHorizontal('left')}
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-8 w-8 p-0 bg-background/80 backdrop-blur-sm"
+                        onClick={() => scrollHorizontal('right')}
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="flex gap-1">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-8 w-8 p-0 bg-background/80 backdrop-blur-sm"
+                        onClick={() => scrollVertical('up')}
+                      >
+                        <ChevronUp className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-8 w-8 p-0 bg-background/80 backdrop-blur-sm"
+                        onClick={() => scrollVertical('down')}
+                      >
+                        <ChevronDown className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                   
@@ -218,7 +285,7 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                       const positionPercent = (timeInMinutes - timelineStart) / timelineRange;
                       
                       const driverColumnWidth = 128;
-                      const noTimeSlotWidth = 600; // Updated to match the new 600px width
+                      const noTimeSlotWidth = 800; // Updated to match the new 800px width
                       const timeSlotWidth = 200;
                       const slotsBeforeCurrentTime = Math.floor(positionPercent * 14);
                       const positionWithinSlot = (positionPercent * 14) - slotsBeforeCurrentTime;
