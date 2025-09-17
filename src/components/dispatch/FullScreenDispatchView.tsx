@@ -83,20 +83,20 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                   <Badge variant="secondary" className="gap-1">
                     {jobs.length} Jobs
                   </Badge>
-                </div>
-                
-                <div className="flex items-center gap-2">
                   <div className="flex items-center gap-2">
                     <Switch
                       id="timeline-view"
                       checked={timelineView}
                       onCheckedChange={setTimelineView}
                     />
-                    <Label htmlFor="timeline-view" className="flex items-center gap-2 cursor-pointer">
+                    <Label htmlFor="timeline-view" className="flex items-center gap-2 cursor-pointer text-sm">
                       <Clock className="h-4 w-4" />
                       Timeline View
                     </Label>
                   </div>
+                </div>
+                
+                <div className="flex items-center gap-2">
                   <DrawerClose asChild>
                     <Button variant="outline" size="sm">
                       <X className="h-4 w-4" />
