@@ -45,10 +45,19 @@ export const DriverOrderModal: React.FC<DriverOrderModalProps> = ({
     setOrderedDrivers(items);
   };
 
-  const alphabetizeDrivers = () => {
+  const alphabetizeByFirstName = () => {
     const sorted = [...orderedDrivers].sort((a, b) => {
-      const nameA = `${a.first_name} ${a.last_name}`.toLowerCase();
-      const nameB = `${b.first_name} ${b.last_name}`.toLowerCase();
+      const nameA = a.first_name.toLowerCase();
+      const nameB = b.first_name.toLowerCase();
+      return nameA.localeCompare(nameB);
+    });
+    setOrderedDrivers(sorted);
+  };
+
+  const alphabetizeByLastName = () => {
+    const sorted = [...orderedDrivers].sort((a, b) => {
+      const nameA = a.last_name.toLowerCase();
+      const nameB = b.last_name.toLowerCase();
       return nameA.localeCompare(nameB);
     });
     setOrderedDrivers(sorted);
@@ -91,11 +100,18 @@ export const DriverOrderModal: React.FC<DriverOrderModalProps> = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex justify-center gap-2 pb-4">
-          <Button variant="outline" size="sm" onClick={alphabetizeDrivers} className="flex items-center gap-1">
-            <ArrowUpDown className="h-3 w-3" />
-            Alphabetize by Name
-          </Button>
+        <div className="pb-4">
+          <div className="text-sm font-medium text-muted-foreground mb-2">Alphabetize:</div>
+          <div className="flex justify-center gap-2">
+            <Button variant="outline" size="sm" onClick={alphabetizeByFirstName} className="flex items-center gap-1">
+              <ArrowUpDown className="h-3 w-3" />
+              First Name
+            </Button>
+            <Button variant="outline" size="sm" onClick={alphabetizeByLastName} className="flex items-center gap-1">
+              <ArrowUpDown className="h-3 w-3" />
+              Last Name
+            </Button>
+          </div>
         </div>
 
         <div className="py-4">
