@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 
 // Fixed-width timeline structure for consistent horizontal scrolling
 export const TIME_SLOTS = [
-  { id: 'no-time', label: 'No Time', startHour: null, endHour: null, width: '200px' },
+  { id: 'no-time', label: 'No Time', startHour: null, endHour: null, width: '600px' },
   { id: '6-7', label: '6-7am', startHour: 6, endHour: 7, width: '200px' },
   { id: '7-8', label: '7-8am', startHour: 7, endHour: 8, width: '200px' },
   { id: '8-9', label: '8-9am', startHour: 8, endHour: 9, width: '200px' },
