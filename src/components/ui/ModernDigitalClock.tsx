@@ -32,10 +32,8 @@ export const ModernDigitalClock: React.FC<ModernDigitalClockProps> = ({
 
   return (
     <div className={`inline-flex items-center justify-center ${className}`}>
-      <div className="bg-gradient-to-r from-primary/10 to-accent/10 backdrop-blur-sm border border-primary/20 rounded-lg px-4 py-2">
-        <div className="font-mono text-lg font-semibold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-          {format(time, formatString)}
-        </div>
+      <div className="font-mono text-lg font-medium text-primary">
+        {format(time, formatString)}
       </div>
     </div>
   );
