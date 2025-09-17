@@ -54,7 +54,9 @@ export const DriverOrderModal: React.FC<DriverOrderModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md bg-background border z-50">
+      <DialogContent className="max-w-md bg-background border z-50 data-[state=open]:backdrop-blur-none"
+        style={{ backdropFilter: 'none' }}
+      >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <User className="h-5 w-5" />
