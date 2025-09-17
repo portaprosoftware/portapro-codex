@@ -126,7 +126,7 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
             {/* Key directly above driver names */}
             <div className="flex items-center gap-2 text-xs text-gray-600 px-2 py-1 border-b border-gray-100">
               <span>Drivers With Jobs Today</span>
-              <Truck className="w-3 h-3 text-muted-foreground" />
+              <Truck className="w-3 h-3 text-green-500" />
             </div>
             <SelectItem value="all">All Drivers</SelectItem>
             {drivers.filter(driver => driver.id && driver.id.trim() !== '').map(driver => (
@@ -135,8 +135,8 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
                    <span className="truncate">{driver.first_name} {driver.last_name}</span>
                    {driversWithJobsToday.has(driver.id) && (
                      <>
-                       <span className="mx-1"> — </span>
-                       <Truck className="w-3 h-3 text-muted-foreground" />
+                       <span className="mx-1"> - </span>
+                       <Truck className="w-3 h-3 text-green-500" />
                      </>
                    )}
                  </div>
