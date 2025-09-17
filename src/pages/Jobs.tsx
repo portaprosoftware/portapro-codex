@@ -3,7 +3,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { format, addDays, subDays } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
 import { formatDateForQuery, addDaysToDate, subtractDaysFromDate, parseDateSafe, isSameDayInTimeZone } from '@/lib/dateUtils';
-import { Calendar as CalendarIcon, MapPin, ClipboardList, Search, Filter, AlertTriangle, User, Plus, ChevronLeft, ChevronRight, FileText } from 'lucide-react';
+import { Calendar as CalendarIcon, MapPin, ClipboardList, Search, Filter, AlertTriangle, User, Plus, ChevronLeft, ChevronRight, FileText, Loader2 } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -57,6 +57,7 @@ const JobsPage: React.FC = () => {
   const dispatchFullscreen = searchParams.get('dispatch') === 'fullscreen';
   // Unified date state for all views - using Date objects (converted to string at query boundary)
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const { isLoaded, isSignedIn } = useUser();
   
   // Modal state
   const [isJobWizardOpen, setIsJobWizardOpen] = useState(false);
@@ -207,7 +208,7 @@ const JobsPage: React.FC = () => {
 
   // Get jobs for all views using unified date (convert Date to string at query boundary)
   // Only pass database-queryable filters to the hook
-  const { data: allJobsRaw = [] } = useJobs({
+  const { data: allJobsRaw = [], isLoading: jobsLoading, error: jobsError } = useJobs({
     date: formatDateForQuery(selectedDate), // Convert Date to string here
     job_type: selectedJobType !== 'all' ? selectedJobType : undefined,
     status: ['assigned', 'unassigned', 'in_progress', 'completed', 'cancelled'].includes(selectedStatus) ? selectedStatus : undefined,
@@ -258,7 +259,7 @@ const JobsPage: React.FC = () => {
   }, [customJobsRaw, customSelectedStatus]);
 
   // Get drivers for filter
-  const { data: drivers = [] } = useQuery({
+  const { data: drivers = [], isLoading: driversLoading, error: driversError } = useQuery({
     queryKey: ['drivers'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -326,9 +327,11 @@ const JobsPage: React.FC = () => {
     } else if (location.pathname.includes('/drafts')) {
       setActiveTab('drafts');
     } else if (location.pathname === '/jobs') {
-      // Default to calendar view for /jobs route
+      // Default to calendar view for /jobs route, preserve query params
       setActiveTab('calendar');
-      navigate('/jobs/calendar', { replace: true });
+      const searchParamsString = searchParams.toString();
+      const redirectUrl = searchParamsString ? `/jobs/calendar?${searchParamsString}` : '/jobs/calendar';
+      navigate(redirectUrl, { replace: true });
     }
   }, [location.pathname, navigate, dispatchFullscreen]);
 
@@ -493,12 +496,59 @@ const JobsPage: React.FC = () => {
 
   // If fullscreen dispatch mode is requested, render only the dispatch view
   if (dispatchFullscreen) {
+    // Auth loading
+    if (!isLoaded) {
+      return (
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="flex items-center gap-3 text-gray-600">
+            <Loader2 className="h-5 w-5 animate-spin" />
+            <span>Initializing...</span>
+          </div>
+        </div>
+      );
+    }
+
+    // Not signed in
+    if (!isSignedIn) {
+      return (
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center text-gray-700">
+            <p className="font-medium">You must be signed in to view Dispatch.</p>
+          </div>
+        </div>
+      );
+    }
+
+    // Data loading
+    if (jobsLoading || driversLoading) {
+      return (
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="flex items-center gap-3 text-gray-600">
+            <Loader2 className="h-5 w-5 animate-spin" />
+            <span>Loading dispatch data…</span>
+          </div>
+        </div>
+      );
+    }
+
+    // Data errors
+    if (jobsError || driversError) {
+      return (
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center text-red-600">
+            <p className="font-medium">Failed to load dispatch data.</p>
+            <p className="text-sm text-red-500 mt-1">{(jobsError as any)?.message || (driversError as any)?.message}</p>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <FullScreenDispatchView
         jobs={dispatchJobs}
         drivers={drivers}
         selectedDate={selectedDate}
-        onJobAssignment={(jobId, driverId, timeSlotId) => 
+        onJobAssignment={(jobId, driverId, timeSlotId) =>
           updateJobAssignmentMutation.mutate({ jobId, driverId, timeSlotId })
         }
         onJobView={handleJobView}
