@@ -13,6 +13,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { TimelineGrid } from './TimelineGrid';
 import { DriverSwimLane } from './DriverSwimLane';
 import { UnassignedJobsPanel } from './UnassignedJobsPanel';
@@ -108,15 +110,17 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                 </div>
                 
                 <div className="flex items-center gap-2">
-                  <Button
-                    variant={timelineView ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setTimelineView(!timelineView)}
-                    className="gap-2"
-                  >
-                    <Clock className="h-4 w-4" />
-                    Timeline View
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      id="timeline-view"
+                      checked={timelineView}
+                      onCheckedChange={setTimelineView}
+                    />
+                    <Label htmlFor="timeline-view" className="flex items-center gap-2 cursor-pointer">
+                      <Clock className="h-4 w-4" />
+                      Timeline View
+                    </Label>
+                  </div>
                   <DrawerClose asChild>
                     <Button variant="outline" size="sm">
                       <X className="h-4 w-4" />
