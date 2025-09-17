@@ -79,7 +79,7 @@ export const DriverSwimLane: React.FC<DriverSwimLaneProps> = ({
                         {...provided.dragHandleProps}
                         className={cn(
                           "transition-all",
-                          snapshot.isDragging && "opacity-75 rotate-2 scale-105 z-50"
+                          snapshot.isDragging && "opacity-95 rotate-1 scale-105 z-50 shadow-lg ring-2 ring-primary/20"
                         )}
                       >
                         <TimelineJobCard
