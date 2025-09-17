@@ -4,7 +4,6 @@ import { User, MapPin, Clock, Truck, GripVertical } from 'lucide-react';
 import { Droppable, Draggable } from '@hello-pangea/dnd';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { TimelineJobCard } from './TimelineJobCard';
 import { cn } from '@/lib/utils';
 
@@ -48,22 +47,12 @@ export const DriverSwimLane: React.FC<DriverSwimLaneProps> = ({
               <GripVertical className="h-4 w-4 text-muted-foreground" />
             </div>
             
-            <Avatar className="h-8 w-8">
-              <AvatarFallback className="text-xs">
-                {driver.first_name?.[0]}{driver.last_name?.[0]}
-              </AvatarFallback>
-            </Avatar>
-            
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <h4 className="font-medium text-sm truncate">{driverName}</h4>
-                <Badge variant={workloadColor} className="text-xs">
+                <Badge variant={workloadColor} className="text-xs flex-shrink-0">
                   {jobs.length}
                 </Badge>
-              </div>
-              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <Truck className="h-3 w-3" />
-                <span>Available</span>
               </div>
             </div>
           </div>
