@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { format } from 'date-fns';
-import { Clock, Maximize2, X, Calendar } from 'lucide-react';
+import { Clock, Maximize2, X, Calendar, Users } from 'lucide-react';
 import {
   Drawer,
   DrawerContent,
@@ -16,6 +16,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { TimelineGrid } from './TimelineGrid';
 import { DriverSwimLane } from './DriverSwimLane';
+import { DriverOrderModal } from './DriverOrderModal';
 import { DragDropContext, DropResult, Droppable, Draggable } from '@hello-pangea/dnd';
 import { cn } from '@/lib/utils';
 
@@ -39,6 +40,7 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
   const [drivers, setDrivers] = useState(driversData);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [timeFilter, setTimeFilter] = useState<'all' | 'morning' | 'afternoon'>('all');
+  const [isDriverOrderModalOpen, setIsDriverOrderModalOpen] = useState(false);
 
   // Update drivers when prop changes
   useEffect(() => {
@@ -82,6 +84,11 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
     }
     // Handle job assignment
     onJobAssignment(result);
+  };
+
+  // Handle driver order update
+  const handleDriverOrderUpdate = (orderedDrivers: any[]) => {
+    setDrivers(orderedDrivers);
   };
 
   return (
@@ -168,6 +175,15 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                   <Button 
                     variant="outline" 
                     size="sm"
+                    onClick={() => setIsDriverOrderModalOpen(true)}
+                    className="gap-2"
+                  >
+                    <Users className="h-4 w-4" />
+                    Reorder Drivers
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
                     onClick={() => setIsOpen(false)}
                   >
                     <X className="h-4 w-4" />
@@ -244,6 +260,14 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
           </div>
         </DragDropContext>
       </DrawerContent>
+
+      {/* Driver Order Modal */}
+      <DriverOrderModal
+        isOpen={isDriverOrderModalOpen}
+        onClose={() => setIsDriverOrderModalOpen(false)}
+        drivers={drivers}
+        onSaveOrder={handleDriverOrderUpdate}
+      />
     </Drawer>
   );
 };
