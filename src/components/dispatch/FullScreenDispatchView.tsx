@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { format } from 'date-fns';
 import { Clock, Maximize2, X, Calendar, Users, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, ExternalLink } from 'lucide-react';
+import { ModernDigitalClock } from '@/components/ui/ModernDigitalClock';
 import {
   Drawer,
   DrawerContent,
@@ -184,9 +185,7 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                       </Label>
                     </div>
                     
-                    <div className="text-sm font-mono text-muted-foreground">
-                      {format(currentTime, 'h:mm:ss a')}
-                    </div>
+                    <ModernDigitalClock showSeconds={true} />
                   </div>
                 </div>
                 
