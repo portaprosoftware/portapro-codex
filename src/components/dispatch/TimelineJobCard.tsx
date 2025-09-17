@@ -79,9 +79,9 @@ export const TimelineJobCard: React.FC<TimelineJobCardProps> = ({
           <div className="font-semibold text-sm text-foreground">
             {job.job_number}
           </div>
-          {job.customers?.company_name && (
+          {job.customers?.name && (
             <div className="text-sm text-foreground font-medium">
-              {job.customers.company_name}
+              {job.customers.name}
             </div>
           )}
         </div>
