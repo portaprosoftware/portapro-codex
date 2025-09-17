@@ -87,7 +87,7 @@ export const UnassignedJobCard: React.FC<UnassignedJobCardProps> = ({
   return (
     <div 
       className={cn(
-        "bg-white border border-gray-200 rounded-lg transition-all duration-200 hover:shadow-md border-l-4 max-w-[280px] w-full p-2",
+        "bg-white border border-gray-200 rounded-lg transition-all duration-200 hover:shadow-md border-l-4 w-full p-3",
         isDragging && "shadow-lg border-blue-300 bg-blue-50",
         jobTypeInfo.borderColor
       )}
@@ -98,54 +98,51 @@ export const UnassignedJobCard: React.FC<UnassignedJobCardProps> = ({
         
         {/* Main Content */}
         <div className="flex-1 min-w-0 space-y-3">
-          {/* Top Section - Job ID & Customer Name */}
+          {/* Job ID and Customer Name on separate rows */}
           <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="font-medium text-sm text-gray-900 truncate">
-                {job.job_number}
-              </span>
-              <span className="text-xs text-gray-500">•</span>
-              <span className="font-semibold text-sm text-gray-700 truncate">
-                {job.customers.name}
-              </span>
+            <div className="font-medium text-sm text-gray-900">
+              {job.job_number}
             </div>
+            <div className="font-semibold text-sm text-gray-700">
+              {job.customers.name}
+            </div>
+          </div>
 
-            {/* Address - Multi-line display */}
-            {job.customers.service_street && (
-              <div className="space-y-1">
-                <div className="flex items-start gap-1 text-sm text-gray-600">
-                  <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" />
-                  <div className="flex flex-col min-w-0">
+          {/* Address - Multi-line display */}
+          {job.customers.service_street && (
+            <div className="space-y-1">
+              <div className="flex items-start gap-1 text-sm text-gray-600">
+                <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" />
+                <div className="flex flex-col min-w-0">
+                  <span className="text-sm">
+                    {job.customers.service_street}
+                  </span>
+                  {job.customers.service_city && (
                     <span className="text-sm">
-                      {job.customers.service_street}
+                      {job.customers.service_city}
+                      {job.customers.service_state && `, ${job.customers.service_state}`}
+                      {job.customers.service_zip && ` ${job.customers.service_zip}`}
                     </span>
-                    {job.customers.service_city && (
-                      <span className="text-sm">
-                        {job.customers.service_city}
-                        {job.customers.service_state && `, ${job.customers.service_state}`}
-                        {job.customers.service_zip && ` ${job.customers.service_zip}`}
-                      </span>
-                    )}
-                  </div>
+                  )}
                 </div>
               </div>
-            )}
+            </div>
+          )}
 
-            {/* Scheduled Time */}
-            {job.scheduled_time && (
-              <div className="flex items-center gap-1 text-sm text-gray-600">
-                <Clock className="w-4 h-4 text-gray-400" />
-                <span>
-                  {(() => {
-                    const [hours, minutes] = job.scheduled_time.split(':').map(Number);
-                    const period = hours >= 12 ? 'PM' : 'AM';
-                    const hours12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
-                    return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
-                  })()}
-                </span>
-              </div>
-            )}
-          </div>
+          {/* Scheduled Time */}
+          {job.scheduled_time && (
+            <div className="flex items-center gap-1 text-sm text-gray-600">
+              <Clock className="w-4 h-4 text-gray-400" />
+              <span>
+                {(() => {
+                  const [hours, minutes] = job.scheduled_time.split(':').map(Number);
+                  const period = hours >= 12 ? 'PM' : 'AM';
+                  const hours12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+                  return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
+                })()}
+              </span>
+            </div>
+          )}
 
           {/* Bottom Section - Badges & Button */}
           <div className="space-y-2">

@@ -682,9 +682,9 @@ const JobsPage: React.FC = () => {
                                   <p className="text-sm">No unassigned jobs for {format(selectedDate, 'MMM d, yyyy')}</p>
                                 </div>
                               </div>
-                            ) : (
-                              <div className="space-y-3 flex flex-col items-center">
-                                {filterJobs(unassignedJobs).map((job, index) => (
+                             ) : (
+                               <div className="space-y-3 p-4">
+                                 {filterJobs(unassignedJobs).map((job, index) => (
                                   <Draggable key={job.id} draggableId={job.id} index={index}>
                                     {(provided, snapshot) => (
                                       <div
