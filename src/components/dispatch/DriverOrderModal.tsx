@@ -100,15 +100,15 @@ export const DriverOrderModal: React.FC<DriverOrderModalProps> = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="pb-4">
+        <div className="pb-2">
           <div className="flex items-center gap-3">
             <div className="text-sm font-medium text-muted-foreground">Alphabetize:</div>
-            <div className="flex">
-              <Button variant="outline" size="sm" onClick={alphabetizeByFirstName} className="flex items-center gap-1 rounded-r-none">
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={alphabetizeByFirstName} className="flex items-center gap-1">
                 <ArrowUpDown className="h-3 w-3" />
                 First Name
               </Button>
-              <Button variant="outline" size="sm" onClick={alphabetizeByLastName} className="flex items-center gap-1 rounded-l-none border-l-0">
+              <Button variant="outline" size="sm" onClick={alphabetizeByLastName} className="flex items-center gap-1">
                 <ArrowUpDown className="h-3 w-3" />
                 Last Name
               </Button>
@@ -116,7 +116,7 @@ export const DriverOrderModal: React.FC<DriverOrderModalProps> = ({
           </div>
         </div>
 
-        <div className="py-4">
+        <div className="py-2">
           <div className="space-y-2">
             {orderedDrivers.map((driver, index) => (
               <Card key={driver.id} className="p-3">
