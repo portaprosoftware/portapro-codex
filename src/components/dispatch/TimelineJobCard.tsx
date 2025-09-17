@@ -55,9 +55,9 @@ export const TimelineJobCard: React.FC<TimelineJobCardProps> = ({
   return (
     <Card
       className={cn(
-        "p-4 transition-all border-l-4 relative bg-white shadow-sm",
+        "p-3 transition-all border-l-4 relative bg-white shadow-sm",
         jobTypeConfig.color.replace('bg-', 'border-l-'),
-        timelineView ? "w-[200px] flex-shrink-0" : "w-full",
+        timelineView ? "w-[180px] flex-shrink-0 mx-auto" : "w-full",
         isOverdue && "border-red-500",
         job.status === 'completed' && "border-green-500",
         isDragging && "ring-2 ring-blue-300 shadow-lg"
@@ -73,7 +73,7 @@ export const TimelineJobCard: React.FC<TimelineJobCardProps> = ({
         </div>
       )}
       
-      <div className="space-y-3 pr-6">
+      <div className="space-y-2 pr-6">
         {/* Job Number and Customer Name */}
         <div className="space-y-1">
           <div className="font-semibold text-sm text-foreground">

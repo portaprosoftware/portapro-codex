@@ -216,7 +216,7 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                       
                       return (
                         <div 
-                          className="absolute top-[60px] bottom-0 w-0.5 bg-red-500 z-30 pointer-events-none"
+                          className="absolute top-[61px] bottom-0 w-0.5 bg-red-500 z-30 pointer-events-none"
                           style={{ left: `${leftPosition}px` }}
                         >
                           <div className="absolute -top-1 -left-1 w-2 h-2 bg-red-500 rounded-full"></div>
