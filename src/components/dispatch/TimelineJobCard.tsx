@@ -74,17 +74,17 @@ export const TimelineJobCard: React.FC<TimelineJobCardProps> = ({
       )}
       
       <div className="space-y-3 pr-6">
-        {/* Job Number */}
-        <div className="font-semibold text-sm text-foreground">
-          {job.job_number}
-        </div>
-
-        {/* Customer Name */}
-        {job.customers?.company_name && (
-          <div className="text-sm text-foreground font-medium">
-            {job.customers.company_name}
+        {/* Job Number and Customer Name */}
+        <div className="space-y-1">
+          <div className="font-semibold text-sm text-foreground">
+            {job.job_number}
           </div>
-        )}
+          {job.customers?.company_name && (
+            <div className="text-sm text-foreground font-medium">
+              {job.customers.company_name}
+            </div>
+          )}
+        </div>
 
         {/* Location */}
         {job.service_address && (
