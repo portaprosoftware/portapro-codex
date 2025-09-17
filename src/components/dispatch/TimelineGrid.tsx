@@ -96,11 +96,8 @@ export const TimelineGrid: React.FC = () => {
   return (
     <div className="border-b bg-gradient-to-r from-blue-600 to-blue-700 sticky top-[120px] z-10">
       <div className="flex">
-        {/* Driver name column spacer - EXACT same width as DriverSwimLane */}
+        {/* No content - the sticky column handles the driver label */}
         <div className="w-32 flex-shrink-0 border-r border-blue-500/30 bg-gradient-to-r from-blue-600 to-blue-700">
-          <div className="py-3 px-2 text-center text-xs font-medium text-white">
-            Drivers
-          </div>
         </div>
         
         {/* Timeline slots - EXACT same widths as DriverSwimLane */}
@@ -114,7 +111,7 @@ export const TimelineGrid: React.FC = () => {
               )}
               style={{ width: slot.width, minWidth: slot.width, flexShrink: 0 }}
             >
-              {slot.label}
+              {slot.id === 'no-time' ? 'No Time Selected' : slot.label}
             </div>
           ))}
         </div>

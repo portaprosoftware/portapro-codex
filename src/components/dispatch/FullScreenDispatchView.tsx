@@ -299,8 +299,8 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                         />
                       </div>
                       
-                      {/* Timeline Header - Full Width Blue Bar */}
-                      <div className="h-[40px] bg-primary text-primary-foreground flex items-center justify-center border-b">
+                      {/* Timeline Header - Blue Gradient */}
+                      <div className="h-[40px] bg-gradient-to-r from-blue-600 to-blue-700 text-white flex items-center justify-center border-b">
                         <div className="text-xs font-medium">Drivers</div>
                       </div>
                       
