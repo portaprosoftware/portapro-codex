@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import { GripVertical, User, Save, X } from 'lucide-react';
+import { ChevronUp, ChevronDown, User, Save, X } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -32,13 +31,17 @@ export const DriverOrderModal: React.FC<DriverOrderModalProps> = ({
     setOrderedDrivers(drivers);
   }, [drivers]);
 
-  const handleDragEnd = (result: DropResult) => {
-    if (!result.destination) return;
-
+  const moveDriverUp = (index: number) => {
+    if (index === 0) return;
     const items = Array.from(orderedDrivers);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
+    [items[index - 1], items[index]] = [items[index], items[index - 1]];
+    setOrderedDrivers(items);
+  };
 
+  const moveDriverDown = (index: number) => {
+    if (index === orderedDrivers.length - 1) return;
+    const items = Array.from(orderedDrivers);
+    [items[index], items[index + 1]] = [items[index + 1], items[index]];
     setOrderedDrivers(items);
   };
 
@@ -61,65 +64,54 @@ export const DriverOrderModal: React.FC<DriverOrderModalProps> = ({
             Reorder Drivers
           </DialogTitle>
           <DialogDescription>
-            Drag and drop to change the order of drivers in the dispatch view.
+            Use the up and down arrows to change the order of drivers in the dispatch view.
           </DialogDescription>
         </DialogHeader>
 
         <div className="py-4">
-          <DragDropContext onDragEnd={handleDragEnd}>
-            <Droppable droppableId="drivers-reorder" type="DRIVER">
-              {(provided, snapshot) => (
-                <div
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                  className={cn(
-                    "space-y-2 min-h-[200px] p-2 rounded-lg border-2 border-dashed",
-                    snapshot.isDraggingOver ? "border-primary bg-muted/50" : "border-muted"
-                  )}
-                >
-                  {orderedDrivers.map((driver, index) => (
-                    <Draggable key={driver.id} draggableId={driver.id} index={index}>
-                      {(provided, snapshot) => (
-                        <Card
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          className={cn(
-                            "p-3 transition-all",
-                            snapshot.isDragging && "ring-2 ring-primary shadow-xl bg-background z-[10000] transform rotate-2"
-                          )}
-                        >
-                          <div className="flex items-center gap-3">
-                            <div
-                              {...provided.dragHandleProps}
-                              className="cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded"
-                            >
-                              <GripVertical className="h-4 w-4 text-muted-foreground" />
-                            </div>
-                            
-                            <div className="flex-1">
-                              <div className="font-medium text-sm">
-                                {driver.first_name} {driver.last_name}
-                              </div>
-                              {driver.phone && (
-                                <div className="text-xs text-muted-foreground">
-                                  {driver.phone}
-                                </div>
-                              )}
-                            </div>
+          <div className="space-y-2">
+            {orderedDrivers.map((driver, index) => (
+              <Card key={driver.id} className="p-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex flex-col gap-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => moveDriverUp(index)}
+                      disabled={index === 0}
+                      className="h-6 w-6 p-0"
+                    >
+                      <ChevronUp className="h-3 w-3" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => moveDriverDown(index)}
+                      disabled={index === orderedDrivers.length - 1}
+                      className="h-6 w-6 p-0"
+                    >
+                      <ChevronDown className="h-3 w-3" />
+                    </Button>
+                  </div>
+                  
+                  <div className="flex-1">
+                    <div className="font-medium text-sm">
+                      {driver.first_name} {driver.last_name}
+                    </div>
+                    {driver.phone && (
+                      <div className="text-xs text-muted-foreground">
+                        {driver.phone}
+                      </div>
+                    )}
+                  </div>
 
-                            <Badge variant="outline" className="text-xs">
-                              #{index + 1}
-                            </Badge>
-                          </div>
-                        </Card>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
+                  <Badge variant="outline" className="text-xs">
+                    #{index + 1}
+                  </Badge>
                 </div>
-              )}
-            </Droppable>
-          </DragDropContext>
+              </Card>
+            ))}
+          </div>
         </div>
 
         <div className="flex justify-end gap-2 pt-4 border-t">
