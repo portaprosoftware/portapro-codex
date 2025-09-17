@@ -52,33 +52,29 @@ export const UnassignedJobsSection: React.FC<UnassignedJobsSectionProps> = ({
     // Vertical list view
     return (
       <Card className="p-0 overflow-hidden mb-4">
-        <div className="min-h-[120px]">
+        <div className={cn("transition-all duration-200", isExpanded ? "min-h-[120px]" : "h-[60px]")}>
           <div className="flex flex-col">
             {/* Unassigned Header */}
             <div className="w-full border-b bg-muted/30 p-4">
-              <div className="flex items-center h-full">
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex flex-col items-center justify-center gap-1">
-                    <div className="flex items-center gap-2">
-                      <UserX className="h-4 w-4 text-muted-foreground" />
-                      <div className="font-medium text-sm text-center">Unassigned</div>
-                    </div>
-                    <Badge variant="secondary" className="text-xs">
-                      {jobs.length}
-                    </Badge>
-                  </div>
-                  <button
-                    onClick={() => setIsExpanded(!isExpanded)}
-                    className="p-1 hover:bg-muted rounded transition-colors"
-                    aria-label={isExpanded ? "Collapse unassigned jobs" : "Expand unassigned jobs"}
-                  >
-                    {isExpanded ? (
-                      <ChevronUp className="h-4 w-4 text-muted-foreground" />
-                    ) : (
-                      <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                    )}
-                  </button>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <UserX className="h-4 w-4 text-muted-foreground" />
+                  <div className="font-medium text-sm">Unassigned</div>
+                  <Badge variant="secondary" className="text-xs">
+                    {jobs.length}
+                  </Badge>
                 </div>
+                <button
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  className="p-1 hover:bg-muted rounded transition-colors"
+                  aria-label={isExpanded ? "Collapse unassigned jobs" : "Expand unassigned jobs"}
+                >
+                  {isExpanded ? (
+                    <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                  )}
+                </button>
               </div>
             </div>
 
@@ -137,33 +133,31 @@ export const UnassignedJobsSection: React.FC<UnassignedJobsSectionProps> = ({
   return (
     <div className="sticky top-0 z-20 bg-background border-b border-border">
       <Card className="p-0 overflow-hidden rounded-none border-x-0 border-t-0">
-        <div className="min-h-[120px]">
+        <div className={cn("transition-all duration-200", isExpanded ? "min-h-[120px]" : "h-[60px]")}>
           <div className="flex flex-row">
             {/* Unassigned Header - Fixed width to match driver columns */}
             <div className="w-32 flex-shrink-0 border-r bg-muted/30 p-2">
-              <div className="flex items-center h-full">
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex flex-col items-center justify-center gap-1">
-                    <div className="flex flex-col items-center">
-                      <UserX className="h-4 w-4 text-muted-foreground mb-1" />
-                      <div className="font-medium text-xs text-center">Unassigned</div>
-                    </div>
-                    <Badge variant="secondary" className="text-xs">
-                      {jobs.length}
-                    </Badge>
+              <div className="flex items-center justify-between h-full">
+                <div className="flex flex-col items-center gap-1">
+                  <div className="flex items-center gap-1">
+                    <UserX className="h-4 w-4 text-muted-foreground" />
+                    <div className="font-medium text-xs">Unassigned</div>
                   </div>
-                  <button
-                    onClick={() => setIsExpanded(!isExpanded)}
-                    className="p-1 hover:bg-muted rounded transition-colors ml-1"
-                    aria-label={isExpanded ? "Collapse unassigned jobs" : "Expand unassigned jobs"}
-                  >
-                    {isExpanded ? (
-                      <ChevronUp className="h-3 w-3 text-muted-foreground" />
-                    ) : (
-                      <ChevronDown className="h-3 w-3 text-muted-foreground" />
-                    )}
-                  </button>
+                  <Badge variant="secondary" className="text-xs">
+                    {jobs.length}
+                  </Badge>
                 </div>
+                <button
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  className="p-1 hover:bg-muted rounded transition-colors"
+                  aria-label={isExpanded ? "Collapse unassigned jobs" : "Expand unassigned jobs"}
+                >
+                  {isExpanded ? (
+                    <ChevronUp className="h-3 w-3 text-muted-foreground" />
+                  ) : (
+                    <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                  )}
+                </button>
               </div>
             </div>
 
