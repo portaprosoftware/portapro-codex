@@ -4,7 +4,6 @@ import { cn } from '@/lib/utils';
 // Fixed-width timeline structure for consistent horizontal scrolling
 export const TIME_SLOTS = [
   { id: 'no-time', label: 'No Time', startHour: null, endHour: null, width: '800px' },
-  { id: 'early', label: 'Early', startHour: null, endHour: 5, width: '200px' },
   { id: '5-6', label: '5-6am', startHour: 5, endHour: 6, width: '200px' },
   { id: '6-7', label: '6-7am', startHour: 6, endHour: 7, width: '200px' },
   { id: '7-8', label: '7-8am', startHour: 7, endHour: 8, width: '200px' },
@@ -41,7 +40,7 @@ export const getTimeSlotForJob = (scheduledTime: string | null): string => {
     const timeInMinutes = hours * 60 + minutes;
   
   // Handle special cases
-  if (timeInMinutes < 5 * 60) return 'early'; // Before 5am
+  if (timeInMinutes < 5 * 60) return 'no-time'; // Before 5am
   if (timeInMinutes >= 22 * 60) return 'late'; // After 10pm
   
   // Find the appropriate hourly slot
