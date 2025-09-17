@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { format, addDays, subDays } from 'date-fns';
-import { formatDateForQuery, addDaysToDate, subtractDaysFromDate } from '@/lib/dateUtils';
+import { toZonedTime } from 'date-fns-tz';
+import { formatDateForQuery, addDaysToDate, subtractDaysFromDate, parseDateSafe, isSameDayInTimeZone } from '@/lib/dateUtils';
 import { Calendar as CalendarIcon, MapPin, ClipboardList, Search, Filter, AlertTriangle, User, Plus, ChevronLeft, ChevronRight, FileText } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { Button } from '@/components/ui/button';
@@ -228,20 +229,42 @@ const JobsPage: React.FC = () => {
     }
   });
 
-  // Calculate drivers with jobs for the selected date (not just today)
+  // Get company timezone
+  const { data: companySettings } = useQuery({
+    queryKey: ['company-settings-timezone'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('company_settings')
+        .select('company_timezone')
+        .single();
+      
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  // Calculate drivers with jobs for the selected date using company timezone
   const selectedDateFormatted = formatDateForQuery(selectedDate);
   const driversWithJobsToday = React.useMemo(() => {
     const driverSet = new Set<string>();
+    const companyTimezone = companySettings?.company_timezone || 'America/New_York';
     
-    // Check jobs for the selected date
+    // Check jobs for the selected date using company timezone
     allJobs.forEach(job => {
-      if (job.driver_id && format(new Date(job.scheduled_date), 'yyyy-MM-dd') === selectedDateFormatted) {
-        driverSet.add(job.driver_id);
+      if (job.driver_id && job.scheduled_date) {
+        // Parse the job's scheduled date and compare with selected date in company timezone
+        const jobDate = parseDateSafe(job.scheduled_date);
+        const selectedDateInTimezone = toZonedTime(selectedDate, companyTimezone);
+        
+        // Use isSameDayInTimeZone to compare dates properly
+        if (isSameDayInTimeZone(jobDate, selectedDateInTimezone, companyTimezone)) {
+          driverSet.add(job.driver_id);
+        }
       }
     });
     
     return driverSet;
-  }, [allJobs, selectedDateFormatted]);
+  }, [allJobs, selectedDate, companySettings?.company_timezone]);
 
   // Set the active tab based on route and force reinitialization
   useEffect(() => {

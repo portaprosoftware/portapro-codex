@@ -174,7 +174,8 @@ export const timezoneOptions = [
 ];
 
 export const getCompanyTimezone = (): string => {
-  // This could come from company settings in the future
+  // Note: This should be called from a hook or component with access to company settings
+  // For now, return the default but this will be overridden where needed
   return 'America/New_York';
 };
 
