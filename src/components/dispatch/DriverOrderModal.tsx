@@ -101,16 +101,18 @@ export const DriverOrderModal: React.FC<DriverOrderModalProps> = ({
         </DialogHeader>
 
         <div className="pb-4">
-          <div className="text-sm font-medium text-muted-foreground mb-2">Alphabetize:</div>
-          <div className="flex justify-center gap-2">
-            <Button variant="outline" size="sm" onClick={alphabetizeByFirstName} className="flex items-center gap-1">
-              <ArrowUpDown className="h-3 w-3" />
-              First Name
-            </Button>
-            <Button variant="outline" size="sm" onClick={alphabetizeByLastName} className="flex items-center gap-1">
-              <ArrowUpDown className="h-3 w-3" />
-              Last Name
-            </Button>
+          <div className="flex items-center gap-3">
+            <div className="text-sm font-medium text-muted-foreground">Alphabetize:</div>
+            <div className="flex">
+              <Button variant="outline" size="sm" onClick={alphabetizeByFirstName} className="flex items-center gap-1 rounded-r-none">
+                <ArrowUpDown className="h-3 w-3" />
+                First Name
+              </Button>
+              <Button variant="outline" size="sm" onClick={alphabetizeByLastName} className="flex items-center gap-1 rounded-l-none border-l-0">
+                <ArrowUpDown className="h-3 w-3" />
+                Last Name
+              </Button>
+            </div>
           </div>
         </div>
 
