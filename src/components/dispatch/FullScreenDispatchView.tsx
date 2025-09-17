@@ -38,6 +38,7 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
   const [timelineView, setTimelineView] = useState(true);
   const [drivers, setDrivers] = useState(driversData);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [timeFilter, setTimeFilter] = useState<'all' | 'morning' | 'afternoon'>('all');
 
   // Update drivers when prop changes
   useEffect(() => {
@@ -52,11 +53,18 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
     return () => clearInterval(timer);
   }, []);
 
-  // Group jobs by driver
+  // Group jobs by driver and filter by time if needed
   const jobsByDriver = useMemo(() => {
     const grouped = new Map<string, any[]>();
     
     jobs.filter(job => job.driver_id).forEach(job => {
+      // Filter jobs based on time filter
+      if (timeFilter !== 'all' && job.scheduled_time) {
+        const [hours] = job.scheduled_time.split(':').map(Number);
+        if (timeFilter === 'morning' && hours >= 12) return;
+        if (timeFilter === 'afternoon' && hours < 17) return;
+      }
+      
       const driverId = job.driver_id;
       if (!grouped.has(driverId)) {
         grouped.set(driverId, []);
@@ -65,7 +73,7 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
     });
     
     return grouped;
-  }, [jobs]);
+  }, [jobs, timeFilter]);
 
   // Handle both job and driver drag and drop
   const handleDragEnd = (result: DropResult) => {
@@ -112,16 +120,49 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                   <Badge variant="secondary" className="gap-1">
                     {jobs.length} Jobs
                   </Badge>
-                  <div className="flex items-center gap-2">
-                    <Switch
-                      id="timeline-view"
-                      checked={timelineView}
-                      onCheckedChange={setTimelineView}
-                    />
-                    <Label htmlFor="timeline-view" className="flex items-center gap-2 cursor-pointer text-sm">
-                      <Clock className="h-4 w-4" />
-                      Timeline View
-                    </Label>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        id="timeline-view"
+                        checked={timelineView}
+                        onCheckedChange={setTimelineView}
+                      />
+                      <Label htmlFor="timeline-view" className="flex items-center gap-2 cursor-pointer text-sm">
+                        <Clock className="h-4 w-4" />
+                        Timeline View
+                      </Label>
+                    </div>
+                    
+                    {/* Time Filter Buttons */}
+                    {timelineView && (
+                      <div className="flex items-center gap-1">
+                        <Button
+                          variant={timeFilter === 'all' ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => setTimeFilter('all')}
+                          className="text-xs"
+                        >
+                          All Day
+                        </Button>
+                        <Button
+                          variant={timeFilter === 'morning' ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => setTimeFilter('morning')}
+                          className="text-xs"
+                        >
+                          Morning
+                        </Button>
+                        <Button
+                          variant={timeFilter === 'afternoon' ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => setTimeFilter('afternoon')}
+                          className="text-xs"
+                        >
+                          Afternoon
+                        </Button>
+                      </div>
+                    )}
+                    
                     <div className="text-sm font-mono text-muted-foreground">
                       {format(currentTime, 'h:mm:ss a')}
                     </div>
@@ -143,7 +184,7 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
             {/* Main Content - Full Width Driver Swim Lanes */}
             <div className="flex-1 flex flex-col overflow-hidden relative">
               {timelineView && (
-                <TimelineGrid />
+                <TimelineGrid timeFilter={timeFilter} />
               )}
               
               <ScrollArea className="flex-1 relative">
