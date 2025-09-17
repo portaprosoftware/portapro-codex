@@ -47,7 +47,7 @@ export const DriverSwimLane: React.FC<DriverSwimLaneProps> = ({
   return (
     <Card className="p-0 overflow-hidden">
       <div className={cn(
-        "min-h-[80px]"
+        "min-h-[120px]"
       )}>
         <div className={cn(
           "flex",
@@ -81,7 +81,7 @@ export const DriverSwimLane: React.FC<DriverSwimLaneProps> = ({
           {/* Jobs Area */}
           <div className={cn(
             "flex-1 p-2 relative",
-            timelineView ? "min-h-[80px]" : "flex flex-col gap-2"
+            timelineView ? "min-h-[120px]" : "flex flex-col gap-2"
           )}>
             {timelineView ? (
               // Timeline view with positioned jobs
