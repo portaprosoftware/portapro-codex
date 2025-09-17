@@ -106,8 +106,8 @@ export const TimelineGrid: React.FC = () => {
             <div
               key={slot.id}
               className={cn(
-                "border-r border-blue-500/30 text-center py-3 px-2 text-xs font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700",
-                slot.id === 'no-time' && "from-blue-700 to-blue-800"
+                "border-r border-blue-500/30 text-center py-3 px-2 text-xs font-medium text-white",
+                slot.id === 'no-time' ? "bg-blue-700" : "bg-gradient-to-r from-blue-600 to-blue-700"
               )}
               style={{ width: slot.width, minWidth: slot.width, flexShrink: 0 }}
             >
