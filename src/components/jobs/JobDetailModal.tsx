@@ -377,7 +377,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
         </DialogHeader>
 
         {/* Action Buttons Row */}
-        <div className="flex-shrink-0 flex items-center justify-between py-2 px-1 border-b">
+        <div className="flex-shrink-0 flex items-center justify-between py-4 px-1 border-b">
           {/* Priority Toggle - Left side */}
           {!isEditing && (
             <div className="flex items-center space-x-2">
@@ -440,7 +440,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto space-y-4 pt-4">
+        <div className="flex-1 overflow-y-auto space-y-4 pt-2">
           {isLoading ? (
             <div className="flex items-center justify-center h-32">
               <div className="text-muted-foreground">Loading job details...</div>
