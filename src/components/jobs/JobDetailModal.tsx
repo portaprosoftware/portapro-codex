@@ -17,7 +17,7 @@ import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { TimePicker } from '@/components/ui/time-picker';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Switch } from '@/components/ui/switch';
-import { CalendarDays, Clock, User, MapPin, FileText, RotateCcw, Edit2, Save, X, Star, Package, Truck, Wrench, Ban } from 'lucide-react';
+import { CalendarDays, Clock, User, MapPin, FileText, RotateCcw, Edit2, Save, X, Star, Package, Truck, Wrench, Ban, Navigation } from 'lucide-react';
 import { JobLengthControl } from './JobLengthControl';
 import { toast } from 'sonner';
 import { getJobStatusInfo } from '@/lib/jobStatusUtils';
@@ -372,7 +372,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                     />
                     <Label className="text-sm flex items-center gap-1 cursor-pointer">
                       <Star className="w-4 h-4 text-yellow-500" />
-                      Mark Job A Priority
+                      Mark Job with Priority Badge
                     </Label>
                   </div>
                   <Button
@@ -671,18 +671,68 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                     {(job?.customer?.service_street || job?.customer?.service_city) && (
                       <div>
                         <label className="text-sm font-medium text-muted-foreground">Service Address</label>
-                        <p className="text-sm">
-                          {job?.customer?.service_street && (
-                            <>{job.customer.service_street}<br /></>
-                          )}
-                          {(job?.customer?.service_city || job?.customer?.service_state || job?.customer?.service_zip) && (
-                            <>
-                              {job?.customer?.service_city && job.customer.service_city}
-                              {job?.customer?.service_state && `, ${job.customer.service_state}`}
-                              {job?.customer?.service_zip && ` ${job.customer.service_zip}`}
-                            </>
-                          )}
-                        </p>
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1">
+                            <p className="text-sm">
+                              {job?.customer?.service_street && (
+                                <>{job.customer.service_street}<br /></>
+                              )}
+                              {(job?.customer?.service_city || job?.customer?.service_state || job?.customer?.service_zip) && (
+                                <>
+                                  {job?.customer?.service_city && job.customer.service_city}
+                                  {job?.customer?.service_state && `, ${job.customer.service_state}`}
+                                  {job?.customer?.service_zip && ` ${job.customer.service_zip}`}
+                                </>
+                              )}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-1 flex-shrink-0">
+                            {(() => {
+                              const fullAddress = [
+                                job?.customer?.service_street,
+                                job?.customer?.service_city,
+                                job?.customer?.service_state,
+                                job?.customer?.service_zip
+                              ].filter(Boolean).join(', ');
+                              
+                              if (!fullAddress) return null;
+                              
+                              const encodedAddress = encodeURIComponent(fullAddress);
+                              
+                              return (
+                                <>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="h-8 px-2 text-xs"
+                                    onClick={() => window.open(`https://maps.google.com/?q=${encodedAddress}`, '_blank')}
+                                    title="Open in Google Maps"
+                                  >
+                                    Google
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="h-8 px-2 text-xs"
+                                    onClick={() => window.open(`https://maps.apple.com/?q=${encodedAddress}`, '_blank')}
+                                    title="Open in Apple Maps"
+                                  >
+                                    Apple
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="h-8 px-2 text-xs"
+                                    onClick={() => window.open(`https://waze.com/ul?q=${encodedAddress}`, '_blank')}
+                                    title="Open in Waze"
+                                  >
+                                    Waze
+                                  </Button>
+                                </>
+                              );
+                            })()}
+                          </div>
+                        </div>
                       </div>
                     )}
                     
