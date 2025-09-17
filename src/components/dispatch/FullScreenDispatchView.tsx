@@ -269,14 +269,14 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                       ref={verticalScrollRef}
                       className="min-w-max h-full overflow-y-auto"
                     >
-                      <TimelineGrid />
-                      
-                      {/* Unassigned Jobs Section - Sticky below timeline grid */}
+                      {/* Unassigned Jobs Section - Now at the top */}
                       <UnassignedJobsSection
                         jobs={unassignedJobs}
                         onJobView={onJobView}
                         timelineView={timelineView}
                       />
+                      
+                      <TimelineGrid />
                       
                       <div className="space-y-2 pb-4">
                         {drivers.map((driver) => (
