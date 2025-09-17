@@ -51,13 +51,12 @@ export const TimelineJobCard: React.FC<TimelineJobCardProps> = ({
   return (
     <Card
       className={cn(
-        "p-3 cursor-pointer hover:shadow-md transition-all border-l-4",
+        "p-3 transition-all border-l-4",
         jobTypeConfig.color.replace('bg-', 'border-l-'),
         timelineView ? "min-w-[240px] max-w-[280px]" : "w-full",
         isOverdue && "border-red-500 bg-red-50",
         job.status === 'completed' && "bg-green-50 border-green-500"
       )}
-      onClick={() => onJobView(job.id)}
     >
       <div className="space-y-2">
         {/* Header */}
