@@ -87,44 +87,43 @@ export const DispatchJobCardList: React.FC<DispatchJobCardListProps> = ({
   return (
     <div 
       className={cn(
-        "bg-white border border-gray-200 rounded-lg transition-all duration-200 hover:shadow-md border-l-4 max-w-[260px] w-full p-3",
+        "bg-white border border-gray-200 rounded-lg transition-all duration-200 hover:shadow-md border-l-4 h-20 flex items-center px-3 gap-3 min-w-[280px]",
         isDragging && "shadow-lg border-blue-300 bg-blue-50",
         jobTypeInfo.borderColor
       )}
     >
       {/* Job Type Indicator */}
-      <div className="flex items-start gap-3">
-        <div className={cn("w-3 h-3 rounded-full flex-shrink-0 mt-1", jobTypeInfo.color)} />
-        
-        {/* Main Content */}
-        <div className="flex-1 min-w-0 space-y-3">
-          {/* Top Section - Job ID & Customer Name */}
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="font-medium text-sm text-gray-900 truncate">
-                {job.job_number}
-              </span>
-              <span className="text-xs text-gray-500">•</span>
-              <span className="font-semibold text-sm text-gray-700 truncate">
-                {job.customers.name}
-              </span>
-            </div>
+      <div className={cn("w-3 h-3 rounded-full flex-shrink-0", jobTypeInfo.color)} />
+      
+      {/* Main Content */}
+      <div className="flex-1 min-w-0 grid grid-cols-[1fr_auto] gap-3 h-full py-2">
+        {/* Left Column - Job Info */}
+        <div className="min-w-0 space-y-1">
+          {/* Job Number & Customer */}
+          <div className="flex items-center gap-2">
+            <span className="font-medium text-sm text-gray-900 truncate">
+              {job.job_number}
+            </span>
+            <span className="text-xs text-gray-500">•</span>
+            <span className="font-semibold text-xs text-gray-700 truncate">
+              {job.customers.name}
+            </span>
+          </div>
 
-            {/* Address */}
+          {/* Location & Time Row */}
+          <div className="flex items-center gap-3 text-xs text-gray-600">
             {job.customers.service_street && (
-              <div className="flex items-center gap-1 text-sm text-gray-600">
-                <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0" />
+              <div className="flex items-center gap-1 min-w-0">
+                <MapPin className="w-3 h-3 text-gray-400 flex-shrink-0" />
                 <span className="truncate">
                   {job.customers.service_street}
                   {job.customers.service_city && `, ${job.customers.service_city}`}
                 </span>
               </div>
             )}
-
-            {/* Scheduled Time */}
             {job.scheduled_time && (
-              <div className="flex items-center gap-1 text-sm text-gray-600">
-                <Clock className="w-4 h-4 text-gray-400" />
+              <div className="flex items-center gap-1 flex-shrink-0">
+                <Clock className="w-3 h-3 text-gray-400" />
                 <span>
                   {(() => {
                     const [hours, minutes] = job.scheduled_time.split(':').map(Number);
@@ -135,50 +134,49 @@ export const DispatchJobCardList: React.FC<DispatchJobCardListProps> = ({
                 </span>
               </div>
             )}
-
-            {/* Driver & Vehicle Info */}
-            <div className="space-y-1">
-              {job.profiles && (
-                <div className="flex items-center gap-1 text-sm text-gray-600">
-                  <User className="w-4 h-4 text-gray-400" />
-                  <span className="truncate">
-                    {job.profiles.first_name} {job.profiles.last_name}
-                  </span>
-                </div>
-              )}
-              {job.vehicles && (
-                <div className="flex items-center gap-1 text-sm text-gray-600">
-                  <Truck className="w-4 h-4 text-gray-400" />
-                  <span className="truncate">
-                    {job.vehicles.license_plate}
-                  </span>
-                </div>
-              )}
-            </div>
           </div>
 
-          {/* Bottom Section - Badges & Button */}
-          <div className="space-y-2">
-            <div className="flex flex-wrap gap-1">
-              <Badge className={cn("text-xs px-2 py-0.5 font-bold whitespace-nowrap", statusInfo.primary.gradient)}>
-                {statusInfo.primary.label}
+          {/* Driver & Vehicle Row */}
+          <div className="flex items-center gap-3 text-xs text-gray-600">
+            {job.profiles && (
+              <div className="flex items-center gap-1">
+                <User className="w-3 h-3 text-gray-400" />
+                <span className="truncate">
+                  {job.profiles.first_name} {job.profiles.last_name}
+                </span>
+              </div>
+            )}
+            {job.vehicles && (
+              <div className="flex items-center gap-1">
+                <Truck className="w-3 h-3 text-gray-400" />
+                <span className="truncate">
+                  {job.vehicles.license_plate}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Right Column - Actions & Status */}
+        <div className="flex items-center gap-2 justify-end">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleViewJob}
+            className="px-3 py-1 text-xs border-gray-300 hover:bg-gray-50 flex-shrink-0"
+            aria-label={`View job ${job.job_number}`}
+          >
+            View Details
+          </Button>
+          <div className="flex flex-col gap-1">
+            <Badge className={cn("text-xs px-2 py-0.5 font-bold text-center whitespace-nowrap", statusInfo.primary.gradient)}>
+              {statusInfo.primary.label}
+            </Badge>
+            {statusInfo.secondary && (
+              <Badge className={cn("text-xs px-2 py-0.5 font-bold text-center whitespace-nowrap", statusInfo.secondary.gradient)}>
+                {statusInfo.secondary.label}
               </Badge>
-              {statusInfo.secondary && (
-                <Badge className={cn("text-xs px-2 py-0.5 font-bold whitespace-nowrap", statusInfo.secondary.gradient)}>
-                  {statusInfo.secondary.label}
-                </Badge>
-              )}
-            </div>
-            
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleViewJob}
-              className="px-3 py-1 text-xs border-gray-300 hover:bg-gray-50 w-full"
-              aria-label={`View job ${job.job_number}`}
-            >
-              View Details
-            </Button>
+            )}
           </div>
         </div>
       </div>
