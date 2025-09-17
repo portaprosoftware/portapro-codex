@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { CalendarIcon, Info } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 interface UniversalJobsHeaderProps {
   selectedDate: Date;
@@ -14,7 +15,7 @@ export const UniversalJobsHeader: React.FC<UniversalJobsHeaderProps> = ({
   jobsCount
 }) => {
   return (
-    <div className="pt-4 px-4 pb-1">
+    <div className="py-3 px-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">
@@ -24,7 +25,9 @@ export const UniversalJobsHeader: React.FC<UniversalJobsHeaderProps> = ({
             </span>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-600">{jobsCount} jobs scheduled</span>
+            <Badge variant="secondary" className="text-xs">
+              {jobsCount} jobs scheduled
+            </Badge>
             <div className="text-xs text-muted-foreground bg-muted/30 rounded-md px-3 py-1 border">
               <span>
                 <strong>Quick Job Search:</strong> Type to search today. Press Enter for job IDs across all dates.
