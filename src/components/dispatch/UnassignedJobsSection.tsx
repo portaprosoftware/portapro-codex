@@ -11,12 +11,14 @@ interface UnassignedJobsSectionProps {
   jobs: any[];
   onJobView: (jobId: string) => void;
   timelineView: boolean;
+  stickyColumnOnly?: boolean;
 }
 
 export const UnassignedJobsSection: React.FC<UnassignedJobsSectionProps> = ({
   jobs,
   onJobView,
-  timelineView
+  timelineView,
+  stickyColumnOnly = false
 }) => {
   // Group unassigned jobs by time slots for timeline view
   const jobsByTimeSlot = useMemo(() => {
@@ -117,27 +119,29 @@ export const UnassignedJobsSection: React.FC<UnassignedJobsSectionProps> = ({
     );
   }
 
+  // Sticky column only - just show the header
+  if (stickyColumnOnly) {
+    return (
+      <div className="p-2 border-b bg-muted/30">
+        <div className="flex flex-col items-center justify-center gap-1">
+          <div className="flex flex-col items-center">
+            <UserX className="h-4 w-4 text-muted-foreground mb-1" />
+            <div className="font-medium text-xs text-center">Unassigned</div>
+          </div>
+          <Badge variant="secondary" className="text-xs">
+            {jobs.length}
+          </Badge>
+        </div>
+      </div>
+    );
+  }
+
   // Horizontal timeline view
   return (
     <div className="sticky top-0 z-20 bg-background border-b border-border">
       <Card className="p-0 overflow-hidden rounded-none border-x-0 border-t-0">
         <div className="min-h-[120px]">
           <div className="flex flex-row">
-            {/* Unassigned Header - Fixed width to match driver columns */}
-            <div className="w-32 flex-shrink-0 border-r bg-muted/30 p-2">
-              <div className="flex items-center h-full">
-                <div className="flex flex-col items-center justify-center gap-1 w-full">
-                  <div className="flex flex-col items-center">
-                    <UserX className="h-4 w-4 text-muted-foreground mb-1" />
-                    <div className="font-medium text-xs text-center">Unassigned</div>
-                  </div>
-                  <Badge variant="secondary" className="text-xs">
-                    {jobs.length}
-                  </Badge>
-                </div>
-              </div>
-            </div>
-
             {/* Time Slots Area - Same layout as DriverSwimLane */}
             <div className="flex">
               {TIME_SLOTS.map((slot) => (
