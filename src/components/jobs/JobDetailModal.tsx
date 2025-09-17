@@ -76,7 +76,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
         .from('jobs')
         .select(`
           *,
-          customer:customers!inner(id, name, email, phone),
+          customer:customers!inner(id, name, email, phone, service_street, service_city, service_state, service_zip),
           driver:profiles(id, first_name, last_name),
           vehicle:vehicles(id, license_plate, vehicle_type)
         `)
@@ -653,6 +653,52 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                   </Card>
                 )}
 
+                {/* Customer Information */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-base">
+                      <MapPin className="w-4 h-4" />
+                      Customer
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Name</label>
+                      <p className="text-sm">{job?.customer?.name}</p>
+                    </div>
+                    
+                    {/* Service Address */}
+                    {(job?.customer?.service_street || job?.customer?.service_city) && (
+                      <div>
+                        <label className="text-sm font-medium text-muted-foreground">Service Address</label>
+                        <p className="text-sm">
+                          {job?.customer?.service_street && (
+                            <>{job.customer.service_street}<br /></>
+                          )}
+                          {(job?.customer?.service_city || job?.customer?.service_state || job?.customer?.service_zip) && (
+                            <>
+                              {job?.customer?.service_city && job.customer.service_city}
+                              {job?.customer?.service_state && `, ${job.customer.service_state}`}
+                              {job?.customer?.service_zip && ` ${job.customer.service_zip}`}
+                            </>
+                          )}
+                        </p>
+                      </div>
+                    )}
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm font-medium text-muted-foreground">Email</label>
+                        <p className="text-sm">{job?.customer?.email || 'Not provided'}</p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-muted-foreground">Phone</label>
+                        <p className="text-sm">{job?.customer?.phone || 'Not provided'}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
                 {/* Assignment Information */}
                 <Card>
                   <CardHeader>
@@ -734,32 +780,6 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                         </div>
                       </>
                     )}
-                  </CardContent>
-                </Card>
-
-                {/* Customer Information */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-base">
-                      <MapPin className="w-4 h-4" />
-                      Customer
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Name</label>
-                      <p className="text-sm">{job?.customer?.name}</p>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-sm font-medium text-muted-foreground">Email</label>
-                        <p className="text-sm">{job?.customer?.email || 'Not provided'}</p>
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium text-muted-foreground">Phone</label>
-                        <p className="text-sm">{job?.customer?.phone || 'Not provided'}</p>
-                      </div>
-                    </div>
                   </CardContent>
                 </Card>
 
