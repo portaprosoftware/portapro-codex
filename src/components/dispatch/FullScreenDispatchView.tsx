@@ -15,7 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { TimelineGrid } from './TimelineGrid';
+import { TimelineGrid, TIME_SLOTS } from './TimelineGrid';
 import { DriverSwimLane } from './DriverSwimLane';
 import { UnassignedJobsSection } from './UnassignedJobsSection';
 import { DriverOrderModal } from './DriverOrderModal';
@@ -268,69 +268,129 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
             {/* Main Content - Unified Timeline */}
             <div className="flex-1 overflow-hidden relative">
               {timelineView ? (
-                <div className="h-full relative">
-                  <div 
-                    ref={horizontalScrollRef}
-                    className="h-full overflow-x-auto overflow-y-hidden"
-                  >
+                <div className="h-full relative flex">
+                  {/* Sticky Driver Column */}
+                  <div className="w-32 flex-shrink-0 bg-white border-r border-gray-200 z-20 relative">
                     <div 
                       ref={verticalScrollRef}
-                      className="min-w-max h-full overflow-y-auto"
+                      className="h-full overflow-y-auto"
                     >
-                      {/* Unassigned Jobs Section - Now at the top */}
-                      <UnassignedJobsSection
-                        jobs={unassignedJobs}
-                        onJobView={onJobView}
-                        timelineView={timelineView}
-                      />
+                      {/* Header for driver column */}
+                      <div className="bg-gradient-to-r from-blue-600 to-blue-700 border-b sticky top-0 z-30">
+                        <div className="py-3 px-2 text-center text-xs font-medium text-white">
+                          Drivers
+                        </div>
+                      </div>
                       
-                      <TimelineGrid />
+                      {/* Unassigned section header */}
+                      <div className="border-b bg-background p-2 min-h-[120px] flex items-center justify-center">
+                        <div className="text-xs font-medium text-center">
+                          <div>Unassigned</div>
+                          <Badge variant="secondary" className="text-xs mt-1">
+                            {unassignedJobs.length} jobs
+                          </Badge>
+                        </div>
+                      </div>
                       
+                      {/* Driver names */}
                       <div className="space-y-2 pb-4">
                         {drivers.map((driver) => (
-                          <DriverSwimLane
-                            key={driver.id}
-                            driver={driver}
-                            jobs={jobsByDriver.get(driver.id) || []}
-                            onJobView={onJobView}
-                            timelineView={timelineView}
-                          />
+                          <div key={driver.id} className="border-b bg-background p-2 min-h-[120px] flex items-center justify-center">
+                            <div className="text-center">
+                              <div className="text-xs font-medium">
+                                {driver.first_name} {driver.last_name}
+                              </div>
+                              <Badge variant="secondary" className="text-xs mt-1">
+                                {jobsByDriver.get(driver.id)?.length || 0} jobs
+                              </Badge>
+                            </div>
+                          </div>
                         ))}
                       </div>
                     </div>
                   </div>
                   
-                  {/* Current time indicator */}
-                  {(() => {
-                    const currentHour = currentTime.getHours();
-                    const currentMinutes = currentTime.getMinutes();
-                    
-                    if (currentHour >= 6 && currentHour < 20) {
-                      const timeInMinutes = currentHour * 60 + currentMinutes;
-                      const timelineStart = 6 * 60;
-                      const timelineEnd = 20 * 60;
-                      const timelineRange = timelineEnd - timelineStart;
-                      const positionPercent = (timeInMinutes - timelineStart) / timelineRange;
-                      
-                      const driverColumnWidth = 128;
-                      const noTimeSlotWidth = 800; // Updated to match the new 800px width
-                      const timeSlotWidth = 200;
-                      const slotsBeforeCurrentTime = Math.floor(positionPercent * 14);
-                      const positionWithinSlot = (positionPercent * 14) - slotsBeforeCurrentTime;
-                      
-                      const leftPosition = driverColumnWidth + noTimeSlotWidth + (slotsBeforeCurrentTime * timeSlotWidth) + (positionWithinSlot * timeSlotWidth);
-                      
-                      return (
-                        <div 
-                          className="absolute top-[61px] bottom-0 w-0.5 bg-red-500 z-30 pointer-events-none"
-                          style={{ left: `${leftPosition}px` }}
-                        >
-                          <div className="absolute -top-1 -left-1 w-2 h-2 bg-red-500 rounded-full"></div>
+                  {/* Scrollable Timeline Area */}
+                  <div className="flex-1 relative">
+                    <div 
+                      ref={horizontalScrollRef}
+                      className="h-full overflow-x-auto overflow-y-hidden"
+                    >
+                      <div className="min-w-max h-full">
+                        {/* Timeline header - sticky */}
+                        <div className="border-b bg-gradient-to-r from-blue-600 to-blue-700 sticky top-0 z-10">
+                          <div className="flex">
+                            {TIME_SLOTS.map((slot) => (
+                              <div
+                                key={slot.id}
+                                className={cn(
+                                  "border-r border-blue-500/30 text-center py-3 px-2 text-xs font-medium text-white",
+                                  slot.id === 'no-time' ? "bg-blue-700" : "bg-gradient-to-r from-blue-600 to-blue-700"
+                                )}
+                                style={{ width: slot.width, minWidth: slot.width, flexShrink: 0 }}
+                              >
+                                {slot.label}
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                      );
-                    }
-                    return null;
-                  })()}
+                        
+                        {/* Timeline content */}
+                        <div className="h-full overflow-y-auto">
+                          {/* Unassigned Jobs Section */}
+                          <UnassignedJobsSection
+                            jobs={unassignedJobs}
+                            onJobView={onJobView}
+                            timelineView={timelineView}
+                          />
+                          
+                          {/* Driver Rows */}
+                          <div className="space-y-2 pb-4">
+                            {drivers.map((driver) => (
+                              <DriverSwimLane
+                                key={driver.id}
+                                driver={driver}
+                                jobs={jobsByDriver.get(driver.id) || []}
+                                onJobView={onJobView}
+                                timelineView={timelineView}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                        
+                        {/* Current time indicator */}
+                        {(() => {
+                          const currentHour = currentTime.getHours();
+                          const currentMinutes = currentTime.getMinutes();
+                          
+                          if (currentHour >= 6 && currentHour < 20) {
+                            const timeInMinutes = currentHour * 60 + currentMinutes;
+                            const timelineStart = 6 * 60;
+                            const timelineEnd = 20 * 60;
+                            const timelineRange = timelineEnd - timelineStart;
+                            const positionPercent = (timeInMinutes - timelineStart) / timelineRange;
+                            
+                            const noTimeSlotWidth = 800;
+                            const timeSlotWidth = 200;
+                            const slotsBeforeCurrentTime = Math.floor(positionPercent * 14);
+                            const positionWithinSlot = (positionPercent * 14) - slotsBeforeCurrentTime;
+                            
+                            const leftPosition = noTimeSlotWidth + (slotsBeforeCurrentTime * timeSlotWidth) + (positionWithinSlot * timeSlotWidth);
+                            
+                            return (
+                              <div 
+                                className="absolute top-[41px] bottom-0 w-0.5 bg-red-500 z-30 pointer-events-none"
+                                style={{ left: `${leftPosition}px` }}
+                              >
+                                <div className="absolute -top-1 -left-1 w-2 h-2 bg-red-500 rounded-full"></div>
+                              </div>
+                            );
+                          }
+                          return null;
+                        })()}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               ) : (
                 <ScrollArea className="h-full">

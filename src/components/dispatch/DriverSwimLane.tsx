@@ -125,20 +125,6 @@ export const DriverSwimLane: React.FC<DriverSwimLaneProps> = ({
     <Card className="p-0 overflow-hidden">
       <div className="min-h-[120px]">
         <div className="flex flex-row">
-          {/* Driver Info Column - Fixed width */}
-          <div className="w-32 flex-shrink-0 border-r bg-background p-2">
-            <div className="flex items-center h-full">
-              <div className="flex flex-col gap-1 w-full">
-                <div className="font-medium text-xs text-center">
-                  {driver.first_name} {driver.last_name}
-                </div>
-                <Badge variant={workloadColor} className="text-xs self-center">
-                  {jobs.length} jobs
-                </Badge>
-              </div>
-            </div>
-          </div>
-
           {/* Time Slots Area - EXACT same layout as TimelineGrid */}
           <div className="flex">{/* Removed overflow-x-auto to prevent double scrollbars */}
             {TIME_SLOTS.map((slot) => (
