@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { format } from 'date-fns';
-import { Clock, Maximize2, X, Calendar, Users, ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from 'lucide-react';
+import { Clock, Maximize2, X, Calendar, Users, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, ExternalLink } from 'lucide-react';
 import {
   Drawer,
   DrawerContent,
@@ -237,6 +237,15 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                     </div>
                   )}
                   
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => window.open('/dispatch-monitor', '_blank')}
+                    className="gap-2"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    Open in New Tab
+                  </Button>
                   <Button 
                     variant="outline" 
                     size="sm"
