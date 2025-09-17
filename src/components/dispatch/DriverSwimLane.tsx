@@ -1,6 +1,6 @@
 import React from 'react';
 import { format } from 'date-fns';
-import { User, MapPin, Clock, Truck, GripVertical } from 'lucide-react';
+import { User, MapPin, Clock, Truck } from 'lucide-react';
 import { Droppable, Draggable } from '@hello-pangea/dnd';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
@@ -12,34 +12,19 @@ interface DriverSwimLaneProps {
   jobs: any[];
   onJobView: (jobId: string) => void;
   timelineView: boolean;
-  dragHandleProps?: any;
-  draggableProps?: any;
-  innerRef?: any;
-  isDragging?: boolean;
 }
 
 export const DriverSwimLane: React.FC<DriverSwimLaneProps> = ({
   driver,
   jobs,
   onJobView,
-  timelineView,
-  dragHandleProps,
-  draggableProps,
-  innerRef,
-  isDragging = false
+  timelineView
 }) => {
   const driverName = `${driver.first_name} ${driver.last_name}`;
   const workloadColor = jobs.length > 3 ? 'destructive' : jobs.length > 1 ? 'default' : 'secondary';
 
   return (
-    <Card 
-      ref={innerRef}
-      {...draggableProps}
-      className={cn(
-        "p-0 overflow-hidden transition-all",
-        isDragging && "opacity-95 rotate-1 scale-105 z-50 shadow-lg ring-2 ring-primary/20"
-      )}
-    >
+    <Card className="p-0 overflow-hidden">
       <div className={cn(
         "min-h-[120px]"
       )}>
@@ -49,19 +34,11 @@ export const DriverSwimLane: React.FC<DriverSwimLaneProps> = ({
         )}>
           {/* Driver Info Column */}
           <div className={cn(
-            "border-r bg-background p-4 relative",
+            "border-r bg-background p-4",
             timelineView ? "w-48 flex-shrink-0" : "w-full border-b"
           )}>
-            {/* Drag Handle - Top Left */}
-            <div 
-              {...dragHandleProps}
-              className="absolute top-2 left-2 cursor-move p-1 hover:bg-muted rounded"
-            >
-              <GripVertical className="h-4 w-4 text-muted-foreground" />
-            </div>
-            
             {/* Driver Names and Badge */}
-            <div className="ml-6 flex items-center h-full">
+            <div className="flex items-center h-full">
               <div className="flex items-center justify-between gap-2 w-full">
                 <div className="flex flex-col min-w-0 flex-1 justify-center">
                   <div className="font-medium text-sm text-left">{driver.first_name}</div>
@@ -79,14 +56,15 @@ export const DriverSwimLane: React.FC<DriverSwimLaneProps> = ({
             "flex-1 p-2",
             timelineView ? "flex flex-row gap-2 min-h-[120px] items-center overflow-x-auto" : "flex flex-col gap-2"
           )}>
-            <Droppable droppableId={driver.id} direction={timelineView ? "horizontal" : "vertical"}>
+            <Droppable droppableId={driver.id} direction={timelineView ? "horizontal" : "vertical"} type="JOB">
               {(provided, snapshot) => (
                 <div
                   ref={provided.innerRef}
                   {...provided.droppableProps}
                   className={cn(
+                    "min-h-[80px] p-2 rounded-md",
                     timelineView ? "flex flex-row gap-2" : "flex flex-col gap-2",
-                    snapshot.isDraggingOver && "bg-muted/50"
+                    snapshot.isDraggingOver && "bg-muted/50 ring-2 ring-primary/20"
                   )}
                 >
                   {jobs.map((job, index) => (
@@ -95,17 +73,14 @@ export const DriverSwimLane: React.FC<DriverSwimLaneProps> = ({
                         <div
                           ref={provided.innerRef}
                           {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          className={cn(
-                            "w-full",
-                            snapshot.isDragging && "opacity-50"
-                          )}
+                          className="w-full"
                         >
                           <TimelineJobCard
                             job={job}
                             onJobView={onJobView}
                             timelineView={timelineView}
                             isDragging={snapshot.isDragging}
+                            dragHandleProps={provided.dragHandleProps}
                           />
                         </div>
                       )}

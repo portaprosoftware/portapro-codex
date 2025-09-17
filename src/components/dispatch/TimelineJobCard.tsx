@@ -1,6 +1,6 @@
 import React from 'react';
 import { format } from 'date-fns';
-import { Clock, MapPin, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Clock, MapPin, AlertTriangle, CheckCircle, GripVertical } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ interface TimelineJobCardProps {
   onJobView: (jobId: string) => void;
   timelineView: boolean;
   isDragging?: boolean;
+  dragHandleProps?: any;
 }
 
 const getJobTypeConfig = (jobType: string) => {
@@ -39,7 +40,8 @@ export const TimelineJobCard: React.FC<TimelineJobCardProps> = ({
   job,
   onJobView,
   timelineView,
-  isDragging = false
+  isDragging = false,
+  dragHandleProps
 }) => {
   const jobTypeConfig = getJobTypeConfig(job.job_type);
   const statusConfig = getStatusConfig(job.status);
@@ -53,15 +55,23 @@ export const TimelineJobCard: React.FC<TimelineJobCardProps> = ({
   return (
     <Card
       className={cn(
-        "p-3 transition-all border-l-4",
+        "p-3 transition-all border-l-4 relative",
         jobTypeConfig.color.replace('bg-', 'border-l-'),
         timelineView ? "min-w-[240px] max-w-[280px]" : "w-full",
         isOverdue && "border-red-500 bg-red-50",
         job.status === 'completed' && "bg-green-50 border-green-500",
-        isDragging && "shadow-lg border-blue-300 bg-blue-50"
+        isDragging && "ring-2 ring-blue-300 shadow-lg bg-white"
       )}
     >
-      <div className="space-y-2">
+      {/* Drag Handle */}
+      <div 
+        {...dragHandleProps}
+        className="absolute top-2 right-2 cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded opacity-60 hover:opacity-100 transition-opacity"
+      >
+        <GripVertical className="h-4 w-4 text-muted-foreground" />
+      </div>
+      
+      <div className="space-y-2 pr-8">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">

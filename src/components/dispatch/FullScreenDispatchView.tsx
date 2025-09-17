@@ -75,18 +75,13 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
     return grouped;
   }, [jobs, timeFilter]);
 
-  // Handle both job and driver drag and drop
+  // Handle job assignment only (driver rows are locked)
   const handleDragEnd = (result: DropResult) => {
-    if (result.destination?.droppableId === 'drivers-list') {
-      // Handle driver reordering
-      const items = Array.from(drivers);
-      const [reorderedItem] = items.splice(result.source.index, 1);
-      items.splice(result.destination.index, 0, reorderedItem);
-      setDrivers(items);
-    } else {
-      // Handle job assignment
-      onJobAssignment(result);
+    if (!result.destination) {
+      return;
     }
+    // Handle job assignment
+    onJobAssignment(result);
   };
 
   return (
@@ -188,33 +183,17 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
               )}
               
                 <ScrollArea className="flex-1 relative">
-                  <Droppable droppableId="drivers-list" direction="vertical">
-                    {(provided, snapshot) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.droppableProps}
-                        className="space-y-2 p-4"
-                      >
-                        {drivers.map((driver, index) => (
-                          <Draggable key={driver.id} draggableId={`driver-${driver.id}`} index={index}>
-                            {(provided, snapshot) => (
-                              <DriverSwimLane
-                                driver={driver}
-                                jobs={jobsByDriver.get(driver.id) || []}
-                                onJobView={onJobView}
-                                timelineView={timelineView}
-                                dragHandleProps={provided.dragHandleProps}
-                                draggableProps={provided.draggableProps}
-                                innerRef={provided.innerRef}
-                                isDragging={snapshot.isDragging}
-                              />
-                            )}
-                          </Draggable>
-                        ))}
-                        {provided.placeholder}
-                      </div>
-                    )}
-                  </Droppable>
+                  <div className="space-y-2 p-4">
+                    {drivers.map((driver) => (
+                      <DriverSwimLane
+                        key={driver.id}
+                        driver={driver}
+                        jobs={jobsByDriver.get(driver.id) || []}
+                        onJobView={onJobView}
+                        timelineView={timelineView}
+                      />
+                    ))}
+                  </div>
                 
                 {/* Current time indicator spanning all drivers */}
                 {timelineView && (() => {
