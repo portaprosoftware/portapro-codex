@@ -1,6 +1,6 @@
 import React from 'react';
 import { format } from 'date-fns';
-import { User, MapPin, Clock, Truck } from 'lucide-react';
+import { User, MapPin, Clock, Truck, GripVertical } from 'lucide-react';
 import { Droppable, Draggable } from '@hello-pangea/dnd';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
@@ -36,12 +36,18 @@ export const DriverSwimLane: React.FC<DriverSwimLaneProps> = ({
           timelineView ? "flex-row" : "flex-col"
         )}>
           {/* Driver Info Column */}
-          <div 
-            {...dragHandleProps}
-            className={cn(
-              "border-r bg-background p-4 flex items-center gap-3 cursor-move",
-              timelineView ? "w-48 flex-shrink-0" : "w-full border-b"
-            )}>
+          <div className={cn(
+            "border-r bg-background p-4 flex items-center gap-3",
+            timelineView ? "w-48 flex-shrink-0" : "w-full border-b"
+          )}>
+            {/* Drag Handle */}
+            <div 
+              {...dragHandleProps}
+              className="cursor-move p-1 hover:bg-muted rounded"
+            >
+              <GripVertical className="h-4 w-4 text-muted-foreground" />
+            </div>
+            
             <Avatar className="h-8 w-8">
               <AvatarFallback className="text-xs">
                 {driver.first_name?.[0]}{driver.last_name?.[0]}
