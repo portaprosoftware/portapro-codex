@@ -333,14 +333,6 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                         className="min-w-max h-full overflow-y-auto"
                         onScroll={() => syncVerticalScroll('main')}
                       >
-                        {/* Timeline Header - Full Width Blue Bar */}
-                        <div className="h-[40px] bg-primary text-primary-foreground flex items-center sticky top-0 z-10 border-b">
-                          <div className="w-32 flex-shrink-0 border-r border-primary-foreground/20"></div>
-                          <div className="flex-1 text-center">
-                            <div className="text-sm font-medium">Timeline</div>
-                          </div>
-                        </div>
-                        
                         {/* Unassigned Jobs Timeline */}
                         <UnassignedJobsSection
                           jobs={unassignedJobs}
