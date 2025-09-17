@@ -86,7 +86,7 @@ export const UnassignedJobCard: React.FC<UnassignedJobCardProps> = ({
   return (
     <div 
       className={cn(
-        "bg-white border border-gray-200 rounded-lg transition-all duration-200 hover:shadow-md border-l-4 min-w-[280px] p-3",
+        "bg-white border border-gray-200 rounded-lg transition-all duration-200 hover:shadow-md border-l-4 max-w-[260px] w-full p-3",
         isDragging && "shadow-lg border-blue-300 bg-blue-50",
         jobTypeInfo.borderColor
       )}
@@ -153,7 +153,7 @@ export const UnassignedJobCard: React.FC<UnassignedJobCardProps> = ({
               variant="outline"
               size="sm"
               onClick={handleViewJob}
-              className="px-3 py-1 text-xs border-gray-300 hover:bg-gray-50 w-full"
+              className="px-3 py-1 text-xs border-gray-300 hover:bg-gray-50 w-auto mx-auto"
               aria-label={`View job ${job.job_number}`}
             >
               View Details
