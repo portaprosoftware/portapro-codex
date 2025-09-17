@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { format } from 'date-fns';
 import { Clock, Maximize2, X, Calendar } from 'lucide-react';
 import {
@@ -37,11 +37,20 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [timelineView, setTimelineView] = useState(true);
   const [drivers, setDrivers] = useState(driversData);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
   // Update drivers when prop changes
-  React.useEffect(() => {
+  useEffect(() => {
     setDrivers(driversData);
   }, [driversData]);
+
+  // Update current time every second
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   // Group jobs by driver
   const jobsByDriver = useMemo(() => {
@@ -113,6 +122,9 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                       <Clock className="h-4 w-4" />
                       Timeline View
                     </Label>
+                    <div className="text-sm font-mono text-muted-foreground">
+                      {format(currentTime, 'h:mm:ss a')}
+                    </div>
                   </div>
                 </div>
                 
@@ -171,11 +183,11 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                 
                 {/* Current time indicator spanning all drivers */}
                 {timelineView && (() => {
-                  const now = new Date();
-                  const currentHour = now.getHours();
-                  const currentMinutes = now.getMinutes();
                   const timelineStart = 6;
                   const timelineEnd = 20;
+                  
+                  const currentHour = currentTime.getHours();
+                  const currentMinutes = currentTime.getMinutes();
                   
                   if (currentHour >= timelineStart && currentHour <= timelineEnd) {
                     const hoursFromStart = currentHour - timelineStart;
