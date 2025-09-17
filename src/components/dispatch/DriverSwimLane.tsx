@@ -125,12 +125,12 @@ export const DriverSwimLane: React.FC<DriverSwimLaneProps> = ({
   // Horizontal timeline view
   return (
     <Card className="p-0 overflow-hidden">
-      <div className="min-h-[120px]">
-        <div className="flex flex-row">
+      <div className="h-[120px]">
+        <div className="flex flex-row h-full">
           {/* Driver Info Column - Only show if not hidden */}
           {!hideDriverInfo && (
-            <div className="w-32 flex-shrink-0 border-r bg-background p-2">
-              <div className="flex items-center h-full">
+            <div className="w-32 flex-shrink-0 border-r bg-background p-2 h-full">
+              <div className="flex items-center justify-center h-full">
                 <div className="flex flex-col gap-1 w-full">
                   <div className="font-medium text-xs text-center">
                     {driver.first_name} {driver.last_name}
@@ -144,11 +144,11 @@ export const DriverSwimLane: React.FC<DriverSwimLaneProps> = ({
           )}
 
           {/* Time Slots Area - EXACT same layout as TimelineGrid */}
-          <div className="flex">{/* Removed overflow-x-auto to prevent double scrollbars */}
+          <div className="flex h-full">{/* Removed overflow-x-auto to prevent double scrollbars */}
             {TIME_SLOTS.map((slot) => (
               <div
                 key={slot.id}
-                className="border-r min-h-[120px]"
+                className="border-r h-full"
                 style={{ width: slot.width, minWidth: slot.width, flexShrink: 0 }}
               >
                 <Droppable droppableId={`${driver.id}-${slot.id}`} direction="vertical" type="JOB">

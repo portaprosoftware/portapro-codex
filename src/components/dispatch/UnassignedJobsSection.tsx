@@ -140,14 +140,14 @@ export const UnassignedJobsSection: React.FC<UnassignedJobsSectionProps> = ({
   return (
     <div className="sticky top-0 z-20 bg-background border-b border-border">
       <Card className="p-0 overflow-hidden rounded-none border-x-0 border-t-0">
-        <div className="min-h-[120px]">
-          <div className="flex flex-row">
+        <div className="h-[120px]">
+          <div className="flex flex-row h-full">
             {/* Time Slots Area - Same layout as DriverSwimLane */}
-            <div className="flex">
+            <div className="flex h-full">
               {TIME_SLOTS.map((slot) => (
                 <div
                   key={slot.id}
-                  className="border-r min-h-[120px]"
+                  className="border-r h-full"
                   style={{ width: slot.width, minWidth: slot.width, flexShrink: 0 }}
                 >
                   <Droppable droppableId={`unassigned-${slot.id}`} direction="vertical" type="JOB">
