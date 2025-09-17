@@ -87,7 +87,7 @@ export const DispatchJobCardList: React.FC<DispatchJobCardListProps> = ({
   return (
     <div 
       className={cn(
-        "bg-white border border-gray-200 rounded-lg transition-all duration-200 hover:shadow-md border-l-4 h-28 flex items-start px-3 gap-3 min-w-[280px] py-3",
+        "bg-white border border-gray-200 rounded-lg transition-all duration-200 hover:shadow-md border-l-4 h-20 flex items-center px-3 gap-3 min-w-[280px]",
         isDragging && "shadow-lg border-blue-300 bg-blue-50",
         jobTypeInfo.borderColor
       )}
