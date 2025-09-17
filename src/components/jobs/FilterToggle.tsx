@@ -1,6 +1,6 @@
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { EyeOff, Eye } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Eye } from 'lucide-react';
 
 interface FilterToggleProps {
   showCancelled: boolean;
@@ -14,23 +14,17 @@ export const FilterToggle: React.FC<FilterToggleProps> = ({
   cancelledCount = 0
 }) => {
   return (
-    <Button
-      variant="outline"
-      size="sm"
-      onClick={() => onToggle(!showCancelled)}
-      className="ml-2"
-    >
-      {showCancelled ? (
-        <>
-          <EyeOff className="w-4 h-4 mr-1" />
-          Hide Cancelled
-        </>
-      ) : (
-        <>
-          <Eye className="w-4 h-4 mr-1" />
+    <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2">
+        <Eye className="w-4 h-4 text-gray-600" />
+        <span className="text-sm text-gray-700">
           Show Cancelled {cancelledCount > 0 && `(${cancelledCount})`}
-        </>
-      )}
-    </Button>
+        </span>
+      </div>
+      <Switch
+        checked={showCancelled}
+        onCheckedChange={onToggle}
+      />
+    </div>
   );
 };
