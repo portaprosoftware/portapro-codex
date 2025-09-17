@@ -113,7 +113,7 @@ const statusConfig = {
   },
   completed_late: { 
     gradient: 'bg-gradient-to-r from-gray-500 to-gray-600', 
-    label: 'Job Completed Late' 
+    label: 'Completed Late' 
   },
   cancelled: { 
     gradient: 'bg-gradient-red', 

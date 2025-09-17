@@ -82,7 +82,7 @@ export const MapLegend: React.FC<MapLegendProps> = ({
     { key: 'priority', label: 'Priority', color: getStatusBorderColor('', false, true) },
     { key: 'overdue_rescheduled', label: 'Overdue - Rescheduled', color: getStatusBorderColor('rescheduled') },
     { key: 'overdue', label: 'Overdue', color: getStatusBorderColor('', true) },
-    { key: 'completed_late', label: 'Job Completed Late', color: getStatusBorderColor('', false, false, true) },
+    { key: 'completed_late', label: 'Completed Late', color: getStatusBorderColor('', false, false, true) },
   ];
 
   return (

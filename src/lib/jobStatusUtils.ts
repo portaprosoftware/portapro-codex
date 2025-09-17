@@ -89,7 +89,7 @@ export const getJobStatusConfig = () => ({
   },
   completed_late: { 
     gradient: 'bg-gradient-to-r from-gray-500 to-gray-600 text-white', 
-    label: 'Job Completed Late',
+    label: 'Completed Late',
     color: '#6B7280'
   },
   overdue: { 

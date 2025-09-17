@@ -409,7 +409,7 @@ export const EnhancedJobFilters: React.FC<EnhancedJobFiltersProps> = ({
                   <SelectItem value="completed_late">
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 rounded-full bg-gray-600"></div>
-                      Job Completed Late
+                      Completed Late
                     </div>
                   </SelectItem>
                 </SelectContent>

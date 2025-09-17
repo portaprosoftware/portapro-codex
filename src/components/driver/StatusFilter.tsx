@@ -30,7 +30,7 @@ const statusOptions = [
   { value: 'priority' as const, label: 'Priority', count: 0 },
   { value: 'was_overdue' as const, label: 'Overdue - Rescheduled', count: 0 },
   { value: 'overdue' as const, label: 'Overdue', count: 0 },
-  { value: 'completed_late' as const, label: 'Job Completed Late', count: 0 }
+  { value: 'completed_late' as const, label: 'Completed Late', count: 0 }
 ];
 
 export const StatusFilter: React.FC<StatusFilterProps> = ({
