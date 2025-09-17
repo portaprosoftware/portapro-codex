@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { GripVertical, User, Save, X } from 'lucide-react';
+import { createPortal } from 'react-dom';
 import {
   Dialog,
   DialogContent,
@@ -27,6 +28,7 @@ export const DriverOrderModal: React.FC<DriverOrderModalProps> = ({
   onSaveOrder
 }) => {
   const [orderedDrivers, setOrderedDrivers] = useState(drivers);
+  const portalRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     setOrderedDrivers(drivers);
@@ -54,7 +56,7 @@ export const DriverOrderModal: React.FC<DriverOrderModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md bg-background border sm:max-h-[80vh] max-h-[85vh] overflow-y-auto">
+      <DialogContent className="max-w-md bg-background border sm:max-h-[90vh] max-h-[92vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <User className="h-5 w-5" />
@@ -64,6 +66,8 @@ export const DriverOrderModal: React.FC<DriverOrderModalProps> = ({
             Drag and drop to change the order of drivers in the dispatch view.
           </DialogDescription>
         </DialogHeader>
+
+        <div ref={portalRef} className="fixed inset-0 z-[10001] pointer-events-none" />
 
         <div className="py-4">
           <DragDropContext onDragEnd={handleDragEnd}>
@@ -78,45 +82,49 @@ export const DriverOrderModal: React.FC<DriverOrderModalProps> = ({
                   )}
                 >
                   {orderedDrivers.map((driver, index) => (
-                    <Draggable key={driver.id} draggableId={driver.id} index={index}>
-                      {(provided, snapshot) => (
-                        <Card
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          style={{
-                            ...(provided.draggableProps.style as React.CSSProperties),
-                            zIndex: snapshot.isDragging ? 10000 : 'auto',
-                          }}
-                          className={cn(
-                            "p-3 transition-all",
-                            snapshot.isDragging && "ring-2 ring-primary shadow-xl bg-background transform rotate-2"
-                          )}
-                        >
-                          <div className="flex items-center gap-3">
-                            <div
-                              {...provided.dragHandleProps}
-                              className="cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded"
-                            >
-                              <GripVertical className="h-4 w-4 text-muted-foreground" />
-                            </div>
-                            
-                            <div className="flex-1">
-                              <div className="font-medium text-sm">
-                                {driver.first_name} {driver.last_name}
+                    <Draggable key={String(driver.id)} draggableId={String(driver.id)} index={index}>
+                      {(provided, snapshot) => {
+                        const card = (
+                          <Card
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            style={{
+                              ...(provided.draggableProps.style as React.CSSProperties),
+                            }}
+                            className={cn(
+                              "p-3 transition-all bg-background",
+                              snapshot.isDragging && "ring-2 ring-primary shadow-xl transform rotate-2"
+                            )}
+                          >
+                            <div className="flex items-center gap-3">
+                              <div
+                                {...provided.dragHandleProps}
+                                className="cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded"
+                              >
+                                <GripVertical className="h-4 w-4 text-muted-foreground" />
                               </div>
-                              {driver.phone && (
-                                <div className="text-xs text-muted-foreground">
-                                  {driver.phone}
+                              
+                              <div className="flex-1">
+                                <div className="font-medium text-sm">
+                                  {driver.first_name} {driver.last_name}
                                 </div>
-                              )}
-                            </div>
+                                {driver.phone && (
+                                  <div className="text-xs text-muted-foreground">
+                                    {driver.phone}
+                                  </div>
+                                )}
+                              </div>
 
-                            <Badge variant="outline" className="text-xs">
-                              #{index + 1}
-                            </Badge>
-                          </div>
-                        </Card>
-                      )}
+                              <Badge variant="outline" className="text-xs">
+                                #{index + 1}
+                              </Badge>
+                            </div>
+                          </Card>
+                        );
+                        return snapshot.isDragging && portalRef.current
+                          ? createPortal(card, portalRef.current)
+                          : card;
+                      }}
                     </Draggable>
                   ))}
                   {provided.placeholder}
