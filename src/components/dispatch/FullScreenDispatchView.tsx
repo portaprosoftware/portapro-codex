@@ -91,7 +91,7 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
         </Button>
       </DrawerTrigger>
       
-      <DrawerContent className="h-[95vh] max-h-[95vh]">
+      <DrawerContent className="h-[100vh] max-h-[100vh]">
         <DragDropContext onDragEnd={onJobAssignment}>
           <div className="flex flex-col h-full">
             {/* Header */}
