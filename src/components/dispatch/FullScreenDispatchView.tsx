@@ -240,7 +240,7 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                   <Button 
                     variant="outline" 
                     size="sm"
-                    onClick={() => window.open('/dispatch-monitor', '_blank')}
+                    onClick={() => window.open('/jobs?dispatch=fullscreen', '_blank')}
                     className="gap-2"
                   >
                     <ExternalLink className="h-4 w-4" />

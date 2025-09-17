@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { format, addDays, subDays } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
 import { formatDateForQuery, addDaysToDate, subtractDaysFromDate, parseDateSafe, isSameDayInTimeZone } from '@/lib/dateUtils';
@@ -50,7 +50,11 @@ import { FilterToggle } from '@/components/jobs/FilterToggle';
 const JobsPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<'calendar' | 'dispatch' | 'map' | 'custom' | 'drafts'>('calendar');
+  
+  // Check if dispatch fullscreen mode is requested
+  const dispatchFullscreen = searchParams.get('dispatch') === 'fullscreen';
   // Unified date state for all views - using Date objects (converted to string at query boundary)
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   
@@ -306,6 +310,11 @@ const JobsPage: React.FC = () => {
 
   // Set the active tab based on route and force reinitialization
   useEffect(() => {
+    if (dispatchFullscreen) {
+      setActiveTab('dispatch');
+      return;
+    }
+    
     if (location.pathname.includes('/calendar')) {
       setActiveTab('calendar');
     } else if (location.pathname.includes('/dispatch')) {
@@ -321,7 +330,7 @@ const JobsPage: React.FC = () => {
       setActiveTab('calendar');
       navigate('/jobs/calendar', { replace: true });
     }
-  }, [location.pathname, navigate]);
+  }, [location.pathname, navigate, dispatchFullscreen]);
 
   // Force refresh of drag context when returning to dispatch tab
   useEffect(() => {
@@ -481,6 +490,21 @@ const JobsPage: React.FC = () => {
     
     return { assigned, inProgress, completed };
   };
+
+  // If fullscreen dispatch mode is requested, render only the dispatch view
+  if (dispatchFullscreen) {
+    return (
+      <FullScreenDispatchView
+        jobs={dispatchJobs}
+        drivers={drivers}
+        selectedDate={selectedDate}
+        onJobAssignment={(jobId, driverId, timeSlotId) => 
+          updateJobAssignmentMutation.mutate({ jobId, driverId, timeSlotId })
+        }
+        onJobView={handleJobView}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">

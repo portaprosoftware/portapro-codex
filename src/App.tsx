@@ -5,7 +5,7 @@ import { useUserRole } from './hooks/useUserRole';
 import { Layout } from './components/layout/Layout';
 import { ErrorBoundary } from './components/ui/error-boundary';
 import { Landing } from './pages/Landing';
-import DispatchMonitor from './pages/DispatchMonitor';
+
 import Auth from './pages/Auth';
 import Dashboard from './pages/Dashboard';
 import Jobs from './pages/Jobs';
@@ -100,7 +100,7 @@ const App = () => {
           } />
 
           {/* Dispatch Monitor - standalone view for multi-monitor setups */}
-          <Route path="/dispatch-monitor" element={<DispatchMonitor />} />
+          
 
           {/* Testing route - outside authentication for easy access */}
           <Route path="/testing" element={<TestingPage />} />
