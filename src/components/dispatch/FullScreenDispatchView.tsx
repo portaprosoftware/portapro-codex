@@ -97,11 +97,13 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                 </div>
                 
                 <div className="flex items-center gap-2">
-                  <DrawerClose asChild>
-                    <Button variant="outline" size="sm">
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </DrawerClose>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
                 </div>
               </div>
             </DrawerHeader>
