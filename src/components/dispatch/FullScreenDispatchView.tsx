@@ -281,11 +281,11 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
             {/* Main Content */}
             <div className="flex-1 overflow-hidden relative">
               {timelineView ? (
-                <div className="h-full flex">
-                  {/* Sticky Left Column - Driver Names & Headers */}
-                  <div className="w-32 flex-shrink-0 bg-background border-r flex flex-col">
-                    {/* Unassigned Header */}
-                    <div className="h-[160px] border-b bg-card flex items-center justify-center">
+                <div className="h-full flex flex-col">
+                  {/* Completely Sticky Blue Header Row - Never moves */}
+                  <div className="flex-shrink-0 flex sticky top-0 z-30 bg-background">
+                    {/* Unassigned Header Section */}
+                    <div className="w-32 h-[160px] border-b border-r bg-card flex items-center justify-center">
                       <div className="text-xs font-medium text-center">
                         <div className="mb-1">Unassigned</div>
                         <Badge variant="secondary" className="text-xs">
@@ -294,17 +294,66 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                       </div>
                     </div>
                     
-                    {/* Drivers Header */}
-                    <div className="h-[40px] border-b bg-gradient-to-r from-blue-600 to-blue-700 text-white flex items-center justify-center">
+                    {/* Unassigned Timeline Content - Scrolls horizontally */}
+                    <div className="flex-1 h-[160px] border-b overflow-x-auto" 
+                         ref={horizontalScrollRef}
+                         onScroll={(e) => {
+                           // Sync horizontal scroll with main content
+                           const mainContent = document.querySelector('[data-timeline-content]') as HTMLElement;
+                           if (mainContent) {
+                             mainContent.scrollLeft = e.currentTarget.scrollLeft;
+                           }
+                         }}>
+                      <UnassignedJobsSection
+                        jobs={unassignedJobs}
+                        onJobView={onJobView}
+                        timelineView={timelineView}
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* Blue Drivers Header Row - Sticky under the Unassigned row */}
+                  <div className="flex-shrink-0 flex sticky top-[160px] z-20 bg-gradient-to-r from-blue-600 to-blue-700">
+                    {/* Drivers Label */}
+                    <div className="w-32 h-[40px] border-r border-blue-500/30 text-white flex items-center justify-center">
                       <div className="text-xs font-medium">Drivers</div>
                     </div>
                     
-                    {/* Driver Names */}
-                    <div 
-                      ref={stickyColumnRef}
-                      className="flex-1 overflow-y-auto scrollbar-thin scrollbar-track-gray-100 scrollbar-thumb-gray-300"
-                      onScroll={() => syncVerticalScroll('sticky')}
-                    >
+                    {/* Time Slot Headers - Scrolls horizontally */}
+                    <div className="flex-1 h-[40px] overflow-x-auto"
+                         onScroll={(e) => {
+                           // Sync with other horizontal scroll areas
+                           if (horizontalScrollRef.current) {
+                             horizontalScrollRef.current.scrollLeft = e.currentTarget.scrollLeft;
+                           }
+                           const mainContent = document.querySelector('[data-timeline-content]') as HTMLElement;
+                           if (mainContent) {
+                             mainContent.scrollLeft = e.currentTarget.scrollLeft;
+                           }
+                         }}>
+                      <div className="flex min-w-max">
+                        {TIME_SLOTS.map((slot) => (
+                          <div
+                            key={slot.id}
+                            className={cn(
+                              "border-r border-blue-500/30 text-center py-3 px-2 text-xs font-medium text-white flex items-center justify-center",
+                              slot.id === 'no-time' ? "bg-blue-700" : "bg-gradient-to-r from-blue-600 to-blue-700"
+                            )}
+                            style={{ width: slot.width, minWidth: slot.width, flexShrink: 0 }}
+                          >
+                            {slot.id === 'no-time' ? 'No Time Selected' : slot.label}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Scrollable Content Area */}
+                  <div className="flex-1 flex overflow-hidden">
+                    {/* Sticky Driver Names Column */}
+                    <div className="w-32 flex-shrink-0 bg-background border-r overflow-y-auto"
+                         ref={stickyColumnRef}
+                         onScroll={() => syncVerticalScroll('sticky')}>
                       {drivers.map((driver) => (
                         <div key={driver.id} className="h-[160px] border-b p-2 flex items-center bg-card">
                           <div className="flex flex-col gap-1 w-full">
@@ -318,57 +367,33 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                         </div>
                       ))}
                     </div>
-                  </div>
-                  
-                  {/* Scrollable Timeline Content - Headers and Jobs Together */}
-                  <div className="flex-1 overflow-hidden">
-                    <div 
-                      ref={horizontalScrollRef}
-                      className="h-full overflow-auto relative"
-                    >
-                      <div className="min-w-max flex flex-col">
-                        {/* Unassigned Row with Timeline Slots */}
-                        <div className="h-[160px] border-b">
-                          <UnassignedJobsSection
-                            jobs={unassignedJobs}
+                    
+                    {/* Driver Timeline Content - Scrolls both ways */}
+                    <div className="flex-1 overflow-auto relative"
+                         ref={verticalScrollRef}
+                         data-timeline-content
+                         onScroll={(e) => {
+                           syncVerticalScroll('main');
+                           // Sync horizontal scroll with headers
+                           if (horizontalScrollRef.current) {
+                             horizontalScrollRef.current.scrollLeft = e.currentTarget.scrollLeft;
+                           }
+                           const headerScroll = document.querySelector('[data-timeline-content]')?.previousElementSibling?.lastElementChild as HTMLElement;
+                           if (headerScroll) {
+                             headerScroll.scrollLeft = e.currentTarget.scrollLeft;
+                           }
+                         }}>
+                      <div className="min-w-max">
+                        {drivers.map((driver) => (
+                          <DriverSwimLane
+                            key={driver.id}
+                            driver={driver}
+                            jobs={jobsByDriver.get(driver.id) || []}
                             onJobView={onJobView}
                             timelineView={timelineView}
+                            hideDriverInfo={true}
                           />
-                        </div>
-                        
-                        {/* Time Slot Headers */}
-                        <div className="h-[40px] border-b bg-gradient-to-r from-blue-600 to-blue-700 flex">
-                          {TIME_SLOTS.map((slot) => (
-                            <div
-                              key={slot.id}
-                              className={cn(
-                                "border-r border-blue-500/30 text-center py-3 px-2 text-xs font-medium text-white flex items-center justify-center",
-                                slot.id === 'no-time' ? "bg-blue-700" : "bg-gradient-to-r from-blue-600 to-blue-700"
-                              )}
-                              style={{ width: slot.width, minWidth: slot.width, flexShrink: 0 }}
-                            >
-                              {slot.id === 'no-time' ? 'No Time Selected' : slot.label}
-                            </div>
-                          ))}
-                        </div>
-                        
-                        {/* Driver Swim Lanes - Timeline Slots Only */}
-                        <div 
-                          ref={verticalScrollRef}
-                          className="flex-1 overflow-y-auto"
-                          onScroll={() => syncVerticalScroll('main')}
-                        >
-                          {drivers.map((driver) => (
-                            <DriverSwimLane
-                              key={driver.id}
-                              driver={driver}
-                              jobs={jobsByDriver.get(driver.id) || []}
-                              onJobView={onJobView}
-                              timelineView={timelineView}
-                              hideDriverInfo={true}
-                            />
-                          ))}
-                        </div>
+                        ))}
                       </div>
                       
                       {/* Current time indicator */}
@@ -393,7 +418,7 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                           
                           return (
                             <div 
-                              className="absolute top-[200px] bottom-0 w-0.5 bg-red-500 z-20 pointer-events-none"
+                              className="absolute top-0 bottom-0 w-0.5 bg-red-500 z-20 pointer-events-none"
                               style={{ left: `${leftPosition}px` }}
                             >
                               <div className="absolute -top-1 -left-1 w-2 h-2 bg-red-500 rounded-full"></div>
