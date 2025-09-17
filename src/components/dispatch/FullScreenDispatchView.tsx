@@ -55,18 +55,11 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
     return () => clearInterval(timer);
   }, []);
 
-  // Group jobs by driver and filter by time if needed
+  // Group jobs by driver (no time filtering needed with new design)
   const jobsByDriver = useMemo(() => {
     const grouped = new Map<string, any[]>();
     
     jobs.filter(job => job.driver_id).forEach(job => {
-      // Filter jobs based on time filter
-      if (timeFilter !== 'all' && job.scheduled_time) {
-        const [hours] = job.scheduled_time.split(':').map(Number);
-        if (timeFilter === 'morning' && hours >= 12) return;
-        if (timeFilter === 'afternoon' && hours < 17) return;
-      }
-      
       const driverId = job.driver_id;
       if (!grouped.has(driverId)) {
         grouped.set(driverId, []);
@@ -75,15 +68,36 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
     });
     
     return grouped;
-  }, [jobs, timeFilter]);
+  }, [jobs]);
 
-  // Handle job assignment only (driver rows are locked)
+  // Handle job assignment with time slot logic
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) {
       return;
     }
-    // Handle job assignment
-    onJobAssignment(result);
+
+    // Extract time slot information from destination droppableId
+    const destinationId = result.destination.droppableId;
+    
+    if (destinationId.includes('-')) {
+      // Timeline view: droppableId format is "driverId-timeSlotId"
+      const [driverId, timeSlotId] = destinationId.split('-');
+      
+      // Create enhanced result with time slot information
+      const enhancedResult = {
+        ...result,
+        destination: {
+          ...result.destination,
+          droppableId: driverId // Set driver ID as main destination
+        },
+        timeSlot: timeSlotId // Add time slot information
+      };
+      
+      onJobAssignment(enhancedResult);
+    } else {
+      // Regular driver assignment (non-timeline view)
+      onJobAssignment(result);
+    }
   };
 
   // Handle driver order update
@@ -135,36 +149,6 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                       </Label>
                     </div>
                     
-                    {/* Time Filter Buttons */}
-                    {timelineView && (
-                      <div className="flex items-center gap-1">
-                        <Button
-                          variant={timeFilter === 'all' ? 'default' : 'outline'}
-                          size="sm"
-                          onClick={() => setTimeFilter('all')}
-                          className="text-xs"
-                        >
-                          All Day
-                        </Button>
-                        <Button
-                          variant={timeFilter === 'morning' ? 'default' : 'outline'}
-                          size="sm"
-                          onClick={() => setTimeFilter('morning')}
-                          className="text-xs"
-                        >
-                          Morning
-                        </Button>
-                        <Button
-                          variant={timeFilter === 'afternoon' ? 'default' : 'outline'}
-                          size="sm"
-                          onClick={() => setTimeFilter('afternoon')}
-                          className="text-xs"
-                        >
-                          Afternoon
-                        </Button>
-                      </div>
-                    )}
-                    
                     <div className="text-sm font-mono text-muted-foreground">
                       {format(currentTime, 'h:mm:ss a')}
                     </div>
@@ -192,70 +176,58 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
               </div>
             </DrawerHeader>
 
-            {/* Main Content - Full Width Driver Swim Lanes */}
+            {/* Main Content - Horizontal Scrollable Timeline */}
             <div className="flex-1 flex flex-col overflow-hidden relative">
-              {timelineView && (
-                <TimelineGrid timeFilter={timeFilter} />
-              )}
+              {timelineView && <TimelineGrid />}
               
-                <ScrollArea className="flex-1 relative">
-                  <div className="space-y-2 p-4">
-                    {drivers.map((driver) => (
-                      <DriverSwimLane
-                        key={driver.id}
-                        driver={driver}
-                        jobs={jobsByDriver.get(driver.id) || []}
-                        onJobView={onJobView}
-                        timelineView={timelineView}
-                      />
-                    ))}
-                  </div>
+              <div className="flex-1 overflow-x-auto overflow-y-auto">
+                <div className="space-y-1 p-2 min-w-max">
+                  {drivers.map((driver) => (
+                    <DriverSwimLane
+                      key={driver.id}
+                      driver={driver}
+                      jobs={jobsByDriver.get(driver.id) || []}
+                      onJobView={onJobView}
+                      timelineView={timelineView}
+                    />
+                  ))}
+                </div>
                 
-                {/* Current time indicator spanning all drivers */}
+                {/* Current time indicator for timeline view */}
                 {timelineView && (() => {
-                  const timelineStart = 6;
-                  const timelineEnd = 20;
-                  
                   const currentHour = currentTime.getHours();
                   const currentMinutes = currentTime.getMinutes();
                   
-                  if (currentHour >= timelineStart && currentHour <= timelineEnd) {
-                    const totalColumns = 11; // Before 8am + 8am-4pm (9 hours) + After 5pm
-                    let position;
+                  if (currentHour >= 6 && currentHour < 20) {
+                    // Calculate position within the timeline (excluding no-time section)
+                    const timeInMinutes = currentHour * 60 + currentMinutes;
+                    const timelineStart = 6 * 60; // 6am in minutes
+                    const timelineEnd = 20 * 60; // 8pm in minutes
+                    const timelineRange = timelineEnd - timelineStart;
                     
-                    if (currentHour < 8) {
-                      // Before 8am column
-                      const positionInColumn = ((currentHour - 6) + currentMinutes / 60) / 2; // 2 hours in before 8am
-                      position = positionInColumn * (1 / totalColumns) * 100;
-                    } else if (currentHour >= 17) {
-                      // After 5pm column  
-                      const lastColumnStart = 10 / totalColumns; // Start of last column
-                      const positionInColumn = ((currentHour - 17) + currentMinutes / 60) / 3; // 3 hours in after 5pm
-                      position = (lastColumnStart + positionInColumn * (1 / totalColumns)) * 100;
-                    } else {
-                      // Regular hourly columns (8am-4pm)
-                      const columnIndex = currentHour - 7; // 8am = column 1, 9am = column 2, etc.
-                      position = (columnIndex / totalColumns + (currentMinutes / 60) * (1 / totalColumns)) * 100;
-                    }
+                    const positionPercent = (timeInMinutes - timelineStart) / timelineRange;
                     
-                    // Calculate position relative to the timeline area (after 192px driver column)
-                    const leftOffset = 192; // 48 * 4 (w-48 = 192px)
-                    const timelineWidth = `calc(100% - ${leftOffset}px)`;
+                    // Calculate actual left position
+                    // 128px (w-32 driver column) + 33% (no-time section) + position within remaining 67%
+                    const driverColumnWidth = 128;
+                    const noTimeWidth = 33; // 33% of remaining width
+                    const timelineWidth = 67; // 67% of remaining width
+                    
+                    const leftPosition = `calc(${driverColumnWidth}px + 33% + ${positionPercent * timelineWidth}%)`;
                     
                     return (
                       <div 
                         className="absolute top-0 bottom-0 w-0.5 bg-red-500 z-20 pointer-events-none"
-                        style={{ 
-                          left: `calc(${leftOffset}px + (${timelineWidth} * ${position / 100}))`,
-                        }}
+                        style={{ left: leftPosition }}
                       >
                         <div className="absolute -top-1 -left-1 w-2 h-2 bg-red-500 rounded-full"></div>
+                        <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-red-500 rounded-full"></div>
                       </div>
                     );
                   }
                   return null;
                 })()}
-              </ScrollArea>
+              </div>
             </div>
           </div>
         </DragDropContext>
