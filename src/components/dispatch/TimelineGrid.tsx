@@ -30,8 +30,6 @@ const getCurrentTimePosition = () => {
 };
 
 export const TimelineGrid: React.FC = () => {
-  const currentTimePosition = getCurrentTimePosition();
-  
   return (
     <div className="border-b bg-background relative">
       <div className="flex">
@@ -51,16 +49,6 @@ export const TimelineGrid: React.FC = () => {
               {hour}
             </div>
           ))}
-          
-          {/* Current time indicator */}
-          {currentTimePosition !== null && (
-            <div 
-              className="absolute top-0 bottom-0 w-0.5 bg-red-500 z-10"
-              style={{ left: `${currentTimePosition}%` }}
-            >
-              <div className="absolute -top-1 -left-1 w-2 h-2 bg-red-500 rounded-full"></div>
-            </div>
-          )}
         </div>
       </div>
     </div>

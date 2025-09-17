@@ -109,12 +109,12 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
             </DrawerHeader>
 
             {/* Main Content - Full Width Driver Swim Lanes */}
-            <div className="flex-1 flex flex-col overflow-hidden">
+            <div className="flex-1 flex flex-col overflow-hidden relative">
               {timelineView && (
                 <TimelineGrid />
               )}
               
-              <ScrollArea className="flex-1">
+              <ScrollArea className="flex-1 relative">
                 <div className="space-y-2 p-4">
                   {drivers.map(driver => (
                     <DriverSwimLane
@@ -126,6 +126,39 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                     />
                   ))}
                 </div>
+                
+                {/* Current time indicator spanning all drivers */}
+                {timelineView && (() => {
+                  const now = new Date();
+                  const currentHour = now.getHours();
+                  const currentMinutes = now.getMinutes();
+                  const timelineStart = 6;
+                  const timelineEnd = 20;
+                  
+                  if (currentHour >= timelineStart && currentHour <= timelineEnd) {
+                    const hoursFromStart = currentHour - timelineStart;
+                    const minutesAsHours = currentMinutes / 60;
+                    const totalHoursFromStart = hoursFromStart + minutesAsHours;
+                    const timelineHours = timelineEnd - timelineStart;
+                    const position = (totalHoursFromStart / timelineHours) * 100;
+                    
+                    // Calculate position relative to the timeline area (after 192px driver column)
+                    const leftOffset = 192; // 48 * 4 (w-48 = 192px)
+                    const timelineWidth = `calc(100% - ${leftOffset}px)`;
+                    
+                    return (
+                      <div 
+                        className="absolute top-0 bottom-0 w-0.5 bg-red-500 z-20 pointer-events-none"
+                        style={{ 
+                          left: `calc(${leftOffset}px + (${timelineWidth} * ${position / 100}))`,
+                        }}
+                      >
+                        <div className="absolute -top-1 -left-1 w-2 h-2 bg-red-500 rounded-full"></div>
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
               </ScrollArea>
             </div>
           </div>
