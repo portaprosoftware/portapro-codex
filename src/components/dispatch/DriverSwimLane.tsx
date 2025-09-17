@@ -36,20 +36,24 @@ export const DriverSwimLane: React.FC<DriverSwimLaneProps> = ({
         )}>
           {/* Driver Info Column */}
           <div className={cn(
-            "border-r bg-background p-4 flex items-center gap-3",
+            "border-r bg-background p-4 relative",
             timelineView ? "w-48 flex-shrink-0" : "w-full border-b"
           )}>
-            {/* Drag Handle */}
+            {/* Drag Handle - Top Left */}
             <div 
               {...dragHandleProps}
-              className="cursor-move p-1 hover:bg-muted rounded"
+              className="absolute top-2 left-2 cursor-move p-1 hover:bg-muted rounded"
             >
               <GripVertical className="h-4 w-4 text-muted-foreground" />
             </div>
             
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <h4 className="font-medium text-sm truncate">{driverName}</h4>
+            {/* Driver Names and Badge */}
+            <div className="ml-6 flex flex-col">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex flex-col min-w-0 flex-1">
+                  <div className="font-medium text-sm text-left">{driver.first_name}</div>
+                  <div className="font-medium text-sm text-left">{driver.last_name}</div>
+                </div>
                 <Badge variant={workloadColor} className="text-xs flex-shrink-0">
                   {jobs.length}
                 </Badge>
