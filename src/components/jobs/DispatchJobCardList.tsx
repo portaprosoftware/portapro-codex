@@ -163,11 +163,11 @@ export const DispatchJobCardList: React.FC<DispatchJobCardListProps> = ({
             variant="outline"
             size="sm"
             onClick={handleViewJob}
-            className="h-6 px-2 text-xs border-gray-300 hover:bg-gray-50 flex-shrink-0"
+            className="h-10 px-2 text-xs border-gray-300 hover:bg-gray-50 flex-shrink-0 flex flex-col items-center justify-center gap-0 leading-tight"
             aria-label={`View job ${job.job_number}`}
           >
-            <Eye className="w-3 h-3 mr-1" />
-            View
+            <span>View</span>
+            <span>Details</span>
           </Button>
           <div className="flex flex-col gap-1">
             <Badge className={cn("text-xs px-2 py-0.5 font-bold text-center whitespace-nowrap", statusInfo.primary.gradient)}>
