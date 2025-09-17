@@ -116,6 +116,16 @@ export const DriverOrderModal: React.FC<DriverOrderModalProps> = ({
           </div>
         </div>
 
+        {/* Column Headers */}
+        <div className="flex items-center justify-between px-3 py-2 bg-muted/30 rounded-md text-xs font-medium text-muted-foreground">
+          <span>Driver</span>
+          <div className="flex items-center gap-4">
+            <span>Up | Down</span>
+            <span>First | Last</span>
+            <span>Position</span>
+          </div>
+        </div>
+
         <div className="py-2">
           <div className="space-y-2">
             {orderedDrivers.map((driver, index) => (
@@ -132,6 +142,31 @@ export const DriverOrderModal: React.FC<DriverOrderModalProps> = ({
                     )}
                   </div>
 
+                  {/* Single Up/Down Movement */}
+                  <div className="flex gap-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => moveDriverUp(index)}
+                      disabled={index === 0}
+                      className="h-6 w-6 p-0"
+                      title="Move up one position"
+                    >
+                      <ChevronUp className="h-3 w-3" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => moveDriverDown(index)}
+                      disabled={index === orderedDrivers.length - 1}
+                      className="h-6 w-6 p-0"
+                      title="Move down one position"
+                    >
+                      <ChevronDown className="h-3 w-3" />
+                    </Button>
+                  </div>
+
+                  {/* First/Last Movement */}
                   <div className="flex gap-1">
                     <Button
                       variant="ghost"
