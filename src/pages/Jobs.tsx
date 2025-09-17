@@ -673,23 +673,11 @@ const JobsPage: React.FC = () => {
           )}
           
           {activeTab === 'dispatch' && (
-            <div className="space-y-4">
-              {/* Full Screen Dispatch View Button */}
-              <div className="flex justify-end">
-                <FullScreenDispatchView
-                  jobs={dispatchJobs}
-                  drivers={drivers}
-                  selectedDate={selectedDate}
-                  onJobAssignment={handleDragEnd}
-                  onJobView={handleJobView}
-                />
-              </div>
-
-              <DragDropContext 
-                onDragEnd={handleDragEnd}
-                key={`drag-context-${dragContextKey}-v2`}
-              >
-                <div className="min-h-screen" key="new-dispatch-layout-v2">
+            <DragDropContext 
+              onDragEnd={handleDragEnd}
+              key={`drag-context-${dragContextKey}-v2`}
+            >
+              <div className="min-h-screen" key="new-dispatch-layout-v2">
 
                 {/* Two Column Layout - NEW VERSION */}
                 <div className="grid grid-cols-[300px_1fr] gap-4" key="new-two-column-layout">
@@ -764,7 +752,16 @@ const JobsPage: React.FC = () => {
                     <div className="overflow-y-auto max-h-[calc(100vh-180px)]">
                       {/* Drivers Title */}
                       <div className="sticky top-0 z-20 p-4 border-b border-gray-200 bg-gray-50">
-                        <h3 className="font-medium text-gray-900">Drivers</h3>
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-medium text-gray-900">Drivers</h3>
+                          <FullScreenDispatchView
+                            jobs={dispatchJobs}
+                            drivers={drivers}
+                            selectedDate={selectedDate}
+                            onJobAssignment={handleDragEnd}
+                            onJobView={handleJobView}
+                          />
+                        </div>
                       </div>
                       {drivers.map(driver => {
                         const driverJobs = filterJobs(getJobsByDriver(driver.id));
@@ -847,9 +844,8 @@ const JobsPage: React.FC = () => {
                   </div>
 
                 </div>
-                </div>
+              </div>
               </DragDropContext>
-            </div>
           )}
           
           {activeTab === 'map' && (
