@@ -678,14 +678,14 @@ const JobsPage: React.FC = () => {
             >
               <div className="min-h-screen" key="new-dispatch-layout-v2">
 
-                {/* Two Column Layout - NEW VERSION */}
-                <div className="grid grid-cols-[300px_1fr] gap-4" key="new-two-column-layout">
+                 {/* Two Column Layout - NEW VERSION */}
+                <div className="grid grid-cols-[300px_1fr] gap-4 h-[calc(100vh-200px)]" key="new-two-column-layout">
                   
                   {/* Left Column - Unassigned Jobs */}
-                  <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                  <div className="bg-white border border-gray-200 rounded-lg overflow-hidden h-full">
                     
                     {/* Scrollable Unassigned Jobs List */}
-                    <div className="overflow-y-auto max-h-[calc(100vh-180px)]">
+                    <div className="overflow-y-auto h-full">
                       {/* Unassigned Jobs Title */}
                       <div className="sticky top-0 z-20 p-4 border-b border-gray-200 bg-orange-50">
                         <div className="flex items-center gap-2">
@@ -745,10 +745,10 @@ const JobsPage: React.FC = () => {
                   </div>
 
                   {/* Right Column - Drivers & Assigned Jobs */}
-                  <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                  <div className="bg-white border border-gray-200 rounded-lg overflow-hidden h-full">
                     
                     {/* Scrollable Drivers Content */}
-                    <div className="overflow-y-auto max-h-[calc(100vh-180px)]">
+                    <div className="overflow-y-auto h-full">
                       {/* Drivers Title */}
                       <div className="sticky top-0 z-20 p-4 border-b border-gray-200 bg-gray-50">
                         <h3 className="font-medium text-gray-900">Drivers</h3>
