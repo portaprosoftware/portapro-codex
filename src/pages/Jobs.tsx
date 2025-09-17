@@ -543,6 +543,11 @@ const JobsPage: React.FC = () => {
                 selectedDate={selectedDate}
                 onDateChange={setSelectedDate}
                 showDateNavigator={true}
+                showUniversalHeader={true}
+                jobsCount={activeTab === 'dispatch' ? dispatchJobs.length : allJobs.length}
+                showCancelled={showCancelledJobs}
+                onToggleCancelled={setShowCancelledJobs}
+                cancelledCount={cancelledJobsCount}
               />
             </div>
           </div>
@@ -672,23 +677,6 @@ const JobsPage: React.FC = () => {
               key={`drag-context-${dragContextKey}-v2`}
             >
               <div className="min-h-screen" key="new-dispatch-layout-v2">
-                {/* Date Header - Fixed at top */}
-                <div className="bg-white border border-gray-200 rounded-lg p-4 mb-4 sticky top-0 z-30">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <CalendarIcon className="h-4 w-4 text-gray-600" />
-                      <span className="font-medium text-gray-900">
-                        {format(selectedDate, 'EEEE, MMMM d, yyyy')}
-                      </span>
-                      <span className="text-sm text-gray-600">{dispatchJobs.length} jobs scheduled</span>
-                    </div>
-                    <FilterToggle
-                      showCancelled={showCancelledJobs}
-                      onToggle={setShowCancelledJobs}
-                      cancelledCount={cancelledJobsCount}
-                    />
-                  </div>
-                </div>
 
                 {/* Two Column Layout - NEW VERSION */}
                 <div className="grid grid-cols-[300px_1fr] gap-4" key="new-two-column-layout">

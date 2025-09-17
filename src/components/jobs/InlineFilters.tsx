@@ -14,6 +14,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { AvailabilityTrackerSheet } from '@/components/inventory/AvailabilityTrackerSheet';
 import { StockVehicleSelectionModal } from '@/components/fleet/StockVehicleSelectionModal';
+import { UniversalJobsHeader } from './UniversalJobsHeader';
 
 interface InlineFiltersProps {
   searchTerm: string;
@@ -31,6 +32,12 @@ interface InlineFiltersProps {
   selectedDate?: Date; // Back to Date objects
   onDateChange?: (date: Date) => void;
   showDateNavigator?: boolean;
+  // Universal header props
+  showUniversalHeader?: boolean;
+  jobsCount?: number;
+  showCancelled?: boolean;
+  onToggleCancelled?: (show: boolean) => void;
+  cancelledCount?: number;
 }
 
 export const InlineFilters: React.FC<InlineFiltersProps> = ({
@@ -47,7 +54,12 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
   driversWithJobsToday = new Set(),
   selectedDate,
   onDateChange,
-  showDateNavigator = false
+  showDateNavigator = false,
+  showUniversalHeader = false,
+  jobsCount = 0,
+  showCancelled = false,
+  onToggleCancelled,
+  cancelledCount = 0
 }) => {
   const [showRouteStock, setShowRouteStock] = useState(false);
   const [stockVehicleId, setStockVehicleId] = useState<string>('');
@@ -94,6 +106,16 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
   return (
     <TooltipProvider>
       <div className="space-y-3">
+        {/* Universal Jobs Header */}
+        {showUniversalHeader && selectedDate && onToggleCancelled && (
+          <UniversalJobsHeader
+            selectedDate={selectedDate}
+            jobsCount={jobsCount}
+            showCancelled={showCancelled}
+            onToggleCancelled={onToggleCancelled}
+            cancelledCount={cancelledCount}
+          />
+        )}
         {/* Instructions */}
         <div className="text-xs text-muted-foreground bg-muted/30 rounded-md p-2 border">
           <span>
