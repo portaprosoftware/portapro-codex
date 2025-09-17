@@ -175,14 +175,13 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
               </div>
             </DrawerHeader>
 
-            {/* Main Content - Horizontal Scrollable Timeline */}
-            <div className="flex-1 flex flex-col overflow-hidden relative">
-              {/* Timeline header and content - synchronized scrolling */}
-              {timelineView && (
-                <div className="flex flex-col relative">
-                  <TimelineGrid />
-                  <div className="flex-1 overflow-x-auto overflow-y-auto" id="timeline-content">
-                    <div className="space-y-1 p-2 min-w-max">
+            {/* Main Content - Unified Timeline */}
+            <div className="flex-1 overflow-hidden relative">
+              {timelineView ? (
+                <div className="h-full overflow-x-auto overflow-y-auto">
+                  <div className="min-w-max">
+                    <TimelineGrid />
+                    <div className="space-y-2">
                       {drivers.map((driver) => (
                         <DriverSwimLane
                           key={driver.id}
@@ -195,42 +194,52 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                     </div>
                   </div>
                   
-                  {/* Current time indicator for timeline view */}
+                  {/* Current time indicator */}
                   {(() => {
                     const currentHour = currentTime.getHours();
                     const currentMinutes = currentTime.getMinutes();
                     
                     if (currentHour >= 6 && currentHour < 20) {
-                      // Calculate position within fixed-width timeline
                       const timeInMinutes = currentHour * 60 + currentMinutes;
-                      const timelineStart = 6 * 60; // 6am in minutes
-                      const timelineEnd = 20 * 60; // 8pm in minutes
+                      const timelineStart = 6 * 60;
+                      const timelineEnd = 20 * 60;
                       const timelineRange = timelineEnd - timelineStart;
-                      
                       const positionPercent = (timeInMinutes - timelineStart) / timelineRange;
                       
-                      // Calculate actual left position with fixed widths
-                      const driverColumnWidth = 128; // w-32 = 128px
-                      const noTimeSlotWidth = 200; // 200px
-                      const timeSlotWidth = 200; // 200px per slot
-                      const slotsBeforeCurrentTime = Math.floor(positionPercent * 14); // 14 time slots from 6am-8pm
+                      const driverColumnWidth = 128;
+                      const noTimeSlotWidth = 200;
+                      const timeSlotWidth = 200;
+                      const slotsBeforeCurrentTime = Math.floor(positionPercent * 14);
                       const positionWithinSlot = (positionPercent * 14) - slotsBeforeCurrentTime;
                       
                       const leftPosition = driverColumnWidth + noTimeSlotWidth + (slotsBeforeCurrentTime * timeSlotWidth) + (positionWithinSlot * timeSlotWidth);
                       
                       return (
                         <div 
-                          className="absolute top-0 bottom-0 w-0.5 bg-red-500 z-30 pointer-events-none"
+                          className="absolute top-[60px] bottom-0 w-0.5 bg-red-500 z-30 pointer-events-none"
                           style={{ left: `${leftPosition}px` }}
                         >
                           <div className="absolute -top-1 -left-1 w-2 h-2 bg-red-500 rounded-full"></div>
-                          <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-red-500 rounded-full"></div>
                         </div>
                       );
                     }
                     return null;
                   })()}
                 </div>
+              ) : (
+                <ScrollArea className="h-full">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4">
+                    {drivers.map((driver) => (
+                      <DriverSwimLane
+                        key={driver.id}
+                        driver={driver}
+                        jobs={jobsByDriver.get(driver.id) || []}
+                        onJobView={onJobView}
+                        timelineView={timelineView}
+                      />
+                    ))}
+                  </div>
+                </ScrollArea>
               )}
             </div>
           </div>
