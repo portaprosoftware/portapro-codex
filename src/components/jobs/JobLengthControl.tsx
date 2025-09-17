@@ -7,9 +7,10 @@ import { parseDateSafe } from '@/lib/dateUtils';
 
 interface JobLengthControlProps {
   jobId: string | null;
+  jobType?: string;
 }
 
-export const JobLengthControl: React.FC<JobLengthControlProps> = ({ jobId }) => {
+export const JobLengthControl: React.FC<JobLengthControlProps> = ({ jobId, jobType }) => {
   // Get job details and current equipment assignments
   const { data: jobData } = useQuery({
     queryKey: ['job-detail', jobId],
@@ -51,13 +52,14 @@ export const JobLengthControl: React.FC<JobLengthControlProps> = ({ jobId }) => 
     ? differenceInDays(currentReturnDate, scheduledDate) + 1  // Inclusive counting
     : null;
 
-  if (!jobId || !scheduledDate) return null;
+  // Only show for delivery jobs
+  if (!jobId || !scheduledDate || jobType !== 'delivery') return null;
 
   return (
     <div className="mt-4 pt-4 border-t border-gray-200">
       <div className="flex items-center gap-3 mb-3">
         <Calendar className="w-4 h-4 text-blue-600" />
-        <h5 className="text-sm font-medium">Job Length</h5>
+        <h5 className="text-sm font-medium">Rental Period</h5>
       </div>
       
       <div className="space-y-3">

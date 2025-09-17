@@ -578,7 +578,12 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                           </div>
                           <div>
                             <label className="text-sm font-medium text-muted-foreground">Time</label>
-                            <p className="text-sm">{job?.scheduled_time || 'No specific time'}</p>
+                            <p className="text-sm">{job?.scheduled_time || 'No specific time selected'}</p>
+                            {!job?.scheduled_time && (
+                              <p className="text-xs text-muted-foreground/70 mt-1">
+                                Edit job to add or change specified time of day for arrival
+                              </p>
+                            )}
                           </div>
                         </div>
                         <div>
@@ -587,7 +592,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                         </div>
 
                         {/* Job Length Control */}
-                        <JobLengthControl jobId={jobId} />
+                        <JobLengthControl jobId={jobId} jobType={job?.job_type} />
                       </>
                     )}
                   </CardContent>
