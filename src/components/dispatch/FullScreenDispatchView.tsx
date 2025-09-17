@@ -390,7 +390,7 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                           const leftPosition = noTimeSlotWidth + slotsBeforeCurrentTime * timeSlotWidth + positionWithinSlot * timeSlotWidth;
                           return (
                             <div
-                              className="absolute top-[200px] bottom-0 w-0.5 bg-red-500 z-20 pointer-events-none"
+                              className="absolute top-0 bottom-0 w-0.5 bg-red-500 z-20 pointer-events-none"
                               style={{ left: `${leftPosition}px` }}
                             >
                               <div className="absolute -top-1 -left-1 w-2 h-2 bg-red-500 rounded-full" />
