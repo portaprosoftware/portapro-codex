@@ -157,30 +157,58 @@ export const DriverSwimLane: React.FC<DriverSwimLaneProps> = ({
                       ref={provided.innerRef}
                       {...provided.droppableProps}
                       className={cn(
-                        "h-full p-1 flex flex-col gap-1",
+                        "h-full p-1",
                         snapshot.isDraggingOver && "bg-primary/10 ring-2 ring-primary/20",
                         slot.id === 'no-time' && "bg-muted/10"
                       )}
                     >
-                      {jobsByTimeSlot[slot.id]?.map((job, index) => (
-                        <Draggable key={job.id} draggableId={job.id} index={index}>
-                          {(provided, snapshot) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              className="w-full"
-                            >
-                              <TimelineJobCard
-                                job={job}
-                                onJobView={onJobView}
-                                timelineView={true}
-                                isDragging={snapshot.isDragging}
-                                dragHandleProps={provided.dragHandleProps}
-                              />
-                            </div>
-                          )}
-                        </Draggable>
-                      ))}
+                      {slot.id === 'no-time' ? (
+                        // Grid layout for No Time section - 4 columns
+                        <div className="grid grid-cols-4 gap-1 h-full">
+                          {jobsByTimeSlot[slot.id]?.map((job, index) => (
+                            <Draggable key={job.id} draggableId={job.id} index={index}>
+                              {(provided, snapshot) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  className="w-full"
+                                >
+                                  <TimelineJobCard
+                                    job={job}
+                                    onJobView={onJobView}
+                                    timelineView={true}
+                                    isDragging={snapshot.isDragging}
+                                    dragHandleProps={provided.dragHandleProps}
+                                  />
+                                </div>
+                              )}
+                            </Draggable>
+                          ))}
+                        </div>
+                      ) : (
+                        // Regular vertical layout for time slots
+                        <div className="flex flex-col gap-1">
+                          {jobsByTimeSlot[slot.id]?.map((job, index) => (
+                            <Draggable key={job.id} draggableId={job.id} index={index}>
+                              {(provided, snapshot) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  className="w-full"
+                                >
+                                  <TimelineJobCard
+                                    job={job}
+                                    onJobView={onJobView}
+                                    timelineView={true}
+                                    isDragging={snapshot.isDragging}
+                                    dragHandleProps={provided.dragHandleProps}
+                                  />
+                                </div>
+                              )}
+                            </Draggable>
+                          ))}
+                        </div>
+                      )}
                       {provided.placeholder}
                       
                       {/* Empty state for time slots */}
