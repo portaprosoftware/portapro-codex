@@ -393,7 +393,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                 </Label>
               </div>
               {(job as any)?.is_priority && (
-                <p className="text-xs text-muted-foreground ml-6">
+                <p className="text-xs text-muted-foreground">
                   This job will be highlighted for drivers.
                 </p>
               )}
