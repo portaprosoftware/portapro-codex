@@ -652,6 +652,10 @@ const JobsPage: React.FC = () => {
                     
                     {/* Scrollable Drivers Content */}
                     <div className="overflow-y-auto max-h-[calc(100vh-180px)]">
+                      {/* Drivers Title */}
+                      <div className="p-4 border-b border-gray-200 bg-gray-50">
+                        <h3 className="font-medium text-gray-900">Drivers</h3>
+                      </div>
                       {drivers.map(driver => {
                         const driverJobs = filterJobs(getJobsByDriver(driver.id));
                         return (
@@ -737,6 +741,16 @@ const JobsPage: React.FC = () => {
                     
                     {/* Scrollable Unassigned Jobs List */}
                     <div className="overflow-y-auto max-h-[calc(100vh-180px)]">
+                      {/* Unassigned Jobs Title */}
+                      <div className="p-4 border-b border-gray-200 bg-orange-50">
+                        <div className="flex items-center gap-2">
+                          <AlertTriangle className="h-4 w-4 text-orange-500" />
+                          <span className="font-medium text-gray-900">Unassigned Jobs</span>
+                          <Badge variant="secondary" className="text-xs">
+                            {filterJobs(unassignedJobs).length}
+                          </Badge>
+                        </div>
+                      </div>
                       <Droppable droppableId="unassigned" direction="vertical">
                         {(provided, snapshot) => (
                           <div
