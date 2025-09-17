@@ -1,6 +1,6 @@
 import React from 'react';
 import { format } from 'date-fns';
-import { AlertTriangle, CheckCircle, MapPin, Clock } from 'lucide-react';
+import { AlertTriangle, CheckCircle, GripVertical, MapPin, Clock } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -75,17 +75,26 @@ export const TimelineJobCard: React.FC<TimelineJobCardProps> = ({
 
   return (
     <Card
-      {...dragHandleProps}
       className={cn(
-        "p-3 transition-all border-l-4 relative bg-white shadow-sm cursor-grab active:cursor-grabbing",
+        "p-3 transition-all border-l-4 relative bg-white shadow-sm",
         jobTypeConfig.color,
         timelineView ? "w-[180px] flex-shrink-0 mx-auto" : "w-full",
         isOverdue && "border-red-500",
         job.status === 'completed' && "border-green-500",
-        isDragging && "ring-2 ring-blue-300 shadow-lg cursor-grabbing"
+        isDragging && "ring-2 ring-blue-300 shadow-lg"
       )}
     >
-      <div className="space-y-2">
+      {/* Drag Handle */}
+      {timelineView && (
+        <div 
+          {...dragHandleProps}
+          className="absolute top-2 right-2 cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded opacity-60 hover:opacity-100 transition-opacity"
+        >
+          <GripVertical className="h-3 w-3 text-muted-foreground" />
+        </div>
+      )}
+      
+      <div className="space-y-2 pr-6">
         {/* Job Number and Customer Name */}
         <div className="space-y-1">
           <div className="font-semibold text-sm text-foreground">
