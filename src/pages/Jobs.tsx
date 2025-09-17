@@ -645,9 +645,72 @@ const JobsPage: React.FC = () => {
                 </div>
 
                 {/* Two Column Layout */}
-                <div className="grid grid-cols-[1fr_300px] gap-4">
+                <div className="grid grid-cols-[300px_1fr] gap-4">
                   
-                  {/* Left Column - Drivers & Assigned Jobs */}
+                  {/* Left Column - Unassigned Jobs */}
+                  <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                    
+                    {/* Scrollable Unassigned Jobs List */}
+                    <div className="overflow-y-auto max-h-[calc(100vh-180px)]">
+                      {/* Unassigned Jobs Title */}
+                      <div className="p-4 border-b border-gray-200 bg-orange-50">
+                        <div className="flex items-center gap-2">
+                          <AlertTriangle className="h-4 w-4 text-orange-500" />
+                          <span className="font-medium text-gray-900">Unassigned Jobs</span>
+                          <Badge variant="secondary" className="text-xs">
+                            {filterJobs(unassignedJobs).length}
+                          </Badge>
+                        </div>
+                      </div>
+                      <Droppable droppableId="unassigned" direction="vertical">
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.droppableProps}
+                            className={cn(
+                              "p-4 min-h-[200px] transition-colors duration-200",
+                              snapshot.isDraggingOver 
+                                ? 'bg-orange-50 border-l-4 border-l-orange-500' 
+                                : ''
+                            )}
+                          >
+                            {filterJobs(unassignedJobs).length === 0 ? (
+                              <div className="flex items-center justify-center h-32 text-gray-400">
+                                <div className="text-center">
+                                  <ClipboardList className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                                  <p className="text-sm">No unassigned jobs for {format(selectedDate, 'MMM d, yyyy')}</p>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="space-y-3">
+                                {filterJobs(unassignedJobs).map((job, index) => (
+                                  <Draggable key={job.id} draggableId={job.id} index={index}>
+                                    {(provided, snapshot) => (
+                                      <div
+                                        ref={provided.innerRef}
+                                        {...provided.draggableProps}
+                                        {...provided.dragHandleProps}
+                                        className={snapshot.isDragging ? 'opacity-50' : ''}
+                                      >
+                                        <DispatchJobCardList
+                                          job={job}
+                                          onView={handleJobView}
+                                          isDragging={snapshot.isDragging}
+                                        />
+                                      </div>
+                                    )}
+                                  </Draggable>
+                                ))}
+                              </div>
+                            )}
+                            {provided.placeholder}
+                          </div>
+                        )}
+                      </Droppable>
+                    </div>
+                  </div>
+
+                  {/* Right Column - Drivers & Assigned Jobs */}
                   <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
                     
                     {/* Scrollable Drivers Content */}
@@ -736,69 +799,6 @@ const JobsPage: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Right Column - Unassigned Jobs */}
-                  <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                    
-                    {/* Scrollable Unassigned Jobs List */}
-                    <div className="overflow-y-auto max-h-[calc(100vh-180px)]">
-                      {/* Unassigned Jobs Title */}
-                      <div className="p-4 border-b border-gray-200 bg-orange-50">
-                        <div className="flex items-center gap-2">
-                          <AlertTriangle className="h-4 w-4 text-orange-500" />
-                          <span className="font-medium text-gray-900">Unassigned Jobs</span>
-                          <Badge variant="secondary" className="text-xs">
-                            {filterJobs(unassignedJobs).length}
-                          </Badge>
-                        </div>
-                      </div>
-                      <Droppable droppableId="unassigned" direction="vertical">
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.droppableProps}
-                            className={cn(
-                              "p-4 min-h-full transition-all duration-200",
-                              snapshot.isDraggingOver 
-                                ? "bg-orange-50 border-l-4 border-l-orange-500" 
-                                : ""
-                            )}
-                          >
-                            {filterJobs(unassignedJobs).length === 0 ? (
-                              <div className="flex items-center justify-center h-64 text-gray-400">
-                                <div className="text-center">
-                                  <ClipboardList className="h-12 w-12 mx-auto mb-3 text-gray-300" />
-                                  <p className="text-lg font-medium text-gray-500">No unassigned jobs</p>
-                                  <p className="text-sm text-gray-400">All jobs have been assigned to drivers</p>
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="space-y-3">
-                                {filterJobs(unassignedJobs).map((job, index) => (
-                                  <Draggable key={job.id} draggableId={job.id} index={index}>
-                                    {(provided, snapshot) => (
-                                      <div
-                                        ref={provided.innerRef}
-                                        {...provided.draggableProps}
-                                        {...provided.dragHandleProps}
-                                        className={snapshot.isDragging ? 'opacity-50' : ''}
-                                      >
-                                        <DispatchJobCardList
-                                          job={job}
-                                          onView={handleJobView}
-                                          isDragging={snapshot.isDragging}
-                                        />
-                                      </div>
-                                    )}
-                                  </Draggable>
-                                ))}
-                              </div>
-                            )}
-                            {provided.placeholder}
-                          </div>
-                        )}
-                      </Droppable>
-                    </div>
-                  </div>
                 </div>
               </div>
             </DragDropContext>
