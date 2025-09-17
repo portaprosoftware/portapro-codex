@@ -380,17 +380,23 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
         <div className="flex-shrink-0 flex items-center justify-between py-4 px-1 border-b">
           {/* Priority Toggle - Left side */}
           {!isEditing && (
-            <div className="flex items-center space-x-2">
-              <Switch
-                checked={(job as any)?.is_priority || false}
-                onCheckedChange={() => handleTogglePriority()}
-                disabled={priorityMutation.isPending}
-                className="data-[state=checked]:bg-blue-600"
-              />
-              <Label className="text-sm flex items-center gap-1 cursor-pointer">
-                <Star className="w-4 h-4 text-yellow-500" />
-                Mark Job with Priority Badge
-              </Label>
+            <div className="flex flex-col space-y-1">
+              <div className="flex items-center space-x-2">
+                <Switch
+                  checked={(job as any)?.is_priority || false}
+                  onCheckedChange={() => handleTogglePriority()}
+                  disabled={priorityMutation.isPending}
+                  className="data-[state=checked]:bg-blue-600"
+                />
+                <Label className="text-sm cursor-pointer">
+                  Priority
+                </Label>
+              </div>
+              {(job as any)?.is_priority && (
+                <p className="text-xs text-muted-foreground ml-6">
+                  This job will be highlighted for drivers.
+                </p>
+              )}
             </div>
           )}
           {/* Action Buttons - Right side */}
