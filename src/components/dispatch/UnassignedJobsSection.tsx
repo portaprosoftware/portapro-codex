@@ -119,11 +119,11 @@ export const UnassignedJobsSection: React.FC<UnassignedJobsSectionProps> = ({
     );
   }
 
-  // Sticky column only - just show the header
+  // Sticky column only - just show the header (same height as driver cards)
   if (stickyColumnOnly) {
     return (
-      <div className="p-2 border-b bg-muted/30">
-        <div className="flex flex-col items-center justify-center gap-1">
+      <div className="h-[120px] p-2 border-b bg-muted/30 flex items-center">
+        <div className="flex flex-col items-center justify-center gap-1 w-full">
           <div className="flex flex-col items-center">
             <UserX className="h-4 w-4 text-muted-foreground mb-1" />
             <div className="font-medium text-xs text-center">Unassigned</div>
