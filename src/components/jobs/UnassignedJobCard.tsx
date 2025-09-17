@@ -87,7 +87,7 @@ export const UnassignedJobCard: React.FC<UnassignedJobCardProps> = ({
   return (
     <div 
       className={cn(
-        "bg-white border border-gray-200 rounded-lg transition-all duration-200 hover:shadow-md border-l-4 max-w-[260px] w-full p-3",
+        "bg-white border border-gray-200 rounded-lg transition-all duration-200 hover:shadow-md border-l-4 max-w-[280px] w-full p-2",
         isDragging && "shadow-lg border-blue-300 bg-blue-50",
         jobTypeInfo.borderColor
       )}
