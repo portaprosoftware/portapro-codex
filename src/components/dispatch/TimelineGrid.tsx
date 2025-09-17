@@ -91,11 +91,11 @@ export const getCurrentTimePosition = () => {
 
 export const TimelineGrid: React.FC = () => {
   return (
-    <div className="border-b bg-background sticky top-[120px] z-10">
+    <div className="border-b bg-gradient-to-r from-blue-600 to-blue-700 sticky top-[120px] z-10">
       <div className="flex">
         {/* Driver name column spacer - EXACT same width as DriverSwimLane */}
-        <div className="w-32 flex-shrink-0 border-r bg-background">
-          <div className="py-3 px-2 text-center text-xs font-medium text-muted-foreground">
+        <div className="w-32 flex-shrink-0 border-r border-blue-500/30 bg-gradient-to-r from-blue-600 to-blue-700">
+          <div className="py-3 px-2 text-center text-xs font-medium text-white">
             Drivers
           </div>
         </div>
@@ -106,8 +106,8 @@ export const TimelineGrid: React.FC = () => {
             <div
               key={slot.id}
               className={cn(
-                "border-r text-center py-3 px-2 text-xs font-medium bg-muted/50 text-muted-foreground",
-                slot.id === 'no-time' && "bg-muted/30"
+                "border-r border-blue-500/30 text-center py-3 px-2 text-xs font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700",
+                slot.id === 'no-time' && "from-blue-700 to-blue-800"
               )}
               style={{ width: slot.width, minWidth: slot.width, flexShrink: 0 }}
             >
