@@ -117,12 +117,12 @@ export const DriverOrderModal: React.FC<DriverOrderModalProps> = ({
         </div>
 
         {/* Column Headers */}
-        <div className="flex items-center justify-between px-3 py-2 bg-muted/30 rounded-md text-xs font-medium text-muted-foreground">
-          <span>Driver</span>
-          <div className="flex items-center gap-4">
-            <span>Up | Down</span>
-            <span>First | Last</span>
-            <span>Position</span>
+        <div className="flex items-center px-3 py-2 bg-muted/30 rounded-md text-xs font-medium text-muted-foreground">
+          <span className="flex-1">Driver</span>
+          <div className="flex items-center gap-8">
+            <span className="w-16 text-center">Up | Down</span>
+            <span className="w-16 text-center">First | Last</span>
+            <span className="w-12 text-center">Position</span>
           </div>
         </div>
 
@@ -130,7 +130,7 @@ export const DriverOrderModal: React.FC<DriverOrderModalProps> = ({
           <div className="space-y-2">
             {orderedDrivers.map((driver, index) => (
               <Card key={driver.id} className="p-3">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center">
                   <div className="flex-1">
                     <div className="font-medium text-sm">
                       {driver.first_name} {driver.last_name}
@@ -142,57 +142,61 @@ export const DriverOrderModal: React.FC<DriverOrderModalProps> = ({
                     )}
                   </div>
 
-                  {/* Single Up/Down Movement */}
-                  <div className="flex gap-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => moveDriverUp(index)}
-                      disabled={index === 0}
-                      className="h-6 w-6 p-0"
-                      title="Move up one position"
-                    >
-                      <ChevronUp className="h-3 w-3" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => moveDriverDown(index)}
-                      disabled={index === orderedDrivers.length - 1}
-                      className="h-6 w-6 p-0"
-                      title="Move down one position"
-                    >
-                      <ChevronDown className="h-3 w-3" />
-                    </Button>
-                  </div>
+                  <div className="flex items-center gap-8">
+                    {/* Single Up/Down Movement */}
+                    <div className="flex gap-1 w-16 justify-center">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => moveDriverUp(index)}
+                        disabled={index === 0}
+                        className="h-6 w-6 p-0"
+                        title="Move up one position"
+                      >
+                        <ChevronUp className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => moveDriverDown(index)}
+                        disabled={index === orderedDrivers.length - 1}
+                        className="h-6 w-6 p-0"
+                        title="Move down one position"
+                      >
+                        <ChevronDown className="h-3 w-3" />
+                      </Button>
+                    </div>
 
-                  {/* First/Last Movement */}
-                  <div className="flex gap-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => moveToFirst(index)}
-                      disabled={index === 0}
-                      className="h-6 w-6 p-0"
-                      title="Move to first"
-                    >
-                      <ArrowUp className="h-3 w-3" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => moveToLast(index)}
-                      disabled={index === orderedDrivers.length - 1}
-                      className="h-6 w-6 p-0"
-                      title="Move to last"
-                    >
-                      <ArrowDown className="h-3 w-3" />
-                    </Button>
-                  </div>
+                    {/* First/Last Movement */}
+                    <div className="flex gap-1 w-16 justify-center">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => moveToFirst(index)}
+                        disabled={index === 0}
+                        className="h-6 w-6 p-0"
+                        title="Move to first"
+                      >
+                        <ArrowUp className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => moveToLast(index)}
+                        disabled={index === orderedDrivers.length - 1}
+                        className="h-6 w-6 p-0"
+                        title="Move to last"
+                      >
+                        <ArrowDown className="h-3 w-3" />
+                      </Button>
+                    </div>
 
-                  <Badge variant="outline" className="text-xs">
-                    #{index + 1}
-                  </Badge>
+                    <div className="w-12 flex justify-center">
+                      <Badge variant="outline" className="text-xs">
+                        #{index + 1}
+                      </Badge>
+                    </div>
+                  </div>
                 </div>
               </Card>
             ))}
