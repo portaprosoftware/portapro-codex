@@ -625,181 +625,178 @@ const JobsPage: React.FC = () => {
               onDragEnd={handleDragEnd}
               key={`drag-context-${dragContextKey}`}
             >
-              <div className="h-full">
+              <div className="min-h-screen">
+                {/* Date Header - Fixed at top */}
+                <div className="bg-white border border-gray-200 rounded-lg p-4 mb-4 sticky top-0 z-30">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <CalendarIcon className="h-4 w-4 text-gray-600" />
+                      <span className="font-medium text-gray-900">
+                        {format(selectedDate, 'EEEE, MMMM d, yyyy')}
+                      </span>
+                      <span className="text-sm text-gray-600">{dispatchJobs.length} jobs scheduled</span>
+                    </div>
+                    <FilterToggle
+                      showCancelled={showCancelledJobs}
+                      onToggle={setShowCancelledJobs}
+                      cancelledCount={cancelledJobsCount}
+                    />
+                  </div>
+                </div>
+
                 {/* Two Column Layout */}
-                <div className="grid grid-cols-[1fr_300px] gap-4 h-[calc(100vh-200px)]">
+                <div className="grid grid-cols-[1fr_300px] gap-4">
                   
                   {/* Left Column - Drivers & Assigned Jobs */}
-                  <div className="flex flex-col">
-                    {/* Date Header - Sticky */}
-                    <div className="bg-white border border-gray-200 rounded-lg p-4 mb-4 sticky top-0 z-20">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <CalendarIcon className="h-4 w-4 text-gray-600" />
-                          <span className="font-medium text-gray-900">
-                            {format(selectedDate, 'EEEE, MMMM d, yyyy')}
-                          </span>
-                          <span className="text-sm text-gray-600">{dispatchJobs.length} jobs scheduled</span>
-                        </div>
-                        <FilterToggle
-                          showCancelled={showCancelledJobs}
-                          onToggle={setShowCancelledJobs}
-                          cancelledCount={cancelledJobsCount}
-                        />
-                      </div>
+                  <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                    {/* Drivers Header - Sticky below date */}
+                    <div className="border-b border-gray-200 bg-gray-50 p-4 sticky top-[88px] z-20">
+                      <h3 className="font-medium text-gray-900">Drivers</h3>
                     </div>
-
-                    {/* Drivers Section */}
-                    <div className="bg-white border border-gray-200 rounded-lg flex-1 overflow-hidden">
-                      <div className="border-b border-gray-200 bg-gray-50 p-4 sticky top-[88px] z-10">
-                        <h3 className="font-medium text-gray-900">Drivers</h3>
-                      </div>
-                      
-                      <div className="overflow-y-auto h-full">
-                        {drivers.map(driver => {
-                          const driverJobs = filterJobs(getJobsByDriver(driver.id));
-                          return (
-                            <div key={driver.id} className="border-b border-gray-200 last:border-b-0">
-                              {/* Driver Header */}
-                              <div className="bg-gray-50 p-4 border-b border-gray-100">
-                                <div className="flex items-center gap-3">
-                                  <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
-                                    <User className="w-4 h-4 text-gray-600" />
-                                  </div>
-                                  <div className="min-w-0 flex-1">
-                                    <h4 className="font-medium text-gray-900 text-sm">
-                                      {driver.first_name} {driver.last_name}
-                                    </h4>
-                                    <Badge 
-                                      variant={driverJobs.length > 0 ? "default" : "secondary"}
-                                      className="text-xs mt-1"
-                                    >
-                                      {driverJobs.length} jobs
-                                    </Badge>
-                                  </div>
+                    
+                    {/* Scrollable Drivers Content */}
+                    <div className="overflow-y-auto max-h-[calc(100vh-180px)]">
+                      {drivers.map(driver => {
+                        const driverJobs = filterJobs(getJobsByDriver(driver.id));
+                        return (
+                          <div key={driver.id} className="border-b border-gray-200 last:border-b-0">
+                            {/* Driver Header */}
+                            <div className="bg-gray-50 p-4 border-b border-gray-100">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
+                                  <User className="w-4 h-4 text-gray-600" />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <h4 className="font-medium text-gray-900 text-sm">
+                                    {driver.first_name} {driver.last_name}
+                                  </h4>
+                                  <Badge 
+                                    variant={driverJobs.length > 0 ? "default" : "secondary"}
+                                    className="text-xs mt-1"
+                                  >
+                                    {driverJobs.length} jobs
+                                  </Badge>
                                 </div>
                               </div>
-
-                              {/* Job Assignment Area */}
-                              <div className="min-h-[120px]">
-                                <Droppable droppableId={driver.id} direction="vertical">
-                                  {(provided, snapshot) => (
-                                    <div
-                                      ref={provided.innerRef}
-                                      {...provided.droppableProps}
-                                      className={cn(
-                                        "p-4 min-h-[120px] transition-colors duration-200",
-                                        snapshot.isDraggingOver 
-                                          ? 'bg-blue-50 border-l-4 border-l-blue-500' 
-                                          : 'hover:bg-gray-25'
-                                      )}
-                                    >
-                                      {driverJobs.length === 0 ? (
-                                        <div className="flex items-center justify-center h-full text-gray-400">
-                                          <div className="text-center">
-                                            <ClipboardList className="h-8 w-8 mx-auto mb-2 text-gray-300" />
-                                            <p className="text-sm">
-                                              Drop jobs here to assign to {driver.first_name}
-                                            </p>
-                                          </div>
-                                        </div>
-                                      ) : (
-                                        <div className="space-y-3">
-                                          {driverJobs.map((job, index) => (
-                                            <Draggable key={job.id} draggableId={job.id} index={index}>
-                                              {(provided, snapshot) => (
-                                                <div
-                                                  ref={provided.innerRef}
-                                                  {...provided.draggableProps}
-                                                  {...provided.dragHandleProps}
-                                                  className={snapshot.isDragging ? 'opacity-50' : ''}
-                                                >
-                                                  <DispatchJobCardList
-                                                    job={job}
-                                                    onView={handleJobView}
-                                                    isDragging={snapshot.isDragging}
-                                                  />
-                                                </div>
-                                              )}
-                                            </Draggable>
-                                          ))}
-                                        </div>
-                                      )}
-                                      {provided.placeholder}
-                                    </div>
-                                  )}
-                                </Droppable>
-                              </div>
                             </div>
-                          );
-                        })}
-                      </div>
+
+                            {/* Job Assignment Area */}
+                            <div className="min-h-[120px]">
+                              <Droppable droppableId={driver.id} direction="vertical">
+                                {(provided, snapshot) => (
+                                  <div
+                                    ref={provided.innerRef}
+                                    {...provided.droppableProps}
+                                    className={cn(
+                                      "p-4 min-h-[120px] transition-colors duration-200",
+                                      snapshot.isDraggingOver 
+                                        ? 'bg-blue-50 border-l-4 border-l-blue-500' 
+                                        : 'hover:bg-gray-25'
+                                    )}
+                                  >
+                                    {driverJobs.length === 0 ? (
+                                      <div className="flex items-center justify-center h-full text-gray-400">
+                                        <div className="text-center">
+                                          <ClipboardList className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                                          <p className="text-sm">
+                                            Drop jobs here to assign to {driver.first_name}
+                                          </p>
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      <div className="space-y-3">
+                                        {driverJobs.map((job, index) => (
+                                          <Draggable key={job.id} draggableId={job.id} index={index}>
+                                            {(provided, snapshot) => (
+                                              <div
+                                                ref={provided.innerRef}
+                                                {...provided.draggableProps}
+                                                {...provided.dragHandleProps}
+                                                className={snapshot.isDragging ? 'opacity-50' : ''}
+                                              >
+                                                <DispatchJobCardList
+                                                  job={job}
+                                                  onView={handleJobView}
+                                                  isDragging={snapshot.isDragging}
+                                                />
+                                              </div>
+                                            )}
+                                          </Draggable>
+                                        ))}
+                                      </div>
+                                    )}
+                                    {provided.placeholder}
+                                  </div>
+                                )}
+                              </Droppable>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
 
                   {/* Right Column - Unassigned Jobs */}
-                  <div className="flex flex-col">
-                    <div className="bg-white border border-gray-200 rounded-lg flex-1 overflow-hidden">
-                      {/* Unassigned Jobs Header - Sticky */}
-                      <div className="border-b border-gray-200 bg-orange-50 p-4 sticky top-0 z-20">
-                        <div className="flex items-center gap-2">
-                          <AlertTriangle className="h-4 w-4 text-orange-500" />
-                          <span className="font-medium text-gray-900">Unassigned Jobs</span>
-                          <Badge variant="secondary" className="text-xs">
-                            {filterJobs(unassignedJobs).length}
-                          </Badge>
-                        </div>
+                  <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                    {/* Unassigned Jobs Header - Sticky at column top */}
+                    <div className="border-b border-gray-200 bg-orange-50 p-4 sticky top-[88px] z-20">
+                      <div className="flex items-center gap-2">
+                        <AlertTriangle className="h-4 w-4 text-orange-500" />
+                        <span className="font-medium text-gray-900">Unassigned Jobs</span>
+                        <Badge variant="secondary" className="text-xs">
+                          {filterJobs(unassignedJobs).length}
+                        </Badge>
                       </div>
-                      
-                      {/* Unassigned Jobs List */}
-                      <div className="flex-1 overflow-y-auto">
-                        <Droppable droppableId="unassigned" direction="vertical">
-                          {(provided, snapshot) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.droppableProps}
-                              className={cn(
-                                "p-4 min-h-full transition-all duration-200",
-                                snapshot.isDraggingOver 
-                                  ? "bg-orange-50 border-l-4 border-l-orange-500" 
-                                  : ""
-                              )}
-                            >
-                              {filterJobs(unassignedJobs).length === 0 ? (
-                                <div className="flex items-center justify-center h-64 text-gray-400">
-                                  <div className="text-center">
-                                    <ClipboardList className="h-12 w-12 mx-auto mb-3 text-gray-300" />
-                                    <p className="text-lg font-medium text-gray-500">No unassigned jobs</p>
-                                    <p className="text-sm text-gray-400">All jobs have been assigned to drivers</p>
-                                  </div>
+                    </div>
+                    
+                    {/* Scrollable Unassigned Jobs List */}
+                    <div className="overflow-y-auto max-h-[calc(100vh-180px)]">
+                      <Droppable droppableId="unassigned" direction="vertical">
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.droppableProps}
+                            className={cn(
+                              "p-4 min-h-full transition-all duration-200",
+                              snapshot.isDraggingOver 
+                                ? "bg-orange-50 border-l-4 border-l-orange-500" 
+                                : ""
+                            )}
+                          >
+                            {filterJobs(unassignedJobs).length === 0 ? (
+                              <div className="flex items-center justify-center h-64 text-gray-400">
+                                <div className="text-center">
+                                  <ClipboardList className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+                                  <p className="text-lg font-medium text-gray-500">No unassigned jobs</p>
+                                  <p className="text-sm text-gray-400">All jobs have been assigned to drivers</p>
                                 </div>
-                              ) : (
-                                <div className="space-y-3">
-                                  {filterJobs(unassignedJobs).map((job, index) => (
-                                    <Draggable key={job.id} draggableId={job.id} index={index}>
-                                      {(provided, snapshot) => (
-                                        <div
-                                          ref={provided.innerRef}
-                                          {...provided.draggableProps}
-                                          {...provided.dragHandleProps}
-                                          className={snapshot.isDragging ? 'opacity-50' : ''}
-                                        >
-                                          <DispatchJobCardList
-                                            job={job}
-                                            onView={handleJobView}
-                                            isDragging={snapshot.isDragging}
-                                          />
-                                        </div>
-                                      )}
-                                    </Draggable>
-                                  ))}
-                                </div>
-                              )}
-                              {provided.placeholder}
-                            </div>
-                          )}
-                        </Droppable>
-                      </div>
+                              </div>
+                            ) : (
+                              <div className="space-y-3">
+                                {filterJobs(unassignedJobs).map((job, index) => (
+                                  <Draggable key={job.id} draggableId={job.id} index={index}>
+                                    {(provided, snapshot) => (
+                                      <div
+                                        ref={provided.innerRef}
+                                        {...provided.draggableProps}
+                                        {...provided.dragHandleProps}
+                                        className={snapshot.isDragging ? 'opacity-50' : ''}
+                                      >
+                                        <DispatchJobCardList
+                                          job={job}
+                                          onView={handleJobView}
+                                          isDragging={snapshot.isDragging}
+                                        />
+                                      </div>
+                                    )}
+                                  </Draggable>
+                                ))}
+                              </div>
+                            )}
+                            {provided.placeholder}
+                          </div>
+                        )}
+                      </Droppable>
                     </div>
                   </div>
                 </div>
