@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronUp, ChevronDown, User, Save, X } from 'lucide-react';
+import { ChevronUp, ChevronDown, User, Save, X, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -45,6 +45,29 @@ export const DriverOrderModal: React.FC<DriverOrderModalProps> = ({
     setOrderedDrivers(items);
   };
 
+  const alphabetizeDrivers = () => {
+    const sorted = [...orderedDrivers].sort((a, b) => {
+      const nameA = `${a.first_name} ${a.last_name}`.toLowerCase();
+      const nameB = `${b.first_name} ${b.last_name}`.toLowerCase();
+      return nameA.localeCompare(nameB);
+    });
+    setOrderedDrivers(sorted);
+  };
+
+  const moveToFirst = (index: number) => {
+    const items = Array.from(orderedDrivers);
+    const [driver] = items.splice(index, 1);
+    items.unshift(driver);
+    setOrderedDrivers(items);
+  };
+
+  const moveToLast = (index: number) => {
+    const items = Array.from(orderedDrivers);
+    const [driver] = items.splice(index, 1);
+    items.push(driver);
+    setOrderedDrivers(items);
+  };
+
   const handleSave = () => {
     onSaveOrder(orderedDrivers);
     onClose();
@@ -67,6 +90,13 @@ export const DriverOrderModal: React.FC<DriverOrderModalProps> = ({
             Use the up and down arrows to change the order of drivers in the dispatch view.
           </DialogDescription>
         </DialogHeader>
+
+        <div className="flex justify-center gap-2 pb-4">
+          <Button variant="outline" size="sm" onClick={alphabetizeDrivers} className="flex items-center gap-1">
+            <ArrowUpDown className="h-3 w-3" />
+            Alphabetize by Name
+          </Button>
+        </div>
 
         <div className="py-4">
           <div className="space-y-2">
@@ -103,6 +133,29 @@ export const DriverOrderModal: React.FC<DriverOrderModalProps> = ({
                         {driver.phone}
                       </div>
                     )}
+                  </div>
+
+                  <div className="flex gap-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => moveToFirst(index)}
+                      disabled={index === 0}
+                      className="h-6 w-6 p-0"
+                      title="Move to first"
+                    >
+                      <ArrowUp className="h-3 w-3" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => moveToLast(index)}
+                      disabled={index === orderedDrivers.length - 1}
+                      className="h-6 w-6 p-0"
+                      title="Move to last"
+                    >
+                      <ArrowDown className="h-3 w-3" />
+                    </Button>
                   </div>
 
                   <Badge variant="outline" className="text-xs">
