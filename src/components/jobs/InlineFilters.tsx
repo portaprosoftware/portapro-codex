@@ -132,10 +132,12 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
             {drivers.filter(driver => driver.id && driver.id.trim() !== '').map(driver => (
                <SelectItem key={driver.id} value={driver.id}>
                  <div className="flex items-center justify-between w-full">
-                    <span>{driver.first_name} {driver.last_name}</span>
-                    {driversWithJobsToday.has(driver.id) && (
-                      <div className="w-2.5 h-2.5 rounded-full bg-green-500 ml-auto"></div>
-                    )}
+                   <span>{driver.first_name} {driver.last_name}</span>
+                   <div className="w-2.5 h-2.5 flex-shrink-0">
+                     {driversWithJobsToday.has(driver.id) && (
+                       <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                     )}
+                   </div>
                  </div>
                </SelectItem>
             ))}
