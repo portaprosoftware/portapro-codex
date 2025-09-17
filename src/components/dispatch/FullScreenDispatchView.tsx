@@ -19,8 +19,6 @@ import { TimelineGrid } from './TimelineGrid';
 import { DriverSwimLane } from './DriverSwimLane';
 import { UnassignedJobsPanel } from './UnassignedJobsPanel';
 import { DispatchMetrics } from './DispatchMetrics';
-import { EnhancedJobFilters } from '@/components/filters/EnhancedJobFilters';
-import { DateRange } from 'react-day-picker';
 import { DragDropContext, DropResult } from '@hello-pangea/dnd';
 import { cn } from '@/lib/utils';
 
@@ -28,73 +26,41 @@ interface FullScreenDispatchViewProps {
   jobs: any[];
   drivers: any[];
   selectedDate: Date;
-  onDateChange: (date: Date) => void;
   onJobAssignment: (result: DropResult) => void;
   onJobView: (jobId: string) => void;
-  // Enhanced filter props
-  dateRange: DateRange | undefined;
-  onDateRangeChange: (range: DateRange | undefined) => void;
-  searchTerm: string;
-  onSearchTermChange: (term: string) => void;
-  selectedDriver: string;
-  onDriverChange: (driver: string) => void;
-  selectedJobType: string;
-  onJobTypeChange: (type: string) => void;
-  selectedStatus: string;
-  onStatusChange: (status: string) => void;
 }
 
 export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
   jobs,
   drivers,
   selectedDate,
-  onDateChange,
   onJobAssignment,
-  onJobView,
-  dateRange,
-  onDateRangeChange,
-  searchTerm,
-  onSearchTermChange,
-  selectedDriver,
-  onDriverChange,
-  selectedJobType,
-  onJobTypeChange,
-  selectedStatus,
-  onStatusChange
+  onJobView
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [timelineView, setTimelineView] = useState(true);
 
-  // Process and filter jobs based on enhanced filters
-  const { assignedJobs, unassignedJobs, jobsByDriver } = useMemo(() => {
-    // Apply enhanced filters to jobs
-    const filteredJobs = jobs.filter(job => {
-      const matchesSearch = searchTerm === '' || 
-        job.job_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (job.customers?.name || '').toLowerCase().includes(searchTerm.toLowerCase());
-      
-      const matchesDriver = selectedDriver === 'all' || job.driver_id === selectedDriver;
-      const matchesJobType = selectedJobType === 'all' || job.job_type === selectedJobType;
-      const matchesStatus = selectedStatus === 'all' || job.status === selectedStatus;
-      
-      return matchesSearch && matchesDriver && matchesJobType && matchesStatus;
-    });
+  // Separate assigned and unassigned jobs
+  const { assignedJobs, unassignedJobs } = useMemo(() => {
+    const assigned = jobs.filter(job => job.driver_id);
+    const unassigned = jobs.filter(job => !job.driver_id);
+    return { assignedJobs: assigned, unassignedJobs: unassigned };
+  }, [jobs]);
 
-    const assigned = filteredJobs.filter(job => job.driver_id);
-    const unassigned = filteredJobs.filter(job => !job.driver_id);
+  // Group jobs by driver
+  const jobsByDriver = useMemo(() => {
+    const grouped = new Map<string, any[]>();
     
-    // Group assigned jobs by driver
-    const byDriver = assigned.reduce((acc, job) => {
-      if (!acc[job.driver_id]) {
-        acc[job.driver_id] = [];
+    assignedJobs.forEach(job => {
+      const driverId = job.driver_id;
+      if (!grouped.has(driverId)) {
+        grouped.set(driverId, []);
       }
-      acc[job.driver_id].push(job);
-      return acc;
-    }, {} as Record<string, any[]>);
+      grouped.get(driverId)!.push(job);
+    });
     
-    return { assignedJobs: assigned, unassignedJobs: unassigned, jobsByDriver: byDriver };
-  }, [jobs, searchTerm, selectedDriver, selectedJobType, selectedStatus]);
-
+    return grouped;
+  }, [assignedJobs]);
 
   // Calculate metrics
   const metrics = useMemo(() => {
@@ -112,7 +78,6 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
       completionRate
     };
   }, [jobs, drivers, assignedJobs, unassignedJobs]);
-
 
   return (
     <Drawer open={isOpen} onOpenChange={setIsOpen}>
@@ -138,6 +103,10 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                   <DrawerTitle className="text-2xl font-semibold">
                     Dispatch Control Center
                   </DrawerTitle>
+                  <Badge variant="outline" className="gap-1">
+                    <Calendar className="h-3 w-3" />
+                    {format(selectedDate, 'MMM d, yyyy')}
+                  </Badge>
                 </div>
                 
                 <div className="flex items-center gap-2">
@@ -159,33 +128,10 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                   </DrawerClose>
                 </div>
               </div>
-            </DrawerHeader>
-
-            {/* Enhanced Filters */}
-            <div className="flex-shrink-0 border-b p-4">
-              <EnhancedJobFilters
-                dateRange={dateRange}
-                onDateRangeChange={onDateRangeChange}
-                searchTerm={searchTerm}
-                onSearchTermChange={onSearchTermChange}
-                selectedDriver={selectedDriver}
-                onDriverChange={onDriverChange}
-                selectedJobType={selectedJobType}
-                onJobTypeChange={onJobTypeChange}
-                selectedStatus={selectedStatus}
-                onStatusChange={onStatusChange}
-                drivers={drivers}
-                jobs={jobs}
-                onExport={() => {}} // TODO: Implement export for dispatch view
-                resultsCount={assignedJobs.length + unassignedJobs.length}
-                totalCount={jobs.length}
-              />
-            </div>
-
-            {/* Metrics Row */}
-            <div className="flex-shrink-0 border-b bg-background px-4">
+              
+              {/* Metrics Row */}
               <DispatchMetrics metrics={metrics} />
-            </div>
+            </DrawerHeader>
 
             {/* Main Content */}
             <div className="flex-1 flex overflow-hidden">
@@ -210,7 +156,7 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                       <DriverSwimLane
                         key={driver.id}
                         driver={driver}
-                        jobs={jobsByDriver[driver.id] || []}
+                        jobs={jobsByDriver.get(driver.id) || []}
                         onJobView={onJobView}
                         timelineView={timelineView}
                       />
@@ -240,7 +186,7 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                     <h3 className="font-semibold mb-2">Driver Status</h3>
                     <div className="space-y-2">
                       {drivers.slice(0, 5).map(driver => {
-                        const driverJobs = jobsByDriver[driver.id] || [];
+                        const driverJobs = jobsByDriver.get(driver.id) || [];
                         const workload = driverJobs.length;
                         return (
                           <div key={driver.id} className="flex items-center justify-between text-sm">
