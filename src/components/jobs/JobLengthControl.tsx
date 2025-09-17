@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
-import { Button } from '@/components/ui/button';
-import { Calendar, Package, Plus, Minus } from 'lucide-react';
+import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { Calendar } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
 import { format, addDays, differenceInDays } from 'date-fns';
 import { parseDateSafe } from '@/lib/dateUtils';
 
@@ -12,9 +10,6 @@ interface JobLengthControlProps {
 }
 
 export const JobLengthControl: React.FC<JobLengthControlProps> = ({ jobId }) => {
-  const [adjustmentDays, setAdjustmentDays] = useState<number>(0);
-  const queryClient = useQueryClient();
-
   // Get job details and current equipment assignments
   const { data: jobData } = useQuery({
     queryKey: ['job-detail', jobId],
@@ -50,67 +45,11 @@ export const JobLengthControl: React.FC<JobLengthControlProps> = ({ jobId }) => 
   const scheduledDate = jobData?.scheduled_date ? parseDateSafe(jobData.scheduled_date) : null;
   const currentReturnDate = equipmentData?.length > 0 
     ? parseDateSafe(equipmentData[0].return_date) 
-    : scheduledDate ? addDays(scheduledDate, 3) : null; // Default to 3 days
+    : null;
   
   const currentJobLength = scheduledDate && currentReturnDate 
     ? differenceInDays(currentReturnDate, scheduledDate) + 1  // Inclusive counting
-    : 3;
-
-  const newJobLength = currentJobLength + adjustmentDays;
-  const newReturnDate = scheduledDate ? addDays(scheduledDate, newJobLength) : null;
-
-  // Reset adjustment when job data changes
-  useEffect(() => {
-    setAdjustmentDays(0);
-  }, [jobId, currentJobLength]);
-
-  // Update all equipment assignments for this job
-  const updateEquipmentMutation = useMutation({
-    mutationFn: async () => {
-      if (!jobId || !scheduledDate) throw new Error('No job ID or scheduled date');
-
-      // Calculate new return date
-      const returnDate = format(addDays(scheduledDate, newJobLength), 'yyyy-MM-dd');
-
-      // Update all equipment assignments for this job
-      const { error } = await supabase
-        .from('equipment_assignments')
-        .update({
-          return_date: returnDate,
-          updated_at: new Date().toISOString()
-        })
-        .eq('job_id', jobId);
-
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['job-equipment', jobId] });
-      queryClient.invalidateQueries({ queryKey: ['job-detail'] });
-      queryClient.invalidateQueries({ queryKey: ['jobs'] });
-      setAdjustmentDays(0);
-      toast.success('Equipment assignment dates updated successfully');
-    },
-    onError: (error) => {
-      toast.error('Failed to update equipment assignments');
-      console.error('Equipment update error:', error);
-    },
-  });
-
-  const handleApplyToEquipment = () => {
-    if (newJobLength > 0 && adjustmentDays !== 0) {
-      updateEquipmentMutation.mutate();
-    }
-  };
-
-  const adjustJobLength = (change: number) => {
-    const newAdjustment = adjustmentDays + change;
-    const finalLength = currentJobLength + newAdjustment;
-    if (finalLength >= 1) {
-      setAdjustmentDays(newAdjustment);
-    }
-  };
-
-  if (!jobId) return null;
+    : null;
 
   if (!jobId || !scheduledDate) return null;
 
@@ -130,70 +69,14 @@ export const JobLengthControl: React.FC<JobLengthControlProps> = ({ jobId }) => 
           </span>
         </div>
 
-        {/* Duration controls */}
-        <div className="flex items-center gap-3">
-          <Button
-            type="button"
-            onClick={() => adjustJobLength(-1)}
-            disabled={newJobLength <= 1}
-            size="sm"
-            variant="outline"
-            className="w-8 h-8 p-0"
-          >
-            <Minus className="w-3 h-3" />
-          </Button>
-          
-          <div className="text-center min-w-[80px]">
-            <div className="text-sm font-medium">{newJobLength} days</div>
-            {adjustmentDays !== 0 && (
-              <div className="text-xs text-muted-foreground">
-                {adjustmentDays > 0 ? '+' : ''}{adjustmentDays} days
-              </div>
-            )}
-          </div>
-          
-          <Button
-            type="button"
-            onClick={() => adjustJobLength(1)}
-            size="sm"
-            variant="outline"
-            className="w-8 h-8 p-0"
-          >
-            <Plus className="w-3 h-3" />
-          </Button>
-        </div>
-
-        {/* New pickup date preview */}
-        {adjustmentDays !== 0 && newReturnDate && (
+        {/* Job length display */}
+        {currentJobLength && (
           <div className="text-sm">
-            <span className="text-gray-600">New pickup: </span>
-            <span className="font-medium text-blue-600">
-              {format(newReturnDate, 'EEEE, MMM do')}
-            </span>
-            <span className="text-xs text-muted-foreground ml-2">
-              ({adjustmentDays > 0 ? '+' : ''}{adjustmentDays} day{Math.abs(adjustmentDays) !== 1 ? 's' : ''})
-            </span>
+            <span className="text-gray-600">Duration: </span>
+            <span className="font-medium">{currentJobLength} days</span>
           </div>
-        )}
-
-        {/* Apply button */}
-        {adjustmentDays !== 0 && (
-          <Button
-            type="button"
-            onClick={handleApplyToEquipment}
-            disabled={updateEquipmentMutation.isPending}
-            size="sm"
-            className="w-full"
-          >
-            <Package className="w-3 h-3 mr-1" />
-            {updateEquipmentMutation.isPending ? 'Applying...' : 'Apply to Equipment'}
-          </Button>
         )}
       </div>
-      
-      <p className="text-xs text-gray-500 mt-2">
-        This will update all equipment assignment return dates for this job
-      </p>
     </div>
   );
 };
