@@ -758,6 +758,7 @@ const JobsPage: React.FC = () => {
                             jobs={dispatchJobs}
                             drivers={drivers}
                             selectedDate={selectedDate}
+                            onDateChange={setSelectedDate}
                             onJobAssignment={handleDragEnd}
                             onJobView={handleJobView}
                           />

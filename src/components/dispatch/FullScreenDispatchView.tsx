@@ -19,6 +19,7 @@ import { TimelineGrid } from './TimelineGrid';
 import { DriverSwimLane } from './DriverSwimLane';
 import { UnassignedJobsPanel } from './UnassignedJobsPanel';
 import { DispatchMetrics } from './DispatchMetrics';
+import { DispatchFilters } from './DispatchFilters';
 import { DragDropContext, DropResult } from '@hello-pangea/dnd';
 import { cn } from '@/lib/utils';
 
@@ -26,6 +27,7 @@ interface FullScreenDispatchViewProps {
   jobs: any[];
   drivers: any[];
   selectedDate: Date;
+  onDateChange: (date: Date) => void;
   onJobAssignment: (result: DropResult) => void;
   onJobView: (jobId: string) => void;
 }
@@ -34,11 +36,19 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
   jobs,
   drivers,
   selectedDate,
+  onDateChange,
   onJobAssignment,
   onJobView
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [timelineView, setTimelineView] = useState(true);
+  
+  // Filter states
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedDriver, setSelectedDriver] = useState('all');
+  const [selectedJobType, setSelectedJobType] = useState('all');
+  const [selectedStatus, setSelectedStatus] = useState('all');
+  const [activeFilters, setActiveFilters] = useState<string[]>([]);
 
   // Separate assigned and unassigned jobs
   const { assignedJobs, unassignedJobs } = useMemo(() => {
@@ -79,6 +89,14 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
     };
   }, [jobs, drivers, assignedJobs, unassignedJobs]);
 
+  const handleQuickFilter = (filter: string) => {
+    setActiveFilters(prev => 
+      prev.includes(filter) 
+        ? prev.filter(f => f !== filter)
+        : [...prev, filter]
+    );
+  };
+
   return (
     <Drawer open={isOpen} onOpenChange={setIsOpen}>
       <DrawerTrigger asChild>
@@ -103,10 +121,6 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                   <DrawerTitle className="text-2xl font-semibold">
                     Dispatch Control Center
                   </DrawerTitle>
-                  <Badge variant="outline" className="gap-1">
-                    <Calendar className="h-3 w-3" />
-                    {format(selectedDate, 'MMM d, yyyy')}
-                  </Badge>
                 </div>
                 
                 <div className="flex items-center gap-2">
@@ -128,10 +142,32 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                   </DrawerClose>
                 </div>
               </div>
-              
-              {/* Metrics Row */}
-              <DispatchMetrics metrics={metrics} />
             </DrawerHeader>
+
+            {/* Filters Section */}
+            <div className="flex-shrink-0 border-b">
+              <DispatchFilters
+                selectedDate={selectedDate}
+                onDateChange={onDateChange}
+                jobsCount={jobs.length}
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                selectedDriver={selectedDriver}
+                onDriverChange={setSelectedDriver}
+                selectedJobType={selectedJobType}
+                onJobTypeChange={setSelectedJobType}
+                selectedStatus={selectedStatus}
+                onStatusChange={setSelectedStatus}
+                drivers={drivers}
+                onQuickFilter={handleQuickFilter}
+                activeFilters={activeFilters}
+              />
+            </div>
+
+            {/* Metrics Row */}
+            <div className="flex-shrink-0 border-b bg-background px-4">
+              <DispatchMetrics metrics={metrics} />
+            </div>
 
             {/* Main Content */}
             <div className="flex-1 flex overflow-hidden">
