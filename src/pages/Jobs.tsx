@@ -873,21 +873,16 @@ const JobsPage: React.FC = () => {
                           <div key={driver.id} className="border-b border-gray-200 last:border-b-0">
                             {/* Driver Header */}
                             <div className="bg-gray-50 p-4 border-b border-gray-100">
-                              <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
-                                  <User className="w-4 h-4 text-gray-600" />
-                                </div>
-                                <div className="min-w-0 flex-1">
-                                  <h4 className="font-medium text-gray-900 text-sm">
-                                    {driver.first_name} {driver.last_name}
-                                  </h4>
-                                  <Badge 
-                                    variant={driverJobs.length > 0 ? "default" : "secondary"}
-                                    className="text-xs mt-1"
-                                  >
-                                    {driverJobs.length} jobs
-                                  </Badge>
-                                </div>
+                              <div className="flex items-center justify-between">
+                                <h4 className="font-medium text-gray-900 text-sm">
+                                  {driver.first_name} {driver.last_name}
+                                </h4>
+                                <Badge 
+                                  variant={driverJobs.length > 0 ? "default" : "secondary"}
+                                  className="text-xs"
+                                >
+                                  {driverJobs.length} jobs
+                                </Badge>
                               </div>
                             </div>
 
