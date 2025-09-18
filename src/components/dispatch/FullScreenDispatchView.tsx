@@ -329,7 +329,8 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                   <div className="flex-1 overflow-hidden">
                     <div
                       ref={verticalScrollRef}
-                      className="h-full overflow-auto relative"
+                      className="h-full overflow-auto relative [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-gray-400"
+                      style={{ scrollbarWidth: 'auto', scrollbarColor: '#d1d5db #f3f4f6' }}
                       data-timeline-content
                       onScroll={() => syncVerticalScroll('main')}
                     >
