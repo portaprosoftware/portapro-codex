@@ -57,19 +57,19 @@ export const QRGenerator: React.FC = () => {
         <h4 className="text-base font-normal">Track Units with QR Codes Automatically</h4>
       </div>
       
-      <div className="grid md:grid-cols-2 gap-6 items-center">
-        <div className="flex flex-col items-center space-y-4">
-          <div id="qr-code" className="bg-white p-4 rounded border">
+      <div className="grid md:grid-cols-2 gap-4 items-center">
+        <div className="flex flex-col items-center">
+          <div id="qr-code" className="bg-white p-3 rounded border">
             <QRCodeSVG 
               value={qrValue} 
-              size={128}
+              size={147}
               level="M"
               includeMargin={true}
             />
           </div>
         </div>
         
-        <div className="space-y-4">
+        <div className="space-y-3">
           <div className="space-y-3">
             <div>
               <label className="block text-sm font-medium mb-2">QR Label</label>
