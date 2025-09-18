@@ -680,7 +680,7 @@ export const Landing: React.FC = () => {
             {/* Panel Scanning Card (was rotator) */}
             <div className="border rounded-lg p-6 bg-card">
               <div className="mb-4">
-                <h4 className="text-base font-normal">Snap & Track Units from Embedded Plastic Text Numbers</h4>
+                <h4 className="text-base font-normal text-center">Snap & Track Units from Embedded Plastic Text Numbers</h4>
               </div>
               
               <div className="grid md:grid-cols-2 gap-6 items-center">
