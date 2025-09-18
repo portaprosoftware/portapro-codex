@@ -4,7 +4,7 @@ import { Camera, Smartphone, Eye } from 'lucide-react';
 
 const PanelScanningCard: React.FC = () => {
   return (
-    <div className="border rounded-lg p-6 bg-card min-h-[400px] flex flex-col justify-between">
+    <div className="border rounded-lg p-6 bg-card">
       <div className="mb-4">
         <h4 className="text-base font-normal">Snap & Track Units from Embedded Plastic Text Numbers</h4>
       </div>

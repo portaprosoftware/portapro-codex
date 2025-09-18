@@ -52,7 +52,7 @@ export const QRGenerator: React.FC = () => {
   };
 
   return (
-    <div className="border rounded-lg p-6 bg-card min-h-[400px] flex flex-col justify-between">
+    <div className="border rounded-lg p-6 bg-card">
       <div className="mb-4">
         <h4 className="text-base font-normal">Track Units with QR Codes Automatically</h4>
       </div>
@@ -67,38 +67,37 @@ export const QRGenerator: React.FC = () => {
               includeMargin={true}
             />
           </div>
-          <div className="text-center text-sm font-medium">
-            {qrValue}
-          </div>
         </div>
         
         <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-2">QR Label</label>
-            <Input
-              value={qrValue}
-              onChange={(e) => setQrValue(e.target.value)}
-              placeholder="Enter unit identifier"
-              className="w-full"
-            />
-          </div>
-          
-          <div className="flex gap-3">
-            <Button 
-              onClick={() => setQrValue(Math.floor(Math.random() * 9999) + ' • Standard Unit')}
-              variant="outline"
-              className="flex-1"
-            >
-              Generate
-            </Button>
-            <Button 
-              onClick={handlePrint}
-              variant="outline"
-              className="flex-1"
-            >
-              <Printer className="w-4 h-4 mr-2" />
-              Print
-            </Button>
+          <div className="space-y-3">
+            <div>
+              <label className="block text-sm font-medium mb-2">QR Label</label>
+              <Input
+                value={qrValue}
+                onChange={(e) => setQrValue(e.target.value)}
+                placeholder="Enter unit identifier"
+                className="w-full"
+              />
+            </div>
+            
+            <div className="flex gap-3">
+              <Button 
+                onClick={() => setQrValue(Math.floor(Math.random() * 9999) + ' • Standard Unit')}
+                variant="outline"
+                className="flex-1"
+              >
+                Generate
+              </Button>
+              <Button 
+                onClick={handlePrint}
+                variant="outline"
+                className="flex-1"
+              >
+                <Printer className="w-4 h-4 mr-2" />
+                Print
+              </Button>
+            </div>
           </div>
           
           <p className="text-sm text-muted-foreground">
