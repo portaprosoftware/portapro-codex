@@ -106,11 +106,11 @@ export const DriverOrderModal: React.FC<DriverOrderModalProps> = ({
             <div className="flex gap-2">
               <Button variant="outline" size="sm" onClick={alphabetizeByFirstName} className="flex items-center gap-1">
                 <ArrowUpDown className="h-3 w-3" />
-                First Name
+                Top
               </Button>
               <Button variant="outline" size="sm" onClick={alphabetizeByLastName} className="flex items-center gap-1">
                 <ArrowUpDown className="h-3 w-3" />
-                Last Name
+                Bottom
               </Button>
             </div>
           </div>
@@ -121,7 +121,7 @@ export const DriverOrderModal: React.FC<DriverOrderModalProps> = ({
           <span className="flex-1">Driver</span>
           <div className="flex items-center gap-8">
             <span className="w-16 text-center">Up | Down</span>
-            <span className="w-16 text-center">First | Last</span>
+            <span className="w-16 text-center">Top | Bottom</span>
             <span className="w-12 text-center">Position</span>
           </div>
         </div>
