@@ -147,8 +147,18 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
 
   const scrollVertical = (direction: 'up' | 'down') => {
     if (verticalScrollRef.current && stickyColumnRef.current) {
-      const scrollAmount = 300;
-      const newScrollTop = verticalScrollRef.current.scrollTop + (direction === 'down' ? scrollAmount : -scrollAmount);
+      const driverRowHeight = 160;
+      const topFrozenHeight = 200; // unassigned (160px) + blue header (40px)
+      const viewportHeight = verticalScrollRef.current.clientHeight;
+      
+      // Calculate dynamic scroll amount - either one page or aligned to driver rows
+      const pageScrollAmount = Math.max(viewportHeight - topFrozenHeight, driverRowHeight);
+      const alignedScrollAmount = Math.ceil(pageScrollAmount / driverRowHeight) * driverRowHeight;
+      
+      const scrollAmount = alignedScrollAmount;
+      const currentScrollTop = verticalScrollRef.current.scrollTop;
+      const newScrollTop = currentScrollTop + (direction === 'down' ? scrollAmount : -scrollAmount);
+      
       verticalScrollRef.current.scrollTo({ top: newScrollTop, behavior: 'smooth' });
       stickyColumnRef.current.scrollTo({ top: newScrollTop, behavior: 'smooth' });
     }
