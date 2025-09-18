@@ -210,7 +210,7 @@ export const DriverOrderModal: React.FC<DriverOrderModalProps> = ({
           </Button>
           <Button onClick={handleSave} className="flex items-center gap-2">
             <Save className="h-4 w-4" />
-            Save Order
+            Save List Order
           </Button>
         </div>
       </DialogContent>
