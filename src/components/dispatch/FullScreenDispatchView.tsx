@@ -85,19 +85,33 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
 
   // Handle job assignment with time slot logic
   const handleDragEnd = (result: DropResult) => {
+    console.log('Drag ended:', {
+      source: result.source,
+      destination: result.destination,
+      draggableId: result.draggableId
+    });
+
     if (!result.destination) {
+      console.log('No destination - drop cancelled');
       return;
     }
 
     // Extract time slot information from destination droppableId
     const destinationId = result.destination.droppableId;
+    const sourceId = result.source.droppableId;
+    
+    // Don't do anything if dropped in the same position
+    if (sourceId === destinationId && result.source.index === result.destination.index) {
+      console.log('Dropped in same position - no action needed');
+      return;
+    }
     
     if (destinationId.includes('-')) {
       // Timeline view: droppableId format is "driverId-timeSlotId" or "unassigned-timeSlotId"
       const [driverId, timeSlotId] = destinationId.split('-');
       const jobId = result.draggableId;
       
-      console.log('Timeline drop:', { jobId, driverId, timeSlotId });
+      console.log('Timeline drop:', { jobId, driverId, timeSlotId, fromSource: sourceId });
       
       // Show informational toast for no-time drops
       if (timeSlotId === 'no-time') {
@@ -108,6 +122,18 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
         });
       }
       
+      // Show success toast for cross-driver moves
+      if (sourceId !== destinationId && !sourceId.startsWith('unassigned')) {
+        const [sourceDriverId] = sourceId.split('-');
+        if (sourceDriverId !== driverId) {
+          toast({
+            title: "Job reassigned",
+            description: `Job moved to ${driverId === 'unassigned' ? 'unassigned' : 'different driver'}`,
+            duration: 3000,
+          });
+        }
+      }
+      
       // Call parent with driver assignment and time slot info
       onJobAssignment(jobId, driverId === 'unassigned' ? null : driverId, timeSlotId);
     } else {
@@ -115,7 +141,7 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
       const driverId = destinationId === 'unassigned' ? null : destinationId;
       const jobId = result.draggableId;
       
-      console.log('Regular drop:', { jobId, driverId });
+      console.log('Regular drop:', { jobId, driverId, fromSource: sourceId });
       
       onJobAssignment(jobId, driverId, null);
     }

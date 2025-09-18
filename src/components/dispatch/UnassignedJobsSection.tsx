@@ -159,8 +159,8 @@ export const UnassignedJobsSection: React.FC<UnassignedJobsSectionProps> = ({
                 ref={provided.innerRef}
                 {...provided.droppableProps}
                 className={cn(
-                  "h-full p-2 flex flex-col gap-2 overflow-y-auto",
-                  snapshot.isDraggingOver && "bg-primary/10 ring-2 ring-primary/20"
+                  "h-full p-2 flex flex-col gap-2 overflow-y-auto transition-all duration-200",
+                  snapshot.isDraggingOver && "bg-primary/10 ring-2 ring-primary/30 border-primary/30"
                 )}
               >
                 {jobsByTimeSlot[slot.id]?.map((job, index) => (

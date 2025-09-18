@@ -62,6 +62,8 @@ export const TimelineJobCard: React.FC<TimelineJobCardProps> = ({
   // Safe time formatting utility
   const formatTimeSafe = (timeString: string | null) => {
     if (!timeString) return null;
+    // Filter out invalid time formats like "no:00"
+    if (timeString.includes('no:') || timeString === 'no:00') return null;
     try {
       return format(new Date(`2000-01-01T${timeString}`), 'h:mm a');
     } catch (error) {
@@ -84,17 +86,18 @@ export const TimelineJobCard: React.FC<TimelineJobCardProps> = ({
         isDragging && "ring-2 ring-blue-300 shadow-lg"
       )}
     >
-      {/* Drag Handle */}
+      {/* Drag Handle - Enhanced for better usability */}
       {timelineView && (
         <div 
           {...dragHandleProps}
-          className="absolute top-1.5 right-1.5 cursor-grab active:cursor-grabbing p-0.5 hover:bg-muted rounded opacity-60 hover:opacity-100 transition-opacity"
+          className="absolute top-1 right-1 cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded opacity-80 hover:opacity-100 transition-all border border-transparent hover:border-gray-300"
+          title="Drag to move job"
         >
-          <GripVertical className="h-2.5 w-2.5 text-muted-foreground" />
+          <GripVertical className="h-4 w-4 text-muted-foreground hover:text-foreground" />
         </div>
       )}
       
-      <div className="space-y-1.5 pr-5"> {/* reduced spacing and right padding */}
+      <div className="space-y-1.5 pr-7"> {/* increased right padding for larger drag handle */}
         {/* Job Number and Customer Name */}
         <div className="space-y-0.5">
           <div className="font-semibold text-xs text-foreground"> {/* reduced from text-sm to text-xs */}
