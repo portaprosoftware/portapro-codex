@@ -52,9 +52,9 @@ export const QRGenerator: React.FC = () => {
   };
 
   return (
-    <div className="border rounded-lg p-6 bg-card">
-      <div className="mb-4">
-        <h4 className="text-base font-normal text-center">Track Units with QR Codes Automatically</h4>
+    <div className="border rounded-lg p-5 bg-card">
+      <div className="mb-3">
+        <h4 className="text-sm font-normal text-center">Track Units with QR Codes Automatically</h4>
       </div>
       
       <div className="grid md:grid-cols-2 gap-2 items-center">
@@ -62,7 +62,7 @@ export const QRGenerator: React.FC = () => {
           <div id="qr-code" className="bg-white p-2 rounded border">
             <QRCodeSVG 
               value={qrValue} 
-              size={176}
+              size={141}
               level="M"
               includeMargin={true}
             />
@@ -70,37 +70,37 @@ export const QRGenerator: React.FC = () => {
         </div>
         
         <div className="space-y-2">
-          <div className="space-y-3">
+          <div className="space-y-2">
             <div>
-              <label className="block text-sm font-medium mb-2">QR Label</label>
+              <label className="block text-xs font-medium mb-1">QR Label</label>
               <Input
                 value={qrValue}
                 onChange={(e) => setQrValue(e.target.value)}
                 placeholder="Enter unit identifier"
-                className="w-full"
+                className="w-full text-sm"
               />
             </div>
             
-            <div className="flex gap-3">
+            <div className="flex gap-2">
               <Button 
                 onClick={() => setQrValue(Math.floor(Math.random() * 9999) + ' • Standard Unit')}
                 variant="outline"
-                className="flex-1"
+                className="flex-1 text-xs py-1"
               >
                 Generate
               </Button>
               <Button 
                 onClick={handlePrint}
                 variant="outline"
-                className="flex-1"
+                className="flex-1 text-xs py-1"
               >
-                <Printer className="w-4 h-4 mr-2" />
+                <Printer className="w-3 h-3 mr-1" />
                 Print
               </Button>
             </div>
           </div>
           
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             Works offline — syncs later. Instant attach to units & jobs.
           </p>
         </div>
