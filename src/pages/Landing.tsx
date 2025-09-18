@@ -23,6 +23,7 @@ import { QuoteToJobShowcase } from '@/components/marketing/QuoteToJobShowcase';
 import { DriverAppShowcase } from '@/components/marketing/DriverAppShowcase';
 import { InventorySuppliesShowcase } from '@/components/marketing/InventorySuppliesShowcase';
 import { TrackingMethodsSlideshow } from '@/components/marketing/TrackingMethodsSlideshow';
+import { QRGenerator } from '@/components/ui/qr-generator';
 import { QRPanelRotator } from '@/components/ui/qr-panel-rotator';
 import { ConsumablesShowcase } from '@/components/marketing/ConsumablesShowcase';
 import { ServicesHubShowcase } from '@/components/marketing/ServicesHubShowcase';
@@ -676,8 +677,49 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
-            {/* QR Code Generator & Panel Scanning Rotator */}
-            <QRPanelRotator />
+            {/* Panel Scanning Card (was rotator) */}
+            <div className="border rounded-lg p-6 bg-card">
+              <div className="mb-4">
+                <h4 className="text-base font-normal">Snap & Track Units from Embedded Plastic Text Numbers</h4>
+              </div>
+              
+              <div className="grid md:grid-cols-2 gap-6 items-center">
+                <div className="flex flex-col items-center space-y-4">
+                  <div className="rounded-lg overflow-hidden">
+                    <img 
+                      src="/lovable-uploads/4ba172a8-8093-4d4e-9143-53090809b31e.png" 
+                      alt="Phone scanning embossed plastic text on portable toilet unit"
+                      className="w-full max-w-sm h-auto"
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="bg-gradient-green text-white px-3 py-1 rounded-full text-sm font-bold inline-block">
+                      ✓ Successfully tracked
+                    </div>
+                    
+                    <div className="space-y-2 text-sm">
+                      <div><span className="font-medium">Vendor:</span> ABC Manufacturing</div>
+                      <div><span className="font-medium">Tool No:</span> T-207788-1A</div>
+                      <div><span className="font-medium">Vendor ID:</span> 32123</div>
+                      <div><span className="font-medium">Mfg Date:</span> January 13, 2016</div>
+                      <div><span className="font-medium">Plastic:</span> HDPE</div>
+                    </div>
+                  </div>
+                  
+                  <p className="text-sm text-muted-foreground">
+                    Works offline — syncs later. Instant attach to units & jobs.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* QR Code Generator Section */}
+          <div className="mb-12">
+            <QRGenerator />
           </div>
 
 
