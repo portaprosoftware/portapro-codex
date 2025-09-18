@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { format } from 'date-fns';
-import { Clock, Maximize2, X, Calendar, Users, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, ExternalLink } from 'lucide-react';
+import { Clock, Maximize2, X, Calendar, Users, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, ExternalLink, Info } from 'lucide-react';
 import { ModernDigitalClock } from '@/components/ui/ModernDigitalClock';
 import {
   Drawer,
@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { TimelineGrid, TIME_SLOTS } from './TimelineGrid';
 import { DriverSwimLane } from './DriverSwimLane';
 import { UnassignedJobsSection } from './UnassignedJobsSection';
@@ -183,6 +184,23 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                     <Calendar className="h-3 w-3" />
                     {format(selectedDate, 'MMM d, yyyy')}
                   </Badge>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-6 w-6 p-0">
+                        <Info className="w-4 h-4 text-gray-400 hover:text-gray-600" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-md">
+                      <DialogHeader>
+                        <DialogTitle>Change Date Instructions</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-2">
+                        <p className="text-sm text-gray-600">
+                          To change the date: Close full screen dispatch center, edit date and reopen "Full Screen Dispatch"
+                        </p>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                   <Badge variant="secondary" className="gap-1">
                     {jobs.length} Jobs ({unassignedJobs.length} unassigned)
                   </Badge>
@@ -266,7 +284,7 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                     className="gap-2"
                   >
                     <Users className="h-4 w-4" />
-                    Reorder Drivers
+                    Reorder List
                   </Button>
                   <Button 
                     variant="outline" 
