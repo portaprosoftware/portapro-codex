@@ -53,9 +53,12 @@ export const QRGenerator: React.FC = () => {
 
   return (
     <div className="border rounded-lg p-6 bg-card">
+      <div className="mb-4">
+        <h4 className="text-base font-normal text-center">Track Units with QR Codes Automatically</h4>
+      </div>
+      
       <div className="grid md:grid-cols-2 gap-2 items-center">
-        <div className="flex flex-col items-center space-y-3">
-          <h4 className="text-base font-normal text-center">Track Units with QR Codes Automatically</h4>
+        <div className="flex flex-col items-center">
           <div id="qr-code" className="bg-white p-2 rounded border">
             <QRCodeSVG 
               value={qrValue} 
