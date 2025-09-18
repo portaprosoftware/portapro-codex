@@ -2622,30 +2622,13 @@ export const Landing: React.FC = () => {
             >
               <X className="w-5 h-5" />
             </button>
-            {/* Loading skeleton while iframe loads */}
-            <div className="absolute inset-0 flex items-center justify-center bg-gray-50 rounded-lg">
-              <div className="animate-pulse flex flex-col items-center space-y-4">
-                <div className="h-8 w-48 bg-gray-200 rounded"></div>
-                <div className="h-4 w-32 bg-gray-200 rounded"></div>
-                <div className="h-64 w-80 bg-gray-200 rounded"></div>
-              </div>
-            </div>
             <iframe
-              src="https://calendly.com/portapro/portapro-software-demo?embed_type=Inline&embed_domain=1&hide_gdpr_banner=1&prefill=0"
+              src="https://calendly.com/portapro/portapro-software-demo?embed_type=Inline&embed_domain=1&hide_gdpr_banner=1"
               width="100%"
               height="100%"
-              className="rounded-lg relative z-10"
+              className="rounded-lg"
               frameBorder="0"
               title="Schedule Demo"
-              loading="eager"
-              onLoad={(e) => {
-                // Hide loading skeleton when iframe loads
-                const target = e.target as HTMLIFrameElement;
-                const skeleton = target.parentElement?.querySelector('.animate-pulse');
-                if (skeleton) {
-                  skeleton.remove();
-                }
-              }}
             />
           </div>
         </div>
