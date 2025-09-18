@@ -180,27 +180,29 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                   <DrawerTitle className="text-2xl font-semibold">
                     Dispatch Center
                   </DrawerTitle>
-                  <Badge variant="outline" className="gap-1">
-                    <Calendar className="h-3 w-3" />
-                    {format(selectedDate, 'MMM d, yyyy')}
-                  </Badge>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-6 w-6 p-0">
-                        <Info className="w-4 h-4 text-gray-400 hover:text-gray-600" />
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-md">
-                      <DialogHeader>
-                        <DialogTitle>Change Date Instructions</DialogTitle>
-                      </DialogHeader>
-                      <div className="space-y-2">
-                        <p className="text-sm text-gray-600">
-                          To change the date: Close full screen dispatch center, edit date and reopen "Full Screen Dispatch"
-                        </p>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
+                  <div className="flex items-center gap-1">
+                    <Badge variant="outline" className="gap-1">
+                      <Calendar className="h-3 w-3" />
+                      {format(selectedDate, 'MMM d, yyyy')}
+                    </Badge>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-6 w-6 p-0">
+                          <Info className="w-4 h-4 text-gray-400 hover:text-gray-600" />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-md">
+                        <DialogHeader>
+                          <DialogTitle>Change Date Instructions</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-2">
+                          <p className="text-sm text-gray-600">
+                            To change the date: Close full screen dispatch center, edit date and reopen "Full Screen Dispatch"
+                          </p>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
                   <Badge variant="secondary" className="gap-1">
                     {jobs.length} Jobs ({unassignedJobs.length} unassigned)
                   </Badge>
