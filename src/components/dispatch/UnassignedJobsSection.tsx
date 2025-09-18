@@ -138,7 +138,7 @@ export const UnassignedJobsSection: React.FC<UnassignedJobsSectionProps> = ({
 
   // Horizontal timeline view - just slots, no wrapper
   return (
-    <div className="h-[160px] flex">
+    <div className="h-[128px] flex">
       {TIME_SLOTS.map((slot) => (
         <div
           key={slot.id}

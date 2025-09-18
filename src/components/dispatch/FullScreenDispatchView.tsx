@@ -287,7 +287,7 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                   <div className="w-32 flex-shrink-0 bg-background border-r flex flex-col">
                     <div className="sticky top-0 z-30 bg-background">
                       {/* Unassigned Header (left cell) */}
-                      <div className="h-[160px] border-b bg-card flex items-center justify-center">
+                      <div className="h-[128px] border-b bg-card flex items-center justify-center">
                         <div className="text-xs font-medium text-center">
                           <div className="mb-1">Unassigned</div>
                           <Badge variant="secondary" className="text-xs">
@@ -308,7 +308,7 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                       onScroll={() => syncVerticalScroll('sticky')}
                     >
                       {drivers.map((driver) => (
-                        <div key={driver.id} className="h-[160px] border-b p-2 flex items-center bg-card">
+                        <div key={driver.id} className="h-[128px] border-b p-2 flex items-center bg-card">
                           <div className="flex flex-col gap-1 w-full">
                             <div className="font-medium text-xs text-center">
                               {driver.first_name} {driver.last_name}
@@ -342,7 +342,7 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                         {/* Sticky top: Unassigned timeline row + blue time headers row */}
                         <div className="sticky top-0 z-20 bg-background">
                           {/* Unassigned timeline (scrolls horizontally with content) */}
-                          <div className="h-[160px] border-b">
+                          <div className="h-[128px] border-b">
                             <UnassignedJobsSection
                               jobs={unassignedJobs}
                               onJobView={onJobView}
@@ -395,10 +395,10 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                           const positionWithinSlot = positionPercent * 14 - slotsBeforeCurrentTime;
                           const leftPosition = noTimeSlotWidth + slotsBeforeCurrentTime * timeSlotWidth + positionWithinSlot * timeSlotWidth;
                           
-                          // Calculate full height: unassigned (160px) + blue header (40px) + all driver rows (160px each)
-                          const unassignedHeight = 160;
-                          const headerHeight = 40;
-                          const driverRowHeight = 160;
+                           // Calculate full height: unassigned (128px) + blue header (40px) + all driver rows (128px each)
+                           const unassignedHeight = 128;
+                           const headerHeight = 40;
+                           const driverRowHeight = 128;
                           const totalHeight = unassignedHeight + headerHeight + (drivers.length * driverRowHeight);
                           
                           return (

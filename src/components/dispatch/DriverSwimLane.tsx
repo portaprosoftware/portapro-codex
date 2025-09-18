@@ -124,7 +124,7 @@ export const DriverSwimLane: React.FC<DriverSwimLaneProps> = ({
 
   // Horizontal timeline view - just slots, no card wrapper
   return (
-    <div className="h-[160px] border-b flex">
+    <div className="h-[128px] border-b flex">
       {TIME_SLOTS.map((slot) => (
         <div
           key={slot.id}

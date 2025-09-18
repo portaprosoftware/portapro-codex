@@ -76,9 +76,9 @@ export const TimelineJobCard: React.FC<TimelineJobCardProps> = ({
   return (
     <Card
       className={cn(
-        "p-3 transition-all border-l-4 relative bg-white shadow-sm",
+        "p-2 transition-all border-l-4 relative bg-white shadow-sm", // reduced padding from p-3 to p-2
         jobTypeConfig.color,
-        timelineView ? "w-[180px] flex-shrink-0 mx-auto" : "w-full",
+        timelineView ? "w-[144px] flex-shrink-0 mx-auto" : "w-full", // reduced width from 180px to 144px (20% reduction)
         isOverdue && "border-red-500",
         job.status === 'completed' && "border-green-500",
         isDragging && "ring-2 ring-blue-300 shadow-lg"
@@ -88,20 +88,20 @@ export const TimelineJobCard: React.FC<TimelineJobCardProps> = ({
       {timelineView && (
         <div 
           {...dragHandleProps}
-          className="absolute top-2 right-2 cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded opacity-60 hover:opacity-100 transition-opacity"
+          className="absolute top-1.5 right-1.5 cursor-grab active:cursor-grabbing p-0.5 hover:bg-muted rounded opacity-60 hover:opacity-100 transition-opacity"
         >
-          <GripVertical className="h-3 w-3 text-muted-foreground" />
+          <GripVertical className="h-2.5 w-2.5 text-muted-foreground" />
         </div>
       )}
       
-      <div className="space-y-2 pr-6">
+      <div className="space-y-1.5 pr-5"> {/* reduced spacing and right padding */}
         {/* Job Number and Customer Name */}
-        <div className="space-y-1">
-          <div className="font-semibold text-sm text-foreground">
+        <div className="space-y-0.5">
+          <div className="font-semibold text-xs text-foreground"> {/* reduced from text-sm to text-xs */}
             {job.job_number}
           </div>
           {job.customers?.name && (
-            <div className="text-sm text-foreground font-medium">
+            <div className="text-xs text-foreground font-medium"> {/* reduced from text-sm to text-xs */}
               {job.customers.name}
             </div>
           )}
@@ -109,8 +109,8 @@ export const TimelineJobCard: React.FC<TimelineJobCardProps> = ({
 
         {/* Location */}
         {job.service_address && (
-          <div className="flex items-start gap-2 text-xs text-muted-foreground">
-            <MapPin className="h-3 w-3 mt-0.5 flex-shrink-0" />
+          <div className="flex items-start gap-1.5 text-xs text-muted-foreground">
+            <MapPin className="h-2.5 w-2.5 mt-0.5 flex-shrink-0" />
             <span className="line-clamp-2">
               {job.service_address}
             </span>
@@ -118,25 +118,25 @@ export const TimelineJobCard: React.FC<TimelineJobCardProps> = ({
         )}
 
         {/* Time */}
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Clock className="h-3 w-3" />
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <Clock className="h-2.5 w-2.5" />
           <span>
             {scheduledTime || scheduledDate || 'Unscheduled'}
           </span>
         </div>
 
         {/* Status Badge */}
-        <div className="flex items-center gap-2">
-          <Badge variant={statusConfig.color} className="text-xs">
+        <div className="flex items-center gap-1.5">
+          <Badge variant={statusConfig.color} className="text-xs px-1.5 py-0.5">
             {statusConfig.label}
           </Badge>
           {isOverdue && (
-            <Badge variant="destructive" className="text-xs">
+            <Badge variant="destructive" className="text-xs px-1.5 py-0.5">
               Overdue
             </Badge>
           )}
           {isPriority && (
-            <Badge variant="destructive" className="text-xs">
+            <Badge variant="destructive" className="text-xs px-1.5 py-0.5">
               Priority
             </Badge>
           )}
@@ -146,7 +146,7 @@ export const TimelineJobCard: React.FC<TimelineJobCardProps> = ({
         <Button
           variant="secondary"
           size="sm"
-          className="w-full text-xs h-8"
+          className="w-full text-xs h-6 px-2" // reduced button height and font size
           onClick={(e) => {
             e.stopPropagation();
             onJobView(job.id);
