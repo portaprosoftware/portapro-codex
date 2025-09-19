@@ -525,7 +525,7 @@ export const Landing: React.FC = () => {
           </div>
 
           {/* Inventory KPIs */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
             <StatCard 
               title="Total Units" 
               value="247" 
@@ -543,20 +543,12 @@ export const Landing: React.FC = () => {
               iconBg="bg-emerald-600"
             />
             <StatCard 
-              title="Out for Service" 
-              value="34" 
+              title="Maintenance" 
+              value="3" 
               icon={Wrench} 
               gradientFrom="#F59E0B" 
               gradientTo="#D97706" 
               iconBg="bg-amber-600"
-            />
-            <StatCard 
-              title="Storage Locations" 
-              value="12" 
-              icon={MapPin} 
-              gradientFrom="#8B5CF6" 
-              gradientTo="#7C3AED" 
-              iconBg="bg-violet-600"
             />
           </div>
 
