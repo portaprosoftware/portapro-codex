@@ -737,7 +737,7 @@ export const Landing: React.FC = () => {
             </div>
             <div className="flex justify-center">
               <img
-                src="/lovable-uploads/98c5b0d3-bf3b-492f-8cf9-f5afd3c1932f.png"
+                src="/src/assets/manage-unit.png"
                 alt="Unit maintenance management interface showing unit 3012 with broken seat repair details, location info, and expected return date"
                 className="w-full max-w-lg h-auto"
                 loading="lazy"
