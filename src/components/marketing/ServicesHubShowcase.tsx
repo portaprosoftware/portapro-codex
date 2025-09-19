@@ -90,8 +90,8 @@ export const ServicesHubShowcase: React.FC = () => {
           {/* Right column: Single image */}
           <aside className="space-y-6">
             <img
-              src="/src/assets/services-1.png"
-              alt="Service management interface showing service categories and rates"
+              src="/src/assets/services-template-builder.png"
+              alt="Template builder interface showing customizable service report elements"
               className="w-full h-auto rounded-lg"
               loading="lazy"
               decoding="async"
