@@ -55,12 +55,12 @@ export const ServicesHubShowcase: React.FC = () => {
   
   const slides = [
     {
-      title: "Service Categories",
-      image: "/lovable-uploads/bdb10ee2-c799-4472-ab92-6d659b480864.png"
+      title: "Service Management",
+      image: "/src/assets/services-1.png"
     },
     {
-      title: "Report Templates", 
-      image: "/lovable-uploads/a2614646-c595-46d9-a67b-0be88225c1b5.png"
+      title: "Template Builder", 
+      image: "/src/assets/services-2.png"
     }
   ];
 
@@ -75,7 +75,7 @@ export const ServicesHubShowcase: React.FC = () => {
     <section id="services-hub" className="py-8 bg-white">
       <div className="container mx-auto max-w-6xl px-6">
         <header className="mb-8 space-y-2">
-          <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Services Hub</h2>
+          <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Services and Reporting Hub</h2>
           <p className="text-muted-foreground">
             Schedule, document, and prove completion. Auto-assign service report templates when specific services are scheduled; drivers complete in the field—offline ready.
           </p>
