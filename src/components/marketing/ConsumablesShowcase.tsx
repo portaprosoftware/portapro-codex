@@ -58,6 +58,16 @@ export const ConsumablesShowcase: React.FC = () => {
               </div>
             </div>
 
+            {/* Right column: Dashboard image */}
+            <div className="flex justify-center">
+              <img
+                src="/src/assets/consumables-dashboard.png"
+                alt="Consumables dashboard showing inventory statistics and alerts"
+                className="w-full max-w-md h-auto"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
           </div>
         </div>
       </div>
