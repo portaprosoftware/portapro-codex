@@ -17,65 +17,12 @@ import {
   Sparkles
 } from "lucide-react";
 
-const ServicesSlider = ({ currentSlide, slides }: { currentSlide: number; slides: any[] }) => {
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [displaySlide, setDisplaySlide] = useState(currentSlide);
-
-  useEffect(() => {
-    if (displaySlide !== currentSlide) {
-      setIsTransitioning(true);
-      
-      // Start fade out and scale out
-      setTimeout(() => {
-        setDisplaySlide(currentSlide);
-        setIsTransitioning(false);
-      }, 200); // Half the transition duration
-    }
-  }, [currentSlide, displaySlide]);
-
-  return (
-    <div className="relative w-full">
-      <img
-        src={slides[displaySlide].image}
-        alt={slides[displaySlide].title}
-        className={`w-full h-auto rounded-lg transition-all duration-400 ease-out ${
-          isTransitioning 
-            ? 'animate-exit opacity-0 scale-95' 
-            : 'animate-enter opacity-100 scale-100'
-        }`}
-        loading="lazy"
-        decoding="async"
-      />
-    </div>
-  );
-};
-
 export const ServicesHubShowcase: React.FC = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  
-  const slides = [
-    {
-      title: "Service Management",
-      image: "/src/assets/services-1.png"
-    },
-    {
-      title: "Template Builder", 
-      image: "/src/assets/services-2.png"
-    }
-  ];
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 4000);
-
-    return () => clearInterval(interval);
-  }, [slides.length]);
   return (
     <section id="services-hub" className="py-8 bg-white">
       <div className="container mx-auto max-w-6xl px-6">
         <header className="mb-8 space-y-2">
-          <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Services and Reporting Hub</h2>
+          <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Service and Reporting Hub</h2>
           <p className="text-muted-foreground">
             Schedule, document, and prove completion. Auto-assign service report templates when specific services are scheduled; drivers complete in the field—offline ready.
           </p>
@@ -164,9 +111,24 @@ export const ServicesHubShowcase: React.FC = () => {
             </article>
           </div>
 
-          {/* Right column: KPIs + highlights + CTAs */}
+          {/* Right column: Stacked images */}
           <aside className="space-y-6">
-            <ServicesSlider currentSlide={currentSlide} slides={slides} />
+            <div className="space-y-4">
+              <img
+                src="/src/assets/services-1.png"
+                alt="Service management interface showing service categories and rates"
+                className="w-full h-auto rounded-lg"
+                loading="lazy"
+                decoding="async"
+              />
+              <img
+                src="/src/assets/services-2.png"
+                alt="Template builder interface showing customizable form elements"
+                className="w-full h-auto rounded-lg"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
 
             <div className="rounded-2xl border bg-card p-5 shadow-md space-y-3">
               <div className="text-base font-semibold text-foreground">What teams love</div>
