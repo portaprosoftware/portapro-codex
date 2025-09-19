@@ -746,10 +746,10 @@ export const Landing: React.FC = () => {
             </div>
           </div>
 
-          {/* Why Teams Love It Section */}
+          {/* Why Teams Love PortaPro Section */}
           <div className="max-w-4xl mx-auto mb-12">
             <div className="bg-card border rounded-lg p-6">
-              <h3 className="text-2xl font-bold text-foreground mb-6">Why teams love it</h3>
+              <h3 className="text-2xl font-bold text-foreground mb-6">🚀 Why Teams Love PortaPro</h3>
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
@@ -757,11 +757,11 @@ export const Landing: React.FC = () => {
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Date-range availability with per-location allocation</span>
+                  <span className="text-foreground">Date-range availability by location</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">QR codes and embossed-plastic AI reading</span>
+                  <span className="text-foreground">QR codes & embossed-plastic AI reading</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
@@ -769,42 +769,25 @@ export const Landing: React.FC = () => {
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Service history and automated scheduling</span>
+                  <span className="text-foreground">Service history & automated scheduling</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Padlock and zip-tie drop-off notations</span>
+                  <span className="text-foreground">Padlock & zip-tie drop-off notations</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Instant clarity on status — available, assigned, service</span>
+                  <span className="text-foreground">Clear status at a glance — available, assigned, service</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Offline scans attach to units and sync later</span>
+                  <span className="text-foreground">Works offline: scan QR codes or unit serials, everything saves and syncs automatically once reconnected</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">💡 Add PortaPro to your home screen (PWA) and it works even without signal — your data is safe.</span>
                 </li>
               </ul>
-            </div>
-          </div>
-
-          {/* Offline Scanning Made Easy Section */}
-          <div className="max-w-4xl mx-auto mb-12">
-            <div className="bg-card border rounded-lg p-6">
-              <h3 className="text-2xl font-bold text-foreground mb-4">Offline Scanning Made Easy</h3>
-              <div className="space-y-4 text-foreground">
-                <div>
-                  <h4 className="font-semibold text-lg mb-2">No signal? No problem.</h4>
-                  <p>You can scan new QR codes or take photos of unit serials—everything saves safely to your device.</p>
-                </div>
-                
-                <p>If it's a PortaPro QR, the app instantly knows the unit and links it, even offline.</p>
-                
-                <p>For third-party QR codes, the scan is still saved and updates once you're back online.</p>
-                
-                <p>When you're reconnected, everything syncs automatically—photos, scans, and records. You can also tap Sync Now anytime.</p>
-                
-                <p>The PWA (add to home screen) app is built to work offline and won't lose your data</p>
-              </div>
             </div>
           </div>
 
