@@ -610,7 +610,7 @@ export const Landing: React.FC = () => {
             </div>
             <div className="flex justify-center">
               <img
-                src="/lovable-uploads/0d1b13bc-c6c7-4e2e-b361-c9eb4d187eec.png"
+                src="/src/assets/inventory-tracking.png"
                 alt="Inventory status interface showing hybrid tracking with available tracked units, bulk pool inventory, and stock allocation across different categories"
                 className="w-full max-w-lg h-auto"
                 loading="lazy"
