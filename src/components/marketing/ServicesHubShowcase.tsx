@@ -92,7 +92,7 @@ export const ServicesHubShowcase: React.FC = () => {
             <img
               src="/src/assets/services-template-builder.png"
               alt="Template builder interface showing customizable service report elements"
-              className="w-full h-auto rounded-lg"
+              className="w-full max-w-md h-auto rounded-lg mx-auto"
               loading="lazy"
               decoding="async"
             />
