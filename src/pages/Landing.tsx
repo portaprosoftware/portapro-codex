@@ -622,7 +622,7 @@ export const Landing: React.FC = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
             <div className="flex justify-center order-1 lg:order-2">
               <img
-                src="/lovable-uploads/6be592f8-871d-4e96-80d4-aa356de5da9f.png"
+                src="/src/assets/location-tracking.png"
                 alt="Location Transfer History showing transfers between North Yard and South Yard with search and date filtering capabilities"
                 className="w-full max-w-lg h-auto"
                 loading="lazy"
