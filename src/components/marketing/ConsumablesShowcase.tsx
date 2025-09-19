@@ -58,35 +58,6 @@ export const ConsumablesShowcase: React.FC = () => {
               </div>
             </div>
 
-            {/* Right column: Main management image and stacked images */}
-            <div className="space-y-6">
-              {/* Main management interface */}
-              <div className="flex justify-center">
-                <img
-                  src={consumablesManagement}
-                  alt="Consumables management interface showing inventory tracking and category management"
-                  className="w-full max-w-md h-auto"
-                />
-              </div>
-              
-              {/* Two stacked images */}
-              <div className="space-y-4">
-                <div className="flex justify-center">
-                  <img
-                    src={consumablesInventory}
-                    alt="Consumables inventory list showing hand sanitizer refill and paper towel products"
-                    className="w-full max-w-sm h-auto"
-                  />
-                </div>
-                <div className="flex justify-center">
-                  <img
-                    src={consumablesStats}
-                    alt="Consumables statistics showing total items, inventory value, and stock alerts"
-                    className="w-full max-w-sm h-auto"
-                  />
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
