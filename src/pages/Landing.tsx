@@ -749,7 +749,7 @@ export const Landing: React.FC = () => {
           {/* Why Teams Love PortaPro Section */}
           <div className="max-w-4xl mx-auto mb-12">
             <div className="bg-card border rounded-lg p-6">
-              <h3 className="text-2xl font-bold text-foreground mb-6">🚀 Why Teams Love PortaPro</h3>
+              <h3 className="text-2xl font-bold text-foreground mb-6">🚀 Why Teams Love PortaPro Product Inventory</h3>
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
@@ -782,10 +782,6 @@ export const Landing: React.FC = () => {
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                   <span className="text-foreground">Works offline: scan QR codes or unit serials, everything saves and syncs automatically once reconnected</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">💡 Add PortaPro to your home screen (PWA) and it works even without signal — your data is safe.</span>
                 </li>
               </ul>
             </div>
