@@ -15,75 +15,76 @@ export const ConsumablesShowcase: React.FC = () => {
           </p>
         </header>
 
-        {/* Single unified card */}
+        {/* Main content layout */}
         <div className="max-w-6xl mx-auto">
-          <div className="bg-card border rounded-lg p-6">
-            <div className="grid lg:grid-cols-2 gap-8 items-start mb-8">
-              {/* Left column: Features list */}
-              <div className="space-y-4">
-                <ul className="space-y-3">
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Set billing at job creation: Included, Itemized, or Kit Fee + Overage</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Track any unit type: case, gallon, or custom</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Fast, error-free logging with barcode or mobile scan</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Automatic overage detection (no missed revenue)</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Transparent itemized billing or bundled simplicity</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Works for blue solution, deodorizers, cleaning supplies & more</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Built into your job flow, adjustable per customer or per job</span>
-                  </li>
-                </ul>
-                
-                <div className="mt-6 p-4 bg-muted rounded-lg">
-                  <p className="text-sm text-foreground">
-                    💡 Choose simple bundled pricing or detailed itemized billing — PortaPro adapts to your workflow.
-                  </p>
-                </div>
+          <div className="grid lg:grid-cols-2 gap-8 items-start mb-8">
+            {/* Left column: Features list */}
+            <div className="space-y-4">
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Set billing at job creation: Included, Itemized, or Kit Fee + Overage</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Track any unit type: case, gallon, or custom</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Fast, error-free logging with barcode or mobile scan</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Automatic overage detection (no missed revenue)</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Transparent itemized billing or bundled simplicity</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Works for blue solution, deodorizers, cleaning supplies & more</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Built into your job flow, adjustable per customer or per job</span>
+                </li>
+              </ul>
+              
+              <div className="mt-6 p-4 bg-muted rounded-lg">
+                <p className="text-sm text-foreground">
+                  💡 Choose simple bundled pricing or detailed itemized billing — PortaPro adapts to your workflow.
+                </p>
               </div>
+            </div>
 
-              {/* Right column: First image */}
+            {/* Right column: Main management image and stacked images */}
+            <div className="space-y-6">
+              {/* Main management interface */}
               <div className="flex justify-center">
                 <img
                   src={consumablesManagement}
                   alt="Consumables management interface showing inventory tracking and category management"
-                  className="w-full max-w-md h-auto rounded-lg shadow-sm"
+                  className="w-full max-w-md h-auto"
                 />
               </div>
-            </div>
-
-            {/* Bottom section: Two images side by side */}
-            <div className="grid md:grid-cols-2 gap-6 mt-8">
-              <div className="flex justify-center">
-                <img
-                  src={consumablesInventory}
-                  alt="Consumables inventory list showing hand sanitizer refill and paper towel products"
-                  className="w-full max-w-sm h-auto rounded-lg shadow-sm"
-                />
-              </div>
-              <div className="flex justify-center">
-                <img
-                  src={consumablesStats}
-                  alt="Consumables statistics showing total items, inventory value, and stock alerts"
-                  className="w-full max-w-sm h-auto rounded-lg shadow-sm"
-                />
+              
+              {/* Two stacked images */}
+              <div className="space-y-4">
+                <div className="flex justify-center">
+                  <img
+                    src={consumablesInventory}
+                    alt="Consumables inventory list showing hand sanitizer refill and paper towel products"
+                    className="w-full max-w-sm h-auto"
+                  />
+                </div>
+                <div className="flex justify-center">
+                  <img
+                    src={consumablesStats}
+                    alt="Consumables statistics showing total items, inventory value, and stock alerts"
+                    className="w-full max-w-sm h-auto"
+                  />
+                </div>
               </div>
             </div>
           </div>
