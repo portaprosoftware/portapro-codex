@@ -62,30 +62,6 @@ export const ServicesHubShowcase: React.FC = () => {
               </div>
             </article>
 
-            {/* B) Auto template assignment */}
-            <article className="rounded-2xl border bg-card shadow-md p-5 animate-fade-in">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-base font-semibold text-foreground">Auto template assignment</h3>
-                <ClipboardCheck className="w-4 h-4 text-muted-foreground" />
-              </div>
-              <div className="inline-flex rounded-xl border bg-background p-1 text-sm mb-4">
-                <button className="px-3 py-1 rounded-lg bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold">Automatic</button>
-                <button className="px-3 py-1 rounded-lg text-foreground">Manual</button>
-              </div>
-              <div className="rounded-xl border bg-background p-4 space-y-3">
-                <div className="text-sm font-medium text-foreground">Recommended by job type</div>
-                <div className="flex flex-wrap gap-2 text-xs">
-                  {['Pump', 'Deep Clean', 'Inspection'].map((chip) => (
-                    <span key={chip} className="rounded-lg bg-muted px-3 py-1 text-muted-foreground">{chip}</span>
-                  ))}
-                </div>
-                <div className="text-sm text-foreground">
-                  Assigned: <span className="font-medium">Site Checklist</span> + <span className="font-medium">Standard Pump Report</span>
-                </div>
-                <div className="text-xs text-muted-foreground">Support for multi‑template assignments per job.</div>
-              </div>
-            </article>
-
 
             {/* D) Driver completes in the field */}
             <article className="rounded-2xl border bg-card shadow-md p-5 animate-fade-in">
@@ -111,24 +87,15 @@ export const ServicesHubShowcase: React.FC = () => {
             </article>
           </div>
 
-          {/* Right column: Stacked images */}
+          {/* Right column: Single image */}
           <aside className="space-y-6">
-            <div className="space-y-4">
-              <img
-                src="/src/assets/services-1.png"
-                alt="Service management interface showing service categories and rates"
-                className="w-full h-auto rounded-lg"
-                loading="lazy"
-                decoding="async"
-              />
-              <img
-                src="/src/assets/services-2.png"
-                alt="Template builder interface showing customizable form elements"
-                className="w-full h-auto rounded-lg"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
+            <img
+              src="/src/assets/services-1.png"
+              alt="Service management interface showing service categories and rates"
+              className="w-full h-auto rounded-lg"
+              loading="lazy"
+              decoding="async"
+            />
 
             <div className="rounded-2xl border bg-card p-5 shadow-md space-y-3">
               <div className="text-base font-semibold text-foreground">What teams love</div>
