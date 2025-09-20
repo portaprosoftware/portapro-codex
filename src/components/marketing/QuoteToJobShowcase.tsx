@@ -8,18 +8,11 @@ export const QuoteToJobShowcase: React.FC = () => {
 
   return (
     <div className="space-y-10 overflow-hidden">
-      <header className="space-y-4 text-center">
+      <header className="space-y-2 text-center">
         <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Quote → Deposit → Job → Invoice, in one flow</h2>
         <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
           Build a quote, send it to your customer, collect a deposit with Stripe, and auto-create the job with schedule and invoice.
         </p>
-        <div className="flex justify-center">
-          <img 
-            src="/src/assets/quote-2.png" 
-            alt="Create Job + Quote interface"
-            className="max-w-sm w-full h-auto"
-          />
-        </div>
       </header>
 
       <div className="flex flex-col gap-10 lg:grid lg:grid-cols-[1fr_1.4fr] lg:items-start">
@@ -40,6 +33,15 @@ export const QuoteToJobShowcase: React.FC = () => {
               </li>
             ))}
           </ul>
+          
+          {/* Quote + Job image */}
+          <div className="max-w-xs">
+            <img 
+              src="/src/assets/quote-2.png" 
+              alt="Create Job + Quote interface"
+              className="w-full h-auto rounded-xl"
+            />
+          </div>
         </aside>
 
         {/* Right: Quote Builder */}
