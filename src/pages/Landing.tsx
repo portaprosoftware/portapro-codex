@@ -613,7 +613,7 @@ export const Landing: React.FC = () => {
               <img
                 src="/inventory-tracking-status.png"
                 alt="Inventory status interface showing hybrid tracking with available, on job, and maintenance status"
-                className="w-3/5 max-w-md h-auto"
+                className="w-4/5 max-w-lg h-auto"
                 loading="lazy"
                 decoding="async"
               />
