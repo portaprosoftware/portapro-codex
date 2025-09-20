@@ -216,7 +216,9 @@ export const Landing: React.FC = () => {
   const [featuresSheetOpen, setFeaturesSheetOpen] = useState(false);
   const [selectedBlogPost, setSelectedBlogPost] = useState<string | null>(null);
   const [calendlyOpen, setCalendlyOpen] = useState(false);
-  const featuresMegaMenuRef = useRef<{ triggerOpen: () => void } | null>(null);
+  const featuresMegaMenuRef = useRef<{
+    triggerOpen: () => void;
+  } | null>(null);
   const isMobile = useIsMobile();
 
   // Date string used across sections
@@ -392,16 +394,13 @@ export const Landing: React.FC = () => {
                 <div className="space-y-4">
                   <div className="flex items-center gap-6 flex-wrap opacity-90">
                     <span className="text-white/80 text-sm">Trusted by operators across North America</span>
-                    <button
-                      onClick={() => {
-                        if (isMobile) {
-                          setFeaturesSheetOpen(true);
-                        } else {
-                          featuresMegaMenuRef.current?.triggerOpen();
-                        }
-                      }}
-                      className="flex items-center gap-2 text-white/80 text-sm font-medium hover:text-white transition-all duration-200"
-                    >
+                    <button onClick={() => {
+                    if (isMobile) {
+                      setFeaturesSheetOpen(true);
+                    } else {
+                      featuresMegaMenuRef.current?.triggerOpen();
+                    }
+                  }} className="flex items-center gap-2 text-white/80 text-sm font-medium hover:text-white transition-all duration-200">
                       <Compass className="w-4 h-4 animate-[spin_3s_linear_infinite]" />
                       Explore All Features
                     </button>
@@ -517,7 +516,7 @@ export const Landing: React.FC = () => {
       {/* Detailed Sections for Group 1: Operations Features */}
 
       {/* Inventory & Supplies — Unified, Accurate, Effortless - White */}
-      <section id="inventory" className="py-8 bg-white">
+      <section id="inventory" className="bg-white py-0">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="text-center mb-8">
             <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Inventory & Supplies — Unified, Accurate, Effortless</h2>
@@ -526,30 +525,9 @@ export const Landing: React.FC = () => {
 
           {/* Inventory KPIs */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
-            <StatCard 
-              title="Total Units" 
-              value="247" 
-              icon={Package} 
-              gradientFrom="#3B82F6" 
-              gradientTo="#1E40AF" 
-              iconBg="bg-blue-600"
-            />
-            <StatCard 
-              title="Available Today" 
-              value="89" 
-              icon={CheckCircle} 
-              gradientFrom="#10B981" 
-              gradientTo="#047857" 
-              iconBg="bg-emerald-600"
-            />
-            <StatCard 
-              title="Maintenance" 
-              value="3" 
-              icon={Wrench} 
-              gradientFrom="#F59E0B" 
-              gradientTo="#D97706" 
-              iconBg="bg-amber-600"
-            />
+            <StatCard title="Total Units" value="247" icon={Package} gradientFrom="#3B82F6" gradientTo="#1E40AF" iconBg="bg-blue-600" />
+            <StatCard title="Available Today" value="89" icon={CheckCircle} gradientFrom="#10B981" gradientTo="#047857" iconBg="bg-emerald-600" />
+            <StatCard title="Maintenance" value="3" icon={Wrench} gradientFrom="#F59E0B" gradientTo="#D97706" iconBg="bg-amber-600" />
           </div>
 
           {/* General Inventory Management */}
@@ -580,13 +558,7 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="flex justify-center">
-              <img 
-                src="/standard-porta-potty.png" 
-                alt="Standard portable toilet unit showing availability tracking"
-                className="w-3/5 max-w-md h-auto"
-                loading="lazy"
-                decoding="async"
-              />
+              <img src="/standard-porta-potty.png" alt="Standard portable toilet unit showing availability tracking" className="w-3/5 max-w-md h-auto" loading="lazy" decoding="async" />
             </div>
           </div>
           {/* Stock Tracking + Location Management Side by Side */}
@@ -661,11 +633,7 @@ export const Landing: React.FC = () => {
               <div className="grid md:grid-cols-2 gap-6 items-center">
                 <div className="flex flex-col items-center space-y-4">
                   <div className="rounded-lg overflow-hidden">
-                    <img 
-                      src="/lovable-uploads/4ba172a8-8093-4d4e-9143-53090809b31e.png" 
-                      alt="Phone scanning embossed plastic text on portable toilet unit"
-                      className="w-full max-w-sm h-auto"
-                    />
+                    <img src="/lovable-uploads/4ba172a8-8093-4d4e-9143-53090809b31e.png" alt="Phone scanning embossed plastic text on portable toilet unit" className="w-full max-w-sm h-auto" />
                   </div>
                 </div>
                 
@@ -719,13 +687,7 @@ export const Landing: React.FC = () => {
               </ul>
             </div>
             <div className="flex justify-center">
-              <img
-                src="/src/assets/manage-unit.png"
-                alt="Unit maintenance management interface showing unit 3012 with broken seat repair details, location info, and expected return date"
-                className="w-full max-w-sm h-auto"
-                loading="lazy"
-                decoding="async"
-              />
+              <img src="/src/assets/manage-unit.png" alt="Unit maintenance management interface showing unit 3012 with broken seat repair details, location info, and expected return date" className="w-full max-w-sm h-auto" loading="lazy" decoding="async" />
             </div>
           </div>
 
@@ -858,7 +820,7 @@ export const Landing: React.FC = () => {
                 <script src="https://fast.wistia.com/player.js" async></script>
                 <script src="https://fast.wistia.com/embed/7fdf1aomkc.js" async type="module"></script>
                 <style dangerouslySetInnerHTML={{
-                  __html: `
+                __html: `
                     wistia-player[media-id='7fdf1aomkc']:not(:defined) { 
                       background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/7fdf1aomkc/swatch'); 
                       display: block; 
@@ -866,7 +828,7 @@ export const Landing: React.FC = () => {
                       padding-top:50.42%; 
                     }
                   `
-                }} />
+              }} />
                 <wistia-player media-id="7fdf1aomkc" aspect="1.9834710743801653"></wistia-player>
               </div>
             </div>
@@ -1053,11 +1015,7 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <img 
-              src="/lovable-uploads/9d80fc9b-a26b-4daa-92af-1c965d64ff86.png" 
-              alt="Maintenance notifications showing past due and due this week tasks"
-              className="w-full h-auto rounded-lg"
-            />
+            <img src="/lovable-uploads/9d80fc9b-a26b-4daa-92af-1c965d64ff86.png" alt="Maintenance notifications showing past due and due this week tasks" className="w-full h-auto rounded-lg" />
           </div>
 
           {/* Fuel Logs & Cost Tracking */}
@@ -1080,11 +1038,7 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <img 
-              src="/lovable-uploads/a133d807-54c7-49e6-a9b3-a5fd12dbda2c.png" 
-              alt="Fuel management dashboard showing total gallons, costs, and fleet MPG metrics"
-              className="w-full h-auto rounded-lg"
-            />
+            <img src="/lovable-uploads/a133d807-54c7-49e6-a9b3-a5fd12dbda2c.png" alt="Fuel management dashboard showing total gallons, costs, and fleet MPG metrics" className="w-full h-auto rounded-lg" />
           </div>
 
           {/* Driver Assignments */}
@@ -1107,11 +1061,7 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <img 
-              src="/lovable-uploads/0b7accb8-59a2-4da2-9dc3-788ae3549efe.png" 
-              alt="Vehicle selection interface showing fleet vehicles with license plates, makes, models, and availability status"
-              className="w-full h-auto rounded-lg"
-            />
+            <img src="/lovable-uploads/0b7accb8-59a2-4da2-9dc3-788ae3549efe.png" alt="Vehicle selection interface showing fleet vehicles with license plates, makes, models, and availability status" className="w-full h-auto rounded-lg" />
           </div>
 
           {/* Truck Stock Management */}
@@ -1142,11 +1092,7 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <img 
-              src="/lovable-uploads/b7bba73c-5402-4e55-8417-455d18cb3338.png" 
-              alt="Truck Stock Management interface showing vehicle selection dropdown and Route vs Truck Stock comparison with service date picker"
-              className="w-full h-auto rounded-lg"
-            />
+            <img src="/lovable-uploads/b7bba73c-5402-4e55-8417-455d18cb3338.png" alt="Truck Stock Management interface showing vehicle selection dropdown and Route vs Truck Stock comparison with service date picker" className="w-full h-auto rounded-lg" />
           </div>
 
           {/* Transport & Spill Compliance */}
@@ -1169,11 +1115,7 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <img 
-              src="/lovable-uploads/765a797c-a357-42cd-922e-92fb794966bd.png" 
-              alt="Transport & Spill Compliance dashboard showing document status alerts for overdue, critical, and warning items"
-              className="w-full h-auto rounded-lg"
-            />
+            <img src="/lovable-uploads/765a797c-a357-42cd-922e-92fb794966bd.png" alt="Transport & Spill Compliance dashboard showing document status alerts for overdue, critical, and warning items" className="w-full h-auto rounded-lg" />
           </div>
 
           {/* DVIRs & Maintenance */}
@@ -1195,11 +1137,7 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <img 
-              src="/lovable-uploads/c021b264-552c-4a3e-b4c3-fcc1d6163147.png" 
-              alt="New DVIR form interface showing asset type selection, vehicle details, and defect reporting for fleet maintenance"
-              className="w-full h-auto rounded-lg"
-            />
+            <img src="/lovable-uploads/c021b264-552c-4a3e-b4c3-fcc1d6163147.png" alt="New DVIR form interface showing asset type selection, vehicle details, and defect reporting for fleet maintenance" className="w-full h-auto rounded-lg" />
           </div>
         </div>
       </section>
@@ -1337,11 +1275,7 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <img 
-              src="/lovable-uploads/0311afae-06cb-4157-9104-e58e14de00b0.png" 
-              alt="Training Requirements management interface"
-              className="order-2 lg:order-1 w-[85%] h-auto"
-            />
+            <img src="/lovable-uploads/0311afae-06cb-4157-9104-e58e14de00b0.png" alt="Training Requirements management interface" className="order-2 lg:order-1 w-[85%] h-auto" />
           </div>
         </div>
       </section>
@@ -1463,12 +1397,12 @@ export const Landing: React.FC = () => {
               <h4 className="font-semibold text-white text-sm sm:text-base">Product</h4>
               <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm text-white/80">
                 <button onClick={() => {
-                  if (isMobile) {
-                    setFeaturesSheetOpen(true);
-                  } else {
-                    featuresMegaMenuRef.current?.triggerOpen();
-                  }
-                }} className="block hover:text-white text-left">Features</button>
+                if (isMobile) {
+                  setFeaturesSheetOpen(true);
+                } else {
+                  featuresMegaMenuRef.current?.triggerOpen();
+                }
+              }} className="block hover:text-white text-left">Features</button>
                 <a href="#mobile-app" className="block hover:text-white">Mobile App</a>
               </div>
             </div>
@@ -2534,33 +2468,18 @@ export const Landing: React.FC = () => {
 
 
       {/* Calendly Popup Widget */}
-      {calendlyOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      {calendlyOpen && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="relative bg-white rounded-lg shadow-xl w-full max-w-2xl h-[80vh] mx-4">
-            <button 
-              onClick={() => setCalendlyOpen(false)}
-              className="absolute top-4 right-4 z-10 p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
-            >
+            <button onClick={() => setCalendlyOpen(false)} className="absolute top-4 right-4 z-10 p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors">
               <X className="w-5 h-5" />
             </button>
-            <iframe
-              src="https://calendly.com/portapro/portapro-software-demo?embed_type=Inline&embed_domain=1&hide_gdpr_banner=1"
-              width="100%"
-              height="100%"
-              className="rounded-lg"
-              frameBorder="0"
-              title="Schedule Demo"
-            />
+            <iframe src="https://calendly.com/portapro/portapro-software-demo?embed_type=Inline&embed_domain=1&hide_gdpr_banner=1" width="100%" height="100%" className="rounded-lg" frameBorder="0" title="Schedule Demo" />
           </div>
-        </div>
-      )}
+        </div>}
 
       {/* Schedule Demo Floating Button */}
       <div className="fixed bottom-6 right-6 z-50">
-        <Button 
-          onClick={handleScheduleDemo} 
-          className="bg-gradient-blue text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-        >
+        <Button onClick={handleScheduleDemo} className="bg-gradient-blue text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
           <Laptop className="w-4 h-4 mr-2" />
           Schedule Demo
         </Button>
