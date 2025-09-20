@@ -580,7 +580,13 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="flex justify-center">
-              {/* Image removed - will be re-added later */}
+              <img 
+                src="/standard-porta-potty.png" 
+                alt="Standard portable toilet unit showing availability tracking"
+                className="w-3/4 max-w-md h-auto"
+                loading="lazy"
+                decoding="async"
+              />
             </div>
           </div>
           {/* Stock Tracking */}
