@@ -610,12 +610,56 @@ export const Landing: React.FC = () => {
             </div>
           </div>
 
-          {/* QR & Photo Scanning & Supply Management Row */}
-          <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
-            <div className="space-y-6">
+          {/* QR & Photo Scanning - Full Width Section */}
+          <div className="mb-12">
+            <div className="text-center mb-8">
               <h3 className="text-2xl font-bold text-foreground">QR & Photo Scanning</h3>
-              <p className="text-lg text-muted-foreground">Instant unit identification and documentation with mobile scanning capabilities.</p>
-              <ul className="space-y-3">
+              <p className="text-lg text-muted-foreground mt-2">Instant unit identification and documentation with mobile scanning capabilities.</p>
+            </div>
+            
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              {/* Snap & Track Units Card */}
+              <div className="border rounded-lg p-6 bg-card">
+                <div className="mb-4">
+                  <h4 className="text-base font-normal text-center">Snap & Track Units from Embedded Plastic Text Numbers</h4>
+                </div>
+                
+                <div className="grid md:grid-cols-2 gap-6 items-center">
+                  <div className="flex flex-col items-center space-y-4">
+                    <div className="rounded-lg overflow-hidden">
+                      <img src="/lovable-uploads/4ba172a8-8093-4d4e-9143-53090809b31e.png" alt="Phone scanning embossed plastic text on portable toilet unit" className="w-full max-w-sm h-auto" />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div className="space-y-3">
+                      <div className="bg-gradient-green text-white px-3 py-1 rounded-full text-sm font-bold inline-block">
+                        ✓ Successfully tracked
+                      </div>
+                      
+                      <div className="space-y-2 text-sm">
+                        <div><span className="font-medium">Vendor:</span> ABC Manufacturing</div>
+                        <div><span className="font-medium">Tool No:</span> T-207788-1A</div>
+                        <div><span className="font-medium">Vendor ID:</span> 32123</div>
+                        <div><span className="font-medium">Mfg Date:</span> January 13, 2016</div>
+                        <div><span className="font-medium">Plastic:</span> HDPE</div>
+                      </div>
+                    </div>
+                    
+                    <p className="text-sm text-muted-foreground">
+                      Works offline — syncs later. Instant attach to units & jobs.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* QR Code Generator Section */}
+              <QRGenerator />
+            </div>
+
+            {/* Feature List */}
+            <div className="mt-8 flex justify-center">
+              <ul className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl">
                 <li className="flex items-start gap-3">
                   <Smartphone className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                   <span className="text-foreground">Mobile QR code scanning for units</span>
@@ -630,45 +674,6 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
-            {/* Panel Scanning Card (was rotator) */}
-            <div className="border rounded-lg p-6 bg-card">
-              <div className="mb-4">
-                <h4 className="text-base font-normal text-center">Snap & Track Units from Embedded Plastic Text Numbers</h4>
-              </div>
-              
-              <div className="grid md:grid-cols-2 gap-6 items-center">
-                <div className="flex flex-col items-center space-y-4">
-                  <div className="rounded-lg overflow-hidden">
-                    <img src="/lovable-uploads/4ba172a8-8093-4d4e-9143-53090809b31e.png" alt="Phone scanning embossed plastic text on portable toilet unit" className="w-full max-w-sm h-auto" />
-                  </div>
-                </div>
-                
-                <div className="space-y-4">
-                  <div className="space-y-3">
-                    <div className="bg-gradient-green text-white px-3 py-1 rounded-full text-sm font-bold inline-block">
-                      ✓ Successfully tracked
-                    </div>
-                    
-                    <div className="space-y-2 text-sm">
-                      <div><span className="font-medium">Vendor:</span> ABC Manufacturing</div>
-                      <div><span className="font-medium">Tool No:</span> T-207788-1A</div>
-                      <div><span className="font-medium">Vendor ID:</span> 32123</div>
-                      <div><span className="font-medium">Mfg Date:</span> January 13, 2016</div>
-                      <div><span className="font-medium">Plastic:</span> HDPE</div>
-                    </div>
-                  </div>
-                  
-                  <p className="text-sm text-muted-foreground">
-                    Works offline — syncs later. Instant attach to units & jobs.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* QR Code Generator Section */}
-          <div className="mb-12">
-            <QRGenerator />
           </div>
 
 
