@@ -41,7 +41,7 @@ export const SmartWizardShowcase: React.FC = () => {
 
           <div className="aspect-video rounded-xl overflow-hidden">
             <img 
-              src="/src/assets/jobs.png" 
+              src="/jobs-wizard-interface.png" 
               alt="Smart Job Wizard interface showing job management with priority controls, schedule details, and action buttons"
               className="w-full h-full object-cover"
             />
