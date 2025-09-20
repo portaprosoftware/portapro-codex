@@ -610,7 +610,13 @@ export const Landing: React.FC = () => {
               </ul>
             </div>
             <div className="flex justify-center">
-              {/* Image removed - will be re-added later */}
+              <img 
+                src="/inventory-tracking-status.png" 
+                alt="Inventory tracking status dashboard"
+                className="w-4/5 max-w-lg h-auto"
+                loading="lazy"
+                decoding="async"
+              />
             </div>
           </div>
           
