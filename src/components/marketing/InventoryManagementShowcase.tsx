@@ -98,9 +98,9 @@ const mockAssignmentData = {
       customerType: 'construction' as const,
       site: 'Riverside Shopping Center',
       coordinates: [-74.0234, 40.7282] as [number, number], // NYC area
-      status: 'active' as const,
+      status: 'pickup' as const,
       assignedDate: '2024-01-08',
-      estimatedReturn: '2024-02-15'
+      estimatedReturn: '2024-01-20'
     },
     { 
       id: '1103',
@@ -109,9 +109,86 @@ const mockAssignmentData = {
       customerType: 'events_festivals' as const,
       site: 'Central Park Festival',
       coordinates: [-73.9654, 40.7829] as [number, number], // Central Park
-      status: 'maintenance' as const,
+      status: 'active' as const,
       assignedDate: '2024-01-05',
       estimatedReturn: '2024-01-20'
+    },
+    { 
+      id: '1104',
+      jobNumber: 'J-2024-167', 
+      customer: 'Summit Retail Group', 
+      customerType: 'retail' as const,
+      site: 'Westfield Mall Renovation',
+      coordinates: [-74.0445, 40.7589] as [number, number], 
+      status: 'active' as const,
+      assignedDate: '2024-01-12',
+      estimatedReturn: '2024-02-01'
+    },
+    { 
+      id: '1105',
+      jobNumber: 'J-2024-151', 
+      customer: 'Emergency Response NYC', 
+      customerType: 'emergency_disaster_relief' as const,
+      site: 'Brooklyn Bridge Repairs',
+      coordinates: [-73.9969, 40.7061] as [number, number], 
+      status: 'pickup' as const,
+      assignedDate: '2024-01-06',
+      estimatedReturn: '2024-01-19'
+    },
+    { 
+      id: '1106',
+      jobNumber: 'J-2024-142', 
+      customer: 'Municipal Works Dept', 
+      customerType: 'municipal_government' as const,
+      site: 'Central Park Maintenance',
+      coordinates: [-73.9712, 40.7831] as [number, number], 
+      status: 'active' as const,
+      assignedDate: '2024-01-03',
+      estimatedReturn: '2024-02-15'
+    },
+    { 
+      id: '1107',
+      jobNumber: 'J-2024-159', 
+      customer: 'Elite Weddings Co', 
+      customerType: 'private_events_weddings' as const,
+      site: 'Brooklyn Botanical Garden',
+      coordinates: [-73.9641, 40.6681] as [number, number], 
+      status: 'active' as const,
+      assignedDate: '2024-01-11',
+      estimatedReturn: '2024-01-21'
+    },
+    { 
+      id: '1108',
+      jobNumber: 'J-2024-163', 
+      customer: 'Sports Arena Management', 
+      customerType: 'sports_recreation' as const,
+      site: 'Yankees Stadium Event',
+      coordinates: [-73.9288, 40.8296] as [number, number], 
+      status: 'pickup' as const,
+      assignedDate: '2024-01-09',
+      estimatedReturn: '2024-01-18'
+    },
+    { 
+      id: '1109',
+      jobNumber: 'J-2024-171', 
+      customer: 'Uptown Bar & Grill', 
+      customerType: 'bars_restaurants' as const,
+      site: 'Rooftop Renovation',
+      coordinates: [-73.9857, 40.7484] as [number, number], 
+      status: 'active' as const,
+      assignedDate: '2024-01-13',
+      estimatedReturn: '2024-02-10'
+    },
+    { 
+      id: '1110',
+      jobNumber: 'J-2024-145', 
+      customer: 'General Contractors Inc', 
+      customerType: 'other' as const,
+      site: 'Staten Island Development',
+      coordinates: [-74.1502, 40.6195] as [number, number], 
+      status: 'pickup' as const,
+      assignedDate: '2024-01-07',
+      estimatedReturn: '2024-01-19'
     }
   ]
 };
@@ -123,7 +200,7 @@ interface Assignment {
   customerType: string;
   site: string;
   coordinates: [number, number];
-  status: 'active' | 'maintenance';
+  status: 'active' | 'pickup';
   assignedDate: string;
   estimatedReturn: string;
 }
@@ -165,7 +242,7 @@ const AssignmentsMap = ({ assignments }: { assignments: Assignment[] }) => {
       };
       
       const hexColor = colorMap[bgColor] || '#6b7280';
-      const statusColor = assignment.status === 'maintenance' ? '#f59e0b' : hexColor;
+      const statusColor = assignment.status === 'pickup' ? '#2563eb' : '#16a34a'; // Blue for pickup, green for active
       
       const el = document.createElement('div');
       el.className = 'assignment-marker';
@@ -174,7 +251,7 @@ const AssignmentsMap = ({ assignments }: { assignments: Assignment[] }) => {
           width: 24px; 
           height: 24px; 
           background: ${statusColor}; 
-          border: 2px solid white; 
+          border: 2px solid white;
           border-radius: 50%; 
           display: flex; 
           align-items: center; 
@@ -194,8 +271,8 @@ const AssignmentsMap = ({ assignments }: { assignments: Assignment[] }) => {
           <p style="margin: 0 0 4px 0; font-size: 12px; color: #666;"><strong>Customer:</strong> ${assignment.customer}</p>
           <p style="margin: 0 0 4px 0; font-size: 12px; color: #666;"><strong>Site:</strong> ${assignment.site}</p>
           <p style="margin: 0 0 4px 0; font-size: 12px; color: #666;"><strong>Status:</strong> 
-            <span style="color: ${assignment.status === 'active' ? '#10b981' : '#f59e0b'}; font-weight: 600;">
-              ${assignment.status === 'active' ? 'Active' : 'Maintenance'}
+            <span style="color: ${assignment.status === 'active' ? '#16a34a' : '#2563eb'}; font-weight: 600;">
+              ${assignment.status === 'active' ? 'Active Assignment' : 'Pickup Today'}
             </span>
           </p>
           <p style="margin: 0; font-size: 12px; color: #666;"><strong>Est. Return:</strong> ${assignment.estimatedReturn}</p>
@@ -210,6 +287,14 @@ const AssignmentsMap = ({ assignments }: { assignments: Assignment[] }) => {
 
     // Add navigation controls
     map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+    // Fit map to show all markers
+    if (assignments.length > 0) {
+      const coordinates = assignments.map(assignment => assignment.coordinates);
+      const bounds = new mapboxgl.LngLatBounds();
+      coordinates.forEach(coord => bounds.extend(coord));
+      map.current.fitBounds(bounds, { padding: 50, maxZoom: 12 });
+    }
 
     return () => {
       map.current?.remove();
@@ -258,8 +343,8 @@ const AssignmentsMap = ({ assignments }: { assignments: Assignment[] }) => {
           <span className="text-sm text-foreground">Active Assignment</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-yellow-500 rounded-full border-2 border-white shadow-sm"></div>
-          <span className="text-sm text-foreground">Maintenance Required</span>
+          <div className="w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-sm"></div>
+          <span className="text-sm text-foreground">Pickup Today</span>
         </div>
       </div>
     </div>
