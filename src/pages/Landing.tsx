@@ -517,9 +517,9 @@ export const Landing: React.FC = () => {
 
       {/* Inventory & Supplies — Unified, Accurate, Effortless - White */}
       <section id="inventory" className="bg-white py-0">
-        <div className="container mx-auto max-w-6xl px-6">
+        <div className="container mx-auto max-w-6xl px-[24px]">
           <div className="text-center mb-8">
-            <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Inventory & Supplies — Unified, Accurate, Effortless</h2>
+            <h2 className="text-3xl lg:text-4xl font-bold text-foreground py-[18px]">Inventory & Supplies — Unified, Accurate, Effortless</h2>
             <p className="text-lg text-muted-foreground">Track units and consumables across multiple storage sites with precision</p>
           </div>
 
@@ -737,7 +737,7 @@ export const Landing: React.FC = () => {
 
 
       {/* Section Divider */}
-      <div className="py-8 bg-white">
+      <div className="bg-white py-[10px]">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="border-t-2 border-border"></div>
         </div>
