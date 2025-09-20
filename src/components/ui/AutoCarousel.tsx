@@ -22,7 +22,7 @@ export const AutoCarousel: React.FC<AutoCarouselProps> = ({
   const SLIDE_DURATION = 5000; // 5 seconds
 
   const plugin = React.useRef(
-    Autoplay({ delay: SLIDE_DURATION, stopOnInteraction: false }) as any
+    Autoplay({ delay: SLIDE_DURATION, stopOnInteraction: false })
   );
 
   // Safety check: return null if media is not provided or empty

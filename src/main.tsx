@@ -9,21 +9,12 @@ import './utils/devUtils.ts' // Load dev utilities
 import { clearClerkCache } from './utils/authCleanup'
 
 const envClerkKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
-const prodClerkKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY_PROD as string | undefined;
 const defaultDevKey = "pk_test_YWN0dWFsLW11dHQtOTEuY2xlcmsuYWNjb3VudHMuZGV2JA";
 const isDevHost = location.hostname.includes('localhost') || location.hostname.includes('lovable.dev');
-const isProductionDomain = location.hostname === 'portaprosoftware.com' || location.hostname === 'www.portaprosoftware.com';
-const isLiveKey = (envClerkKey ?? prodClerkKey)?.startsWith('pk_live_') ?? false;
+const isLiveKey = envClerkKey?.startsWith('pk_live_') ?? false;
 
 let effectiveClerkKey = envClerkKey ?? defaultDevKey;
-
-// Use production key on production domains; dev key on dev hosts
-if (isProductionDomain) {
-  effectiveClerkKey = (prodClerkKey ?? envClerkKey ?? defaultDevKey);
-  if (!effectiveClerkKey.startsWith('pk_live_')) {
-    console.error('[Clerk] Production domain detected but no live publishable key found. Set VITE_CLERK_PUBLISHABLE_KEY_PROD to your pk_live_... key.');
-  }
-} else if ((envClerkKey?.startsWith('pk_live_') || prodClerkKey?.startsWith('pk_live_')) && isDevHost) {
+if (isLiveKey && isDevHost) {
   console.warn("Detected production Clerk key on a dev host. Falling back to dev key and clearing auth cache.");
   try { clearClerkCache(); } catch {}
   effectiveClerkKey = defaultDevKey;

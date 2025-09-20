@@ -15,38 +15,10 @@ export const ConsumablesShowcase: React.FC = () => {
           </p>
         </header>
 
-        {/* Main content with images */}
+        {/* Compact layout without image */}
         <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-start mb-12">
-            {/* Left column: Images showcase */}
-            <div className="space-y-6">
-              <div className="grid gap-4">
-                <img
-                  src={consumablesManagement}
-                  alt="Consumables management dashboard showing products, quantities, and pricing"
-                  className="w-full rounded-lg shadow-lg"
-                  loading="lazy"
-                />
-                <div className="grid grid-cols-2 gap-4">
-                  <img
-                    src={consumablesInventory}
-                    alt="Inventory tracking interface with QR codes and stock levels"
-                    className="w-full rounded-lg shadow-md"
-                    loading="lazy"
-                  />
-                  <img
-                    src={consumablesStats}
-                    alt="Analytics dashboard showing consumables usage statistics"
-                    className="w-full rounded-lg shadow-md"
-                    loading="lazy"
-                  />
-                </div>
-              </div>
-            </div>
-            
-            {/* Right column: Features list */}
-            <div className="space-y-8">
-              <div className="grid gap-8">
+          <div className="max-w-5xl">
+            <div className="grid md:grid-cols-2 gap-8">
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
@@ -79,13 +51,12 @@ export const ConsumablesShowcase: React.FC = () => {
                   <span className="text-foreground">Built into your job flow, adjustable per customer or per job</span>
                 </li>
               </ul>
-              </div>
-              
-              <div className="p-4 bg-muted rounded-lg">
-                <p className="text-sm text-foreground">
-                  💡 Choose simple bundled pricing or detailed itemized billing — PortaPro adapts to your workflow.
-                </p>
-              </div>
+            </div>
+            
+            <div className="mt-8 p-4 bg-muted rounded-lg max-w-3xl">
+              <p className="text-sm text-foreground">
+                💡 Choose simple bundled pricing or detailed itemized billing — PortaPro adapts to your workflow.
+              </p>
             </div>
           </div>
         </div>
