@@ -46,7 +46,7 @@ export const MarketingShowcase: React.FC = () => {
         </header>
 
         <div className="grid lg:grid-cols-2 gap-8 items-start">
-          {/* Left column: Audience & Segments + Video + Highlights */}
+          {/* Left column: Audience & Segments + Video */}
           <div className="space-y-4">
             {/* Audience & Smart Segments */}
             <article className="rounded-2xl border bg-card shadow-md p-5 animate-fade-in">
@@ -78,19 +78,6 @@ export const MarketingShowcase: React.FC = () => {
               <style dangerouslySetInnerHTML={{__html: `wistia-player[media-id='a2finp2l33']:not(:defined) { background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/a2finp2l33/swatch'); display: block; filter: blur(5px); padding-top:78.54%; }`}} />
               <wistia-player media-id="a2finp2l33" aspect="1.273209549071618"></wistia-player>
             </div>
-
-            {/* Highlights */}
-            <div className="rounded-2xl border bg-card p-5 shadow-md animate-fade-in">
-              <div className="text-base font-semibold mb-3 text-foreground">Highlights</div>
-              <ul className="grid grid-cols-2 gap-2 text-sm">
-                <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Build templates with AI — subject + body in seconds</li>
-                <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Save drafts automatically; resume anytime</li>
-                <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Target all customers or Smart Segments</li>
-                <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Schedule ahead or send instantly; timezone aware</li>
-                <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Real‑time metrics for delivery, opens, clicks, unsubs</li>
-                <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Unlimited texts and emails — included, no hidden fees</li>
-              </ul>
-            </div>
           </div>
 
           {/* Right column: Campaign Creation */}
@@ -100,6 +87,39 @@ export const MarketingShowcase: React.FC = () => {
               <CampaignConfirmationDemo />
             </div>
           </aside>
+        </div>
+
+        {/* Highlights - Full Width Across Both Columns */}
+        <div className="mt-8">
+          <div className="rounded-2xl border bg-card p-5 shadow-md animate-fade-in">
+            <div className="text-base font-semibold mb-4 text-foreground">Highlights</div>
+            <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+              <li className="flex items-start gap-3">
+                <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                <span>Build templates with AI — subject + body in seconds</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                <span>Save drafts automatically; resume anytime</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                <span>Target all customers or Smart Segments</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                <span>Schedule ahead or send instantly; timezone aware</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                <span>Real‑time metrics for delivery, opens, clicks, unsubs</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                <span>Unlimited texts and emails — included, no hidden fees</span>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </section>
