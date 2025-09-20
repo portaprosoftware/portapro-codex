@@ -677,28 +677,29 @@ export const Landing: React.FC = () => {
           </div>
 
 
-          {/* Unit Maintenance & History Row */}
-          <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
-            <div className="space-y-6">
+          {/* Unit Maintenance & History - Full Width Section */}
+          <div className="mb-12">
+            <div className="text-center mb-8">
               <h3 className="text-2xl font-bold text-foreground">Unit Maintenance & History</h3>
-              <p className="text-lg text-muted-foreground">Comprehensive maintenance tracking with automated work order management.</p>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <Smartphone className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Mobile maintenance work order management</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <FileText className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Complete service history and condition monitoring</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CalendarClock className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Automated scheduling and technician assignments</span>
-                </li>
-              </ul>
-            </div>
-            <div className="flex justify-center">
-              <img src="/src/assets/manage-unit.png" alt="Unit maintenance management interface showing unit 3012 with broken seat repair details, location info, and expected return date" className="w-full max-w-[21.6rem] h-auto" loading="lazy" decoding="async" />
+              <p className="text-lg text-muted-foreground mt-2">Comprehensive maintenance tracking with automated work order management.</p>
+              
+              {/* Feature List */}
+              <div className="mt-6 flex justify-center">
+                <ul className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl">
+                  <li className="flex items-start gap-3">
+                    <Smartphone className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Mobile maintenance work order management</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <FileText className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Complete service history and condition monitoring</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CalendarClock className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Automated scheduling and technician assignments</span>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
 
