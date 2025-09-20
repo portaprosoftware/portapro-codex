@@ -204,7 +204,8 @@ export const ServiceHubDemo: React.FC = () => {
                 <h5 className="font-medium text-foreground truncate">{service.name}</h5>
                 <p className="text-sm text-muted-foreground line-clamp-2">{service.description}</p>
               </div>
-              <div className="text-left sm:text-right flex-shrink-0">
+              {/* Hide price section on mobile */}
+              <div className="hidden md:block text-right flex-shrink-0">
                 <div className="text-lg font-bold text-foreground">${service.price}</div>
                 <div className="text-xs text-muted-foreground">{service.duration}</div>
               </div>
@@ -228,14 +229,14 @@ export const ServiceHubDemo: React.FC = () => {
                 )}
               </div>
               
-              <div className="flex gap-1">
+              {/* Hide buttons on mobile */}
+              <div className="hidden md:flex gap-1">
                 <Button variant="outline" size="sm" className="text-xs">
                   <Edit className="w-3 h-3 mr-1" />
-                  <span className="hidden sm:inline">Edit</span>
+                  Edit
                 </Button>
                 <Button variant="outline" size="sm" className="text-xs">
-                  <span className="hidden sm:inline">Assign Template</span>
-                  <span className="sm:hidden">Assign</span>
+                  Assign Template
                 </Button>
               </div>
             </div>
