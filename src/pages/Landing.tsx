@@ -580,13 +580,7 @@ export const Landing: React.FC = () => {
             </div>
             
             <div className="flex justify-center">
-              <img 
-                src="/standard-unit-inventory.png" 
-                alt="Standard Porta Potty inventory item showing pricing and availability tracking"
-                className="w-full max-w-lg h-auto"
-                loading="lazy"
-                decoding="async"
-              />
+              {/* Image removed - will be re-added later */}
             </div>
           </div>
           {/* Stock Tracking */}
@@ -610,13 +604,7 @@ export const Landing: React.FC = () => {
               </ul>
             </div>
             <div className="flex justify-center">
-              <img
-                src="/inventory-dashboard.png"
-                alt="Inventory status interface showing hybrid tracking with available tracked units, bulk pool inventory, and stock allocation across different categories"
-                className="w-full max-w-lg h-auto"
-                loading="lazy"
-                decoding="async"
-              />
+              {/* Image removed - will be re-added later */}
             </div>
           </div>
           
@@ -641,13 +629,7 @@ export const Landing: React.FC = () => {
               </ul>
             </div>
             <div className="flex justify-center">
-              <img
-                src="/location-tracking.png"
-                alt="Location Transfer History showing transfers between North Yard and South Yard with search and date filtering capabilities"
-                className="w-full max-w-lg h-auto"
-                loading="lazy"
-                decoding="async"
-              />
+              {/* Image removed - will be re-added later */}
             </div>
           </div>
 
