@@ -109,25 +109,21 @@ export function InventoryManagementShowcase() {
             <div className="grid grid-cols-2 gap-6 items-start">
               {/* Left Column - Image with Status Badges */}
               <div className="flex flex-col items-center space-y-3">
-                <div className="relative">
-                  <img 
-                    src="/assets/standard-unit.png" 
-                    alt="Standard Portable Toilet" 
-                    className="w-full max-w-48 h-auto rounded-lg"
-                  />
-                  <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
-                    <div className="bg-gradient-to-r from-green-600 to-green-500 text-white px-4 py-2 rounded-full font-bold text-sm whitespace-nowrap">
-                      {mockStockData.totalAvailable} Available
-                    </div>
-                  </div>
-                </div>
+                <img 
+                  src="/assets/standard-unit.png" 
+                  alt="Standard Portable Toilet" 
+                  className="w-full max-w-48 h-auto rounded-lg"
+                />
                 
-                {/* Additional Status Badges */}
-                <div className="flex flex-col gap-2 mt-4">
-                  <div className="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-4 py-2 rounded-full font-bold text-sm whitespace-nowrap">
+                {/* Status Badges - Centered under image */}
+                <div className="flex flex-col gap-2 w-full items-center">
+                  <div className="bg-gradient-to-r from-green-600 to-green-500 text-white px-4 py-2 rounded-full font-bold text-sm">
+                    {mockStockData.totalAvailable} Available
+                  </div>
+                  <div className="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-4 py-2 rounded-full font-bold text-sm">
                     On Assignment {mockStockData.totalAssigned}
                   </div>
-                  <div className="bg-gradient-to-r from-orange-600 to-orange-500 text-white px-4 py-2 rounded-full font-bold text-sm whitespace-nowrap">
+                  <div className="bg-gradient-to-r from-orange-600 to-orange-500 text-white px-4 py-2 rounded-full font-bold text-sm">
                     Maintenance {mockStockData.totalMaintenance}
                   </div>
                 </div>
