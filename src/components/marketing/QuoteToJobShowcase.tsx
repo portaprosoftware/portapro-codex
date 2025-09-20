@@ -33,6 +33,15 @@ export const QuoteToJobShowcase: React.FC = () => {
               </li>
             ))}
           </ul>
+          
+          {/* Quotes image */}
+          <div className="max-w-sm">
+            <img 
+              src="/src/assets/quotes.png" 
+              alt="Quote and Job creation interface"
+              className="w-full h-auto rounded-xl"
+            />
+          </div>
         </aside>
 
         {/* Right: Quote Builder */}
