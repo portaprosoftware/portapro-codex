@@ -99,43 +99,43 @@ export function InventoryManagementShowcase() {
     switch (activeTab) {
       case 'overview':
         return (
-          <div className="space-y-3">
+          <div className="space-y-2">
             {/* Product Header */}
-            <div className="text-center mb-2">
+            <div className="text-center mb-1">
               <h4 className="text-lg font-semibold text-foreground">{mockUnitData.productName}</h4>
             </div>
 
             {/* Three Column Layout */}
-            <div className="grid grid-cols-3 gap-3 items-center">
+            <div className="grid grid-cols-3 gap-3 items-center justify-items-center">
               {/* Left Column - Image */}
               <div className="flex justify-center">
                 <img 
                   src="/assets/standard-unit.png" 
                   alt="Standard Portable Toilet" 
-                  className="w-full max-w-40 h-auto rounded-lg"
+                  className="w-full max-w-60 h-auto rounded-lg"
                 />
               </div>
 
               {/* Middle Column - Status Badges */}
-              <div className="flex flex-col gap-2 justify-center">
-                <div className="bg-gradient-to-r from-green-600 to-green-500 text-white px-3 py-1.5 rounded-full font-bold text-xs text-center whitespace-nowrap">
+              <div className="flex flex-col gap-1.5 justify-center items-center w-full">
+                <div className="bg-gradient-to-r from-green-600 to-green-500 text-white px-3 py-1.5 rounded-full font-bold text-xs text-center whitespace-nowrap w-full max-w-32">
                   {mockStockData.totalAvailable} Available
                 </div>
-                <div className="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-3 py-1.5 rounded-full font-bold text-xs text-center whitespace-nowrap">
+                <div className="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-3 py-1.5 rounded-full font-bold text-xs text-center whitespace-nowrap w-full max-w-32">
                   On Assignment {mockStockData.totalAssigned}
                 </div>
-                <div className="bg-gradient-to-r from-orange-600 to-orange-500 text-white px-3 py-1.5 rounded-full font-bold text-xs text-center whitespace-nowrap">
+                <div className="bg-gradient-to-r from-orange-600 to-orange-500 text-white px-3 py-1.5 rounded-full font-bold text-xs text-center whitespace-nowrap w-full max-w-32">
                   Maintenance {mockStockData.totalMaintenance}
                 </div>
               </div>
 
               {/* Right Column - Inventory by Location */}
-              <div className="space-y-2">
-                <h5 className="font-medium text-foreground text-sm">Inventory by Location</h5>
-                <div className="grid gap-1.5">
+              <div className="space-y-1.5 w-full">
+                <h5 className="font-medium text-foreground text-sm text-center">Inventory by Location</h5>
+                <div className="grid gap-1">
                   {mockStockData.bulkStock.map((location, index) => (
-                    <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
-                      <div className="flex items-center gap-1.5">
+                    <div key={index} className="flex items-center justify-between p-1.5 bg-gray-50 rounded-lg">
+                      <div className="flex items-center gap-1">
                         <MapPin className="w-3 h-3 text-muted-foreground" />
                         <span className="text-xs font-medium">{location.location}</span>
                       </div>
