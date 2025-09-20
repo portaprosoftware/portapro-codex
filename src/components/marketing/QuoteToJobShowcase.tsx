@@ -89,7 +89,7 @@ export const QuoteToJobShowcase: React.FC = () => {
                     <div key={row.name} className="flex items-center justify-between px-4 py-3">
                       <div className="space-y-0.5">
                         <div className="font-medium text-foreground">{row.name}</div>
-                        <div className="text-xs text-muted-foreground">${'{'}row.price{'}'} {row.cycle}</div>
+                        <div className="text-xs text-muted-foreground">${row.price}{row.cycle}</div>
                       </div>
                       <div className="text-sm text-muted-foreground">×{row.qty}</div>
                     </div>
@@ -100,15 +100,15 @@ export const QuoteToJobShowcase: React.FC = () => {
                 <div className="rounded-xl border bg-muted/30 px-4 py-3">
                   <div className="flex items-center justify-between">
                     <div className="text-sm text-muted-foreground">Subtotal</div>
-                    <div className="font-medium text-foreground">$247</div>
+                    <div className="font-medium text-foreground">$292</div>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="text-sm text-muted-foreground">Tax</div>
-                    <div className="font-medium text-foreground">$20.28</div>
+                    <div className="font-medium text-foreground">$23.36</div>
                   </div>
                   <div className="flex items-center justify-between border-t mt-2 pt-2">
                     <div className="font-semibold text-foreground">Total</div>
-                    <div className="font-semibold text-foreground">$267.28</div>
+                    <div className="font-semibold text-foreground">$315.36</div>
                   </div>
                 </div>
 
@@ -116,7 +116,7 @@ export const QuoteToJobShowcase: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <div className="text-sm text-muted-foreground">Deposit due (50%)</div>
                   <div className="inline-flex items-center gap-2">
-                    <span className="font-semibold text-foreground">$133.64</span>
+                    <span className="font-semibold text-foreground">$157.68</span>
                     <ArrowRight className="w-4 h-4 text-muted-foreground" />
                     <span className="text-sm text-muted-foreground">to schedule</span>
                   </div>
