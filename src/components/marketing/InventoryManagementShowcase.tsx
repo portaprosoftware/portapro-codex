@@ -251,7 +251,24 @@ export function InventoryManagementShowcase() {
                     {endDate.toLocaleDateString()}
                   </div>
                 </div>
+            </div>
+
+            {/* Inventory Request */}
+            <div className="border rounded-lg p-4">
+              <h5 className="font-medium text-foreground mb-3 flex items-center gap-2">
+                <Package className="w-4 h-4" /> Inventory Request
+              </h5>
+              <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  <div>
+                    <div className="text-sm font-medium text-foreground">20 units requested</div>
+                    <div className="text-xs text-green-600">Available for selected dates</div>
+                  </div>
+                </div>
+                <div className="text-lg font-bold text-green-700">✓ Confirmed</div>
               </div>
+            </div>
             </div>
 
             {/* Calendar View */}
