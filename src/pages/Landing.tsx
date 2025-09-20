@@ -583,7 +583,7 @@ export const Landing: React.FC = () => {
               <img 
                 src="/standard-porta-potty.png" 
                 alt="Standard portable toilet unit showing availability tracking"
-                className="w-3/4 max-w-md h-auto"
+                className="w-3/5 max-w-md h-auto"
                 loading="lazy"
                 decoding="async"
               />
