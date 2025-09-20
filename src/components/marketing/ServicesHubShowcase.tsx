@@ -35,9 +35,6 @@ export const ServicesHubShowcase: React.FC = () => {
         <div className="space-y-8">
           {/* Interactive Demo */}
           <div className="space-y-4">
-            <p className="text-sm text-muted-foreground text-center">
-              Interactive demo - click tabs to explore different sections
-            </p>
             <ServiceHubDemo />
             
             {/* Sample Service Report */}

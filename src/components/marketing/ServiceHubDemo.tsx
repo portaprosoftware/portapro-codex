@@ -388,10 +388,9 @@ export const ServiceHubDemo: React.FC = () => {
             <p className="text-green-100 text-sm">Schedule, document, and track service completions</p>
           </div>
           <div className="text-right">
-            <Badge className="bg-white/20 text-white border-0">
-              <ClipboardCheck className="w-4 h-4 mr-1" />
-              Live Demo
-            </Badge>
+            <p className="text-green-100 text-sm">
+              Interactive demo - click tabs to explore different sections
+            </p>
           </div>
         </div>
       </div>
