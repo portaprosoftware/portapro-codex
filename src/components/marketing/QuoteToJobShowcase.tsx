@@ -34,18 +34,31 @@ export const QuoteToJobShowcase: React.FC = () => {
             ))}
           </ul>
           
-          {/* Quote + Job image */}
-          <div className="max-w-xs space-y-0">
-            <img 
-              src="/src/assets/quote-2.png" 
-              alt="Create Job + Quote interface"
-              className="w-full h-auto rounded-xl"
-            />
-            <img 
-              src="/src/assets/invoice-2.png" 
-              alt="Create Job + Invoice interface"
-              className="w-full h-auto rounded-xl"
-            />
+          {/* Custom interface cards */}
+          <div className="space-y-4">
+            {/* Create Job + Quote Card */}
+            <div className="bg-card border rounded-2xl p-6 text-center shadow-sm">
+              <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <FileText className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">Create Job + Quote</h3>
+              <p className="text-sm text-muted-foreground mb-4">Create both a job and quote simultaneously</p>
+              <button className="w-full bg-primary text-primary-foreground py-2.5 rounded-xl font-medium hover:bg-primary/90 transition-colors">
+                Quote + Job
+              </button>
+            </div>
+
+            {/* Create Job + Invoice Card */}
+            <div className="bg-card border rounded-2xl p-6 text-center shadow-sm">
+              <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <DollarSign className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">Create Job + Invoice</h3>
+              <p className="text-sm text-muted-foreground mb-4">Create job and immediately generate invoice</p>
+              <button className="w-full bg-primary text-primary-foreground py-2.5 rounded-xl font-medium hover:bg-primary/90 transition-colors">
+                Job + Invoice
+              </button>
+            </div>
           </div>
         </aside>
 
