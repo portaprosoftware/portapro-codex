@@ -86,7 +86,7 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
             {/* Interactive Demo Info */}
             <div className="mb-4 text-center">
               <p className="text-sm text-muted-foreground">
-                Interactive Demo: Click the tabs below to explore different vehicle management features
+                Interactive: Click the tabs below to explore different customer profile segments
               </p>
             </div>
 
