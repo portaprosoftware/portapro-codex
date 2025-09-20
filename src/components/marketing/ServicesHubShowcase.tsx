@@ -22,7 +22,7 @@ export const ServicesHubShowcase: React.FC = () => {
     <section id="services-hub" className="py-8 bg-white">
       <div className="container mx-auto max-w-6xl px-6">
         <header className="mb-8 space-y-2">
-          <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Service and Reporting Hub</h2>
+          <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Service & Reporting Hub</h2>
           <p className="text-muted-foreground">
             Schedule, document, and prove completion. Auto-assign service report templates when specific services are scheduled; drivers complete in the field—offline ready.
           </p>
@@ -90,7 +90,7 @@ export const ServicesHubShowcase: React.FC = () => {
           {/* Right column: Single image */}
           <aside className="space-y-6">
             <img
-              src="/src/assets/services_2-4.png"
+              src="/assets/services_2-4.png"
               alt="Template builder interface showing service report elements including text input, photo capture, digital signature and checklist options"
               className="w-full max-w-sm h-auto rounded-lg mx-auto"
               loading="lazy"
