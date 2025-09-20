@@ -52,40 +52,38 @@ export const CampaignConfirmationDemo: React.FC = () => {
           </Button>
         </div>
 
-        <div className="grid lg:grid-cols-5 gap-6">
-          {/* Left Column - Schedule & Review */}
-          <div className="lg:col-span-2 space-y-6">
-            <div>
-              <h4 className="text-lg font-semibold text-foreground mb-4">Schedule & Review</h4>
-              
-              {/* Scheduling Options */}
-              <div className="space-y-4">
-                <div>
-                  <h5 className="text-sm font-medium text-foreground mb-2">Scheduling</h5>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm" className="text-xs">
-                      Send Now
-                    </Button>
-                    <Button className="bg-blue-600 hover:bg-blue-700 text-white text-xs">
-                      Schedule
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Date Selection */}
-                <div>
-                  <h5 className="text-sm font-medium text-foreground mb-2">Select Date</h5>
-                  <Button variant="outline" className="w-full justify-start text-gray-500">
-                    <Calendar className="w-4 h-4 mr-2" />
-                    Pick a date
+        <div className="space-y-6">
+          {/* Schedule & Review Section */}
+          <div>
+            <h4 className="text-lg font-semibold text-foreground mb-4">Schedule & Review</h4>
+            
+            {/* Scheduling Options */}
+            <div className="space-y-4">
+              <div>
+                <h5 className="text-sm font-medium text-foreground mb-2">Scheduling</h5>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" className="text-xs">
+                    Send Now
+                  </Button>
+                  <Button className="bg-blue-600 hover:bg-blue-700 text-white text-xs">
+                    Schedule
                   </Button>
                 </div>
+              </div>
+
+              {/* Date Selection */}
+              <div>
+                <h5 className="text-sm font-medium text-foreground mb-2">Select Date</h5>
+                <Button variant="outline" className="w-full justify-start text-gray-500">
+                  <Calendar className="w-4 h-4 mr-2" />
+                  Pick a date
+                </Button>
               </div>
             </div>
           </div>
 
-          {/* Right Column - Campaign Summary (Stretched) */}
-          <div className="lg:col-span-3">
+          {/* Campaign Summary - Full Width */}
+          <div>
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">Campaign Summary</CardTitle>
@@ -117,22 +115,6 @@ export const CampaignConfirmationDemo: React.FC = () => {
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground">Customer Types:</span>
                   <span className="text-sm font-medium">All types</span>
-                </div>
-
-                {/* Quick Stats */}
-                <div className="pt-4 border-t space-y-2">
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Users className="w-3 h-3" />
-                    <span>Estimated delivery: 2-3 minutes</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Target className="w-3 h-3" />
-                    <span>Expected open rate: 24-28%</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Clock className="w-3 h-3" />
-                    <span>Best send time: 10:00 AM local</span>
-                  </div>
                 </div>
               </CardContent>
             </Card>
