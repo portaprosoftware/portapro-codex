@@ -16,41 +16,34 @@ import {
 export const CampaignConfirmationDemo: React.FC = () => {
   return (
     <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-      {/* Header with Send Campaign Button */}
-      <div className="p-6 pb-4">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h3 className="text-xl font-bold text-foreground mb-4">Create New Campaign</h3>
-            
-            {/* Progress Steps */}
-            <div className="flex items-center gap-4">
-              {[1, 2, 3, 4].map((step, index) => (
-                <div key={step} className="flex items-center">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                    step === 4 
-                      ? 'bg-blue-600 text-white' 
-                      : step < 4 
-                        ? 'bg-blue-100 text-blue-600' 
-                        : 'bg-gray-200 text-gray-500'
-                  }`}>
-                    {step}
-                  </div>
-                  {index < 3 && (
-                    <div className={`w-12 h-0.5 mx-2 ${
-                      step < 4 ? 'bg-blue-600' : 'bg-gray-200'
-                    }`} />
-                  )}
-                </div>
-              ))}
+      {/* Header with Grey Background */}
+      <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-6 border-b">
+        <h3 className="text-xl font-bold text-foreground mb-4">Create New Campaign</h3>
+        
+        {/* Progress Steps */}
+        <div className="flex items-center justify-center gap-4">
+          {[1, 2, 3, 4].map((step, index) => (
+            <div key={step} className="flex items-center">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                step === 4 
+                  ? 'bg-blue-600 text-white' 
+                  : step < 4 
+                    ? 'bg-blue-100 text-blue-600' 
+                    : 'bg-gray-200 text-gray-500'
+              }`}>
+                {step}
+              </div>
+              {index < 3 && (
+                <div className={`w-12 h-0.5 mx-2 ${
+                  step < 4 ? 'bg-blue-600' : 'bg-gray-200'
+                }`} />
+              )}
             </div>
-          </div>
-          
-          {/* Send Campaign Button - Top Right */}
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-            <Send className="w-4 h-4 mr-1" />
-            Send Campaign
-          </Button>
+          ))}
         </div>
+      </div>
+
+      <div className="p-6">
 
         <div className="space-y-6">
           {/* Schedule & Review Section */}
@@ -121,15 +114,21 @@ export const CampaignConfirmationDemo: React.FC = () => {
           </div>
         </div>
 
-        {/* Bottom Action Buttons - Left Side */}
-        <div className="flex gap-2 pt-6 justify-start">
-          <Button variant="outline" size="sm">
-            <ArrowLeft className="w-4 h-4 mr-1" />
-            Back
-          </Button>
-          <Button variant="outline" size="sm">
-            <Save className="w-4 h-4 mr-1" />
-            Save as Draft
+        {/* Bottom Action Buttons */}
+        <div className="flex gap-2 pt-6 justify-between">
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm">
+              <ArrowLeft className="w-4 h-4 mr-1" />
+              Back
+            </Button>
+            <Button variant="outline" size="sm">
+              <Save className="w-4 h-4 mr-1" />
+              Save as Draft
+            </Button>
+          </div>
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+            <Send className="w-4 h-4 mr-1" />
+            Send Campaign
           </Button>
         </div>
       </div>
