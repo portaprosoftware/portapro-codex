@@ -43,7 +43,7 @@ export const QuoteToJobShowcase: React.FC = () => {
               </div>
               <h3 className="text-lg font-semibold text-foreground mb-2">Create Job + Quote</h3>
               <p className="text-sm text-muted-foreground mb-4">Create both a job and quote simultaneously</p>
-              <button className="w-full bg-primary text-primary-foreground py-2.5 rounded-xl font-medium hover:bg-primary/90 transition-colors">
+              <button className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-2.5 rounded-xl font-medium hover:from-green-600 hover:to-green-700 transition-all shadow">
                 Quote + Job
               </button>
             </div>
@@ -55,7 +55,7 @@ export const QuoteToJobShowcase: React.FC = () => {
               </div>
               <h3 className="text-lg font-semibold text-foreground mb-2">Create Job + Invoice</h3>
               <p className="text-sm text-muted-foreground mb-4">Create job and immediately generate invoice</p>
-              <button className="w-full bg-primary text-primary-foreground py-2.5 rounded-xl font-medium hover:bg-primary/90 transition-colors">
+              <button className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-2.5 rounded-xl font-medium hover:from-green-600 hover:to-green-700 transition-all shadow">
                 Job + Invoice
               </button>
             </div>
