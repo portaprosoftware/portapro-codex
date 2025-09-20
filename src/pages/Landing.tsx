@@ -553,7 +553,7 @@ export const Landing: React.FC = () => {
           </div>
 
           {/* General Inventory Management */}
-          <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
+          <div className="grid lg:grid-cols-2 gap-12 items-center mb-4">
             <div className="space-y-6">
               <div className="text-left">
                 <h3 className="text-2xl font-bold text-foreground mb-4">General Inventory Management</h3>
@@ -588,7 +588,7 @@ export const Landing: React.FC = () => {
             </div>
           </div>
           {/* Stock Tracking & Location Management Row */}
-          <div className="grid lg:grid-cols-2 gap-12 items-center mb-6">
+          <div className="grid lg:grid-cols-2 gap-12 items-center mb-4">
             <div className="space-y-6">
               <h3 className="text-2xl font-bold text-foreground">Stock Tracking</h3>
               <p className="text-lg text-muted-foreground">Real-time inventory levels with automated tracking and threshold monitoring.</p>
@@ -618,7 +618,7 @@ export const Landing: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
+          <div className="grid lg:grid-cols-2 gap-12 items-center mb-4">
             <div className="flex justify-center order-1 lg:order-2">
               <img
                 src="/src/assets/location-tracking.png"
