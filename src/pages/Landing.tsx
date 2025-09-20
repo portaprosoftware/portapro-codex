@@ -553,7 +553,7 @@ export const Landing: React.FC = () => {
           </div>
 
           {/* General Inventory Management */}
-          <div className="grid lg:grid-cols-2 gap-12 items-center mb-4">
+          <div className="grid lg:grid-cols-2 gap-12 items-center mb-8">
             <div className="space-y-6">
               <div className="text-left">
                 <h3 className="text-2xl font-bold text-foreground mb-4">General Inventory Management</h3>
@@ -581,14 +581,16 @@ export const Landing: React.FC = () => {
             
             <div className="flex justify-center">
               <img 
-                src="/src/assets/standard-unit.png" 
+                src="/standard-unit-inventory.png" 
                 alt="Standard Porta Potty inventory item showing pricing and availability tracking"
-                className="w-full max-w-sm h-auto"
+                className="w-full max-w-lg h-auto"
+                loading="lazy"
+                decoding="async"
               />
             </div>
           </div>
           {/* Stock Tracking */}
-          <div className="grid lg:grid-cols-2 gap-12 items-center mb-2">
+          <div className="grid lg:grid-cols-2 gap-12 items-center mb-8">
             <div className="space-y-6">
               <h3 className="text-2xl font-bold text-foreground">Stock Tracking</h3>
               <p className="text-lg text-muted-foreground">Real-time inventory levels with automated tracking and threshold monitoring.</p>
@@ -609,7 +611,7 @@ export const Landing: React.FC = () => {
             </div>
             <div className="flex justify-center">
               <img
-                src="/inventory-status.png"
+                src="/inventory-dashboard.png"
                 alt="Inventory status interface showing hybrid tracking with available tracked units, bulk pool inventory, and stock allocation across different categories"
                 className="w-full max-w-lg h-auto"
                 loading="lazy"
@@ -619,7 +621,7 @@ export const Landing: React.FC = () => {
           </div>
           
           {/* Location Management */}
-          <div className="grid lg:grid-cols-2 gap-12 items-center mb-2">
+          <div className="grid lg:grid-cols-2 gap-12 items-center mb-8">
             <div className="space-y-6">
               <h3 className="text-2xl font-bold text-foreground">Location Management</h3>
               <p className="text-lg text-muted-foreground">Organize inventory across multiple storage facilities and job sites.</p>
