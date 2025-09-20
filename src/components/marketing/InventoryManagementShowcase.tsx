@@ -234,7 +234,7 @@ export function InventoryManagementShowcase() {
           <div className="space-y-4">
             {/* Date Range Summary */}
             <div className="bg-muted rounded-lg p-4 text-center">
-              <div className="text-2xl font-bold text-foreground">Daily Availability Overview</div>
+              <div className="text-xl font-bold text-foreground">Daily Availability Overview</div>
               <div className="flex items-center justify-center gap-4 mt-3">
                 <div className="space-y-1">
                   <label className="text-xs text-muted-foreground">Start Date</label>
@@ -259,8 +259,8 @@ export function InventoryManagementShowcase() {
               <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-green-600 to-green-500 rounded-lg">
                 <CheckCircle className="w-5 h-5 text-white" />
                 <div>
-                  <div className="text-sm font-medium text-white">20 units requested</div>
-                  <div className="text-xs text-white">Available for selected dates</div>
+                  <div className="text-sm font-bold text-white">20 units requested</div>
+                  <div className="text-xs font-bold text-white">Available for selected dates</div>
                 </div>
               </div>
             </div>
@@ -326,7 +326,7 @@ export function InventoryManagementShowcase() {
           <div className="space-y-4">
             {/* Maintenance Overview */}
             <div className="border rounded-lg p-4 text-center bg-muted">
-              <div className="text-2xl font-bold text-foreground">{mockMaintenanceData.unitsInMaintenance} Units in Maintenance</div>
+              <div className="text-xl font-bold text-foreground">{mockMaintenanceData.unitsInMaintenance} Units in Maintenance</div>
               <div className="text-sm text-muted-foreground">Currently being repaired</div>
             </div>
 
