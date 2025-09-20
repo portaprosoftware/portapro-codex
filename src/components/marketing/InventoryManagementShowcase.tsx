@@ -118,13 +118,13 @@ export function InventoryManagementShowcase() {
 
               {/* Middle Column - Status Badges */}
               <div className="flex flex-col gap-2 justify-center items-center w-full h-full">
-                <div className="bg-gradient-to-r from-green-600 to-green-500 text-white px-6 py-3 rounded-full font-bold text-sm text-center whitespace-nowrap w-full max-w-40">
+                <div className="bg-gradient-to-r from-green-600 to-green-500 text-white px-6 py-1.5 rounded-full font-bold text-sm text-center whitespace-nowrap w-full max-w-40">
                   {mockStockData.totalAvailable} Available
                 </div>
-                <div className="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-6 py-3 rounded-full font-bold text-sm text-center whitespace-nowrap w-full max-w-40">
+                <div className="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-6 py-1.5 rounded-full font-bold text-sm text-center whitespace-nowrap w-full max-w-40">
                   On Assignment {mockStockData.totalAssigned}
                 </div>
-                <div className="bg-gradient-to-r from-orange-600 to-orange-500 text-white px-6 py-3 rounded-full font-bold text-sm text-center whitespace-nowrap w-full max-w-40">
+                <div className="bg-gradient-to-r from-orange-600 to-orange-500 text-white px-6 py-1.5 rounded-full font-bold text-sm text-center whitespace-nowrap w-full max-w-40">
                   Maintenance {mockStockData.totalMaintenance}
                 </div>
               </div>
