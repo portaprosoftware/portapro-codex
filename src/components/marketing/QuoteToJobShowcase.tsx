@@ -34,19 +34,6 @@ export const QuoteToJobShowcase: React.FC = () => {
             ))}
           </ul>
           
-          {/* Stacked images - cropped and sized */}
-          <div className="space-y-3 max-w-xs">
-            <img 
-              src="/assets/Quote.png" 
-              alt="Create Job + Quote interface"
-              className="w-full h-32 object-cover object-top rounded-lg shadow-sm"
-            />
-            <img 
-              src="/assets/Invoice.png" 
-              alt="Create Job + Invoice interface"
-              className="w-full h-32 object-cover object-top rounded-lg shadow-sm"
-            />
-          </div>
         </aside>
 
         {/* Right: Quote Builder */}
