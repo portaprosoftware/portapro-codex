@@ -235,10 +235,22 @@ export function InventoryManagementShowcase() {
         return (
           <div className="space-y-4">
             {/* Date Range Summary */}
-            <div className="bg-gradient-to-r from-green-600 to-green-500 rounded-lg p-4 text-center">
-              <div className="text-2xl font-bold text-white">Daily Availability Overview</div>
-              <div className="text-sm text-white mt-1">
-                {startDate.toLocaleDateString()} to {endDate.toLocaleDateString()}
+            <div className="bg-muted rounded-lg p-4 text-center">
+              <div className="text-2xl font-bold text-foreground">Daily Availability Overview</div>
+              <div className="flex items-center justify-center gap-4 mt-3">
+                <div className="space-y-1">
+                  <label className="text-xs text-muted-foreground">Start Date</label>
+                  <div className="p-2 border rounded bg-background text-sm min-w-[120px]">
+                    {startDate.toLocaleDateString()}
+                  </div>
+                </div>
+                <span className="text-muted-foreground mt-4">to</span>
+                <div className="space-y-1">
+                  <label className="text-xs text-muted-foreground">End Date</label>
+                  <div className="p-2 border rounded bg-background text-sm min-w-[120px]">
+                    {endDate.toLocaleDateString()}
+                  </div>
+                </div>
               </div>
             </div>
 
