@@ -27,7 +27,7 @@ export const QuoteToJobShowcase: React.FC = () => {
             ].map((item, idx) => (
               <li key={idx} className="flex items-start gap-3">
                 <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center mt-0.5">
-                  <CheckCircle className="w-3.5 h-3.5" />
+                  <CheckCircle className="w-4 h-4" />
                 </div>
                 <span className="text-muted-foreground">{item}</span>
               </li>
@@ -38,8 +38,8 @@ export const QuoteToJobShowcase: React.FC = () => {
           <div className="space-y-4">
             {/* Create Job + Quote Card */}
             <div className="bg-card border rounded-2xl p-6 text-center shadow-sm">
-              <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <FileText className="w-6 h-6 text-primary" />
+              <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <FileText className="w-6 h-6 text-white" />
               </div>
               <h3 className="text-lg font-semibold text-foreground mb-2">Create Job + Quote</h3>
               <p className="text-sm text-muted-foreground mb-4">Create both a job and quote simultaneously</p>
@@ -50,8 +50,8 @@ export const QuoteToJobShowcase: React.FC = () => {
 
             {/* Create Job + Invoice Card */}
             <div className="bg-card border rounded-2xl p-6 text-center shadow-sm">
-              <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <DollarSign className="w-6 h-6 text-primary" />
+              <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <DollarSign className="w-6 h-6 text-white" />
               </div>
               <h3 className="text-lg font-semibold text-foreground mb-2">Create Job + Invoice</h3>
               <p className="text-sm text-muted-foreground mb-4">Create job and immediately generate invoice</p>
