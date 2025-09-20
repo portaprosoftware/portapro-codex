@@ -376,9 +376,7 @@ export function InventoryManagementShowcase() {
         const sampleQrCodes = [
           { unitCode: '1101', type: 'Standard Portable Toilet' },
           { unitCode: '1102', type: 'Standard Portable Toilet' },
-          { unitCode: '1103', type: 'Standard Portable Toilet' },
-          { unitCode: '1104', type: 'Standard Portable Toilet' },
-          { unitCode: '1105', type: 'Standard Portable Toilet' }
+          { unitCode: '1103', type: 'Standard Portable Toilet' }
         ];
         
         return (
@@ -388,7 +386,7 @@ export function InventoryManagementShowcase() {
               <div className="flex items-center justify-between mb-4">
                 <h5 className="font-medium text-foreground">Unit QR Codes</h5>
                 <Button size="sm" className="bg-gradient-to-r from-blue-700 to-blue-800 text-white">
-                  Print All
+                  Print Selected
                 </Button>
               </div>
               <div className="grid gap-3">
