@@ -381,14 +381,14 @@ export const ServiceHubDemo: React.FC = () => {
   return (
     <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
       {/* Header */}
-      <div className="bg-gradient-to-r from-green-600 to-green-700 text-white p-4">
+      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-xl font-bold">Service & Reporting Hub</h3>
-            <p className="text-green-100 text-sm">Schedule, document, and track service completions</p>
+            <p className="text-blue-100 text-sm">Schedule, document, and track service completions</p>
           </div>
           <div className="text-right">
-            <p className="text-green-100 text-sm">
+            <p className="text-blue-100 text-sm">
               Interactive demo - click tabs to explore different sections
             </p>
           </div>
