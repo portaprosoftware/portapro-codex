@@ -22,6 +22,7 @@ import { AIPanelScanningShowcase } from '@/components/marketing/AIPanelScanningS
 import { QuoteToJobShowcase } from '@/components/marketing/QuoteToJobShowcase';
 import { DriverAppShowcase } from '@/components/marketing/DriverAppShowcase';
 import { InventorySuppliesShowcase } from '@/components/marketing/InventorySuppliesShowcase';
+import { InventoryManagementShowcase } from '@/components/marketing/InventoryManagementShowcase';
 import { TrackingMethodsSlideshow } from '@/components/marketing/TrackingMethodsSlideshow';
 import { QRGenerator } from '@/components/ui/qr-generator';
 import { QRPanelRotator } from '@/components/ui/qr-panel-rotator';
@@ -528,6 +529,11 @@ export const Landing: React.FC = () => {
             <StatCard title="Total Units" value="247" icon={Package} gradientFrom="#3B82F6" gradientTo="#1E40AF" iconBg="bg-blue-600" />
             <StatCard title="Available Today" value="89" icon={CheckCircle} gradientFrom="#10B981" gradientTo="#047857" iconBg="bg-emerald-600" />
             <StatCard title="Maintenance" value="3" icon={Wrench} gradientFrom="#F59E0B" gradientTo="#D97706" iconBg="bg-amber-600" />
+          </div>
+
+          {/* Interactive Inventory Demo */}
+          <div className="mb-12">
+            <InventoryManagementShowcase />
           </div>
 
           {/* General Inventory Management */}
