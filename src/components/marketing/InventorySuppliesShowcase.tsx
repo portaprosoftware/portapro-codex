@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
 import { Package, BarChart3, MapPin, Calendar, QrCode, Lock, CloudOff, RefreshCcw, Sparkles, BellRing, Shield, Clock, Wrench, AlertTriangle, User, DollarSign } from "lucide-react";
+import { InventoryManagementShowcase } from "./InventoryManagementShowcase";
 
 const InventorySlider = ({ currentSlide, slides }: { currentSlide: number; slides: any[] }) => {
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -295,8 +296,13 @@ export function InventorySuppliesShowcase() {
 
            </div>
 
-          {/* Right: Benefits */}
-          <aside className="mt-48 animate-fade-in">
+          {/* Right: Interactive Demo & Benefits */}
+          <aside className="space-y-6 animate-fade-in">
+            {/* Interactive Demo */}
+            <div>
+              <InventoryManagementShowcase />
+            </div>
+
             <div className="rounded-2xl border border-border p-5">
               <h3 className="text-lg font-semibold text-foreground">Why teams love it</h3>
               <ul className="mt-3 space-y-2 text-sm text-foreground list-disc list-inside">
