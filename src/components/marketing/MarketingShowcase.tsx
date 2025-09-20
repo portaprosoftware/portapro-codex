@@ -1,5 +1,5 @@
 import React from "react";
-import marketingConfirmationImage from "@/assets/marketing-campaign-confirmation.png";
+import { CampaignConfirmationDemo } from "./CampaignConfirmationDemo";
 import { StatCard } from "@/components/ui/StatCard";
 import { Button } from "@/components/ui/button";
 import {
@@ -84,12 +84,8 @@ export const MarketingShowcase: React.FC = () => {
           {/* Right column: Campaign Creation + Highlights */}
           <aside className="space-y-6">
             {/* Campaign Creation Interface */}
-            <div className="rounded-lg overflow-hidden animate-fade-in">
-              <img 
-                src={marketingConfirmationImage}
-                alt="Create New Campaign interface showing scheduling and review options"
-                className="w-full h-auto"
-              />
+            <div className="animate-fade-in">
+              <CampaignConfirmationDemo />
             </div>
 
             <div className="rounded-2xl border bg-card p-5 shadow-md">
