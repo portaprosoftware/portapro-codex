@@ -39,7 +39,7 @@ export const QuoteToJobShowcase: React.FC = () => {
         {/* Right: Quote Builder */}
         <main className="space-y-6">
           {/* Quote Builder */}
-          <AspectRatio ratio={16/10} className="max-w-3xl mx-auto scale-75">
+          <AspectRatio ratio={16/10} className="max-w-3xl mx-auto scale-90">
             <div className="rounded-2xl border bg-card shadow-lg overflow-hidden animate-fade-in">
               <div className="flex items-center justify-between border-b px-4 py-3 bg-muted/40">
                 <div>
