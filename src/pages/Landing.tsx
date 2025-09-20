@@ -901,8 +901,7 @@ export const Landing: React.FC = () => {
 
 
           {/* Fleet KPIs */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
-            <StatCard title="Vehicles" value={12} icon={Truck} gradientFrom="hsl(262, 83%, 58%)" gradientTo="hsl(262, 83%, 48%)" iconBg="hsl(262, 83%, 58%)" subtitle={<span className="text-muted-foreground">Active + standby</span>} />
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
             <StatCard title="Active Drivers" value={8} icon={Users} gradientFrom="hsl(217, 91%, 60%)" gradientTo="hsl(217, 91%, 50%)" iconBg="hsl(217, 91%, 60%)" subtitle={<span className="text-muted-foreground">On schedule today</span>} />
             <StatCard title="Monthly Fuel Spend" value={"$10,932"} icon={DollarSign} gradientFrom="hsl(38, 90%, 50%)" gradientTo="hsl(38, 90%, 40%)" iconBg="hsl(38, 90%, 50%)" subtitle={<span className="text-muted-foreground">Down 6% vs last month</span>} />
             <StatCard title="Upcoming Services" value={9} icon={Wrench} gradientFrom="hsl(25, 95%, 53%)" gradientTo="hsl(25, 95%, 43%)" iconBg="hsl(25, 95%, 53%)" subtitle={<span className="text-muted-foreground">Due in next 7 days</span>} />
@@ -991,6 +990,12 @@ export const Landing: React.FC = () => {
 
           {/* Fleet Management Showcase - Full Width */}
           <div className="col-span-full mt-8">
+            {/* Interactive Demo Info */}
+            <div className="mb-4 text-center">
+              <p className="text-sm text-muted-foreground bg-blue-50 inline-block px-3 py-1 rounded-full border border-blue-200">
+                💡 Interactive Demo: Click the tabs below to explore different vehicle management features
+              </p>
+            </div>
             <FleetManagementShowcase />
           </div>
 
