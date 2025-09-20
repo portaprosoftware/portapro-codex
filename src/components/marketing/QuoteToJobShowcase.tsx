@@ -81,9 +81,9 @@ export const QuoteToJobShowcase: React.FC = () => {
                 {/* Items table */}
                 <div className="rounded-xl border bg-background divide-y">
                   {[
-                    { name: 'Standard Unit', qty: 3, price: 35, cycle: '/week' },
-                    { name: 'ADA Unit', qty: 1, price: 42, cycle: '/week' },
-                    { name: 'Handwash Station', qty: 1, price: 25, cycle: '/week' },
+                    { name: 'Standard Unit', qty: 3, price: 875, cycle: '/week' },
+                    { name: 'ADA Unit', qty: 1, price: 1000, cycle: '/week' },
+                    { name: 'Handwash Station', qty: 1, price: 400, cycle: '/week' },
                     { name: 'Delivery Fee', qty: 1, price: 85, cycle: '' },
                   ].map((row) => (
                     <div key={row.name} className="flex items-center justify-between px-4 py-3">
@@ -100,15 +100,15 @@ export const QuoteToJobShowcase: React.FC = () => {
                 <div className="rounded-xl border bg-muted/30 px-4 py-3">
                   <div className="flex items-center justify-between">
                     <div className="text-sm text-muted-foreground">Subtotal</div>
-                    <div className="font-medium text-foreground">$292</div>
+                    <div className="font-medium text-foreground">$4,110</div>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="text-sm text-muted-foreground">Tax</div>
-                    <div className="font-medium text-foreground">$23.36</div>
+                    <div className="font-medium text-foreground">$328.80</div>
                   </div>
                   <div className="flex items-center justify-between border-t mt-2 pt-2">
                     <div className="font-semibold text-foreground">Total</div>
-                    <div className="font-semibold text-foreground">$315.36</div>
+                    <div className="font-semibold text-foreground">$4,438.80</div>
                   </div>
                 </div>
 
@@ -116,7 +116,7 @@ export const QuoteToJobShowcase: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <div className="text-sm text-muted-foreground">Deposit due (50%)</div>
                   <div className="inline-flex items-center gap-2">
-                    <span className="font-semibold text-foreground">$157.68</span>
+                    <span className="font-semibold text-foreground">$2,219.40</span>
                     <ArrowRight className="w-4 h-4 text-muted-foreground" />
                     <span className="text-sm text-muted-foreground">to schedule</span>
                   </div>
