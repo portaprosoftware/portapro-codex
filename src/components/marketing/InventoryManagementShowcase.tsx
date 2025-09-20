@@ -105,19 +105,19 @@ export function InventoryManagementShowcase() {
               <h4 className="text-xl font-semibold text-foreground">{mockUnitData.productName}</h4>
             </div>
 
-            {/* Three Column Layout */}
-            <div className="grid grid-cols-3 gap-4 items-center justify-items-center">
+            {/* Three Column Layout - Fixed Height to Match Image */}
+            <div className="grid grid-cols-3 gap-4 items-start justify-items-center h-64">
               {/* Left Column - Image */}
-              <div className="flex justify-center">
+              <div className="flex justify-center h-full">
                 <img 
                   src="/assets/standard-unit.png" 
                   alt="Standard Portable Toilet" 
-                  className="w-full max-w-60 h-auto rounded-lg"
+                  className="w-full max-w-60 h-full object-contain rounded-lg"
                 />
               </div>
 
               {/* Middle Column - Status Badges */}
-              <div className="flex flex-col gap-3 justify-center items-center w-full">
+              <div className="flex flex-col gap-2 justify-center items-center w-full h-full">
                 <div className="bg-gradient-to-r from-green-600 to-green-500 text-white px-6 py-3 rounded-full font-bold text-sm text-center whitespace-nowrap w-full max-w-40">
                   {mockStockData.totalAvailable} Available
                 </div>
@@ -130,18 +130,20 @@ export function InventoryManagementShowcase() {
               </div>
 
               {/* Right Column - Inventory by Location */}
-              <div className="space-y-3 w-full">
-                <h5 className="font-semibold text-foreground text-base text-center">Inventory by Location</h5>
-                <div className="grid gap-2">
-                  {mockStockData.bulkStock.map((location, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-sm font-medium">{location.location}</span>
+              <div className="flex flex-col justify-center h-full w-full">
+                <div className="space-y-3">
+                  <h5 className="font-semibold text-foreground text-base text-center">Inventory by Location</h5>
+                  <div className="grid gap-2">
+                    {mockStockData.bulkStock.map((location, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center gap-2">
+                          <MapPin className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-sm font-medium">{location.location}</span>
+                        </div>
+                        <span className="text-sm font-bold text-foreground">{location.quantity}</span>
                       </div>
-                      <span className="text-sm font-bold text-foreground">{location.quantity}</span>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
