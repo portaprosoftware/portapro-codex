@@ -83,15 +83,15 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
               <p className="text-sm text-muted-foreground">Internal account management for your rental company</p>
             </div>
 
-            {/* Interactive Demo Info */}
-            <div className="mb-4 text-center">
-              <p className="text-sm text-muted-foreground">
-                Interactive: Click the tabs below to explore different customer profile segments
-              </p>
-            </div>
-
             {/* Interactive Customer Account Management */}
             <article className="rounded-2xl border bg-card shadow-md p-5 animate-fade-in">
+              {/* Interactive Demo Info */}
+              <div className="mb-3">
+                <p className="text-xs text-muted-foreground">
+                  Interactive: Click the tabs below to explore different customer profile segments
+                </p>
+              </div>
+              
               <div className="flex items-center justify-between mb-4">
                 <h4 className="text-base font-semibold text-foreground">{mockCustomerData.name}</h4>
                 <Users className="w-4 h-4 text-muted-foreground" />
