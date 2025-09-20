@@ -131,7 +131,7 @@ const AssignmentsMap = ({ assignments }: { assignments: Assignment[] }) => {
     if (!mapContainer.current) return;
 
     // Use a placeholder token - user needs to add their actual token
-    mapboxgl.accessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw'; // Demo token
+    mapboxgl.accessToken = 'pk.eyJ1IjoicG9ydGFwcm9zb2Z0d2FyZSIsImEiOiJjbWJybnBnMnIwY2x2Mm1wd3p2MWdqY2FnIn0.7ZIJ7ufeGtn-ufiOGJpq1Q';
     
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
