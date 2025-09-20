@@ -2,6 +2,7 @@ import React from "react";
 import { ServiceHubDemo } from "./ServiceHubDemo";
 import { StatCard } from "@/components/ui/StatCard";
 import { Button } from "@/components/ui/button";
+import serviceReportExample from "@/assets/service-report-example.png";
 import {
   CalendarClock,
   ClipboardList,
@@ -42,10 +43,13 @@ export const ServicesHubShowcase: React.FC = () => {
               <h3 className="text-lg font-semibold text-foreground mb-4">Sample Completed Service Report</h3>
               <div className="rounded-lg border border-border bg-card p-4">
                 <img 
-                  src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=800&q=80" 
-                  alt="Completed service report showing job details, photos, and customer signature" 
-                  className="w-full h-auto rounded-md"
+                  src={serviceReportExample} 
+                  alt="Standard Pumping Service Report example showing before/after photos, waste level check, tank condition, and customer signature" 
+                  className="w-full h-auto rounded-md shadow-sm"
                 />
+                <p className="text-sm text-muted-foreground mt-3 text-center">
+                  Auto-generated from "Pumping Service Report" template with photos, checklists, and digital signature
+                </p>
               </div>
             </div>
           </div>
