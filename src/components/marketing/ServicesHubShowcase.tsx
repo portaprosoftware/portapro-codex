@@ -41,7 +41,7 @@ export const ServicesHubShowcase: React.FC = () => {
           {/* What Customers Love Card */}
           <div className="rounded-2xl border border-border p-6 bg-gray-100">
             <h3 className="text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-white" />
+              <Sparkles className="w-5 h-5 text-blue-600" />
               What Customers Love
             </h3>
             
