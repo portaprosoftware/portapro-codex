@@ -16,37 +16,45 @@ import {
 export const CampaignConfirmationDemo: React.FC = () => {
   return (
     <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-6 border-b">
-        <h3 className="text-xl font-bold text-foreground mb-4">Create New Campaign</h3>
-        
-        {/* Progress Steps */}
-        <div className="flex items-center justify-center gap-4">
-          {[1, 2, 3, 4].map((step, index) => (
-            <div key={step} className="flex items-center">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                step === 4 
-                  ? 'bg-blue-600 text-white' 
-                  : step < 4 
-                    ? 'bg-blue-100 text-blue-600' 
-                    : 'bg-gray-200 text-gray-500'
-              }`}>
-                {step}
-              </div>
-              {index < 3 && (
-                <div className={`w-12 h-0.5 mx-2 ${
-                  step < 4 ? 'bg-blue-600' : 'bg-gray-200'
-                }`} />
-              )}
+      {/* Header with Send Campaign Button */}
+      <div className="p-6 pb-4">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h3 className="text-xl font-bold text-foreground mb-4">Create New Campaign</h3>
+            
+            {/* Progress Steps */}
+            <div className="flex items-center gap-4">
+              {[1, 2, 3, 4].map((step, index) => (
+                <div key={step} className="flex items-center">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                    step === 4 
+                      ? 'bg-blue-600 text-white' 
+                      : step < 4 
+                        ? 'bg-blue-100 text-blue-600' 
+                        : 'bg-gray-200 text-gray-500'
+                  }`}>
+                    {step}
+                  </div>
+                  {index < 3 && (
+                    <div className={`w-12 h-0.5 mx-2 ${
+                      step < 4 ? 'bg-blue-600' : 'bg-gray-200'
+                    }`} />
+                  )}
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
+          
+          {/* Send Campaign Button - Top Right */}
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+            <Send className="w-4 h-4 mr-1" />
+            Send Campaign
+          </Button>
         </div>
-      </div>
 
-      <div className="p-6">
-        <div className="grid lg:grid-cols-2 gap-6">
+        <div className="grid lg:grid-cols-5 gap-6">
           {/* Left Column - Schedule & Review */}
-          <div className="space-y-6">
+          <div className="lg:col-span-2 space-y-6">
             <div>
               <h4 className="text-lg font-semibold text-foreground mb-4">Schedule & Review</h4>
               
@@ -74,26 +82,10 @@ export const CampaignConfirmationDemo: React.FC = () => {
                 </div>
               </div>
             </div>
-
-            {/* Action Buttons */}
-            <div className="flex gap-2 pt-4">
-              <Button variant="outline" size="sm">
-                <ArrowLeft className="w-4 h-4 mr-1" />
-                Back
-              </Button>
-              <Button variant="outline" size="sm">
-                <Save className="w-4 h-4 mr-1" />
-                Save as Draft
-              </Button>
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                <Send className="w-4 h-4 mr-1" />
-                Send Campaign
-              </Button>
-            </div>
           </div>
 
-          {/* Right Column - Campaign Summary */}
-          <div>
+          {/* Right Column - Campaign Summary (Stretched) */}
+          <div className="lg:col-span-3">
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">Campaign Summary</CardTitle>
@@ -145,6 +137,18 @@ export const CampaignConfirmationDemo: React.FC = () => {
               </CardContent>
             </Card>
           </div>
+        </div>
+
+        {/* Bottom Action Buttons - Left Side */}
+        <div className="flex gap-2 pt-6 justify-start">
+          <Button variant="outline" size="sm">
+            <ArrowLeft className="w-4 h-4 mr-1" />
+            Back
+          </Button>
+          <Button variant="outline" size="sm">
+            <Save className="w-4 h-4 mr-1" />
+            Save as Draft
+          </Button>
         </div>
       </div>
     </div>
