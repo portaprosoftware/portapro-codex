@@ -992,8 +992,8 @@ export const Landing: React.FC = () => {
           <div className="col-span-full mt-8">
             {/* Interactive Demo Info */}
             <div className="mb-4 text-center">
-              <p className="text-sm text-muted-foreground bg-blue-50 inline-block px-3 py-1 rounded-full border border-blue-200">
-                💡 Interactive Demo: Click the tabs below to explore different vehicle management features
+              <p className="text-sm text-muted-foreground">
+                Interactive Demo: Click the tabs below to explore different vehicle management features
               </p>
             </div>
             <FleetManagementShowcase />
