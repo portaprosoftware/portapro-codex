@@ -105,27 +105,27 @@ export function InventoryManagementShowcase() {
               <h4 className="text-lg font-semibold text-foreground">{mockUnitData.productName}</h4>
             </div>
 
-            {/* Two Column Layout */}
-            <div className="grid grid-cols-2 gap-6 items-start">
-              {/* Left Column - Image with Status Badges */}
-              <div className="flex flex-col items-center space-y-3">
+            {/* Three Column Layout */}
+            <div className="grid grid-cols-3 gap-4 items-start">
+              {/* Left Column - Image */}
+              <div className="flex justify-center">
                 <img 
                   src="/assets/standard-unit.png" 
                   alt="Standard Portable Toilet" 
                   className="w-full max-w-48 h-auto rounded-lg"
                 />
-                
-                {/* Status Badges - Centered under image */}
-                <div className="flex flex-col gap-2 w-full items-center">
-                  <div className="bg-gradient-to-r from-green-600 to-green-500 text-white px-4 py-2 rounded-full font-bold text-sm">
-                    {mockStockData.totalAvailable} Available
-                  </div>
-                  <div className="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-4 py-2 rounded-full font-bold text-sm">
-                    On Assignment {mockStockData.totalAssigned}
-                  </div>
-                  <div className="bg-gradient-to-r from-orange-600 to-orange-500 text-white px-4 py-2 rounded-full font-bold text-sm">
-                    Maintenance {mockStockData.totalMaintenance}
-                  </div>
+              </div>
+
+              {/* Middle Column - Status Badges */}
+              <div className="flex flex-col gap-3 justify-center">
+                <div className="bg-gradient-to-r from-green-600 to-green-500 text-white px-4 py-2 rounded-full font-bold text-sm text-center">
+                  {mockStockData.totalAvailable} Available
+                </div>
+                <div className="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-4 py-2 rounded-full font-bold text-sm text-center">
+                  On Assignment {mockStockData.totalAssigned}
+                </div>
+                <div className="bg-gradient-to-r from-orange-600 to-orange-500 text-white px-4 py-2 rounded-full font-bold text-sm text-center">
+                  Maintenance {mockStockData.totalMaintenance}
                 </div>
               </div>
 
