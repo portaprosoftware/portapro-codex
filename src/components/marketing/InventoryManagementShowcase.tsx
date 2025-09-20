@@ -38,9 +38,9 @@ const tabs: TabData[] = [
 ];
 
 const mockUnitData = {
-  unitCode: 'ST-001',
+  unitCode: '1101',
   productName: 'Standard Portable Toilet',
-  serialNumber: 'PT-2024-001',
+  toolNumber: 'T-10788-1A',
   condition: 'Excellent',
   currentLocation: 'Yard A - Section 3',
   status: 'Available',
@@ -56,10 +56,10 @@ const mockStockData = {
     { location: 'Warehouse', quantity: 20, lowStockThreshold: 10 }
   ],
   individualUnits: [
-    { code: 'ST-001', status: 'Available', location: 'Yard A' },
-    { code: 'ST-002', status: 'Assigned', location: 'Job Site' },
-    { code: 'ST-003', status: 'Maintenance', location: 'Service Bay' },
-    { code: 'ST-004', status: 'Available', location: 'Yard B' }
+    { code: '1101', status: 'Available', location: 'Yard A' },
+    { code: '1102', status: 'Assigned', location: 'Job Site' },
+    { code: '1103', status: 'Maintenance', location: 'Service Bay' },
+    { code: '1104', status: 'Available', location: 'Yard B' }
   ],
   totalAvailable: 45,
   totalAssigned: 17,
@@ -104,11 +104,20 @@ export function InventoryManagementShowcase() {
             <div className="flex items-start justify-between">
               <div>
                 <h4 className="text-lg font-semibold text-foreground">{mockUnitData.productName}</h4>
-                <p className="text-sm text-muted-foreground">Unit: {mockUnitData.unitCode} • Serial: {mockUnitData.serialNumber}</p>
+                <p className="text-sm text-muted-foreground">Unit: {mockUnitData.unitCode} • Tool #: {mockUnitData.toolNumber}</p>
               </div>
               <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
                 {mockUnitData.status}
               </Badge>
+            </div>
+
+            {/* Unit Image */}
+            <div className="flex justify-center">
+              <img 
+                src="/assets/standard-portable-toilet.png" 
+                alt="Standard Portable Toilet - Unit 1101" 
+                className="w-48 h-auto rounded-lg"
+              />
             </div>
 
             {/* Quick Stats */}
@@ -407,14 +416,14 @@ export function InventoryManagementShowcase() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between p-2 bg-green-50 rounded">
                   <div>
-                    <div className="text-sm font-medium">ST-001 Scanned</div>
+                    <div className="text-sm font-medium">1101 Scanned</div>
                     <div className="text-xs text-muted-foreground">2 minutes ago • Job Assignment</div>
                   </div>
                   <CheckCircle className="w-4 h-4 text-green-500" />
                 </div>
                 <div className="flex items-center justify-between p-2 bg-blue-50 rounded">
                   <div>
-                    <div className="text-sm font-medium">ST-002 Scanned</div>
+                    <div className="text-sm font-medium">1102 Scanned</div>
                     <div className="text-xs text-muted-foreground">15 minutes ago • Maintenance Check</div>
                   </div>
                   <CheckCircle className="w-4 h-4 text-blue-500" />
