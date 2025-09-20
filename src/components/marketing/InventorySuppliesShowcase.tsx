@@ -303,6 +303,31 @@ export function InventorySuppliesShowcase() {
               <InventoryManagementShowcase />
             </div>
 
+            {/* Image Slideshow */}
+            <div className="rounded-2xl border border-border p-4">
+              <div className="text-sm font-medium text-muted-foreground mb-3">
+                {slides[currentSlide].title}
+              </div>
+              <InventorySlider currentSlide={currentSlide} slides={slides} />
+              <div className="text-xs text-muted-foreground mt-2">
+                {slides[currentSlide].content}
+              </div>
+              
+              {/* Slide indicators */}
+              <div className="flex justify-center gap-2 mt-3">
+                {slides.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentSlide(index)}
+                    className={`w-2 h-2 rounded-full transition-colors ${
+                      index === currentSlide ? 'bg-primary' : 'bg-muted'
+                    }`}
+                    aria-label={`Go to slide ${index + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
+
             <div className="rounded-2xl border border-border p-5">
               <h3 className="text-lg font-semibold text-foreground">Why teams love it</h3>
               <ul className="mt-3 space-y-2 text-sm text-foreground list-disc list-inside">
