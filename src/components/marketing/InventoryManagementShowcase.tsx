@@ -743,7 +743,6 @@ export function InventoryManagementShowcase() {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h4 className="text-base font-semibold text-foreground">{mockUnitData.productName}</h4>
-        <Package className="w-4 h-4 text-muted-foreground" />
       </div>
 
       {/* Tab Navigation */}
