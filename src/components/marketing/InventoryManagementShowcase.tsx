@@ -107,8 +107,8 @@ export function InventoryManagementShowcase() {
 
             {/* Two Column Layout */}
             <div className="grid grid-cols-2 gap-6 items-start">
-              {/* Left Column - Image with Available Count */}
-              <div className="flex flex-col items-center space-y-4">
+              {/* Left Column - Image with Status Badges */}
+              <div className="flex flex-col items-center space-y-3">
                 <div className="relative">
                   <img 
                     src="/assets/standard-toilet-icon.png" 
@@ -119,6 +119,16 @@ export function InventoryManagementShowcase() {
                     <div className="bg-gradient-to-r from-green-600 to-green-500 text-white px-4 py-2 rounded-full font-bold text-sm whitespace-nowrap">
                       {mockStockData.totalAvailable} Available
                     </div>
+                  </div>
+                </div>
+                
+                {/* Additional Status Badges */}
+                <div className="flex flex-col gap-2 mt-4">
+                  <div className="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-4 py-2 rounded-full font-bold text-sm whitespace-nowrap">
+                    On Assignment {mockStockData.totalAssigned}
+                  </div>
+                  <div className="bg-gradient-to-r from-orange-600 to-orange-500 text-white px-4 py-2 rounded-full font-bold text-sm whitespace-nowrap">
+                    Maintenance {mockStockData.totalMaintenance}
                   </div>
                 </div>
               </div>
