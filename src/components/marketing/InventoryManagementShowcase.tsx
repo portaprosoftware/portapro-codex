@@ -99,41 +99,44 @@ export function InventoryManagementShowcase() {
     switch (activeTab) {
       case 'overview':
         return (
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* Product Header */}
             <div className="text-center">
               <h4 className="text-lg font-semibold text-foreground">{mockUnitData.productName}</h4>
             </div>
 
-            {/* Icon View - Image with Available Count */}
-            <div className="flex flex-col items-center space-y-4">
-              <div className="relative">
-                <img 
-                  src="/assets/standard-toilet-icon.png" 
-                  alt="Standard Portable Toilet" 
-                  className="w-48 h-auto rounded-lg"
-                />
-                <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
-                  <div className="bg-green-600 text-white px-4 py-2 rounded-full font-bold text-sm">
-                    {mockStockData.totalAvailable} Available
+            {/* Two Column Layout */}
+            <div className="grid grid-cols-2 gap-6 items-start">
+              {/* Left Column - Image with Available Count */}
+              <div className="flex flex-col items-center space-y-4">
+                <div className="relative">
+                  <img 
+                    src="/assets/standard-toilet-icon.png" 
+                    alt="Standard Portable Toilet" 
+                    className="w-full max-w-48 h-auto rounded-lg"
+                  />
+                  <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
+                    <div className="bg-gradient-to-r from-green-600 to-green-500 text-white px-4 py-2 rounded-full font-bold text-sm whitespace-nowrap">
+                      {mockStockData.totalAvailable} Available
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Inventory by Location */}
-            <div className="space-y-3">
-              <h5 className="font-medium text-foreground">Inventory by Location</h5>
-              <div className="grid gap-2">
-                {mockStockData.bulkStock.map((location, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div className="flex items-center gap-2">
-                      <MapPin className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-sm font-medium">{location.location}</span>
+              {/* Right Column - Inventory by Location */}
+              <div className="space-y-3">
+                <h5 className="font-medium text-foreground">Inventory by Location</h5>
+                <div className="grid gap-2">
+                  {mockStockData.bulkStock.map((location, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-sm font-medium">{location.location}</span>
+                      </div>
+                      <span className="text-sm font-bold text-foreground">{location.quantity} units</span>
                     </div>
-                    <span className="text-sm font-bold text-foreground">{location.quantity} units</span>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
           </div>
