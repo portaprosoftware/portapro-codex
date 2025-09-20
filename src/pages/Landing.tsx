@@ -589,8 +589,9 @@ export const Landing: React.FC = () => {
               />
             </div>
           </div>
-          {/* Stock Tracking */}
-          <div className="grid lg:grid-cols-2 gap-12 items-center mb-8">
+          {/* Stock Tracking + Location Management Combined */}
+          <div className="grid lg:grid-cols-2 gap-12 items-start mb-12">
+            {/* Left: Stock Tracking text */}
             <div className="space-y-6">
               <h3 className="text-2xl font-bold text-foreground">Stock Tracking</h3>
               <p className="text-lg text-muted-foreground">Real-time inventory levels with automated tracking and threshold monitoring.</p>
@@ -609,7 +610,9 @@ export const Landing: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <div className="flex justify-center">
+
+            {/* Right: Image, then Location Management text directly underneath */}
+            <div className="flex flex-col items-center gap-8">
               <img 
                 src="/inventory-tracking-status.png" 
                 alt="Inventory tracking status dashboard"
@@ -617,31 +620,25 @@ export const Landing: React.FC = () => {
                 loading="lazy"
                 decoding="async"
               />
-            </div>
-          </div>
-          
-          {/* Location Management */}
-          <div className="grid lg:grid-cols-2 gap-12 items-center mb-8">
-            <div className="space-y-6">
-              <h3 className="text-2xl font-bold text-foreground">Location Management</h3>
-              <p className="text-lg text-muted-foreground">Organize inventory across multiple storage facilities and job sites.</p>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <Building2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Multiple storage location support</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Route className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Inter-location transfer tracking</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Compass className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">GPS-enabled location verification</span>
-                </li>
-              </ul>
-            </div>
-            <div className="flex justify-center">
-              {/* Image removed - will be re-added later */}
+
+              <div className="w-full space-y-6">
+                <h3 className="text-2xl font-bold text-foreground">Location Management</h3>
+                <p className="text-lg text-muted-foreground">Organize inventory across multiple storage facilities and job sites.</p>
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-3">
+                    <Building2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Multiple storage location support</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Route className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Inter-location transfer tracking</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Compass className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">GPS-enabled location verification</span>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
 
