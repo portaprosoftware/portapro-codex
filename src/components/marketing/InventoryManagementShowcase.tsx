@@ -406,6 +406,19 @@ export function InventoryManagementShowcase() {
                 </div>
               </div>
             </div>
+
+            {/* Mock Action Buttons */}
+            <div className="flex justify-center gap-3 mt-4">
+              <Button variant="outline" size="sm" className="bg-white hover:bg-gray-50 text-foreground border-gray-300">
+                Edit Product
+              </Button>
+              <Button variant="outline" size="sm" className="bg-white hover:bg-gray-50 text-foreground border-gray-300">
+                Stock History
+              </Button>
+              <Button variant="outline" size="sm" className="bg-white hover:bg-gray-50 text-foreground border-gray-300">
+                Low Quantity Threshold
+              </Button>
+            </div>
           </div>
         );
 
