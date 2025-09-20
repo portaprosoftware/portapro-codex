@@ -112,18 +112,18 @@ export function InventoryManagementShowcase() {
             </div>
 
             {/* Image and Details Layout */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-              {/* Unit Image - Left */}
-              <div className="flex justify-center">
+            <div className="grid grid-cols-5 gap-4 items-center">
+              {/* Unit Image - Left (2 columns) */}
+              <div className="col-span-2 flex justify-center">
                 <img 
                   src="/assets/standard-portable-toilet.png" 
                   alt="Standard Portable Toilet - Unit 1101" 
-                  className="w-48 h-auto rounded-lg"
+                  className="w-full max-w-32 h-auto rounded-lg"
                 />
               </div>
 
-              {/* Current Details - Right */}
-              <div className="border rounded-lg p-4 space-y-3">
+              {/* Current Details - Right (3 columns) */}
+              <div className="col-span-3 space-y-3">
                 <div className="flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-muted-foreground" />
                   <span className="text-sm">Current Location: <span className="font-medium">{mockUnitData.currentLocation}</span></span>
