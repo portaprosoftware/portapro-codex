@@ -24,7 +24,7 @@ import {
 export const ServicesHubShowcase: React.FC = () => {
   return (
     <section id="services-hub" className="py-8 bg-white">
-      <div className="container mx-auto max-w-6xl px-6">
+      <div className="container mx-auto max-w-6xl px-4 sm:px-6">
         <header className="mb-8 space-y-2">
           <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Service & Reporting Hub</h2>
           <p className="text-muted-foreground">

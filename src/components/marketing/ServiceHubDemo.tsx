@@ -2,6 +2,12 @@ import React, { useState } from 'react';
 import { TabNav } from '@/components/ui/TabNav';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { 
   ClipboardCheck, 
   FileText, 
@@ -19,7 +25,9 @@ import {
   AlertTriangle,
   Plus,
   Edit,
-  Eye
+  Eye,
+  ChevronDown,
+  Menu
 } from 'lucide-react';
 
 interface Service {
@@ -171,6 +179,14 @@ const mockCompletedReports: CompletedReport[] = [
 export const ServiceHubDemo: React.FC = () => {
   const [activeTab, setActiveTab] = useState('catalog');
 
+  const tabs = [
+    { id: 'catalog', label: 'Service Catalog', icon: ClipboardCheck },
+    { id: 'templates', label: 'Report Templates', icon: FileText },
+    { id: 'records', label: 'Completed Records', icon: CheckCircle }
+  ];
+
+  const activeTabData = tabs.find(tab => tab.id === activeTab) || tabs[0];
+
   const renderServiceCatalog = () => (
     <div className="space-y-4">
       <div className="text-center bg-muted rounded-lg p-4">
@@ -182,7 +198,53 @@ export const ServiceHubDemo: React.FC = () => {
 
       <div className="grid gap-3">
         {mockServices.map((service) => (
-          <div key={service.id} className="border rounded-lg p-4 bg-white">
+          <div key={service.id} className="border rounded-lg p-3 sm:p-4 bg-white">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-2 gap-2">
+              <div className="flex-1 min-w-0">
+                <h5 className="font-medium text-foreground truncate">{service.name}</h5>
+                <p className="text-sm text-muted-foreground line-clamp-2">{service.description}</p>
+              </div>
+              <div className="text-left sm:text-right flex-shrink-0">
+                <div className="text-lg font-bold text-foreground">${service.price}</div>
+                <div className="text-xs text-muted-foreground">{service.duration}</div>
+              </div>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
+                <Badge variant="secondary" className="text-xs">
+                  {service.category}
+                </Badge>
+                {service.templateAssigned ? (
+                  <Badge className="bg-green-100 text-green-800 border-0 text-xs">
+                    <CheckCircle className="w-3 h-3 mr-1" />
+                    Template Assigned
+                  </Badge>
+                ) : (
+                  <Badge variant="outline" className="text-xs border-orange-300 text-orange-700">
+                    <AlertTriangle className="w-3 h-3 mr-1" />
+                    No Template
+                  </Badge>
+                )}
+              </div>
+              
+              <div className="flex gap-1">
+                <Button variant="outline" size="sm" className="text-xs">
+                  <Edit className="w-3 h-3 mr-1" />
+                  <span className="hidden sm:inline">Edit</span>
+                </Button>
+                <Button variant="outline" size="sm" className="text-xs">
+                  <span className="hidden sm:inline">Assign Template</span>
+                  <span className="sm:hidden">Assign</span>
+                </Button>
+              </div>
+            </div>
+
+            {service.defaultTemplate && (
+              <div className="mt-2 text-xs text-muted-foreground">
+                Default Template: <span className="font-medium">{service.defaultTemplate}</span>
+              </div>
+            )}
             <div className="flex justify-between items-start mb-2">
               <div className="flex-1">
                 <h5 className="font-medium text-foreground">{service.name}</h5>
@@ -245,7 +307,50 @@ export const ServiceHubDemo: React.FC = () => {
 
       <div className="grid gap-3">
         {mockTemplates.map((template) => (
-          <div key={template.id} className="border rounded-lg p-4 bg-white">
+          <div key={template.id} className="border rounded-lg p-3 sm:p-4 bg-white">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-3 gap-2">
+              <div className="flex-1 min-w-0">
+                <h5 className="font-medium text-foreground">{template.name}</h5>
+                <p className="text-sm text-muted-foreground">
+                  Used for: {template.serviceTypes.join(', ')}
+                </p>
+              </div>
+              <div className="text-left sm:text-right flex-shrink-0">
+                <div className="text-sm font-medium text-foreground">{template.completedCount} completed</div>
+                <div className="text-xs text-muted-foreground">Avg: {template.averageTime}</div>
+              </div>
+            </div>
+
+            <div className="mb-3">
+              <h6 className="text-sm font-medium text-foreground mb-2">Template Elements:</h6>
+              <div className="flex flex-wrap gap-1">
+                {template.elements.map((element, index) => (
+                  <Badge key={index} variant="outline" className="text-xs">
+                    {element}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+              <div className="flex items-center gap-2">
+                <Badge className="bg-blue-100 text-blue-800 border-0 text-xs">
+                  <FileText className="w-3 h-3 mr-1" />
+                  {template.elements.length} Elements
+                </Badge>
+              </div>
+              
+              <div className="flex gap-1">
+                <Button variant="outline" size="sm" className="text-xs">
+                  <Eye className="w-3 h-3 mr-1" />
+                  <span className="hidden sm:inline">Preview</span>
+                </Button>
+                <Button variant="outline" size="sm" className="text-xs">
+                  <Edit className="w-3 h-3 mr-1" />
+                  <span className="hidden sm:inline">Edit</span>
+                </Button>
+              </div>
+            </div>
             <div className="flex justify-between items-start mb-3">
               <div>
                 <h5 className="font-medium text-foreground">{template.name}</h5>
@@ -306,7 +411,61 @@ export const ServiceHubDemo: React.FC = () => {
 
       <div className="grid gap-3">
         {mockCompletedReports.map((report) => (
-          <div key={report.id} className="border rounded-lg p-4 bg-white">
+          <div key={report.id} className="border rounded-lg p-3 sm:p-4 bg-white">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-2 gap-2">
+              <div className="flex-1 min-w-0">
+                <h5 className="font-medium text-foreground">{report.serviceName}</h5>
+                <p className="text-sm text-muted-foreground">Customer: {report.customerName}</p>
+                <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground mt-1">
+                  <span className="flex items-center gap-1">
+                    <User className="w-3 h-3" />
+                    {report.technician}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Clock className="w-3 h-3" />
+                    {report.duration}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Camera className="w-3 h-3" />
+                    {report.photos} photos
+                  </span>
+                </div>
+              </div>
+              <div className="text-left sm:text-right flex-shrink-0">
+                <div className="text-sm font-medium text-foreground">{report.completedDate}</div>
+                {report.status === 'completed' && (
+                  <Badge className="bg-green-100 text-green-800 border-0 text-xs mt-1">
+                    <CheckCircle className="w-3 h-3 mr-1" />
+                    Completed
+                  </Badge>
+                )}
+                {report.status === 'pending_review' && (
+                  <Badge className="bg-yellow-100 text-yellow-800 border-0 text-xs mt-1">
+                    <Clock className="w-3 h-3 mr-1" />
+                    Pending Review
+                  </Badge>
+                )}
+                {report.status === 'approved' && (
+                  <Badge className="bg-blue-100 text-blue-800 border-0 text-xs mt-1">
+                    <CheckCircle className="w-3 h-3 mr-1" />
+                    Approved
+                  </Badge>
+                )}
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row sm:justify-end gap-1">
+              <Button variant="outline" size="sm" className="text-xs">
+                <Eye className="w-3 h-3 mr-1" />
+                <span className="hidden sm:inline">View Report</span>
+                <span className="sm:hidden">View</span>
+              </Button>
+              <Button variant="outline" size="sm" className="text-xs">
+                <FileText className="w-3 h-3 mr-1" />
+                <span className="hidden sm:inline">Download PDF</span>
+                <span className="sm:hidden">Download</span>
+              </Button>
+            </div>
             <div className="flex justify-between items-start mb-2">
               <div className="flex-1">
                 <h5 className="font-medium text-foreground">{report.serviceName}</h5>
@@ -381,51 +540,83 @@ export const ServiceHubDemo: React.FC = () => {
   return (
     <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-xl font-bold">Service & Reporting Hub</h3>
-            <p className="text-blue-100 text-sm">Schedule, document, and track service completions</p>
+      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex-1">
+            <h3 className="text-lg sm:text-xl font-bold leading-tight">Service & Reporting Hub</h3>
+            <p className="text-blue-100 text-sm mt-1">Schedule, document, and track service completions</p>
           </div>
-          <div className="text-right">
-            <p className="text-blue-100 text-sm">
+          <div className="text-left sm:text-right">
+            <p className="text-blue-100 text-xs sm:text-sm">
               Interactive demo - click tabs to explore different sections
             </p>
           </div>
         </div>
       </div>
 
-      {/* Navigation Pills */}
-      <div className="p-4">
-        <TabNav ariaLabel="Service hub navigation">
-          <TabNav.Item
-            to="#catalog"
-            isActive={activeTab === 'catalog'}
-            onClick={() => setActiveTab('catalog')}
-          >
-            <ClipboardCheck className="w-4 h-4" />
-            Service Catalog
-          </TabNav.Item>
-          <TabNav.Item
-            to="#templates"
-            isActive={activeTab === 'templates'}
-            onClick={() => setActiveTab('templates')}
-          >
-            <FileText className="w-4 h-4" />
-            Report Templates
-          </TabNav.Item>
-          <TabNav.Item
-            to="#records"
-            isActive={activeTab === 'records'}
-            onClick={() => setActiveTab('records')}
-          >
-            <CheckCircle className="w-4 h-4" />
-            Completed Records & Reports
-          </TabNav.Item>
-        </TabNav>
+      {/* Navigation */}
+      <div className="p-4 sm:p-6">
+        {/* Desktop Navigation Pills */}
+        <div className="hidden md:block">
+          <TabNav ariaLabel="Service hub navigation">
+            <TabNav.Item
+              to="#catalog"
+              isActive={activeTab === 'catalog'}
+              onClick={() => setActiveTab('catalog')}
+            >
+              <ClipboardCheck className="w-4 h-4" />
+              Service Catalog
+            </TabNav.Item>
+            <TabNav.Item
+              to="#templates"
+              isActive={activeTab === 'templates'}
+              onClick={() => setActiveTab('templates')}
+            >
+              <FileText className="w-4 h-4" />
+              Report Templates
+            </TabNav.Item>
+            <TabNav.Item
+              to="#records"
+              isActive={activeTab === 'records'}
+              onClick={() => setActiveTab('records')}
+            >
+              <CheckCircle className="w-4 h-4" />
+              Completed Records & Reports
+            </TabNav.Item>
+          </TabNav>
+        </div>
+
+        {/* Mobile Navigation Dropdown */}
+        <div className="md:hidden">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="w-full justify-between">
+                <div className="flex items-center gap-2">
+                  <activeTabData.icon className="w-4 h-4" />
+                  {activeTabData.label}
+                </div>
+                <ChevronDown className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-full bg-white border border-gray-200 shadow-lg z-50">
+              {tabs.map((tab) => (
+                <DropdownMenuItem
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-2 cursor-pointer hover:bg-gray-100 ${
+                    activeTab === tab.id ? 'bg-blue-50 text-blue-700' : ''
+                  }`}
+                >
+                  <tab.icon className="w-4 h-4" />
+                  {tab.label}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
 
         {/* Tab Content */}
-        <div className="mt-4">
+        <div className="mt-4 sm:mt-6">
           {renderTabContent()}
         </div>
       </div>
