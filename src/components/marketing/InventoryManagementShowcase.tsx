@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { TabNav } from '@/components/ui/TabNav';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 import { 
   Package, 
   MapPin, 
@@ -76,18 +78,147 @@ const mockMaintenanceData = {
 };
 
 const mockAssignmentData = {
-  currentJob: {
-    jobNumber: 'J-2024-156',
-    customer: 'ABC Construction',
-    site: 'Downtown Office Complex',
-    assignedDate: '2024-01-10',
-    estimatedReturn: '2024-02-28'
-  },
-  history: [
-    { jobNumber: 'J-2024-123', customer: 'Metro Builders', duration: '18 days', rating: 5 },
-    { jobNumber: 'J-2024-089', customer: 'City Events LLC', duration: '3 days', rating: 5 },
-    { jobNumber: 'J-2024-067', customer: 'ABC Construction', duration: '21 days', rating: 4 }
+  assignments: [
+    { 
+      id: '1101',
+      jobNumber: 'J-2024-156', 
+      customer: 'ABC Construction', 
+      site: 'Downtown Office Complex',
+      coordinates: [-74.006, 40.7128] as [number, number], // NYC
+      status: 'active' as const,
+      assignedDate: '2024-01-10',
+      estimatedReturn: '2024-02-28'
+    },
+    { 
+      id: '1102',
+      jobNumber: 'J-2024-144', 
+      customer: 'Metro Builders', 
+      site: 'Riverside Shopping Center',
+      coordinates: [-74.0234, 40.7282] as [number, number], // NYC area
+      status: 'active' as const,
+      assignedDate: '2024-01-08',
+      estimatedReturn: '2024-02-15'
+    },
+    { 
+      id: '1103',
+      jobNumber: 'J-2024-133', 
+      customer: 'City Events LLC', 
+      site: 'Central Park Festival',
+      coordinates: [-73.9654, 40.7829] as [number, number], // Central Park
+      status: 'maintenance' as const,
+      assignedDate: '2024-01-05',
+      estimatedReturn: '2024-01-20'
+    }
   ]
+};
+
+interface Assignment {
+  id: string;
+  jobNumber: string;
+  customer: string;
+  site: string;
+  coordinates: [number, number];
+  status: 'active' | 'maintenance';
+  assignedDate: string;
+  estimatedReturn: string;
+}
+
+const AssignmentsMap = ({ assignments }: { assignments: Assignment[] }) => {
+  const mapContainer = useRef<HTMLDivElement>(null);
+  const map = useRef<mapboxgl.Map | null>(null);
+
+  useEffect(() => {
+    if (!mapContainer.current) return;
+
+    // Use a placeholder token - user needs to add their actual token
+    mapboxgl.accessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw'; // Demo token
+    
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: 'mapbox://styles/mapbox/light-v11',
+      center: [-74.006, 40.7128], // NYC
+      zoom: 11
+    });
+
+    // Add markers for each assignment
+    assignments.forEach((assignment) => {
+      const el = document.createElement('div');
+      el.className = assignment.status === 'active' ? 'assignment-marker active' : 'assignment-marker maintenance';
+      el.innerHTML = `
+        <div style="
+          width: 24px; 
+          height: 24px; 
+          background: ${assignment.status === 'active' ? '#10b981' : '#f59e0b'}; 
+          border: 2px solid white; 
+          border-radius: 50%; 
+          display: flex; 
+          align-items: center; 
+          justify-content: center; 
+          font-size: 10px; 
+          font-weight: bold; 
+          color: white;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        ">
+          ${assignment.id.slice(-2)}
+        </div>
+      `;
+
+      const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
+        <div style="padding: 8px; min-width: 200px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600;">${assignment.jobNumber}</h3>
+          <p style="margin: 0 0 4px 0; font-size: 12px; color: #666;"><strong>Customer:</strong> ${assignment.customer}</p>
+          <p style="margin: 0 0 4px 0; font-size: 12px; color: #666;"><strong>Site:</strong> ${assignment.site}</p>
+          <p style="margin: 0 0 4px 0; font-size: 12px; color: #666;"><strong>Status:</strong> 
+            <span style="color: ${assignment.status === 'active' ? '#10b981' : '#f59e0b'}; font-weight: 600;">
+              ${assignment.status === 'active' ? 'Active' : 'Maintenance'}
+            </span>
+          </p>
+          <p style="margin: 0; font-size: 12px; color: #666;"><strong>Est. Return:</strong> ${assignment.estimatedReturn}</p>
+        </div>
+      `);
+
+      new mapboxgl.Marker(el)
+        .setLngLat(assignment.coordinates)
+        .setPopup(popup)
+        .addTo(map.current!);
+    });
+
+    // Add navigation controls
+    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+    return () => {
+      map.current?.remove();
+    };
+  }, [assignments]);
+
+  return (
+    <div className="space-y-4">
+      {/* Map Header */}
+      <div className="bg-muted rounded-lg p-4 text-center">
+        <div className="text-xl font-bold text-foreground">Job Assignments Map</div>
+        <div className="text-sm text-muted-foreground mt-1">
+          {assignments.length} units currently deployed
+        </div>
+      </div>
+
+      {/* Map Container */}
+      <div className="border rounded-lg overflow-hidden">
+        <div ref={mapContainer} className="w-full h-64" />
+      </div>
+
+      {/* Legend */}
+      <div className="flex items-center justify-center gap-6 p-3 bg-muted rounded-lg">
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-sm"></div>
+          <span className="text-sm text-foreground">Active Assignment</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 bg-yellow-500 rounded-full border-2 border-white shadow-sm"></div>
+          <span className="text-sm text-foreground">Maintenance Required</span>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export function InventoryManagementShowcase() {
@@ -450,75 +581,7 @@ export function InventoryManagementShowcase() {
         );
 
       case 'assignments':
-        return (
-          <div className="space-y-4">
-            {/* Current Assignment */}
-            <div className="border rounded-lg p-4 bg-blue-50">
-              <h5 className="font-medium text-foreground mb-3 flex items-center gap-2">
-                <Truck className="w-4 h-4" /> Current Assignment
-              </h5>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Job Number:</span>
-                  <span className="text-sm font-medium">{mockAssignmentData.currentJob.jobNumber}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Customer:</span>
-                  <span className="text-sm font-medium">{mockAssignmentData.currentJob.customer}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Site:</span>
-                  <span className="text-sm font-medium">{mockAssignmentData.currentJob.site}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Assigned:</span>
-                  <span className="text-sm font-medium">{mockAssignmentData.currentJob.assignedDate}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Est. Return:</span>
-                  <span className="text-sm font-medium">{mockAssignmentData.currentJob.estimatedReturn}</span>
-                </div>
-              </div>
-              <Button className="w-full mt-3" size="sm" variant="outline">
-                View Job Details
-              </Button>
-            </div>
-
-            {/* Assignment History */}
-            <div className="border rounded-lg p-4">
-              <h5 className="font-medium text-foreground mb-3 flex items-center gap-2">
-                <Clipboard className="w-4 h-4" /> Assignment History
-              </h5>
-              <div className="space-y-2">
-                {mockAssignmentData.history.map((assignment, index) => (
-                  <div key={index} className="flex items-center justify-between p-2 bg-muted rounded">
-                    <div>
-                      <div className="text-sm font-medium">{assignment.jobNumber}</div>
-                      <div className="text-xs text-muted-foreground">{assignment.customer} • {assignment.duration}</div>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      {[...Array(assignment.rating)].map((_, i) => (
-                        <div key={i} className="w-3 h-3 bg-yellow-400 rounded-full"></div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Performance Metrics */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="border rounded-lg p-4 text-center">
-                <div className="text-2xl font-bold text-green-700">4.7</div>
-                <div className="text-sm text-muted-foreground">Avg Rating</div>
-              </div>
-              <div className="border rounded-lg p-4 text-center">
-                <div className="text-2xl font-bold text-blue-700">14</div>
-                <div className="text-sm text-muted-foreground">Avg Days/Job</div>
-              </div>
-            </div>
-          </div>
-        );
+        return <AssignmentsMap assignments={mockAssignmentData.assignments} />;
 
       default:
         return null;
