@@ -99,14 +99,14 @@ export function InventoryManagementShowcase() {
     switch (activeTab) {
       case 'overview':
         return (
-          <div className="space-y-2">
+          <div className="space-y-1">
             {/* Product Header */}
             <div className="text-center mb-1">
               <h4 className="text-lg font-semibold text-foreground">{mockUnitData.productName}</h4>
             </div>
 
             {/* Three Column Layout */}
-            <div className="grid grid-cols-3 gap-3 items-center justify-items-center">
+            <div className="grid grid-cols-3 gap-1.5 items-center justify-items-center">
               {/* Left Column - Image */}
               <div className="flex justify-center">
                 <img 
