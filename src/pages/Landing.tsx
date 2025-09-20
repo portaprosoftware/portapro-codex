@@ -531,11 +531,6 @@ export const Landing: React.FC = () => {
             <StatCard title="Maintenance" value="3" icon={Wrench} gradientFrom="#F59E0B" gradientTo="#D97706" iconBg="bg-amber-600" />
           </div>
 
-          {/* Interactive Inventory Demo */}
-          <div className="mb-12">
-            <InventoryManagementShowcase />
-          </div>
-
           {/* General Inventory Management */}
           <div className="mb-8">
             <div className="space-y-6 max-w-4xl mx-auto text-center">
@@ -566,6 +561,11 @@ export const Landing: React.FC = () => {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Interactive Inventory Demo */}
+          <div className="mb-12">
+            <InventoryManagementShowcase />
           </div>
           {/* Stock Tracking + Location Management Side by Side */}
           <div className="grid lg:grid-cols-2 gap-12 items-start mb-12">
