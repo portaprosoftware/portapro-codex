@@ -34,7 +34,24 @@ export const ServicesHubShowcase: React.FC = () => {
 
         <div className="space-y-8">
           {/* Interactive Demo */}
-          <ServiceHubDemo />
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground text-center">
+              Interactive demo - click tabs to explore different sections
+            </p>
+            <ServiceHubDemo />
+            
+            {/* Sample Service Report */}
+            <div className="mt-8">
+              <h3 className="text-lg font-semibold text-foreground mb-4">Sample Completed Service Report</h3>
+              <div className="rounded-lg border border-border bg-card p-4">
+                <img 
+                  src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=800&q=80" 
+                  alt="Completed service report showing job details, photos, and customer signature" 
+                  className="w-full h-auto rounded-md"
+                />
+              </div>
+            </div>
+          </div>
 
           {/* What Customers Love Card */}
           <div className="rounded-2xl border border-border p-6 bg-gradient-to-br from-green-50 to-blue-50">
