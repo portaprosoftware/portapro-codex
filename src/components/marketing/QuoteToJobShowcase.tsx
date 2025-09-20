@@ -35,10 +35,15 @@ export const QuoteToJobShowcase: React.FC = () => {
           </ul>
           
           {/* Quote + Job image */}
-          <div className="max-w-xs">
+          <div className="max-w-xs space-y-0">
             <img 
               src="/src/assets/quote-2.png" 
               alt="Create Job + Quote interface"
+              className="w-full h-auto rounded-xl"
+            />
+            <img 
+              src="/src/assets/invoice-2.png" 
+              alt="Create Job + Invoice interface"
               className="w-full h-auto rounded-xl"
             />
           </div>
