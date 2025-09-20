@@ -537,34 +537,34 @@ export const Landing: React.FC = () => {
           </div>
 
           {/* General Inventory Management */}
-          <div className="grid lg:grid-cols-2 gap-12 items-center mb-8">
-            <div className="space-y-6">
-              <div className="text-left">
+          <div className="mb-8">
+            <div className="space-y-6 max-w-4xl mx-auto text-center">
+              <div>
                 <h3 className="text-2xl font-bold text-foreground mb-4">General Inventory Management</h3>
                 <p className="text-lg text-muted-foreground mb-6">Every unit has a dedicated tracking system for comprehensive inventory control and management.</p>
               </div>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <Database className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Unified tracking system for all inventory types</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Multi-location stock allocation and transfers</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Calendar className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Date-range availability checking and reservations</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <AlertTriangle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Automatic low-stock alerts and reorder points</span>
-                </li>
-              </ul>
-            </div>
-            
-            <div className="flex justify-center">
-              <img src="/standard-porta-potty.png" alt="Standard portable toilet unit showing availability tracking" className="w-3/5 max-w-md h-auto" loading="lazy" decoding="async" />
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-3 text-left">
+                  <div className="flex items-start gap-3">
+                    <Database className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Unified tracking system for all inventory types</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Multi-location stock allocation and transfers</span>
+                  </div>
+                </div>
+                <div className="space-y-3 text-left">
+                  <div className="flex items-start gap-3">
+                    <Calendar className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Date-range availability checking and reservations</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Automatic low-stock alerts and reorder points</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           {/* Stock Tracking + Location Management Side by Side */}
