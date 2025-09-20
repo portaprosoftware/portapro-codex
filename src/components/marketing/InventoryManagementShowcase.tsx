@@ -99,14 +99,14 @@ export function InventoryManagementShowcase() {
     switch (activeTab) {
       case 'overview':
         return (
-          <div className="space-y-1">
+          <div className="space-y-2">
             {/* Product Header */}
-            <div className="text-center mb-1">
-              <h4 className="text-lg font-semibold text-foreground">{mockUnitData.productName}</h4>
+            <div className="text-center mb-2">
+              <h4 className="text-xl font-semibold text-foreground">{mockUnitData.productName}</h4>
             </div>
 
             {/* Three Column Layout */}
-            <div className="grid grid-cols-3 gap-1.5 items-center justify-items-center">
+            <div className="grid grid-cols-3 gap-4 items-center justify-items-center">
               {/* Left Column - Image */}
               <div className="flex justify-center">
                 <img 
@@ -117,29 +117,29 @@ export function InventoryManagementShowcase() {
               </div>
 
               {/* Middle Column - Status Badges */}
-              <div className="flex flex-col gap-1.5 justify-center items-center w-full">
-                <div className="bg-gradient-to-r from-green-600 to-green-500 text-white px-3 py-1.5 rounded-full font-bold text-xs text-center whitespace-nowrap w-full max-w-32">
+              <div className="flex flex-col gap-3 justify-center items-center w-full">
+                <div className="bg-gradient-to-r from-green-600 to-green-500 text-white px-6 py-3 rounded-full font-bold text-sm text-center whitespace-nowrap w-full max-w-40">
                   {mockStockData.totalAvailable} Available
                 </div>
-                <div className="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-3 py-1.5 rounded-full font-bold text-xs text-center whitespace-nowrap w-full max-w-32">
+                <div className="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-6 py-3 rounded-full font-bold text-sm text-center whitespace-nowrap w-full max-w-40">
                   On Assignment {mockStockData.totalAssigned}
                 </div>
-                <div className="bg-gradient-to-r from-orange-600 to-orange-500 text-white px-3 py-1.5 rounded-full font-bold text-xs text-center whitespace-nowrap w-full max-w-32">
+                <div className="bg-gradient-to-r from-orange-600 to-orange-500 text-white px-6 py-3 rounded-full font-bold text-sm text-center whitespace-nowrap w-full max-w-40">
                   Maintenance {mockStockData.totalMaintenance}
                 </div>
               </div>
 
               {/* Right Column - Inventory by Location */}
-              <div className="space-y-1.5 w-full">
-                <h5 className="font-medium text-foreground text-sm text-center">Inventory by Location</h5>
-                <div className="grid gap-1">
+              <div className="space-y-3 w-full">
+                <h5 className="font-semibold text-foreground text-base text-center">Inventory by Location</h5>
+                <div className="grid gap-2">
                   {mockStockData.bulkStock.map((location, index) => (
-                    <div key={index} className="flex items-center justify-between p-1.5 bg-gray-50 rounded-lg">
-                      <div className="flex items-center gap-1">
-                        <MapPin className="w-3 h-3 text-muted-foreground" />
-                        <span className="text-xs font-medium">{location.location}</span>
+                    <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-sm font-medium">{location.location}</span>
                       </div>
-                      <span className="text-xs font-bold text-foreground">{location.quantity}</span>
+                      <span className="text-sm font-bold text-foreground">{location.quantity}</span>
                     </div>
                   ))}
                 </div>
