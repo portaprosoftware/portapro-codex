@@ -325,9 +325,9 @@ export function InventoryManagementShowcase() {
         return (
           <div className="space-y-4">
             {/* Maintenance Overview */}
-            <div className="bg-gradient-to-r from-orange-600 to-orange-500 rounded-lg p-4 text-center">
-              <div className="text-2xl font-bold text-white">{mockMaintenanceData.unitsInMaintenance} Units in Maintenance</div>
-              <div className="text-sm text-white">Currently being repaired</div>
+            <div className="border rounded-lg p-4 text-center bg-muted">
+              <div className="text-2xl font-bold text-foreground">{mockMaintenanceData.unitsInMaintenance} Units in Maintenance</div>
+              <div className="text-sm text-muted-foreground">Currently being repaired</div>
             </div>
 
             {/* Broken Units List */}
