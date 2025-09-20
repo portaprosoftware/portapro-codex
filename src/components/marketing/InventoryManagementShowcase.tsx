@@ -99,43 +99,41 @@ export function InventoryManagementShowcase() {
     switch (activeTab) {
       case 'overview':
         return (
-          <div className="space-y-4">
-            {/* Unit Header */}
-            <div className="flex items-start justify-between">
-              <div>
-                <h4 className="text-lg font-semibold text-foreground">{mockUnitData.productName}</h4>
-                <p className="text-sm text-muted-foreground">Unit: {mockUnitData.unitCode} • Tool #: {mockUnitData.toolNumber}</p>
-              </div>
-              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                {mockUnitData.status}
-              </Badge>
+          <div className="space-y-6">
+            {/* Product Header */}
+            <div className="text-center">
+              <h4 className="text-lg font-semibold text-foreground">{mockUnitData.productName}</h4>
             </div>
 
-            {/* Image and Details Layout */}
-            <div className="grid grid-cols-5 gap-4 items-center">
-              {/* Unit Image - Left (2 columns) */}
-              <div className="col-span-2 flex justify-center">
+            {/* Icon View - Image with Available Count */}
+            <div className="flex flex-col items-center space-y-4">
+              <div className="relative">
                 <img 
-                  src="/assets/standard-portable-toilet.png" 
-                  alt="Standard Portable Toilet - Unit 1101" 
-                  className="w-full max-w-32 h-auto rounded-lg"
+                  src="/assets/standard-toilet-icon.png" 
+                  alt="Standard Portable Toilet" 
+                  className="w-48 h-auto rounded-lg"
                 />
+                <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
+                  <div className="bg-green-600 text-white px-4 py-2 rounded-full font-bold text-sm">
+                    {mockStockData.totalAvailable} Available
+                  </div>
+                </div>
               </div>
+            </div>
 
-              {/* Current Details - Right (3 columns) */}
-              <div className="col-span-3 space-y-3">
-                <div className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm">Current Location: <span className="font-medium">{mockUnitData.currentLocation}</span></span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Building className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm">Last Customer: <span className="font-medium">{mockUnitData.lastCustomer}</span></span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm">Next Delivery Date: <span className="font-medium">February 15, 2024</span></span>
-                </div>
+            {/* Inventory by Location */}
+            <div className="space-y-3">
+              <h5 className="font-medium text-foreground">Inventory by Location</h5>
+              <div className="grid gap-2">
+                {mockStockData.bulkStock.map((location, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-sm font-medium">{location.location}</span>
+                    </div>
+                    <span className="text-sm font-bold text-foreground">{location.quantity} units</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
