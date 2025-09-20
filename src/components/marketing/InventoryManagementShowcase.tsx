@@ -180,9 +180,6 @@ export function InventoryManagementShowcase() {
                     <span className="text-sm">{location.location}</span>
                     <div className="flex items-center gap-2">
                       <span className="font-medium">{location.quantity}</span>
-                      {location.quantity <= location.lowStockThreshold && (
-                        <AlertTriangle className="w-4 h-4 text-orange-500" />
-                      )}
                     </div>
                   </div>
                 ))}
@@ -218,58 +215,83 @@ export function InventoryManagementShowcase() {
         );
 
       case 'availability':
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() + 7); // 7 days from now
+        const endDate = new Date();
+        endDate.setDate(endDate.getDate() + 14); // 14 days from now
+        
+        // Generate calendar days between start and end date
+        const calendarDays = [];
+        const currentDate = new Date(startDate);
+        while (currentDate <= endDate) {
+          calendarDays.push({
+            date: new Date(currentDate),
+            available: Math.floor(Math.random() * 20) + 40, // Random availability between 40-59
+            total: 62
+          });
+          currentDate.setDate(currentDate.getDate() + 1);
+        }
+        
         return (
           <div className="space-y-4">
-            {/* Date Range Checker */}
-            <div className="border rounded-lg p-4">
-              <h5 className="font-medium text-foreground mb-3 flex items-center gap-2">
-                <Calendar className="w-4 h-4" /> Date Range Availability
-              </h5>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm text-muted-foreground">Start Date</label>
-                  <div className="p-2 border rounded bg-muted text-sm">Jan 20, 2024</div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm text-muted-foreground">End Date</label>
-                  <div className="p-2 border rounded bg-muted text-sm">Jan 27, 2024</div>
-                </div>
-              </div>
-              <div className="mt-4 p-4 bg-green-50 rounded-lg">
-                <div className="text-2xl font-bold text-green-700">45 of 62 units available</div>
-                <div className="text-sm text-green-600">For selected date range</div>
+            {/* Date Range Summary */}
+            <div className="bg-gradient-to-r from-green-600 to-green-500 rounded-lg p-4 text-center">
+              <div className="text-2xl font-bold text-white">Daily Availability Overview</div>
+              <div className="text-sm text-white mt-1">
+                {startDate.toLocaleDateString()} to {endDate.toLocaleDateString()}
               </div>
             </div>
 
-            {/* Auto-Allocation Preview */}
+            {/* Calendar View */}
             <div className="border rounded-lg p-4">
-              <h5 className="font-medium text-foreground mb-3">Auto-Allocation Preview</h5>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-2 bg-blue-50 rounded">
-                  <span className="text-sm">Yard A - Closest to job site</span>
-                  <span className="font-medium text-blue-700">28 units</span>
+              <h5 className="font-medium text-foreground mb-3 flex items-center gap-2">
+                <Calendar className="w-4 h-4" /> Daily Unit Availability
+              </h5>
+              <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto">
+                {calendarDays.map((day, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="text-sm font-medium min-w-[100px]">
+                        {day.date.toLocaleDateString('en-US', { 
+                          weekday: 'short', 
+                          month: 'short', 
+                          day: 'numeric' 
+                        })}
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-gradient-to-r from-green-600 to-green-500 h-2 rounded-full" 
+                          style={{ width: `${(day.available / day.total) * 100}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold text-foreground">
+                        {day.available} of {day.total}
+                      </span>
+                      <span className="text-xs text-muted-foreground">available</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Location Breakdown */}
+            <div className="border rounded-lg p-4">
+              <h5 className="font-medium text-foreground mb-3">Current Inventory by Location</h5>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between p-2 bg-muted rounded">
+                  <span className="text-sm">Yard A</span>
+                  <span className="font-medium">28 units</span>
                 </div>
                 <div className="flex items-center justify-between p-2 bg-muted rounded">
-                  <span className="text-sm">Yard B - Secondary option</span>
+                  <span className="text-sm">Yard B</span>
                   <span className="font-medium">14 units</span>
                 </div>
                 <div className="flex items-center justify-between p-2 bg-muted rounded">
-                  <span className="text-sm">Warehouse - Backup inventory</span>
+                  <span className="text-sm">Warehouse</span>
                   <span className="font-medium">20 units</span>
                 </div>
-              </div>
-              <Button className="w-full mt-3" size="sm">
-                Confirm Auto-Allocation
-              </Button>
-            </div>
-
-            {/* Conflict Detection */}
-            <div className="border rounded-lg p-4">
-              <h5 className="font-medium text-foreground mb-3 flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-green-500" /> Conflict Detection
-              </h5>
-              <div className="text-sm text-green-600">
-                ✓ No scheduling conflicts detected for this date range
               </div>
             </div>
           </div>
