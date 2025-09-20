@@ -1163,9 +1163,7 @@ export const Landing: React.FC = () => {
           </div>
 
           {/* Team KPIs */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-12">
-            <StatCard title="Total Members" value={12} icon={Users} gradientFrom="hsl(214, 100%, 50%)" gradientTo="hsl(214, 100%, 35%)" iconBg="hsl(214, 100%, 50%)" subtitle={<span className="text-muted-foreground">All roles</span>} />
-            <StatCard title="Active Drivers" value={8} icon={Truck} gradientFrom="hsl(214, 100%, 50%)" gradientTo="hsl(214, 100%, 35%)" iconBg="hsl(214, 100%, 50%)" subtitle={<span className="text-muted-foreground">Drivers on roster</span>} />
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
             <StatCard title="Shifts Today" value={8} icon={CalendarClock} gradientFrom="hsl(142, 76%, 36%)" gradientTo="hsl(142, 76%, 25%)" iconBg="hsl(142, 76%, 36%)" subtitle={<span className="text-muted-foreground">Scheduled shifts</span>} />
             <StatCard title="Approved Time Off" value={1} icon={Calendar} gradientFrom="hsl(var(--destructive))" gradientTo="hsl(var(--destructive) / 0.7)" iconBg="hsl(var(--destructive))" subtitle={<span className="text-muted-foreground">Today</span>} />
             <StatCard title="Expiring Credentials" value={3} icon={Shield} gradientFrom="hsl(45, 93%, 55%)" gradientTo="hsl(45, 93%, 45%)" iconBg="hsl(45, 93%, 55%)" subtitle={<span className="text-muted-foreground">Next 30 days</span>} />
