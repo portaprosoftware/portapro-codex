@@ -155,17 +155,17 @@ export function InventoryManagementShowcase() {
           <div className="space-y-4">
             {/* Stock Summary */}
             <div className="grid grid-cols-3 gap-3">
-              <div className="bg-green-50 rounded-lg p-3 text-center">
-                <div className="text-2xl font-bold text-green-700">{mockStockData.totalAvailable}</div>
-                <div className="text-xs text-green-600">Available</div>
+              <div className="bg-gradient-to-r from-green-600 to-green-500 rounded-lg p-3 text-center">
+                <div className="text-2xl font-bold text-white">{mockStockData.totalAvailable}</div>
+                <div className="text-xs text-white">Available</div>
               </div>
-              <div className="bg-blue-50 rounded-lg p-3 text-center">
-                <div className="text-2xl font-bold text-blue-700">{mockStockData.totalAssigned}</div>
-                <div className="text-xs text-blue-600">On Job</div>
+              <div className="bg-gradient-to-r from-blue-600 to-blue-500 rounded-lg p-3 text-center">
+                <div className="text-2xl font-bold text-white">{mockStockData.totalAssigned}</div>
+                <div className="text-xs text-white">On Job</div>
               </div>
-              <div className="bg-orange-50 rounded-lg p-3 text-center">
-                <div className="text-2xl font-bold text-orange-700">{mockStockData.totalMaintenance}</div>
-                <div className="text-xs text-orange-600">Maintenance</div>
+              <div className="bg-gradient-to-r from-orange-600 to-orange-500 rounded-lg p-3 text-center">
+                <div className="text-2xl font-bold text-white">{mockStockData.totalMaintenance}</div>
+                <div className="text-xs text-white">Maintenance</div>
               </div>
             </div>
 
@@ -199,17 +199,16 @@ export function InventoryManagementShowcase() {
                   <div key={index} className="flex items-center justify-between p-2 bg-muted rounded">
                     <span className="text-sm font-mono">{unit.code}</span>
                     <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">{unit.location}</span>
                       <Badge 
-                        variant="outline" 
-                        className={`text-xs ${
-                          unit.status === 'Available' ? 'bg-green-50 text-green-700 border-green-200' :
-                          unit.status === 'Assigned' ? 'bg-blue-50 text-blue-700 border-blue-200' :
-                          'bg-orange-50 text-orange-700 border-orange-200'
+                        className={`text-xs font-bold text-white ${
+                          unit.status === 'Available' ? 'bg-gradient-to-r from-green-600 to-green-500' :
+                          unit.status === 'Assigned' ? 'bg-gradient-to-r from-blue-600 to-blue-500' :
+                          'bg-gradient-to-r from-orange-600 to-orange-500'
                         }`}
                       >
                         {unit.status}
                       </Badge>
-                      <span className="text-xs text-muted-foreground">{unit.location}</span>
                     </div>
                   </div>
                 ))}
