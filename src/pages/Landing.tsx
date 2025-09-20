@@ -615,6 +615,24 @@ export const Landing: React.FC = () => {
             <div className="text-center mb-8">
               <h3 className="text-2xl font-bold text-foreground">QR & Photo Scanning</h3>
               <p className="text-lg text-muted-foreground mt-2">Instant unit identification and documentation with mobile scanning capabilities.</p>
+              
+              {/* Feature List - Moved above cards */}
+              <div className="mt-6 flex justify-center">
+                <ul className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl">
+                  <li className="flex items-start gap-3">
+                    <Smartphone className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Mobile QR code scanning for units</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Camera className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Photo documentation for condition tracking</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CloudOff className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Offline scanning with auto-sync capabilities</span>
+                  </li>
+                </ul>
+              </div>
             </div>
             
             <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -655,24 +673,6 @@ export const Landing: React.FC = () => {
 
               {/* QR Code Generator Section */}
               <QRGenerator />
-            </div>
-
-            {/* Feature List */}
-            <div className="mt-8 flex justify-center">
-              <ul className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl">
-                <li className="flex items-start gap-3">
-                  <Smartphone className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Mobile QR code scanning for units</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Camera className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Photo documentation for condition tracking</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CloudOff className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Offline scanning with auto-sync capabilities</span>
-                </li>
-              </ul>
             </div>
           </div>
 
