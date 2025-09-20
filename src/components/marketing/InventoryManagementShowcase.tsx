@@ -373,22 +373,36 @@ export function InventoryManagementShowcase() {
         );
 
       case 'qr-tracking':
+        const sampleQrCodes = [
+          { unitCode: '1101', type: 'Standard Portable Toilet' },
+          { unitCode: '1102', type: 'Standard Portable Toilet' },
+          { unitCode: '1103', type: 'Standard Portable Toilet' },
+          { unitCode: '1104', type: 'Standard Portable Toilet' },
+          { unitCode: '1105', type: 'Standard Portable Toilet' }
+        ];
+        
         return (
           <div className="space-y-4">
-            {/* QR Code Display */}
-            <div className="border rounded-lg p-4 text-center">
-              <h5 className="font-medium text-foreground mb-3">QR Code for Unit {mockUnitData.unitCode}</h5>
-              <div className="w-32 h-32 mx-auto bg-white border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center mb-3">
-                <QrCode className="w-16 h-16 text-muted-foreground" />
-              </div>
-              <div className="text-sm font-mono text-muted-foreground mb-3">{mockUnitData.unitCode} • {mockUnitData.productName}</div>
-              <div className="flex gap-2 justify-center">
+            {/* QR Codes List */}
+            <div className="border rounded-lg p-4">
+              <div className="flex items-center justify-between mb-4">
+                <h5 className="font-medium text-foreground">Unit QR Codes</h5>
                 <Button size="sm" className="bg-gradient-to-r from-blue-700 to-blue-800 text-white">
-                  Generate
+                  Print All
                 </Button>
-                <Button size="sm" variant="outline">
-                  Print
-                </Button>
+              </div>
+              <div className="grid gap-3">
+                {sampleQrCodes.map((unit, index) => (
+                  <div key={index} className="flex items-center gap-4 p-3 bg-muted rounded-lg">
+                    <div className="w-16 h-16 bg-white border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <QrCode className="w-10 h-10 text-muted-foreground" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-sm font-mono font-medium">{unit.unitCode}</div>
+                      <div className="text-xs text-muted-foreground">{unit.type}</div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -431,27 +445,6 @@ export function InventoryManagementShowcase() {
                     <CheckCircle className="w-4 h-4 text-green-500" />
                     <span>No data loss</span>
                   </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Recent Scans */}
-            <div className="border rounded-lg p-4">
-              <h5 className="font-medium text-foreground mb-3">Recent Scans</h5>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between p-2 bg-green-50 rounded">
-                  <div>
-                    <div className="text-sm font-medium">1101 Scanned</div>
-                    <div className="text-xs text-muted-foreground">2 minutes ago • Job Assignment</div>
-                  </div>
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                </div>
-                <div className="flex items-center justify-between p-2 bg-blue-50 rounded">
-                  <div>
-                    <div className="text-sm font-medium">1102 Scanned</div>
-                    <div className="text-xs text-muted-foreground">15 minutes ago • Maintenance Check</div>
-                  </div>
-                  <CheckCircle className="w-4 h-4 text-blue-500" />
                 </div>
               </div>
             </div>
