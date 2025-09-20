@@ -37,25 +37,25 @@ export const QuoteToJobShowcase: React.FC = () => {
           {/* Custom interface cards */}
           <div className="space-y-4">
             {/* Create Job + Quote Card */}
-            <div className="bg-card border rounded-2xl p-6 text-center shadow-sm">
-              <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <FileText className="w-6 h-6 text-white" />
+            <div className="bg-card border rounded-2xl p-4 text-center shadow-sm">
+              <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-3">
+                <FileText className="w-5 h-5 text-white" />
               </div>
-              <h3 className="text-lg font-semibold text-foreground mb-2">Create Job + Quote</h3>
-              <p className="text-sm text-muted-foreground mb-4">Create both a job and quote simultaneously</p>
-              <button className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-2.5 rounded-xl font-medium hover:from-green-600 hover:to-green-700 transition-all shadow">
+              <h3 className="text-base font-semibold text-foreground mb-2">Create Job + Quote</h3>
+              <p className="text-xs text-muted-foreground mb-3">Create both a job and quote simultaneously</p>
+              <button className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-2 rounded-xl font-medium hover:from-green-600 hover:to-green-700 transition-all shadow text-sm">
                 Quote + Job
               </button>
             </div>
 
             {/* Create Job + Invoice Card */}
-            <div className="bg-card border rounded-2xl p-6 text-center shadow-sm">
-              <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <DollarSign className="w-6 h-6 text-white" />
+            <div className="bg-card border rounded-2xl p-4 text-center shadow-sm">
+              <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-3">
+                <DollarSign className="w-5 h-5 text-white" />
               </div>
-              <h3 className="text-lg font-semibold text-foreground mb-2">Create Job + Invoice</h3>
-              <p className="text-sm text-muted-foreground mb-4">Create job and immediately generate invoice</p>
-              <button className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-2.5 rounded-xl font-medium hover:from-green-600 hover:to-green-700 transition-all shadow">
+              <h3 className="text-base font-semibold text-foreground mb-2">Create Job + Invoice</h3>
+              <p className="text-xs text-muted-foreground mb-3">Create job and immediately generate invoice</p>
+              <button className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-2 rounded-xl font-medium hover:from-green-600 hover:to-green-700 transition-all shadow text-sm">
                 Job + Invoice
               </button>
             </div>
