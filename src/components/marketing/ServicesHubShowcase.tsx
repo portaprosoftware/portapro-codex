@@ -84,18 +84,18 @@ export const ServicesHubShowcase: React.FC = () => {
                 </div>
               </div>
               <div className="mt-3 text-xs text-muted-foreground">Photos, signatures, notes — all captured offline and auto‑synced.</div>
+              
+              {/* Services table image directly under the card */}
+              <div className="mt-4">
+                <img
+                  src="/src/assets/services_1-3.png"
+                  alt="Service management table showing standard service with cleaning category, pricing, duration and template assignments"
+                  className="w-full max-w-lg h-auto rounded-lg"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
             </article>
-
-            {/* Services table image */}
-            <div className="flex justify-center">
-              <img
-                src="/src/assets/services_1-3.png"
-                alt="Service management table showing standard service with cleaning category, pricing, duration and template assignments"
-                className="w-full max-w-md h-auto rounded-lg"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
           </div>
 
           {/* Right column: Single image */}
