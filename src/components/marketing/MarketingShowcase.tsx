@@ -80,8 +80,8 @@ export const MarketingShowcase: React.FC = () => {
             </article>
           </div>
 
-          {/* Right column: Campaign Creation - Vertically Centered */}
-          <aside className="flex items-center">
+          {/* Right column: Campaign Creation - Positioned Lower */}
+          <aside className="flex items-end pb-8">
             {/* Campaign Creation Interface */}
             <div className="animate-fade-in w-full">
               <CampaignConfirmationDemo />
