@@ -59,7 +59,7 @@ export const QRGenerator: React.FC = () => {
       
       <div className="grid md:grid-cols-2 gap-2 items-center">
         <div className="flex flex-col items-center">
-          <div id="qr-code" className="bg-white p-2 rounded border">
+          <div id="qr-code" className="bg-white p-2 rounded">
             <QRCodeSVG 
               value={qrValue} 
               size={141}
