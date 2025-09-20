@@ -83,6 +83,13 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
               <p className="text-sm text-muted-foreground">Internal account management for your rental company</p>
             </div>
 
+            {/* Interactive Demo Info */}
+            <div className="mb-4 text-center">
+              <p className="text-sm text-muted-foreground">
+                Interactive Demo: Click the tabs below to explore different vehicle management features
+              </p>
+            </div>
+
             {/* Interactive Customer Account Management */}
             <article className="rounded-2xl border bg-card shadow-md p-5 animate-fade-in">
               <div className="flex items-center justify-between mb-4">
