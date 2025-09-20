@@ -67,14 +67,12 @@ const mockStockData = {
 };
 
 const mockMaintenanceData = {
-  lastService: '2024-01-08',
-  nextDue: '2024-02-15',
-  workOrders: [
-    { date: '2024-01-08', type: 'Routine Service', technician: 'Mike Johnson', status: 'Completed' },
-    { date: '2023-12-15', type: 'Deep Clean', technician: 'Sarah Wilson', status: 'Completed' },
-    { date: '2023-11-20', type: 'Repair - Door', technician: 'Tom Davis', status: 'Completed' }
-  ],
-  upcomingService: { date: '2024-02-15', type: 'Routine Service', technician: 'TBD' }
+  unitsInMaintenance: 3,
+  brokenUnits: [
+    { unitCode: '1103', issue: 'Door hinge broken', priority: 'High', dateReported: '2024-01-15', technician: 'Mike Johnson', status: 'In Progress' },
+    { unitCode: '1087', issue: 'Vent fan not working', priority: 'Medium', dateReported: '2024-01-12', technician: 'Sarah Wilson', status: 'Parts Ordered' },
+    { unitCode: '1045', issue: 'Lock mechanism stuck', priority: 'Low', dateReported: '2024-01-10', technician: 'Tom Davis', status: 'Completed' }
+  ]
 };
 
 const mockAssignmentData = {
@@ -326,62 +324,50 @@ export function InventoryManagementShowcase() {
       case 'maintenance':
         return (
           <div className="space-y-4">
-            {/* Service Status */}
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="border rounded-lg p-4">
-                <h5 className="font-medium text-foreground mb-2">Last Service</h5>
-                <div className="text-2xl font-bold text-green-700">{mockMaintenanceData.lastService}</div>
-                <div className="text-sm text-muted-foreground">Routine Service</div>
-              </div>
-              <div className="border rounded-lg p-4">
-                <h5 className="font-medium text-foreground mb-2">Next Service Due</h5>
-                <div className="text-2xl font-bold text-orange-700">{mockMaintenanceData.nextDue}</div>
-                <div className="text-sm text-muted-foreground">In 23 days</div>
-              </div>
+            {/* Maintenance Overview */}
+            <div className="bg-gradient-to-r from-orange-600 to-orange-500 rounded-lg p-4 text-center">
+              <div className="text-2xl font-bold text-white">{mockMaintenanceData.unitsInMaintenance} Units in Maintenance</div>
+              <div className="text-sm text-white">Currently being repaired</div>
             </div>
 
-            {/* Work Orders */}
+            {/* Broken Units List */}
             <div className="border rounded-lg p-4">
               <h5 className="font-medium text-foreground mb-3 flex items-center gap-2">
-                <Clipboard className="w-4 h-4" /> Recent Work Orders
+                <Wrench className="w-4 h-4" /> Broken Units & Repairs
               </h5>
               <div className="space-y-2">
-                {mockMaintenanceData.workOrders.map((order, index) => (
-                  <div key={index} className="flex items-center justify-between p-2 bg-muted rounded">
-                    <div>
-                      <div className="text-sm font-medium">{order.type}</div>
-                      <div className="text-xs text-muted-foreground">{order.date} • {order.technician}</div>
+                {mockMaintenanceData.brokenUnits.map((unit, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 bg-muted rounded">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-1">
+                        <span className="text-sm font-mono font-medium">{unit.unitCode}</span>
+                        <Badge 
+                          className={`text-xs font-bold text-white ${
+                            unit.priority === 'High' ? 'bg-gradient-to-r from-red-600 to-red-500' :
+                            unit.priority === 'Medium' ? 'bg-gradient-to-r from-orange-600 to-orange-500' :
+                            'bg-gradient-to-r from-blue-600 to-blue-500'
+                          }`}
+                        >
+                          {unit.priority}
+                        </Badge>
+                      </div>
+                      <div className="text-sm text-foreground">{unit.issue}</div>
+                      <div className="text-xs text-muted-foreground">
+                        Reported: {unit.dateReported} • {unit.technician}
+                      </div>
                     </div>
-                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                      {order.status}
+                    <Badge 
+                      className={`text-xs font-bold text-white ml-3 ${
+                        unit.status === 'Completed' ? 'bg-gradient-to-r from-green-600 to-green-500' :
+                        unit.status === 'In Progress' ? 'bg-gradient-to-r from-blue-600 to-blue-500' :
+                        'bg-gradient-to-r from-yellow-600 to-yellow-500'
+                      }`}
+                    >
+                      {unit.status}
                     </Badge>
                   </div>
                 ))}
               </div>
-            </div>
-
-            {/* Upcoming Service */}
-            <div className="border rounded-lg p-4 bg-blue-50">
-              <h5 className="font-medium text-foreground mb-3 flex items-center gap-2">
-                <Clock className="w-4 h-4" /> Upcoming Service
-              </h5>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Date:</span>
-                  <span className="text-sm font-medium">{mockMaintenanceData.upcomingService.date}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Type:</span>
-                  <span className="text-sm font-medium">{mockMaintenanceData.upcomingService.type}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Technician:</span>
-                  <span className="text-sm font-medium">{mockMaintenanceData.upcomingService.technician}</span>
-                </div>
-              </div>
-              <Button className="w-full mt-3" size="sm" variant="outline">
-                Schedule Technician
-              </Button>
             </div>
           </div>
         );
