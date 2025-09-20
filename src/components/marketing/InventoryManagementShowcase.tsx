@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { TabNav } from '@/components/ui/TabNav';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { getCustomerTypeColor, getCustomerTypeIcon } from '@/lib/customerTypeIcons';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { 
@@ -83,6 +84,7 @@ const mockAssignmentData = {
       id: '1101',
       jobNumber: 'J-2024-156', 
       customer: 'ABC Construction', 
+      customerType: 'construction' as const,
       site: 'Downtown Office Complex',
       coordinates: [-74.006, 40.7128] as [number, number], // NYC
       status: 'active' as const,
@@ -93,6 +95,7 @@ const mockAssignmentData = {
       id: '1102',
       jobNumber: 'J-2024-144', 
       customer: 'Metro Builders', 
+      customerType: 'construction' as const,
       site: 'Riverside Shopping Center',
       coordinates: [-74.0234, 40.7282] as [number, number], // NYC area
       status: 'active' as const,
@@ -103,6 +106,7 @@ const mockAssignmentData = {
       id: '1103',
       jobNumber: 'J-2024-133', 
       customer: 'City Events LLC', 
+      customerType: 'events_festivals' as const,
       site: 'Central Park Festival',
       coordinates: [-73.9654, 40.7829] as [number, number], // Central Park
       status: 'maintenance' as const,
@@ -116,6 +120,7 @@ interface Assignment {
   id: string;
   jobNumber: string;
   customer: string;
+  customerType: string;
   site: string;
   coordinates: [number, number];
   status: 'active' | 'maintenance';
@@ -142,13 +147,32 @@ const AssignmentsMap = ({ assignments }: { assignments: Assignment[] }) => {
 
     // Add markers for each assignment
     assignments.forEach((assignment) => {
+      const customerColor = getCustomerTypeColor(assignment.customerType);
+      const bgColor = customerColor.replace('bg-', '').replace('-500', '').replace('-600', '');
+      
+      // Convert Tailwind color classes to hex values
+      const colorMap: Record<string, string> = {
+        'orange': '#ea580c',
+        'yellow': '#ca8a04', 
+        'red': '#dc2626',
+        'purple': '#9333ea',
+        'blue': '#2563eb',
+        'pink': '#db2777',
+        'green': '#16a34a',
+        'indigo': '#4f46e5',
+        'gray': '#6b7280'
+      };
+      
+      const hexColor = colorMap[bgColor] || '#6b7280';
+      const statusColor = assignment.status === 'maintenance' ? '#f59e0b' : hexColor;
+      
       const el = document.createElement('div');
-      el.className = assignment.status === 'active' ? 'assignment-marker active' : 'assignment-marker maintenance';
+      el.className = 'assignment-marker';
       el.innerHTML = `
         <div style="
           width: 24px; 
           height: 24px; 
-          background: ${assignment.status === 'active' ? '#10b981' : '#f59e0b'}; 
+          background: ${statusColor}; 
           border: 2px solid white; 
           border-radius: 50%; 
           display: flex; 
