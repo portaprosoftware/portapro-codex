@@ -82,7 +82,7 @@ export const MarketingShowcase: React.FC = () => {
             {/* Highlights */}
             <div className="rounded-2xl border bg-card p-5 shadow-md animate-fade-in">
               <div className="text-base font-semibold mb-3 text-foreground">Highlights</div>
-              <ul className="space-y-2 text-sm">
+              <ul className="grid grid-cols-2 gap-2 text-sm">
                 <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Build templates with AI — subject + body in seconds</li>
                 <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Save drafts automatically; resume anytime</li>
                 <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Target all customers or Smart Segments</li>
