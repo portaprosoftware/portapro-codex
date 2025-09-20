@@ -587,9 +587,8 @@ export const Landing: React.FC = () => {
               />
             </div>
           </div>
-
           {/* Stock Tracking & Location Management Row */}
-          <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
+          <div className="grid lg:grid-cols-2 gap-12 items-center mb-6">
             <div className="space-y-6">
               <h3 className="text-2xl font-bold text-foreground">Stock Tracking</h3>
               <p className="text-lg text-muted-foreground">Real-time inventory levels with automated tracking and threshold monitoring.</p>
