@@ -111,48 +111,31 @@ export function InventoryManagementShowcase() {
               </Badge>
             </div>
 
-            {/* Unit Image */}
-            <div className="flex justify-center">
-              <img 
-                src="/assets/standard-portable-toilet.png" 
-                alt="Standard Portable Toilet - Unit 1101" 
-                className="w-48 h-auto rounded-lg"
-              />
-            </div>
+            {/* Image and Details Layout */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+              {/* Unit Image - Left */}
+              <div className="flex justify-center">
+                <img 
+                  src="/assets/standard-portable-toilet.png" 
+                  alt="Standard Portable Toilet - Unit 1101" 
+                  className="w-48 h-auto rounded-lg"
+                />
+              </div>
 
-            {/* Quick Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <div className="bg-blue-50 rounded-lg p-3 text-center">
-                <div className="text-2xl font-bold text-blue-700">{mockUnitData.daysSinceService}</div>
-                <div className="text-xs text-blue-600">Days Since Service</div>
-              </div>
-              <div className="bg-green-50 rounded-lg p-3 text-center">
-                <div className="text-2xl font-bold text-green-700">{mockUnitData.totalJobs}</div>
-                <div className="text-xs text-green-600">Total Jobs</div>
-              </div>
-              <div className="bg-purple-50 rounded-lg p-3 text-center">
-                <div className="text-lg font-bold text-purple-700">Excellent</div>
-                <div className="text-xs text-purple-600">Condition</div>
-              </div>
-              <div className="bg-orange-50 rounded-lg p-3 text-center">
-                <div className="text-sm font-bold text-orange-700">Yard A</div>
-                <div className="text-xs text-orange-600">Location</div>
-              </div>
-            </div>
-
-            {/* Current Details */}
-            <div className="border rounded-lg p-4 space-y-3">
-              <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-muted-foreground" />
-                <span className="text-sm">Current Location: <span className="font-medium">{mockUnitData.currentLocation}</span></span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Building className="w-4 h-4 text-muted-foreground" />
-                <span className="text-sm">Last Customer: <span className="font-medium">{mockUnitData.lastCustomer}</span></span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-muted-foreground" />
-                <span className="text-sm">Next Service Due: <span className="font-medium">February 15, 2024</span></span>
+              {/* Current Details - Right */}
+              <div className="border rounded-lg p-4 space-y-3">
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-sm">Current Location: <span className="font-medium">{mockUnitData.currentLocation}</span></span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Building className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-sm">Last Customer: <span className="font-medium">{mockUnitData.lastCustomer}</span></span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-sm">Next Delivery Date: <span className="font-medium">February 15, 2024</span></span>
+                </div>
               </div>
             </div>
           </div>
