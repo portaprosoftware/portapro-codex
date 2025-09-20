@@ -617,18 +617,10 @@ export const Landing: React.FC = () => {
               />
             </div>
           </div>
-
-          <div className="grid lg:grid-cols-2 gap-12 items-center mb-4">
-            <div className="flex justify-center order-1 lg:order-2">
-              <img
-                src="/src/assets/location-tracking.png"
-                alt="Location Transfer History showing transfers between North Yard and South Yard with search and date filtering capabilities"
-                className="w-full max-w-lg h-auto"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-            <div className="space-y-6 order-2 lg:order-1">
+          
+          {/* Location Management - moved under Stock Tracking */}
+          <div className="max-w-4xl mx-auto mb-8">
+            <div className="space-y-6">
               <h3 className="text-2xl font-bold text-foreground">Location Management</h3>
               <p className="text-lg text-muted-foreground">Organize inventory across multiple storage facilities and job sites.</p>
               <ul className="space-y-3">
