@@ -46,8 +46,8 @@ export const MarketingShowcase: React.FC = () => {
         </header>
 
         <div className="grid lg:grid-cols-2 gap-8 items-start">
-          {/* Left column: Audience & Segments + Video */}
-          <div className="space-y-3">
+          {/* Left column: Audience & Segments + Video + Highlights */}
+          <div className="space-y-4">
             {/* Audience & Smart Segments */}
             <article className="rounded-2xl border bg-card shadow-md p-5 animate-fade-in">
               <div className="flex items-center justify-between mb-3">
@@ -79,16 +79,8 @@ export const MarketingShowcase: React.FC = () => {
               <wistia-player media-id="a2finp2l33" aspect="1.273209549071618"></wistia-player>
             </div>
 
-          </div>
-
-          {/* Right column: Campaign Creation + Highlights */}
-          <aside className="space-y-6">
-            {/* Campaign Creation Interface */}
-            <div className="animate-fade-in">
-              <CampaignConfirmationDemo />
-            </div>
-
-            <div className="rounded-2xl border bg-card p-5 shadow-md">
+            {/* Highlights */}
+            <div className="rounded-2xl border bg-card p-5 shadow-md animate-fade-in">
               <div className="text-base font-semibold mb-3 text-foreground">Highlights</div>
               <ul className="space-y-2 text-sm">
                 <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Build templates with AI — subject + body in seconds</li>
@@ -99,7 +91,14 @@ export const MarketingShowcase: React.FC = () => {
                 <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-primary mt-0.5" /> Unlimited texts and emails — included, no hidden fees</li>
               </ul>
             </div>
+          </div>
 
+          {/* Right column: Campaign Creation */}
+          <aside className="space-y-6">
+            {/* Campaign Creation Interface */}
+            <div className="animate-fade-in">
+              <CampaignConfirmationDemo />
+            </div>
           </aside>
         </div>
       </div>
