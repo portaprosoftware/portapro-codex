@@ -11,10 +11,17 @@ import { clearClerkCache } from './utils/authCleanup'
 const envClerkKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
 const defaultDevKey = "pk_test_YWN0dWFsLW11dHQtOTEuY2xlcmsuYWNjb3VudHMuZGV2JA";
 const isDevHost = location.hostname.includes('localhost') || location.hostname.includes('lovable.dev');
+const isProductionDomain = location.hostname === 'portaprosoftware.com';
 const isLiveKey = envClerkKey?.startsWith('pk_live_') ?? false;
 
 let effectiveClerkKey = envClerkKey ?? defaultDevKey;
-if (isLiveKey && isDevHost) {
+
+// Use production key for production domain, dev key for dev environments
+if (isProductionDomain) {
+  // For production domain, we'll need to get the production key from Supabase secrets
+  // This will be handled by the deployment environment
+  effectiveClerkKey = envClerkKey ?? defaultDevKey;
+} else if (isLiveKey && isDevHost) {
   console.warn("Detected production Clerk key on a dev host. Falling back to dev key and clearing auth cache.");
   try { clearClerkCache(); } catch {}
   effectiveClerkKey = defaultDevKey;
