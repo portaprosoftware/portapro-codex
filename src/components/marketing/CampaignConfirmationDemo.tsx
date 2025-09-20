@@ -46,31 +46,26 @@ export const CampaignConfirmationDemo: React.FC = () => {
       <div className="p-6">
 
         <div className="space-y-6">
-          {/* Schedule & Review Section */}
-          <div>
-            <h4 className="text-lg font-semibold text-foreground mb-4">Schedule & Review</h4>
-            
-            {/* Scheduling Options and Date Selection - Same Row */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <h5 className="text-sm font-medium text-foreground mb-2">Scheduling</h5>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="text-xs">
-                    Send Now
-                  </Button>
-                  <Button className="bg-blue-600 hover:bg-blue-700 text-white text-xs">
-                    Schedule
-                  </Button>
-                </div>
-              </div>
-
-              <div>
-                <h5 className="text-sm font-medium text-foreground mb-2">Select Date</h5>
-                <Button variant="outline" className="w-full justify-start text-gray-500">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  Pick a date
+          {/* Scheduling Options and Date Selection - Same Row */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <h5 className="text-sm font-medium text-foreground mb-2">Scheduling</h5>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" className="text-xs">
+                  Send Now
+                </Button>
+                <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white text-xs">
+                  Schedule
                 </Button>
               </div>
+            </div>
+
+            <div>
+              <h5 className="text-sm font-medium text-foreground mb-2">Select Date</h5>
+              <Button variant="outline" className="w-full justify-start text-gray-500">
+                <Calendar className="w-4 h-4 mr-2" />
+                Pick a date
+              </Button>
             </div>
           </div>
 
