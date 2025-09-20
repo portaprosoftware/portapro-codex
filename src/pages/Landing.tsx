@@ -515,8 +515,225 @@ export const Landing: React.FC = () => {
 
       {/* Detailed Sections for Group 1: Operations Features */}
 
-      {/* Inventory & Supplies — Unified, Accurate, Effortless */}
-      <InventorySuppliesShowcase />
+      {/* Inventory & Supplies — Unified, Accurate, Effortless - White */}
+      <section id="inventory" className="bg-white py-0">
+        <div className="container mx-auto max-w-6xl px-[24px]">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl lg:text-4xl font-bold text-foreground py-[18px]">Inventory & Supplies — Unified, Accurate, Effortless</h2>
+            <p className="text-lg text-muted-foreground">Track units and consumables across multiple storage sites with precision</p>
+          </div>
+
+          {/* Inventory KPIs */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
+            <StatCard title="Total Units" value="247" icon={Package} gradientFrom="#3B82F6" gradientTo="#1E40AF" iconBg="bg-blue-600" />
+            <StatCard title="Available Today" value="89" icon={CheckCircle} gradientFrom="#10B981" gradientTo="#047857" iconBg="bg-emerald-600" />
+            <StatCard title="Maintenance" value="3" icon={Wrench} gradientFrom="#F59E0B" gradientTo="#D97706" iconBg="bg-amber-600" />
+          </div>
+
+          {/* General Inventory Management */}
+          <div className="grid lg:grid-cols-2 gap-12 items-center mb-8">
+            <div className="space-y-6">
+              <div className="text-left">
+                <h3 className="text-2xl font-bold text-foreground mb-4">General Inventory Management</h3>
+                <p className="text-lg text-muted-foreground mb-6">Every unit has a dedicated tracking system for comprehensive inventory control and management.</p>
+              </div>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <Database className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Unified tracking system for all inventory types</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Multi-location stock allocation and transfers</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Calendar className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Date-range availability checking and reservations</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <AlertTriangle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Automatic low-stock alerts and reorder points</span>
+                </li>
+              </ul>
+            </div>
+            
+            <div className="flex justify-center">
+              <img src="/standard-porta-potty.png" alt="Standard portable toilet unit showing availability tracking" className="w-3/5 max-w-md h-auto" loading="lazy" decoding="async" />
+            </div>
+          </div>
+          {/* Stock Tracking + Location Management Side by Side */}
+          <div className="grid lg:grid-cols-2 gap-12 items-start mb-12">
+            {/* Left: Stock Tracking */}
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-foreground">Stock Tracking</h3>
+              <p className="text-lg text-muted-foreground">Real-time inventory levels with automated tracking and threshold monitoring.</p>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <BarChart3 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Bulk vs. individual unit tracking modes</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Gauge className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Real-time stock level monitoring</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <BellRing className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Automated threshold alerts and notifications</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Right: Location Management */}
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-foreground">Location Management</h3>
+              <p className="text-lg text-muted-foreground">Organize inventory across multiple storage facilities and job sites.</p>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <Building2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Multiple storage location support</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Route className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Inter-location transfer tracking</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Compass className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">GPS-enabled location verification</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* QR & Photo Scanning & Supply Management Row */}
+          <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-foreground">QR & Photo Scanning</h3>
+              <p className="text-lg text-muted-foreground">Instant unit identification and documentation with mobile scanning capabilities.</p>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <Smartphone className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Mobile QR code scanning for units</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Camera className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Photo documentation for condition tracking</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CloudOff className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Offline scanning with auto-sync capabilities</span>
+                </li>
+              </ul>
+            </div>
+            {/* Panel Scanning Card (was rotator) */}
+            <div className="border rounded-lg p-6 bg-card">
+              <div className="mb-4">
+                <h4 className="text-base font-normal text-center">Snap & Track Units from Embedded Plastic Text Numbers</h4>
+              </div>
+              
+              <div className="grid md:grid-cols-2 gap-6 items-center">
+                <div className="flex flex-col items-center space-y-4">
+                  <div className="rounded-lg overflow-hidden">
+                    <img src="/lovable-uploads/4ba172a8-8093-4d4e-9143-53090809b31e.png" alt="Phone scanning embossed plastic text on portable toilet unit" className="w-full max-w-sm h-auto" />
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="bg-gradient-green text-white px-3 py-1 rounded-full text-sm font-bold inline-block">
+                      ✓ Successfully tracked
+                    </div>
+                    
+                    <div className="space-y-2 text-sm">
+                      <div><span className="font-medium">Vendor:</span> ABC Manufacturing</div>
+                      <div><span className="font-medium">Tool No:</span> T-207788-1A</div>
+                      <div><span className="font-medium">Vendor ID:</span> 32123</div>
+                      <div><span className="font-medium">Mfg Date:</span> January 13, 2016</div>
+                      <div><span className="font-medium">Plastic:</span> HDPE</div>
+                    </div>
+                  </div>
+                  
+                  <p className="text-sm text-muted-foreground">
+                    Works offline — syncs later. Instant attach to units & jobs.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* QR Code Generator Section */}
+          <div className="mb-12">
+            <QRGenerator />
+          </div>
+
+
+          {/* Unit Maintenance & History Row */}
+          <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-foreground">Unit Maintenance & History</h3>
+              <p className="text-lg text-muted-foreground">Comprehensive maintenance tracking with automated work order management.</p>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <Smartphone className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Mobile maintenance work order management</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <FileText className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Complete service history and condition monitoring</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CalendarClock className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Automated scheduling and technician assignments</span>
+                </li>
+              </ul>
+            </div>
+            <div className="flex justify-center">
+              <img src="/src/assets/manage-unit.png" alt="Unit maintenance management interface showing unit 3012 with broken seat repair details, location info, and expected return date" className="w-full max-w-[21.6rem] h-auto" loading="lazy" decoding="async" />
+            </div>
+          </div>
+
+          {/* Why Teams Love PortaPro Section */}
+          <div className="max-w-4xl mx-auto mb-12">
+            <div className="bg-card border rounded-lg p-6">
+              <h3 className="text-2xl font-bold text-foreground mb-6">🚀 Why Teams Love PortaPro Product Inventory</h3>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Bulk, individual, and hybrid tracking in one system</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Date-range availability by location</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">QR codes & embossed-plastic AI reading</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Maintenance work orders with technician & cost tracking</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Service history & automated scheduling</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Padlock & zip-tie drop-off notations</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Clear status at a glance — available, assigned, service</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Works offline: scan QR codes or unit serials, everything saves and syncs automatically once reconnected</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </section>
 
 
       {/* Section Divider */}
