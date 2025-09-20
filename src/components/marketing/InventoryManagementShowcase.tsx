@@ -111,7 +111,7 @@ export function InventoryManagementShowcase() {
               <div className="flex flex-col items-center space-y-3">
                 <div className="relative">
                   <img 
-                    src="/assets/standard-toilet-icon.png" 
+                    src="/assets/standard-unit.png" 
                     alt="Standard Portable Toilet" 
                     className="w-full max-w-48 h-auto rounded-lg"
                   />
