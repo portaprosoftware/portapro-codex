@@ -258,11 +258,11 @@ export function InventoryManagementShowcase() {
               <h5 className="font-medium text-foreground mb-3 flex items-center gap-2">
                 <Package className="w-4 h-4" /> Inventory Request
               </h5>
-              <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg border border-green-200">
-                <CheckCircle className="w-5 h-5 text-green-600" />
+              <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-green-600 to-green-500 rounded-lg">
+                <CheckCircle className="w-5 h-5 text-white" />
                 <div>
-                  <div className="text-sm font-medium text-foreground">20 units requested</div>
-                  <div className="text-xs text-green-600">Available for selected dates</div>
+                  <div className="text-sm font-medium text-white">20 units requested</div>
+                  <div className="text-xs text-white">Available for selected dates</div>
                 </div>
               </div>
             </div>
