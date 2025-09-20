@@ -697,41 +697,41 @@ export const Landing: React.FC = () => {
             </div>
           </div>
 
-          {/* Why Teams Love PortaPro Section */}
-          <div className="max-w-4xl mx-auto mb-12">
-            <div className="bg-card border rounded-lg p-6">
-              <h3 className="text-2xl font-bold text-foreground mb-6">🚀 Why Teams Love PortaPro Product Inventory</h3>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+          {/* Why Teams Love PortaPro Section - Condensed */}
+          <div className="max-w-3xl mx-auto mb-12">
+            <div className="bg-gray-50 border rounded-lg p-4">
+              <h3 className="text-lg font-bold text-foreground mb-4">🚀 Why Teams Love PortaPro Product Inventory</h3>
+              <ul className="space-y-2 text-sm">
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
                   <span className="text-foreground">Bulk, individual, and hybrid tracking in one system</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
                   <span className="text-foreground">Date-range availability by location</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
                   <span className="text-foreground">QR codes & embossed-plastic AI reading</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
                   <span className="text-foreground">Maintenance work orders with technician & cost tracking</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
                   <span className="text-foreground">Service history & automated scheduling</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
                   <span className="text-foreground">Padlock & zip-tie drop-off notations</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
                   <span className="text-foreground">Clear status at a glance — available, assigned, service</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
                   <span className="text-foreground">Works offline: scan QR codes or unit serials, everything saves and syncs automatically once reconnected</span>
                 </li>
               </ul>
