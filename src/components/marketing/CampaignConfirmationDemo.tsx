@@ -50,8 +50,8 @@ export const CampaignConfirmationDemo: React.FC = () => {
           <div>
             <h4 className="text-lg font-semibold text-foreground mb-4">Schedule & Review</h4>
             
-            {/* Scheduling Options */}
-            <div className="space-y-4">
+            {/* Scheduling Options and Date Selection - Same Row */}
+            <div className="grid grid-cols-2 gap-4">
               <div>
                 <h5 className="text-sm font-medium text-foreground mb-2">Scheduling</h5>
                 <div className="flex gap-2">
@@ -64,7 +64,6 @@ export const CampaignConfirmationDemo: React.FC = () => {
                 </div>
               </div>
 
-              {/* Date Selection */}
               <div>
                 <h5 className="text-sm font-medium text-foreground mb-2">Select Date</h5>
                 <Button variant="outline" className="w-full justify-start text-gray-500">
@@ -89,15 +88,20 @@ export const CampaignConfirmationDemo: React.FC = () => {
                 
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground">Type:</span>
-                  <Badge className="bg-blue-100 text-blue-800 border-0">
-                    <Mail className="w-3 h-3 mr-1" />
-                    email
-                  </Badge>
+                  <div className="flex gap-1">
+                    <Badge className="bg-blue-100 text-blue-800 border-0">
+                      <Mail className="w-3 h-3 mr-1" />
+                      email
+                    </Badge>
+                    <Badge className="bg-green-100 text-green-800 border-0">
+                      SMS
+                    </Badge>
+                  </div>
                 </div>
                 
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground">Total Recipients:</span>
-                  <span className="text-sm font-bold">2,340</span>
+                  <span className="text-sm font-bold">340</span>
                 </div>
                 
                 <div className="flex justify-between items-center">
