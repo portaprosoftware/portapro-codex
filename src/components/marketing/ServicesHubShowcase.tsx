@@ -89,13 +89,23 @@ export const ServicesHubShowcase: React.FC = () => {
 
           {/* Right column: Single image */}
           <aside className="space-y-6">
-            <img
-              src="/service-reporting-hub.png"
-              alt="Template builder interface showing customizable service report elements"
-              className="w-full max-w-lg h-auto rounded-lg mx-auto"
-              loading="lazy"
-              decoding="async"
-            />
+            <div className="space-y-4">
+              <img
+                src="/src/assets/services_1-2.png"
+                alt="Service management interface showing standard service details with pricing and template configuration"
+                className="w-full max-w-lg h-auto rounded-lg mx-auto"
+                loading="lazy"
+                decoding="async"
+              />
+              
+              <img
+                src="/src/assets/services_2-4.png"
+                alt="Template builder interface showing service report elements including text input, photo capture, digital signature and checklist options"
+                className="w-full max-w-lg h-auto rounded-lg mx-auto"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
 
             <div className="rounded-2xl border bg-card p-5 shadow-md space-y-3">
               <div className="text-base font-semibold text-foreground">What teams love</div>
