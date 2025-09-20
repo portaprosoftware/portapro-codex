@@ -46,8 +46,16 @@ export const MarketingShowcase: React.FC = () => {
         </header>
 
         <div className="grid lg:grid-cols-2 gap-8 items-start">
-          {/* Left column: Audience & Segments + Video */}
+          {/* Left column: Video + Audience & Segments */}
           <div className="space-y-4">
+            {/* Video Demo */}
+            <div className="rounded-lg overflow-hidden animate-fade-in">
+              <script src="https://fast.wistia.com/player.js" async></script>
+              <script src="https://fast.wistia.com/embed/a2finp2l33.js" async type="module"></script>
+              <style dangerouslySetInnerHTML={{__html: `wistia-player[media-id='a2finp2l33']:not(:defined) { background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/a2finp2l33/swatch'); display: block; filter: blur(5px); padding-top:78.54%; }`}} />
+              <wistia-player media-id="a2finp2l33" aspect="1.273209549071618"></wistia-player>
+            </div>
+
             {/* Audience & Smart Segments */}
             <article className="rounded-2xl border bg-card shadow-md p-5 animate-fade-in">
               <div className="flex items-center justify-between mb-3">
@@ -70,20 +78,12 @@ export const MarketingShowcase: React.FC = () => {
               </div>
               <div className="text-xs text-muted-foreground">Preview list and exclusion rules before sending.</div>
             </article>
-
-            {/* Video Demo */}
-            <div className="rounded-lg overflow-hidden animate-fade-in">
-              <script src="https://fast.wistia.com/player.js" async></script>
-              <script src="https://fast.wistia.com/embed/a2finp2l33.js" async type="module"></script>
-              <style dangerouslySetInnerHTML={{__html: `wistia-player[media-id='a2finp2l33']:not(:defined) { background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/a2finp2l33/swatch'); display: block; filter: blur(5px); padding-top:78.54%; }`}} />
-              <wistia-player media-id="a2finp2l33" aspect="1.273209549071618"></wistia-player>
-            </div>
           </div>
 
-          {/* Right column: Campaign Creation */}
-          <aside className="space-y-6">
+          {/* Right column: Campaign Creation - Vertically Centered */}
+          <aside className="flex items-center">
             {/* Campaign Creation Interface */}
-            <div className="animate-fade-in">
+            <div className="animate-fade-in w-full">
               <CampaignConfirmationDemo />
             </div>
           </aside>
