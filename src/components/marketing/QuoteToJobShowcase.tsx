@@ -9,7 +9,7 @@ export const QuoteToJobShowcase: React.FC = () => {
   return (
     <div className="space-y-10 overflow-hidden">
       <header className="space-y-2 text-center">
-        <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Quote → Deposit → Job, in one flow</h2>
+        <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Quote → Deposit → Job → Invoice, in one flow</h2>
         <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
           Build a quote, send it to your customer, collect a deposit with Stripe, and auto-create the job with schedule and invoice.
         </p>
@@ -47,7 +47,7 @@ export const QuoteToJobShowcase: React.FC = () => {
         {/* Right: Quote Builder */}
         <main className="space-y-6">
           {/* Quote Builder */}
-          <AspectRatio ratio={16/10}>
+          <AspectRatio ratio={16/10} className="max-w-3xl mx-auto scale-75">
             <div className="rounded-2xl border bg-card shadow-lg overflow-hidden animate-fade-in">
               <div className="flex items-center justify-between border-b px-4 py-3 bg-muted/40">
                 <div>
