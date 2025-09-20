@@ -429,15 +429,15 @@ export function InventoryManagementShowcase() {
             <div className="grid grid-cols-3 gap-3">
               <div className="bg-gradient-to-r from-green-600 to-green-500 rounded-lg p-3 text-center">
                 <div className="text-2xl font-bold text-white">{mockStockData.totalAvailable}</div>
-                <div className="text-xs text-white">Available</div>
+                <div className="text-xs font-bold text-white">Available</div>
               </div>
               <div className="bg-gradient-to-r from-blue-600 to-blue-500 rounded-lg p-3 text-center">
                 <div className="text-2xl font-bold text-white">{mockStockData.totalAssigned}</div>
-                <div className="text-xs text-white">On Job</div>
+                <div className="text-xs font-bold text-white">On Job</div>
               </div>
               <div className="bg-gradient-to-r from-orange-600 to-orange-500 rounded-lg p-3 text-center">
                 <div className="text-2xl font-bold text-white">{mockStockData.totalMaintenance}</div>
-                <div className="text-xs text-white">Maintenance</div>
+                <div className="text-xs font-bold text-white">Maintenance</div>
               </div>
             </div>
 
