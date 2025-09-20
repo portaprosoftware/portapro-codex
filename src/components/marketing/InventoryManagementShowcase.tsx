@@ -131,6 +131,7 @@ interface Assignment {
 const AssignmentsMap = ({ assignments }: { assignments: Assignment[] }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
+  const [isSatelliteView, setIsSatelliteView] = useState(false);
 
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -140,7 +141,7 @@ const AssignmentsMap = ({ assignments }: { assignments: Assignment[] }) => {
     
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/light-v11',
+      style: 'mapbox://styles/mapbox/streets-v12', // Colorful streets style
       center: [-74.006, 40.7128], // NYC
       zoom: 11
     });
@@ -215,6 +216,16 @@ const AssignmentsMap = ({ assignments }: { assignments: Assignment[] }) => {
     };
   }, [assignments]);
 
+  const toggleSatelliteView = () => {
+    if (map.current) {
+      const newStyle = isSatelliteView 
+        ? 'mapbox://styles/mapbox/streets-v12' 
+        : 'mapbox://styles/mapbox/satellite-v9';
+      map.current.setStyle(newStyle);
+      setIsSatelliteView(!isSatelliteView);
+    }
+  };
+
   return (
     <div className="space-y-4">
       {/* Map Header */}
@@ -225,8 +236,18 @@ const AssignmentsMap = ({ assignments }: { assignments: Assignment[] }) => {
         </div>
       </div>
 
-      {/* Map Container */}
-      <div className="border rounded-lg overflow-hidden">
+      {/* Map Controls and Container */}
+      <div className="border rounded-lg overflow-hidden relative">
+        <div className="absolute top-3 left-3 z-10">
+          <Button 
+            onClick={toggleSatelliteView}
+            variant="outline"
+            size="sm"
+            className="bg-white/90 hover:bg-white text-foreground shadow-sm"
+          >
+            {isSatelliteView ? 'Street View' : 'Satellite'}
+          </Button>
+        </div>
         <div ref={mapContainer} className="w-full h-64" />
       </div>
 
