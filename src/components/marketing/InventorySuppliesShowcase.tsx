@@ -295,11 +295,9 @@ export function InventorySuppliesShowcase() {
 
            </div>
 
-          {/* Right: Auto-rotating slider + Benefits */}
+          {/* Right: Benefits */}
           <aside className="mt-48 animate-fade-in">
-            {/* Auto-rotating slider */}
-            <InventorySlider currentSlide={currentSlide} slides={slides} />
-            <div className="rounded-2xl border border-border p-5 mt-6">
+            <div className="rounded-2xl border border-border p-5">
               <h3 className="text-lg font-semibold text-foreground">Why teams love it</h3>
               <ul className="mt-3 space-y-2 text-sm text-foreground list-disc list-inside">
                 <li>Bulk, individual, and hybrid tracking in one system</li>
