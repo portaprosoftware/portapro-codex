@@ -376,14 +376,15 @@ export function InventoryManagementShowcase() {
               </div>
 
               {/* Middle Column - Status Badges */}
-              <div className="flex flex-col gap-2 justify-center items-center w-full h-full">
-                <div className="bg-gradient-to-r from-green-600 to-green-500 text-white px-6 py-1.5 rounded-full font-bold text-sm text-center whitespace-nowrap w-full max-w-40">
+              <div className="flex flex-col gap-3 justify-center items-center w-full h-full">
+                <h5 className="font-semibold text-foreground text-base">Status:</h5>
+                <div className="bg-gradient-to-r from-green-600 to-green-500 text-white px-8 py-2 rounded-full font-bold text-sm text-center whitespace-nowrap w-full">
                   {mockStockData.totalAvailable} Available
                 </div>
-                <div className="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-6 py-1.5 rounded-full font-bold text-sm text-center whitespace-nowrap w-full max-w-40">
+                <div className="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-8 py-2 rounded-full font-bold text-sm text-center whitespace-nowrap w-full">
                   On Assignment {mockStockData.totalAssigned}
                 </div>
-                <div className="bg-gradient-to-r from-orange-600 to-orange-500 text-white px-6 py-1.5 rounded-full font-bold text-sm text-center whitespace-nowrap w-full max-w-40">
+                <div className="bg-gradient-to-r from-orange-600 to-orange-500 text-white px-8 py-2 rounded-full font-bold text-sm text-center whitespace-nowrap w-full">
                   Maintenance {mockStockData.totalMaintenance}
                 </div>
               </div>
@@ -394,9 +395,8 @@ export function InventoryManagementShowcase() {
                   <h5 className="font-semibold text-foreground text-base text-center">Inventory by Location</h5>
                   <div className="grid gap-2">
                     {mockStockData.bulkStock.map((location, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div className="flex items-center gap-2">
-                          <MapPin className="w-4 h-4 text-muted-foreground" />
+                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg w-full">
+                        <div className="flex items-center gap-2 flex-1">
                           <span className="text-sm font-medium">{location.location}</span>
                         </div>
                         <span className="text-sm font-bold text-foreground">{location.quantity}</span>
