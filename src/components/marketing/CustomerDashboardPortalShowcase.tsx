@@ -82,7 +82,7 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
         {/* Before & After Comparison */}
         <div className="grid lg:grid-cols-2 gap-8 mb-12">
           {/* Without Portal */}
-          <div className="rounded-2xl border border-red-200 bg-red-50 p-6 h-80 flex flex-col">
+          <div className="rounded-2xl border border-red-200 bg-red-50 p-6">
             <div className="text-center mb-6">
               <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-3">
                 <Frown className="w-6 h-6 text-red-600" />
@@ -91,7 +91,7 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
               <p className="text-sm text-red-600">Chaos and frustration for your customers</p>
             </div>
             
-            <div className="space-y-4 flex-1">
+            <div className="space-y-4">
               <div className="flex items-center gap-3 p-3 bg-white rounded-lg border border-red-200">
                 <Phone className="w-5 h-5 text-red-500" />
                 <span className="text-sm text-red-700">Constant phone calls for updates</span>
@@ -112,7 +112,7 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
           </div>
 
           {/* With Portal */}
-          <div className="rounded-2xl border border-green-200 bg-green-50 p-6 h-80 flex flex-col">
+          <div className="rounded-2xl border border-green-200 bg-green-50 p-6">
             <div className="text-center mb-6">
               <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-3">
                 <Smile className="w-6 h-6 text-green-600" />
@@ -121,7 +121,7 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
               <p className="text-sm text-green-600">Self-service clarity and confidence</p>
             </div>
             
-            <div className="space-y-4 flex-1">
+            <div className="space-y-4">
               <div className="flex items-center gap-3 p-3 bg-white rounded-lg border border-green-200">
                 <Monitor className="w-5 h-5 text-green-500" />
                 <span className="text-sm text-green-700">Real-time dashboard with all info</span>
@@ -145,12 +145,12 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
         {/* Feature Grid - 4 Themed Cards */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Dashboard Card */}
-          <div className="rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 p-6 text-white shadow-lg h-80 flex flex-col">
+          <div className="rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 p-6 text-white shadow-lg">
             <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mb-4">
               <BarChart3 className="w-6 h-6 text-white" />
             </div>
             <h3 className="text-lg font-bold mb-3">Dashboard</h3>
-            <ul className="space-y-2 text-sm text-blue-100 flex-1">
+            <ul className="space-y-2 text-sm text-blue-100">
               <li>• Units on site status</li>
               <li>• Upcoming services</li>
               <li>• Open requests & alerts</li>
@@ -159,12 +159,12 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
           </div>
 
           {/* Proof of Service Card */}
-          <div className="rounded-2xl bg-gradient-to-br from-green-500 to-green-600 p-6 text-white shadow-lg h-80 flex flex-col">
+          <div className="rounded-2xl bg-gradient-to-br from-green-500 to-green-600 p-6 text-white shadow-lg">
             <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mb-4">
               <Camera className="w-6 h-6 text-white" />
             </div>
             <h3 className="text-lg font-bold mb-3">Proof of Service</h3>
-            <ul className="space-y-2 text-sm text-green-100 flex-1">
+            <ul className="space-y-2 text-sm text-green-100">
               <li>• Photos with GPS stamps</li>
               <li>• Time-stamped checklists</li>
               <li>• Dispute & re-clean options</li>
@@ -173,12 +173,12 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
           </div>
 
           {/* Requests & Units Card */}
-          <div className="rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 p-6 text-white shadow-lg h-80 flex flex-col">
+          <div className="rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 p-6 text-white shadow-lg">
             <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mb-4">
               <ClipboardList className="w-6 h-6 text-white" />
             </div>
             <h3 className="text-lg font-bold mb-3">Requests & Units</h3>
-            <ul className="space-y-2 text-sm text-purple-100 flex-1">
+            <ul className="space-y-2 text-sm text-purple-100">
               <li>• Delivery/relocation requests</li>
               <li>• Extra service scheduling</li>
               <li>• Hazard notes & attachments</li>
@@ -187,12 +187,12 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
           </div>
 
           {/* Billing & Support Card */}
-          <div className="rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 p-6 text-white shadow-lg h-80 flex flex-col">
+          <div className="rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 p-6 text-white shadow-lg">
             <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mb-4">
               <FileSignature className="w-6 h-6 text-white" />
             </div>
             <h3 className="text-lg font-bold mb-3">Billing & Support</h3>
-            <ul className="space-y-2 text-sm text-orange-100 flex-1">
+            <ul className="space-y-2 text-sm text-orange-100">
               <li>• Online invoice payments</li>
               <li>• Quote review & e-signing</li>
               <li>• Chat & ticketing system</li>
