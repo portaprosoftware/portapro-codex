@@ -26,75 +26,7 @@ export const FleetOpsCondensed: React.FC = () => {
   const [complianceExpanded, setComplianceExpanded] = useState(false);
 
   return (
-    <div className="space-y-8">
-      {/* Top Row: Maintenance & Fuel KPIs */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* Maintenance Alerts */}
-        <EnhancedCard variant="elevated" padding="sm" className="bg-gradient-to-br from-red-50 to-red-100 border-red-200">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <BellRing className="w-4 h-4 text-red-600" />
-                  <span className="text-sm font-medium text-red-700">Past Due</span>
-                </div>
-                <div className="text-2xl font-bold text-red-800">2</div>
-                <div className="text-xs text-red-600">Maintenance items</div>
-              </div>
-            </div>
-          </CardContent>
-        </EnhancedCard>
-
-        {/* Upcoming Maintenance */}
-        <EnhancedCard variant="elevated" padding="sm" className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <CalendarClock className="w-4 h-4 text-orange-600" />
-                  <span className="text-sm font-medium text-orange-700">Due This Week</span>
-                </div>
-                <div className="text-2xl font-bold text-orange-800">5</div>
-                <div className="text-xs text-orange-600">Services scheduled</div>
-              </div>
-            </div>
-          </CardContent>
-        </EnhancedCard>
-
-        {/* Fuel Usage */}
-        <EnhancedCard variant="elevated" padding="sm" className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <Gauge className="w-4 h-4 text-green-600" />
-                  <span className="text-sm font-medium text-green-700">Monthly Usage</span>
-                </div>
-                <div className="text-2xl font-bold text-green-800">695.3</div>
-                <div className="text-xs text-green-600">Gallons</div>
-              </div>
-            </div>
-          </CardContent>
-        </EnhancedCard>
-
-        {/* Fuel Spend */}
-        <EnhancedCard variant="elevated" padding="sm" className="bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <DollarSign className="w-4 h-4 text-emerald-600" />
-                  <span className="text-sm font-medium text-emerald-700">Monthly Spend</span>
-                </div>
-                <div className="text-2xl font-bold text-emerald-800">$2,847</div>
-                <div className="text-xs text-emerald-600">8% under budget</div>
-              </div>
-            </div>
-          </CardContent>
-        </EnhancedCard>
-      </div>
-
-      {/* Screenshots Row: Maintenance & Fuel */}
+    <div className="space-y-8">{/* Screenshots Row: Maintenance & Fuel */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
