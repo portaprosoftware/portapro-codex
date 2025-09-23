@@ -591,9 +591,9 @@ export const Landing: React.FC = () => {
               
               <div className="text-center space-y-3">
                 <div className="w-12 h-12 mx-auto bg-gradient-to-r from-blue-600 to-blue-700 text-white flex items-center justify-center">
-                  <Compass className="w-6 h-6" />
+                  <Package className="w-6 h-6" />
                 </div>
-                <h4 className="font-semibold text-foreground">GPS-enabled verification for complete accountability</h4>
+                <h4 className="font-semibold text-foreground">Bulk (auto-assign) or individual unit tracking simultaneously</h4>
               </div>
             </div>
           </div>
