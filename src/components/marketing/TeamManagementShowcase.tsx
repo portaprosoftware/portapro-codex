@@ -41,9 +41,9 @@ const mockTimeOffRequests = [
 ];
 
 const mockCredentials = [
-  { id: 1, driver: 'Mike Johnson', type: 'CDL License', expires: '2024-02-15', status: 'warning' },
-  { id: 2, driver: 'David Rodriguez', type: 'Medical Card', expires: '2024-01-30', status: 'critical' },
-  { id: 3, driver: 'Sarah Chen', type: 'Safety Training', expires: '2024-03-10', status: 'good' }
+  { id: 1, driver: 'Mike Johnson', type: 'CDL License', expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], status: 'good' },
+  { id: 2, driver: 'David Rodriguez', type: 'Medical Card', expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], status: 'warning' },
+  { id: 3, driver: 'Sarah Chen', type: 'Safety Training', expires: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], status: 'critical' }
 ];
 
 const mockDriverProfile = {
