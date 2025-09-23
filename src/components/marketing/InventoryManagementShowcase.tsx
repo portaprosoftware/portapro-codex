@@ -333,7 +333,7 @@ const AssignmentsMap = ({ assignments }: { assignments: Assignment[] }) => {
             {isSatelliteView ? 'Street View' : 'Satellite'}
           </Button>
         </div>
-        <div ref={mapContainer} className="w-full h-64" />
+        <div ref={mapContainer} className="w-full h-48 sm:h-64" />
       </div>
 
       {/* Legend */}
@@ -364,42 +364,42 @@ export function InventoryManagementShowcase() {
               <h4 className="text-xl font-semibold text-foreground">{mockUnitData.productName}</h4>
             </div>
 
-            {/* Three Column Layout - Fixed Height to Match Image */}
-            <div className="grid grid-cols-3 gap-4 items-start justify-items-center h-64">
-              {/* Left Column - Image */}
-              <div className="flex justify-center h-full">
+            {/* Responsive Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
+              {/* Image - Full width on mobile, left column on desktop */}
+              <div className="flex justify-center lg:h-64">
                 <img 
                   src="/assets/standard-unit.png" 
                   alt="Standard Portable Toilet" 
-                  className="w-full max-w-60 h-full object-contain rounded-lg"
+                  className="w-full max-w-48 sm:max-w-60 h-48 sm:h-64 lg:h-full object-contain rounded-lg"
                 />
               </div>
 
-              {/* Middle Column - Status Badges */}
-              <div className="flex flex-col gap-3 justify-center items-center w-full h-full">
-                <h5 className="font-semibold text-foreground text-base">Status:</h5>
-                <div className="bg-gradient-to-r from-green-600 to-green-500 text-white px-6 py-1 rounded-full font-bold text-sm text-center whitespace-nowrap w-4/5 mx-auto">
+              {/* Status Badges - Stack on mobile, middle column on desktop */}
+              <div className="flex flex-col gap-2 sm:gap-3 justify-center items-center w-full">
+                <h5 className="font-semibold text-foreground text-sm sm:text-base">Status:</h5>
+                <div className="bg-gradient-to-r from-green-600 to-green-500 text-white px-3 sm:px-6 py-1 rounded-full font-bold text-xs sm:text-sm text-center whitespace-nowrap w-full sm:w-4/5 mx-auto">
                   {mockStockData.totalAvailable} Available
                 </div>
-                <div className="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-6 py-1 rounded-full font-bold text-sm text-center whitespace-nowrap w-4/5 mx-auto">
+                <div className="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-3 sm:px-6 py-1 rounded-full font-bold text-xs sm:text-sm text-center whitespace-nowrap w-full sm:w-4/5 mx-auto">
                   On Assignment {mockStockData.totalAssigned}
                 </div>
-                <div className="bg-gradient-to-r from-orange-600 to-orange-500 text-white px-6 py-1 rounded-full font-bold text-sm text-center whitespace-nowrap w-4/5 mx-auto">
+                <div className="bg-gradient-to-r from-orange-600 to-orange-500 text-white px-3 sm:px-6 py-1 rounded-full font-bold text-xs sm:text-sm text-center whitespace-nowrap w-full sm:w-4/5 mx-auto">
                   Maintenance {mockStockData.totalMaintenance}
                 </div>
               </div>
 
-              {/* Right Column - Inventory by Location */}
-              <div className="flex flex-col justify-center h-full w-full">
-                <div className="space-y-3">
-                  <h5 className="font-semibold text-foreground text-base text-center">Inventory by Location</h5>
-                  <div className="grid gap-2">
+              {/* Inventory by Location - Stack on mobile, right column on desktop */}
+              <div className="flex flex-col justify-center w-full">
+                <div className="space-y-2 sm:space-y-3">
+                  <h5 className="font-semibold text-foreground text-sm sm:text-base text-center lg:text-center">Inventory by Location</h5>
+                  <div className="grid gap-1 sm:gap-2">
                     {mockStockData.bulkStock.map((location, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg w-full">
+                      <div key={index} className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 rounded-lg w-full">
                         <div className="flex items-center gap-2 flex-1">
-                          <span className="text-sm font-medium">{location.location}</span>
+                          <span className="text-xs sm:text-sm font-medium">{location.location}</span>
                         </div>
-                        <span className="text-sm font-bold text-foreground">{location.quantity}</span>
+                        <span className="text-xs sm:text-sm font-bold text-foreground">{location.quantity}</span>
                       </div>
                     ))}
                   </div>
@@ -407,15 +407,15 @@ export function InventoryManagementShowcase() {
               </div>
             </div>
 
-            {/* Mock Action Buttons */}
-            <div className="flex justify-center gap-3 mt-4">
-              <Button variant="outline" size="sm" className="bg-white hover:bg-gray-50 text-foreground border-gray-300">
+            {/* Mock Action Buttons - Responsive */}
+            <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-3 mt-4">
+              <Button variant="outline" size="sm" className="bg-white hover:bg-gray-50 text-foreground border-gray-300 text-xs sm:text-sm">
                 Edit Product
               </Button>
-              <Button variant="outline" size="sm" className="bg-white hover:bg-gray-50 text-foreground border-gray-300">
+              <Button variant="outline" size="sm" className="bg-white hover:bg-gray-50 text-foreground border-gray-300 text-xs sm:text-sm">
                 Stock History
               </Button>
-              <Button variant="outline" size="sm" className="bg-white hover:bg-gray-50 text-foreground border-gray-300">
+              <Button variant="outline" size="sm" className="bg-white hover:bg-gray-50 text-foreground border-gray-300 text-xs sm:text-sm">
                 Low Quantity Threshold
               </Button>
             </div>
@@ -425,18 +425,18 @@ export function InventoryManagementShowcase() {
       case 'stock':
         return (
           <div className="space-y-4">
-            {/* Stock Summary */}
-            <div className="grid grid-cols-3 gap-3">
-              <div className="bg-gradient-to-r from-green-600 to-green-500 rounded-lg p-3 text-center">
-                <div className="text-2xl font-bold text-white">{mockStockData.totalAvailable}</div>
+            {/* Stock Summary - Responsive */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
+              <div className="bg-gradient-to-r from-green-600 to-green-500 rounded-lg p-2 sm:p-3 text-center">
+                <div className="text-xl sm:text-2xl font-bold text-white">{mockStockData.totalAvailable}</div>
                 <div className="text-xs font-bold text-white">Available</div>
               </div>
-              <div className="bg-gradient-to-r from-blue-600 to-blue-500 rounded-lg p-3 text-center">
-                <div className="text-2xl font-bold text-white">{mockStockData.totalAssigned}</div>
+              <div className="bg-gradient-to-r from-blue-600 to-blue-500 rounded-lg p-2 sm:p-3 text-center">
+                <div className="text-xl sm:text-2xl font-bold text-white">{mockStockData.totalAssigned}</div>
                 <div className="text-xs font-bold text-white">On Job</div>
               </div>
-              <div className="bg-gradient-to-r from-orange-600 to-orange-500 rounded-lg p-3 text-center">
-                <div className="text-2xl font-bold text-white">{mockStockData.totalMaintenance}</div>
+              <div className="bg-gradient-to-r from-orange-600 to-orange-500 rounded-lg p-2 sm:p-3 text-center">
+                <div className="text-xl sm:text-2xl font-bold text-white">{mockStockData.totalMaintenance}</div>
                 <div className="text-xs font-bold text-white">Maintenance</div>
               </div>
             </div>
