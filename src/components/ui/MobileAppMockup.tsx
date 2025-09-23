@@ -36,7 +36,7 @@ export const MobileAppMockup: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-gray-900">Optimized Route</h3>
-                  <p className="text-xs text-gray-500">Today, delivered to 4 out of 6 stops</p>
+                  <p className="text-xs text-gray-500">Today, completed 4 of 6 stops</p>
                 </div>
               </div>
             </div>
