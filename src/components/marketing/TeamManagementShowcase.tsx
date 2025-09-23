@@ -306,10 +306,10 @@ export const TeamManagementShowcase: React.FC = () => {
                     </div>
                   </div>
                   <div className="flex gap-2 flex-wrap">
-                    <Badge variant="secondary" className="bg-orange-100 text-orange-800 text-xs">
+                    <Badge className="bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold text-xs border-0">
                       {mockDriverProfile.role}
                     </Badge>
-                    <Badge variant="default" className="bg-green-100 text-green-800 text-xs">
+                    <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white font-bold text-xs border-0">
                       {mockDriverProfile.status}
                     </Badge>
                   </div>
@@ -330,7 +330,7 @@ export const TeamManagementShowcase: React.FC = () => {
                   <div className="space-y-2 sm:space-y-3">
                     <div className="flex justify-between items-center">
                       <span className="text-xs sm:text-sm">License Status</span>
-                      <Badge variant="destructive" className="text-xs">Not Set</Badge>
+                      <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white font-bold text-xs border-0">Current</Badge>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-xs sm:text-sm">Medical Card</span>
