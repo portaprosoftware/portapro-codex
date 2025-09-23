@@ -67,7 +67,7 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
         <header className="mb-8 space-y-2">
           <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Accounts & Portal</h2>
           <p className="text-muted-foreground">
-            <strong>Accounts:</strong> Internal customer account management for your team. <strong>Portal:</strong> Self-service portals for your customers.
+            <strong>Accounts:</strong> Internal customer account management for your team. <strong>Portal:</strong> Everything your customers need, in one place.
           </p>
         </header>
 
@@ -77,7 +77,7 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
             <Monitor className="w-6 h-6 text-green-600" />
             Customer Portal
           </h3>
-          <p className="text-muted-foreground">Self-service portals for your customers</p>
+          
         </div>
 
         {/* Before & After Comparison Table */}
