@@ -13,17 +13,17 @@ export const SmartWizardShowcase: React.FC = () => {
   const steps = ['Customer', 'Dates', 'Units', 'Assign', 'Review'];
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6 sm:space-y-10">
       <header className="space-y-2">
-        <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Smart Job Wizard</h2>
-        <p className="text-muted-foreground text-lg">
+        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">Smart Job Wizard</h2>
+        <p className="text-muted-foreground text-base sm:text-lg">
           AI capacity planning, real-time availability, crew & vehicle assignment, and instant invoice — all in one flow.
         </p>
       </header>
 
-      <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr] items-start">
+      <div className="grid gap-6 sm:gap-8 lg:gap-10 lg:grid-cols-[1fr_1.4fr] items-start">
         {/* Left: Static KPIs, video, and highlights */}
-        <aside className="space-y-6">
+        <aside className="space-y-4 sm:space-y-6">
           <div className="grid grid-cols-1 gap-3">
             {kpis.map((k, i) => (
               <StatCard
@@ -63,8 +63,8 @@ export const SmartWizardShowcase: React.FC = () => {
           </ul>
         </aside>
 
-        {/* Right: "Make-believe screenshots" stack */}
-        <main className="space-y-6 transform origin-top-right scale-[0.8] md:scale-[0.85] lg:scale-[0.8] mt-8">
+        {/* Right: "Make-believe screenshots" stack - Mobile Responsive */}
+        <main className="space-y-4 sm:space-y-6 transform origin-top-right scale-[0.9] sm:scale-[0.8] md:scale-[0.85] lg:scale-[0.8] mt-4 sm:mt-8">
           {/* Main mock: Create Job */}
           <AspectRatio ratio={16/10}>
             <div className="rounded-2xl border bg-card shadow-lg overflow-hidden animate-fade-in">
