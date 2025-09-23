@@ -576,21 +576,21 @@ export const Landing: React.FC = () => {
             
             <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
               <div className="text-center space-y-3">
-                <div className="w-12 h-12 mx-auto rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
+                <div className="w-12 h-12 mx-auto bg-gradient-to-r from-blue-600 to-blue-700 text-white flex items-center justify-center">
                   <BellRing className="w-6 h-6" />
                 </div>
                 <h4 className="font-semibold text-foreground">Real-time tracking with automated alerts</h4>
               </div>
               
               <div className="text-center space-y-3">
-                <div className="w-12 h-12 mx-auto rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
+                <div className="w-12 h-12 mx-auto bg-gradient-to-r from-blue-600 to-blue-700 text-white flex items-center justify-center">
                   <Route className="w-6 h-6" />
                 </div>
                 <h4 className="font-semibold text-foreground">Manage stock across multiple sites with transfer tracking</h4>
               </div>
               
               <div className="text-center space-y-3">
-                <div className="w-12 h-12 mx-auto rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
+                <div className="w-12 h-12 mx-auto bg-gradient-to-r from-blue-600 to-blue-700 text-white flex items-center justify-center">
                   <Compass className="w-6 h-6" />
                 </div>
                 <h4 className="font-semibold text-foreground">GPS-enabled verification for complete accountability</h4>
