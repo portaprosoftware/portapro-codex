@@ -83,7 +83,7 @@ export const CustomerPortalMockup: React.FC = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
+              <div className="flex items-center justify-between p-3 bg-gray-100 rounded-lg border border-gray-200">
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                   <div>
@@ -95,14 +95,14 @@ export const CustomerPortalMockup: React.FC = () => {
                   </div>
                 </div>
                 <div className="text-right">
-                  <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">
+                  <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white border-0">
                     2x Standard Units
                   </Badge>
                   <p className="text-xs text-gray-500 mt-1">Next service: Tomorrow</p>
                 </div>
               </div>
               
-              <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
+              <div className="flex items-center justify-between p-3 bg-gray-100 rounded-lg border border-gray-200">
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                   <div>
@@ -114,7 +114,7 @@ export const CustomerPortalMockup: React.FC = () => {
                   </div>
                 </div>
                 <div className="text-right">
-                  <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300">
+                  <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0">
                     4x Standard Units
                   </Badge>
                   <p className="text-xs text-gray-500 mt-1">Next service: Friday</p>
