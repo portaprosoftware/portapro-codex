@@ -9,8 +9,11 @@ export const MobileAppMockup: React.FC = () => {
       {/* iPhone Frame */}
       <div className="bg-black rounded-[3rem] p-2 shadow-2xl">
         <div className="bg-white rounded-[2.5rem] overflow-hidden relative" style={{ width: '288px', height: '576px' }}>
+          {/* Dynamic Island */}
+          <div className="absolute top-2 left-1/2 transform -translate-x-1/2 bg-black rounded-full z-10" style={{ width: '100px', height: '24px' }}></div>
+          
           {/* Status Bar */}
-          <div className="flex justify-between items-center px-6 pt-3 pb-1 bg-white">
+          <div className="flex justify-between items-center px-6 pt-8 pb-1 bg-white">
             <span className="text-sm font-semibold">9:41</span>
             <div className="flex items-center gap-1">
               <div className="flex gap-1">
