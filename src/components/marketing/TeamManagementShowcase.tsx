@@ -266,9 +266,14 @@ export const TeamManagementShowcase: React.FC = () => {
                     <div className="w-full bg-gray-200 rounded-full h-2 mb-3">
                       <div className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full" style={{ width: '100%' }}></div>
                     </div>
-                    <Button variant="outline" size="sm" className="w-full text-xs">
-                      View Drivers
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm" className="flex-1 text-xs">
+                        View Drivers
+                      </Button>
+                      <Button variant="outline" size="sm" className="flex-1 text-xs">
+                        Upload Documents
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
