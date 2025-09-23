@@ -261,7 +261,7 @@ export const TeamManagementShowcase: React.FC = () => {
                     </div>
                     <div className="flex items-center justify-between mb-2 text-sm">
                       <span className="font-medium">Active: 2</span>
-                      <span className="text-orange-600 font-medium">Expiring: 0</span>
+                      <span className="bg-gradient-to-r from-yellow-500 to-yellow-600 bg-clip-text text-transparent font-medium">Expiring: 0</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2 mb-3">
                       <div className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full" style={{ width: '100%' }}></div>
