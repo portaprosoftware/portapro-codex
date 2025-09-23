@@ -79,59 +79,112 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
           <p className="text-muted-foreground">Self-service portals for your customers</p>
         </div>
 
-        {/* Customer Portal Hero Section */}
+        {/* Before & After Comparison Table */}
         <div className="mb-12">
           <Card className="rounded-2xl border border-border shadow-lg overflow-hidden">
             <CardContent className="p-0">
-              <div className="grid lg:grid-cols-2 gap-0">
-                {/* Portal Screenshot */}
-                <div className="p-8 bg-gradient-to-br from-gray-50 to-gray-100">
-                  <div className="rounded-xl overflow-hidden shadow-lg border border-gray-200">
-                    <img 
-                      src="/src/assets/customer-portal-screenshot.png" 
-                      alt="PortaPro Customer Portal Dashboard Screenshot"
-                      className="w-full h-auto object-cover"
-                    />
+              <div className="grid lg:grid-cols-2">
+                {/* Without Portal Column */}
+                <div className="p-8 border-r border-border">
+                  <div className="flex items-center gap-3 mb-6">
+                    <AlertTriangle className="w-6 h-6 text-red-500" />
+                    <div>
+                      <h3 className="text-lg font-bold text-foreground">Without a Portal</h3>
+                      <p className="text-sm text-red-600">Frustration, wasted time, lost trust</p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-red-100">
+                        <span className="text-red-600 text-sm font-bold">❌</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Phone className="w-4 h-4 text-red-500" />
+                        <span className="text-sm text-foreground">Endless update calls</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-red-100">
+                        <span className="text-red-600 text-sm font-bold">❌</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <FileText className="w-4 h-4 text-red-500" />
+                        <span className="text-sm text-foreground">Lost paperwork</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-red-100">
+                        <span className="text-red-600 text-sm font-bold">❌</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Camera className="w-4 h-4 text-red-500" />
+                        <span className="text-sm text-foreground">No verification</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-red-100">
+                        <span className="text-red-600 text-sm font-bold">❌</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MessageSquare className="w-4 h-4 text-red-500" />
+                        <span className="text-sm text-foreground">Confusion</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                {/* Portal Description */}
-                <div className="p-8 bg-white flex flex-col justify-center">
-                  <div className="space-y-6">
+                {/* With Portal Column */}
+                <div className="p-8 bg-white">
+                  <div className="flex items-center gap-3 mb-6">
+                    <CheckCircle className="w-6 h-6 text-green-600" />
                     <div>
-                      <h3 className="text-2xl font-bold text-foreground mb-2">PortaPro Customer Portal</h3>
-                      <p className="text-muted-foreground italic">Everything your customers need, in one place:</p>
+                      <h3 className="text-xl font-bold text-foreground">With PortaPro</h3>
+                      <p className="text-sm text-green-700">Clarity, confidence, and self-service access</p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-green-100">
+                        <span className="text-green-600 text-sm font-bold">✅</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <BarChart3 className="w-4 h-4 text-green-600" />
+                        <span className="text-sm text-foreground font-medium">Instant visibility</span>
+                      </div>
                     </div>
                     
-                    <div className="space-y-4">
-                      <div className="flex items-start gap-3">
-                        <div className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 mt-0.5">
-                          <BarChart3 className="w-3 h-3 text-blue-600" />
-                        </div>
-                        <div>
-                          <span className="text-sm font-medium text-foreground">📊 Real-time visibility:</span>
-                          <span className="text-sm text-muted-foreground ml-1">services, requests, and balances</span>
-                        </div>
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-green-100">
+                        <span className="text-green-600 text-sm font-bold">✅</span>
                       </div>
-                      
-                      <div className="flex items-start gap-3">
-                        <div className="flex items-center justify-center w-6 h-6 rounded-full bg-green-100 mt-0.5">
-                          <Camera className="w-3 h-3 text-green-600" />
-                        </div>
-                        <div>
-                          <span className="text-sm font-medium text-foreground">🧾 Digital proof & history:</span>
-                          <span className="text-sm text-muted-foreground ml-1">photos, GPS, and reports</span>
-                        </div>
+                      <div className="flex items-center gap-2">
+                        <CreditCard className="w-4 h-4 text-green-600" />
+                        <span className="text-sm text-foreground font-medium">Online payments & autopay</span>
                       </div>
-                      
-                      <div className="flex items-start gap-3">
-                        <div className="flex items-center justify-center w-6 h-6 rounded-full bg-orange-100 mt-0.5">
-                          <CreditCard className="w-3 h-3 text-orange-600" />
-                        </div>
-                        <div>
-                          <span className="text-sm font-medium text-foreground">💳 Self-service tools:</span>
-                          <span className="text-sm text-muted-foreground ml-1">billing, payments, quotes, and support</span>
-                        </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-green-100">
+                        <span className="text-green-600 text-sm font-bold">✅</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Camera className="w-4 h-4 text-green-600" />
+                        <span className="text-sm text-foreground font-medium">GPS + photos</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-green-100">
+                        <span className="text-green-600 text-sm font-bold">✅</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MessageSquare className="w-4 h-4 text-green-600" />
+                        <span className="text-sm text-foreground font-medium">24/7 ticketing</span>
                       </div>
                     </div>
                   </div>
