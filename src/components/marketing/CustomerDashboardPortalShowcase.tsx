@@ -138,7 +138,7 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
                 </div>
 
                 {/* With Portal Column */}
-                <div className="p-8 bg-gradient-to-br from-green-50 to-blue-50">
+                <div className="p-8 bg-white">
                   <div className="flex items-center gap-3 mb-6">
                     <CheckCircle className="w-6 h-6 text-green-600" />
                     <div>
