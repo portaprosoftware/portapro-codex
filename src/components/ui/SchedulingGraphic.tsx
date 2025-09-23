@@ -2,13 +2,13 @@ import React from 'react';
 import { Users, Clock, AlertTriangle } from 'lucide-react';
 
 export const SchedulingGraphic: React.FC = () => {
-  // Generate the next 7 days starting from today
-  const generateNext7Days = () => {
+  // Generate the next 5 days starting from today
+  const generateNext5Days = () => {
     const today = new Date();
     const days = [];
     const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < 5; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
       days.push({
@@ -20,14 +20,14 @@ export const SchedulingGraphic: React.FC = () => {
     return days;
   };
 
-  const next7Days = generateNext7Days();
+  const next5Days = generateNext5Days();
   const drivers = ['Mike R.', 'Sarah K.', 'John D.'];
   const shifts = ['AM', 'PM', 'EVE'];
 
   // Format date range for header
   const formatDateRange = () => {
-    const startDate = next7Days[0].fullDate;
-    const endDate = next7Days[6].fullDate;
+    const startDate = next5Days[0].fullDate;
+    const endDate = next5Days[4].fullDate;
     const startMonth = startDate.toLocaleDateString('en-US', { month: 'short' });
     const endMonth = endDate.toLocaleDateString('en-US', { month: 'short' });
     const startDay = startDate.getDate();
@@ -55,9 +55,9 @@ export const SchedulingGraphic: React.FC = () => {
       {/* Schedule Grid */}
       <div className="space-y-2">
         {/* Days Header */}
-        <div className="grid grid-cols-8 gap-1">
+        <div className="grid grid-cols-6 gap-1">
           <div className="text-xs font-medium text-muted-foreground"></div>
-          {next7Days.map((day, index) => (
+          {next5Days.map((day, index) => (
             <div key={index} className="text-xs font-medium text-center text-muted-foreground py-1">
               <div>{day.fullDate.toLocaleDateString('en-US', { month: 'short' })} {day.date}</div>
             </div>
@@ -66,11 +66,11 @@ export const SchedulingGraphic: React.FC = () => {
 
         {/* Driver Rows */}
         {drivers.map((driver, driverIndex) => (
-          <div key={driver} className="grid grid-cols-8 gap-1">
+          <div key={driver} className="grid grid-cols-6 gap-1">
             <div className="text-xs font-medium text-muted-foreground py-1 flex items-center">
               {driver}
             </div>
-            {next7Days.map((day, dayIndex) => (
+            {next5Days.map((day, dayIndex) => (
               <div key={`${driver}-${dayIndex}`} className="relative">
                 {/* Morning Shift */}
                 <div className={`h-3 rounded-sm mb-0.5 flex items-center justify-center ${
