@@ -924,9 +924,10 @@ export const Landing: React.FC = () => {
             <FleetManagementShowcase />
           </div>
 
-
           {/* Fleet Ops & Compliance - Condensed Layout */}
-          <FleetOpsCondensed />
+          <div className="mt-12">
+            <FleetOpsCondensed />
+          </div>
         </div>
       </section>
 

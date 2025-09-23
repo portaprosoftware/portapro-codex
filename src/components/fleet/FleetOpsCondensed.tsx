@@ -36,7 +36,7 @@ export const FleetOpsCondensed: React.FC = () => {
           <img 
             src="/lovable-uploads/9d80fc9b-a26b-4daa-92af-1c965d64ff86.png" 
             alt="Maintenance notifications showing past due and due this week tasks" 
-            className="w-full h-auto rounded-lg border shadow-sm" 
+            className="w-full h-auto rounded-lg" 
           />
           <div className="text-sm text-muted-foreground">
             Threshold-based alerts, drag-and-drop scheduling, auto-generated work orders
@@ -51,7 +51,7 @@ export const FleetOpsCondensed: React.FC = () => {
           <img 
             src="/lovable-uploads/a133d807-54c7-49e6-a9b3-a5fd12dbda2c.png" 
             alt="Fuel management dashboard showing total gallons, costs, and fleet MPG metrics" 
-            className="w-full h-auto rounded-lg border shadow-sm" 
+            className="w-full h-auto rounded-lg" 
           />
           <div className="text-sm text-muted-foreground">
             Receipt photos, MPG tracking, budget vs actual with trends
@@ -69,7 +69,7 @@ export const FleetOpsCondensed: React.FC = () => {
           <img 
             src="/lovable-uploads/0b7accb8-59a2-4da2-9dc3-788ae3549efe.png" 
             alt="Vehicle selection interface showing fleet vehicles with license plates, makes, models, and availability status" 
-            className="w-full h-auto rounded-lg border shadow-sm" 
+            className="w-full h-auto rounded-lg" 
           />
           <div className="text-sm text-muted-foreground">
             Drag-and-drop dispatch, pre-trip checklists, route syncing to mobile
@@ -84,7 +84,7 @@ export const FleetOpsCondensed: React.FC = () => {
           <img 
             src="/lovable-uploads/b7bba73c-5402-4e55-8417-455d18cb3338.png" 
             alt="Truck Stock Management interface showing vehicle selection dropdown and Route vs Truck Stock comparison with service date picker" 
-            className="w-full h-auto rounded-lg border shadow-sm" 
+            className="w-full h-auto rounded-lg" 
           />
           <div className="text-sm text-muted-foreground">
             Vehicle selection, inventory tracking, stock readiness validation
@@ -116,7 +116,7 @@ export const FleetOpsCondensed: React.FC = () => {
               <img 
                 src="/lovable-uploads/765a797c-a357-42cd-922e-92fb794966bd.png" 
                 alt="Transport & Spill Compliance dashboard showing document status alerts for overdue, critical, and warning items" 
-                className="w-full h-auto rounded-lg border shadow-sm" 
+                className="w-full h-auto rounded-lg" 
               />
               <div className="text-sm text-muted-foreground">
                 Transport manifests, spill incidents, auto reminders for expiring documents
@@ -131,7 +131,7 @@ export const FleetOpsCondensed: React.FC = () => {
               <img 
                 src="/lovable-uploads/c021b264-552c-4a3e-b4c3-fcc1d6163147.png" 
                 alt="New DVIR form interface showing asset type selection, vehicle details, and defect reporting for fleet maintenance" 
-                className="w-full h-auto rounded-lg border shadow-sm" 
+                className="w-full h-auto rounded-lg" 
               />
               <div className="text-sm text-muted-foreground">
                 Pre/Post-trip DVIRs, maintenance logs, driver photos and signatures
