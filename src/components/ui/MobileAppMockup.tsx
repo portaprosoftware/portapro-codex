@@ -16,13 +16,6 @@ export const MobileAppMockup: React.FC = () => {
           <div className="flex justify-between items-center px-6 pt-8 pb-1 bg-white">
             <span className="text-sm font-semibold">9:41</span>
             <div className="flex items-center gap-1">
-              <div className="flex gap-1">
-                <div className="w-1 h-1 bg-black rounded-full"></div>
-                <div className="w-1 h-1 bg-black rounded-full"></div>
-                <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
-                <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
-              </div>
-              <Wifi className="w-4 h-4 ml-2" />
               <div className="w-6 h-3 border border-black rounded-sm">
                 <div className="w-4 h-full bg-green-500 rounded-sm"></div>
               </div>
@@ -67,7 +60,6 @@ export const MobileAppMockup: React.FC = () => {
 
             {/* Navigation Options */}
             <div className="bg-white rounded-lg p-3 mb-3 shadow-sm">
-              <h4 className="text-sm font-semibold text-gray-900 mb-2">Use PortaPro Navigation</h4>
               <div className="grid grid-cols-3 gap-2">
                 <Button variant="outline" size="sm" className="text-xs">
                   Apple
