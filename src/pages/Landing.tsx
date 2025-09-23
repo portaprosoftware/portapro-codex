@@ -766,7 +766,7 @@ export const Landing: React.FC = () => {
       <ConsumablesShowcase />
 
       {/* Section Divider */}
-      <div className="py-8 bg-white">
+      <div className="py-3 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="border-t-2 border-border"></div>
         </div>
