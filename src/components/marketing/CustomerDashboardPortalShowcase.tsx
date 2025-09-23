@@ -79,43 +79,119 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
           <p className="text-muted-foreground">Self-service portals for your customers</p>
         </div>
 
-        {/* Before & After Comparison */}
-        <div className="grid lg:grid-cols-2 gap-8 mb-12">
-          {/* Without Portal */}
-          <div className="rounded-2xl bg-gradient-to-br from-red-500 to-red-600 p-6 text-white shadow-lg">
-            <div className="text-center mb-6">
-              <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-3">
-                <Frown className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-white mb-2">Without a Portal</h3>
-              <p className="text-sm text-red-100">Chaos and frustration for your customers</p>
-            </div>
-            
-            <ul className="space-y-2 text-sm text-red-100">
-              <li>• Constant phone calls for updates</li>
-              <li>• Paper invoices get lost</li>
-              <li>• No proof of service completion</li>
-              <li>• Billing disputes and confusion</li>
-            </ul>
-          </div>
+        {/* Before & After Comparison Table */}
+        <div className="mb-12">
+          <Card className="rounded-2xl border border-border shadow-lg overflow-hidden">
+            <CardContent className="p-0">
+              <div className="grid lg:grid-cols-2">
+                {/* Without Portal Column */}
+                <div className="p-8 border-r border-border">
+                  <div className="flex items-center gap-3 mb-6">
+                    <AlertTriangle className="w-6 h-6 text-red-500" />
+                    <div>
+                      <h3 className="text-lg font-bold text-foreground">Without a Portal</h3>
+                      <p className="text-sm text-red-600">Frustration, wasted time, lost trust</p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-red-100">
+                        <span className="text-red-600 text-sm font-bold">❌</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Phone className="w-4 h-4 text-red-500" />
+                        <span className="text-sm text-foreground">Endless update calls</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-red-100">
+                        <span className="text-red-600 text-sm font-bold">❌</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <FileText className="w-4 h-4 text-red-500" />
+                        <span className="text-sm text-foreground">Lost paperwork</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-red-100">
+                        <span className="text-red-600 text-sm font-bold">❌</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Camera className="w-4 h-4 text-red-500" />
+                        <span className="text-sm text-foreground">No verification</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-red-100">
+                        <span className="text-red-600 text-sm font-bold">❌</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MessageSquare className="w-4 h-4 text-red-500" />
+                        <span className="text-sm text-foreground">Confusion</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-          {/* With Portal */}
-          <div className="rounded-2xl bg-gradient-to-br from-green-500 to-green-600 p-6 text-white shadow-lg">
-            <div className="text-center mb-6">
-              <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-3">
-                <Smile className="w-6 h-6 text-white" />
+                {/* With Portal Column */}
+                <div className="p-8 bg-gradient-to-br from-green-50 to-blue-50">
+                  <div className="flex items-center gap-3 mb-6">
+                    <CheckCircle className="w-6 h-6 text-green-600" />
+                    <div>
+                      <h3 className="text-xl font-bold text-foreground">With PortaPro</h3>
+                      <p className="text-sm text-green-700">Clarity, confidence, and self-service access</p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-green-100">
+                        <span className="text-green-600 text-sm font-bold">✅</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <BarChart3 className="w-4 h-4 text-green-600" />
+                        <span className="text-sm text-foreground font-medium">Instant visibility</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-green-100">
+                        <span className="text-green-600 text-sm font-bold">✅</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CreditCard className="w-4 h-4 text-green-600" />
+                        <span className="text-sm text-foreground font-medium">Online payments & autopay</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-green-100">
+                        <span className="text-green-600 text-sm font-bold">✅</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Camera className="w-4 h-4 text-green-600" />
+                        <span className="text-sm text-foreground font-medium">GPS + photos</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-green-100">
+                        <span className="text-green-600 text-sm font-bold">✅</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MessageSquare className="w-4 h-4 text-green-600" />
+                        <span className="text-sm text-foreground font-medium">24/7 ticketing</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">With PortaPro Customer Portal</h3>
-              <p className="text-sm text-green-100">Self-service clarity and confidence</p>
-            </div>
-            
-            <ul className="space-y-2 text-sm text-green-100">
-              <li>• Real-time dashboard with all info</li>
-              <li>• Digital proof with photos & GPS</li>
-              <li>• Instant online payments</li>
-              <li>• 24/7 support ticket system</li>
-            </ul>
-          </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Feature Grid - 4 Themed Cards */}
