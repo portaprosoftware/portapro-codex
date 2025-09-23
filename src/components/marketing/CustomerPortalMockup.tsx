@@ -23,7 +23,7 @@ export const CustomerPortalMockup: React.FC = () => {
       <div className="bg-white rounded-lg border border-gray-200 mb-6 p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <h1 className="text-lg font-semibold text-gray-900">123 Construction Portal</h1>
+            <h1 className="text-lg font-semibold text-gray-900">ABC Construction • Customer Portal</h1>
           </div>
           <div className="flex items-center gap-2">
             <div className="relative">
@@ -64,7 +64,7 @@ export const CustomerPortalMockup: React.FC = () => {
             <Settings className="w-5 h-5 text-gray-400" />
             <div className="flex items-center gap-2">
               <User className="w-5 h-5 text-gray-400" />
-              <span className="text-sm text-gray-600">123 Construction</span>
+              <span className="text-sm text-gray-600">ABC Construction</span>
             </div>
           </div>
         </div>
