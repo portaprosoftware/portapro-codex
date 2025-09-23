@@ -66,13 +66,13 @@ export const TeamManagementShowcase: React.FC = () => {
             <div className="grid md:grid-cols-2 gap-2 sm:gap-4">
               {/* Scheduling Features */}
               <Card>
-                <CardHeader>
+                <CardHeader className="pb-1">
                   <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                     <Users className="w-5 h-5 text-primary" />
                     <span className="truncate">Scheduling Features</span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2 sm:space-y-3 p-2 sm:p-4">
+                <CardContent className="space-y-2 sm:space-y-3 p-2 sm:p-3 pt-1">
                   <div className="space-y-2">
                     <div className="flex items-start gap-2">
                       <CalendarClock className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
@@ -96,13 +96,13 @@ export const TeamManagementShowcase: React.FC = () => {
 
               {/* Today's Shifts */}
               <Card>
-                <CardHeader>
+                <CardHeader className="pb-1">
                   <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                     <CalendarClock className="w-5 h-5 text-green-600" />
                     <span className="truncate">Today's Shifts</span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-2 sm:p-4">
+                <CardContent className="p-2 sm:p-3 pt-1">
                   <div className="space-y-2">
                     {mockShifts.map((shift) => (
                       <div key={shift.id} className="flex justify-between items-center p-2 rounded bg-gray-50">
@@ -122,10 +122,10 @@ export const TeamManagementShowcase: React.FC = () => {
 
             {/* Interactive Schedule Grid */}
             <Card>
-              <CardHeader>
+              <CardHeader className="pb-1">
                 <CardTitle className="text-base sm:text-lg">Weekly Schedule Overview</CardTitle>
               </CardHeader>
-              <CardContent className="p-2 sm:p-4">
+              <CardContent className="p-2 sm:p-3 pt-1">
                 <div className="h-64 sm:h-80">
                   <SchedulingGraphic />
                 </div>
@@ -140,13 +140,13 @@ export const TeamManagementShowcase: React.FC = () => {
             <div className="grid md:grid-cols-2 gap-2 sm:gap-4">
               {/* Time Off Features */}
               <Card>
-                <CardHeader>
+                <CardHeader className="pb-1">
                   <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                     <Calendar className="w-5 h-5 text-primary" />
                     <span className="truncate">Time Off Management</span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2 sm:space-y-3 p-2 sm:p-4">
+                <CardContent className="space-y-2 sm:space-y-3 p-2 sm:p-3 pt-1">
                   <div className="space-y-2">
                     <div className="flex items-start gap-2">
                       <Calendar className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
@@ -170,13 +170,13 @@ export const TeamManagementShowcase: React.FC = () => {
 
               {/* Recent Requests */}
               <Card>
-                <CardHeader>
+                <CardHeader className="pb-1">
                   <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                     <Clock className="w-5 h-5 text-orange-600" />
                     <span className="truncate">Recent Requests</span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-2 sm:p-4">
+                <CardContent className="p-2 sm:p-3 pt-1">
                   <div className="space-y-2">
                     {mockTimeOffRequests.map((request) => (
                       <div key={request.id} className="flex justify-between items-center p-2 rounded bg-gray-50">
@@ -196,10 +196,10 @@ export const TeamManagementShowcase: React.FC = () => {
 
             {/* Calendar View */}
             <Card>
-              <CardHeader>
+              <CardHeader className="pb-1">
                 <CardTitle className="text-base sm:text-lg">Time Off Calendar</CardTitle>
               </CardHeader>
-              <CardContent className="p-2 sm:p-4">
+              <CardContent className="p-2 sm:p-3 pt-1">
                 <div className="flex justify-center">
                   <div className="w-full max-w-sm">
                     <AspectRatio ratio={1}>
@@ -220,13 +220,13 @@ export const TeamManagementShowcase: React.FC = () => {
             <div className="grid md:grid-cols-2 gap-2 sm:gap-4">
               {/* Compliance Features */}
               <Card>
-                <CardHeader>
+                <CardHeader className="pb-1">
                   <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                     <Shield className="w-5 h-5 text-primary" />
                     <span className="truncate">Compliance Tracking</span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2 sm:space-y-3 p-2 sm:p-4">
+                <CardContent className="space-y-2 sm:space-y-3 p-2 sm:p-3 pt-1">
                   <div className="space-y-2">
                     <div className="flex items-start gap-2">
                       <Shield className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
@@ -250,13 +250,13 @@ export const TeamManagementShowcase: React.FC = () => {
 
               {/* Training Image */}
               <Card>
-                <CardHeader>
+                <CardHeader className="pb-1">
                   <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                     <FileText className="w-5 h-5 text-blue-600" />
                     <span className="truncate">Training Interface</span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-2 sm:p-4">
+                <CardContent className="p-2 sm:p-3 pt-1">
                   <div className="rounded-lg overflow-hidden">
                     <img 
                       src="/lovable-uploads/0311afae-06cb-4157-9104-e58e14de00b0.png" 
@@ -270,10 +270,10 @@ export const TeamManagementShowcase: React.FC = () => {
 
             {/* Credential Status */}
             <Card>
-              <CardHeader>
+              <CardHeader className="pb-1">
                 <CardTitle className="text-base sm:text-lg">Credential Status</CardTitle>
               </CardHeader>
-              <CardContent className="p-2 sm:p-4">
+              <CardContent className="p-2 sm:p-3 pt-1">
                 <div className="space-y-2">
                   {mockCredentials.map((credential) => (
                     <div key={credential.id} className="flex justify-between items-center p-2 rounded bg-gray-50">
@@ -300,7 +300,7 @@ export const TeamManagementShowcase: React.FC = () => {
           <div className="space-y-2 sm:space-y-3">
             {/* Driver Profile Header */}
             <Card>
-              <CardContent className="p-3 sm:p-4">
+              <CardContent className="p-2 sm:p-3 pt-1">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm sm:text-lg">
@@ -327,13 +327,13 @@ export const TeamManagementShowcase: React.FC = () => {
             <div className="grid gap-2 sm:gap-4">
               {/* Quick Stats */}
               <Card>
-                <CardHeader className="pb-2">
+                <CardHeader className="pb-1">
                   <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
                     <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
                     <span className="truncate">Quick Stats</span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-3 sm:p-4 pt-0">
+                <CardContent className="p-2 sm:p-3 pt-1">
                   <div className="space-y-2 sm:space-y-3">
                     <div className="flex justify-between items-center">
                       <span className="text-xs sm:text-sm">License Status</span>
@@ -357,13 +357,13 @@ export const TeamManagementShowcase: React.FC = () => {
 
               {/* Compliance Overview */}
               <Card>
-                <CardHeader className="pb-2">
+                <CardHeader className="pb-1">
                   <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
                     <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />
                     <span className="truncate">Compliance Overview</span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-3 sm:p-4 pt-0">
+                <CardContent className="p-2 sm:p-3 pt-1">
                   <div className="flex items-center gap-3 sm:gap-4 mb-3">
                     <div className="relative w-12 h-12 sm:w-16 sm:h-16">
                       <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-red-100 flex items-center justify-center">
@@ -391,10 +391,10 @@ export const TeamManagementShowcase: React.FC = () => {
 
             {/* Profile Sections Overview */}
             <Card>
-              <CardHeader className="pb-2">
+              <CardHeader className="pb-1">
                 <CardTitle className="text-sm sm:text-base">Profile Management Features</CardTitle>
               </CardHeader>
-              <CardContent className="p-3 sm:p-4 pt-0">
+              <CardContent className="p-2 sm:p-3 pt-1">
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
                   <div className="text-center p-2 sm:p-3 rounded-lg border">
                     <Users className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1 sm:mb-2 text-blue-600" />
