@@ -358,17 +358,13 @@ export const TeamManagementShowcase: React.FC = () => {
                 </CardHeader>
                 <CardContent className="p-2 sm:p-3 pt-1">
                   <div className="flex items-center gap-3 sm:gap-4 mb-3">
-                    <div className="relative w-12 h-12 sm:w-16 sm:h-16">
-                      <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-red-100 flex items-center justify-center">
-                        <span className="text-base sm:text-xl font-bold text-red-600">20%</span>
-                      </div>
-                    </div>
+                    <div className="text-base sm:text-xl font-bold text-red-600">20%</div>
                     <div>
                       <p className="font-semibold text-sm sm:text-base">Overall Compliance</p>
                       <p className="text-xs text-gray-600">1 of 5 items</p>
                     </div>
                   </div>
-                  <div className="space-y-1 text-xs">
+                  <div className="flex items-center gap-4 text-xs">
                     <div className="flex items-center gap-2">
                       <CheckCircle className="w-3 h-3 text-green-600" />
                       <span>Compliant: 1</span>
