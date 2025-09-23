@@ -36,8 +36,8 @@ const mockShifts = [
 ];
 
 const mockTimeOffRequests = [
-  { id: 1, driver: 'Mike Johnson', date: '2024-01-15', type: 'Vacation', status: 'pending' },
-  { id: 2, driver: 'Sarah Klein', date: '2024-01-20', type: 'Sick', status: 'approved' }
+  { id: 1, driver: 'Mike Johnson', date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], type: 'Vacation', status: 'pending' },
+  { id: 2, driver: 'Sarah Klein', date: new Date().toISOString().split('T')[0], type: 'Sick', status: 'approved' }
 ];
 
 const mockCredentials = [
@@ -172,8 +172,15 @@ export const TeamManagementShowcase: React.FC = () => {
                           <p className="font-medium text-sm">{request.driver}</p>
                           <p className="text-xs text-gray-600">{request.date} - {request.type}</p>
                         </div>
-                        <Badge variant={request.status === 'approved' ? 'default' : 'secondary'} className="text-xs">
-                          {request.status}
+                        <Badge 
+                          variant="default" 
+                          className={`text-xs ${
+                            request.status === 'approved' 
+                              ? 'bg-gradient-to-r from-green-500 to-green-600 text-white border-0' 
+                              : 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white border-0'
+                          }`}
+                        >
+                          {request.status === 'approved' ? 'Approved' : 'Pending'}
                         </Badge>
                       </div>
                     ))}
@@ -182,7 +189,7 @@ export const TeamManagementShowcase: React.FC = () => {
               </Card>
             </div>
 
-            {/* Calendar View */}
+            {/* Time Off Management with Calendar */}
             <Card>
               <CardHeader className="pb-1">
                 <CardTitle className="text-base sm:text-lg">Time Off Calendar</CardTitle>
