@@ -393,73 +393,48 @@ export const TeamManagementShowcase: React.FC = () => {
                 </CardHeader>
                 <CardContent className="p-2 sm:p-3 pt-0">
                   <div className="flex items-center gap-3 sm:gap-4 mb-3">
-                    <div className="text-base sm:text-xl font-bold text-red-600">20%</div>
+                    <div className="text-base sm:text-xl font-bold text-red-600">40%</div>
                     <div>
                       <p className="font-semibold text-sm sm:text-base">Overall Compliance</p>
-                      <p className="text-xs text-gray-600">1 of 5 items</p>
+                      <p className="text-xs text-gray-600">2 of 5 items</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-4 text-xs">
                     <div className="flex items-center gap-2">
                       <CheckCircle className="w-3 h-3 text-green-600" />
-                      <span>Compliant: 1</span>
+                      <span>Compliant: 2</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <AlertTriangle className="w-3 h-3 text-red-600" />
-                      <span>Missing: 4</span>
+                      <span>Missing: 3</span>
                     </div>
                   </div>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Profile Sections Overview */}
+            {/* Items Need Attention */}
             <Card>
               <CardHeader className="pb-0">
-                <CardTitle className="text-sm sm:text-base">Profile Management Features</CardTitle>
+                <CardTitle className="text-sm sm:text-base">4 items need immediate attention:</CardTitle>
               </CardHeader>
               <CardContent className="p-2 sm:p-3 pt-0">
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
-                  <div className="text-center p-2 sm:p-3 rounded-lg border">
-                    <Users className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1 sm:mb-2 text-blue-600" />
-                    <p className="text-xs font-medium">Overview</p>
-                    <p className="text-xs text-gray-600 hidden sm:block">Stats & Activity</p>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm">
+                    <AlertTriangle className="w-4 h-4 text-red-600" />
+                    <span>Medical Certificate - Not provided</span>
                   </div>
-                  <div className="text-center p-2 sm:p-3 rounded-lg border">
-                    <CreditCard className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1 sm:mb-2 text-green-600" />
-                    <p className="text-xs font-medium">Credentials</p>
-                    <p className="text-xs text-gray-600 hidden sm:block">License & Permits</p>
+                  <div className="flex items-center gap-2 text-sm">
+                    <AlertTriangle className="w-4 h-4 text-red-600" />
+                    <span>Safety Training - Not provided</span>
                   </div>
-                  <div className="text-center p-2 sm:p-3 rounded-lg border">
-                    <ClipboardList className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1 sm:mb-2 text-purple-600" />
-                    <p className="text-xs font-medium">Training</p>
-                    <p className="text-xs text-gray-600 hidden sm:block">Certifications</p>
+                  <div className="flex items-center gap-2 text-sm">
+                    <AlertTriangle className="w-4 h-4 text-red-600" />
+                    <span>DOT Compliance - Not provided</span>
                   </div>
-                  <div className="text-center p-2 sm:p-3 rounded-lg border">
-                    <Shield className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1 sm:mb-2 text-red-600" />
-                    <p className="text-xs font-medium">Compliance</p>
-                    <p className="text-xs text-gray-600 hidden sm:block">Status Tracking</p>
-                  </div>
-                  <div className="text-center p-2 sm:p-3 rounded-lg border col-span-2 sm:col-span-1">
-                    <FileText className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1 sm:mb-2 text-orange-600" />
-                    <p className="text-xs font-medium">Documents</p>
-                    <p className="text-xs text-gray-600 hidden sm:block">File Management</p>
-                  </div>
-                </div>
-                
-                <div className="mt-3 sm:mt-4 p-2 sm:p-3 bg-gray-100 rounded-lg">
-                  <div className="flex items-start gap-2">
-                    <AlertTriangle className="w-4 h-4 text-gray-600 flex-shrink-0 mt-0.5" />
-                    <div className="text-xs">
-                      <p className="font-medium text-gray-900">4 items need immediate attention:</p>
-                      <ul className="mt-1 space-y-1 text-gray-800">
-                        <li>• Training Docs - Not provided</li>
-                        <li>• Medical Certificate - Not provided</li>
-                        <li className="sm:block hidden">• Safety Training - Not provided</li>
-                        <li className="sm:block hidden">• DOT Compliance - Not provided</li>
-                        <li className="sm:hidden">• +2 more items</li>
-                      </ul>
-                    </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <AlertTriangle className="w-4 h-4 text-red-600" />
+                    <span>Insurance Documents - Not provided</span>
                   </div>
                 </div>
               </CardContent>
