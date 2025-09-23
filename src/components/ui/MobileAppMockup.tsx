@@ -39,21 +39,36 @@ export const MobileAppMockup: React.FC = () => {
 
             {/* Job Locations */}
             <div className="bg-white rounded-lg p-3 mb-3 shadow-sm">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span className="text-sm font-medium text-gray-900">ACME Construction</span>
-                  <span className="text-xs text-gray-500">— 1250 Market</span>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <div>
+                      <span className="text-sm font-medium text-blue-600">ACME Construction</span>
+                      <span className="text-xs text-gray-500"> — 1250 Market</span>
+                      <div className="text-xs text-gray-400">delivery</div>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  <span className="text-sm font-medium text-gray-900">City Park North</span>
-                  <span className="text-xs text-gray-500">— 4450 E 23rd Ave</span>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <div>
+                      <span className="text-sm font-medium text-blue-600">City Park North</span>
+                      <span className="text-xs text-gray-500"> — 4450 E 23rd Ave</span>
+                      <div className="text-xs text-gray-400">delivery</div>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                  <span className="text-sm font-medium text-gray-900">Riverside Site</span>
-                  <span className="text-xs text-gray-500">— 3600 S Platte Canyon Rd</span>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                    <div>
+                      <span className="text-sm font-medium text-blue-600">Riverside Site</span>
+                      <span className="text-xs text-gray-500"> — 3600 S Platte Canyon Rd</span>
+                      <div className="text-xs text-gray-400">service</div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
