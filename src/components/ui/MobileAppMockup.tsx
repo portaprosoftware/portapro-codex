@@ -94,11 +94,6 @@ export const MobileAppMockup: React.FC = () => {
                   alt="Satellite view of job site" 
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                  <div className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center border-2 border-white shadow-lg">
-                    <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
-                  </div>
-                </div>
               </div>
               <p className="text-xs text-gray-500 mt-1">Satellite view for exact placement</p>
             </div>
