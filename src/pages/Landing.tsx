@@ -33,6 +33,7 @@ import { CustomerDashboardPortalShowcase } from '@/components/marketing/Customer
 import { FleetManagementShowcase } from '@/components/marketing/FleetManagementShowcase';
 import { ConsolidatedFleetCard } from '@/components/marketing/ConsolidatedFleetCard';
 import { CompanyAnalyticsShowcase } from '@/components/marketing/CompanyAnalyticsShowcase';
+import { TeamManagementShowcase } from '@/components/marketing/TeamManagementShowcase';
 import { AlertTriangle, Package, Droplets, ClipboardCheck, Megaphone } from 'lucide-react';
 import { FeaturesMegaMenu } from '@/components/marketing/FeaturesMegaMenu';
 import { FeaturesSheet } from '@/components/marketing/FeaturesSheet';
@@ -1077,134 +1078,8 @@ export const Landing: React.FC = () => {
         </div>
       </div>
 
-    {/* Team Management - White */}
-      <section id="team-management" className="py-8 bg-white">
-        <div className="container mx-auto max-w-6xl px-6">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Team Management & Scheduling</h2>
-            <p className="text-lg text-muted-foreground">Everything you need to manage people, time, and compliance</p>
-          </div>
-
-          {/* Team KPIs */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
-            <StatCard title="Shifts Today" value={8} icon={CalendarClock} gradientFrom="hsl(142, 76%, 36%)" gradientTo="hsl(142, 76%, 25%)" iconBg="hsl(142, 76%, 36%)" subtitle={<span className="text-muted-foreground">Scheduled shifts</span>} />
-            <StatCard title="Approved Time Off" value={1} icon={Calendar} gradientFrom="hsl(var(--destructive))" gradientTo="hsl(var(--destructive) / 0.7)" iconBg="hsl(var(--destructive))" subtitle={<span className="text-muted-foreground">Today</span>} />
-            <StatCard title="Expiring Credentials" value={3} icon={Shield} gradientFrom="hsl(45, 93%, 55%)" gradientTo="hsl(45, 93%, 45%)" iconBg="hsl(45, 93%, 55%)" subtitle={<span className="text-muted-foreground">Next 30 days</span>} />
-          </div>
-
-          {/* Team Ops Toolkit */}
-          <div className="grid sm:grid-cols-2 gap-4 mb-12">
-            <div className="p-5 rounded-xl border bg-card shadow-sm">
-              <div className="flex items-center gap-3 mb-2">
-                <ClipboardList className="w-5 h-5 text-primary" />
-                <h4 className="font-semibold text-foreground">Shift Templates</h4>
-              </div>
-              <p className="text-sm text-muted-foreground">Reusable day parts and roles to schedule faster with consistency.</p>
-            </div>
-            <div className="p-5 rounded-xl border bg-card shadow-sm">
-              <div className="flex items-center gap-3 mb-2">
-                <Users className="w-5 h-5 text-primary" />
-                <h4 className="font-semibold text-foreground">Availability</h4>
-              </div>
-              <p className="text-sm text-muted-foreground">See who’s available at a glance with conflict detection.</p>
-            </div>
-            <div className="p-5 rounded-xl border bg-card shadow-sm">
-              <div className="flex items-center gap-3 mb-2">
-                <Calendar className="w-5 h-5 text-primary" />
-                <h4 className="font-semibold text-foreground">Time Off Approvals</h4>
-              </div>
-              <p className="text-sm text-muted-foreground">Structured requests with status, notes, and attachments.</p>
-            </div>
-            <div className="p-5 rounded-xl border bg-card shadow-sm">
-              <div className="flex items-center gap-3 mb-2">
-                <Shield className="w-5 h-5 text-primary" />
-                <h4 className="font-semibold text-foreground">Roles & Permissions</h4>
-              </div>
-              <p className="text-sm text-muted-foreground">Owner/Admin controlled approvals</p>
-            </div>
-          </div>
-
-          {/* Scheduling & Availability */}
-          <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
-            <div className="space-y-6 order-2 lg:order-1">
-              <h3 className="text-2xl font-bold text-foreground">Scheduling & Availability</h3>
-              <p className="text-lg text-muted-foreground">Plan faster with draggable shifts and clear daily rollups.</p>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <Users className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Weekly board with driver assignment and handoffs</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <ClipboardList className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Templates for morning/afternoon/evening shifts</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CalendarClock className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Conflict checks and warnings before double-booking</span>
-                </li>
-              </ul>
-            </div>
-            <div className="order-1 lg:order-2">
-              <SchedulingGraphic />
-            </div>
-          </div>
-
-          {/* Time Off & Leave Management */}
-          <div className="grid lg:grid-cols-2 gap-8 items-start mb-12">
-            <div className="space-y-6 order-1 lg:order-2">
-              <h3 className="text-2xl font-bold text-foreground">Time Off & Leave Management</h3>
-              <p className="text-lg text-muted-foreground">Approve requests quickly with a clean, visual calendar.</p>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <Calendar className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Full-day, AM/PM, or custom times with reasons</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Statuses: pending, approved, denied</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Users className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Instant visibility into impact to shifts</span>
-                </li>
-              </ul>
-            </div>
-            
-            <div className="flex justify-center order-2 lg:order-1">
-              <div className="w-full max-w-xs">
-                <AspectRatio ratio={1}>
-                  <div className="h-full">
-                    <TimeOffCalendarView compact />
-                  </div>
-                </AspectRatio>
-              </div>
-            </div>
-          </div>
-
-          {/* Training & Compliance */}
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6 order-1 lg:order-2">
-              <h3 className="text-2xl font-bold text-foreground">Training & Compliance</h3>
-              <p className="text-lg text-muted-foreground">Keep licenses, medical cards, and trainings up to date.</p>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <Shield className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Auto-reminders for upcoming expirations</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <ClipboardList className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Track certifications and attach proof</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Users className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Company-specific requirements per role</span>
-                </li>
-              </ul>
-            </div>
-            <img src="/lovable-uploads/0311afae-06cb-4157-9104-e58e14de00b0.png" alt="Training Requirements management interface" className="order-2 lg:order-1 w-[85%] h-auto" />
-          </div>
-        </div>
-      </section>
+     {/* Team Management - White */}
+      <TeamManagementShowcase />
 
       {/* Section Divider */}
       <div className="py-8 bg-white">
