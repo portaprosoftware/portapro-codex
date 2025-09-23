@@ -255,7 +255,7 @@ export const TeamManagementShowcase: React.FC = () => {
                   <div className="bg-gray-50 rounded-lg p-3">
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="font-medium text-sm">Commercial Driver License Class B</h4>
-                      <Badge className="bg-gradient-to-r from-red-500 to-red-600 text-white border-0 text-xs">
+                      <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 text-xs">
                         Required
                       </Badge>
                     </div>
@@ -263,9 +263,12 @@ export const TeamManagementShowcase: React.FC = () => {
                       <span className="font-medium">Active: 2</span>
                       <span className="text-orange-600 font-medium">Expiring: 0</span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="w-full bg-gray-200 rounded-full h-2 mb-3">
                       <div className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full" style={{ width: '100%' }}></div>
                     </div>
+                    <Button variant="outline" size="sm" className="w-full text-xs">
+                      View Drivers
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
