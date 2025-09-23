@@ -77,7 +77,7 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
             <Monitor className="w-6 h-6 text-green-600" />
             Customer Portal
           </h3>
-          <p className="text-muted-foreground">Self-service portals for your customers</p>
+          <p className="text-muted-foreground">Everything your customers need, in one place:</p>
         </div>
 
         {/* Before & After Comparison Table */}
