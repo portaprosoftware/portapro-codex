@@ -44,21 +44,21 @@ export const MobileAppMockup: React.FC = () => {
                   <div>
                     <span className="text-sm font-medium text-blue-600">123 Construction</span>
                     <span className="text-xs text-gray-500"> — 78 W. 9th St • </span>
-                    <span className="text-xs text-blue-600">Delivery</span>
+                    <span className="text-xs font-bold text-orange-600">Pickup</span>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
                   <div>
                     <span className="text-sm font-medium text-blue-600">Metro Park East</span>
                     <span className="text-xs text-gray-500"> — 220 E 32nd Ave • </span>
-                    <span className="text-xs text-orange-600">Pickup</span>
+                    <span className="text-xs font-bold text-blue-600">Delivery</span>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
                   <div>
                     <span className="text-sm font-medium text-blue-600">Lakeside Club</span>
                     <span className="text-xs text-gray-500"> — 3600 Lakeside Ave • </span>
-                    <span className="text-xs text-purple-600">Service</span>
+                    <span className="text-xs font-bold text-purple-600">Service</span>
                   </div>
                 </div>
               </div>
