@@ -85,7 +85,7 @@ export const MobileAppMockup: React.FC = () => {
                 <div className="w-6 h-6 bg-red-500 rounded flex items-center justify-center">
                   <MapPin className="w-3 h-3 text-white" />
                 </div>
-                <span className="text-sm font-semibold text-gray-900">Drop-off Pin</span>
+                <span className="text-sm font-semibold text-gray-900">Drop-off Pins</span>
               </div>
               
               {/* Satellite Map Mock */}
