@@ -413,11 +413,11 @@ export const ServiceHubDemo: React.FC = () => {
       <div className="grid gap-3">
         {mockCompletedReports.map((report) => (
           <div key={report.id} className="border rounded-lg p-3 sm:p-4 bg-white">
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-2 gap-2">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-3 gap-2">
               <div className="flex-1 min-w-0">
                 <h5 className="font-medium text-foreground">{report.serviceName}</h5>
                 <p className="text-sm text-muted-foreground">Customer: {report.customerName}</p>
-                <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground mt-1">
+                <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground mt-2">
                   <span className="flex items-center gap-1">
                     <User className="w-3 h-3" />
                     {report.technician}
@@ -433,21 +433,21 @@ export const ServiceHubDemo: React.FC = () => {
                 </div>
               </div>
               <div className="text-left sm:text-right flex-shrink-0">
-                <div className="text-sm font-medium text-foreground">{report.completedDate}</div>
+                <div className="text-sm font-medium text-foreground mb-2">{report.completedDate}</div>
                 {report.status === 'completed' && (
-                  <Badge className="bg-green-100 text-green-800 border-0 text-xs mt-1">
+                  <Badge className="bg-green-100 text-green-800 border-0 text-xs">
                     <CheckCircle className="w-3 h-3 mr-1" />
                     Completed
                   </Badge>
                 )}
                 {report.status === 'pending_review' && (
-                  <Badge className="bg-yellow-100 text-yellow-800 border-0 text-xs mt-1">
+                  <Badge className="bg-yellow-100 text-yellow-800 border-0 text-xs">
                     <Clock className="w-3 h-3 mr-1" />
                     Pending Review
                   </Badge>
                 )}
                 {report.status === 'approved' && (
-                  <Badge className="bg-blue-100 text-blue-800 border-0 text-xs mt-1">
+                  <Badge className="bg-blue-100 text-blue-800 border-0 text-xs">
                     <CheckCircle className="w-3 h-3 mr-1" />
                     Approved
                   </Badge>
@@ -455,68 +455,16 @@ export const ServiceHubDemo: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row sm:justify-end gap-1">
-              <Button variant="outline" size="sm" className="text-xs">
+            <div className="grid grid-cols-2 gap-2 sm:flex sm:justify-end sm:gap-2">
+              <Button variant="outline" size="sm" className="text-xs bg-white hover:bg-gray-50 border-gray-300 w-full sm:w-auto">
                 <Eye className="w-3 h-3 mr-1" />
                 <span className="hidden sm:inline">View Report</span>
                 <span className="sm:hidden">View</span>
               </Button>
-              <Button variant="outline" size="sm" className="text-xs">
+              <Button variant="outline" size="sm" className="text-xs bg-white hover:bg-gray-50 border-gray-300 w-full sm:w-auto">
                 <FileText className="w-3 h-3 mr-1" />
                 <span className="hidden sm:inline">Download PDF</span>
                 <span className="sm:hidden">Download</span>
-              </Button>
-            </div>
-            <div className="flex justify-between items-start mb-2">
-              <div className="flex-1">
-                <h5 className="font-medium text-foreground">{report.serviceName}</h5>
-                <p className="text-sm text-muted-foreground">Customer: {report.customerName}</p>
-                <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
-                  <span className="flex items-center gap-1">
-                    <User className="w-3 h-3" />
-                    {report.technician}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    {report.duration}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Camera className="w-3 h-3" />
-                    {report.photos} photos
-                  </span>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="text-sm font-medium text-foreground">{report.completedDate}</div>
-                {report.status === 'completed' && (
-                  <Badge className="bg-green-100 text-green-800 border-0 text-xs mt-1">
-                    <CheckCircle className="w-3 h-3 mr-1" />
-                    Completed
-                  </Badge>
-                )}
-                {report.status === 'pending_review' && (
-                  <Badge className="bg-yellow-100 text-yellow-800 border-0 text-xs mt-1">
-                    <Clock className="w-3 h-3 mr-1" />
-                    Pending Review
-                  </Badge>
-                )}
-                {report.status === 'approved' && (
-                  <Badge className="bg-blue-100 text-blue-800 border-0 text-xs mt-1">
-                    <CheckCircle className="w-3 h-3 mr-1" />
-                    Approved
-                  </Badge>
-                )}
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-1">
-              <Button variant="outline" size="sm" className="text-xs">
-                <Eye className="w-3 h-3 mr-1" />
-                View Report
-              </Button>
-              <Button variant="outline" size="sm" className="text-xs">
-                <FileText className="w-3 h-3 mr-1" />
-                Download PDF
               </Button>
             </div>
           </div>
