@@ -31,6 +31,7 @@ import { ServicesHubShowcase } from '@/components/marketing/ServicesHubShowcase'
 import { MarketingShowcase } from '@/components/marketing/MarketingShowcase';
 import { CustomerDashboardPortalShowcase } from '@/components/marketing/CustomerDashboardPortalShowcase';
 import { FleetManagementShowcase } from '@/components/marketing/FleetManagementShowcase';
+import { ConsolidatedFleetCard } from '@/components/marketing/ConsolidatedFleetCard';
 import { CompanyAnalyticsShowcase } from '@/components/marketing/CompanyAnalyticsShowcase';
 import { AlertTriangle, Package, Droplets, ClipboardCheck, Megaphone } from 'lucide-react';
 import { FeaturesMegaMenu } from '@/components/marketing/FeaturesMegaMenu';
@@ -908,92 +909,12 @@ export const Landing: React.FC = () => {
 
 
           {/* Fleet KPIs */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
             <StatCard title="Active Drivers" value={8} icon={Users} gradientFrom="hsl(217, 91%, 60%)" gradientTo="hsl(217, 91%, 50%)" iconBg="hsl(217, 91%, 60%)" subtitle={<span className="text-muted-foreground">On schedule today</span>} />
-            <StatCard title="Monthly Fuel Spend" value={"$10,932"} icon={DollarSign} gradientFrom="hsl(38, 90%, 50%)" gradientTo="hsl(38, 90%, 40%)" iconBg="hsl(38, 90%, 50%)" subtitle={<span className="text-muted-foreground">Down 6% vs last month</span>} />
-            <StatCard title="Upcoming Services" value={9} icon={Wrench} gradientFrom="hsl(25, 95%, 53%)" gradientTo="hsl(25, 95%, 43%)" iconBg="hsl(25, 95%, 53%)" subtitle={<span className="text-muted-foreground">Due in next 7 days</span>} />
           </div>
 
-          {/* General Fleet Tracking */}
-          {/* General Fleet Tracking - Left Aligned Header */}
-          <div className="flex flex-col mb-8">
-            <div className="max-w-4xl space-y-6">
-              <h3 className="text-2xl font-bold text-foreground text-left">General Fleet Tracking</h3>
-              <p className="text-lg text-muted-foreground text-left">Every vehicle has a dedicated "home base" for comprehensive management and tracking.</p>
-              <div className="grid md:grid-cols-2 gap-x-8 gap-y-3">
-                <div className="flex items-start gap-3 text-left">
-                  <Truck className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Vehicle profiles with status, location, and availability</span>
-                </div>
-                <div className="flex items-start gap-3 text-left">
-                  <Gauge className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Automatic and manual mileage tracking with history</span>
-                </div>
-                <div className="flex items-start gap-3 text-left">
-                  <Camera className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Photo documentation for condition and damage tracking</span>
-                </div>
-                <div className="flex items-start gap-3 text-left">
-                  <FileText className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Document management with expiry alerts and compliance</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Assignments and Compliance Locker Row */}
-          <div className="grid md:grid-cols-2 gap-6 mb-6">
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <Users className="w-5 h-5 text-blue-600" />
-                  <div>
-                    <h3 className="font-semibold">Assignments</h3>
-                    <p className="text-sm text-gray-600">Daily driver shifts with vehicle handoffs and checklists.</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <Shield className="w-5 h-5 text-blue-600" />
-                  <div>
-                    <h3 className="font-semibold">Compliance Locker</h3>
-                    <p className="text-sm text-gray-600">DOCs, registrations, insurance—alerts before anything expires.</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Scheduled PMs and Parts & Costs Row */}
-          <div className="grid md:grid-cols-2 gap-6 mb-12">
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <Clock className="w-5 h-5 text-blue-600" />
-                  <div>
-                    <h3 className="font-semibold">Scheduled PMs</h3>
-                    <p className="text-sm text-gray-600">Set mileage or time-based intervals. Auto-create work orders when due.</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <DollarSign className="w-5 h-5 text-blue-600" />
-                  <div>
-                    <h3 className="font-semibold">Parts & Costs</h3>
-                    <p className="text-sm text-gray-600">Track parts, labor, and vendor invoices. Roll-up cost per vehicle.</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          {/* Consolidated Fleet Management */}
+          <ConsolidatedFleetCard />
 
           {/* Fleet Management Showcase - Full Width */}
           <div className="col-span-full mt-8">
