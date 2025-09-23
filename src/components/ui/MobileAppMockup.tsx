@@ -45,8 +45,7 @@ export const MobileAppMockup: React.FC = () => {
                     <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                     <div>
                       <span className="text-sm font-medium text-blue-600">ACME Construction</span>
-                      <span className="text-xs text-gray-500"> — 1250 Market</span>
-                      <div className="text-xs text-gray-400">delivery</div>
+                      <span className="text-xs text-gray-500"> — 1250 Market • delivery</span>
                     </div>
                   </div>
                 </div>
@@ -55,8 +54,7 @@ export const MobileAppMockup: React.FC = () => {
                     <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                     <div>
                       <span className="text-sm font-medium text-blue-600">City Park North</span>
-                      <span className="text-xs text-gray-500"> — 4450 E 23rd Ave</span>
-                      <div className="text-xs text-gray-400">delivery</div>
+                      <span className="text-xs text-gray-500"> — 4450 E 23rd Ave • delivery</span>
                     </div>
                   </div>
                 </div>
@@ -65,8 +63,7 @@ export const MobileAppMockup: React.FC = () => {
                     <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
                     <div>
                       <span className="text-sm font-medium text-blue-600">Riverside Site</span>
-                      <span className="text-xs text-gray-500"> — 3600 S Platte Canyon Rd</span>
-                      <div className="text-xs text-gray-400">service</div>
+                      <span className="text-xs text-gray-500"> — 3600 S Platte Canyon Rd • service</span>
                     </div>
                   </div>
                 </div>
@@ -94,7 +91,7 @@ export const MobileAppMockup: React.FC = () => {
                 <div className="w-6 h-6 bg-red-500 rounded flex items-center justify-center">
                   <MapPin className="w-3 h-3 text-white" />
                 </div>
-                <span className="text-sm font-semibold text-gray-900">Precise Drop-off Pin</span>
+                <span className="text-sm font-semibold text-gray-900">Drop-off Pin</span>
               </div>
               
               {/* Satellite Map Mock */}
