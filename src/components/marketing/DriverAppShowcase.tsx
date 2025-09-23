@@ -1,6 +1,7 @@
 import React from 'react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { StatCard } from '@/components/ui/StatCard';
+import { MobileAppMockup } from '@/components/ui/MobileAppMockup';
 import { 
   CheckCircle, 
   MapPin, 
@@ -30,14 +31,8 @@ export const DriverAppShowcase: React.FC = () => {
 
       <div className="flex flex-col gap-6 lg:grid lg:grid-cols-[1.2fr_1fr] lg:items-start">
         {/* Left: Mobile app image only */}
-        <main className="order-2 lg:order-1">
-          <div className="rounded-[2rem] overflow-hidden relative max-w-[75%] mx-auto">
-            <img 
-              src="/lovable-uploads/ec1bdcd8-48e9-4afe-aad9-8507b3433a04.png" 
-              alt="Mobile driver app interface showing optimized route, one-tap navigation, precise drop-off pin, and offline mode features"
-              className="w-full h-auto object-cover"
-            />
-          </div>
+        <main className="order-2 lg:order-1 flex justify-center">
+          <MobileAppMockup />
         </main>
 
         {/* Right: Benefits & KPIs */}
