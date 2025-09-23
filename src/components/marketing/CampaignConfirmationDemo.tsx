@@ -15,16 +15,16 @@ import {
 
 export const CampaignConfirmationDemo: React.FC = () => {
   return (
-    <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+    <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden w-full max-w-full">
       {/* Header with Grey Background */}
-      <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-4 border-b">
-        <h3 className="text-lg font-bold text-foreground mb-3">Create New Campaign</h3>
+      <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-3 sm:p-4 border-b">
+        <h3 className="text-base sm:text-lg font-bold text-foreground mb-2 sm:mb-3">Create New Campaign</h3>
         
-        {/* Progress Steps */}
-        <div className="flex items-center justify-center gap-3">
+        {/* Progress Steps - Mobile Responsive */}
+        <div className="flex items-center justify-center gap-1 sm:gap-3 overflow-x-auto">
           {[1, 2, 3, 4].map((step, index) => (
-            <div key={step} className="flex items-center">
-              <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium ${
+            <div key={step} className="flex items-center flex-shrink-0">
+              <div className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center text-xs font-medium ${
                 step === 4 
                   ? 'bg-blue-600 text-white' 
                   : step < 4 
@@ -34,7 +34,7 @@ export const CampaignConfirmationDemo: React.FC = () => {
                 {step}
               </div>
               {index < 3 && (
-                <div className={`w-10 h-0.5 mx-2 ${
+                <div className={`w-6 sm:w-10 h-0.5 mx-1 sm:mx-2 ${
                   step < 4 ? 'bg-blue-600' : 'bg-gray-200'
                 }`} />
               )}
@@ -43,18 +43,18 @@ export const CampaignConfirmationDemo: React.FC = () => {
         </div>
       </div>
 
-      <div className="p-4">
+      <div className="p-3 sm:p-4 w-full">
 
-        <div className="space-y-4">
-          {/* Scheduling Options and Date Selection - Same Row */}
-          <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-3 sm:space-y-4 w-full">
+          {/* Scheduling Options and Date Selection - Mobile Responsive */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <h5 className="text-xs font-medium text-foreground mb-2">Scheduling</h5>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" className="text-xs px-3 py-1">
+              <div className="flex gap-2 w-full">
+                <Button variant="outline" size="sm" className="text-xs px-2 sm:px-3 py-1 flex-1 sm:flex-none">
                   Send Now
                 </Button>
-                <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1">
+                <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-2 sm:px-3 py-1 flex-1 sm:flex-none">
                   Schedule
                 </Button>
               </div>
@@ -113,19 +113,19 @@ export const CampaignConfirmationDemo: React.FC = () => {
           </div>
         </div>
 
-        {/* Bottom Action Buttons */}
-        <div className="flex gap-2 pt-4 justify-between">
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="text-xs px-3 py-1">
+        {/* Bottom Action Buttons - Mobile Responsive */}
+        <div className="flex flex-col sm:flex-row gap-2 pt-3 sm:pt-4 justify-between">
+          <div className="flex gap-2 order-2 sm:order-1">
+            <Button variant="outline" size="sm" className="text-xs px-2 sm:px-3 py-1 flex-1 sm:flex-none">
               <ArrowLeft className="w-3 h-3 mr-1" />
               Back
             </Button>
-            <Button variant="outline" size="sm" className="text-xs px-3 py-1">
+            <Button variant="outline" size="sm" className="text-xs px-2 sm:px-3 py-1 flex-1 sm:flex-none">
               <Save className="w-3 h-3 mr-1" />
               Save as Draft
             </Button>
           </div>
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1">
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-2 sm:px-3 py-1 order-1 sm:order-2 w-full sm:w-auto">
             <Send className="w-3 h-3 mr-1" />
             Send Campaign
           </Button>
