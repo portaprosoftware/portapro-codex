@@ -7,17 +7,17 @@ export const QuoteToJobShowcase: React.FC = () => {
   // KPIs removed as requested
 
   return (
-    <div className="space-y-10 overflow-hidden">
-      <header className="space-y-2 text-center">
-        <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Quote → Deposit → Job → Invoice, in one flow</h2>
-        <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
+    <div className="space-y-6 sm:space-y-10 overflow-hidden">
+      <header className="space-y-2 text-center px-4">
+        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">Quote → Deposit → Job → Invoice, in one flow</h2>
+        <p className="text-muted-foreground text-base sm:text-lg max-w-3xl mx-auto">
           Build a quote, send it to your customer, collect a deposit with Stripe, and auto-create the job with schedule and invoice.
         </p>
       </header>
 
-      <div className="flex flex-col gap-10 lg:grid lg:grid-cols-[1fr_1.4fr] lg:items-start">
+      <div className="flex flex-col gap-6 sm:gap-10 lg:grid lg:grid-cols-[1fr_1.4fr] lg:items-start px-4 sm:px-0">
         {/* Left: Highlights only */}
-        <aside className="space-y-6">
+        <aside className="space-y-4 sm:space-y-6">
           <ul className="space-y-3" aria-label="Quote-to-job highlights">
             {[
               'Itemized quotes with units, delivery, services, and taxes',
@@ -26,10 +26,10 @@ export const QuoteToJobShowcase: React.FC = () => {
               'Auto-create job, schedule, and initial invoice on acceptance',
             ].map((item, idx) => (
               <li key={idx} className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center mt-0.5">
-                  <CheckCircle className="w-4 h-4" />
+                <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center mt-0.5 flex-shrink-0">
+                  <CheckCircle className="w-3.5 h-3.5" />
                 </div>
-                <span className="text-muted-foreground">{item}</span>
+                <span className="text-muted-foreground text-sm sm:text-base">{item}</span>
               </li>
             ))}
           </ul>
@@ -63,21 +63,21 @@ export const QuoteToJobShowcase: React.FC = () => {
         </aside>
 
         {/* Right: Quote Builder */}
-        <main className="space-y-6">
+        <main className="space-y-4 sm:space-y-6">
           {/* Quote Builder */}
           <AspectRatio ratio={16/10}>
             <div className="rounded-2xl border bg-card shadow-lg overflow-hidden animate-fade-in">
-              <div className="flex items-center justify-between border-b px-4 py-3 bg-muted/40">
-                <div>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b px-3 sm:px-4 py-3 bg-muted/40 gap-2 sm:gap-0">
+                <div className="flex-1 min-w-0">
                   <h3 className="text-sm font-semibold text-foreground">Quote • Q-1046</h3>
-                  <p className="text-xs text-muted-foreground">ACME Construction — 1250 Market St, Denver CO</p>
+                  <p className="text-xs text-muted-foreground truncate">ACME Construction — 1250 Market St, Denver CO</p>
                 </div>
-                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow">
+                <div className="inline-flex items-center justify-center bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow flex-shrink-0">
                   Awaiting acceptance
                 </div>
               </div>
 
-              <div className="p-5 space-y-4">
+              <div className="p-3 sm:p-5 space-y-3 sm:space-y-4">
                 {/* Items table */}
                 <div className="rounded-xl border bg-background divide-y">
                   {[
@@ -86,18 +86,18 @@ export const QuoteToJobShowcase: React.FC = () => {
                     { name: 'Handwash Station', qty: 1, price: 400, cycle: '/week' },
                     { name: 'Delivery Fee', qty: 1, price: 85, cycle: '' },
                   ].map((row) => (
-                    <div key={row.name} className="flex items-center justify-between px-4 py-3">
-                      <div className="space-y-0.5">
-                        <div className="font-medium text-foreground">{row.name}</div>
+                    <div key={row.name} className="flex items-center justify-between px-3 sm:px-4 py-2 sm:py-3">
+                      <div className="space-y-0.5 flex-1 min-w-0">
+                        <div className="font-medium text-foreground text-sm">{row.name}</div>
                         <div className="text-xs text-muted-foreground">${row.price}{row.cycle}</div>
                       </div>
-                      <div className="text-sm text-muted-foreground">×{row.qty}</div>
+                      <div className="text-sm text-muted-foreground flex-shrink-0">×{row.qty}</div>
                     </div>
                   ))}
                 </div>
 
                 {/* Totals */}
-                <div className="rounded-xl border bg-muted/30 px-4 py-3">
+                <div className="rounded-xl border bg-muted/30 px-3 sm:px-4 py-3">
                   <div className="flex items-center justify-between">
                     <div className="text-sm text-muted-foreground">Subtotal</div>
                     <div className="font-medium text-foreground">$4,110</div>
@@ -113,7 +113,7 @@ export const QuoteToJobShowcase: React.FC = () => {
                 </div>
 
                 {/* Deposit */}
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                   <div className="text-sm text-muted-foreground">Deposit due (50%)</div>
                   <div className="inline-flex items-center gap-2">
                     <span className="font-semibold text-foreground">$2,219.40</span>
