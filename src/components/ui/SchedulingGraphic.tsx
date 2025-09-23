@@ -46,19 +46,19 @@ export const SchedulingGraphic: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <Users className="w-4 h-4 text-primary" />
-          <h4 className="font-semibold text-foreground text-sm">Schedule</h4>
+          <Users className="w-5 h-5 text-primary" />
+          <h4 className="font-semibold text-foreground text-base">Schedule</h4>
         </div>
-        <div className="text-xs text-muted-foreground">{formatDateRange()}</div>
+        <div className="text-sm text-muted-foreground">{formatDateRange()}</div>
       </div>
 
       {/* Schedule Grid */}
       <div className="space-y-2">
         {/* Days Header */}
         <div className="grid grid-cols-4 gap-1">
-          <div className="text-xs font-medium text-muted-foreground"></div>
+          <div className="text-sm font-medium text-muted-foreground"></div>
           {next3Days.map((day, index) => (
-            <div key={index} className="text-xs font-medium text-center text-muted-foreground py-1">
+            <div key={index} className="text-sm font-medium text-center text-muted-foreground py-1">
               <div>{day.fullDate.toLocaleDateString('en-US', { month: 'short' })} {day.date}</div>
             </div>
           ))}
@@ -67,7 +67,7 @@ export const SchedulingGraphic: React.FC = () => {
         {/* Driver Rows */}
         {drivers.map((driver, driverIndex) => (
           <div key={driver} className="grid grid-cols-4 gap-1">
-            <div className="text-xs font-medium text-muted-foreground py-1 flex items-center">
+            <div className="text-sm font-medium text-muted-foreground py-1 flex items-center">
               {driver}
             </div>
             {next3Days.map((day, dayIndex) => (
@@ -79,7 +79,7 @@ export const SchedulingGraphic: React.FC = () => {
                     : 'bg-gray-200'
                 }`}>
                   {((driverIndex === 0 && dayIndex < 2) || (driverIndex === 1 && dayIndex >= 1)) && (
-                    <span className="text-[7px] text-white font-medium">AM</span>
+                    <span className="text-[8px] text-white font-medium">AM</span>
                   )}
                 </div>
                 
@@ -90,7 +90,7 @@ export const SchedulingGraphic: React.FC = () => {
                     : 'bg-gray-200'
                 }`}>
                   {((driverIndex === 1 && dayIndex < 1) || (driverIndex === 0 && dayIndex === 2)) && (
-                    <span className="text-[7px] text-white font-medium">PM</span>
+                    <span className="text-[8px] text-white font-medium">PM</span>
                   )}
                 </div>
 
@@ -101,7 +101,7 @@ export const SchedulingGraphic: React.FC = () => {
                     : 'bg-gray-200'
                 }`}>
                   {(driverIndex === 0 && dayIndex === 1) && (
-                    <span className="text-[7px] text-white font-medium">EVE</span>
+                    <span className="text-[8px] text-white font-medium">EVE</span>
                   )}
                 </div>
 
@@ -116,15 +116,15 @@ export const SchedulingGraphic: React.FC = () => {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1">
             <div className="w-2 h-2 rounded bg-gradient-to-r from-blue-500 to-blue-600"></div>
-            <span className="text-[10px] text-muted-foreground">Morning</span>
+            <span className="text-xs text-muted-foreground">Morning</span>
           </div>
           <div className="flex items-center gap-1">
             <div className="w-2 h-2 rounded bg-gradient-to-r from-emerald-500 to-emerald-600"></div>
-            <span className="text-[10px] text-muted-foreground">Afternoon</span>
+            <span className="text-xs text-muted-foreground">Afternoon</span>
           </div>
           <div className="flex items-center gap-1">
             <div className="w-2 h-2 rounded bg-gradient-to-r from-purple-500 to-purple-600"></div>
-            <span className="text-[10px] text-muted-foreground">Evening</span>
+            <span className="text-xs text-muted-foreground">Evening</span>
           </div>
         </div>
       </div>
