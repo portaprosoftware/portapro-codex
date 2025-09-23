@@ -300,23 +300,23 @@ export const TeamManagementShowcase: React.FC = () => {
           <div className="space-y-2 sm:space-y-3">
             {/* Driver Profile Header */}
             <Card>
-              <CardContent className="p-2 sm:p-4">
-                <div className="flex items-center justify-between mb-4">
+              <CardContent className="p-3 sm:p-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-lg">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm sm:text-lg">
                       {mockDriverProfile.initials}
                     </div>
-                    <div>
-                      <h3 className="font-bold text-lg">{mockDriverProfile.name}</h3>
-                      <p className="text-sm text-gray-600">{mockDriverProfile.email}</p>
-                      <p className="text-sm text-gray-600">{mockDriverProfile.phone}</p>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="font-bold text-base sm:text-lg">{mockDriverProfile.name}</h3>
+                      <p className="text-xs sm:text-sm text-gray-600 truncate">{mockDriverProfile.email}</p>
+                      <p className="text-xs sm:text-sm text-gray-600">{mockDriverProfile.phone}</p>
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Badge variant="secondary" className="bg-orange-100 text-orange-800">
+                  <div className="flex gap-2 flex-wrap">
+                    <Badge variant="secondary" className="bg-orange-100 text-orange-800 text-xs">
                       {mockDriverProfile.role}
                     </Badge>
-                    <Badge variant="default" className="bg-green-100 text-green-800">
+                    <Badge variant="default" className="bg-green-100 text-green-800 text-xs">
                       {mockDriverProfile.status}
                     </Badge>
                   </div>
@@ -324,31 +324,31 @@ export const TeamManagementShowcase: React.FC = () => {
               </CardContent>
             </Card>
 
-            <div className="grid md:grid-cols-2 gap-2 sm:gap-4">
+            <div className="grid gap-2 sm:gap-4">
               {/* Quick Stats */}
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                    <CheckCircle className="w-5 h-5 text-primary" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
+                    <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
                     <span className="truncate">Quick Stats</span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-2 sm:p-4">
-                  <div className="space-y-3">
+                <CardContent className="p-3 sm:p-4 pt-0">
+                  <div className="space-y-2 sm:space-y-3">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm">License Status</span>
+                      <span className="text-xs sm:text-sm">License Status</span>
                       <Badge variant="destructive" className="text-xs">Not Set</Badge>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm">Medical Card</span>
+                      <span className="text-xs sm:text-sm">Medical Card</span>
                       <Badge variant="destructive" className="text-xs">Not Set</Badge>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm">Training Records</span>
+                      <span className="text-xs sm:text-sm">Training Records</span>
                       <Badge variant="default" className="text-xs">0 Records</Badge>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm">Working Days</span>
+                      <span className="text-xs sm:text-sm">Working Days</span>
                       <Badge variant="default" className="text-xs">5 Days/Week</Badge>
                     </div>
                   </div>
@@ -357,21 +357,21 @@ export const TeamManagementShowcase: React.FC = () => {
 
               {/* Compliance Overview */}
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                    <Shield className="w-5 h-5 text-red-600" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
+                    <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />
                     <span className="truncate">Compliance Overview</span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-2 sm:p-4">
-                  <div className="flex items-center gap-4 mb-3">
-                    <div className="relative w-16 h-16">
-                      <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
-                        <span className="text-xl font-bold text-red-600">20%</span>
+                <CardContent className="p-3 sm:p-4 pt-0">
+                  <div className="flex items-center gap-3 sm:gap-4 mb-3">
+                    <div className="relative w-12 h-12 sm:w-16 sm:h-16">
+                      <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-red-100 flex items-center justify-center">
+                        <span className="text-base sm:text-xl font-bold text-red-600">20%</span>
                       </div>
                     </div>
                     <div>
-                      <p className="font-semibold">Overall Compliance</p>
+                      <p className="font-semibold text-sm sm:text-base">Overall Compliance</p>
                       <p className="text-xs text-gray-600">1 of 5 items</p>
                     </div>
                   </div>
@@ -391,39 +391,39 @@ export const TeamManagementShowcase: React.FC = () => {
 
             {/* Profile Sections Overview */}
             <Card>
-              <CardHeader>
-                <CardTitle className="text-base sm:text-lg">Profile Management Features</CardTitle>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm sm:text-base">Profile Management Features</CardTitle>
               </CardHeader>
-              <CardContent className="p-2 sm:p-4">
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                  <div className="text-center p-3 rounded-lg border">
-                    <Users className="w-6 h-6 mx-auto mb-2 text-blue-600" />
+              <CardContent className="p-3 sm:p-4 pt-0">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
+                  <div className="text-center p-2 sm:p-3 rounded-lg border">
+                    <Users className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1 sm:mb-2 text-blue-600" />
                     <p className="text-xs font-medium">Overview</p>
-                    <p className="text-xs text-gray-600">Stats & Activity</p>
+                    <p className="text-xs text-gray-600 hidden sm:block">Stats & Activity</p>
                   </div>
-                  <div className="text-center p-3 rounded-lg border">
-                    <CreditCard className="w-6 h-6 mx-auto mb-2 text-green-600" />
+                  <div className="text-center p-2 sm:p-3 rounded-lg border">
+                    <CreditCard className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1 sm:mb-2 text-green-600" />
                     <p className="text-xs font-medium">Credentials</p>
-                    <p className="text-xs text-gray-600">License & Permits</p>
+                    <p className="text-xs text-gray-600 hidden sm:block">License & Permits</p>
                   </div>
-                  <div className="text-center p-3 rounded-lg border">
-                    <ClipboardList className="w-6 h-6 mx-auto mb-2 text-purple-600" />
+                  <div className="text-center p-2 sm:p-3 rounded-lg border">
+                    <ClipboardList className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1 sm:mb-2 text-purple-600" />
                     <p className="text-xs font-medium">Training</p>
-                    <p className="text-xs text-gray-600">Certifications</p>
+                    <p className="text-xs text-gray-600 hidden sm:block">Certifications</p>
                   </div>
-                  <div className="text-center p-3 rounded-lg border">
-                    <Shield className="w-6 h-6 mx-auto mb-2 text-red-600" />
+                  <div className="text-center p-2 sm:p-3 rounded-lg border">
+                    <Shield className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1 sm:mb-2 text-red-600" />
                     <p className="text-xs font-medium">Compliance</p>
-                    <p className="text-xs text-gray-600">Status Tracking</p>
+                    <p className="text-xs text-gray-600 hidden sm:block">Status Tracking</p>
                   </div>
-                  <div className="text-center p-3 rounded-lg border">
-                    <FileText className="w-6 h-6 mx-auto mb-2 text-orange-600" />
+                  <div className="text-center p-2 sm:p-3 rounded-lg border col-span-2 sm:col-span-1">
+                    <FileText className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1 sm:mb-2 text-orange-600" />
                     <p className="text-xs font-medium">Documents</p>
-                    <p className="text-xs text-gray-600">File Management</p>
+                    <p className="text-xs text-gray-600 hidden sm:block">File Management</p>
                   </div>
                 </div>
                 
-                <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                <div className="mt-3 sm:mt-4 p-2 sm:p-3 bg-blue-50 rounded-lg">
                   <div className="flex items-start gap-2">
                     <AlertTriangle className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
                     <div className="text-xs">
@@ -431,8 +431,9 @@ export const TeamManagementShowcase: React.FC = () => {
                       <ul className="mt-1 space-y-1 text-blue-700">
                         <li>• Driver License - Not provided</li>
                         <li>• Medical Certificate - Not provided</li>
-                        <li>• Safety Training - Not provided</li>
-                        <li>• DOT Compliance - Not provided</li>
+                        <li className="sm:block hidden">• Safety Training - Not provided</li>
+                        <li className="sm:block hidden">• DOT Compliance - Not provided</li>
+                        <li className="sm:hidden">• +2 more items</li>
                       </ul>
                     </div>
                   </div>
@@ -500,7 +501,23 @@ export const TeamManagementShowcase: React.FC = () => {
 
           {/* Navigation */}
           <div className="p-2 sm:p-3">
-            <nav className="flex flex-wrap items-center gap-1 mb-2 sm:mb-3" aria-label="Team management tabs">
+            {/* Mobile Dropdown Navigation */}
+            <div className="block sm:hidden mb-2">
+              <select 
+                value={activeTab} 
+                onChange={(e) => setActiveTab(e.target.value)}
+                className="w-full p-2 border rounded-lg bg-white text-sm"
+              >
+                {teamTabs.map((tab) => (
+                  <option key={tab.key} value={tab.key}>
+                    {tab.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Desktop Navigation */}
+            <nav className="hidden sm:flex flex-wrap items-center gap-1 mb-2 sm:mb-3" aria-label="Team management tabs">
               {teamTabs.map((tab) => (
                 <Button
                   key={tab.key}
@@ -514,14 +531,13 @@ export const TeamManagementShowcase: React.FC = () => {
                   }`}
                 >
                   <tab.icon className="w-3 h-3 sm:w-4 sm:h-4" />
-                  <span className="hidden sm:inline">{tab.label}</span>
-                  <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
+                  <span>{tab.label}</span>
                 </Button>
               ))}
             </nav>
 
             {/* Tab Content */}
-            <div className="min-h-[300px] sm:min-h-[400px]">
+            <div className="min-h-[250px] sm:min-h-[300px] lg:min-h-[400px]">
               {renderTabContent()}
             </div>
           </div>
