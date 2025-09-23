@@ -567,46 +567,34 @@ export const Landing: React.FC = () => {
           <div className="mb-12">
             <InventoryManagementShowcase />
           </div>
-          {/* Stock Tracking + Location Management Side by Side */}
-          <div className="grid lg:grid-cols-2 gap-12 items-start mb-12">
-            {/* Left: Stock Tracking */}
-            <div className="space-y-6">
-              <h3 className="text-2xl font-bold text-foreground">Stock Tracking</h3>
-              <p className="text-lg text-muted-foreground">Real-time inventory levels with automated tracking and threshold monitoring.</p>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <BarChart3 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Bulk vs. individual unit tracking modes</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Gauge className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Real-time stock level monitoring</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <BellRing className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Automated threshold alerts and notifications</span>
-                </li>
-              </ul>
+          {/* Inventory & Location Management - Combined Section */}
+          <div className="mb-12">
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-bold text-foreground">Inventory & Location Management</h3>
+              <p className="text-lg text-muted-foreground">Stay on top of every unit with real-time tracking and multi-location control.</p>
             </div>
-
-            {/* Right: Location Management */}
-            <div className="space-y-6">
-              <h3 className="text-2xl font-bold text-foreground">Location Management</h3>
-              <p className="text-lg text-muted-foreground">Organize inventory across multiple storage facilities and job sites.</p>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <Building2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Multiple storage location support</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Route className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Inter-location transfer tracking</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Compass className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">GPS-enabled location verification</span>
-                </li>
-              </ul>
+            
+            <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+              <div className="text-center space-y-3">
+                <div className="w-12 h-12 mx-auto rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
+                  <BellRing className="w-6 h-6" />
+                </div>
+                <h4 className="font-semibold text-foreground">Real-time tracking with automated alerts</h4>
+              </div>
+              
+              <div className="text-center space-y-3">
+                <div className="w-12 h-12 mx-auto rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
+                  <Route className="w-6 h-6" />
+                </div>
+                <h4 className="font-semibold text-foreground">Manage stock across multiple sites with transfer tracking</h4>
+              </div>
+              
+              <div className="text-center space-y-3">
+                <div className="w-12 h-12 mx-auto rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
+                  <Compass className="w-6 h-6" />
+                </div>
+                <h4 className="font-semibold text-foreground">GPS-enabled verification for complete accountability</h4>
+              </div>
             </div>
           </div>
 
