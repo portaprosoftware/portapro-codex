@@ -121,16 +121,9 @@ export const TeamManagementShowcase: React.FC = () => {
             </div>
 
             {/* Interactive Schedule Grid */}
-            <Card>
-              <CardHeader className="pb-1">
-                <CardTitle className="text-base sm:text-lg">Weekly Schedule Overview</CardTitle>
-              </CardHeader>
-              <CardContent className="p-2 sm:p-3 pt-1">
-                <div className="h-64 sm:h-80">
-                  <SchedulingGraphic />
-                </div>
-              </CardContent>
-            </Card>
+            <div className="h-64 sm:h-80">
+              <SchedulingGraphic />
+            </div>
           </div>
         );
 
