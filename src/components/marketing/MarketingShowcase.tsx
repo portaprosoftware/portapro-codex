@@ -70,11 +70,11 @@ export const MarketingShowcase: React.FC = () => {
                   "Smart: High value accounts",
                   "Custom: VIP corporate",
                 ].map((chip) => (
-                  <span key={chip} className="rounded-lg bg-muted px-2 sm:px-3 py-1 text-muted-foreground text-xs break-words">{chip}</span>
+                  <span key={chip} className="rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 text-white px-2 sm:px-3 py-1 text-xs break-words font-medium">{chip}</span>
                 ))}
               </div>
               <div className="text-xs sm:text-sm text-foreground">
-                2,340 recipients • 187 excluded (unsubscribed, bounced)
+                226 recipients • 187 excluded (unsubscribed, bounced)
               </div>
               <div className="text-xs text-muted-foreground">Preview list and exclusion rules before sending.</div>
             </article>
@@ -95,27 +95,15 @@ export const MarketingShowcase: React.FC = () => {
             <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 text-xs sm:text-sm">
               <li className="flex items-start gap-3">
                 <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                <span>Build templates with AI — subject + body in seconds</span>
+                <span>AI-powered templates & auto-saved drafts</span>
               </li>
               <li className="flex items-start gap-3">
                 <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                <span>Save drafts automatically; resume anytime</span>
+                <span>Smart targeting with scheduling & timezone support</span>
               </li>
               <li className="flex items-start gap-3">
                 <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                <span>Target all customers or Smart Segments</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                <span>Schedule ahead or send instantly; timezone aware</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                <span>Real‑time metrics for delivery, opens, clicks, unsubs</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                <span>Unlimited texts and emails — included, no hidden fees</span>
+                <span>Real-time metrics + unlimited texts & emails, no hidden fees</span>
               </li>
             </ul>
           </div>
