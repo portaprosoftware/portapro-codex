@@ -64,9 +64,9 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
     <section id="customer-portal" className="py-8 bg-white">
       <div className="container mx-auto max-w-6xl px-6">
         <header className="mb-8 space-y-2">
-          <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Customer Portals</h2>
-          <p className="text-lg text-muted-foreground font-medium text-center">
-            From confusion to clarity — your customers get everything they need in one place.
+          <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Accounts & Portal</h2>
+          <p className="text-muted-foreground">
+            <strong>Accounts:</strong> Internal customer account management for your team. <strong>Portal:</strong> Self-service portals for your customers.
           </p>
         </header>
 
