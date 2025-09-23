@@ -47,9 +47,9 @@ const FleetManagementShowcase: React.FC = () => {
     switch (activeTab) {
       case 'overview':
         return (
-          <div className="space-y-3 sm:space-y-6">
+          <div className="space-y-2 sm:space-y-3">
             {/* Vehicle Photos and Current Assignment Side by Side */}
-            <div className="grid md:grid-cols-2 gap-3 sm:gap-6">
+            <div className="grid md:grid-cols-2 gap-2 sm:gap-4">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
@@ -57,12 +57,12 @@ const FleetManagementShowcase: React.FC = () => {
                     <span className="truncate">Vehicle Photos</span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-3 sm:p-6">
+                <CardContent className="p-2 sm:p-4">
                   <div className="rounded-lg overflow-hidden">
                     <img 
                       src="/lovable-uploads/9abe22a2-0d1c-477b-8f9f-e39843ff0748.png" 
                       alt="2019 Isuzu NPR-HD Fleet Vehicle" 
-                      className="w-full h-48 object-cover object-center"
+                      className="w-full h-40 sm:h-48 object-cover object-center"
                     />
                   </div>
                 </CardContent>
@@ -75,7 +75,7 @@ const FleetManagementShowcase: React.FC = () => {
                     <span className="truncate">Current Assignment</span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3 sm:space-y-4 p-3 sm:p-6">
+                <CardContent className="space-y-2 sm:space-y-3 p-2 sm:p-4">
                   <div>
                     <span className="text-sm text-gray-600">Assigned Driver</span>
                     <p className="font-semibold text-lg">{mockVehicle.driver}</p>
@@ -104,7 +104,7 @@ const FleetManagementShowcase: React.FC = () => {
                   <span className="truncate">Vehicle Information</span>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-3 sm:p-6">
+              <CardContent className="p-2 sm:p-4">
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                   <div>
                     <span className="text-sm text-gray-600">Make</span>
@@ -331,9 +331,9 @@ const FleetManagementShowcase: React.FC = () => {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden transform scale-90 origin-top">
-      {/* Header - Reduced padding */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4">
+    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-2 sm:p-4">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex-1 min-w-0">
             <h2 className="text-lg sm:text-xl font-bold truncate">{mockVehicle.year} {mockVehicle.make} {mockVehicle.model}</h2>
@@ -349,9 +349,9 @@ const FleetManagementShowcase: React.FC = () => {
 
 
       {/* Navigation Pills - Desktop and Mobile */}
-      <div className="p-3 sm:p-4">
+      <div className="p-2 sm:p-3">
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-1 mb-3 sm:mb-4" aria-label="Vehicle navigation tabs">
+        <nav className="hidden md:flex items-center space-x-1 mb-2 sm:mb-3" aria-label="Vehicle navigation tabs">
           {tabs.map((tab) => (
             <button
               key={tab.key}
@@ -370,7 +370,7 @@ const FleetManagementShowcase: React.FC = () => {
         </nav>
 
         {/* Mobile Dropdown Navigation */}
-        <div className="md:hidden mb-3 sm:mb-4">
+        <div className="md:hidden mb-2 sm:mb-3">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="w-full justify-between bg-white">
