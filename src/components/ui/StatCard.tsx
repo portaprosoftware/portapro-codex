@@ -91,7 +91,7 @@ export const StatCard: React.FC<StatCardProps> = ({
           </div>
           
           {/* Title */}
-          <div className="text-sm font-semibold text-gray-900 font-sans truncate">
+          <div className="text-sm font-semibold text-gray-900 font-sans leading-tight">
             {title}
           </div>
           
