@@ -44,12 +44,12 @@ export const SchedulingGraphic: React.FC = () => {
   return (
     <div className="w-[90%] mx-auto bg-white rounded-xl p-3 border shadow-sm">
       {/* Header */}
-      <div className="flex items-center justify-between mb-3">
+      <div className="mb-3">
         <div className="flex items-center gap-2">
           <Users className="w-5 h-5 text-primary" />
           <h4 className="font-semibold text-foreground text-base">Schedule</h4>
         </div>
-        <div className="text-sm text-muted-foreground">{formatDateRange()}</div>
+        <div className="text-sm text-muted-foreground mt-1">{formatDateRange()}</div>
       </div>
 
       {/* Schedule Grid */}
@@ -73,35 +73,35 @@ export const SchedulingGraphic: React.FC = () => {
             {next3Days.map((day, dayIndex) => (
               <div key={`${driver}-${dayIndex}`} className="relative">
                 {/* Morning Shift */}
-                <div className={`h-3 rounded-sm mb-0.5 flex items-center justify-center ${
+                <div className={`h-4 rounded-sm mb-0.5 flex items-center justify-center ${
                   (driverIndex === 0 && dayIndex < 2) || (driverIndex === 1 && dayIndex >= 1)
                     ? 'bg-gradient-to-r from-blue-500 to-blue-600'
                     : 'bg-gray-200'
                 }`}>
                   {((driverIndex === 0 && dayIndex < 2) || (driverIndex === 1 && dayIndex >= 1)) && (
-                    <span className="text-[8px] text-white font-medium">AM</span>
+                    <span className="text-[9px] text-white font-medium">AM</span>
                   )}
                 </div>
                 
                 {/* Afternoon Shift */}
-                <div className={`h-3 rounded-sm mb-0.5 flex items-center justify-center ${
+                <div className={`h-4 rounded-sm mb-0.5 flex items-center justify-center ${
                   (driverIndex === 1 && dayIndex < 1) || (driverIndex === 0 && dayIndex === 2)
                     ? 'bg-gradient-to-r from-emerald-500 to-emerald-600'
                     : 'bg-gray-200'
                 }`}>
                   {((driverIndex === 1 && dayIndex < 1) || (driverIndex === 0 && dayIndex === 2)) && (
-                    <span className="text-[8px] text-white font-medium">PM</span>
+                    <span className="text-[9px] text-white font-medium">PM</span>
                   )}
                 </div>
 
                 {/* Evening Shift */}
-                <div className={`h-3 rounded-sm flex items-center justify-center ${
+                <div className={`h-4 rounded-sm flex items-center justify-center ${
                   (driverIndex === 0 && dayIndex === 1)
                     ? 'bg-gradient-to-r from-purple-500 to-purple-600'
                     : 'bg-gray-200'
                 }`}>
                   {(driverIndex === 0 && dayIndex === 1) && (
-                    <span className="text-[8px] text-white font-medium">EVE</span>
+                    <span className="text-[9px] text-white font-medium">EVE</span>
                   )}
                 </div>
 
