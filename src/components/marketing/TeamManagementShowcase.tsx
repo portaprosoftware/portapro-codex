@@ -412,13 +412,13 @@ export const TeamManagementShowcase: React.FC = () => {
                   </div>
                 </div>
                 
-                <div className="mt-3 sm:mt-4 p-2 sm:p-3 bg-blue-50 rounded-lg">
+                <div className="mt-3 sm:mt-4 p-2 sm:p-3 bg-gray-100 rounded-lg">
                   <div className="flex items-start gap-2">
-                    <AlertTriangle className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <AlertTriangle className="w-4 h-4 text-gray-600 flex-shrink-0 mt-0.5" />
                     <div className="text-xs">
-                      <p className="font-medium text-blue-800">4 items need immediate attention:</p>
-                      <ul className="mt-1 space-y-1 text-blue-700">
-                        <li>• Driver License - Not provided</li>
+                      <p className="font-medium text-gray-900">4 items need immediate attention:</p>
+                      <ul className="mt-1 space-y-1 text-gray-800">
+                        <li>• Training Docs - Not provided</li>
                         <li>• Medical Certificate - Not provided</li>
                         <li className="sm:block hidden">• Safety Training - Not provided</li>
                         <li className="sm:block hidden">• DOT Compliance - Not provided</li>
