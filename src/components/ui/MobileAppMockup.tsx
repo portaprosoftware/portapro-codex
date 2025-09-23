@@ -8,7 +8,7 @@ export const MobileAppMockup: React.FC = () => {
     <div className="relative mx-auto">
       {/* iPhone Frame */}
       <div className="bg-black rounded-[3rem] p-2 shadow-2xl">
-        <div className="bg-white rounded-[2.5rem] overflow-hidden relative" style={{ width: '320px', height: '640px' }}>
+        <div className="bg-white rounded-[2.5rem] overflow-hidden relative" style={{ width: '288px', height: '576px' }}>
           {/* Status Bar */}
           <div className="flex justify-between items-center px-6 pt-3 pb-1 bg-white">
             <span className="text-sm font-semibold">9:41</span>
