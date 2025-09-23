@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { CustomerPortalMockup } from "./CustomerPortalMockup";
 import {
   Home,
   History,
@@ -197,15 +198,9 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
         {/* Customer Portal Hero Section */}
         <div className="mb-8">
           <div className="grid lg:grid-cols-2 gap-8 items-center">
-            {/* Left Side - Portal Screenshot */}
+            {/* Left Side - Portal UI Component */}
             <div className="order-2 lg:order-1">
-              <div className="rounded-2xl overflow-hidden shadow-lg border border-border bg-white">
-                <img 
-                  src="/src/assets/customer-portal-dashboard.png" 
-                  alt="PortaPro Customer Portal Dashboard"
-                  className="w-full h-auto"
-                />
-              </div>
+              <CustomerPortalMockup />
             </div>
 
             {/* Right Side - Content */}
