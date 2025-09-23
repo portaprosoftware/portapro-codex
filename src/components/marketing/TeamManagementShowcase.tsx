@@ -455,6 +455,11 @@ export const TeamManagementShowcase: React.FC = () => {
           />
         </div>
 
+        {/* Interactive Text */}
+        <div className="text-center mb-4">
+          <p className="text-sm text-muted-foreground">Interactive: Click the tabs below to explore.</p>
+        </div>
+
         {/* Main Dashboard */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
           {/* Header */}
@@ -462,7 +467,6 @@ export const TeamManagementShowcase: React.FC = () => {
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div className="flex-1 min-w-0">
                 <h3 className="text-lg sm:text-xl font-bold truncate">Team Management Dashboard</h3>
-                <p className="text-sm text-white/80">Interactive: Click the tabs below to explore.</p>
               </div>
             </div>
           </div>
