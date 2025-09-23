@@ -737,16 +737,12 @@ export function InventoryManagementShowcase() {
 
   return (
     <article className="rounded-2xl border bg-card shadow-md p-5 animate-fade-in">
-      {/* Interactive Demo Info */}
-      <div className="mb-3">
+      {/* Header with Interactive Info */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
+        <h4 className="text-sm sm:text-base font-semibold text-foreground">{mockUnitData.productName}</h4>
         <p className="text-xs text-muted-foreground">
           Interactive: Click the tabs below to explore different inventory management features
         </p>
-      </div>
-      
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <h4 className="text-base font-semibold text-foreground">{mockUnitData.productName}</h4>
       </div>
 
       {/* Tab Navigation - Mobile Dropdown, Desktop Tabs */}
