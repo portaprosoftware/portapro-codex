@@ -680,7 +680,7 @@ export const Landing: React.FC = () => {
                   </li>
                   <li className="flex items-start gap-3">
                     <FileText className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Complete service history and condition monitoring</span>
+                    <span className="text-foreground">Complete service history and cost tracking</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CalendarClock className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
