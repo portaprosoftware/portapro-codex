@@ -52,9 +52,9 @@ const FleetManagementShowcase: React.FC = () => {
             <div className="grid md:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Camera className="w-5 h-5" />
-                    Vehicle Photos
+                  <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                    <Camera className="w-6 h-6 sm:w-5 sm:h-5" />
+                    <span className="truncate">Vehicle Photos</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -70,9 +70,9 @@ const FleetManagementShowcase: React.FC = () => {
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <TrendingUp className="w-5 h-5" />
-                    Current Assignment
+                  <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                    <TrendingUp className="w-6 h-6 sm:w-5 sm:h-5" />
+                    <span className="truncate">Current Assignment</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -99,9 +99,9 @@ const FleetManagementShowcase: React.FC = () => {
             {/* Vehicle Information - Full Width */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Eye className="w-5 h-5" />
-                  Vehicle Information
+                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                  <Eye className="w-6 h-6 sm:w-5 sm:h-5" />
+                  <span className="truncate">Vehicle Information</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -142,33 +142,39 @@ const FleetManagementShowcase: React.FC = () => {
           <div className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Wrench className="w-5 h-5" />
-                  Maintenance Schedule & History
+                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                  <Wrench className="w-6 h-6 sm:w-5 sm:h-5" />
+                  <span className="truncate">Maintenance Schedule</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center p-4 rounded-lg bg-white border border-gray-200">
-                    <div>
-                      <p className="font-semibold">Oil Change & Filter</p>
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 rounded-lg bg-white border border-gray-200 gap-2 sm:gap-0">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold truncate">Oil Change & Filter</p>
                       <p className="text-sm text-gray-600">Last: {mockVehicle.lastService} • Due: {mockVehicle.nextService}</p>
                     </div>
-                    <Badge variant="destructive">Overdue</Badge>
+                    <div className="flex-shrink-0">
+                      <Badge variant="destructive" className="whitespace-nowrap">Overdue</Badge>
+                    </div>
                   </div>
-                  <div className="flex justify-between items-center p-4 rounded-lg bg-white border border-gray-200">
-                    <div>
-                      <p className="font-semibold">Tire Rotation</p>
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 rounded-lg bg-white border border-gray-200 gap-2 sm:gap-0">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold truncate">Tire Rotation</p>
                       <p className="text-sm text-gray-600">Last: 2024-01-10 • Due: 2024-03-10</p>
                     </div>
-                    <Badge variant="secondary">Due Soon</Badge>
+                    <div className="flex-shrink-0">
+                      <Badge variant="secondary" className="whitespace-nowrap">Due Soon</Badge>
+                    </div>
                   </div>
-                  <div className="flex justify-between items-center p-4 rounded-lg bg-white border border-gray-200">
-                    <div>
-                      <p className="font-semibold">DOT Inspection</p>
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 rounded-lg bg-white border border-gray-200 gap-2 sm:gap-0">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold truncate">DOT Inspection</p>
                       <p className="text-sm text-gray-600">Last: 2023-12-15 • Due: 2024-12-15</p>
                     </div>
-                    <Badge variant="default">Current</Badge>
+                    <div className="flex-shrink-0">
+                      <Badge variant="default" className="whitespace-nowrap">Current</Badge>
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -181,9 +187,9 @@ const FleetManagementShowcase: React.FC = () => {
           <div className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Fuel className="w-5 h-5" />
-                  Fuel Tracking & Economy
+                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                  <Fuel className="w-6 h-6 sm:w-5 sm:h-5" />
+                  <span className="truncate">Fuel Tracking & Economy</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -213,9 +219,9 @@ const FleetManagementShowcase: React.FC = () => {
           <div className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <User className="w-5 h-5" />
-                  Driver Assignments & Routes
+                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                  <User className="w-6 h-6 sm:w-5 sm:h-5" />
+                  <span className="truncate">Driver Assignments</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -241,26 +247,30 @@ const FleetManagementShowcase: React.FC = () => {
           <div className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <AlertTriangle className="w-5 h-5" />
-                  Damage Reports & Incidents
+                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                  <AlertTriangle className="w-6 h-6 sm:w-5 sm:h-5" />
+                  <span className="truncate">Damage Reports</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center p-4 rounded-lg bg-white border border-gray-200">
-                    <div>
-                      <p className="font-semibold">Minor Dent - Rear Panel</p>
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 rounded-lg bg-white border border-gray-200 gap-2 sm:gap-0">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold truncate">Minor Dent - Rear Panel</p>
                       <p className="text-sm text-gray-600">Reported: 2024-01-20 • Driver: Mike Johnson</p>
                     </div>
-                    <Badge variant="secondary">Pending Repair</Badge>
+                    <div className="flex-shrink-0">
+                      <Badge variant="secondary" className="whitespace-nowrap">Pending Repair</Badge>
+                    </div>
                   </div>
-                  <div className="flex justify-between items-center p-4 rounded-lg bg-white border border-gray-200">
-                    <div>
-                      <p className="font-semibold">Scratched Bumper</p>
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 rounded-lg bg-white border border-gray-200 gap-2 sm:gap-0">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold truncate">Scratched Bumper</p>
                       <p className="text-sm text-gray-600">Reported: 2024-01-10 • Driver: Sarah Wilson</p>
                     </div>
-                    <Badge variant="default">Repaired</Badge>
+                    <div className="flex-shrink-0">
+                      <Badge variant="default" className="whitespace-nowrap">Repaired</Badge>
+                    </div>
                   </div>
                   <p className="text-sm text-gray-600">Total Reports: {mockVehicle.damageReports}</p>
                 </div>
@@ -274,33 +284,39 @@ const FleetManagementShowcase: React.FC = () => {
           <div className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <FileText className="w-5 h-5" />
-                  Vehicle Documents & Compliance
+                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                  <FileText className="w-6 h-6 sm:w-5 sm:h-5" />
+                  <span className="truncate">Documents & Compliance</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center p-4 rounded-lg bg-white border border-gray-200">
-                    <div>
-                      <p className="font-semibold">Registration</p>
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 rounded-lg bg-white border border-gray-200 gap-2 sm:gap-0">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold truncate">Registration</p>
                       <p className="text-sm text-gray-600">Expires: 2024-12-31</p>
                     </div>
-                    <Badge variant="default">Valid</Badge>
+                    <div className="flex-shrink-0">
+                      <Badge variant="default" className="whitespace-nowrap">Valid</Badge>
+                    </div>
                   </div>
-                  <div className="flex justify-between items-center p-4 rounded-lg bg-white border border-gray-200">
-                    <div>
-                      <p className="font-semibold">Insurance Policy</p>
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 rounded-lg bg-white border border-gray-200 gap-2 sm:gap-0">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold truncate">Insurance Policy</p>
                       <p className="text-sm text-gray-600">Expires: 2024-08-15</p>
                     </div>
-                    <Badge variant="default">Valid</Badge>
+                    <div className="flex-shrink-0">
+                      <Badge variant="default" className="whitespace-nowrap">Valid</Badge>
+                    </div>
                   </div>
-                  <div className="flex justify-between items-center p-4 rounded-lg bg-white border border-gray-200">
-                    <div>
-                      <p className="font-semibold">DOT Medical Card</p>
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 rounded-lg bg-white border border-gray-200 gap-2 sm:gap-0">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold truncate">DOT Medical Card</p>
                       <p className="text-sm text-gray-600">Expires: 2024-03-30</p>
                     </div>
-                    <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0">Expiring Soon</Badge>
+                    <div className="flex-shrink-0">
+                      <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0 whitespace-nowrap">Expiring Soon</Badge>
+                    </div>
                   </div>
                   <p className="text-sm text-gray-600">Total Documents: {mockVehicle.documentsCount}</p>
                 </div>
@@ -318,12 +334,13 @@ const FleetManagementShowcase: React.FC = () => {
     <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden transform scale-90 origin-top">
       {/* Header - Reduced padding */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-bold">{mockVehicle.year} {mockVehicle.make} {mockVehicle.model} <span className="text-blue-100 text-sm font-normal">• License: {mockVehicle.licensePlate} • VIN: {mockVehicle.vin}</span></h2>
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div className="flex-1 min-w-0">
+            <h2 className="text-lg sm:text-xl font-bold truncate">{mockVehicle.year} {mockVehicle.make} {mockVehicle.model}</h2>
+            <p className="text-blue-100 text-xs sm:text-sm font-normal truncate">License: {mockVehicle.licensePlate} • VIN: {mockVehicle.vin}</p>
           </div>
-          <div className="text-right">
-            <Badge className="bg-gradient-to-r from-green-600 to-green-700 text-white border-0 text-xs">
+          <div className="flex-shrink-0">
+            <Badge className="bg-gradient-to-r from-green-600 to-green-700 text-white border-0 text-xs whitespace-nowrap">
               {mockVehicle.status}
             </Badge>
           </div>
