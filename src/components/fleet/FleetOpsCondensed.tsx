@@ -38,9 +38,29 @@ export const FleetOpsCondensed: React.FC = () => {
             alt="Maintenance notifications showing past due and due this week tasks" 
             className="w-full h-auto rounded-lg" 
           />
-          <div className="text-sm text-muted-foreground">
-            Threshold-based alerts, drag-and-drop scheduling, auto-generated work orders
-          </div>
+          
+          <Collapsible>
+            <CollapsibleTrigger className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <ChevronRight className="w-4 h-4" />
+              Never miss a service with automated alerts and a clean calendar view
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-2">
+              <ul className="space-y-2 text-sm">
+                <li className="flex items-start gap-3">
+                  <BellRing className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Threshold-based alerts: mileage, engine hours, dates</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CalendarClock className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Drag-and-drop scheduling with conflict warnings</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Wrench className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Auto-generate work orders with parts and labor</span>
+                </li>
+              </ul>
+            </CollapsibleContent>
+          </Collapsible>
         </div>
         
         <div className="space-y-4">
@@ -53,9 +73,29 @@ export const FleetOpsCondensed: React.FC = () => {
             alt="Fuel management dashboard showing total gallons, costs, and fleet MPG metrics" 
             className="w-full h-auto rounded-lg" 
           />
-          <div className="text-sm text-muted-foreground">
-            Receipt photos, MPG tracking, budget vs actual with trends
-          </div>
+          
+          <Collapsible>
+            <CollapsibleTrigger className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <ChevronRight className="w-4 h-4" />
+              Understand spend, MPG, and trends across the fleet
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-2">
+              <ul className="space-y-2 text-sm">
+                <li className="flex items-start gap-3">
+                  <Camera className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Receipt photos with automatic data capture</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Gauge className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">MPG by vehicle and route—spot outliers fast</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <DollarSign className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Monthly budget vs actual with trendlines</span>
+                </li>
+              </ul>
+            </CollapsibleContent>
+          </Collapsible>
         </div>
       </div>
 
@@ -71,9 +111,29 @@ export const FleetOpsCondensed: React.FC = () => {
             alt="Vehicle selection interface showing fleet vehicles with license plates, makes, models, and availability status" 
             className="w-full h-auto rounded-lg" 
           />
-          <div className="text-sm text-muted-foreground">
-            Drag-and-drop dispatch, pre-trip checklists, route syncing to mobile
-          </div>
+          
+          <Collapsible>
+            <CollapsibleTrigger className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <ChevronRight className="w-4 h-4" />
+              Simple, clear dispatch—drivers know exactly where to go
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-2">
+              <ul className="space-y-2 text-sm">
+                <li className="flex items-start gap-3">
+                  <Users className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Drag-and-drop shift board with availability</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <ClipboardList className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Pre-trip checklists and handoff notes</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <MapPin className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Routes and stops synced to the mobile app</span>
+                </li>
+              </ul>
+            </CollapsibleContent>
+          </Collapsible>
         </div>
         
         <div className="space-y-4">
@@ -86,9 +146,37 @@ export const FleetOpsCondensed: React.FC = () => {
             alt="Truck Stock Management interface showing vehicle selection dropdown and Route vs Truck Stock comparison with service date picker" 
             className="w-full h-auto rounded-lg" 
           />
-          <div className="text-sm text-muted-foreground">
-            Vehicle selection, inventory tracking, stock readiness validation
-          </div>
+          
+          <Collapsible>
+            <CollapsibleTrigger className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <ChevronRight className="w-4 h-4" />
+              Optimize vehicle loading and track real-time inventory across your fleet
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-2">
+              <ul className="space-y-2 text-sm">
+                <li className="flex items-start gap-3">
+                  <Truck className="w-4 h-4 text-purple-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Vehicle selection and inventory tracking</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <BarChart3 className="w-4 h-4 text-purple-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Route vs truck stock comparison</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-4 h-4 text-purple-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Stock readiness validation</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Calendar className="w-4 h-4 text-purple-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Service date planning</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Gauge className="w-4 h-4 text-purple-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-foreground">Real-time inventory status</span>
+                </li>
+              </ul>
+            </CollapsibleContent>
+          </Collapsible>
         </div>
       </div>
 
@@ -118,9 +206,29 @@ export const FleetOpsCondensed: React.FC = () => {
                 alt="Transport & Spill Compliance dashboard showing document status alerts for overdue, critical, and warning items" 
                 className="w-full h-auto rounded-lg" 
               />
-              <div className="text-sm text-muted-foreground">
-                Transport manifests, spill incidents, auto reminders for expiring documents
-              </div>
+              
+              <Collapsible>
+                <CollapsibleTrigger className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  <ChevronRight className="w-4 h-4" />
+                  Stay audit-ready with structured logs and document tracking
+                </CollapsibleTrigger>
+                <CollapsibleContent className="mt-2">
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-start gap-3">
+                      <CheckCircle className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
+                      <span className="text-foreground">Transport manifests & chain-of-custody</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <CheckCircle className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
+                      <span className="text-foreground">Spill incidents with photos, notes, and follow-ups</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <CheckCircle className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
+                      <span className="text-foreground">Auto reminders for expiring documents</span>
+                    </li>
+                  </ul>
+                </CollapsibleContent>
+              </Collapsible>
             </div>
 
             <div className="space-y-4">
@@ -133,9 +241,29 @@ export const FleetOpsCondensed: React.FC = () => {
                 alt="New DVIR form interface showing asset type selection, vehicle details, and defect reporting for fleet maintenance" 
                 className="w-full h-auto rounded-lg" 
               />
-              <div className="text-sm text-muted-foreground">
-                Pre/Post-trip DVIRs, maintenance logs, driver photos and signatures
-              </div>
+              
+              <Collapsible>
+                <CollapsibleTrigger className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  <ChevronRight className="w-4 h-4" />
+                  Pre/Post-trip inspections with digital documentation
+                </CollapsibleTrigger>
+                <CollapsibleContent className="mt-2">
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-start gap-3">
+                      <CheckCircle className="w-4 h-4 text-orange-600 flex-shrink-0 mt-0.5" />
+                      <span className="text-foreground">Pre/Post-trip DVIR checklists</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <CheckCircle className="w-4 h-4 text-orange-600 flex-shrink-0 mt-0.5" />
+                      <span className="text-foreground">Maintenance logs and alerts</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <CheckCircle className="w-4 h-4 text-orange-600 flex-shrink-0 mt-0.5" />
+                      <span className="text-foreground">Driver photos and signatures</span>
+                    </li>
+                  </ul>
+                </CollapsibleContent>
+              </Collapsible>
             </div>
           </div>
 
