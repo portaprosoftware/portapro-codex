@@ -337,7 +337,7 @@ const FleetManagementShowcase: React.FC = () => {
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex-1 min-w-0">
             <h2 className="text-lg sm:text-xl font-bold truncate">{mockVehicle.year} {mockVehicle.make} {mockVehicle.model}</h2>
-            <p className="text-blue-100 text-xs sm:text-sm font-normal truncate">License: {mockVehicle.licensePlate} • VIN: {mockVehicle.vin}</p>
+            <p className="text-blue-100 text-xs sm:text-sm font-normal truncate">License: {mockVehicle.licensePlate}<span className="hidden sm:inline"> • VIN: {mockVehicle.vin}</span></p>
           </div>
           <div className="flex-shrink-0">
             <Badge className="bg-gradient-to-r from-green-600 to-green-700 text-white border-0 text-xs whitespace-nowrap">
