@@ -42,7 +42,6 @@ const mockTimeOffRequests = [
 
 const mockCredentials = [
   { id: 1, driver: 'Mike Johnson', type: 'CDL License', expires: '2024-02-15', status: 'warning' },
-  { id: 2, driver: 'David Rodriguez', type: 'Medical Card', expires: '2024-01-30', status: 'critical' },
   { id: 3, driver: 'Sarah Chen', type: 'Safety Training', expires: '2024-03-10', status: 'good' }
 ];
 
@@ -256,7 +255,7 @@ export const TeamManagementShowcase: React.FC = () => {
                     <img 
                       src="/lovable-uploads/0311afae-06cb-4157-9104-e58e14de00b0.png" 
                       alt="Training Requirements management interface" 
-                      className="w-full h-32 sm:h-40 object-cover object-center"
+                      className="w-full h-20 sm:h-24 object-cover object-center"
                     />
                   </div>
                 </CardContent>
