@@ -112,7 +112,7 @@ export const SchedulingGraphic: React.FC = () => {
       </div>
 
       {/* Legend */}
-      <div className="flex items-center justify-between mt-3 pt-2 border-t border-gray-200">
+      <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-200">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1">
             <div className="w-2 h-2 rounded bg-gradient-to-r from-blue-500 to-blue-600"></div>

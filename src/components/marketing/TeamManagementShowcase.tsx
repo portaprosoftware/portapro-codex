@@ -109,7 +109,7 @@ export const TeamManagementShowcase: React.FC = () => {
             </div>
 
             {/* Interactive Schedule Grid */}
-            <div className="h-64 sm:h-80">
+            <div className="h-56 sm:h-64">
               <SchedulingGraphic />
             </div>
           </div>
