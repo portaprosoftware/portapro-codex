@@ -64,7 +64,7 @@ export const SmartWizardShowcase: React.FC = () => {
         </aside>
 
         {/* Right: "Make-believe screenshots" stack - Mobile Responsive */}
-        <main className="space-y-4 sm:space-y-6 transform origin-top-right scale-[0.9] sm:scale-[0.8] md:scale-[0.85] lg:scale-[0.8] mt-4 sm:mt-8">
+        <main className="space-y-4 sm:space-y-6 transform origin-top-right scale-[0.9] sm:scale-[0.8] md:scale-[0.85] lg:scale-[0.8] mt-4 sm:mt-8 mx-auto lg:mx-0 max-w-2xl lg:max-w-none">
           {/* Main mock: Create Job */}
           <AspectRatio ratio={16/10}>
             <div className="rounded-2xl border bg-card shadow-lg overflow-hidden animate-fade-in">
