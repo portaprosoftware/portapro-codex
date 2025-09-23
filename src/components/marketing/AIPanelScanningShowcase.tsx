@@ -104,10 +104,6 @@ export const AIPanelScanningShowcase: React.FC = () => {
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle className="w-3.5 h-3.5 text-primary" /> 
-                  Instant inventory updates
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="w-3.5 h-3.5 text-primary" /> 
                   Reads even weathered panels
                 </li>
               </ul>
