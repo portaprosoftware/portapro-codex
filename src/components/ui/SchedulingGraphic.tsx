@@ -43,27 +43,21 @@ export const SchedulingGraphic: React.FC = () => {
 
   return (
     <div className="w-[90%] mx-auto bg-white rounded-xl p-3 border shadow-sm">
-      {/* Header */}
-      <div className="mb-3">
+      {/* Header with dates */}
+      <div className="grid grid-cols-4 gap-1 mb-3">
         <div className="flex items-center gap-2">
           <Users className="w-5 h-5 text-primary" />
           <h4 className="font-semibold text-foreground text-base">Schedule</h4>
         </div>
-        <div className="text-sm text-muted-foreground mt-1">{formatDateRange()}</div>
+        {next3Days.map((day, index) => (
+          <div key={index} className="text-sm font-medium text-center text-muted-foreground py-1">
+            <div>{day.fullDate.toLocaleDateString('en-US', { month: 'short' })} {day.date}</div>
+          </div>
+        ))}
       </div>
 
       {/* Schedule Grid */}
       <div className="space-y-2">
-        {/* Days Header */}
-        <div className="grid grid-cols-4 gap-1">
-          <div className="text-sm font-medium text-muted-foreground"></div>
-          {next3Days.map((day, index) => (
-            <div key={index} className="text-sm font-medium text-center text-muted-foreground py-1">
-              <div>{day.fullDate.toLocaleDateString('en-US', { month: 'short' })} {day.date}</div>
-            </div>
-          ))}
-        </div>
-
         {/* Driver Rows */}
         {drivers.map((driver, driverIndex) => (
           <div key={driver} className="grid grid-cols-4 gap-1">
