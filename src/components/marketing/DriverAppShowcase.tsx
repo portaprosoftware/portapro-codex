@@ -57,23 +57,40 @@ export const DriverAppShowcase: React.FC = () => {
             ))}
           </div>
 
-          <ul className="space-y-3" aria-label="Driver app highlights">
-            {[
-              'Turn-by-turn optimized routes with stop reordering',
-              'Open Apple Maps, Google Maps, or Waze with one tap',
-              'Job-specific satellite pins for exact drop-off and pickup',
-              'Full offline mode: queue updates, photos, signatures',
-              'Automatic sync and conflict-safe retries when online',
-              'Service reports linked to jobs with photos and signatures',
-            ].map((item, idx) => (
-              <li key={idx} className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center mt-0.5">
-                  <CheckCircle className="w-3.5 h-3.5" />
-                </div>
-                <span className="text-muted-foreground">{item}</span>
-              </li>
-            ))}
-          </ul>
+          <div className="space-y-4" aria-label="Driver app highlights">
+            {/* Routing & Drop-Offs */}
+            <div className="space-y-2">
+              <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
+                🚚 Routing & Drop-Offs
+              </h3>
+              <ul className="space-y-1 ml-6">
+                <li className="text-muted-foreground text-sm">Optimized turn-by-turn routes with stop reordering</li>
+                <li className="text-muted-foreground text-sm">One-tap navigation via Apple Maps, Google Maps, or Waze</li>
+                <li className="text-muted-foreground text-sm">Job-specific satellite pins for exact pickup & drop-off</li>
+              </ul>
+            </div>
+
+            {/* Offline & Sync */}
+            <div className="space-y-2">
+              <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
+                📶 Offline & Sync
+              </h3>
+              <ul className="space-y-1 ml-6">
+                <li className="text-muted-foreground text-sm">Full offline mode for updates, photos, and signatures</li>
+                <li className="text-muted-foreground text-sm">Automatic sync with conflict-safe retries when online</li>
+              </ul>
+            </div>
+
+            {/* Service Reports */}
+            <div className="space-y-2">
+              <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
+                📝 Service Reports
+              </h3>
+              <ul className="space-y-1 ml-6">
+                <li className="text-muted-foreground text-sm">Linked to jobs with photos & signatures for proof of service</li>
+              </ul>
+            </div>
+          </div>
 
           <div className="rounded-xl border bg-muted/30 p-4 space-y-2">
             <div className="text-sm font-semibold text-foreground">What drivers love</div>
