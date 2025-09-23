@@ -494,19 +494,19 @@ export const TeamManagementShowcase: React.FC = () => {
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div className="flex-1 min-w-0">
                 <h3 className="text-lg sm:text-xl font-bold truncate">Team Management Dashboard</h3>
-                <p className="text-sm text-white/80">Interactive demo of scheduling, time-off, and compliance features</p>
+                <p className="text-sm text-white/80">Interactive: Click the tabs below to explore.</p>
               </div>
             </div>
           </div>
 
           {/* Navigation */}
           <div className="p-2 sm:p-3">
-            {/* Mobile Dropdown Navigation */}
-            <div className="block sm:hidden mb-2">
+            {/* Mobile & Tablet Dropdown Navigation */}
+            <div className="block lg:hidden mb-2">
               <select 
                 value={activeTab} 
                 onChange={(e) => setActiveTab(e.target.value)}
-                className="w-full p-2 border rounded-lg bg-white text-sm"
+                className="w-full p-2 border rounded-lg bg-white text-sm shadow-sm z-50 relative"
               >
                 {teamTabs.map((tab) => (
                   <option key={tab.key} value={tab.key}>
@@ -517,7 +517,7 @@ export const TeamManagementShowcase: React.FC = () => {
             </div>
 
             {/* Desktop Navigation */}
-            <nav className="hidden sm:flex flex-wrap items-center gap-1 mb-2 sm:mb-3" aria-label="Team management tabs">
+            <nav className="hidden lg:flex flex-wrap items-center gap-1 mb-2 sm:mb-3" aria-label="Team management tabs">
               {teamTabs.map((tab) => (
                 <Button
                   key={tab.key}
