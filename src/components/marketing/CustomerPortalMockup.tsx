@@ -48,14 +48,14 @@ export const CustomerPortalMockup: React.FC = () => {
                     </h3>
                   </div>
                   <div className="p-4 space-y-3">
-                    <div className="p-3 bg-orange-50 rounded-lg border border-orange-200">
-                      <p className="text-sm font-medium text-orange-900">Service scheduled</p>
-                      <p className="text-xs text-orange-700">Tomorrow at 9:00 AM</p>
+                    <div className="p-3 bg-gray-100 rounded-lg border border-gray-200">
+                      <p className="text-sm font-medium text-gray-900">Service scheduled</p>
+                      <p className="text-xs text-gray-700">Tomorrow at 9:00 AM</p>
                     </div>
                     
-                    <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                      <p className="text-sm font-medium text-blue-900">Invoice ready</p>
-                      <p className="text-xs text-blue-700">Ready for review</p>
+                    <div className="p-3 bg-gray-100 rounded-lg border border-gray-200">
+                      <p className="text-sm font-medium text-gray-900">Invoice ready</p>
+                      <p className="text-xs text-gray-700">Ready for review</p>
                     </div>
                   </div>
                 </div>
