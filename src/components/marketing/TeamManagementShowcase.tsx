@@ -48,8 +48,8 @@ const mockCredentials = [
 
 const mockDriverProfile = {
   name: 'John Doe',
-  email: 'tylertdouglas@outlook.com',
-  phone: '3305627425',
+  email: 'john.doe@ABCporta-rentals.com',
+  phone: '987-555-1234',
   initials: 'JD',
   role: 'Driver',
   status: 'Active'
@@ -416,7 +416,7 @@ export const TeamManagementShowcase: React.FC = () => {
             {/* Items Need Attention */}
             <Card>
               <CardHeader className="pb-0">
-                <CardTitle className="text-sm sm:text-base">4 items need immediate attention:</CardTitle>
+                <CardTitle className="text-sm sm:text-base">3 items need immediate attention:</CardTitle>
               </CardHeader>
               <CardContent className="p-2 sm:p-3 pt-0">
                 <div className="space-y-2">
@@ -431,10 +431,6 @@ export const TeamManagementShowcase: React.FC = () => {
                   <div className="flex items-center gap-2 text-sm">
                     <AlertTriangle className="w-4 h-4 text-red-600" />
                     <span>DOT Compliance - Not provided</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <AlertTriangle className="w-4 h-4 text-red-600" />
-                    <span>Insurance Documents - Not provided</span>
                   </div>
                 </div>
               </CardContent>
