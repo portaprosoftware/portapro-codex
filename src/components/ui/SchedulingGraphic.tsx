@@ -2,9 +2,40 @@ import React from 'react';
 import { Users, Clock, AlertTriangle } from 'lucide-react';
 
 export const SchedulingGraphic: React.FC = () => {
-  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+  // Generate the next 7 days starting from today
+  const generateNext7Days = () => {
+    const today = new Date();
+    const days = [];
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      days.push({
+        name: dayNames[date.getDay()],
+        date: date.getDate(),
+        fullDate: date
+      });
+    }
+    return days;
+  };
+
+  const next7Days = generateNext7Days();
   const drivers = ['Mike R.', 'Sarah K.', 'John D.'];
   const shifts = ['AM', 'PM', 'EVE'];
+
+  // Format date range for header
+  const formatDateRange = () => {
+    const startDate = next7Days[0].fullDate;
+    const endDate = next7Days[6].fullDate;
+    const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
+    
+    const start = startDate.toLocaleDateString('en-US', options);
+    const end = endDate.toLocaleDateString('en-US', options);
+    const year = endDate.getFullYear();
+    
+    return `${start} - ${end}, ${year}`;
+  };
 
   return (
     <div className="w-full bg-white rounded-xl p-4 border shadow-sm">
@@ -14,29 +45,30 @@ export const SchedulingGraphic: React.FC = () => {
           <Users className="w-5 h-5 text-primary" />
           <h4 className="font-semibold text-foreground">Weekly Schedule</h4>
         </div>
-        <div className="text-xs text-muted-foreground">Dec 11-15, 2025</div>
+        <div className="text-xs text-muted-foreground">{formatDateRange()}</div>
       </div>
 
       {/* Schedule Grid */}
       <div className="space-y-3">
         {/* Days Header */}
-        <div className="grid grid-cols-6 gap-2">
+        <div className="grid grid-cols-8 gap-2">
           <div className="text-xs font-medium text-muted-foreground"></div>
-          {days.map(day => (
-            <div key={day} className="text-xs font-medium text-center text-muted-foreground py-1">
-              {day}
+          {next7Days.map((day, index) => (
+            <div key={index} className="text-xs font-medium text-center text-muted-foreground py-1">
+              <div>{day.name}</div>
+              <div className="text-[10px] text-gray-500">{day.date}</div>
             </div>
           ))}
         </div>
 
         {/* Driver Rows */}
         {drivers.map((driver, driverIndex) => (
-          <div key={driver} className="grid grid-cols-6 gap-2">
+          <div key={driver} className="grid grid-cols-8 gap-2">
             <div className="text-xs font-medium text-muted-foreground py-2 flex items-center">
               {driver}
             </div>
-            {days.map((day, dayIndex) => (
-              <div key={`${driver}-${day}`} className="relative">
+            {next7Days.map((day, dayIndex) => (
+              <div key={`${driver}-${dayIndex}`} className="relative">
                 {/* Morning Shift */}
                 <div className={`h-4 rounded-sm mb-1 flex items-center justify-center ${
                   (driverIndex === 0 && dayIndex < 3) || (driverIndex === 1 && dayIndex >= 2) || (driverIndex === 2 && dayIndex === 1)

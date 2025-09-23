@@ -66,13 +66,7 @@ export const TeamManagementShowcase: React.FC = () => {
             <div className="grid md:grid-cols-2 gap-2 sm:gap-4">
               {/* Scheduling Features */}
               <Card>
-                <CardHeader className="pb-1">
-                  <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                    <Users className="w-5 h-5 text-primary" />
-                    <span className="truncate">Scheduling Features</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2 sm:space-y-3 p-2 sm:p-3 pt-1">
+                <CardContent className="space-y-2 sm:space-y-3 p-2 sm:p-3">
                   <div className="space-y-2">
                     <div className="flex items-start gap-2">
                       <CalendarClock className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
@@ -96,13 +90,7 @@ export const TeamManagementShowcase: React.FC = () => {
 
               {/* Today's Shifts */}
               <Card>
-                <CardHeader className="pb-1">
-                  <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                    <CalendarClock className="w-5 h-5 text-green-600" />
-                    <span className="truncate">Today's Shifts</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-2 sm:p-3 pt-1">
+                <CardContent className="p-2 sm:p-3">
                   <div className="space-y-2">
                     {mockShifts.map((shift) => (
                       <div key={shift.id} className="flex justify-between items-center p-2 rounded bg-gray-50">
