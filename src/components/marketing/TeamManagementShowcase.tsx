@@ -243,21 +243,29 @@ export const TeamManagementShowcase: React.FC = () => {
                 </CardContent>
               </Card>
 
-              {/* Training Image */}
+              {/* Training Status */}
               <Card>
                 <CardHeader className="pb-0">
                   <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                     <FileText className="w-5 h-5 text-blue-600" />
-                    <span className="truncate">Training Interface</span>
+                    <span className="truncate">Training Status</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-2 sm:p-3 pt-0">
-                  <div className="rounded-lg overflow-hidden">
-                    <img 
-                      src="/lovable-uploads/0311afae-06cb-4157-9104-e58e14de00b0.png" 
-                      alt="Training Requirements management interface" 
-                      className="w-full h-20 sm:h-24 object-cover object-center"
-                    />
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-medium text-sm">Commercial Driver License Class B</h4>
+                      <Badge className="bg-gradient-to-r from-red-500 to-red-600 text-white border-0 text-xs">
+                        Required
+                      </Badge>
+                    </div>
+                    <div className="flex items-center justify-between mb-2 text-sm">
+                      <span className="font-medium">Active: 2</span>
+                      <span className="text-orange-600 font-medium">Expiring: 0</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full" style={{ width: '100%' }}></div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
