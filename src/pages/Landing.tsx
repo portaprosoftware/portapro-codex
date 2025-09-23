@@ -908,11 +908,6 @@ export const Landing: React.FC = () => {
           </div>
 
 
-          {/* Fleet KPIs */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-            <StatCard title="Active Drivers" value={8} icon={Users} gradientFrom="hsl(217, 91%, 60%)" gradientTo="hsl(217, 91%, 50%)" iconBg="hsl(217, 91%, 60%)" subtitle={<span className="text-muted-foreground">On schedule today</span>} />
-          </div>
-
           {/* Consolidated Fleet Management */}
           <ConsolidatedFleetCard />
 
