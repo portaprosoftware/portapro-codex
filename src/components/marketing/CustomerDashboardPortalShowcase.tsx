@@ -82,63 +82,39 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
         {/* Before & After Comparison */}
         <div className="grid lg:grid-cols-2 gap-8 mb-12">
           {/* Without Portal */}
-          <div className="rounded-2xl border border-red-200 bg-red-50 p-6">
+          <div className="rounded-2xl bg-gradient-to-br from-red-500 to-red-600 p-6 text-white shadow-lg">
             <div className="text-center mb-6">
-              <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-3">
-                <Frown className="w-6 h-6 text-red-600" />
+              <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-3">
+                <Frown className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-red-800 mb-2">Without a Portal</h3>
-              <p className="text-sm text-red-600">Chaos and frustration for your customers</p>
+              <h3 className="text-xl font-bold text-white mb-2">Without a Portal</h3>
+              <p className="text-sm text-red-100">Chaos and frustration for your customers</p>
             </div>
             
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 p-3 bg-white rounded-lg border border-red-200">
-                <Phone className="w-5 h-5 text-red-500" />
-                <span className="text-sm text-red-700">Constant phone calls for updates</span>
-              </div>
-              <div className="flex items-center gap-3 p-3 bg-white rounded-lg border border-red-200">
-                <FileText className="w-5 h-5 text-red-500" />
-                <span className="text-sm text-red-700">Paper invoices get lost</span>
-              </div>
-              <div className="flex items-center gap-3 p-3 bg-white rounded-lg border border-red-200">
-                <AlertTriangle className="w-5 h-5 text-red-500" />
-                <span className="text-sm text-red-700">No proof of service completion</span>
-              </div>
-              <div className="flex items-center gap-3 p-3 bg-white rounded-lg border border-red-200">
-                <AlertOctagon className="w-5 h-5 text-red-500" />
-                <span className="text-sm text-red-700">Billing disputes and confusion</span>
-              </div>
-            </div>
+            <ul className="space-y-2 text-sm text-red-100">
+              <li>• Constant phone calls for updates</li>
+              <li>• Paper invoices get lost</li>
+              <li>• No proof of service completion</li>
+              <li>• Billing disputes and confusion</li>
+            </ul>
           </div>
 
           {/* With Portal */}
-          <div className="rounded-2xl border border-green-200 bg-green-50 p-6">
+          <div className="rounded-2xl bg-gradient-to-br from-green-500 to-green-600 p-6 text-white shadow-lg">
             <div className="text-center mb-6">
-              <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-3">
-                <Smile className="w-6 h-6 text-green-600" />
+              <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-3">
+                <Smile className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-green-800 mb-2">With PortaPro Customer Portal</h3>
-              <p className="text-sm text-green-600">Self-service clarity and confidence</p>
+              <h3 className="text-xl font-bold text-white mb-2">With PortaPro Customer Portal</h3>
+              <p className="text-sm text-green-100">Self-service clarity and confidence</p>
             </div>
             
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 p-3 bg-white rounded-lg border border-green-200">
-                <Monitor className="w-5 h-5 text-green-500" />
-                <span className="text-sm text-green-700">Real-time dashboard with all info</span>
-              </div>
-              <div className="flex items-center gap-3 p-3 bg-white rounded-lg border border-green-200">
-                <CheckCircle className="w-5 h-5 text-green-500" />
-                <span className="text-sm text-green-700">Digital proof with photos & GPS</span>
-              </div>
-              <div className="flex items-center gap-3 p-3 bg-white rounded-lg border border-green-200">
-                <CreditCard className="w-5 h-5 text-green-500" />
-                <span className="text-sm text-green-700">Instant online payments</span>
-              </div>
-              <div className="flex items-center gap-3 p-3 bg-white rounded-lg border border-green-200">
-                <MessageSquare className="w-5 h-5 text-green-500" />
-                <span className="text-sm text-green-700">24/7 support ticket system</span>
-              </div>
-            </div>
+            <ul className="space-y-2 text-sm text-green-100">
+              <li>• Real-time dashboard with all info</li>
+              <li>• Digital proof with photos & GPS</li>
+              <li>• Instant online payments</li>
+              <li>• 24/7 support ticket system</li>
+            </ul>
           </div>
         </div>
 
