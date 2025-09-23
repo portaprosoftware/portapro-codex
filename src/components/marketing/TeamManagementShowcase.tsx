@@ -457,16 +457,7 @@ export const TeamManagementShowcase: React.FC = () => {
         </div>
 
         {/* Team KPIs */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-          <StatCard 
-            title="Shifts Today" 
-            value={8} 
-            icon={CalendarClock} 
-            gradientFrom="hsl(142, 76%, 36%)" 
-            gradientTo="hsl(142, 76%, 25%)" 
-            iconBg="hsl(142, 76%, 36%)" 
-            subtitle={<span className="text-muted-foreground">Scheduled shifts</span>} 
-          />
+        <div className="grid sm:grid-cols-2 gap-4 mb-8">
           <StatCard 
             title="Approved Time Off" 
             value={1} 
