@@ -42,6 +42,7 @@ const mockTimeOffRequests = [
 
 const mockCredentials = [
   { id: 1, driver: 'Mike Johnson', type: 'CDL License', expires: '2024-02-15', status: 'warning' },
+  { id: 2, driver: 'David Rodriguez', type: 'Medical Card', expires: '2024-01-30', status: 'critical' },
   { id: 3, driver: 'Sarah Chen', type: 'Safety Training', expires: '2024-03-10', status: 'good' }
 ];
 
@@ -268,22 +269,39 @@ export const TeamManagementShowcase: React.FC = () => {
                 <CardTitle className="text-base sm:text-lg">Credential Status</CardTitle>
               </CardHeader>
               <CardContent className="p-2 sm:p-3 pt-0">
-                <div className="space-y-2">
-                  {mockCredentials.map((credential) => (
-                    <div key={credential.id} className="flex justify-between items-center p-2 rounded bg-gray-50">
-                      <div>
-                        <p className="font-medium text-sm">{credential.driver}</p>
-                        <p className="text-xs text-gray-600">{credential.type} - Expires {credential.expires}</p>
-                      </div>
-                      <Badge 
-                        variant={credential.status === 'critical' ? 'destructive' : credential.status === 'warning' ? 'secondary' : 'default'} 
-                        className="text-xs"
-                      >
-                        {credential.status}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
+                  <div className="space-y-2">
+                    {mockCredentials.map((credential) => {
+                      const expiryDate = new Date(credential.expires);
+                      const today = new Date();
+                      const daysUntilExpiry = Math.ceil((expiryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+                      
+                      let badgeClass = '';
+                      let badgeText = '';
+                      
+                      if (daysUntilExpiry < 0) {
+                        badgeClass = 'bg-gradient-to-r from-red-500 to-red-600 text-white border-0';
+                        badgeText = 'Expired';
+                      } else if (daysUntilExpiry <= 30) {
+                        badgeClass = 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white border-0';
+                        badgeText = 'Expiring';
+                      } else {
+                        badgeClass = 'bg-gradient-to-r from-green-500 to-green-600 text-white border-0';
+                        badgeText = 'Current';
+                      }
+                      
+                      return (
+                        <div key={credential.id} className="flex justify-between items-center p-2 rounded bg-gray-50">
+                          <div>
+                            <p className="font-medium text-sm">{credential.driver}</p>
+                            <p className="text-xs text-gray-600">{credential.type} - Expires {credential.expires}</p>
+                          </div>
+                          <Badge variant="default" className={`text-xs ${badgeClass}`}>
+                            {badgeText}
+                          </Badge>
+                        </div>
+                      );
+                    })}
+                  </div>
               </CardContent>
             </Card>
           </div>
