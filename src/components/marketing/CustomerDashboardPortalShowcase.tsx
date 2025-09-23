@@ -203,8 +203,8 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
             {/* Feature Bullets - Responsive Grid */}
             <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
               <div className="flex items-start gap-3 md:flex-col md:items-center md:text-center">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                  <BarChart3 className="w-4 h-4 text-blue-600" />
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+                  <BarChart3 className="w-4 h-4 text-white font-bold" strokeWidth={3} />
                 </div>
                 <div>
                   <span className="text-lg font-medium text-foreground">Real-time visibility</span>
@@ -213,8 +213,8 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
               </div>
 
               <div className="flex items-start gap-3 md:flex-col md:items-center md:text-center">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-                  <Camera className="w-4 h-4 text-green-600" />
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+                  <Camera className="w-4 h-4 text-white font-bold" strokeWidth={3} />
                 </div>
                 <div>
                   <span className="text-lg font-medium text-foreground">Digital proof & history</span>
@@ -223,8 +223,8 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
               </div>
 
               <div className="flex items-start gap-3 md:flex-col md:items-center md:text-center">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
-                  <CreditCard className="w-4 h-4 text-purple-600" />
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+                  <CreditCard className="w-4 h-4 text-white font-bold" strokeWidth={3} />
                 </div>
                 <div>
                   <span className="text-lg font-medium text-foreground">Self-service tools</span>
