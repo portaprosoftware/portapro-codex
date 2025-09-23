@@ -141,7 +141,7 @@ export const SmartWizardShowcase: React.FC = () => {
           </AspectRatio>
 
           {/* Support mocks */}
-          <div className="grid md:grid-cols-2 gap-4 mt-20 md:mt-24">
+          <div className="grid md:grid-cols-2 gap-4 mt-8 md:mt-10">
             {/* Schedule & Assign */}
             <AspectRatio ratio={4/3}>
               <div className="rounded-2xl border bg-card shadow-md overflow-hidden animate-enter">

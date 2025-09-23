@@ -820,7 +820,7 @@ export const Landing: React.FC = () => {
           <SmartWizardShowcase />
           
           {/* Jobs: Calendar, Dispatch, Drag-Drop & Map Section */}
-          <div className="mt-8 sm:mt-12">
+          <div className="mt-6 sm:mt-8">
             <h2 className="text-3xl font-bold text-center mb-8">Jobs: Calendar, Dispatch, Drag-Drop & Map</h2>
             <div className="flex justify-center">
               <div className="w-full max-w-4xl">
@@ -844,7 +844,7 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* Section Divider */}
-      <div className="py-8 bg-white">
+      <div className="py-4 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="border-t-2 border-border"></div>
         </div>
