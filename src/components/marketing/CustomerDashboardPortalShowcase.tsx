@@ -199,10 +199,6 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
         <div className="mb-8">
           {/* Header Content - Full Width */}
           <div className="text-center mb-8">
-            <h3 className="text-3xl font-bold text-foreground mb-3">PortaPro Customer Portal</h3>
-            <p className="text-lg text-muted-foreground mb-8">
-              Everything your customers need, in one place:
-            </p>
             
             {/* Feature Bullets - Responsive Grid */}
             <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
