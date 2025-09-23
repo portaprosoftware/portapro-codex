@@ -122,119 +122,58 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Dashboard Card */}
           <div className="rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 p-6 text-white shadow-lg">
-            <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mb-4">
               <BarChart3 className="w-6 h-6 text-white" />
-              <h3 className="text-lg font-bold">Dashboard</h3>
             </div>
-            <ul className="space-y-1 text-sm text-blue-100 mb-4">
+            <h3 className="text-lg font-bold mb-3">Dashboard</h3>
+            <ul className="space-y-2 text-sm text-blue-100">
               <li>• Units on site status</li>
               <li>• Upcoming services</li>
               <li>• Open requests & alerts</li>
               <li>• Balance due summary</li>
             </ul>
-            {/* UI Screenshot Mockup */}
-            <div className="bg-white/10 rounded-lg p-3 border border-white/20">
-              <div className="flex items-center justify-between mb-2">
-                <div className="w-16 h-2 bg-white/40 rounded"></div>
-                <div className="w-8 h-2 bg-white/40 rounded"></div>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="bg-white/20 rounded p-2">
-                  <div className="w-4 h-4 bg-white/40 rounded mb-1"></div>
-                  <div className="w-8 h-1 bg-white/40 rounded"></div>
-                </div>
-                <div className="bg-white/20 rounded p-2">
-                  <div className="w-4 h-4 bg-white/40 rounded mb-1"></div>
-                  <div className="w-8 h-1 bg-white/40 rounded"></div>
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* Proof of Service Card */}
           <div className="rounded-2xl bg-gradient-to-br from-green-500 to-green-600 p-6 text-white shadow-lg">
-            <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mb-4">
               <Camera className="w-6 h-6 text-white" />
-              <h3 className="text-lg font-bold">Proof of Service</h3>
             </div>
-            <ul className="space-y-1 text-sm text-green-100 mb-4">
+            <h3 className="text-lg font-bold mb-3">Proof of Service</h3>
+            <ul className="space-y-2 text-sm text-green-100">
               <li>• Photos with GPS stamps</li>
               <li>• Time-stamped checklists</li>
               <li>• Dispute & re-clean options</li>
               <li>• PDF service reports</li>
             </ul>
-            {/* UI Screenshot Mockup */}
-            <div className="bg-white/10 rounded-lg p-3 border border-white/20">
-              <div className="flex gap-2 mb-2">
-                <div className="w-12 h-8 bg-white/30 rounded"></div>
-                <div className="flex-1">
-                  <div className="w-16 h-1.5 bg-white/40 rounded mb-1"></div>
-                  <div className="w-20 h-1 bg-white/30 rounded"></div>
-                </div>
-              </div>
-              <div className="flex gap-1">
-                <div className="w-3 h-3 bg-white/40 rounded"></div>
-                <div className="w-3 h-3 bg-white/40 rounded"></div>
-                <div className="w-3 h-3 bg-white/40 rounded"></div>
-              </div>
-            </div>
           </div>
 
           {/* Requests & Units Card */}
           <div className="rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 p-6 text-white shadow-lg">
-            <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mb-4">
               <ClipboardList className="w-6 h-6 text-white" />
-              <h3 className="text-lg font-bold">Requests & Units</h3>
             </div>
-            <ul className="space-y-1 text-sm text-purple-100 mb-4">
+            <h3 className="text-lg font-bold mb-3">Requests & Units</h3>
+            <ul className="space-y-2 text-sm text-purple-100">
               <li>• Delivery/relocation requests</li>
               <li>• Extra service scheduling</li>
               <li>• Hazard notes & attachments</li>
               <li>• Quick action buttons</li>
             </ul>
-            {/* UI Screenshot Mockup */}
-            <div className="bg-white/10 rounded-lg p-3 border border-white/20">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-white/40 rounded"></div>
-                  <div className="w-20 h-1.5 bg-white/40 rounded"></div>
-                  <div className="w-8 h-3 bg-white/30 rounded-full text-xs"></div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-white/40 rounded"></div>
-                  <div className="w-16 h-1.5 bg-white/40 rounded"></div>
-                  <div className="w-6 h-3 bg-white/30 rounded-full text-xs"></div>
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* Billing & Support Card */}
           <div className="rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 p-6 text-white shadow-lg">
-            <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mb-4">
               <FileSignature className="w-6 h-6 text-white" />
-              <h3 className="text-lg font-bold">Billing & Support</h3>
             </div>
-            <ul className="space-y-1 text-sm text-orange-100 mb-4">
+            <h3 className="text-lg font-bold mb-3">Billing & Support</h3>
+            <ul className="space-y-2 text-sm text-orange-100">
               <li>• Online invoice payments</li>
               <li>• Quote review & e-signing</li>
               <li>• Chat & ticketing system</li>
               <li>• Knowledge base access</li>
             </ul>
-            {/* UI Screenshot Mockup */}
-            <div className="bg-white/10 rounded-lg p-3 border border-white/20">
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <div className="w-12 h-1.5 bg-white/40 rounded"></div>
-                  <div className="w-8 h-2 bg-white/30 rounded"></div>
-                </div>
-                <div className="w-full h-4 bg-white/20 rounded"></div>
-                <div className="flex gap-2">
-                  <div className="w-12 h-3 bg-white/30 rounded"></div>
-                  <div className="w-8 h-3 bg-white/30 rounded"></div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
