@@ -194,62 +194,61 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
           </Card>
         </div>
 
-        {/* Feature Grid - 4 Themed Cards */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {/* Dashboard Card */}
-          <div className="rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 p-6 text-white shadow-lg">
-            <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mb-4">
-              <BarChart3 className="w-6 h-6 text-white" />
+        {/* Customer Portal Hero Section */}
+        <div className="mb-8">
+          <div className="grid lg:grid-cols-2 gap-8 items-center">
+            {/* Left Side - Portal Screenshot */}
+            <div className="order-2 lg:order-1">
+              <div className="rounded-2xl overflow-hidden shadow-lg border border-border bg-white">
+                <img 
+                  src="/src/assets/customer-portal-dashboard.png" 
+                  alt="PortaPro Customer Portal Dashboard"
+                  className="w-full h-auto"
+                />
+              </div>
             </div>
-            <h3 className="text-lg font-bold mb-3">Dashboard</h3>
-            <ul className="space-y-2 text-sm text-blue-100">
-              <li>• Units on site status</li>
-              <li>• Upcoming services</li>
-              <li>• Open requests & alerts</li>
-              <li>• Balance due summary</li>
-            </ul>
-          </div>
 
-          {/* Proof of Service Card */}
-          <div className="rounded-2xl bg-gradient-to-br from-green-500 to-green-600 p-6 text-white shadow-lg">
-            <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mb-4">
-              <Camera className="w-6 h-6 text-white" />
-            </div>
-            <h3 className="text-lg font-bold mb-3">Proof of Service</h3>
-            <ul className="space-y-2 text-sm text-green-100">
-              <li>• Photos with GPS stamps</li>
-              <li>• Time-stamped checklists</li>
-              <li>• Dispute & re-clean options</li>
-              <li>• PDF service reports</li>
-            </ul>
-          </div>
+            {/* Right Side - Content */}
+            <div className="order-1 lg:order-2 space-y-6">
+              <div>
+                <h3 className="text-3xl font-bold text-foreground mb-3">PortaPro Customer Portal</h3>
+                <p className="text-lg text-muted-foreground mb-6">
+                  Everything your customers need, in one place:
+                </p>
+              </div>
 
-          {/* Requests & Units Card */}
-          <div className="rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 p-6 text-white shadow-lg">
-            <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mb-4">
-              <ClipboardList className="w-6 h-6 text-white" />
-            </div>
-            <h3 className="text-lg font-bold mb-3">Requests & Units</h3>
-            <ul className="space-y-2 text-sm text-purple-100">
-              <li>• Delivery/relocation requests</li>
-              <li>• Extra service scheduling</li>
-              <li>• Hazard notes & attachments</li>
-              <li>• Quick action buttons</li>
-            </ul>
-          </div>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                    <BarChart3 className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <span className="text-lg font-medium text-foreground">Real-time visibility</span>
+                    <p className="text-sm text-muted-foreground">Services, requests, and balances</p>
+                  </div>
+                </div>
 
-          {/* Billing & Support Card */}
-          <div className="rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 p-6 text-white shadow-lg">
-            <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mb-4">
-              <FileSignature className="w-6 h-6 text-white" />
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+                    <Camera className="w-4 h-4 text-green-600" />
+                  </div>
+                  <div>
+                    <span className="text-lg font-medium text-foreground">Digital proof & history</span>
+                    <p className="text-sm text-muted-foreground">Photos, GPS, and reports</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
+                    <CreditCard className="w-4 h-4 text-purple-600" />
+                  </div>
+                  <div>
+                    <span className="text-lg font-medium text-foreground">Self-service tools</span>
+                    <p className="text-sm text-muted-foreground">Billing, payments, quotes, and support</p>
+                  </div>
+                </div>
+              </div>
             </div>
-            <h3 className="text-lg font-bold mb-3">Billing & Support</h3>
-            <ul className="space-y-2 text-sm text-orange-100">
-              <li>• Online invoice payments</li>
-              <li>• Quote review & e-signing</li>
-              <li>• Chat & ticketing system</li>
-              <li>• Knowledge base access</li>
-            </ul>
           </div>
         </div>
 
