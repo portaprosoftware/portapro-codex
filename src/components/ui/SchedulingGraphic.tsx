@@ -2,13 +2,13 @@ import React from 'react';
 import { Users, Clock, AlertTriangle } from 'lucide-react';
 
 export const SchedulingGraphic: React.FC = () => {
-  // Generate the next 5 days starting from today
-  const generateNext5Days = () => {
+  // Generate the next 3 days starting from today
+  const generateNext3Days = () => {
     const today = new Date();
     const days = [];
     const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 3; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
       days.push({
@@ -20,14 +20,14 @@ export const SchedulingGraphic: React.FC = () => {
     return days;
   };
 
-  const next5Days = generateNext5Days();
-  const drivers = ['Mike R.', 'Sarah K.', 'John D.'];
+  const next3Days = generateNext3Days();
+  const drivers = ['Mike R.', 'Sarah K.'];
   const shifts = ['AM', 'PM', 'EVE'];
 
   // Format date range for header
   const formatDateRange = () => {
-    const startDate = next5Days[0].fullDate;
-    const endDate = next5Days[4].fullDate;
+    const startDate = next3Days[0].fullDate;
+    const endDate = next3Days[2].fullDate;
     const startMonth = startDate.toLocaleDateString('en-US', { month: 'short' });
     const endMonth = endDate.toLocaleDateString('en-US', { month: 'short' });
     const startDay = startDate.getDate();
@@ -55,9 +55,9 @@ export const SchedulingGraphic: React.FC = () => {
       {/* Schedule Grid */}
       <div className="space-y-2">
         {/* Days Header */}
-        <div className="grid grid-cols-6 gap-1">
+        <div className="grid grid-cols-4 gap-1">
           <div className="text-xs font-medium text-muted-foreground"></div>
-          {next5Days.map((day, index) => (
+          {next3Days.map((day, index) => (
             <div key={index} className="text-xs font-medium text-center text-muted-foreground py-1">
               <div>{day.fullDate.toLocaleDateString('en-US', { month: 'short' })} {day.date}</div>
             </div>
@@ -66,41 +66,41 @@ export const SchedulingGraphic: React.FC = () => {
 
         {/* Driver Rows */}
         {drivers.map((driver, driverIndex) => (
-          <div key={driver} className="grid grid-cols-6 gap-1">
+          <div key={driver} className="grid grid-cols-4 gap-1">
             <div className="text-xs font-medium text-muted-foreground py-1 flex items-center">
               {driver}
             </div>
-            {next5Days.map((day, dayIndex) => (
+            {next3Days.map((day, dayIndex) => (
               <div key={`${driver}-${dayIndex}`} className="relative">
                 {/* Morning Shift */}
                 <div className={`h-3 rounded-sm mb-0.5 flex items-center justify-center ${
-                  (driverIndex === 0 && dayIndex < 3) || (driverIndex === 1 && dayIndex >= 2) || (driverIndex === 2 && dayIndex === 1)
+                  (driverIndex === 0 && dayIndex < 2) || (driverIndex === 1 && dayIndex >= 1)
                     ? 'bg-gradient-to-r from-blue-500 to-blue-600'
                     : 'bg-gray-200'
                 }`}>
-                  {((driverIndex === 0 && dayIndex < 3) || (driverIndex === 1 && dayIndex >= 2) || (driverIndex === 2 && dayIndex === 1)) && (
+                  {((driverIndex === 0 && dayIndex < 2) || (driverIndex === 1 && dayIndex >= 1)) && (
                     <span className="text-[7px] text-white font-medium">AM</span>
                   )}
                 </div>
                 
                 {/* Afternoon Shift */}
                 <div className={`h-3 rounded-sm mb-0.5 flex items-center justify-center ${
-                  (driverIndex === 1 && dayIndex < 2) || (driverIndex === 2 && dayIndex >= 3) || (driverIndex === 0 && dayIndex === 4)
+                  (driverIndex === 1 && dayIndex < 1) || (driverIndex === 0 && dayIndex === 2)
                     ? 'bg-gradient-to-r from-emerald-500 to-emerald-600'
                     : 'bg-gray-200'
                 }`}>
-                  {((driverIndex === 1 && dayIndex < 2) || (driverIndex === 2 && dayIndex >= 3) || (driverIndex === 0 && dayIndex === 4)) && (
+                  {((driverIndex === 1 && dayIndex < 1) || (driverIndex === 0 && dayIndex === 2)) && (
                     <span className="text-[7px] text-white font-medium">PM</span>
                   )}
                 </div>
 
                 {/* Evening Shift */}
                 <div className={`h-3 rounded-sm flex items-center justify-center ${
-                  (driverIndex === 2 && dayIndex === 0) || (driverIndex === 0 && dayIndex === 1)
+                  (driverIndex === 0 && dayIndex === 1)
                     ? 'bg-gradient-to-r from-purple-500 to-purple-600'
                     : 'bg-gray-200'
                 }`}>
-                  {((driverIndex === 2 && dayIndex === 0) || (driverIndex === 0 && dayIndex === 1)) && (
+                  {(driverIndex === 0 && dayIndex === 1) && (
                     <span className="text-[7px] text-white font-medium">EVE</span>
                   )}
                 </div>
