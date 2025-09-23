@@ -28,6 +28,7 @@ import { QRGenerator } from '@/components/ui/qr-generator';
 import { QRPanelRotator } from '@/components/ui/qr-panel-rotator';
 import { ConsumablesShowcase } from '@/components/marketing/ConsumablesShowcase';
 import { ServicesHubShowcase } from '@/components/marketing/ServicesHubShowcase';
+import { FleetOpsCondensed } from '@/components/fleet/FleetOpsCondensed';
 import { MarketingShowcase } from '@/components/marketing/MarketingShowcase';
 import { CustomerDashboardPortalShowcase } from '@/components/marketing/CustomerDashboardPortalShowcase';
 import { FleetManagementShowcase } from '@/components/marketing/FleetManagementShowcase';
@@ -924,150 +925,8 @@ export const Landing: React.FC = () => {
           </div>
 
 
-          {/* Maintenance Notifications & Scheduling */}
-          <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
-            <div className="space-y-6 order-1 lg:order-2">
-              <h3 className="text-2xl font-bold text-foreground">Maintenance Notifications & Scheduling</h3>
-              <p className="text-lg text-muted-foreground">Never miss a service with automated alerts and a clean calendar view.</p>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <BellRing className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Threshold-based alerts: mileage, engine hours, dates</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CalendarClock className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Drag-and-drop scheduling with conflict warnings</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Wrench className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Auto-generate work orders with parts and labor</span>
-                </li>
-              </ul>
-            </div>
-            <img src="/lovable-uploads/9d80fc9b-a26b-4daa-92af-1c965d64ff86.png" alt="Maintenance notifications showing past due and due this week tasks" className="w-full h-auto rounded-lg" />
-          </div>
-
-          {/* Fuel Logs & Cost Tracking */}
-          <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
-            <div className="space-y-6 order-2 lg:order-1">
-              <h3 className="text-2xl font-bold text-foreground">Fuel Logs & Cost Tracking</h3>
-              <p className="text-lg text-muted-foreground">Understand spend, MPG, and trends across the fleet.</p>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <Camera className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Receipt photos with automatic data capture</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Gauge className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">MPG by vehicle and route—spot outliers fast</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <DollarSign className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Monthly budget vs actual with trendlines</span>
-                </li>
-              </ul>
-            </div>
-            <img src="/lovable-uploads/a133d807-54c7-49e6-a9b3-a5fd12dbda2c.png" alt="Fuel management dashboard showing total gallons, costs, and fleet MPG metrics" className="w-full h-auto rounded-lg" />
-          </div>
-
-          {/* Driver Assignments */}
-          <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
-            <div className="space-y-6 order-2 lg:order-1">
-              <h3 className="text-2xl font-bold text-foreground">Driver Assignments</h3>
-              <p className="text-lg text-muted-foreground">Simple, clear dispatch—drivers know exactly where to go.</p>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <Users className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Drag-and-drop shift board with availability</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <ClipboardList className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Pre-trip checklists and handoff notes</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Routes and stops synced to the mobile app</span>
-                </li>
-              </ul>
-            </div>
-            <img src="/lovable-uploads/0b7accb8-59a2-4da2-9dc3-788ae3549efe.png" alt="Vehicle selection interface showing fleet vehicles with license plates, makes, models, and availability status" className="w-full h-auto rounded-lg" />
-          </div>
-
-          {/* Truck Stock Management */}
-          <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
-            <div className="space-y-6">
-              <h3 className="text-2xl font-bold text-foreground">Truck Stock Management</h3>
-              <p className="text-lg text-muted-foreground">Optimize vehicle loading and track real-time inventory across your fleet.</p>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <Truck className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Vehicle selection and inventory tracking</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <BarChart3 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Route vs truck stock comparison</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Stock readiness validation</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Calendar className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Service date planning</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Gauge className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Real-time inventory status</span>
-                </li>
-              </ul>
-            </div>
-            <img src="/lovable-uploads/b7bba73c-5402-4e55-8417-455d18cb3338.png" alt="Truck Stock Management interface showing vehicle selection dropdown and Route vs Truck Stock comparison with service date picker" className="w-full h-auto rounded-lg" />
-          </div>
-
-          {/* Transport & Spill Compliance */}
-          <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
-            <div className="space-y-6 order-1 lg:order-2">
-              <h3 className="text-2xl font-bold text-foreground">Transport & Spill Compliance Suite</h3>
-              <p className="text-lg text-muted-foreground">Stay audit-ready with structured logs and document tracking.</p>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-muted-foreground">Transport manifests & chain-of-custody</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-muted-foreground">Spill incidents with photos, notes, and follow-ups</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Auto reminders for expiring documents</span>
-                </li>
-              </ul>
-            </div>
-            <img src="/lovable-uploads/765a797c-a357-42cd-922e-92fb794966bd.png" alt="Transport & Spill Compliance dashboard showing document status alerts for overdue, critical, and warning items" className="w-full h-auto rounded-lg" />
-          </div>
-
-          {/* DVIRs & Maintenance */}
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6 order-1 lg:order-2">
-              <h3 className="text-2xl font-bold text-foreground">DVIRs & Fleet Maintenance</h3>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Pre/Post-trip DVIR checklists</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Maintenance logs and alerts</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Driver photos and signatures</span>
-                </li>
-              </ul>
-            </div>
-            <img src="/lovable-uploads/c021b264-552c-4a3e-b4c3-fcc1d6163147.png" alt="New DVIR form interface showing asset type selection, vehicle details, and defect reporting for fleet maintenance" className="w-full h-auto rounded-lg" />
-          </div>
+          {/* Fleet Ops & Compliance - Condensed Layout */}
+          <FleetOpsCondensed />
         </div>
       </section>
 
