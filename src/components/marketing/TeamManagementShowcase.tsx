@@ -16,7 +16,8 @@ import {
   FileText,
   Camera,
   Smartphone,
-  UserCheck
+  UserCheck,
+  CreditCard
 } from 'lucide-react';
 import { SchedulingGraphic } from '@/components/ui/SchedulingGraphic';
 import { TimeOffCalendarView } from '@/components/team/enhanced/TimeOffCalendarView';
@@ -24,7 +25,8 @@ import { TimeOffCalendarView } from '@/components/team/enhanced/TimeOffCalendarV
 const teamTabs = [
   { key: 'scheduling', label: 'Scheduling & Availability', icon: CalendarClock },
   { key: 'time-off', label: 'Time Off & Compliance', icon: Clock },
-  { key: 'training', label: 'Training & Certifications', icon: Shield }
+  { key: 'training', label: 'Training & Certifications', icon: Shield },
+  { key: 'driver-profiles', label: 'Driver Profiles', icon: Users }
 ];
 
 const mockShifts = [
@@ -43,6 +45,15 @@ const mockCredentials = [
   { id: 2, driver: 'David Rodriguez', type: 'Medical Card', expires: '2024-01-30', status: 'critical' },
   { id: 3, driver: 'Sarah Chen', type: 'Safety Training', expires: '2024-03-10', status: 'good' }
 ];
+
+const mockDriverProfile = {
+  name: 'John Doe',
+  email: 'tylertdouglas@outlook.com',
+  phone: '3305627425',
+  initials: 'JD',
+  role: 'Driver',
+  status: 'Active'
+};
 
 export const TeamManagementShowcase: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('scheduling');
@@ -278,6 +289,153 @@ export const TeamManagementShowcase: React.FC = () => {
                       </Badge>
                     </div>
                   ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        );
+
+      case 'driver-profiles':
+        return (
+          <div className="space-y-2 sm:space-y-3">
+            {/* Driver Profile Header */}
+            <Card>
+              <CardContent className="p-2 sm:p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-lg">
+                      {mockDriverProfile.initials}
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-lg">{mockDriverProfile.name}</h3>
+                      <p className="text-sm text-gray-600">{mockDriverProfile.email}</p>
+                      <p className="text-sm text-gray-600">{mockDriverProfile.phone}</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Badge variant="secondary" className="bg-orange-100 text-orange-800">
+                      {mockDriverProfile.role}
+                    </Badge>
+                    <Badge variant="default" className="bg-green-100 text-green-800">
+                      {mockDriverProfile.status}
+                    </Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <div className="grid md:grid-cols-2 gap-2 sm:gap-4">
+              {/* Quick Stats */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                    <CheckCircle className="w-5 h-5 text-primary" />
+                    <span className="truncate">Quick Stats</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-2 sm:p-4">
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">License Status</span>
+                      <Badge variant="destructive" className="text-xs">Not Set</Badge>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">Medical Card</span>
+                      <Badge variant="destructive" className="text-xs">Not Set</Badge>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">Training Records</span>
+                      <Badge variant="default" className="text-xs">0 Records</Badge>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">Working Days</span>
+                      <Badge variant="default" className="text-xs">5 Days/Week</Badge>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Compliance Overview */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                    <Shield className="w-5 h-5 text-red-600" />
+                    <span className="truncate">Compliance Overview</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-2 sm:p-4">
+                  <div className="flex items-center gap-4 mb-3">
+                    <div className="relative w-16 h-16">
+                      <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
+                        <span className="text-xl font-bold text-red-600">20%</span>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="font-semibold">Overall Compliance</p>
+                      <p className="text-xs text-gray-600">1 of 5 items</p>
+                    </div>
+                  </div>
+                  <div className="space-y-1 text-xs">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-3 h-3 text-green-600" />
+                      <span>Compliant: 1</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle className="w-3 h-3 text-red-600" />
+                      <span>Missing: 4</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Profile Sections Overview */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base sm:text-lg">Profile Management Features</CardTitle>
+              </CardHeader>
+              <CardContent className="p-2 sm:p-4">
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                  <div className="text-center p-3 rounded-lg border">
+                    <Users className="w-6 h-6 mx-auto mb-2 text-blue-600" />
+                    <p className="text-xs font-medium">Overview</p>
+                    <p className="text-xs text-gray-600">Stats & Activity</p>
+                  </div>
+                  <div className="text-center p-3 rounded-lg border">
+                    <CreditCard className="w-6 h-6 mx-auto mb-2 text-green-600" />
+                    <p className="text-xs font-medium">Credentials</p>
+                    <p className="text-xs text-gray-600">License & Permits</p>
+                  </div>
+                  <div className="text-center p-3 rounded-lg border">
+                    <ClipboardList className="w-6 h-6 mx-auto mb-2 text-purple-600" />
+                    <p className="text-xs font-medium">Training</p>
+                    <p className="text-xs text-gray-600">Certifications</p>
+                  </div>
+                  <div className="text-center p-3 rounded-lg border">
+                    <Shield className="w-6 h-6 mx-auto mb-2 text-red-600" />
+                    <p className="text-xs font-medium">Compliance</p>
+                    <p className="text-xs text-gray-600">Status Tracking</p>
+                  </div>
+                  <div className="text-center p-3 rounded-lg border">
+                    <FileText className="w-6 h-6 mx-auto mb-2 text-orange-600" />
+                    <p className="text-xs font-medium">Documents</p>
+                    <p className="text-xs text-gray-600">File Management</p>
+                  </div>
+                </div>
+                
+                <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <div className="text-xs">
+                      <p className="font-medium text-blue-800">4 items need immediate attention:</p>
+                      <ul className="mt-1 space-y-1 text-blue-700">
+                        <li>• Driver License - Not provided</li>
+                        <li>• Medical Certificate - Not provided</li>
+                        <li>• Safety Training - Not provided</li>
+                        <li>• DOT Compliance - Not provided</li>
+                      </ul>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
