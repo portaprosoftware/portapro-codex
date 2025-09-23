@@ -40,22 +40,22 @@ export const MobileAppMockup: React.FC = () => {
             {/* Job Locations */}
             <div className="bg-white rounded-lg p-3 mb-3 shadow-sm">
               <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-blue-500 rounded-full flex-shrink-0"></div>
+                <div className="flex items-start gap-2">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-1"></div>
                   <div>
                     <span className="text-sm font-medium text-blue-600">ACME Construction</span>
                     <span className="text-xs text-gray-500"> — 1250 Market • delivery</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-blue-500 rounded-full flex-shrink-0"></div>
+                <div className="flex items-start gap-2">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-1"></div>
                   <div>
                     <span className="text-sm font-medium text-blue-600">City Park North</span>
                     <span className="text-xs text-gray-500"> — 4450 E 23rd Ave • delivery</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-purple-500 rounded-full flex-shrink-0"></div>
+                <div className="flex items-start gap-2">
+                  <div className="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0 mt-1"></div>
                   <div>
                     <span className="text-sm font-medium text-blue-600">Riverside Site</span>
                     <span className="text-xs text-gray-500"> — 3600 S Platte Canyon Rd • service</span>
