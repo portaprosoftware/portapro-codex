@@ -2,7 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { TabNav } from '@/components/ui/TabNav';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { getCustomerTypeColor, getCustomerTypeIcon } from '@/lib/customerTypeIcons';
+import { useIsMobile } from '@/hooks/use-mobile';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { 
@@ -353,6 +355,7 @@ const AssignmentsMap = ({ assignments }: { assignments: Assignment[] }) => {
 
 export function InventoryManagementShowcase() {
   const [activeTab, setActiveTab] = useState('overview');
+  const isMobile = useIsMobile();
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -506,65 +509,66 @@ export function InventoryManagementShowcase() {
         
         return (
           <div className="space-y-4">
-            {/* Date Range Summary */}
-            <div className="bg-muted rounded-lg p-4 text-center">
-              <div className="text-xl font-bold text-foreground">Daily Availability Overview</div>
-              <div className="flex items-center justify-center gap-4 mt-3">
-                <div className="space-y-1">
+            {/* Date Range Summary - Mobile Responsive */}
+            <div className="bg-muted rounded-lg p-3 sm:p-4 text-center">
+              <div className="text-lg sm:text-xl font-bold text-foreground">Daily Availability Overview</div>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 mt-3">
+                <div className="space-y-1 w-full sm:w-auto">
                   <label className="text-xs text-muted-foreground">Start Date</label>
-                  <div className="p-2 border rounded bg-background text-sm min-w-[120px]">
+                  <div className="p-2 border rounded bg-background text-xs sm:text-sm min-w-[100px] sm:min-w-[120px]">
                     {startDate.toLocaleDateString()}
                   </div>
                 </div>
-                <span className="text-muted-foreground mt-4">to</span>
-                <div className="space-y-1">
+                <span className="text-muted-foreground text-xs sm:text-sm hidden sm:block mt-4">to</span>
+                <span className="text-muted-foreground text-xs sm:hidden">to</span>
+                <div className="space-y-1 w-full sm:w-auto">
                   <label className="text-xs text-muted-foreground">End Date</label>
-                  <div className="p-2 border rounded bg-background text-sm min-w-[120px]">
+                  <div className="p-2 border rounded bg-background text-xs sm:text-sm min-w-[100px] sm:min-w-[120px]">
                     {endDate.toLocaleDateString()}
                   </div>
                 </div>
             </div>
 
-            {/* Inventory Request */}
-            <div className="border rounded-lg p-4">
-              <h5 className="font-medium text-foreground mb-3 flex items-center gap-2">
+            {/* Inventory Request - Mobile Responsive */}
+            <div className="border rounded-lg p-3 sm:p-4">
+              <h5 className="font-medium text-foreground mb-3 flex items-center gap-2 text-sm sm:text-base">
                 <Package className="w-4 h-4" /> Inventory Request
               </h5>
-              <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-green-600 to-green-500 rounded-lg">
-                <CheckCircle className="w-5 h-5 text-white" />
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 p-3 bg-gradient-to-r from-green-600 to-green-500 rounded-lg">
+                <CheckCircle className="w-5 h-5 text-white flex-shrink-0" />
                 <div>
-                  <div className="text-sm font-bold text-white">20 units requested</div>
+                  <div className="text-xs sm:text-sm font-bold text-white">20 units requested</div>
                   <div className="text-xs font-bold text-white">Available for selected dates</div>
                 </div>
               </div>
             </div>
             </div>
 
-            {/* Calendar View */}
-            <div className="border rounded-lg p-4">
-              <h5 className="font-medium text-foreground mb-3 flex items-center gap-2">
+            {/* Calendar View - Mobile Responsive */}
+            <div className="border rounded-lg p-3 sm:p-4">
+              <h5 className="font-medium text-foreground mb-3 flex items-center gap-2 text-sm sm:text-base">
                 <Calendar className="w-4 h-4" /> Daily Unit Availability
               </h5>
-              <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto">
+              <div className="grid grid-cols-1 gap-1 sm:gap-2 max-h-40 sm:max-h-48 overflow-y-auto">
                 {calendarDays.map((day, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="text-sm font-medium min-w-[100px]">
+                  <div key={index} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-2 sm:p-3 bg-muted rounded-lg gap-2 sm:gap-0">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 w-full">
+                      <div className="text-xs sm:text-sm font-medium min-w-[80px] sm:min-w-[100px]">
                         {day.date.toLocaleDateString('en-US', { 
                           weekday: 'short', 
                           month: 'short', 
                           day: 'numeric' 
                         })}
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="w-full sm:w-24 bg-gray-200 rounded-full h-2">
                         <div 
                           className="bg-gradient-to-r from-green-600 to-green-500 h-2 rounded-full" 
                           style={{ width: `${(day.available / day.total) * 100}%` }}
                         ></div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-foreground">
+                    <div className="flex items-center gap-1 sm:gap-2 text-right">
+                      <span className="text-xs sm:text-sm font-bold text-foreground">
                         {day.available} of {day.total}
                       </span>
                       <span className="text-xs text-muted-foreground">available</span>
@@ -745,28 +749,48 @@ export function InventoryManagementShowcase() {
         <h4 className="text-base font-semibold text-foreground">{mockUnitData.productName}</h4>
       </div>
 
-      {/* Tab Navigation */}
-      <div className="mb-4 overflow-x-auto">
-        <TabNav ariaLabel="Inventory management features">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            return (
-              <TabNav.Item
-                key={tab.id}
-                to={`#${tab.id}`}
-                isActive={activeTab === tab.id}
-                onClick={() => setActiveTab(tab.id)}
-              >
-                <Icon className="w-4 h-4" />
-                <span className="hidden sm:inline">{tab.label}</span>
-              </TabNav.Item>
-            );
-          })}
-        </TabNav>
+      {/* Tab Navigation - Mobile Dropdown, Desktop Tabs */}
+      <div className="mb-4">
+        {isMobile ? (
+          <Select value={activeTab} onValueChange={setActiveTab}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select a feature" />
+            </SelectTrigger>
+            <SelectContent>
+              {tabs.map((tab) => (
+                <SelectItem key={tab.id} value={tab.id}>
+                  <div className="flex items-center gap-2">
+                    <tab.icon className="w-4 h-4" />
+                    {tab.label}
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        ) : (
+          <div className="overflow-x-auto">
+            <TabNav ariaLabel="Inventory management features">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <TabNav.Item
+                    key={tab.id}
+                    to={`#${tab.id}`}
+                    isActive={activeTab === tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                  >
+                    <Icon className="w-4 h-4" />
+                    <span className="hidden sm:inline">{tab.label}</span>
+                  </TabNav.Item>
+                );
+              })}
+            </TabNav>
+          </div>
+        )}
       </div>
 
       {/* Tab Content */}
-      <div className="min-h-[400px]">
+      <div className="min-h-[300px] sm:min-h-[400px]">
         {renderTabContent()}
       </div>
     </article>
