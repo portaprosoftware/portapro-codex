@@ -29,14 +29,14 @@ export const MobileAppMockup: React.FC = () => {
           {/* App Content */}
           <div className="px-4 pb-4 bg-gray-50 h-full">
             {/* Header */}
-            <div className="bg-gray-100 rounded-lg p-3 mb-3 shadow-sm">
+            <div className="bg-white rounded-lg p-3 mb-3 shadow-sm">
               <div className="flex items-center gap-2 mb-2">
-                <div className="w-6 h-6 bg-gray-600 rounded flex items-center justify-center">
+                <div className="w-6 h-6 bg-primary rounded flex items-center justify-center">
                   <Navigation className="w-3 h-3 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-gray-900">Optimized Route</h3>
-                  <p className="text-xs text-gray-600">Today, completed 4 of 6 stops</p>
+                  <h3 className="text-sm font-semibold text-gray-900">Optimized Route</h3>
+                  <p className="text-xs text-gray-500">Today, delivered to 4 out of 6 stops</p>
                 </div>
               </div>
             </div>
