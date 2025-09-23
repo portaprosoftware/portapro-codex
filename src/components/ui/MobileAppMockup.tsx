@@ -1,6 +1,7 @@
 import React from 'react';
 import { MapPin, Navigation, Wifi, WifiOff, Phone, Camera, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import satelliteMap from '@/assets/satellite-map.png';
 
 export const MobileAppMockup: React.FC = () => {
   return (
@@ -87,13 +88,15 @@ export const MobileAppMockup: React.FC = () => {
               </div>
               
               {/* Satellite Map Mock */}
-              <div className="relative h-24 bg-green-200 rounded-md overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-green-300 to-green-400"></div>
-                <div className="absolute top-2 left-2 w-8 h-6 bg-gray-600 rounded-sm"></div>
-                <div className="absolute bottom-2 right-2 w-6 h-4 bg-gray-700 rounded-sm"></div>
+              <div className="relative h-24 rounded-md overflow-hidden">
+                <img 
+                  src={satelliteMap} 
+                  alt="Satellite view of job site" 
+                  className="w-full h-full object-cover"
+                />
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                  <div className="w-3 h-3 bg-red-500 rounded-full flex items-center justify-center">
-                    <div className="w-1 h-1 bg-white rounded-full"></div>
+                  <div className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center border-2 border-white shadow-lg">
+                    <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
                   </div>
                 </div>
               </div>
