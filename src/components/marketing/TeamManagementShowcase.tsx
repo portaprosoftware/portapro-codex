@@ -30,14 +30,14 @@ const teamTabs = [
 ];
 
 const mockShifts = [
-  { id: 1, driver: 'Mike Johnson', time: '7:00 AM - 3:00 PM', status: 'scheduled' },
-  { id: 2, driver: 'Sarah Chen', time: '8:00 AM - 4:00 PM', status: 'in-progress' },
+  { id: 1, driver: 'Sarah Klein', time: '8:00 AM - 4:00 PM', status: 'in-progress' },
+  { id: 2, driver: 'Mike Johnson', time: '12:00 PM - 8:00 PM', status: 'scheduled' },
   { id: 3, driver: 'David Rodriguez', time: '2:00 PM - 10:00 PM', status: 'scheduled' }
 ];
 
 const mockTimeOffRequests = [
   { id: 1, driver: 'Mike Johnson', date: '2024-01-15', type: 'Vacation', status: 'pending' },
-  { id: 2, driver: 'Sarah Chen', date: '2024-01-20', type: 'Sick', status: 'approved' }
+  { id: 2, driver: 'Sarah Klein', date: '2024-01-20', type: 'Sick', status: 'approved' }
 ];
 
 const mockCredentials = [
@@ -104,9 +104,12 @@ export const TeamManagementShowcase: React.FC = () => {
                           <p className="font-medium text-sm">{shift.driver}</p>
                           <p className="text-xs text-gray-600">{shift.time}</p>
                         </div>
-                        <Badge variant={shift.status === 'in-progress' ? 'default' : 'secondary'} className="text-xs">
-                          {shift.status === 'in-progress' ? 'Active' : 'Scheduled'}
-                        </Badge>
+                         <Badge 
+                           variant={shift.status === 'in-progress' ? 'default' : 'secondary'} 
+                           className={`text-xs ${shift.status === 'in-progress' ? 'bg-gradient-to-r from-green-500 to-green-600 text-white border-0' : ''}`}
+                         >
+                           {shift.status === 'in-progress' ? 'Active' : 'Scheduled'}
+                         </Badge>
                       </div>
                     ))}
                   </div>
