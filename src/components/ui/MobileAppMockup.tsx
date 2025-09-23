@@ -41,24 +41,24 @@ export const MobileAppMockup: React.FC = () => {
             <div className="bg-white rounded-lg p-2 mb-3 shadow-sm">
               <div className="space-y-1.5">
                 <div className="flex items-start gap-2">
-                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full flex-shrink-0 mt-1"></div>
                   <div>
                     <span className="text-sm font-medium text-blue-600">123 Construction</span>
-                    <span className="text-xs text-gray-500"> — 78 W. 9th St • Delivery</span>
+                    <span className="text-xs text-gray-500"> — 78 W. 9th St • </span>
+                    <span className="text-xs text-blue-600">Delivery</span>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
-                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full flex-shrink-0 mt-1"></div>
                   <div>
                     <span className="text-sm font-medium text-blue-600">Metro Park East</span>
-                    <span className="text-xs text-gray-500"> — 220 E 32nd Ave • Delivery</span>
+                    <span className="text-xs text-gray-500"> — 220 E 32nd Ave • </span>
+                    <span className="text-xs text-blue-600">Delivery</span>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
-                  <div className="w-1.5 h-1.5 bg-purple-500 rounded-full flex-shrink-0 mt-1"></div>
                   <div>
                     <span className="text-sm font-medium text-blue-600">Lakeside Club</span>
-                    <span className="text-xs text-gray-500"> — 3600 Lakeside Ave • Service</span>
+                    <span className="text-xs text-gray-500"> — 3600 Lakeside Ave • </span>
+                    <span className="text-xs text-purple-600">Service</span>
                   </div>
                 </div>
               </div>
