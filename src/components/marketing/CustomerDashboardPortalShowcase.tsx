@@ -70,6 +70,15 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
           </p>
         </header>
 
+        {/* Customer Portal Section */}
+        <div className="space-y-2 mb-8">
+          <h3 className="text-2xl font-bold text-foreground flex items-center gap-2">
+            <Monitor className="w-6 h-6 text-green-600" />
+            Customer Portal
+          </h3>
+          <p className="text-muted-foreground">Self-service portals for your customers</p>
+        </div>
+
         {/* Before & After Comparison */}
         <div className="grid lg:grid-cols-2 gap-8 mb-12">
           {/* Without Portal */}
