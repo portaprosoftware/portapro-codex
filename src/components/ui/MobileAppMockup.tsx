@@ -99,12 +99,12 @@ export const MobileAppMockup: React.FC = () => {
             </div>
 
             {/* Offline Status */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
+            <div className="bg-gray-100 border border-gray-200 rounded-lg p-3 mb-3">
               <div className="flex items-center gap-2">
-                <WifiOff className="w-4 h-4 text-blue-600" />
-                <span className="text-sm text-blue-800">Offline mode active — actions queued.</span>
+                <WifiOff className="w-4 h-4 text-gray-600" />
+                <span className="text-sm font-bold text-gray-900">Offline mode active — actions queued.</span>
               </div>
-              <p className="text-xs text-blue-600 mt-1">Auto-sync when back online.</p>
+              <p className="text-xs text-gray-600 mt-1">Auto-sync when back online.</p>
             </div>
 
             {/* Action Buttons */}
