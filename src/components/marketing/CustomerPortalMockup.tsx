@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 
 export const CustomerPortalMockup: React.FC = () => {
+  const [showNotifications, setShowNotifications] = useState(false);
   return (
     <div className="bg-gray-50 p-6 rounded-2xl border border-gray-200 shadow-lg">
       {/* Header */}
@@ -28,7 +29,41 @@ export const CustomerPortalMockup: React.FC = () => {
             <h1 className="text-lg font-semibold text-gray-900">PortaPro Customer Portal</h1>
           </div>
           <div className="flex items-center gap-2">
-            <Bell className="w-5 h-5 text-gray-400" />
+            <div className="relative">
+              <button 
+                onClick={() => setShowNotifications(!showNotifications)}
+                className="p-1 hover:bg-gray-100 rounded-full transition-colors relative"
+              >
+                <Bell className="w-5 h-5 text-gray-400" />
+                {/* Notification badge */}
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full flex items-center justify-center">
+                  <span className="text-xs text-white font-bold">2</span>
+                </div>
+              </button>
+              
+              {/* Notifications Dropdown */}
+              {showNotifications && (
+                <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                  <div className="p-4 border-b border-gray-200">
+                    <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                      <Bell className="w-4 h-4 text-orange-600" />
+                      Notifications
+                    </h3>
+                  </div>
+                  <div className="p-4 space-y-3">
+                    <div className="p-3 bg-orange-50 rounded-lg border border-orange-200">
+                      <p className="text-sm font-medium text-orange-900">Service scheduled</p>
+                      <p className="text-xs text-orange-700">Tomorrow at 9:00 AM</p>
+                    </div>
+                    
+                    <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                      <p className="text-sm font-medium text-blue-900">Invoice ready</p>
+                      <p className="text-xs text-blue-700">Ready for review</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
             <Settings className="w-5 h-5 text-gray-400" />
             <div className="flex items-center gap-2">
               <User className="w-5 h-5 text-gray-400" />
@@ -175,26 +210,6 @@ export const CustomerPortalMockup: React.FC = () => {
             </CardContent>
           </Card>
 
-          {/* Notifications */}
-          <Card className="border-gray-200">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Bell className="w-5 h-5 text-orange-600" />
-                Notifications
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="p-2 bg-orange-50 rounded-lg border border-orange-200">
-                <p className="text-xs font-medium text-orange-900">Service scheduled</p>
-                <p className="text-xs text-orange-700">Tomorrow at 9:00 AM</p>
-              </div>
-              
-              <div className="p-2 bg-blue-50 rounded-lg border border-blue-200">
-                <p className="text-xs font-medium text-blue-900">Invoice ready</p>
-                <p className="text-xs text-blue-700">Ready for review</p>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
     </div>
