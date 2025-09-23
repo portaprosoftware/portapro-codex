@@ -48,7 +48,7 @@ const mockCredentials = [
 
 const mockDriverProfile = {
   name: 'John Doe',
-  email: 'john.doe@ABCporta-rentals.com',
+  email: 'john.doe@ABC-PortaRentals.com',
   phone: '987-555-1234',
   initials: 'JD',
   role: 'Driver',
