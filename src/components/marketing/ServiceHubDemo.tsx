@@ -398,19 +398,19 @@ export const ServiceHubDemo: React.FC = () => {
               <div className="text-left sm:text-right flex-shrink-0">
                 <div className="text-sm font-medium text-foreground mb-2">{report.completedDate}</div>
                 {report.status === 'completed' && (
-                  <Badge className="bg-green-100 text-green-800 border-0 text-xs">
+                  <Badge className="bg-gradient-to-r from-green-600 to-green-700 text-white border-0 text-xs font-bold">
                     <CheckCircle className="w-3 h-3 mr-1" />
                     Completed
                   </Badge>
                 )}
                 {report.status === 'pending_review' && (
-                  <Badge className="bg-yellow-100 text-yellow-800 border-0 text-xs">
+                  <Badge className="bg-gradient-to-r from-yellow-600 to-yellow-700 text-white border-0 text-xs font-bold">
                     <Clock className="w-3 h-3 mr-1" />
                     Pending Review
                   </Badge>
                 )}
                 {report.status === 'approved' && (
-                  <Badge className="bg-blue-100 text-blue-800 border-0 text-xs">
+                  <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white border-0 text-xs font-bold">
                     <CheckCircle className="w-3 h-3 mr-1" />
                     Approved
                   </Badge>
