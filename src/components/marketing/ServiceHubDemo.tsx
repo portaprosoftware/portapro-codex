@@ -225,7 +225,7 @@ export const ServiceHubDemo: React.FC = () => {
                   {service.category}
                 </Badge>
                 {service.templateAssigned ? (
-                  <Badge className="bg-green-100 text-green-800 border-0 text-xs">
+                  <Badge variant="outline" className="text-xs border-green-300 text-green-800">
                     <CheckCircle className="w-3 h-3 mr-1" />
                     Template Assigned
                   </Badge>
