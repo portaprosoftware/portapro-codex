@@ -213,7 +213,15 @@ export const ServiceHubDemo: React.FC = () => {
             
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div className="flex items-center gap-2 flex-wrap">
-                <Badge variant="secondary" className="text-xs">
+                <Badge 
+                  className={`text-xs font-medium text-white border-0 ${
+                    service.category === 'Pumping' ? 'bg-gradient-to-r from-blue-500 to-blue-600' :
+                    service.category === 'Maintenance' ? 'bg-gradient-to-r from-orange-500 to-orange-600' :
+                    service.category === 'Delivery' ? 'bg-gradient-to-r from-green-500 to-green-600' :
+                    service.category === 'Inspection' ? 'bg-gradient-to-r from-purple-500 to-purple-600' :
+                    'bg-gradient-to-r from-gray-500 to-gray-600'
+                  }`}
+                >
                   {service.category}
                 </Badge>
                 {service.templateAssigned ? (
