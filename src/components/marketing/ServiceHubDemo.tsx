@@ -56,7 +56,7 @@ interface CompletedReport {
   customerName: string;
   technician: string;
   completedDate: string;
-  status: 'completed' | 'pending_review' | 'approved';
+  status: 'completed' | 'incomplete';
   duration: string;
   photos: number;
 }
@@ -150,7 +150,7 @@ const mockCompletedReports: CompletedReport[] = [
     customerName: 'Metro Events LLC',
     technician: 'Sarah Wilson',
     completedDate: '2024-01-18',
-    status: 'pending_review',
+    status: 'incomplete',
     duration: '35 mins',
     photos: 8
   },
@@ -160,7 +160,7 @@ const mockCompletedReports: CompletedReport[] = [
     customerName: 'City Works Department',
     technician: 'Tom Davis',
     completedDate: '2024-01-17',
-    status: 'approved',
+    status: 'incomplete',
     duration: '12 mins',
     photos: 3
   },
@@ -403,16 +403,10 @@ export const ServiceHubDemo: React.FC = () => {
                     Completed
                   </Badge>
                 )}
-                {report.status === 'pending_review' && (
-                  <Badge className="bg-gradient-to-r from-yellow-600 to-yellow-700 text-white border-0 text-xs font-bold">
-                    <Clock className="w-3 h-3 mr-1" />
-                    Pending Review
-                  </Badge>
-                )}
-                {report.status === 'approved' && (
-                  <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white border-0 text-xs font-bold">
-                    <CheckCircle className="w-3 h-3 mr-1" />
-                    Approved
+                {report.status === 'incomplete' && (
+                  <Badge className="bg-gradient-to-r from-red-600 to-red-700 text-white border-0 text-xs font-bold">
+                    <AlertTriangle className="w-3 h-3 mr-1" />
+                    Incomplete
                   </Badge>
                 )}
               </div>
