@@ -240,14 +240,11 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
           </div>
         </div>
 
-        {/* Callout Bar */}
-        <div className="rounded-2xl bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 p-6">
-          <div className="flex items-center justify-center gap-3 text-center">
-            <Lightbulb className="w-6 h-6 text-blue-600" />
-            <p className="text-lg font-medium text-blue-800">
-              Customers stay informed, confident, and connected — without calling your office.
-            </p>
-          </div>
+        {/* Callout Text */}
+        <div className="text-center py-8">
+          <p className="text-lg text-foreground">
+            Customers stay informed, confident, and connected — without calling your office.
+          </p>
         </div>
 
         {/* Internal Accounts Section */}
