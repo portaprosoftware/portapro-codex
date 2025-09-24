@@ -133,9 +133,9 @@ export function CompanyAnalyticsShowcase() {
               {/* Chart Type Selection and Actions */}
               <div className="space-y-3">
                 <div className="text-sm font-medium text-foreground">Visualization Type</div>
-                <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex flex-col gap-3">
                   {/* Chart Type Buttons */}
-                  <div className="flex flex-wrap gap-2">
+                  <div className="grid grid-cols-3 gap-1 sm:flex sm:flex-wrap sm:gap-2">
                     {[
                       { name: "Bar Chart", icon: BarChart, active: true },
                       { name: "Line Chart", icon: LineChart, active: false },
@@ -145,31 +145,35 @@ export function CompanyAnalyticsShowcase() {
                       return (
                         <button
                           key={idx}
-                          className={`flex items-center gap-2 px-3 py-2 rounded border text-sm font-bold transition-colors ${
+                          className={`flex items-center justify-center gap-1 px-2 py-1.5 rounded border text-xs font-medium transition-colors ${
                             chart.active 
                               ? 'bg-blue-500 text-white border-blue-500' 
                               : 'bg-background text-muted-foreground border-border hover:bg-muted/50'
                           }`}
                         >
-                          <IconComponent className="w-4 h-4" />
-                          {chart.name}
+                          <IconComponent className="w-3 h-3" />
+                          <span className="hidden sm:inline">{chart.name}</span>
+                          <span className="sm:hidden">{chart.name.split(' ')[0]}</span>
                         </button>
                       );
                     })}
                   </div>
                   
                   {/* Action Buttons */}
-                  <div className="flex flex-wrap gap-2 sm:ml-auto">
-                    <Button size="sm" className="text-sm px-3 py-2">
-                      <BarChart3 className="w-4 h-4 mr-2" />
-                      Generate Preview
+                  <div className="grid grid-cols-3 gap-1 sm:flex sm:flex-wrap sm:gap-2 sm:ml-auto">
+                    <Button size="sm" className="text-xs px-2 py-1.5 h-auto">
+                      <BarChart3 className="w-3 h-3 mr-1" />
+                      <span className="hidden sm:inline">Generate Preview</span>
+                      <span className="sm:hidden">Preview</span>
                     </Button>
-                    <Button size="sm" variant="outline" className="text-sm px-3 py-2">
-                      <Download className="w-4 h-4 mr-2" />
-                      Export CSV
+                    <Button size="sm" variant="outline" className="text-xs px-2 py-1.5 h-auto">
+                      <Download className="w-3 h-3 mr-1" />
+                      <span className="hidden sm:inline">Export CSV</span>
+                      <span className="sm:hidden">Export</span>
                     </Button>
-                    <Button size="sm" variant="outline" className="text-sm px-3 py-2">
-                      Save Template
+                    <Button size="sm" variant="outline" className="text-xs px-2 py-1.5 h-auto">
+                      <span className="hidden sm:inline">Save Template</span>
+                      <span className="sm:hidden">Save</span>
                     </Button>
                   </div>
                 </div>
