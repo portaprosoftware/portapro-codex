@@ -12,7 +12,8 @@ import {
   AlertCircle,
   User,
   Bell,
-  Settings
+  Settings,
+  X
 } from 'lucide-react';
 
 export const CustomerPortalMockup: React.FC = () => {
@@ -42,10 +43,18 @@ export const CustomerPortalMockup: React.FC = () => {
               {showNotifications && (
                 <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
                   <div className="p-4 border-b border-gray-200">
-                    <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                      <Bell className="w-4 h-4 text-orange-600" />
-                      Notifications
-                    </h3>
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                        <Bell className="w-4 h-4 text-orange-600" />
+                        Notifications
+                      </h3>
+                      <button 
+                        onClick={() => setShowNotifications(false)}
+                        className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                      >
+                        <X className="w-4 h-4 text-gray-400 hover:text-gray-600" />
+                      </button>
+                    </div>
                   </div>
                   <div className="p-4 space-y-3">
                     <div className="p-3 bg-gray-100 rounded-lg border border-gray-200">
