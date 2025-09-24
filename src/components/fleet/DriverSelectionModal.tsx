@@ -197,9 +197,9 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
 
         <div className="p-6 space-y-4 flex-1 overflow-hidden flex flex-col">
           {/* Filters */}
-          <div className="space-y-4">
+          <div className="space-y-2">
             {/* Filter Description */}
-            <div className="text-sm text-muted-foreground mb-3 p-3 bg-muted/30 rounded-lg">
+            <div className="text-sm text-muted-foreground p-3 bg-muted/30 rounded-lg">
               <p className="font-medium mb-2">Filter Options:</p>
               <ul className="space-y-1 text-xs">
                 <li><strong>Available:</strong> Drivers scheduled to work today but not yet assigned a vehicle</li>
