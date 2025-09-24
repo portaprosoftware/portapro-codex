@@ -87,18 +87,17 @@ export function CompanyAnalyticsShowcase() {
                 {/* Fields Section */}
                 <div className="space-y-3">
                   <div className="text-sm font-medium text-foreground">Available Fields</div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 gap-2 text-sm">
                     {[
-                      { name: "Revenue", type: "currency" },
-                      { name: "Job Count", type: "number" },
-                      { name: "Customer", type: "text" },
-                      { name: "Service Date", type: "date" },
-                      { name: "Unit Type", type: "category" },
-                      { name: "Driver", type: "text" }
+                      { name: "Revenue" },
+                      { name: "Job Count" },
+                      { name: "Customer" },
+                      { name: "Service Date" },
+                      { name: "Unit Type" },
+                      { name: "Driver" }
                     ].map((field, idx) => (
-                      <div key={idx} className="p-3 bg-muted/30 border rounded cursor-pointer hover:bg-muted/50 transition-colors">
-                        <div className="text-sm font-medium text-foreground">{field.name}</div>
-                        <div className="text-xs text-muted-foreground capitalize">{field.type}</div>
+                      <div key={idx} className="p-2 bg-muted/30 border rounded cursor-pointer hover:bg-muted/50 transition-colors text-center">
+                        <div className="font-medium text-foreground">{field.name}</div>
                       </div>
                     ))}
                   </div>
