@@ -6,9 +6,9 @@ import consumablesStats from "@/assets/consumables-stats.png";
 
 export const ConsumablesShowcase: React.FC = () => {
   return (
-    <section id="consumables" className="py-8 bg-white">
-      <div className="container mx-auto max-w-6xl px-6">
-        <header className="mb-8 space-y-2">
+    <section id="consumables" className="py-6 md:py-8 bg-white">
+      <div className="container mx-auto max-w-6xl px-4 md:px-6">
+        <header className="mb-4 md:mb-8 space-y-2">
           <h2 className="text-3xl lg:text-4xl font-bold text-foreground">🧻 Consumables — Flexible & Transparent</h2>
           <p className="text-muted-foreground">
             Bill for toilet paper, hand sanitizer, deodorizer, and more — your way.
@@ -17,10 +17,10 @@ export const ConsumablesShowcase: React.FC = () => {
 
         {/* Content with mockup */}
         <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-start">
+          <div className="grid lg:grid-cols-2 gap-6 lg:gap-12 items-start">
             {/* Features list */}
-            <div className="space-y-4">
-              <ul className="space-y-4">
+            <div className="space-y-3 md:space-y-4">
+              <ul className="space-y-3 md:space-y-4">
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                   <span className="text-foreground">Flexible billing at job creation: bundled, itemized, or kit + overage</span>
@@ -43,7 +43,7 @@ export const ConsumablesShowcase: React.FC = () => {
                 </li>
               </ul>
               
-              <div className="mt-6 p-4 bg-muted rounded-lg">
+              <div className="mt-4 md:mt-6 p-3 md:p-4 bg-muted rounded-lg">
                 <p className="text-sm text-foreground">
                   💡 Choose bundled simplicity or detailed itemized billing — PortaPro adapts to your workflow.
                 </p>
