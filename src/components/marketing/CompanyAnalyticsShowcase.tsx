@@ -132,48 +132,51 @@ export function CompanyAnalyticsShowcase() {
               {/* Chart Type Selection and Actions */}
               <div className="space-y-3">
                 <div className="text-sm font-medium text-foreground">Visualization Type</div>
-                <div className="flex flex-col gap-3">
-                  {/* Chart Type Buttons */}
-                  <div className="grid grid-cols-3 gap-1 sm:flex sm:flex-wrap sm:gap-2">
-                    {[
-                      { name: "Bar Chart", icon: BarChart, active: true },
-                      { name: "Line Chart", icon: LineChart, active: false },
-                      { name: "Pie Chart", icon: PieChart, active: false }
-                    ].map((chart, idx) => {
-                      const IconComponent = chart.icon;
-                      return (
-                        <button
-                          key={idx}
-                          className={`flex items-center justify-center gap-1 px-2 py-1.5 rounded border text-xs font-medium transition-colors ${
-                            chart.active 
-                              ? 'bg-blue-500 text-white border-blue-500' 
-                              : 'bg-background text-muted-foreground border-border hover:bg-muted/50'
-                          }`}
-                        >
-                          <IconComponent className="w-3 h-3" />
-                          <span className="hidden sm:inline">{chart.name}</span>
-                          <span className="sm:hidden">{chart.name.split(' ')[0]}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                  
-                  {/* Action Buttons */}
-                  <div className="grid grid-cols-3 gap-1 sm:flex sm:flex-wrap sm:gap-2 sm:ml-auto">
-                    <Button size="sm" className="text-xs px-2 py-1.5 h-auto">
-                      <BarChart3 className="w-3 h-3 mr-1" />
-                      <span className="hidden sm:inline">Generate Preview</span>
-                      <span className="sm:hidden">Preview</span>
-                    </Button>
-                    <Button size="sm" variant="outline" className="text-xs px-2 py-1.5 h-auto">
-                      <Download className="w-3 h-3 mr-1" />
-                      <span className="hidden sm:inline">Export CSV</span>
-                      <span className="sm:hidden">Export</span>
-                    </Button>
-                    <Button size="sm" variant="outline" className="text-xs px-2 py-1.5 h-auto">
-                      <span className="hidden sm:inline">Save Template</span>
-                      <span className="sm:hidden">Save</span>
-                    </Button>
+                <div className="space-y-3">
+                  {/* Chart Type and Action Buttons in one row */}
+                  <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+                    {/* Chart Type Buttons */}
+                    <div className="flex gap-2">
+                      {[
+                        { name: "Bar Chart", icon: BarChart, active: true },
+                        { name: "Line Chart", icon: LineChart, active: false },
+                        { name: "Pie Chart", icon: PieChart, active: false }
+                      ].map((chart, idx) => {
+                        const IconComponent = chart.icon;
+                        return (
+                          <button
+                            key={idx}
+                            className={`flex items-center gap-2 px-3 py-2 rounded border text-sm font-medium transition-colors ${
+                              chart.active 
+                                ? 'bg-blue-500 text-white border-blue-500' 
+                                : 'bg-background text-muted-foreground border-border hover:bg-muted/50'
+                            }`}
+                          >
+                            <IconComponent className="w-4 h-4" />
+                            <span className="hidden sm:inline">{chart.name}</span>
+                            <span className="sm:hidden">{chart.name.split(' ')[0]}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                    
+                    {/* Action Buttons */}
+                    <div className="flex gap-2 w-full sm:w-auto sm:ml-auto">
+                      <Button size="default" className="flex-1 sm:flex-none text-sm px-4 py-2">
+                        <BarChart3 className="w-4 h-4 mr-2" />
+                        <span className="hidden sm:inline">Generate Preview</span>
+                        <span className="sm:hidden">Preview</span>
+                      </Button>
+                      <Button size="default" variant="outline" className="flex-1 sm:flex-none text-sm px-4 py-2">
+                        <Download className="w-4 h-4 mr-2" />
+                        <span className="hidden sm:inline">Export CSV</span>
+                        <span className="sm:hidden">Export</span>
+                      </Button>
+                      <Button size="default" variant="outline" className="flex-1 sm:flex-none text-sm px-4 py-2">
+                        <span className="hidden sm:inline">Save Template</span>
+                        <span className="sm:hidden">Save</span>
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
