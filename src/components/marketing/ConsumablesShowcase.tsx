@@ -15,32 +15,23 @@ export const ConsumablesShowcase: React.FC = () => {
           </p>
         </header>
 
-        {/* Compact layout without image */}
+        {/* Content with mockup */}
         <div className="max-w-7xl mx-auto">
-          <div className="max-w-5xl">
-            <div className="grid md:grid-cols-2 gap-8">
-              <ul className="space-y-3">
+          <div className="grid lg:grid-cols-2 gap-12 items-start">
+            {/* Features list */}
+            <div className="space-y-4">
+              <ul className="space-y-4">
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Set billing at job creation: Included, Itemized, or Kit Fee + Overage</span>
+                  <span className="text-foreground">Flexible billing at job creation: bundled, itemized, or kit + overage</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Track any unit type: case, gallon, or custom</span>
+                  <span className="text-foreground">Track any unit type with fast barcode or mobile scan logging</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Fast, error-free logging with barcode or mobile scan</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Automatic overage detection (no missed revenue)</span>
-                </li>
-              </ul>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Transparent itemized billing or bundled simplicity</span>
+                  <span className="text-foreground">Automatic overage detection + transparent reporting</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
@@ -48,15 +39,58 @@ export const ConsumablesShowcase: React.FC = () => {
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">Built into your job flow, adjustable per customer or per job</span>
+                  <span className="text-foreground">Built into your job flow, adjustable per customer or job</span>
                 </li>
               </ul>
+              
+              <div className="mt-6 p-4 bg-muted rounded-lg">
+                <p className="text-sm text-foreground">
+                  💡 Choose bundled simplicity or detailed itemized billing — PortaPro adapts to your workflow.
+                </p>
+              </div>
             </div>
-            
-            <div className="mt-8 p-4 bg-muted rounded-lg max-w-3xl">
-              <p className="text-sm text-foreground">
-                💡 Choose simple bundled pricing or detailed itemized billing — PortaPro adapts to your workflow.
-              </p>
+
+            {/* Consumables mockup */}
+            <div className="bg-card rounded-xl shadow-lg border overflow-hidden">
+              <div className="bg-primary/5 px-6 py-4 border-b">
+                <h3 className="text-lg font-semibold text-foreground">Consumables Inventory</h3>
+              </div>
+              <div className="p-6 space-y-4">
+                <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span className="font-medium">Toilet Paper (Cases)</span>
+                  </div>
+                  <span className="text-sm text-muted-foreground">48 in stock</span>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                    <span className="font-medium">Hand Sanitizer (Gallons)</span>
+                  </div>
+                  <span className="text-sm text-muted-foreground">12 in stock</span>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                    <span className="font-medium">Blue Solution (Gallons)</span>
+                  </div>
+                  <span className="text-sm text-muted-foreground">3 in stock</span>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span className="font-medium">Deodorizer (Bottles)</span>
+                  </div>
+                  <span className="text-sm text-muted-foreground">24 in stock</span>
+                </div>
+                <div className="mt-4 pt-4 border-t">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Billing Mode: Job #1234</span>
+                    <span className="text-primary font-medium">Kit + Overage</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
