@@ -139,14 +139,14 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
         return (
           <div className="space-y-6">
             {/* Grid layout - side by side on desktop, stacked on mobile */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
               {/* Date Selection */}
-              <div className="space-y-4">
-                <div className="text-center">
+              <div className="flex flex-col space-y-4">
+                <div className="text-center h-16 flex flex-col justify-center">
                   <h3 className="text-base font-semibold mb-2">Assignment Date</h3>
                   <p className="text-sm text-muted-foreground">Select a date for this assignment</p>
                 </div>
-                <div className="flex justify-center">
+                <div className="flex justify-center flex-1">
                   <div className="w-fit">
                     <Calendar
                       mode="single"
@@ -170,13 +170,13 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
               </div>
 
               {/* Vehicle Selection */}
-              <div className="space-y-4 flex flex-col">
-                <div className="text-center">
+              <div className="flex flex-col space-y-4">
+                <div className="text-center h-16 flex flex-col justify-center">
                   <h3 className="text-base font-semibold mb-2">Select Vehicle</h3>
                   <p className="text-sm text-muted-foreground">Choose an available vehicle</p>
                 </div>
                 
-                <div className="flex-1 flex items-center justify-center">
+                <div className="flex-1 flex items-start justify-center pt-4">
                   {selectedVehicle ? (
                     <div className="p-3 border rounded-lg bg-muted/50 w-full max-w-xs">
                       <div className="space-y-3">
@@ -220,13 +220,13 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
               </div>
 
               {/* Driver Selection */}
-              <div className="space-y-4 flex flex-col">
-                <div className="text-center">
+              <div className="flex flex-col space-y-4">
+                <div className="text-center h-16 flex flex-col justify-center">
                   <h3 className="text-base font-semibold mb-2">Select Driver</h3>
                   <p className="text-sm text-muted-foreground">Choose a driver for this assignment</p>
                 </div>
                 
-                <div className="flex-1 flex items-center justify-center">
+                <div className="flex-1 flex items-start justify-center pt-4">
                   {selectedDriver ? (
                     <div className="p-3 border rounded-lg bg-muted/50 w-full max-w-xs">
                       <div className="space-y-3">
