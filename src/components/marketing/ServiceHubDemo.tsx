@@ -314,48 +314,6 @@ export const ServiceHubDemo: React.FC = () => {
                 </Button>
               </div>
             </div>
-            <div className="flex justify-between items-start mb-3">
-              <div>
-                <h5 className="font-medium text-foreground">{template.name}</h5>
-                <p className="text-sm text-muted-foreground">
-                  Used for: {template.serviceTypes.join(', ')}
-                </p>
-              </div>
-              <div className="text-right">
-                <div className="text-sm font-medium text-foreground">{template.completedCount} completed</div>
-              </div>
-            </div>
-
-            <div className="mb-3">
-              <h6 className="text-sm font-medium text-foreground mb-2">Template Elements:</h6>
-              <div className="flex flex-wrap gap-1">
-                {template.elements.map((element, index) => (
-                  <Badge key={index} variant="outline" className="text-xs">
-                    {element}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <Badge className="bg-blue-600 text-white border-0 text-xs font-bold">
-                  <FileText className="w-3 h-3 mr-1" />
-                  {template.elements.length} Elements
-                </Badge>
-              </div>
-              
-              <div className="flex gap-1">
-                <Button variant="outline" size="sm" className="text-xs">
-                  <Eye className="w-3 h-3 mr-1" />
-                  Preview
-                </Button>
-                <Button variant="outline" size="sm" className="text-xs">
-                  <Edit className="w-3 h-3 mr-1" />
-                  Edit
-                </Button>
-              </div>
-            </div>
           </div>
         ))}
       </div>
