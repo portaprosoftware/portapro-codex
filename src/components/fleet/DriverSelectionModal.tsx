@@ -196,18 +196,8 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
         </DialogHeader>
 
         <div className="p-6 space-y-4 flex-1 overflow-hidden flex flex-col">
-          {/* Search and Filters */}
+          {/* Filters */}
           <div className="space-y-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-              <Input
-                placeholder="Search drivers by name..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-
             {/* Filter Description */}
             <div className="text-sm text-muted-foreground mb-3 p-3 bg-muted/30 rounded-lg">
               <p className="font-medium mb-2">Filter Options:</p>
@@ -251,6 +241,17 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
               >
                 Off-Duty ({driversWithDetails.filter(d => d.status === "off-duty").length})
               </Button>
+            </div>
+
+            {/* Search */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input
+                placeholder="Search drivers by name..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
             </div>
           </div>
 
