@@ -64,12 +64,12 @@ export const QRGalleryModal: React.FC<QRGalleryModalProps> = ({ isOpen, onClose 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[70vh] p-0">
-        <div className="relative flex-1 flex items-center justify-center p-4">
+      <DialogContent className="max-w-lg max-h-[60vh] p-2">
+        <div className="relative flex-1 flex items-center justify-center p-2">
           <Button
             variant="outline"
             size="icon"
-            className="absolute left-4 top-1/2 -translate-y-1/2 z-10"
+            className="absolute left-2 top-1/2 -translate-y-1/2 z-10 h-8 w-8"
             onClick={prevImage}
           >
             <ChevronLeft className="w-4 h-4" />
@@ -79,14 +79,14 @@ export const QRGalleryModal: React.FC<QRGalleryModalProps> = ({ isOpen, onClose 
             <img
               src={galleryImages[currentImageIndex].src}
               alt={galleryImages[currentImageIndex].alt}
-              className="max-w-full max-h-[50vh] object-contain rounded-lg"
+              className="max-w-full max-h-[40vh] object-contain rounded-lg"
             />
           </div>
 
           <Button
             variant="outline"
             size="icon"
-            className="absolute right-4 top-1/2 -translate-y-1/2 z-10"
+            className="absolute right-2 top-1/2 -translate-y-1/2 z-10 h-8 w-8"
             onClick={nextImage}
           >
             <ChevronRight className="w-4 h-4" />
@@ -94,14 +94,14 @@ export const QRGalleryModal: React.FC<QRGalleryModalProps> = ({ isOpen, onClose 
         </div>
 
         {/* Progress bar */}
-        <div className="absolute bottom-16 left-1/2 -translate-x-1/2 w-32 h-1 bg-muted rounded-full overflow-hidden">
+        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 w-24 h-1 bg-muted rounded-full overflow-hidden">
           <div 
             className="h-full bg-primary transition-all duration-50 ease-linear rounded-full"
             style={{ width: `${progress}%` }}
           />
         </div>
 
-        <div className="flex justify-center gap-2 p-4">
+        <div className="flex justify-center gap-2 p-2">
           {galleryImages.map((_, index) => (
             <button
               key={index}
