@@ -53,10 +53,10 @@ export const CustomerPortalMockup: React.FC = () => {
                       <p className="text-xs text-gray-700">Tomorrow at 9:00 AM</p>
                     </div>
                     
-                    <div className="p-3 bg-gray-100 rounded-lg border border-gray-200">
-                      <p className="text-sm font-medium text-gray-900">Invoice ready</p>
-                      <p className="text-xs text-gray-700">Ready for review</p>
-                    </div>
+                    <button className="w-full p-3 bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 hover:border-blue-300 transition-all duration-200 text-left group">
+                      <p className="text-sm font-medium text-blue-900 group-hover:text-blue-800">Invoice ready</p>
+                      <p className="text-xs text-blue-700 group-hover:text-blue-600">Ready for review</p>
+                    </button>
                   </div>
                 </div>
               )}
