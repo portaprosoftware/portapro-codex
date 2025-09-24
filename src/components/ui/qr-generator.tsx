@@ -60,6 +60,12 @@ export const QRGenerator: React.FC = () => {
                 Print
               </Button>
             </div>
+            
+            <div className="text-center mt-2">
+              <p className="text-xs text-muted-foreground">
+                Select to preview
+              </p>
+            </div>
           </div>
           
           <p className="text-xs text-muted-foreground">
