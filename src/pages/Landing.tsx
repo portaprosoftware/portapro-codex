@@ -97,7 +97,7 @@ const managementFeatures = [{
   href: "#team-management"
 }, {
   title: "Accounts & Portals",
-  description: "Accounts: Internal customer account management for your team. Portals: Self-service portals for your customers.",
+  description: "Manage customer accounts internally and give customers self-service access.",
   icon: Users,
   href: "#customer-portal"
 }, {
