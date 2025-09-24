@@ -298,7 +298,7 @@ export const ServiceHubDemo: React.FC = () => {
 
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
               <div className="flex items-center gap-2">
-                <Badge className="bg-blue-100 text-blue-800 border-0 text-xs">
+                <Badge className="bg-blue-600 text-white border-0 text-xs font-bold">
                   <FileText className="w-3 h-3 mr-1" />
                   {template.elements.length} Elements
                 </Badge>
@@ -341,7 +341,7 @@ export const ServiceHubDemo: React.FC = () => {
 
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-2">
-                <Badge className="bg-blue-100 text-blue-800 border-0 text-xs">
+                <Badge className="bg-blue-600 text-white border-0 text-xs font-bold">
                   <FileText className="w-3 h-3 mr-1" />
                   {template.elements.length} Elements
                 </Badge>
