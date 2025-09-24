@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
@@ -24,6 +24,17 @@ const galleryImages = [
 export const QRGalleryModal: React.FC<QRGalleryModalProps> = ({ isOpen, onClose }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
+  // Auto-rotation timer
+  useEffect(() => {
+    if (!isOpen) return;
+    
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % galleryImages.length);
+    }, 3000); // Change every 3 seconds
+
+    return () => clearInterval(interval);
+  }, [isOpen]);
+
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % galleryImages.length);
   };
@@ -34,7 +45,7 @@ export const QRGalleryModal: React.FC<QRGalleryModalProps> = ({ isOpen, onClose 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] p-0">
+      <DialogContent className="max-w-2xl max-h-[70vh] p-0">
         <DialogHeader className="p-4 pb-0">
           <DialogTitle className="text-center">QR Code Print Gallery</DialogTitle>
         </DialogHeader>
@@ -53,7 +64,7 @@ export const QRGalleryModal: React.FC<QRGalleryModalProps> = ({ isOpen, onClose 
             <img
               src={galleryImages[currentImageIndex].src}
               alt={galleryImages[currentImageIndex].alt}
-              className="max-w-full max-h-[70vh] object-contain rounded-lg"
+              className="max-w-full max-h-[50vh] object-contain rounded-lg"
             />
           </div>
 
