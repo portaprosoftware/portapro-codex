@@ -67,7 +67,6 @@ type SortColumn = 'first_name' | 'last_name' | 'role' | 'status';
 export function UserManagementSection() {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<any>(null);
-  const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -239,7 +238,6 @@ export function UserManagementSection() {
       toast.success("User deleted successfully");
       setDeleteConfirmOpen(false);
       setUserToDelete(null);
-      setDeleteConfirmText("");
     },
     onError: (error) => {
       toast.error("Failed to delete user");
@@ -280,7 +278,7 @@ export function UserManagementSection() {
   };
 
   const handleDeleteConfirm = () => {
-    if (deleteConfirmText === "delete" && userToDelete) {
+    if (userToDelete) {
       deleteUser.mutate(userToDelete.id);
     }
   };
@@ -315,7 +313,7 @@ export function UserManagementSection() {
   };
 
   const handleDeleteConfirm = () => {
-    if (deleteConfirmText === "delete" && userToDelete) {
+    if (userToDelete) {
       deleteUser.mutate(userToDelete.id);
     }
   };
