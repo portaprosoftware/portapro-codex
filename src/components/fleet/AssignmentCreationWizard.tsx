@@ -139,7 +139,7 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
         return (
           <div className="space-y-6">
             {/* Grid layout - side by side on desktop, stacked on mobile */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-20">
               {/* Date Selection */}
               <div className="flex flex-col space-y-4">
                 <div className="text-center h-16 flex flex-col justify-center">
@@ -178,7 +178,7 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
                 
                 <div className="flex-1 flex items-start justify-center pt-4">
                   {selectedVehicle ? (
-                    <div className="p-3 border rounded-lg bg-muted/50 w-full max-w-xs">
+                    <div className="p-3 border rounded-lg bg-muted/50 w-full">
                       <div className="space-y-3">
                         <div className="flex items-center space-x-3">
                           <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -205,7 +205,7 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
                       </div>
                     </div>
                   ) : (
-                    <div className="text-center py-4 w-full max-w-xs">
+                    <div className="text-center py-4 w-full">
                       <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center mx-auto mb-3">
                         <Truck className="h-6 w-6 text-muted-foreground" />
                       </div>
@@ -228,7 +228,7 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
                 
                 <div className="flex-1 flex items-start justify-center pt-4">
                   {selectedDriver ? (
-                    <div className="p-3 border rounded-lg bg-muted/50 w-full max-w-xs">
+                    <div className="p-3 border rounded-lg bg-muted/50 w-full">
                       <div className="space-y-3">
                         <div className="flex items-center space-x-3">
                           <Avatar className="w-10 h-10 flex-shrink-0">
@@ -268,7 +268,7 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
                       </div>
                     </div>
                   ) : (
-                    <div className="text-center py-4 w-full max-w-xs">
+                    <div className="text-center py-4 w-full">
                       <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center mx-auto mb-3">
                         <User className="h-6 w-6 text-muted-foreground" />
                       </div>
