@@ -29,6 +29,9 @@ export const QRGenerator: React.FC = () => {
               includeMargin={true}
             />
           </div>
+          <p className="text-xs text-muted-foreground mt-2 text-center">
+            Works offline — syncs later. Instant attach to units & jobs.
+          </p>
         </div>
         
         <div className="space-y-2">
@@ -67,10 +70,6 @@ export const QRGenerator: React.FC = () => {
               </p>
             </div>
           </div>
-          
-          <p className="text-xs text-muted-foreground">
-            Works offline — syncs later. Instant attach to units & jobs.
-          </p>
         </div>
       </div>
       
