@@ -24,24 +24,24 @@ export const CustomerPortalMockup: React.FC = () => {
       <div className="bg-white rounded-lg border border-gray-200 mb-6 p-4">
         <div className="space-y-3">
           {/* Company Name Row */}
-          <div className="flex items-center justify-between md:justify-start">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <h1 className="text-lg font-semibold text-gray-900">
                 ABC Construction
                 <span className="hidden md:inline"> • Customer Portal</span>
               </h1>
             </div>
-            {/* Icons on desktop - right aligned */}
-            <div className="hidden md:flex items-center gap-2">
+            {/* Icons on desktop - properly right aligned */}
+            <div className="hidden md:flex items-center gap-3 ml-auto">
               <div className="relative">
                 <button 
                   onClick={() => setShowNotifications(!showNotifications)}
-                  className="p-1 hover:bg-gray-100 rounded-full transition-colors relative"
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors relative"
                 >
                   <Bell className="w-5 h-5 text-gray-400" />
                   {/* Notification badge */}
-                  <div className="absolute -top-2 -right-2 w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center border-2 border-white">
-                    <span className="text-sm text-white font-bold">2</span>
+                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center border-2 border-white">
+                    <span className="text-xs text-white font-bold">2</span>
                   </div>
                 </button>
                 
@@ -76,25 +76,28 @@ export const CustomerPortalMockup: React.FC = () => {
                   </div>
                 )}
               </div>
-              <Settings className="w-5 h-5 text-gray-400" />
-              <div className="flex items-center gap-2">
+              <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                <Settings className="w-5 h-5 text-gray-400" />
+              </button>
+              <div className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-full transition-colors">
                 <User className="w-5 h-5 text-gray-400" />
                 <span className="text-sm text-gray-600">ABC Construction</span>
               </div>
             </div>
           </div>
           
+          
           {/* Icons Row on Mobile */}
-          <div className="flex md:hidden items-center gap-2">
+          <div className="flex md:hidden items-center justify-end gap-3">
             <div className="relative">
               <button 
                 onClick={() => setShowNotifications(!showNotifications)}
-                className="p-1 hover:bg-gray-100 rounded-full transition-colors relative"
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors relative"
               >
                 <Bell className="w-5 h-5 text-gray-400" />
                 {/* Notification badge */}
-                <div className="absolute -top-2 -right-2 w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center border-2 border-white">
-                  <span className="text-sm text-white font-bold">2</span>
+                <div className="absolute -top-1 -right-1 w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center border-2 border-white">
+                  <span className="text-xs text-white font-bold">2</span>
                 </div>
               </button>
               
@@ -129,8 +132,10 @@ export const CustomerPortalMockup: React.FC = () => {
                 </div>
               )}
             </div>
-            <Settings className="w-5 h-5 text-gray-400" />
-            <div className="flex items-center gap-2">
+            <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+              <Settings className="w-5 h-5 text-gray-400" />
+            </button>
+            <div className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-full transition-colors">
               <User className="w-5 h-5 text-gray-400" />
               <span className="text-sm text-gray-600">ABC Construction</span>
             </div>
