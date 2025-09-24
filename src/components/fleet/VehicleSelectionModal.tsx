@@ -44,7 +44,7 @@ export const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
       const { data, error } = await supabase
         .from("vehicles")
         .select("*")
-        .eq("status", "active")
+        .eq("status", "available")
         .order("license_plate", { ascending: true });
       
       if (error) throw error;
