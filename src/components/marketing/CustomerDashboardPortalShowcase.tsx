@@ -67,7 +67,7 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
         <header className="mb-8 space-y-2">
           <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Accounts & Portal</h2>
           <p className="text-muted-foreground">
-            <strong>Accounts:</strong> Internal customer account management for your team. <strong>Portal:</strong> Self-service portals for your customers.
+            Manage customer accounts internally and give customers self-service access.
           </p>
         </header>
 
