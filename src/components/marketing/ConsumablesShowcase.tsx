@@ -51,41 +51,41 @@ export const ConsumablesShowcase: React.FC = () => {
             </div>
 
             {/* Consumables mockup */}
-            <div className="bg-card rounded-xl shadow-lg border overflow-hidden">
-              <div className="bg-primary/5 px-6 py-4 border-b">
-                <h3 className="text-lg font-semibold text-foreground">Consumables Inventory</h3>
+            <div className="bg-card rounded-lg shadow-md border overflow-hidden">
+              <div className="bg-primary/5 px-4 py-3 border-b">
+                <h3 className="text-base font-semibold text-foreground">Consumables Inventory</h3>
               </div>
-              <div className="p-6 space-y-4">
-                <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span className="font-medium">Toilet Paper (Cases)</span>
+              <div className="p-4 space-y-3">
+                <div className="flex items-center justify-between p-2 bg-background rounded border">
+                  <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                    <span className="text-sm font-medium">Toilet Paper (Cases)</span>
                   </div>
-                  <span className="text-sm text-muted-foreground">48 in stock</span>
+                  <span className="text-xs text-muted-foreground">48 in stock</span>
                 </div>
-                <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                    <span className="font-medium">Hand Sanitizer (Gallons)</span>
+                <div className="flex items-center justify-between p-2 bg-background rounded border">
+                  <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full"></div>
+                    <span className="text-sm font-medium">Hand Sanitizer (Gallons)</span>
                   </div>
-                  <span className="text-sm text-muted-foreground">12 in stock</span>
+                  <span className="text-xs text-muted-foreground">12 in stock</span>
                 </div>
-                <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                    <span className="font-medium">Blue Solution (Gallons)</span>
+                <div className="flex items-center justify-between p-2 bg-background rounded border">
+                  <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-red-500 rounded-full"></div>
+                    <span className="text-sm font-medium">Blue Solution (Gallons)</span>
                   </div>
-                  <span className="text-sm text-muted-foreground">3 in stock</span>
+                  <span className="text-xs text-muted-foreground">3 in stock</span>
                 </div>
-                <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span className="font-medium">Deodorizer (Bottles)</span>
+                <div className="flex items-center justify-between p-2 bg-background rounded border">
+                  <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                    <span className="text-sm font-medium">Deodorizer (Bottles)</span>
                   </div>
-                  <span className="text-sm text-muted-foreground">24 in stock</span>
+                  <span className="text-xs text-muted-foreground">24 in stock</span>
                 </div>
-                <div className="mt-4 pt-4 border-t">
-                  <div className="flex items-center justify-between text-sm">
+                <div className="mt-3 pt-3 border-t">
+                  <div className="flex items-center justify-between text-xs">
                     <span className="text-muted-foreground">Billing Mode: Job #1234</span>
                     <span className="text-primary font-medium">Kit + Overage</span>
                   </div>
