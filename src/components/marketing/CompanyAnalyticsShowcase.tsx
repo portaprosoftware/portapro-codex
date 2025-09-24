@@ -68,7 +68,10 @@ export function CompanyAnalyticsShowcase() {
               </div>
             </CardContent>
           </Card>
+        </div>
 
+        {/* Remaining Analytics Cards */}
+        <div className="space-y-4">
           {/* Custom Report Builder */}
           <Card className="border border-border bg-card">
             <CardHeader>
@@ -170,10 +173,7 @@ export function CompanyAnalyticsShowcase() {
               </div>
             </CardContent>
           </Card>
-        </div>
 
-        {/* Remaining Analytics Cards */}
-        <div className="space-y-4">
           {/* Overview Dashboard Demo */}
           <Card className="border border-border bg-card">
             <CardHeader>
@@ -252,7 +252,6 @@ export function CompanyAnalyticsShowcase() {
               </div>
             </CardContent>
           </Card>
-
         </div>
       </div>
     </section>
