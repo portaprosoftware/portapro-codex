@@ -145,8 +145,8 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
   const getStatusColor = (status: string) => {
     switch (status) {
       case "available": return "bg-gradient-to-r from-green-500 to-green-600 text-white border-0";
-      case "assigned": return "bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0";
-      case "off-duty": return "bg-gradient-to-r from-gray-500 to-gray-600 text-white border-0";
+      case "assigned": return "bg-gradient-to-r from-yellow-500 to-yellow-600 text-white border-0";
+      case "off-duty": return "bg-gradient-to-r from-red-500 to-red-600 text-white border-0";
       default: return "bg-gradient-to-r from-gray-500 to-gray-600 text-white border-0";
     }
   };
@@ -223,7 +223,7 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
                 variant={statusFilter === "all" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setStatusFilter("all")}
-                className={statusFilter === "all" ? "bg-gradient-to-r from-gray-500 to-gray-600 text-white border-0" : ""}
+                className={statusFilter === "all" ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0" : ""}
               >
                 All ({driversWithDetails.length})
               </Button>
@@ -239,7 +239,7 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
                 variant={statusFilter === "assigned" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setStatusFilter("assigned")}
-                className={statusFilter === "assigned" ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0" : ""}
+                className={statusFilter === "assigned" ? "bg-gradient-to-r from-yellow-500 to-yellow-600 text-white border-0" : ""}
               >
                 Assigned ({driversWithDetails.filter(d => d.status === "assigned").length})
               </Button>
@@ -247,7 +247,7 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
                 variant={statusFilter === "off-duty" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setStatusFilter("off-duty")}
-                className={statusFilter === "off-duty" ? "bg-gradient-to-r from-gray-500 to-gray-600 text-white border-0" : ""}
+                className={statusFilter === "off-duty" ? "bg-gradient-to-r from-red-500 to-red-600 text-white border-0" : ""}
               >
                 Off-Duty ({driversWithDetails.filter(d => d.status === "off-duty").length})
               </Button>
