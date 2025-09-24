@@ -324,7 +324,6 @@ export const ServiceHubDemo: React.FC = () => {
               </div>
               <div className="text-right">
                 <div className="text-sm font-medium text-foreground">{template.completedCount} completed</div>
-                <div className="text-xs text-muted-foreground">Avg: {template.averageTime}</div>
               </div>
             </div>
 
