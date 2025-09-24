@@ -65,10 +65,6 @@ export const QRGalleryModal: React.FC<QRGalleryModalProps> = ({ isOpen, onClose 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[70vh] p-0">
-        <DialogHeader className="p-4 pb-0">
-          <DialogTitle className="text-center">QR Code Print Gallery</DialogTitle>
-        </DialogHeader>
-        
         <div className="relative flex-1 flex items-center justify-center p-4">
           <Button
             variant="outline"
