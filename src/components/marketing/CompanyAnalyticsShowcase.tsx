@@ -151,47 +151,6 @@ export function CompanyAnalyticsShowcase() {
             </CardContent>
           </Card>
 
-          {/* Campaign Creation Interface */}
-          <Card className="border border-border bg-card">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
-                <Users className="w-5 h-5" />
-                Audience & Segments
-              </CardTitle>
-              <CardDescription className="text-muted-foreground">Smart segmentation with real-time recipient counts</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Audience Segments */}
-              <div className="space-y-3">
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    "All Customers",
-                    "Smart: Event rentals this week", 
-                    "Smart: Inactive 90+ days",
-                    "Smart: High value accounts",
-                    "Custom: VIP corporate"
-                  ].map((segment, idx) => (
-                    <Badge 
-                      key={idx} 
-                      className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 hover:from-blue-600 hover:to-blue-700 transition-all duration-200"
-                    >
-                      {segment}
-                    </Badge>
-                  ))}
-                </div>
-                
-                {/* Recipient Count */}
-                <div className="p-3 bg-muted/50 rounded-lg border">
-                  <div className="text-sm font-medium text-foreground">
-                    2,340 recipients • 187 excluded (unsubscribed, bounced)
-                  </div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    Preview list and exclusion rules before sending.
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
     </section>
