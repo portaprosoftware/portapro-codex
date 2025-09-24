@@ -23,24 +23,43 @@ const galleryImages = [
 
 export const QRGalleryModal: React.FC<QRGalleryModalProps> = ({ isOpen, onClose }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [progress, setProgress] = useState(0);
 
-  // Auto-rotation timer
+  // Auto-rotation timer with progress tracking
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {
+      setProgress(0);
+      return;
+    }
     
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % galleryImages.length);
-    }, 3000); // Change every 3 seconds
+    const duration = 3000; // 3 seconds
+    const interval = 50; // Update every 50ms for smooth animation
+    let elapsed = 0;
 
-    return () => clearInterval(interval);
-  }, [isOpen]);
+    const timer = setInterval(() => {
+      elapsed += interval;
+      const newProgress = (elapsed / duration) * 100;
+      
+      if (newProgress >= 100) {
+        setCurrentImageIndex((prev) => (prev + 1) % galleryImages.length);
+        elapsed = 0;
+        setProgress(0);
+      } else {
+        setProgress(newProgress);
+      }
+    }, interval);
+
+    return () => clearInterval(timer);
+  }, [isOpen, currentImageIndex]);
 
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % galleryImages.length);
+    setProgress(0); // Reset progress when manually changing
   };
 
   const prevImage = () => {
     setCurrentImageIndex((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
+    setProgress(0); // Reset progress when manually changing
   };
 
   return (
@@ -78,6 +97,14 @@ export const QRGalleryModal: React.FC<QRGalleryModalProps> = ({ isOpen, onClose 
           </Button>
         </div>
 
+        {/* Progress bar */}
+        <div className="absolute bottom-16 left-1/2 -translate-x-1/2 w-32 h-1 bg-muted rounded-full overflow-hidden">
+          <div 
+            className="h-full bg-primary transition-all duration-50 ease-linear rounded-full"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+
         <div className="flex justify-center gap-2 p-4">
           {galleryImages.map((_, index) => (
             <button
@@ -85,7 +112,10 @@ export const QRGalleryModal: React.FC<QRGalleryModalProps> = ({ isOpen, onClose 
               className={`w-3 h-3 rounded-full transition-colors ${
                 index === currentImageIndex ? 'bg-primary' : 'bg-muted'
               }`}
-              onClick={() => setCurrentImageIndex(index)}
+              onClick={() => {
+                setCurrentImageIndex(index);
+                setProgress(0); // Reset progress when manually selecting
+              }}
             />
           ))}
         </div>
