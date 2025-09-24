@@ -7,7 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
   Crown, Headphones, Truck, User, Shield, 
-  MoreVertical, Edit, UserCheck, UserX,
+  MoreVertical, Edit, Trash2, UserCheck, UserX,
   Phone, Mail, Calendar, ChevronUp, ChevronDown, ChevronsUpDown,
   ExternalLink, AlertTriangle, Clock, FileText, Navigation
 } from 'lucide-react';
@@ -40,11 +40,13 @@ type SortColumn = 'first_name' | 'last_name' | 'role' | 'status' | 'license_expi
 interface UserListViewProps {
   users: User[];
   onEdit: (user: User) => void;
+  onDelete: (user: User) => void;
   onToggleStatus: (userId: string, isActive: boolean) => void;
   isLoading?: boolean;
   sortColumn?: SortColumn | null;
   sortDirection?: SortDirection;
   onSort?: (column: SortColumn) => void;
+  canDeleteUser?: (user: User) => boolean;
   showDriverColumns?: boolean;
 }
 
@@ -67,11 +69,13 @@ const roleLabels = {
 export function UserListView({ 
   users, 
   onEdit, 
+  onDelete,
   onToggleStatus,
   isLoading = false,
   sortColumn,
   sortDirection = 'default',
   onSort,
+  canDeleteUser,
   showDriverColumns = false
 }: UserListViewProps) {
 
@@ -343,6 +347,15 @@ export function UserListView({
                            </>
                          )}
                        </DropdownMenuItem>
+                       {canDeleteUser && canDeleteUser(user) && (
+                         <DropdownMenuItem 
+                           onClick={() => onDelete(user)}
+                           className="text-destructive"
+                         >
+                           <Trash2 className="w-4 h-4 mr-2" />
+                           Delete User
+                         </DropdownMenuItem>
+                       )}
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>

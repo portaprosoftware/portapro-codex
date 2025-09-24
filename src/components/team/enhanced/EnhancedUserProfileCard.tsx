@@ -7,7 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
   Crown, Headphones, Truck, User, Shield, 
-  MoreVertical, Edit, UserCheck, UserX,
+  MoreVertical, Edit, Trash2, UserCheck, UserX,
   Phone, Mail, Calendar, Navigation
 } from 'lucide-react';
 
@@ -27,7 +27,9 @@ interface User {
 interface EnhancedUserProfileCardProps {
   user: User;
   onEdit: (user: User) => void;
+  onDelete: (user: User) => void;
   onToggleStatus: (userId: string, isActive: boolean) => void;
+  canDeleteUser?: (user: User) => boolean;
 }
 
 const roleIcons = {
@@ -50,7 +52,9 @@ const roleLabels = {
 export function EnhancedUserProfileCard({ 
   user, 
   onEdit, 
-  onToggleStatus
+  onDelete,
+  onToggleStatus,
+  canDeleteUser
 }: EnhancedUserProfileCardProps) {
   const navigate = useNavigate();
   const RoleIcon = roleIcons[user.current_role as keyof typeof roleIcons] || User;
@@ -111,6 +115,15 @@ export function EnhancedUserProfileCard({
                    </>
                  )}
                </DropdownMenuItem>
+               {canDeleteUser && canDeleteUser(user) && (
+                 <DropdownMenuItem 
+                   onClick={() => onDelete(user)}
+                   className="text-destructive"
+                 >
+                   <Trash2 className="w-4 h-4 mr-2" />
+                   Delete User
+                 </DropdownMenuItem>
+               )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

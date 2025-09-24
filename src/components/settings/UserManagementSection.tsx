@@ -13,8 +13,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Plus, Edit, Search, Filter, UserCheck, UserX, Crown, Headphones, Truck, User, Shield, MoreVertical, Grid3X3, List, Upload, FileText, TrendingUp, Bell, Send, RefreshCw } from "lucide-react";
+import { Users, Plus, Edit, Trash2, Search, Filter, UserCheck, UserX, Crown, Headphones, Truck, User, Shield, MoreVertical, Grid3X3, List, Upload, FileText, TrendingUp, Bell, Send, RefreshCw } from "lucide-react";
 import { EnhancedUserProfileCard } from "@/components/team/enhanced/EnhancedUserProfileCard";
 import { UserListView } from "@/components/team/enhanced/UserListView";
 import { BulkTeamOperations } from "@/components/team/BulkTeamOperations";
@@ -64,6 +65,9 @@ type SortDirection = 'asc' | 'desc' | 'default';
 type SortColumn = 'first_name' | 'last_name' | 'role' | 'status';
 
 export function UserManagementSection() {
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<any>(null);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -208,6 +212,41 @@ export function UserManagementSection() {
     },
   });
 
+  const deleteUser = useMutation({
+    mutationFn: async (userId: string) => {
+      // Delete role first (if exists)
+      const { error: roleError } = await supabase
+        .from("user_roles")
+        .delete()
+        .eq("user_id", userId);
+
+      if (roleError) {
+        console.warn("Warning deleting user role:", roleError);
+      }
+
+      // Then delete profile
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .delete()
+        .eq("id", userId);
+
+      if (profileError) throw profileError;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users-with-roles"] });
+      queryClient.invalidateQueries({ queryKey: ['drivers-with-hours'] });
+      queryClient.invalidateQueries({ queryKey: ['drivers'] });
+      toast.success("User deleted successfully");
+      setDeleteConfirmOpen(false);
+      setUserToDelete(null);
+      setDeleteConfirmText("");
+    },
+    onError: (error) => {
+      toast.error("Failed to delete user");
+      console.error("Error deleting user:", error);
+    },
+  });
+
 
   const toggleUserStatus = useMutation({
     mutationFn: async ({ userId, isActive }: { userId: string; isActive: boolean }) => {
@@ -235,6 +274,24 @@ export function UserManagementSection() {
     createUser.mutate(data);
   };
 
+  const handleDeleteClick = (user: any) => {
+    setUserToDelete(user);
+    setDeleteConfirmOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (deleteConfirmText === "delete" && userToDelete) {
+      deleteUser.mutate(userToDelete.id);
+    }
+  };
+
+  // Check if user can delete (admin/dispatcher role and not themselves)
+  const canDeleteUser = (user: any) => {
+    if (!isOwner) return false; // Only admin/dispatcher can delete
+    if (user.clerk_user_id === clerkUser?.id) return false; // Can't delete themselves
+    return true;
+  };
+
 
   // Separate current user from others
   const currentUser = users.find(user => user.clerk_user_id === clerkUser?.id);
@@ -250,7 +307,25 @@ export function UserManagementSection() {
       const matchesRole = roleFilter === "all" || user.current_role === roleFilter;
       
       return matchesSearch && matchesRole;
-    });
+  });
+
+  const handleDeleteClick = (user: any) => {
+    setUserToDelete(user);
+    setDeleteConfirmOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (deleteConfirmText === "delete" && userToDelete) {
+      deleteUser.mutate(userToDelete.id);
+    }
+  };
+
+  // Check if user can delete (admin/dispatcher role and not themselves)
+  const canDeleteUser = (user: any) => {
+    if (!isOwner) return false; // Only admin/dispatcher can delete
+    if (user.clerk_user_id === clerkUser?.id) return false; // Can't delete themselves
+    return true;
+  };
 
     // Apply sorting
     if (sortColumn && sortDirection !== 'default') {
@@ -394,10 +469,12 @@ export function UserManagementSection() {
                     <UserListView
                       users={[filteredCurrentUser]}
                       onEdit={setEditingUser}
+                      onDelete={handleDeleteClick}
                       onToggleStatus={(userId, isActive) => 
                         toggleUserStatus.mutate({ userId, isActive })
                       }
                       isLoading={isLoading}
+                      canDeleteUser={canDeleteUser}
                     />
                   </div>
                 )}
@@ -409,6 +486,7 @@ export function UserManagementSection() {
                     <UserListView
                       users={filteredOtherUsers}
                       onEdit={setEditingUser}
+                      onDelete={handleDeleteClick}
                       onToggleStatus={(userId, isActive) => 
                         toggleUserStatus.mutate({ userId, isActive })
                       }
@@ -416,6 +494,7 @@ export function UserManagementSection() {
                       sortColumn={sortColumn}
                       sortDirection={sortDirection}
                       onSort={handleSort}
+                      canDeleteUser={canDeleteUser}
                     />
                   </div>
                 )}
@@ -438,9 +517,11 @@ export function UserManagementSection() {
                            key={filteredCurrentUser.id}
                            user={filteredCurrentUser}
                            onEdit={setEditingUser}
+                           onDelete={handleDeleteClick}
                            onToggleStatus={(userId, isActive) => 
                              toggleUserStatus.mutate({ userId, isActive })
                            }
+                           canDeleteUser={canDeleteUser}
                          />
                       </div>
                     </div>
@@ -456,9 +537,11 @@ export function UserManagementSection() {
                              key={user.id}
                              user={user}
                              onEdit={setEditingUser}
+                             onDelete={handleDeleteClick}
                              onToggleStatus={(userId, isActive) => 
                                toggleUserStatus.mutate({ userId, isActive })
                              }
+                             canDeleteUser={canDeleteUser}
                            />
                         ))}
                       </div>
