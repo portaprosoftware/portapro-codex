@@ -32,7 +32,7 @@ export const QRGalleryModal: React.FC<QRGalleryModalProps> = ({ isOpen, onClose 
       return;
     }
     
-    const duration = 3000; // 3 seconds
+    const duration = 4000; // 4 seconds
     const interval = 50; // Update every 50ms for smooth animation
     let elapsed = 0;
 
@@ -70,7 +70,7 @@ export const QRGalleryModal: React.FC<QRGalleryModalProps> = ({ isOpen, onClose 
             <img
               src={galleryImages[currentImageIndex].src}
               alt={galleryImages[currentImageIndex].alt}
-              className="max-w-full max-h-[40vh] object-contain rounded-lg"
+              className="max-w-full max-h-[48vh] object-contain rounded-lg"
             />
           </div>
         </div>
