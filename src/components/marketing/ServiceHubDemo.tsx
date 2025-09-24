@@ -230,7 +230,7 @@ export const ServiceHubDemo: React.FC = () => {
                     Template Assigned
                   </Badge>
                 ) : (
-                  <Badge variant="outline" className="text-xs border-orange-300 text-orange-700">
+                  <Badge variant="outline" className="text-xs border-orange-600 text-orange-700">
                     <AlertTriangle className="w-3 h-3 mr-1" />
                     No Template
                   </Badge>
