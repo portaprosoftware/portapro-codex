@@ -13,11 +13,11 @@ interface QRGalleryModalProps {
 const galleryImages = [
   {
     src: qrGallery1,
-    alt: 'QR Codes Print Interface'
+    alt: 'QR Codes Print Selection Interface'
   },
   {
     src: qrGallery2,
-    alt: 'QR Code Grid Layout'
+    alt: 'QR Code Grid Print Layout'
   }
 ];
 
