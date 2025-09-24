@@ -160,11 +160,11 @@ export const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
                         </h4>
                         
                         {(vehicle.make || vehicle.model || vehicle.year) && (
-                          <div className="flex justify-between items-center">
+                          <div className="space-y-1">
                             <span className="text-sm text-gray-600 font-medium">Make/Model:</span>
-                            <span className="text-sm text-gray-900">
+                            <p className="text-sm text-gray-900 leading-tight">
                               {[vehicle.make, vehicle.model, vehicle.year].filter(Boolean).join(' ')}
-                            </span>
+                            </p>
                           </div>
                         )}
                         
