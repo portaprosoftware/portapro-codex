@@ -108,19 +108,19 @@ export function CompanyAnalyticsShowcase() {
                 <div className="space-y-3">
                   <div className="text-sm font-medium text-foreground">Active Filters</div>
                   <div className="space-y-2">
-                    <div className="flex items-center justify-between p-2 bg-blue-50 border border-blue-200 rounded">
+                    <div className="flex items-center justify-between p-2 bg-muted/30 border border-border rounded">
                       <div className="text-xs">
-                        <span className="font-medium text-blue-900">Date Range:</span>
-                        <span className="text-blue-700 ml-1">Last 30 days</span>
+                        <span className="font-medium text-foreground">Date Range:</span>
+                        <span className="text-muted-foreground ml-1">Last 30 days</span>
                       </div>
-                      <Calendar className="w-3 h-3 text-blue-600" />
+                      <Calendar className="w-3 h-3 text-muted-foreground" />
                     </div>
-                    <div className="flex items-center justify-between p-2 bg-green-50 border border-green-200 rounded">
+                    <div className="flex items-center justify-between p-2 bg-muted/30 border border-border rounded">
                       <div className="text-xs">
-                        <span className="font-medium text-green-900">Service Type:</span>
-                        <span className="text-green-700 ml-1">Delivery + Service</span>
+                        <span className="font-medium text-foreground">Service Type:</span>
+                        <span className="text-muted-foreground ml-1">Delivery + Service</span>
                       </div>
-                      <Filter className="w-3 h-3 text-green-600" />
+                      <Filter className="w-3 h-3 text-muted-foreground" />
                     </div>
                     <Button size="sm" variant="outline" className="w-full text-xs">
                       <Plus className="w-3 h-3 mr-1" />
