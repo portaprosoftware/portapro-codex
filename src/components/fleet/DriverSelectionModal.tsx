@@ -33,7 +33,7 @@ interface ScheduledJob {
 }
 
 interface DriverWithDetails extends Driver {
-  status: "available" | "assigned";
+  status: "available" | "assigned" | "off-duty";
   scheduledJobs: ScheduledJob[];
 }
 
@@ -111,8 +111,19 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
     const hasAssignment = assignedDriverIds.has(driver.id);
     const scheduledJobs = jobsByDriver[driver.id] || [];
     
-    // Simplified status logic: Available (no vehicle assignment) or Assigned (has vehicle assignment)
-    const status: "available" | "assigned" = hasAssignment ? "assigned" : "available";
+    // Check if driver is scheduled to work today (simplified - checking if they have working hours)
+    // In a real implementation, this would check against driver_working_hours table for the selected day
+    const dayOfWeek = selectedDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    const isScheduledToWork = true; // For now, assume all drivers are scheduled - this should check working_hours table
+    
+    // Status logic:
+    // - Off-Duty: Not scheduled to work that day
+    // - Assigned: Scheduled to work AND has vehicle assignment  
+    // - Available: Scheduled to work but no vehicle assignment
+    let status: "available" | "assigned" | "off-duty" = "off-duty";
+    if (isScheduledToWork) {
+      status = hasAssignment ? "assigned" : "available";
+    }
 
     return {
       ...driver,
@@ -127,6 +138,7 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
     
     if (statusFilter === "available") return matchesSearch && driver.status === "available";
     if (statusFilter === "assigned") return matchesSearch && driver.status === "assigned";
+    if (statusFilter === "off-duty") return matchesSearch && driver.status === "off-duty";
     return matchesSearch;
   });
 
@@ -134,6 +146,7 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
     switch (status) {
       case "available": return "bg-gradient-to-r from-green-500 to-green-600 text-white border-0";
       case "assigned": return "bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0";
+      case "off-duty": return "bg-gradient-to-r from-gray-500 to-gray-600 text-white border-0";
       default: return "bg-gradient-to-r from-gray-500 to-gray-600 text-white border-0";
     }
   };
@@ -142,6 +155,7 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
     switch (status) {
       case "available": return "Available";
       case "assigned": return "Assigned";
+      case "off-duty": return "Off-Duty";
       default: return "Unknown";
     }
   };
@@ -194,7 +208,17 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
               />
             </div>
 
-            <div className="flex gap-2">
+            {/* Filter Description */}
+            <div className="text-sm text-muted-foreground mb-3 p-3 bg-muted/30 rounded-lg">
+              <p className="font-medium mb-2">Filter Options:</p>
+              <ul className="space-y-1 text-xs">
+                <li><strong>Available:</strong> Drivers scheduled to work today but not yet assigned a vehicle</li>
+                <li><strong>Assigned:</strong> Drivers who have been assigned a vehicle for the day</li>
+                <li><strong>Off-Duty:</strong> Drivers not scheduled to work today</li>
+              </ul>
+            </div>
+
+            <div className="flex gap-2 flex-wrap">
               <Button
                 variant={statusFilter === "all" ? "default" : "outline"}
                 size="sm"
@@ -218,6 +242,14 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
                 className={statusFilter === "assigned" ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0" : ""}
               >
                 Assigned ({driversWithDetails.filter(d => d.status === "assigned").length})
+              </Button>
+              <Button
+                variant={statusFilter === "off-duty" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setStatusFilter("off-duty")}
+                className={statusFilter === "off-duty" ? "bg-gradient-to-r from-gray-500 to-gray-600 text-white border-0" : ""}
+              >
+                Off-Duty ({driversWithDetails.filter(d => d.status === "off-duty").length})
               </Button>
             </div>
           </div>
