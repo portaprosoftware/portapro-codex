@@ -139,7 +139,7 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
         return (
           <div className="space-y-6">
             {/* Grid layout - side by side on desktop, stacked on mobile */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
               {/* Date Selection */}
               <div className="space-y-4">
                 <div className="text-center">
@@ -170,112 +170,116 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
               </div>
 
               {/* Vehicle Selection */}
-              <div className="space-y-4">
+              <div className="space-y-4 flex flex-col">
                 <div className="text-center">
                   <h3 className="text-base font-semibold mb-2">Select Vehicle</h3>
                   <p className="text-sm text-muted-foreground">Choose an available vehicle</p>
                 </div>
                 
-                {selectedVehicle ? (
-                  <div className="p-3 border rounded-lg bg-muted/50">
-                    <div className="space-y-3">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <Truck className="h-5 w-5 text-primary" />
+                <div className="flex-1 flex items-center justify-center">
+                  {selectedVehicle ? (
+                    <div className="p-3 border rounded-lg bg-muted/50 w-full max-w-xs">
+                      <div className="space-y-3">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <Truck className="h-5 w-5 text-primary" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h4 className="font-semibold text-sm">{selectedVehicle.license_plate}</h4>
+                            <p className="text-xs text-muted-foreground truncate">
+                              {selectedVehicle.year} {selectedVehicle.make} {selectedVehicle.model}
+                            </p>
+                            <Badge variant="outline" className="text-xs mt-1">
+                              {selectedVehicle.vehicle_type}
+                            </Badge>
+                          </div>
                         </div>
-                        <div className="min-w-0 flex-1">
-                          <h4 className="font-semibold text-sm">{selectedVehicle.license_plate}</h4>
-                          <p className="text-xs text-muted-foreground truncate">
-                            {selectedVehicle.year} {selectedVehicle.make} {selectedVehicle.model}
-                          </p>
-                          <Badge variant="outline" className="text-xs mt-1">
-                            {selectedVehicle.vehicle_type}
-                          </Badge>
-                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setVehicleModalOpen(true)}
+                          className="w-full text-xs"
+                        >
+                          Change Vehicle
+                        </Button>
                       </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setVehicleModalOpen(true)}
-                        className="w-full text-xs"
-                      >
-                        Change Vehicle
+                    </div>
+                  ) : (
+                    <div className="text-center py-4 w-full max-w-xs">
+                      <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center mx-auto mb-3">
+                        <Truck className="h-6 w-6 text-muted-foreground" />
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-3">No vehicle selected</p>
+                      <Button onClick={() => setVehicleModalOpen(true)} size="sm" className="text-xs">
+                        <Plus className="h-4 w-4 mr-1" />
+                        Select Vehicle
                       </Button>
                     </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-4">
-                    <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center mx-auto mb-3">
-                      <Truck className="h-6 w-6 text-muted-foreground" />
-                    </div>
-                    <p className="text-sm text-muted-foreground mb-3">No vehicle selected</p>
-                    <Button onClick={() => setVehicleModalOpen(true)} size="sm" className="text-xs">
-                      <Plus className="h-4 w-4 mr-1" />
-                      Select Vehicle
-                    </Button>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
 
               {/* Driver Selection */}
-              <div className="space-y-4">
+              <div className="space-y-4 flex flex-col">
                 <div className="text-center">
                   <h3 className="text-base font-semibold mb-2">Select Driver</h3>
                   <p className="text-sm text-muted-foreground">Choose a driver for this assignment</p>
                 </div>
                 
-                {selectedDriver ? (
-                  <div className="p-3 border rounded-lg bg-muted/50">
-                    <div className="space-y-3">
-                      <div className="flex items-center space-x-3">
-                        <Avatar className="w-10 h-10 flex-shrink-0">
-                          <AvatarFallback className="bg-primary/10 text-primary font-semibold text-sm">
-                            {`${selectedDriver.first_name?.[0] || ''}${selectedDriver.last_name?.[0] || ''}`.toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="min-w-0 flex-1">
-                          <h4 className="font-semibold text-sm">
-                            {selectedDriver.first_name} {selectedDriver.last_name}
-                          </h4>
-                          <div className="flex items-center space-x-1 mt-1">
-                            <Badge 
-                              variant="outline" 
-                              className={`text-xs ${
-                                selectedDriver.status === "available" 
-                                  ? "bg-green-50 text-green-700 border-green-200"
-                                  : selectedDriver.status === "scheduled"
-                                  ? "bg-yellow-50 text-yellow-700 border-yellow-200"
-                                  : "bg-red-50 text-red-700 border-red-200"
-                              }`}
-                            >
-                              {selectedDriver.status === "available" ? "Available" : 
-                               selectedDriver.status === "scheduled" ? "Scheduled" : "Busy"}
-                            </Badge>
+                <div className="flex-1 flex items-center justify-center">
+                  {selectedDriver ? (
+                    <div className="p-3 border rounded-lg bg-muted/50 w-full max-w-xs">
+                      <div className="space-y-3">
+                        <div className="flex items-center space-x-3">
+                          <Avatar className="w-10 h-10 flex-shrink-0">
+                            <AvatarFallback className="bg-primary/10 text-primary font-semibold text-sm">
+                              {`${selectedDriver.first_name?.[0] || ''}${selectedDriver.last_name?.[0] || ''}`.toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="min-w-0 flex-1">
+                            <h4 className="font-semibold text-sm">
+                              {selectedDriver.first_name} {selectedDriver.last_name}
+                            </h4>
+                            <div className="flex items-center space-x-1 mt-1">
+                              <Badge 
+                                variant="outline" 
+                                className={`text-xs ${
+                                  selectedDriver.status === "available" 
+                                    ? "bg-green-50 text-green-700 border-green-200"
+                                    : selectedDriver.status === "scheduled"
+                                    ? "bg-yellow-50 text-yellow-700 border-yellow-200"
+                                    : "bg-red-50 text-red-700 border-red-200"
+                                }`}
+                              >
+                                {selectedDriver.status === "available" ? "Available" : 
+                                 selectedDriver.status === "scheduled" ? "Scheduled" : "Busy"}
+                              </Badge>
+                            </div>
                           </div>
                         </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setDriverModalOpen(true)}
+                          className="w-full text-xs"
+                        >
+                          Change Driver
+                        </Button>
                       </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setDriverModalOpen(true)}
-                        className="w-full text-xs"
-                      >
-                        Change Driver
+                    </div>
+                  ) : (
+                    <div className="text-center py-4 w-full max-w-xs">
+                      <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center mx-auto mb-3">
+                        <User className="h-6 w-6 text-muted-foreground" />
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-3">No driver selected</p>
+                      <Button onClick={() => setDriverModalOpen(true)} size="sm" className="text-xs">
+                        <Plus className="h-4 w-4 mr-1" />
+                        Select Driver
                       </Button>
                     </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-4">
-                    <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center mx-auto mb-3">
-                      <User className="h-6 w-6 text-muted-foreground" />
-                    </div>
-                    <p className="text-sm text-muted-foreground mb-3">No driver selected</p>
-                    <Button onClick={() => setDriverModalOpen(true)} size="sm" className="text-xs">
-                      <Plus className="h-4 w-4 mr-1" />
-                      Select Driver
-                    </Button>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             </div>
 
