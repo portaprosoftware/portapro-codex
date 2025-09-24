@@ -137,145 +137,146 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
     switch (currentStep) {
       case "basics":
         return (
-          <div className="space-y-8">
-            {/* Date Selection */}
-            <div className="space-y-4">
-              <div className="text-center">
-                <h3 className="text-lg font-semibold mb-2">Assignment Date</h3>
-                <p className="text-sm text-muted-foreground">Select a date for this vehicle assignment</p>
-              </div>
-              <div className="flex justify-center">
-                <div className="w-fit">
-                  <Calendar
-                    mode="single"
-                    selected={selectedDate}
-                    onSelect={(date) => date && setSelectedDate(date)}
-                    className="rounded-lg border shadow-sm pointer-events-auto"
-                    disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
-                    classNames={{
-                      day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
-                      day_today: "bg-accent text-accent-foreground",
-                      day: "h-9 w-9 text-center text-sm p-0 font-normal aria-selected:opacity-100 hover:bg-accent hover:text-accent-foreground",
-                      table: "w-full border-collapse space-y-1",
-                      head_row: "flex",
-                      head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
-                      row: "flex w-full mt-2",
-                      cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-                    }}
-                  />
+          <div className="space-y-6">
+            {/* Grid layout - side by side on desktop, stacked on mobile */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Date Selection */}
+              <div className="space-y-4">
+                <div className="text-center">
+                  <h3 className="text-base font-semibold mb-2">Assignment Date</h3>
+                  <p className="text-sm text-muted-foreground">Select a date for this assignment</p>
                 </div>
-              </div>
-            </div>
-
-            {/* Vehicle Selection */}
-            <div className="space-y-4">
-              <div className="text-center">
-                <h3 className="text-lg font-semibold mb-2">Select Vehicle</h3>
-                <p className="text-sm text-muted-foreground">Choose an available vehicle for the assignment</p>
-              </div>
-              
-              {selectedVehicle ? (
-                <div className="p-4 border rounded-lg bg-muted/50">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                        <Truck className="h-6 w-6 text-primary" />
-                      </div>
-                      <div>
-                        <h4 className="font-semibold">{selectedVehicle.license_plate}</h4>
-                        <p className="text-sm text-muted-foreground">
-                          {selectedVehicle.year} {selectedVehicle.make} {selectedVehicle.model}
-                          {selectedVehicle.nickname && ` "${selectedVehicle.nickname}"`}
-                        </p>
-                        <Badge variant="outline" className="text-xs mt-1">
-                          {selectedVehicle.vehicle_type}
-                        </Badge>
-                      </div>
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setVehicleModalOpen(true)}
-                    >
-                      Change Vehicle
-                    </Button>
+                <div className="flex justify-center">
+                  <div className="w-fit">
+                    <Calendar
+                      mode="single"
+                      selected={selectedDate}
+                      onSelect={(date) => date && setSelectedDate(date)}
+                      className="rounded-lg border shadow-sm pointer-events-auto scale-90 lg:scale-100"
+                      disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                      classNames={{
+                        day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+                        day_today: "bg-accent text-accent-foreground",
+                        day: "h-9 w-9 text-center text-sm p-0 font-normal aria-selected:opacity-100 hover:bg-accent hover:text-accent-foreground",
+                        table: "w-full border-collapse space-y-1",
+                        head_row: "flex",
+                        head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
+                        row: "flex w-full mt-2",
+                        cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+                      }}
+                    />
                   </div>
                 </div>
-              ) : (
-                <div className="text-center py-6">
-                  <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center mx-auto mb-4">
-                    <Truck className="h-8 w-8 text-muted-foreground" />
-                  </div>
-                  <p className="text-muted-foreground mb-4">No vehicle selected</p>
-                  <Button onClick={() => setVehicleModalOpen(true)}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Select Vehicle
-                  </Button>
-                </div>
-              )}
-            </div>
-
-            {/* Driver Selection */}
-            <div className="space-y-4">
-              <div className="text-center">
-                <h3 className="text-lg font-semibold mb-2">Select Driver</h3>
-                <p className="text-sm text-muted-foreground">Choose a driver for this assignment</p>
               </div>
-              
-              {selectedDriver ? (
-                <div className="p-4 border rounded-lg bg-muted/50">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <Avatar className="w-12 h-12">
-                        <AvatarFallback className="bg-primary/10 text-primary font-semibold">
-                          {`${selectedDriver.first_name?.[0] || ''}${selectedDriver.last_name?.[0] || ''}`.toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <h4 className="font-semibold">
-                          {selectedDriver.first_name} {selectedDriver.last_name}
-                        </h4>
-                        <div className="flex items-center space-x-2 mt-1">
-                          <Badge 
-                            variant="outline" 
-                            className={`text-xs ${
-                              selectedDriver.status === "available" 
-                                ? "bg-green-50 text-green-700 border-green-200"
-                                : selectedDriver.status === "scheduled"
-                                ? "bg-yellow-50 text-yellow-700 border-yellow-200"
-                                : "bg-red-50 text-red-700 border-red-200"
-                            }`}
-                          >
-                            {selectedDriver.status === "available" ? "Available" : 
-                             selectedDriver.status === "scheduled" ? "Scheduled" : "Busy"}
+
+              {/* Vehicle Selection */}
+              <div className="space-y-4">
+                <div className="text-center">
+                  <h3 className="text-base font-semibold mb-2">Select Vehicle</h3>
+                  <p className="text-sm text-muted-foreground">Choose an available vehicle</p>
+                </div>
+                
+                {selectedVehicle ? (
+                  <div className="p-3 border rounded-lg bg-muted/50">
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <Truck className="h-5 w-5 text-primary" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <h4 className="font-semibold text-sm">{selectedVehicle.license_plate}</h4>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {selectedVehicle.year} {selectedVehicle.make} {selectedVehicle.model}
+                          </p>
+                          <Badge variant="outline" className="text-xs mt-1">
+                            {selectedVehicle.vehicle_type}
                           </Badge>
-                          <span className="text-xs text-muted-foreground">
-                            {selectedDriver.scheduledJobs?.length || 0} scheduled jobs
-                          </span>
                         </div>
                       </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setVehicleModalOpen(true)}
+                        className="w-full text-xs"
+                      >
+                        Change Vehicle
+                      </Button>
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setDriverModalOpen(true)}
-                    >
-                      Change Driver
+                  </div>
+                ) : (
+                  <div className="text-center py-4">
+                    <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center mx-auto mb-3">
+                      <Truck className="h-6 w-6 text-muted-foreground" />
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">No vehicle selected</p>
+                    <Button onClick={() => setVehicleModalOpen(true)} size="sm" className="text-xs">
+                      <Plus className="h-4 w-4 mr-1" />
+                      Select Vehicle
                     </Button>
                   </div>
+                )}
+              </div>
+
+              {/* Driver Selection */}
+              <div className="space-y-4">
+                <div className="text-center">
+                  <h3 className="text-base font-semibold mb-2">Select Driver</h3>
+                  <p className="text-sm text-muted-foreground">Choose a driver for this assignment</p>
                 </div>
-              ) : (
-                <div className="text-center py-6">
-                  <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center mx-auto mb-4">
-                    <User className="h-8 w-8 text-muted-foreground" />
+                
+                {selectedDriver ? (
+                  <div className="p-3 border rounded-lg bg-muted/50">
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-3">
+                        <Avatar className="w-10 h-10 flex-shrink-0">
+                          <AvatarFallback className="bg-primary/10 text-primary font-semibold text-sm">
+                            {`${selectedDriver.first_name?.[0] || ''}${selectedDriver.last_name?.[0] || ''}`.toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="min-w-0 flex-1">
+                          <h4 className="font-semibold text-sm">
+                            {selectedDriver.first_name} {selectedDriver.last_name}
+                          </h4>
+                          <div className="flex items-center space-x-1 mt-1">
+                            <Badge 
+                              variant="outline" 
+                              className={`text-xs ${
+                                selectedDriver.status === "available" 
+                                  ? "bg-green-50 text-green-700 border-green-200"
+                                  : selectedDriver.status === "scheduled"
+                                  ? "bg-yellow-50 text-yellow-700 border-yellow-200"
+                                  : "bg-red-50 text-red-700 border-red-200"
+                              }`}
+                            >
+                              {selectedDriver.status === "available" ? "Available" : 
+                               selectedDriver.status === "scheduled" ? "Scheduled" : "Busy"}
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setDriverModalOpen(true)}
+                        className="w-full text-xs"
+                      >
+                        Change Driver
+                      </Button>
+                    </div>
                   </div>
-                  <p className="text-muted-foreground mb-4">No driver selected</p>
-                  <Button onClick={() => setDriverModalOpen(true)}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Select Driver
-                  </Button>
-                </div>
-              )}
+                ) : (
+                  <div className="text-center py-4">
+                    <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center mx-auto mb-3">
+                      <User className="h-6 w-6 text-muted-foreground" />
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">No driver selected</p>
+                    <Button onClick={() => setDriverModalOpen(true)} size="sm" className="text-xs">
+                      <Plus className="h-4 w-4 mr-1" />
+                      Select Driver
+                    </Button>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Required Fields Notice */}
