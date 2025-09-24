@@ -1,9 +1,23 @@
 import React from 'react';
-import { Building2, Users, Target, Award } from 'lucide-react';
+import { Building2, Users, Target, Award, ArrowLeft } from 'lucide-react';
+import { LandingLogo } from '@/components/ui/landing-logo';
 
 export default function About() {
   return (
     <div className="min-h-screen bg-background">
+      {/* Header with Logo */}
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container mx-auto px-4 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <a href="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+              <ArrowLeft className="w-4 h-4" />
+              <span className="text-sm">Back to Home</span>
+            </a>
+          </div>
+          <LandingLogo />
+          <div className="w-24"></div> {/* Spacer for centering logo */}
+        </div>
+      </header>
       {/* Header */}
       <div className="bg-gradient-to-br from-primary to-primary/80 text-white">
         <div className="container mx-auto px-4 py-16 sm:py-24">

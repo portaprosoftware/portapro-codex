@@ -1210,24 +1210,24 @@ export const Landing: React.FC = () => {
             <div className="space-y-3 sm:space-y-4">
               <h4 className="font-semibold text-white text-sm sm:text-base">Company</h4>
               <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm text-white/80">
-                <a href="/about" onClick={() => setAboutSliderOpen(true)} className="block hover:text-white text-left">About</a>
+                <a href="/about" onClick={(e) => { e.preventDefault(); setAboutSliderOpen(true); }} className="block hover:text-white text-left">About</a>
                 <a href="#" className="block hover:text-white">Careers</a>
-                <a href="/blog" onClick={() => setBlogSliderOpen(true)} className="block hover:text-white text-left">Blog</a>
+                <a href="/blog" onClick={(e) => { e.preventDefault(); setBlogSliderOpen(true); }} className="block hover:text-white text-left">Blog</a>
               </div>
             </div>
             <div className="space-y-3 sm:space-y-4">
               <h4 className="font-semibold text-white text-sm sm:text-base">Resources</h4>
               <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm text-white/80">
                 <a href="/help" className="block hover:text-white">Help Center</a>
-                <a href="/community" onClick={() => setCommunitySliderOpen(true)} className="block hover:text-white text-left">Community</a>
+                <a href="/community" onClick={(e) => { e.preventDefault(); setCommunitySliderOpen(true); }} className="block hover:text-white text-left">Community</a>
               </div>
             </div>
             <div className="space-y-3 sm:space-y-4">
               <h4 className="font-semibold text-white text-sm sm:text-base">Legal</h4>
               <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm text-white/80">
-                <a href="/terms" onClick={() => setTermsSliderOpen(true)} className="block hover:text-white text-left">Terms</a>
-                <a href="/privacy" onClick={() => setPrivacySliderOpen(true)} className="block hover:text-white text-left">Privacy</a>
-                <a href="/security" onClick={() => setSecuritySliderOpen(true)} className="block hover:text-white text-left">Security</a>
+                <a href="/terms" onClick={(e) => { e.preventDefault(); setTermsSliderOpen(true); }} className="block hover:text-white text-left">Terms</a>
+                <a href="/privacy" onClick={(e) => { e.preventDefault(); setPrivacySliderOpen(true); }} className="block hover:text-white text-left">Privacy</a>
+                <a href="/security" onClick={(e) => { e.preventDefault(); setSecuritySliderOpen(true); }} className="block hover:text-white text-left">Security</a>
               </div>
             </div>
           </div>
