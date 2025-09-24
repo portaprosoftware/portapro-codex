@@ -241,14 +241,14 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
         </div>
 
         {/* Callout Text */}
-        <div className="text-center py-8">
+        <div className="text-center py-4">
           <p className="text-lg text-foreground">
             Customers stay informed, confident, and connected — without calling your office.
           </p>
         </div>
 
         {/* Internal Accounts Section */}
-        <div className="mt-6 pt-4 border-t border-gray-200">
+        <div className="mt-4 pt-4 border-t border-gray-200">
           <div className="space-y-2 mb-6">
             <h3 className="text-2xl font-bold text-foreground flex items-center gap-2">
               <Users className="w-6 h-6 text-blue-600" />
