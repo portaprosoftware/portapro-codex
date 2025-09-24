@@ -130,10 +130,10 @@ export function CompanyAnalyticsShowcase() {
                 </div>
               </div>
 
-              {/* Chart Type Selection */}
+              {/* Chart Type Selection and Actions */}
               <div className="space-y-3">
                 <div className="text-sm font-medium text-foreground">Visualization Type</div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2 items-center">
                   {[
                     { name: "Bar Chart", icon: BarChart, active: true },
                     { name: "Line Chart", icon: LineChart, active: false },
@@ -143,7 +143,7 @@ export function CompanyAnalyticsShowcase() {
                     return (
                       <button
                         key={idx}
-                        className={`flex items-center gap-2 p-2 rounded border text-xs transition-colors ${
+                        className={`flex items-center gap-2 p-2 rounded border text-xs font-bold transition-colors ${
                           chart.active 
                             ? 'bg-blue-500 text-white border-blue-500' 
                             : 'bg-background text-muted-foreground border-border hover:bg-muted/50'
@@ -154,23 +154,24 @@ export function CompanyAnalyticsShowcase() {
                       </button>
                     );
                   })}
+                  
+                  {/* Action Buttons */}
+                  <div className="flex gap-2 ml-auto">
+                    <Button size="sm" className="text-xs">
+                      <BarChart3 className="w-3 h-3 mr-1" />
+                      Generate Preview
+                    </Button>
+                    <Button size="sm" variant="outline" className="text-xs">
+                      <Download className="w-3 h-3 mr-1" />
+                      Export CSV
+                    </Button>
+                    <Button size="sm" variant="outline" className="text-xs">
+                      Save Template
+                    </Button>
+                  </div>
                 </div>
               </div>
 
-              {/* Preview and Export */}
-              <div className="flex gap-2 pt-3 border-t">
-                <Button size="sm" className="text-xs">
-                  <BarChart3 className="w-3 h-3 mr-1" />
-                  Generate Preview
-                </Button>
-                <Button size="sm" variant="outline" className="text-xs">
-                  <Download className="w-3 h-3 mr-1" />
-                  Export CSV
-                </Button>
-                <Button size="sm" variant="outline" className="text-xs">
-                  Save Template
-                </Button>
-              </div>
             </CardContent>
           </Card>
 
