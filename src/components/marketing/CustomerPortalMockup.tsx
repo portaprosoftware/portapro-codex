@@ -92,41 +92,41 @@ export const CustomerPortalMockup: React.FC = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <div className="flex items-center justify-between p-3 bg-gray-100 rounded-lg border border-gray-200">
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <div>
-                    <p className="font-medium text-gray-900">Downtown Office Complex</p>
-                    <p className="text-sm text-gray-600 flex items-center gap-1">
-                      <MapPin className="w-3 h-3" />
-                      123 Main St, Downtown
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 bg-gray-100 rounded-lg border border-gray-200 gap-3">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                  <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></div>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-gray-900 text-sm truncate">Downtown Office Complex</p>
+                    <p className="text-xs text-gray-600 flex items-center gap-1">
+                      <MapPin className="w-3 h-3 flex-shrink-0" />
+                      <span className="truncate">123 Main St, Downtown</span>
                     </p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white border-0">
+                <div className="flex flex-col items-start sm:items-end gap-1 flex-shrink-0">
+                  <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white border-0 text-xs whitespace-nowrap">
                     2x Standard Units
                   </Badge>
-                  <p className="text-xs text-gray-500 mt-1">Next service: Tomorrow</p>
+                  <p className="text-xs text-gray-500 whitespace-nowrap">Next: Tomorrow</p>
                 </div>
               </div>
               
-              <div className="flex items-center justify-between p-3 bg-gray-100 rounded-lg border border-gray-200">
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  <div>
-                    <p className="font-medium text-gray-900">Riverside Construction Site</p>
-                    <p className="text-sm text-gray-600 flex items-center gap-1">
-                      <MapPin className="w-3 h-3" />
-                      456 River Rd, Westside
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 bg-gray-100 rounded-lg border border-gray-200 gap-3">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-gray-900 text-sm truncate">Riverside Construction Site</p>
+                    <p className="text-xs text-gray-600 flex items-center gap-1">
+                      <MapPin className="w-3 h-3 flex-shrink-0" />
+                      <span className="truncate">456 River Rd, Westside</span>
                     </p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0">
+                <div className="flex flex-col items-start sm:items-end gap-1 flex-shrink-0">
+                  <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 text-xs whitespace-nowrap">
                     4x Standard Units
                   </Badge>
-                  <p className="text-xs text-gray-500 mt-1">Next service: Friday</p>
+                  <p className="text-xs text-gray-500 whitespace-nowrap">Next: Friday</p>
                 </div>
               </div>
             </CardContent>

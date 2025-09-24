@@ -272,33 +272,33 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
             </div>
 
             {/* Customer Stats Cards */}
-            <div className="grid grid-cols-2 gap-3 mb-6">
+            <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-6">
               <Card className="border-l-4 border-l-blue-600 bg-background shadow-sm">
-                <CardContent className="p-4 relative">
-                  <Calendar className="w-4 h-4 text-blue-600 absolute top-3 right-3" />
-                  <div className="text-2xl font-bold text-foreground mb-1">{mockCustomerData.stats.totalJobs}</div>
-                  <div className="text-sm text-muted-foreground">Total Job History</div>
+                <CardContent className="p-3 sm:p-4 relative">
+                  <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600 absolute top-2 right-2 sm:top-3 sm:right-3" />
+                  <div className="text-lg sm:text-2xl font-bold text-foreground mb-1 pr-6">{mockCustomerData.stats.totalJobs}</div>
+                  <div className="text-xs sm:text-sm text-muted-foreground leading-tight">Total Job History</div>
                 </CardContent>
               </Card>
               <Card className="border-l-4 border-l-green-600 bg-background shadow-sm">
-                <CardContent className="p-4 relative">
-                  <DollarSign className="w-4 h-4 text-green-600 absolute top-3 right-3" />
-                  <div className="text-2xl font-bold text-foreground mb-1">${mockCustomerData.stats.outstandingBalance}</div>
-                  <div className="text-sm text-muted-foreground">Outstanding Balance</div>
+                <CardContent className="p-3 sm:p-4 relative">
+                  <DollarSign className="w-3 h-3 sm:w-4 sm:h-4 text-green-600 absolute top-2 right-2 sm:top-3 sm:right-3" />
+                  <div className="text-lg sm:text-2xl font-bold text-foreground mb-1 pr-6">${mockCustomerData.stats.outstandingBalance}</div>
+                  <div className="text-xs sm:text-sm text-muted-foreground leading-tight">Outstanding Balance</div>
                 </CardContent>
               </Card>
               <Card className="border-l-4 border-l-orange-600 bg-background shadow-sm">
-                <CardContent className="p-4 relative">
-                  <FileText className="w-4 h-4 text-orange-600 absolute top-3 right-3" />
-                  <div className="text-2xl font-bold text-foreground mb-1">{mockCustomerData.stats.outstandingInvoices}</div>
-                  <div className="text-sm text-muted-foreground">Outstanding Invoices</div>
+                <CardContent className="p-3 sm:p-4 relative">
+                  <FileText className="w-3 h-3 sm:w-4 sm:h-4 text-orange-600 absolute top-2 right-2 sm:top-3 sm:right-3" />
+                  <div className="text-lg sm:text-2xl font-bold text-foreground mb-1 pr-6">{mockCustomerData.stats.outstandingInvoices}</div>
+                  <div className="text-xs sm:text-sm text-muted-foreground leading-tight">Outstanding Invoices</div>
                 </CardContent>
               </Card>
               <Card className="border-l-4 border-l-purple-600 bg-background shadow-sm">
-                <CardContent className="p-4 relative">
-                  <Truck className="w-4 h-4 text-purple-600 absolute top-3 right-3" />
-                  <div className="text-2xl font-bold text-foreground mb-1">{mockCustomerData.stats.nextDelivery}</div>
-                  <div className="text-sm text-muted-foreground">Next Delivery</div>
+                <CardContent className="p-3 sm:p-4 relative">
+                  <Truck className="w-3 h-3 sm:w-4 sm:h-4 text-purple-600 absolute top-2 right-2 sm:top-3 sm:right-3" />
+                  <div className="text-lg sm:text-2xl font-bold text-foreground mb-1 pr-6">{mockCustomerData.stats.nextDelivery}</div>
+                  <div className="text-xs sm:text-sm text-muted-foreground leading-tight">Next Delivery</div>
                 </CardContent>
               </Card>
             </div>
