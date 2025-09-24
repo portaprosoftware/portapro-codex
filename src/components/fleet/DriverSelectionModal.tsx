@@ -184,7 +184,7 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-full h-full max-w-none md:max-w-4xl md:h-auto md:max-h-[90vh] p-0 flex flex-col">
-        <DialogHeader className="p-6 pb-4 border-b">
+        <DialogHeader className="p-6 pb-2 border-b">
           <DialogTitle className="text-xl font-semibold">Select Driver</DialogTitle>
           <p className="text-sm text-muted-foreground">
             Scheduled date: {selectedDate.toLocaleDateString('en-US', { 
@@ -195,11 +195,11 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
           </p>
         </DialogHeader>
 
-        <div className="p-6 space-y-4 flex-1 overflow-hidden flex flex-col">
+        <div className="px-6 pt-3 pb-6 space-y-2 flex-1 overflow-hidden flex flex-col">
           {/* Filters */}
-          <div className="space-y-4">
+          <div className="space-y-2">
             {/* Filter Description */}
-            <div className="text-sm text-muted-foreground mb-3 p-3 bg-muted/30 rounded-lg">
+            <div className="text-sm text-muted-foreground p-3 bg-muted/30 rounded-lg">
               <p className="font-medium mb-2">Filter Options:</p>
               <ul className="space-y-1 text-xs">
                 <li><strong>Available:</strong> Drivers scheduled to work today but not yet assigned a vehicle</li>
