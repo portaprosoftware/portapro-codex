@@ -196,13 +196,13 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
         </div>
 
         {/* Customer Portal Hero Section */}
-        <div className="mb-8">
+        <div className="mb-6">
           {/* Header Content - Full Width */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-4">
             
             {/* Feature Bullets - Responsive Grid */}
-            <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-              <div className="flex items-start gap-3 md:flex-col md:items-center md:text-center">
+            <div className="grid md:grid-cols-3 gap-4 md:gap-6 max-w-4xl mx-auto">
+              <div className="flex items-start gap-3 text-left md:flex-col md:items-center md:text-center">
                 <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
                   <BarChart3 className="w-4 h-4 text-white font-bold" strokeWidth={3} />
                 </div>
@@ -212,7 +212,7 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex items-start gap-3 md:flex-col md:items-center md:text-center">
+              <div className="flex items-start gap-3 text-left md:flex-col md:items-center md:text-center">
                 <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
                   <Camera className="w-4 h-4 text-white font-bold" strokeWidth={3} />
                 </div>
@@ -222,7 +222,7 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex items-start gap-3 md:flex-col md:items-center md:text-center">
+              <div className="flex items-start gap-3 text-left md:flex-col md:items-center md:text-center">
                 <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
                   <CreditCard className="w-4 h-4 text-white font-bold" strokeWidth={3} />
                 </div>
