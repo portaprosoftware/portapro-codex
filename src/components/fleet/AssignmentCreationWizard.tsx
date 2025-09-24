@@ -177,34 +177,7 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
                 </div>
                 
                 <div className="flex-1 flex items-start justify-center pt-4">
-                  {selectedVehicle ? (
-                    <div className="p-3 border rounded-lg bg-muted/50 w-full">
-                      <div className="space-y-3">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                            <Truck className="h-5 w-5 text-primary" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <h4 className="font-semibold text-sm">{selectedVehicle.license_plate}</h4>
-                            <p className="text-xs text-muted-foreground truncate">
-                              {selectedVehicle.year} {selectedVehicle.make} {selectedVehicle.model}
-                            </p>
-                            <Badge variant="outline" className="text-xs mt-1">
-                              {selectedVehicle.vehicle_type}
-                            </Badge>
-                          </div>
-                        </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setVehicleModalOpen(true)}
-                          className="w-full text-xs"
-                        >
-                          Change Vehicle
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
+                  {!selectedVehicle && (
                     <div className="text-center py-4 w-full">
                       <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center mx-auto mb-3">
                         <Truck className="h-6 w-6 text-muted-foreground" />
@@ -213,6 +186,17 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
                       <Button onClick={() => setVehicleModalOpen(true)} size="sm" className="text-xs">
                         <Plus className="h-4 w-4 mr-1" />
                         Select Vehicle
+                      </Button>
+                    </div>
+                  )}
+                  {selectedVehicle && (
+                    <div className="text-center py-4 w-full">
+                      <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mx-auto mb-3">
+                        <Check className="h-6 w-6 text-white" />
+                      </div>
+                      <p className="text-sm font-medium mb-3">Vehicle Selected</p>
+                      <Button onClick={() => setVehicleModalOpen(true)} variant="outline" size="sm" className="text-xs">
+                        Change Vehicle
                       </Button>
                     </div>
                   )}
@@ -227,47 +211,7 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
                 </div>
                 
                 <div className="flex-1 flex items-start justify-center pt-4">
-                  {selectedDriver ? (
-                    <div className="p-3 border rounded-lg bg-muted/50 w-full">
-                      <div className="space-y-3">
-                        <div className="flex items-center space-x-3">
-                          <Avatar className="w-10 h-10 flex-shrink-0">
-                            <AvatarFallback className="bg-primary/10 text-primary font-semibold text-sm">
-                              {`${selectedDriver.first_name?.[0] || ''}${selectedDriver.last_name?.[0] || ''}`.toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="min-w-0 flex-1">
-                            <h4 className="font-semibold text-sm">
-                              {selectedDriver.first_name} {selectedDriver.last_name}
-                            </h4>
-                            <div className="flex items-center space-x-1 mt-1">
-                              <Badge 
-                                variant="outline" 
-                                className={`text-xs ${
-                                  selectedDriver.status === "available" 
-                                    ? "bg-green-50 text-green-700 border-green-200"
-                                    : selectedDriver.status === "scheduled"
-                                    ? "bg-yellow-50 text-yellow-700 border-yellow-200"
-                                    : "bg-red-50 text-red-700 border-red-200"
-                                }`}
-                              >
-                                {selectedDriver.status === "available" ? "Available" : 
-                                 selectedDriver.status === "scheduled" ? "Scheduled" : "Busy"}
-                              </Badge>
-                            </div>
-                          </div>
-                        </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setDriverModalOpen(true)}
-                          className="w-full text-xs"
-                        >
-                          Change Driver
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
+                  {!selectedDriver && (
                     <div className="text-center py-4 w-full">
                       <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center mx-auto mb-3">
                         <User className="h-6 w-6 text-muted-foreground" />
@@ -279,9 +223,84 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
                       </Button>
                     </div>
                   )}
+                  {selectedDriver && (
+                    <div className="text-center py-4 w-full">
+                      <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mx-auto mb-3">
+                        <Check className="h-6 w-6 text-white" />
+                      </div>
+                      <p className="text-sm font-medium mb-3">Driver Selected</p>
+                      <Button onClick={() => setDriverModalOpen(true)} variant="outline" size="sm" className="text-xs">
+                        Change Driver
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
+
+            {/* Selected Items Display at Bottom */}
+            {(selectedVehicle || selectedDriver) && (
+              <div className="mt-8 pt-6 border-t">
+                <h4 className="text-sm font-semibold text-center mb-4">Selected Items</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Selected Vehicle Card */}
+                  {selectedVehicle && (
+                    <div className="p-4 border rounded-lg bg-muted/30">
+                      <div className="space-y-3">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <Truck className="h-5 w-5 text-white" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h5 className="font-semibold text-sm">{selectedVehicle.license_plate}</h5>
+                            <p className="text-xs text-muted-foreground truncate">
+                              {selectedVehicle.year} {selectedVehicle.make} {selectedVehicle.model}
+                            </p>
+                            <div className="mt-1">
+                              <span className="inline-flex items-center rounded-md bg-gradient-to-r from-blue-500 to-blue-600 px-2 py-1 text-xs font-bold text-white shadow-sm">
+                                {selectedVehicle.vehicle_type}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Selected Driver Card */}
+                  {selectedDriver && (
+                    <div className="p-4 border rounded-lg bg-muted/30">
+                      <div className="space-y-3">
+                        <div className="flex items-center space-x-3">
+                          <Avatar className="w-10 h-10 flex-shrink-0">
+                            <AvatarFallback className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold text-sm">
+                              {`${selectedDriver.first_name?.[0] || ''}${selectedDriver.last_name?.[0] || ''}`.toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="min-w-0 flex-1">
+                            <h5 className="font-semibold text-sm">
+                              {selectedDriver.first_name} {selectedDriver.last_name}
+                            </h5>
+                            <div className="flex items-center space-x-1 mt-1">
+                              <span className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-bold text-white shadow-sm ${
+                                selectedDriver.status === "available" 
+                                  ? "bg-gradient-to-r from-green-500 to-green-600"
+                                  : selectedDriver.status === "scheduled"
+                                  ? "bg-gradient-to-r from-yellow-500 to-yellow-600"
+                                  : "bg-gradient-to-r from-red-500 to-red-600"
+                              }`}>
+                                {selectedDriver.status === "available" ? "Available" : 
+                                 selectedDriver.status === "scheduled" ? "Scheduled" : "Busy"}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Required Fields Notice */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
