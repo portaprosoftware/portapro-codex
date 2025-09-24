@@ -7,7 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
   Crown, Headphones, Truck, User, Shield, 
-  MoreVertical, Edit, Trash2, UserCheck, UserX,
+  MoreVertical, Edit, UserCheck, UserX,
   Phone, Mail, Calendar, Navigation
 } from 'lucide-react';
 
@@ -27,9 +27,7 @@ interface User {
 interface EnhancedUserProfileCardProps {
   user: User;
   onEdit: (user: User) => void;
-  onDelete: (user: User) => void;
   onToggleStatus: (userId: string, isActive: boolean) => void;
-  canDeleteUser?: boolean;
 }
 
 const roleIcons = {
@@ -52,9 +50,7 @@ const roleLabels = {
 export function EnhancedUserProfileCard({ 
   user, 
   onEdit, 
-  onDelete, 
-  onToggleStatus,
-  canDeleteUser = true
+  onToggleStatus
 }: EnhancedUserProfileCardProps) {
   const navigate = useNavigate();
   const RoleIcon = roleIcons[user.current_role as keyof typeof roleIcons] || User;
@@ -102,36 +98,19 @@ export function EnhancedUserProfileCard({
                 <Edit className="w-4 h-4 mr-2" />
                 Edit Profile
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onToggleStatus(user.id, user.is_active)}>
-                {user.is_active ? (
-                  <>
-                    <UserX className="w-4 h-4 mr-2" />
-                    Deactivate
-                  </>
-                ) : (
-                  <>
-                    <UserCheck className="w-4 h-4 mr-2" />
-                    Activate
-                  </>
-                )}
-              </DropdownMenuItem>
-              {canDeleteUser ? (
-                <DropdownMenuItem 
-                  onClick={() => onDelete(user)}
-                  className="text-destructive"
-                >
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Delete User
-                </DropdownMenuItem>
-              ) : (
-                <DropdownMenuItem 
-                  disabled
-                  className="text-muted-foreground opacity-50"
-                >
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Cannot delete last admin
-                </DropdownMenuItem>
-              )}
+               <DropdownMenuItem onClick={() => onToggleStatus(user.id, user.is_active)}>
+                 {user.is_active ? (
+                   <>
+                     <UserX className="w-4 h-4 mr-2" />
+                     Deactivate
+                   </>
+                 ) : (
+                   <>
+                     <UserCheck className="w-4 h-4 mr-2" />
+                     Activate
+                   </>
+                 )}
+               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

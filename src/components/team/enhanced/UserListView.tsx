@@ -7,7 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
   Crown, Headphones, Truck, User, Shield, 
-  MoreVertical, Edit, Trash2, UserCheck, UserX,
+  MoreVertical, Edit, UserCheck, UserX,
   Phone, Mail, Calendar, ChevronUp, ChevronDown, ChevronsUpDown,
   ExternalLink, AlertTriangle, Clock, FileText, Navigation
 } from 'lucide-react';
@@ -40,13 +40,11 @@ type SortColumn = 'first_name' | 'last_name' | 'role' | 'status' | 'license_expi
 interface UserListViewProps {
   users: User[];
   onEdit: (user: User) => void;
-  onDelete: (user: User) => void;
   onToggleStatus: (userId: string, isActive: boolean) => void;
   isLoading?: boolean;
   sortColumn?: SortColumn | null;
   sortDirection?: SortDirection;
   onSort?: (column: SortColumn) => void;
-  canDeleteUser?: boolean;
   showDriverColumns?: boolean;
 }
 
@@ -69,13 +67,11 @@ const roleLabels = {
 export function UserListView({ 
   users, 
   onEdit, 
-  onDelete, 
   onToggleStatus,
   isLoading = false,
   sortColumn,
   sortDirection = 'default',
   onSort,
-  canDeleteUser = true,
   showDriverColumns = false
 }: UserListViewProps) {
 
@@ -334,36 +330,19 @@ export function UserListView({
                         <Edit className="w-4 h-4 mr-2" />
                         Edit Profile
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onToggleStatus(user.id, user.is_active)}>
-                        {user.is_active ? (
-                          <>
-                            <UserX className="w-4 h-4 mr-2" />
-                            Deactivate
-                          </>
-                        ) : (
-                          <>
-                            <UserCheck className="w-4 h-4 mr-2" />
-                            Activate
-                          </>
-                        )}
-                      </DropdownMenuItem>
-                      {canDeleteUser ? (
-                        <DropdownMenuItem 
-                          onClick={() => onDelete(user)}
-                          className="text-destructive"
-                        >
-                          <Trash2 className="w-4 h-4 mr-2" />
-                          Delete User
-                        </DropdownMenuItem>
-                      ) : (
-                        <DropdownMenuItem 
-                          disabled
-                          className="text-muted-foreground opacity-50"
-                        >
-                          <Trash2 className="w-4 h-4 mr-2" />
-                          Cannot delete last admin
-                        </DropdownMenuItem>
-                      )}
+                       <DropdownMenuItem onClick={() => onToggleStatus(user.id, user.is_active)}>
+                         {user.is_active ? (
+                           <>
+                             <UserX className="w-4 h-4 mr-2" />
+                             Deactivate
+                           </>
+                         ) : (
+                           <>
+                             <UserCheck className="w-4 h-4 mr-2" />
+                             Activate
+                           </>
+                         )}
+                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>

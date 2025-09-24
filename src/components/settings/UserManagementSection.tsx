@@ -12,9 +12,9 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Plus, Edit, Trash2, Search, Filter, UserCheck, UserX, Crown, Headphones, Truck, User, Shield, MoreVertical, Grid3X3, List, Upload, FileText, TrendingUp, Bell, Send, RefreshCw } from "lucide-react";
+import { Users, Plus, Edit, Search, Filter, UserCheck, UserX, Crown, Headphones, Truck, User, Shield, MoreVertical, Grid3X3, List, Upload, FileText, TrendingUp, Bell, Send, RefreshCw } from "lucide-react";
 import { EnhancedUserProfileCard } from "@/components/team/enhanced/EnhancedUserProfileCard";
 import { UserListView } from "@/components/team/enhanced/UserListView";
 import { BulkTeamOperations } from "@/components/team/BulkTeamOperations";
@@ -68,9 +68,6 @@ export function UserManagementSection() {
   const [editingUser, setEditingUser] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
-  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-  const [userToDelete, setUserToDelete] = useState<any>(null);
-  const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const [sortColumn, setSortColumn] = useState<SortColumn | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>('default');
@@ -211,75 +208,6 @@ export function UserManagementSection() {
     },
   });
 
-  const deleteUser = useMutation({
-    mutationFn: async (userId: string) => {
-      // Check if this is the last admin trying to delete themselves
-      const userToDelete = users.find(user => user.id === userId);
-      if (userToDelete?.current_role === 'admin') {
-        const activeAdmins = users.filter(user => user.current_role === 'admin' && user.is_active);
-        if (activeAdmins.length <= 1 && userToDelete.clerk_user_id === clerkUser?.id) {
-          throw new Error("Cannot delete the last active admin. Please create another admin before deleting this account.");
-        }
-      }
-
-      // Check if user can be deleted (no active assignments)
-      const { data: canDeleteResult, error: checkError } = await supabase
-        .rpc('can_delete_user', { user_uuid: userId });
-      
-      if (checkError) throw checkError;
-      
-      // Type assert the response to expected structure
-      const deleteCheck = canDeleteResult as { can_delete: boolean; reason?: string } | null;
-      
-      if (!deleteCheck?.can_delete) {
-        throw new Error(deleteCheck?.reason || 'User cannot be deleted due to active assignments');
-      }
-
-      // Delete role first (if exists - some orphaned users may not have roles)
-      const { error: roleError } = await supabase
-        .from("user_roles")
-        .delete()
-        .eq("user_id", userId);
-
-      // Don't throw on role delete error - user might not have a role
-      if (roleError) {
-        console.warn("Warning deleting user role:", roleError);
-      }
-
-      // Also try deleting by clerk_user_id for orphaned roles
-      if (userToDelete?.clerk_user_id) {
-        const { error: clerkRoleError } = await supabase
-          .from("user_roles")
-          .delete()
-          .eq("user_id", userToDelete.clerk_user_id);
-          
-        if (clerkRoleError) {
-          console.warn("Warning deleting clerk user role:", clerkRoleError);
-        }
-      }
-
-      // Then delete profile
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .delete()
-        .eq("id", userId);
-
-      if (profileError) throw profileError;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users-with-roles"] });
-      queryClient.invalidateQueries({ queryKey: ['drivers-with-hours'] });
-      queryClient.invalidateQueries({ queryKey: ['drivers'] });
-      toast.success("User deleted successfully");
-      setDeleteConfirmOpen(false);
-      setUserToDelete(null);
-      setDeleteConfirmText("");
-    },
-    onError: (error) => {
-      toast.error("Failed to delete user");
-      console.error("Error deleting user:", error);
-    },
-  });
 
   const toggleUserStatus = useMutation({
     mutationFn: async ({ userId, isActive }: { userId: string; isActive: boolean }) => {
@@ -307,26 +235,10 @@ export function UserManagementSection() {
     createUser.mutate(data);
   };
 
-  const handleDeleteClick = (user: any) => {
-    setUserToDelete(user);
-    setDeleteConfirmOpen(true);
-  };
-
-  const handleDeleteConfirm = () => {
-    if (deleteConfirmText === "delete" && userToDelete) {
-      deleteUser.mutate(userToDelete.id);
-    }
-  };
-
-  // Count active admins
-  const activeAdminCount = users.filter(user => user.current_role === 'admin' && user.is_active).length;
 
   // Separate current user from others
   const currentUser = users.find(user => user.clerk_user_id === clerkUser?.id);
   const otherUsers = users.filter(user => user.clerk_user_id !== clerkUser?.id);
-
-  // Check if current user can be deleted (not the last admin)
-  const canDeleteCurrentUser = !(currentUser?.current_role === 'admin' && activeAdminCount <= 1);
 
   // Filter and sort users
   const filteredAndSortedUsers = useMemo(() => {
@@ -482,12 +394,10 @@ export function UserManagementSection() {
                     <UserListView
                       users={[filteredCurrentUser]}
                       onEdit={setEditingUser}
-                      onDelete={handleDeleteClick}
                       onToggleStatus={(userId, isActive) => 
                         toggleUserStatus.mutate({ userId, isActive })
                       }
                       isLoading={isLoading}
-                      canDeleteUser={canDeleteCurrentUser}
                     />
                   </div>
                 )}
@@ -499,7 +409,6 @@ export function UserManagementSection() {
                     <UserListView
                       users={filteredOtherUsers}
                       onEdit={setEditingUser}
-                      onDelete={handleDeleteClick}
                       onToggleStatus={(userId, isActive) => 
                         toggleUserStatus.mutate({ userId, isActive })
                       }
@@ -525,16 +434,14 @@ export function UserManagementSection() {
                     <div className="space-y-2">
                       <h3 className="text-sm font-medium text-muted-foreground">Your Profile</h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <EnhancedUserProfileCard
-                          key={filteredCurrentUser.id}
-                          user={filteredCurrentUser}
-                          onEdit={setEditingUser}
-                          onDelete={handleDeleteClick}
-                          onToggleStatus={(userId, isActive) => 
-                            toggleUserStatus.mutate({ userId, isActive })
-                          }
-                          canDeleteUser={canDeleteCurrentUser}
-                        />
+                         <EnhancedUserProfileCard
+                           key={filteredCurrentUser.id}
+                           user={filteredCurrentUser}
+                           onEdit={setEditingUser}
+                           onToggleStatus={(userId, isActive) => 
+                             toggleUserStatus.mutate({ userId, isActive })
+                           }
+                         />
                       </div>
                     </div>
                   )}
@@ -545,15 +452,14 @@ export function UserManagementSection() {
                       <h3 className="text-sm font-medium text-muted-foreground">Team Members</h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredOtherUsers.map((user) => (
-                          <EnhancedUserProfileCard
-                            key={user.id}
-                            user={user}
-                            onEdit={setEditingUser}
-                            onDelete={handleDeleteClick}
-                            onToggleStatus={(userId, isActive) => 
-                              toggleUserStatus.mutate({ userId, isActive })
-                            }
-                          />
+                           <EnhancedUserProfileCard
+                             key={user.id}
+                             user={user}
+                             onEdit={setEditingUser}
+                             onToggleStatus={(userId, isActive) => 
+                               toggleUserStatus.mutate({ userId, isActive })
+                             }
+                           />
                         ))}
                       </div>
                     </div>
@@ -590,53 +496,6 @@ export function UserManagementSection() {
           />
         )}
 
-        {/* Delete Confirmation Dialog */}
-        <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete User</AlertDialogTitle>
-              <AlertDialogDescription className="space-y-3">
-                <p>
-                  Are you sure you want to delete{" "}
-                  <span className="font-semibold">
-                    {userToDelete?.first_name} {userToDelete?.last_name}
-                  </span>
-                  ?
-                </p>
-                <p className="text-destructive font-medium">
-                  This action cannot be undone. This will permanently delete the user account and all associated data.
-                </p>
-                <div className="pt-2">
-                  <p className="text-sm mb-2">
-                    Type <span className="font-mono bg-muted px-1 rounded">delete</span> to confirm:
-                  </p>
-                  <Input
-                    value={deleteConfirmText}
-                    onChange={(e) => setDeleteConfirmText(e.target.value)}
-                    placeholder="Type 'delete' to confirm"
-                    className="font-mono"
-                  />
-                </div>
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => {
-                setDeleteConfirmOpen(false);
-                setUserToDelete(null);
-                setDeleteConfirmText("");
-              }}>
-                Cancel
-              </AlertDialogCancel>
-              <AlertDialogAction
-                onClick={handleDeleteConfirm}
-                disabled={deleteConfirmText !== "delete" || deleteUser.isPending}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              >
-                {deleteUser.isPending ? "Deleting..." : "Delete User"}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
       </CardContent>
     </Card>
   );
