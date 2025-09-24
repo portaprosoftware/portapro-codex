@@ -30,7 +30,7 @@ export const QRGenerator: React.FC = () => {
             />
           </div>
           <p className="text-xs text-muted-foreground mt-2 text-center">
-            Works offline — syncs later. Instant attach to units & jobs.
+            Works offline — syncs later.
           </p>
         </div>
         
