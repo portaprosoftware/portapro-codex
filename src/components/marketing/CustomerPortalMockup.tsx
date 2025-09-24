@@ -22,11 +22,70 @@ export const CustomerPortalMockup: React.FC = () => {
     <div className="bg-gray-50 p-6 rounded-2xl border border-gray-200 shadow-lg">
       {/* Header */}
       <div className="bg-white rounded-lg border border-gray-200 mb-6 p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <h1 className="text-lg font-semibold text-gray-900">ABC Construction • Customer Portal</h1>
+        <div className="space-y-3">
+          {/* Company Name Row */}
+          <div className="flex items-center justify-between md:justify-start">
+            <div className="flex items-center gap-3">
+              <h1 className="text-lg font-semibold text-gray-900">
+                ABC Construction
+                <span className="hidden md:inline"> • Customer Portal</span>
+              </h1>
+            </div>
+            {/* Icons on desktop - right aligned */}
+            <div className="hidden md:flex items-center gap-2">
+              <div className="relative">
+                <button 
+                  onClick={() => setShowNotifications(!showNotifications)}
+                  className="p-1 hover:bg-gray-100 rounded-full transition-colors relative"
+                >
+                  <Bell className="w-5 h-5 text-gray-400" />
+                  {/* Notification badge */}
+                  <div className="absolute -top-2 -right-2 w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center border-2 border-white">
+                    <span className="text-sm text-white font-bold">2</span>
+                  </div>
+                </button>
+                
+                {/* Notifications Dropdown */}
+                {showNotifications && (
+                  <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                    <div className="p-4 border-b border-gray-200">
+                      <div className="flex items-center justify-between">
+                        <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                          <Bell className="w-4 h-4 text-orange-600" />
+                          Notifications
+                        </h3>
+                        <button 
+                          onClick={() => setShowNotifications(false)}
+                          className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                        >
+                          <X className="w-4 h-4 text-gray-400 hover:text-gray-600" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="p-4 space-y-3">
+                      <div className="p-3 bg-gray-100 rounded-lg border border-gray-200">
+                        <p className="text-sm font-medium text-gray-900">Service scheduled</p>
+                        <p className="text-xs text-gray-700">Tomorrow at 9:00 AM</p>
+                      </div>
+                      
+                      <button className="w-full p-3 bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 hover:border-blue-300 transition-all duration-200 text-left group">
+                        <p className="text-sm font-medium text-blue-900 group-hover:text-blue-800">Invoice ready</p>
+                        <p className="text-xs text-blue-700 group-hover:text-blue-600">Ready for review</p>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <Settings className="w-5 h-5 text-gray-400" />
+              <div className="flex items-center gap-2">
+                <User className="w-5 h-5 text-gray-400" />
+                <span className="text-sm text-gray-600">ABC Construction</span>
+              </div>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
+          
+          {/* Icons Row on Mobile */}
+          <div className="flex md:hidden items-center gap-2">
             <div className="relative">
               <button 
                 onClick={() => setShowNotifications(!showNotifications)}
