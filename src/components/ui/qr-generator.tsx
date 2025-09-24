@@ -3,52 +3,14 @@ import { QRCodeSVG } from 'qrcode.react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { QrCode, Printer } from 'lucide-react';
+import { QRGalleryModal } from '@/components/ui/QRGalleryModal';
 
 export const QRGenerator: React.FC = () => {
   const [qrValue, setQrValue] = useState('1232 • Standard Unit');
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
 
   const handlePrint = () => {
-    const printWindow = window.open('', '_blank');
-    if (printWindow) {
-      const qrElement = document.getElementById('qr-code');
-      if (qrElement) {
-        printWindow.document.write(`
-          <html>
-            <head>
-              <title>QR Code Print</title>
-              <style>
-                body { 
-                  font-family: Arial, sans-serif; 
-                  display: flex; 
-                  justify-content: center; 
-                  align-items: center; 
-                  min-height: 100vh; 
-                  margin: 0;
-                  flex-direction: column;
-                }
-                .qr-container {
-                  text-align: center;
-                  padding: 20px;
-                }
-                .qr-label {
-                  margin-top: 10px;
-                  font-size: 14px;
-                  font-weight: bold;
-                }
-              </style>
-            </head>
-            <body>
-              <div class="qr-container">
-                ${qrElement.outerHTML}
-                <div class="qr-label">${qrValue}</div>
-              </div>
-            </body>
-          </html>
-        `);
-        printWindow.document.close();
-        printWindow.print();
-      }
-    }
+    setIsGalleryOpen(true);
   };
 
   return (
@@ -105,6 +67,11 @@ export const QRGenerator: React.FC = () => {
           </p>
         </div>
       </div>
+      
+      <QRGalleryModal 
+        isOpen={isGalleryOpen} 
+        onClose={() => setIsGalleryOpen(false)} 
+      />
     </div>
   );
 };
