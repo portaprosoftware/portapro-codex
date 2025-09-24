@@ -213,7 +213,7 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
               <p className="font-medium mb-2">Filter Options:</p>
               <ul className="space-y-1 text-xs">
                 <li><strong>Available:</strong> Drivers scheduled to work today but not yet assigned a vehicle</li>
-                <li><strong>Assigned:</strong> Drivers who have been assigned a vehicle for the day</li>
+                <li><strong>Assigned:</strong> Drivers who have been assigned at least one job/vehicle for the day</li>
                 <li><strong>Off-Duty:</strong> Drivers not scheduled to work today</li>
               </ul>
             </div>
