@@ -33,7 +33,7 @@ interface ScheduledJob {
 }
 
 interface DriverWithDetails extends Driver {
-  status: "available" | "busy" | "scheduled";
+  status: "available" | "assigned";
   scheduledJobs: ScheduledJob[];
 }
 
@@ -110,11 +110,9 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
   const driversWithDetails: DriverWithDetails[] = drivers.map(driver => {
     const hasAssignment = assignedDriverIds.has(driver.id);
     const scheduledJobs = jobsByDriver[driver.id] || [];
-    const hasJobs = scheduledJobs.length > 0;
     
-    let status: "available" | "busy" | "scheduled" = "available";
-    if (hasAssignment) status = "busy";
-    else if (hasJobs) status = "scheduled";
+    // Simplified status logic: Available (no vehicle assignment) or Assigned (has vehicle assignment)
+    const status: "available" | "assigned" = hasAssignment ? "assigned" : "available";
 
     return {
       ...driver,
@@ -128,16 +126,14 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
       `${driver.first_name} ${driver.last_name}`.toLowerCase().includes(searchQuery.toLowerCase());
     
     if (statusFilter === "available") return matchesSearch && driver.status === "available";
-    if (statusFilter === "busy") return matchesSearch && driver.status === "busy";
-    if (statusFilter === "scheduled") return matchesSearch && driver.status === "scheduled";
+    if (statusFilter === "assigned") return matchesSearch && driver.status === "assigned";
     return matchesSearch;
   });
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case "available": return "bg-gradient-to-r from-green-500 to-green-600 text-white border-0";
-      case "scheduled": return "bg-gradient-to-r from-yellow-500 to-yellow-600 text-white border-0";
-      case "busy": return "bg-gradient-to-r from-red-500 to-red-600 text-white border-0";
+      case "assigned": return "bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0";
       default: return "bg-gradient-to-r from-gray-500 to-gray-600 text-white border-0";
     }
   };
@@ -145,8 +141,7 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
   const getStatusText = (status: string) => {
     switch (status) {
       case "available": return "Available";
-      case "scheduled": return "Scheduled";
-      case "busy": return "Busy";
+      case "assigned": return "Assigned";
       default: return "Unknown";
     }
   };
@@ -204,9 +199,9 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
                 variant={statusFilter === "all" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setStatusFilter("all")}
-                className={statusFilter === "all" ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0" : ""}
+                className={statusFilter === "all" ? "bg-gradient-to-r from-gray-500 to-gray-600 text-white border-0" : ""}
               >
-                All ({filteredDrivers.length})
+                All ({driversWithDetails.length})
               </Button>
               <Button
                 variant={statusFilter === "available" ? "default" : "outline"}
@@ -217,20 +212,12 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
                 Available ({driversWithDetails.filter(d => d.status === "available").length})
               </Button>
               <Button
-                variant={statusFilter === "scheduled" ? "default" : "outline"}
+                variant={statusFilter === "assigned" ? "default" : "outline"}
                 size="sm"
-                onClick={() => setStatusFilter("scheduled")}
-                className={statusFilter === "scheduled" ? "bg-gradient-to-r from-yellow-500 to-yellow-600 text-white border-0" : ""}
+                onClick={() => setStatusFilter("assigned")}
+                className={statusFilter === "assigned" ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0" : ""}
               >
-                Scheduled ({driversWithDetails.filter(d => d.status === "scheduled").length})
-              </Button>
-              <Button
-                variant={statusFilter === "busy" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setStatusFilter("busy")}
-                className={statusFilter === "busy" ? "bg-gradient-to-r from-red-500 to-red-600 text-white border-0" : ""}
-              >
-                Busy ({driversWithDetails.filter(d => d.status === "busy").length})
+                Assigned ({driversWithDetails.filter(d => d.status === "assigned").length})
               </Button>
             </div>
           </div>
