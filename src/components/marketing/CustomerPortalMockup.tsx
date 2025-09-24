@@ -32,7 +32,7 @@ export const CustomerPortalMockup: React.FC = () => {
               </h1>
             </div>
             {/* Icons on desktop - properly right aligned */}
-            <div className="hidden md:flex items-center gap-3 ml-auto">
+            <div className="hidden md:flex items-center gap-1 ml-auto">
               <div className="relative">
                 <button 
                   onClick={() => setShowNotifications(!showNotifications)}
@@ -88,7 +88,7 @@ export const CustomerPortalMockup: React.FC = () => {
           
           
           {/* Icons Row on Mobile */}
-          <div className="flex md:hidden items-center justify-end gap-3">
+          <div className="flex md:hidden items-center justify-end gap-1">
             <div className="relative">
               <button 
                 onClick={() => setShowNotifications(!showNotifications)}
