@@ -29,6 +29,16 @@ interface DocumentTypeFormData {
   category: string;
 }
 
+interface TypeDisplayItem {
+  name: string;
+  isPredefined: boolean;
+  id?: string;
+  description?: string | null;
+  default_reminder_days?: number;
+  is_active?: boolean;
+  category?: string;
+}
+
 // Predefined document categories matching the DocumentTypeSelector
 const predefinedCategories = [
   {
@@ -341,17 +351,24 @@ export const DocumentTypeManagement: React.FC = () => {
       {/* Categories with both predefined and custom types */}
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {predefinedCategories.map((category) => {
-            // Get custom types for this category
+        {predefinedCategories.map((category) => {
+            // Get custom types for this category  
             const customTypesForCategory = allDocumentTypes?.filter(type => 
-              type.category === category.id
+              (type as any).category === category.id
             ) || [];
             
             // Combine predefined and custom types
-            const allTypesForCategory = [
-              ...category.types.map(type => ({ name: type, isPredefined: true })),
-              ...customTypesForCategory.map(type => ({ ...type, isPredefined: false }))
-            ];
+            const predefinedTypes: TypeDisplayItem[] = category.types.map(typeName => ({
+              name: typeName,
+              isPredefined: true
+            }));
+            
+            const customTypes: TypeDisplayItem[] = customTypesForCategory.map(type => ({
+              ...type,
+              isPredefined: false
+            }));
+            
+            const allTypesForCategory = [...predefinedTypes, ...customTypes];
 
             return (
               <Card key={category.id} className="p-4">
@@ -374,47 +391,54 @@ export const DocumentTypeManagement: React.FC = () => {
                             )}
                           </div>
                           
-                          {!type.isPredefined && (
-                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600"
-                                onClick={() => handleEdit(type as DocumentType)}
-                              >
-                                <Edit className="w-3 h-3" />
-                              </Button>
-                              
-                              <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-6 w-6 p-0 text-red-400 hover:text-red-600"
-                                  >
-                                    <Trash2 className="w-3 h-3" />
-                                  </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>Delete Document Type</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      Are you sure you want to delete "{type.name}"? This action cannot be undone.
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction
-                                      onClick={() => deleteMutation.mutate((type as DocumentType).id)}
-                                      className="bg-red-600 hover:bg-red-700"
-                                    >
-                                      Delete
-                                    </AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
-                            </div>
-                          )}
+                           {!type.isPredefined && type.id && (
+                             <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                               <Button
+                                 variant="ghost"
+                                 size="sm"
+                                 className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600"
+                                 onClick={() => handleEdit({
+                                   id: type.id!,
+                                   name: type.name,
+                                   description: type.description || null,
+                                   default_reminder_days: type.default_reminder_days || 30,
+                                   is_active: type.is_active || true,
+                                   category: type.category
+                                 })}
+                               >
+                                 <Edit className="w-3 h-3" />
+                               </Button>
+                               
+                               <AlertDialog>
+                                 <AlertDialogTrigger asChild>
+                                   <Button
+                                     variant="ghost"
+                                     size="sm"
+                                     className="h-6 w-6 p-0 text-red-400 hover:text-red-600"
+                                   >
+                                     <Trash2 className="w-3 h-3" />
+                                   </Button>
+                                 </AlertDialogTrigger>
+                                 <AlertDialogContent>
+                                   <AlertDialogHeader>
+                                     <AlertDialogTitle>Delete Document Type</AlertDialogTitle>
+                                     <AlertDialogDescription>
+                                       Are you sure you want to delete "{type.name}"? This action cannot be undone.
+                                     </AlertDialogDescription>
+                                   </AlertDialogHeader>
+                                   <AlertDialogFooter>
+                                     <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                     <AlertDialogAction
+                                       onClick={() => deleteMutation.mutate(type.id!)}
+                                       className="bg-red-600 hover:bg-red-700"
+                                     >
+                                       Delete
+                                     </AlertDialogAction>
+                                   </AlertDialogFooter>
+                                 </AlertDialogContent>
+                               </AlertDialog>
+                             </div>
+                           )}
                         </div>
                       ))}
                     </div>
