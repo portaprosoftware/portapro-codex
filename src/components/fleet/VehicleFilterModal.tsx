@@ -39,7 +39,7 @@ export const VehicleFilterModal: React.FC<VehicleFilterModalProps> = ({
 
   // Fetch vehicles
   const { data: vehicles = [], isLoading } = useQuery({
-    queryKey: ["vehicles-all-statuses"],
+    queryKey: ["vehicles-filter-modal", statusFilter],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("vehicles")
