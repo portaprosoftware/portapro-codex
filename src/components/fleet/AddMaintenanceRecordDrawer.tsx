@@ -125,7 +125,7 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
     },
     onError: (error) => {
       console.error("Error creating maintenance record:", error);
-      toast.error("Failed to create maintenance record");
+      toast.error(error.message ?? "Failed to create maintenance record");
     }
   });
 
@@ -177,8 +177,8 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!vehicleId || !scheduledDate || !estimatedCost) {
-      toast.error("Please fill in all required fields (Vehicle, Date, and Cost)");
+    if (!vehicleId || !scheduledDate || !estimatedCost || !description) {
+      toast.error("Please fill in all required fields (Vehicle, Date, Cost, and Description)");
       return;
     }
 
@@ -186,10 +186,12 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
       vehicle_id: vehicleId,
       task_type_id: taskTypeId || null,
       vendor_id: vendorId || null,
-      description: description || null,
+      description: description || taskTypeName || "General Maintenance",
+      maintenance_type: taskTypeName || description || "General Maintenance",
       scheduled_date: scheduledDate.toISOString().split('T')[0],
       priority,
       cost: parseFloat(estimatedCost),
+      mileage_at_service: vehicleMiles ? parseInt(vehicleMiles) : null,
       notes,
       status: "scheduled"
     };
@@ -295,12 +297,13 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">Description *</Label>
                 <Input
                   id="description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="e.g., Oil change, brake inspection..."
+                  required
                 />
               </div>
 
