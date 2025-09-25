@@ -17,6 +17,7 @@ import { AddMaintenanceRecordDrawer } from "./AddMaintenanceRecordDrawer";
 import { AddRecurringServiceSlider } from "./AddRecurringServiceSlider";
 import { DeleteMaintenanceConfirmDialog } from "./maintenance/DeleteMaintenanceConfirmDialog";
 import { MultiSelectVehicleFilter } from "./MultiSelectVehicleFilter";
+import { MaintenancePDFExportModal } from "./MaintenancePDFExportModal";
 import { toast } from "sonner";
 
 export const MaintenanceAllRecordsTab: React.FC = () => {
@@ -34,6 +35,7 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
   const [selectedRecurringRecord, setSelectedRecurringRecord] = useState<any>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingRecord, setDeletingRecord] = useState<any>(null);
+  const [exportModalOpen, setExportModalOpen] = useState(false);
   
   const queryClient = useQueryClient();
 
@@ -257,8 +259,7 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
   };
 
   const handleExport = () => {
-    // Export functionality would be implemented here
-    console.log("Export to CSV/PDF");
+    setExportModalOpen(true);
   };
 
   const handleDeleteConfirm = () => {
@@ -458,6 +459,12 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
         onOpenChange={setIsVehicleModalOpen}
         selectedVehicles={selectedVehicles}
         onVehiclesChange={handleVehiclesChange}
+      />
+
+      {/* PDF Export Modal */}
+      <MaintenancePDFExportModal
+        open={exportModalOpen}
+        onOpenChange={setExportModalOpen}
       />
     </div>
   );
