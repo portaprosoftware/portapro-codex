@@ -10,14 +10,15 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Plus, Edit, Trash2, Settings, FileText, Info } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Plus, Edit, Trash2, Eye, FileText, Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { DocumentTypeDetailsModal } from "./DocumentTypeDetailsModal";
 
 interface DocumentType {
   id: string;
   name: string;
   description: string | null;
-  default_reminder_days: number;
   is_active: boolean;
   category?: string;
 }
@@ -33,9 +34,9 @@ interface TypeDisplayItem {
   isPredefined: boolean;
   id?: string;
   description?: string | null;
-  default_reminder_days?: number;
   is_active?: boolean;
   category?: string;
+  categoryInfo?: any;
 }
 
 // Predefined document categories matching the DocumentTypeSelector
@@ -95,6 +96,8 @@ const predefinedCategories = [
 
 export const DocumentTypeManagement: React.FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [selectedTypeForDetails, setSelectedTypeForDetails] = useState<TypeDisplayItem | null>(null);
   const [editingType, setEditingType] = useState<DocumentType | null>(null);
   const [formData, setFormData] = useState<DocumentTypeFormData>({
     name: "",
@@ -214,6 +217,12 @@ export const DocumentTypeManagement: React.FC = () => {
     setIsDialogOpen(true);
   };
 
+  const handleViewDetails = (type: TypeDisplayItem, categoryInfo: any) => {
+    const typeWithCategoryInfo = { ...type, categoryInfo };
+    setSelectedTypeForDetails(typeWithCategoryInfo);
+    setIsDetailsModalOpen(true);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -242,12 +251,13 @@ export const DocumentTypeManagement: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900">Document Types</h3>
-          <p className="text-sm text-gray-600">Manage document types organized by predefined categories</p>
-        </div>
+    <TooltipProvider>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900">Document Types</h3>
+            <p className="text-sm text-gray-600">Manage document types organized by predefined categories</p>
+          </div>
         
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
@@ -366,60 +376,107 @@ export const DocumentTypeManagement: React.FC = () => {
                         <div key={index} className="flex items-center justify-between group">
                           <div className="flex items-center gap-2 text-xs text-gray-600">
                             <FileText className="w-3 h-3" />
-                            <span>{type.name}</span>
+                            <span className="flex-1">{type.name}</span>
+                            
+                            {/* Description indicator */}
+                            {type.description && (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Info className="w-3 h-3 text-blue-500 cursor-help" />
+                                </TooltipTrigger>
+                                <TooltipContent className="max-w-xs">
+                                  <p className="text-sm">{type.description}</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            )}
+                            
                             {!type.isPredefined && (
                               <Badge variant="outline" className="text-xs px-1 py-0">Custom</Badge>
                             )}
                           </div>
                           
-                           {!type.isPredefined && type.id && (
-                             <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                               <Button
-                                 variant="ghost"
-                                 size="sm"
-                                 className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600"
-                                 onClick={() => handleEdit({
-                                   id: type.id!,
-                                   name: type.name,
-                                   description: type.description || null,
-                                   default_reminder_days: type.default_reminder_days || 30,
-                                   is_active: type.is_active || true,
-                                   category: type.category
-                                 })}
-                               >
-                                 <Edit className="w-3 h-3" />
-                               </Button>
-                               
-                               <AlertDialog>
-                                 <AlertDialogTrigger asChild>
-                                   <Button
-                                     variant="ghost"
-                                     size="sm"
-                                     className="h-6 w-6 p-0 text-red-400 hover:text-red-600"
-                                   >
-                                     <Trash2 className="w-3 h-3" />
-                                   </Button>
-                                 </AlertDialogTrigger>
-                                 <AlertDialogContent>
-                                   <AlertDialogHeader>
-                                     <AlertDialogTitle>Delete Document Type</AlertDialogTitle>
-                                     <AlertDialogDescription>
-                                       Are you sure you want to delete "{type.name}"? This action cannot be undone.
-                                     </AlertDialogDescription>
-                                   </AlertDialogHeader>
-                                   <AlertDialogFooter>
-                                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                     <AlertDialogAction
-                                       onClick={() => deleteMutation.mutate(type.id!)}
-                                       className="bg-red-600 hover:bg-red-700"
-                                     >
-                                       Delete
-                                     </AlertDialogAction>
-                                   </AlertDialogFooter>
-                                 </AlertDialogContent>
-                               </AlertDialog>
-                             </div>
-                           )}
+                          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            {/* View Details Button */}
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-6 w-6 p-0 text-blue-400 hover:text-blue-600"
+                                  onClick={() => handleViewDetails(type, category)}
+                                >
+                                  <Eye className="w-3 h-3" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>View details</p>
+                              </TooltipContent>
+                            </Tooltip>
+                            
+                            {/* Edit Button - Only for custom types */}
+                            {!type.isPredefined && type.id && (
+                              <>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600"
+                                      onClick={() => handleEdit({
+                                        id: type.id!,
+                                        name: type.name,
+                                        description: type.description || null,
+                                        is_active: type.is_active || true,
+                                        category: type.category
+                                      })}
+                                    >
+                                      <Edit className="w-3 h-3" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Edit document type</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                                
+                                {/* Delete Button */}
+                                <AlertDialog>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <AlertDialogTrigger asChild>
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          className="h-6 w-6 p-0 text-red-400 hover:text-red-600"
+                                        >
+                                          <Trash2 className="w-3 h-3" />
+                                        </Button>
+                                      </AlertDialogTrigger>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>Delete document type</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>Delete Document Type</AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        Are you sure you want to delete "{type.name}"? This action cannot be undone.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                      <AlertDialogAction
+                                        onClick={() => deleteMutation.mutate(type.id!)}
+                                        className="bg-red-600 hover:bg-red-700"
+                                      >
+                                        Delete
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              </>
+                            )}
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -430,6 +487,15 @@ export const DocumentTypeManagement: React.FC = () => {
           })}
         </div>
       </div>
+
+      {/* Details Modal */}
+      <DocumentTypeDetailsModal
+        isOpen={isDetailsModalOpen}
+        onClose={() => setIsDetailsModalOpen(false)}
+        documentType={selectedTypeForDetails}
+        categoryInfo={selectedTypeForDetails?.categoryInfo}
+      />
     </div>
+    </TooltipProvider>
   );
 };

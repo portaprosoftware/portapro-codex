@@ -50,8 +50,9 @@ interface ComplianceDocument {
 interface DocumentType {
   id: string;
   name: string;
-  description: string;
-  default_reminder_days: number;
+  description: string | null;
+  is_active: boolean;
+  category: string | null;
 }
 
 export const UpdateDocumentModal: React.FC<UpdateDocumentModalProps> = ({
