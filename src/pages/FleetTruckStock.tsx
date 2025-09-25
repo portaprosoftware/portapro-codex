@@ -252,17 +252,17 @@ const FleetTruckStock: React.FC = () => {
                     </CardContent>
                   </Card>
 
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
+                  <Card className="border-0 shadow-none">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="flex items-center gap-2 text-lg">
                         <ArrowLeftRight className="h-5 w-5"/> Transfer Between Trucks
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-3">
+                    <CardContent className="space-y-2 pt-0">
                       <div>
                         <Label className="text-sm text-muted-foreground">Destination Vehicle</Label>
                         <Select value={destVehicleId} onValueChange={setDestVehicleId}>
-                          <SelectTrigger>
+                          <SelectTrigger className="h-8">
                             <SelectValue placeholder="Select destination vehicle" />
                           </SelectTrigger>
                           <SelectContent>
@@ -272,11 +272,11 @@ const FleetTruckStock: React.FC = () => {
                           </SelectContent>
                         </Select>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 pt-2">
                         <Button
                           disabled={!vehicleId || !destVehicleId || !consumableId || !quantity || transferMutation.isPending}
                           onClick={() => transferMutation.mutate({ consumable_id: consumableId, qty: Number(quantity), from_vehicle_id: vehicleId, to_vehicle_id: destVehicleId })}
-                          className="gap-2"
+                          className="gap-2 h-8"
                         >
                           <ArrowLeftRight className="h-4 w-4"/> Transfer
                         </Button>
