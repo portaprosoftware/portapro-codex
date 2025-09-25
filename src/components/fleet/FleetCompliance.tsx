@@ -6,11 +6,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { AlertTriangle, Calendar, FileText, Plus, Settings, Upload, Info, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { DocumentTypeManagement } from "./DocumentTypeManagement";
-import { AddDocumentModal } from "./AddDocumentModal";
+import { AddDocumentForm } from "./AddDocumentForm";
 import { UpdateDocumentModal } from "./UpdateDocumentModal";
 import { SpillKitsTab } from "./compliance/SpillKitsTab";
 import { IncidentsTab } from "./compliance/IncidentsTab";
@@ -136,6 +137,7 @@ export const FleetCompliance: React.FC = () => {
 
 const FleetComplianceContent: React.FC = () => {
   const [isAddDocumentModalOpen, setIsAddDocumentModalOpen] = useState(false);
+  const [addDocumentDrawerOpen, setAddDocumentDrawerOpen] = useState(false);
   const [isUpdateDocumentModalOpen, setIsUpdateDocumentModalOpen] = useState(false);
   const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null);
   const { toast } = useToast();
@@ -270,7 +272,7 @@ const FleetComplianceContent: React.FC = () => {
           <p className="text-sm text-gray-600">Track permits, certifications, and required paperwork</p>
         </div>
         <Button 
-          onClick={() => setIsAddDocumentModalOpen(true)}
+          onClick={() => setAddDocumentDrawerOpen(true)}
           className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
         >
           <Plus className="w-4 h-4 mr-2" />
@@ -374,10 +376,19 @@ const FleetComplianceContent: React.FC = () => {
         )}
       </div>
 
-      <AddDocumentModal 
-        isOpen={isAddDocumentModalOpen}
-        onClose={() => setIsAddDocumentModalOpen(false)}
-      />
+      <Drawer open={addDocumentDrawerOpen} onOpenChange={setAddDocumentDrawerOpen}>
+        <DrawerContent className="h-[75vh]">
+          <DrawerHeader>
+            <DrawerTitle>Add Compliance Document</DrawerTitle>
+          </DrawerHeader>
+          <div className="p-4 overflow-y-auto flex-1">
+            <AddDocumentForm 
+              onSaved={() => setAddDocumentDrawerOpen(false)}
+              onCancel={() => setAddDocumentDrawerOpen(false)} 
+            />
+          </div>
+        </DrawerContent>
+      </Drawer>
 
       <UpdateDocumentModal 
         isOpen={isUpdateDocumentModalOpen}

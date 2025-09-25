@@ -5,8 +5,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { PackageOpen, Plus } from "lucide-react";
-import { SpillKitCheckModal } from "./SpillKitCheckModal";
+import { SpillKitCheckForm } from "./SpillKitCheckForm";
 
 type DVIR = {
   id: string;
@@ -24,7 +25,7 @@ type SpillKitRow = {
 
 export const SpillKitsTab: React.FC = () => {
   const qc = useQueryClient();
-  const [open, setOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ["spill-kits-status"],
@@ -91,6 +92,7 @@ export const SpillKitsTab: React.FC = () => {
 
   const handleSaved = () => {
     qc.invalidateQueries({ queryKey: ["spill-kits-status"] });
+    setDrawerOpen(false);
   };
 
   if (isLoading) return <div className="py-10 text-center">Loading...</div>;
@@ -101,10 +103,22 @@ export const SpillKitsTab: React.FC = () => {
         <PackageOpen className="w-12 h-12 text-gray-400 mx-auto mb-4" />
         <h3 className="text-lg font-medium">No DVIR or spill kit checks found</h3>
         <p className="text-muted-foreground mb-4">Once drivers or dispatch record checks, status will appear here.</p>
-        <Button onClick={() => setOpen(true)}>
+        <Button onClick={() => setDrawerOpen(true)}>
           <Plus className="w-4 h-4 mr-2" /> Record Spill Kit Check
         </Button>
-        <SpillKitCheckModal isOpen={open} onClose={() => setOpen(false)} onSaved={handleSaved} />
+        <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
+          <DrawerContent className="h-[75vh]">
+            <DrawerHeader>
+              <DrawerTitle>Record Spill Kit Check</DrawerTitle>
+            </DrawerHeader>
+            <div className="p-4 overflow-y-auto flex-1">
+              <SpillKitCheckForm 
+                onSaved={handleSaved} 
+                onCancel={() => setDrawerOpen(false)} 
+              />
+            </div>
+          </DrawerContent>
+        </Drawer>
       </Card>
     );
   }
@@ -113,7 +127,7 @@ export const SpillKitsTab: React.FC = () => {
     <>
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-base font-semibold">Spill Kit Status</h3>
-        <Button onClick={() => setOpen(true)}>
+        <Button onClick={() => setDrawerOpen(true)}>
           <Plus className="w-4 h-4 mr-2" /> Record Spill Kit Check
         </Button>
       </div>
@@ -134,7 +148,19 @@ export const SpillKitsTab: React.FC = () => {
         ))}
       </div>
 
-      <SpillKitCheckModal isOpen={open} onClose={() => setOpen(false)} onSaved={handleSaved} />
+      <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
+        <DrawerContent className="h-[75vh]">
+          <DrawerHeader>
+            <DrawerTitle>Record Spill Kit Check</DrawerTitle>
+          </DrawerHeader>
+          <div className="p-4 overflow-y-auto flex-1">
+            <SpillKitCheckForm 
+              onSaved={handleSaved} 
+              onCancel={() => setDrawerOpen(false)} 
+            />
+          </div>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 };

@@ -9,11 +9,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Plus, Edit, Trash2, FileText, Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { DocumentTypeDetailsModal } from "./DocumentTypeDetailsModal";
+import { DocumentTypeCreateForm } from "./DocumentTypeCreateForm";
 
 interface DocumentType {
   id: string;
@@ -96,6 +98,7 @@ const predefinedCategories = [
 
 export const DocumentTypeManagement: React.FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedTypeForDetails, setSelectedTypeForDetails] = useState<TypeDisplayItem | null>(null);
   const [editingType, setEditingType] = useState<DocumentType | null>(null);
@@ -259,85 +262,29 @@ export const DocumentTypeManagement: React.FC = () => {
             <p className="text-sm text-gray-600">Manage document types organized by predefined categories</p>
           </div>
         
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button 
-              onClick={() => {
-                setEditingType(null);
-                resetForm();
-              }}
-              className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Document Type
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>
-                {editingType ? "Edit Document Type" : "Add New Document Type"}
-              </DialogTitle>
-            </DialogHeader>
-            
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="category">Category *</Label>
-                <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {predefinedCategories.map((category) => (
-                      <SelectItem key={category.id} value={category.id}>
-                        <div className="flex items-center gap-2">
-                          <span>{category.icon}</span>
-                          <span>{category.name}</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label htmlFor="name">Name *</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  required
-                  placeholder="e.g., Custom Permit, Special Certification"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Optional description of this document type"
-                  rows={3}
-                />
-              </div>
-              
-              
-              <div className="flex gap-2 pt-4">
-                <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending}>
-                  {editingType ? "Update Document Type" : "Create Document Type"}
-                </Button>
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={() => setIsDialogOpen(false)}
-                >
-                  Cancel
-                </Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
+        <Button 
+          onClick={() => setDrawerOpen(true)}
+          className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Add Document Type
+        </Button>
       </div>
+
+      {/* Document Type Create Drawer */}
+      <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
+        <DrawerContent className="h-[75vh]">
+          <DrawerHeader>
+            <DrawerTitle>Add New Document Type</DrawerTitle>
+          </DrawerHeader>
+          <div className="p-4 overflow-y-auto flex-1">
+            <DocumentTypeCreateForm 
+              onSaved={() => setDrawerOpen(false)}
+              onCancel={() => setDrawerOpen(false)} 
+            />
+          </div>
+        </DrawerContent>
+      </Drawer>
 
       {/* Categories with both predefined and custom types */}
       <div className="space-y-4">
