@@ -352,7 +352,7 @@ const FleetComplianceContent: React.FC = () => {
                     variant="outline" 
                     size="sm"
                     onClick={() => handleDeleteDocument(document.id)}
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    className="text-red-600 hover:text-white hover:bg-gradient-to-r hover:from-red-500 hover:to-red-600 hover:border-red-500 transition-all duration-200"
                     disabled={deleteDocumentMutation.isPending}
                   >
                     <Trash2 className="w-4 h-4" />
