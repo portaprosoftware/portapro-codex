@@ -4,7 +4,17 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
-import { CalendarIcon, UserIcon, DollarSignIcon, FileTextIcon, WrenchIcon, TruckIcon, Edit, Trash2 } from "lucide-react";
+import { 
+  CalendarIcon, 
+  UserIcon, 
+  DollarSignIcon, 
+  FileTextIcon, 
+  WrenchIcon, 
+  TruckIcon, 
+  Edit, 
+  Trash2,
+  Clock
+} from "lucide-react";
 import { format } from "date-fns";
 
 interface MaintenanceRecord {
@@ -15,7 +25,7 @@ interface MaintenanceRecord {
   scheduled_date: string;
   completed_date?: string;
   status: 'scheduled' | 'in_progress' | 'completed' | 'cancelled';
-  priority?: 'low' | 'medium' | 'high' | 'critical';
+  priority?: 'low' | 'medium' | 'high' | 'critical' | 'normal';
   cost?: number;
   labor_hours?: number;
   parts_cost?: number;
@@ -58,272 +68,262 @@ export const MaintenanceRecordModal: React.FC<MaintenanceRecordModalProps> = ({
 }) => {
   if (!record) return null;
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "completed":
-        return "bg-green-100 text-green-800 border-green-200";
-      case "in_progress":
-        return "bg-blue-100 text-blue-800 border-blue-200";
-      case "scheduled":
-        return "bg-gray-100 text-gray-800 border-gray-200";
-      case "cancelled":
-        return "bg-red-100 text-red-800 border-red-200";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
-    }
-  };
-
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case "critical":
-        return "bg-red-500 text-white border-red-600";
+        return "bg-gradient-to-r from-red-500 to-red-600 text-white font-bold border-0";
       case "high":
-        return "bg-orange-500 text-white border-orange-600";
+        return "bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold border-0";
+      case "normal":
       case "medium":
-        return "bg-yellow-500 text-white border-yellow-600";
+        return "bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0";
       case "low":
-        return "bg-green-500 text-white border-green-600";
+        return "bg-gradient-to-r from-green-500 to-green-600 text-white font-bold border-0";
       default:
-        return "bg-gray-500 text-white border-gray-600";
+        return "bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0";
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "completed":
+        return "bg-gradient-to-r from-green-500 to-green-600 text-white font-bold border-0";
+      case "in_progress":
+        return "bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0";
+      case "scheduled":
+        return "bg-gradient-to-r from-gray-500 to-gray-600 text-white font-bold border-0";
+      case "cancelled":
+        return "bg-gradient-to-r from-red-500 to-red-600 text-white font-bold border-0";
+      default:
+        return "bg-gradient-to-r from-gray-500 to-gray-600 text-white font-bold border-0";
     }
   };
 
   const getVehicleName = () => {
-    const vehicle = record.vehicles;
-    if (!vehicle) return `Vehicle ID: ${record.vehicle_id}`;
-    
-    if (vehicle.make && vehicle.model) {
-      const name = vehicle.nickname 
-        ? `${vehicle.make} ${vehicle.model} (${vehicle.nickname})`
-        : `${vehicle.make} ${vehicle.model}`;
-      return vehicle.year ? `${vehicle.year} ${name}` : name;
+    if (record.vehicles?.make && record.vehicles?.model) {
+      return `${record.vehicles.make} ${record.vehicles.model}${record.vehicles.nickname ? ` - ${record.vehicles.nickname}` : ''}`;
     }
-    return vehicle.license_plate || `Vehicle ID: ${record.vehicle_id}`;
-  };
-
-  const handleEdit = () => {
-    if (onEdit && record) {
-      onEdit(record);
-    }
-  };
-
-  const handleDelete = () => {
-    if (onDelete && record) {
-      onDelete(record);
-    }
+    return record.vehicles?.vehicle_type || 'Unknown Vehicle';
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <div className="flex items-start justify-between">
-            <div>
-              <DialogTitle className="text-xl font-semibold text-foreground">
-                Maintenance Record Details
-              </DialogTitle>
-              <DialogDescription className="text-muted-foreground">
-                Record ID: {record.id}
-              </DialogDescription>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <WrenchIcon className="h-5 w-5 text-blue-600" />
+              </div>
+              <div>
+                <DialogTitle className="text-xl font-semibold text-gray-900">
+                  {record.maintenance_task_types?.name || record.maintenance_type}
+                </DialogTitle>
+                <DialogDescription className="text-gray-600">
+                  Maintenance Record - {getVehicleName()}
+                </DialogDescription>
+              </div>
             </div>
-            <div className="flex gap-2">
-              {onEdit && (
-                <Button variant="outline" size="sm" onClick={handleEdit}>
-                  <Edit className="w-4 h-4 mr-1" />
-                  Edit
-                </Button>
-              )}
-              {onDelete && (
-                <Button variant="outline" size="sm" onClick={handleDelete}>
-                  <Trash2 className="w-4 h-4 mr-1" />
-                  Delete
-                </Button>
+            <div className="flex items-center gap-2">
+              <Badge className={getStatusColor(record.status)}>
+                {record.status.replace("_", " ").replace(/\b\w/g, l => l.toUpperCase())}
+              </Badge>
+              {record.priority && (
+                <Badge className={getPriorityColor(record.priority)}>
+                  {record.priority.replace(/\b\w/g, l => l.toUpperCase())}
+                </Badge>
               )}
             </div>
           </div>
         </DialogHeader>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="space-y-6">
           {/* Vehicle Information */}
           <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-2 mb-4">
-                <TruckIcon className="w-5 h-5 text-blue-600" />
-                <h3 className="font-semibold text-foreground">Vehicle Information</h3>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <TruckIcon className="h-4 w-4 text-gray-600" />
+                <h3 className="font-medium text-gray-900">Vehicle Information</h3>
               </div>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Vehicle:</span>
-                  <span className="font-medium text-foreground">{getVehicleName()}</span>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span className="text-gray-600">Vehicle:</span>
+                  <p className="font-medium">{getVehicleName()}</p>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">License Plate:</span>
-                  <span className="font-medium text-foreground">{record.vehicles?.license_plate || "—"}</span>
+                <div>
+                  <span className="text-gray-600">License Plate:</span>
+                  <p className="font-medium">{record.vehicles?.license_plate || 'N/A'}</p>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Type:</span>
-                  <span className="font-medium text-foreground">{record.vehicles?.vehicle_type || "—"}</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Maintenance Details */}
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-2 mb-4">
-                <WrenchIcon className="w-5 h-5 text-orange-600" />
-                <h3 className="font-semibold text-foreground">Maintenance Details</h3>
-              </div>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Task Type:</span>
-                  <span className="font-medium text-foreground">
-                    {record.maintenance_task_types?.name || record.maintenance_type}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Status:</span>
-                  <Badge className={`${getStatusColor(record.status)} w-fit`}>
-                    {record.status.replace("_", " ")}
-                  </Badge>
-                </div>
-                {record.priority && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">Priority:</span>
-                    <Badge className={`${getPriorityColor(record.priority)} w-fit`}>
-                      {record.priority}
-                    </Badge>
+                {record.vehicles?.year && (
+                  <div>
+                    <span className="text-gray-600">Year:</span>
+                    <p className="font-medium">{record.vehicles.year}</p>
                   </div>
                 )}
+                <div>
+                  <span className="text-gray-600">Type:</span>
+                  <p className="font-medium">{record.vehicles?.vehicle_type || 'N/A'}</p>
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Schedule Information */}
+          {/* Service Information */}
           <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-2 mb-4">
-                <CalendarIcon className="w-5 h-5 text-green-600" />
-                <h3 className="font-semibold text-foreground">Schedule Information</h3>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <WrenchIcon className="h-4 w-4 text-gray-600" />
+                <h3 className="font-medium text-gray-900">Service Details</h3>
               </div>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Scheduled:</span>
-                  <span className="font-medium text-foreground">
-                    {format(new Date(record.scheduled_date), "MMM d, yyyy")}
-                  </span>
+              <div className="space-y-3">
+                <div>
+                  <span className="text-gray-600 text-sm">Description:</span>
+                  <p className="font-medium">{record.description}</p>
                 </div>
-                {record.completed_date && (
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Completed:</span>
-                    <span className="font-medium text-green-600">
-                      {format(new Date(record.completed_date), "MMM d, yyyy")}
-                    </span>
+                
+                <Separator />
+                
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="text-gray-600">Scheduled Date:</span>
+                    <p className="font-medium flex items-center gap-1">
+                      <CalendarIcon className="h-3 w-3" />
+                      {format(new Date(record.scheduled_date), "PPP")}
+                    </p>
                   </div>
-                )}
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Created:</span>
-                  <span className="font-medium text-foreground">
-                    {format(new Date(record.created_at), "MMM d, yyyy")}
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Cost Information */}
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-2 mb-4">
-                <DollarSignIcon className="w-5 h-5 text-green-600" />
-                <h3 className="font-semibold text-foreground">Cost Information</h3>
-              </div>
-              <div className="space-y-2">
-                {record.cost ? (
-                  <>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Total Cost:</span>
-                      <span className="font-bold text-foreground">${record.cost.toLocaleString()}</span>
+                  {record.completed_date && (
+                    <div>
+                      <span className="text-gray-600">Completed Date:</span>
+                      <p className="font-medium flex items-center gap-1">
+                        <CalendarIcon className="h-3 w-3" />
+                        {format(new Date(record.completed_date), "PPP")}
+                      </p>
                     </div>
-                    {record.labor_cost && (
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Labor Cost:</span>
-                        <span className="font-medium text-foreground">${record.labor_cost.toLocaleString()}</span>
-                      </div>
-                    )}
-                    {record.parts_cost && (
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Parts Cost:</span>
-                        <span className="font-medium text-foreground">${record.parts_cost.toLocaleString()}</span>
-                      </div>
-                    )}
-                    {record.labor_hours && (
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Labor Hours:</span>
-                        <span className="font-medium text-foreground">{record.labor_hours}h</span>
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <div className="text-center py-4">
-                    <span className="text-muted-foreground">No cost information available</span>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Vendor Information */}
-          {record.maintenance_vendors && (
+          {/* Service Timeline */}
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Clock className="h-4 w-4 text-gray-600" />
+                <h3 className="font-medium text-gray-900">Service Timeline</h3>
+              </div>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span className="text-gray-600">Created:</span>
+                  <p className="font-medium">
+                    {format(new Date(record.created_at), "PPP")}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-gray-600">Last Updated:</span>
+                  <p className="font-medium">
+                    {format(new Date(record.updated_at), "PPP")}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Vendor & Cost Information */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <UserIcon className="w-5 h-5 text-purple-600" />
-                  <h3 className="font-semibold text-foreground">Vendor Information</h3>
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <UserIcon className="h-4 w-4 text-gray-600" />
+                  <h3 className="font-medium text-gray-900">Service Provider</h3>
                 </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Company:</span>
-                    <span className="font-medium text-foreground">{record.maintenance_vendors.name}</span>
+                <div className="space-y-2 text-sm">
+                  <div>
+                    <span className="text-gray-600">Provider:</span>
+                    <p className="font-medium">{record.maintenance_vendors?.name || "In-house"}</p>
                   </div>
-                  {record.maintenance_vendors.contact_person && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Contact:</span>
-                      <span className="font-medium text-foreground">{record.maintenance_vendors.contact_person}</span>
+                  {record.maintenance_vendors?.contact_person && (
+                    <div>
+                      <span className="text-gray-600">Contact:</span>
+                      <p className="font-medium">{record.maintenance_vendors.contact_person}</p>
                     </div>
                   )}
-                  {record.maintenance_vendors.phone && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Phone:</span>
-                      <span className="font-medium text-foreground">{record.maintenance_vendors.phone}</span>
-                    </div>
-                  )}
-                  {record.maintenance_vendors.email && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Email:</span>
-                      <span className="font-medium text-foreground">{record.maintenance_vendors.email}</span>
+                  {record.maintenance_vendors?.phone && (
+                    <div>
+                      <span className="text-gray-600">Phone:</span>
+                      <p className="font-medium">{record.maintenance_vendors.phone}</p>
                     </div>
                   )}
                 </div>
               </CardContent>
             </Card>
-          )}
 
-          {/* Description */}
-          <Card className="lg:col-span-2">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-2 mb-4">
-                <FileTextIcon className="w-5 h-5 text-gray-600" />
-                <h3 className="font-semibold text-foreground">Description</h3>
-              </div>
-              <div className="bg-gray-50 rounded-lg p-4">
-                <p className="text-foreground whitespace-pre-wrap">
-                  {record.description || "No description provided."}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <DollarSignIcon className="h-4 w-4 text-gray-600" />
+                  <h3 className="font-medium text-gray-900">Cost Information</h3>
+                </div>
+                <div className="space-y-2 text-sm">
+                  {record.cost && (
+                    <div>
+                      <span className="text-gray-600">Total Cost:</span>
+                      <p className="font-medium text-lg">${record.cost.toLocaleString()}</p>
+                    </div>
+                  )}
+                  {record.labor_cost !== undefined && record.labor_cost > 0 && (
+                    <div>
+                      <span className="text-gray-600">Labor Cost:</span>
+                      <p className="font-medium">${record.labor_cost.toLocaleString()}</p>
+                    </div>
+                  )}
+                  {record.parts_cost !== undefined && record.parts_cost > 0 && (
+                    <div>
+                      <span className="text-gray-600">Parts Cost:</span>
+                      <p className="font-medium">${record.parts_cost.toLocaleString()}</p>
+                    </div>
+                  )}
+                  {record.labor_hours && (
+                    <div>
+                      <span className="text-gray-600">Labor Hours:</span>
+                      <p className="font-medium">{record.labor_hours} hours</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Actions */}
+          <div className="flex justify-end gap-3 pt-4 border-t">
+            <Button variant="outline" onClick={onClose}>
+              Close
+            </Button>
+            {onEdit && (
+              <Button
+                onClick={() => {
+                  onEdit(record);
+                  onClose();
+                }}
+                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
+              >
+                <Edit className="h-4 w-4 mr-2" />
+                Edit Maintenance
+              </Button>
+            )}
+            {onDelete && (
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  onDelete(record);
+                  onClose();
+                }}
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete
+              </Button>
+            )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>
