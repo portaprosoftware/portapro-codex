@@ -153,7 +153,7 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
               </Badge>
               {record.priority && (
                 <Badge className={`${getPriorityColor(record.priority)} text-xs`}>
-                  {record.priority.replace(/\b\w/g, l => l.toUpperCase())}
+                  {record.priority === 'medium' ? 'Normal' : record.priority.replace(/\b\w/g, l => l.toUpperCase())}
                 </Badge>
               )}
               {(record.next_service_date || record.next_service_mileage) && (
@@ -206,7 +206,7 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
             </Badge>
             {record.priority && (
               <Badge className={`${getPriorityColor(record.priority)} text-xs w-fit`}>
-                {record.priority.replace(/\b\w/g, l => l.toUpperCase())}
+                {record.priority === 'medium' ? 'Normal' : record.priority.replace(/\b\w/g, l => l.toUpperCase())}
               </Badge>
             )}
             {(record.next_service_date || record.next_service_mileage) && (
@@ -254,7 +254,7 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
           </Badge>
           {record.priority && (
             <Badge className={`${getPriorityColor(record.priority)} text-xs`}>
-              {record.priority.replace(/\b\w/g, l => l.toUpperCase())}
+              {record.priority === 'medium' ? 'Normal' : record.priority.replace(/\b\w/g, l => l.toUpperCase())}
             </Badge>
           )}
           {(record.next_service_date || record.next_service_mileage) && (

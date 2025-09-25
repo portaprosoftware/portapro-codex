@@ -130,7 +130,7 @@ export const MaintenanceRecordModal: React.FC<MaintenanceRecordModalProps> = ({
               </Badge>
               {record.priority && (
                 <Badge className={getPriorityColor(record.priority)}>
-                  {record.priority.replace(/\b\w/g, l => l.toUpperCase())}
+                  {record.priority === 'medium' ? 'Normal' : record.priority.replace(/\b\w/g, l => l.toUpperCase())}
                 </Badge>
               )}
             </div>
