@@ -170,6 +170,7 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
   const handleVehicleSelect = (vehicle: any) => {
     setSelectedVehicle(vehicle);
     setVehicleId(vehicle.id);
+    setVehicleMiles(vehicle.current_mileage?.toString() || '');
     setShowVehicleModal(false);
   };
 

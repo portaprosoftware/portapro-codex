@@ -159,6 +159,7 @@ export const AddRecurringServiceSlider: React.FC<AddRecurringServiceSliderProps>
   const handleVehicleSelect = (vehicle: any) => {
     setSelectedVehicle(vehicle);
     setVehicleId(vehicle.id);
+    setVehicleMiles(vehicle.current_mileage?.toString() || '');
     setShowVehicleModal(false);
   };
 
