@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, Download, Eye, Edit } from "lucide-react";
+import { Search, Filter, Download, Eye, Edit, Check } from "lucide-react";
 import { format } from "date-fns";
 import { MaintenanceRecordCard } from "./maintenance/MaintenanceRecordCard";
 import { MaintenanceRecordModal } from "./maintenance/MaintenanceRecordModal";
@@ -249,6 +249,15 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
     }
   };
 
+  const getSelectedVehicleName = () => {
+    if (vehicleFilter === "all") return "All Vehicles";
+    const vehicle = vehicles?.find(v => v.id === vehicleFilter);
+    if (vehicle?.make && vehicle?.model) {
+      return `${vehicle.make} ${vehicle.model}${vehicle.nickname ? ` - ${vehicle.nickname}` : ''}`;
+    }
+    return vehicle?.license_plate || "Unknown Vehicle";
+  };
+
   const getVehicleName = (record: any) => {
     if (record.vehicles?.make && record.vehicles?.model) {
       return `${record.vehicles.make} ${record.vehicles.model}${record.vehicles.nickname ? ` - ${record.vehicles.nickname}` : ''}`;
@@ -286,18 +295,31 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
           </Select>
 
           <Select value={vehicleFilter} onValueChange={setVehicleFilter}>
-            <SelectTrigger className="w-full sm:w-40">
-              <SelectValue placeholder="Vehicle" />
+            <SelectTrigger className="w-full sm:w-48">
+              <SelectValue placeholder={getSelectedVehicleName()} />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Vehicles</SelectItem>
+            <SelectContent className="max-h-[300px]">
+              <SelectItem value="all" className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  {vehicleFilter === "all" && <Check className="h-4 w-4 text-green-600" />}
+                  <span>All Vehicles</span>
+                </div>
+              </SelectItem>
                {vehicles?.map((vehicle) => (
-                 <SelectItem key={vehicle.id} value={vehicle.id}>
-                   {vehicle.make && vehicle.model 
-                     ? `${vehicle.make} ${vehicle.model}${vehicle.nickname ? ` - ${vehicle.nickname}` : ''}`
-                     : vehicle.license_plate}
+                 <SelectItem key={vehicle.id} value={vehicle.id} className="flex items-center justify-between">
+                   <div className="flex items-center gap-2">
+                     {vehicleFilter === vehicle.id && <Check className="h-4 w-4 text-green-600" />}
+                     <div className="flex flex-col">
+                       <span className="font-medium">
+                         {vehicle.make && vehicle.model 
+                           ? `${vehicle.make} ${vehicle.model}${vehicle.nickname ? ` - ${vehicle.nickname}` : ''}`
+                           : vehicle.license_plate}
+                       </span>
+                       <span className="text-xs text-muted-foreground">{vehicle.license_plate}</span>
+                     </div>
+                   </div>
                  </SelectItem>
-              ))}
+               ))}
             </SelectContent>
           </Select>
 
