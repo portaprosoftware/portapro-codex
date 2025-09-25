@@ -156,50 +156,6 @@ export const MaintenanceSettingsTab: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Default Intervals */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Default Maintenance Intervals</CardTitle>
-          <CardDescription>
-            Configure default service intervals for different maintenance types
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Task Type</TableHead>
-                <TableHead>Default Miles</TableHead>
-                <TableHead>Default Days</TableHead>
-                <TableHead>Default Cost</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {taskTypes?.map((taskType) => (
-                <TableRow key={taskType.id}>
-                  <TableCell className="font-medium">{taskType.name}</TableCell>
-                  <TableCell>{taskType.default_interval_miles || "—"}</TableCell>
-                  <TableCell>{taskType.default_interval_days || "—"}</TableCell>
-                  <TableCell>${taskType.default_cost || 0}</TableCell>
-                  <TableCell>
-                    <Button size="sm" variant="outline">
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <div className="mt-4">
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              Add New Task Type
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Vendor Management */}
       <Card>
         <CardHeader>
@@ -275,6 +231,50 @@ export const MaintenanceSettingsTab: React.FC = () => {
             <Button onClick={handleCreateVendor}>
               <Plus className="w-4 h-4 mr-2" />
               Add New Vendor
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Default Intervals */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Default Maintenance Intervals</CardTitle>
+          <CardDescription>
+            Configure default service intervals for different maintenance types
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Task Type</TableHead>
+                <TableHead>Default Miles</TableHead>
+                <TableHead>Default Days</TableHead>
+                <TableHead>Default Cost</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {taskTypes?.map((taskType) => (
+                <TableRow key={taskType.id}>
+                  <TableCell className="font-medium">{taskType.name}</TableCell>
+                  <TableCell>{taskType.default_interval_miles || "—"}</TableCell>
+                  <TableCell>{taskType.default_interval_days || "—"}</TableCell>
+                  <TableCell>${taskType.default_cost || 0}</TableCell>
+                  <TableCell>
+                    <Button size="sm" variant="outline">
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <div className="mt-4">
+            <Button>
+              <Plus className="w-4 h-4 mr-2" />
+              Add New Task Type
             </Button>
           </div>
         </CardContent>
