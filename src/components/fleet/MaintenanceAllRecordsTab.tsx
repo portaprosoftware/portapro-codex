@@ -16,14 +16,13 @@ import { RecurringServiceModal } from "./maintenance/RecurringServiceModal";
 import { AddMaintenanceRecordDrawer } from "./AddMaintenanceRecordDrawer";
 import { AddRecurringServiceSlider } from "./AddRecurringServiceSlider";
 import { DeleteMaintenanceConfirmDialog } from "./maintenance/DeleteMaintenanceConfirmDialog";
-import { VehicleFilterModal } from "./VehicleFilterModal";
+import { MultiSelectVehicleFilter } from "./MultiSelectVehicleFilter";
 import { toast } from "sonner";
 
 export const MaintenanceAllRecordsTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [vehicleFilter, setVehicleFilter] = useState("all");
-  const [selectedVehicle, setSelectedVehicle] = useState<any>(null);
+  const [selectedVehicles, setSelectedVehicles] = useState<any[]>([]);
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -52,7 +51,7 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
   });
 
   const { data: maintenanceRecords, isLoading } = useQuery({
-    queryKey: ["maintenance-records", searchTerm, statusFilter, selectedVehicle?.id, companySettings?.company_timezone],
+    queryKey: ["maintenance-records", searchTerm, statusFilter, selectedVehicles.map(v => v.id), companySettings?.company_timezone],
     queryFn: async () => {
       let query = supabase
         .from("maintenance_records")
@@ -92,8 +91,9 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
         }
       }
 
-      if (selectedVehicle) {
-        query = query.eq("vehicle_id", selectedVehicle.id);
+      if (selectedVehicles.length > 0) {
+        const vehicleIds = selectedVehicles.map(v => v.id);
+        query = query.in("vehicle_id", vehicleIds);
       }
 
       const { data, error } = await query;
@@ -267,22 +267,24 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
     }
   };
 
-  const getSelectedVehicleName = () => {
-    if (!selectedVehicle) return "All Vehicles";
-    if (selectedVehicle.make && selectedVehicle.model) {
-      return `${selectedVehicle.make} ${selectedVehicle.model}${selectedVehicle.nickname ? ` - ${selectedVehicle.nickname}` : ''}`;
+  const getSelectedVehiclesText = () => {
+    if (selectedVehicles.length === 0) return "All Vehicles";
+    if (selectedVehicles.length === 1) {
+      const vehicle = selectedVehicles[0];
+      if (vehicle.make && vehicle.model) {
+        return `${vehicle.make} ${vehicle.model}${vehicle.nickname ? ` - ${vehicle.nickname}` : ''}`;
+      }
+      return vehicle.license_plate || "Unknown Vehicle";
     }
-    return selectedVehicle.license_plate || "Unknown Vehicle";
+    return `${selectedVehicles.length} Vehicles Selected`;
   };
 
-  const handleVehicleSelect = (vehicle: any) => {
-    setSelectedVehicle(vehicle);
-    setVehicleFilter(vehicle.id);
+  const handleVehiclesChange = (vehicles: any[]) => {
+    setSelectedVehicles(vehicles);
   };
 
   const handleClearVehicleFilter = () => {
-    setSelectedVehicle(null);
-    setVehicleFilter("all");
+    setSelectedVehicles([]);
   };
 
   const getVehicleName = (record: any) => {
@@ -328,9 +330,9 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
               className="flex items-center justify-center gap-2 px-3 py-2 w-auto"
             >
               <Truck className="h-4 w-4" />
-              <span className="whitespace-nowrap">{getSelectedVehicleName()}</span>
+              <span className="whitespace-nowrap">{getSelectedVehiclesText()}</span>
             </Button>
-            {selectedVehicle && (
+            {selectedVehicles.length > 0 && (
               <Button
                 variant="ghost"
                 size="sm"
@@ -451,12 +453,11 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
       />
 
       {/* Vehicle Selection Modal */}
-      <VehicleFilterModal
+      <MultiSelectVehicleFilter
         open={isVehicleModalOpen}
         onOpenChange={setIsVehicleModalOpen}
-        selectedDate={new Date()}
-        selectedVehicle={selectedVehicle}
-        onVehicleSelect={handleVehicleSelect}
+        selectedVehicles={selectedVehicles}
+        onVehiclesChange={handleVehiclesChange}
       />
     </div>
   );
