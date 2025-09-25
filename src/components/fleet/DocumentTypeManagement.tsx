@@ -368,9 +368,9 @@ export const DocumentTypeManagement: React.FC = () => {
                   <div className="flex-1">
                     <h5 className="font-medium text-gray-900 mb-1">{category.name}</h5>
                     <p className="text-sm text-gray-600 mb-3">{category.description}</p>
-                    <Badge className={category.color}>
+                    <div className="text-sm text-gray-500">
                       {allTypesForCategory.length} types
-                    </Badge>
+                    </div>
                     <div className="mt-3 space-y-1">
                       {allTypesForCategory.map((type, index) => (
                         <div key={index} className="flex items-center justify-between group">
@@ -380,18 +380,14 @@ export const DocumentTypeManagement: React.FC = () => {
                             
                             {/* Description indicator */}
                             {type.description && (
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Info className="w-3 h-3 text-blue-500 cursor-help" />
-                                </TooltipTrigger>
-                                <TooltipContent className="max-w-xs">
-                                  <p className="text-sm">{type.description}</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            )}
-                            
-                            {!type.isPredefined && (
-                              <Badge variant="outline" className="text-xs px-1 py-0">Custom</Badge>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-4 w-4 p-0 text-blue-500 hover:text-blue-600"
+                                onClick={() => handleViewDetails(type, category)}
+                              >
+                                <Info className="w-3 h-3" />
+                              </Button>
                             )}
                           </div>
                           
