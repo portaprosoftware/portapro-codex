@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,18 +7,62 @@ import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { EnhancedDateNavigator } from "@/components/jobs/EnhancedDateNavigator";
 import { AssignmentCreationWizard } from "./AssignmentCreationWizard";
+import { AssignmentViewModal } from "./AssignmentViewModal";
+import { AssignmentActionsMenu } from "./AssignmentActionsMenu";
 import { Truck, User, Clock, Calendar, Plus, TrendingUp, BarChart3, Activity } from "lucide-react";
 import { format } from "date-fns";
+import { useToast } from "@/hooks/use-toast";
 
 export function VehicleAssignments() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [wizardOpen, setWizardOpen] = useState(false);
   const [editingAssignment, setEditingAssignment] = useState<any>(null);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [viewingAssignment, setViewingAssignment] = useState<any>(null);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const handleEditAssignment = (assignment: any) => {
     console.log('Edit assignment clicked:', assignment);
     setEditingAssignment(assignment);
     setWizardOpen(true);
+  };
+
+  const handleViewAssignment = (assignment: any) => {
+    console.log('View assignment clicked:', assignment);
+    setViewingAssignment(assignment);
+    setViewModalOpen(true);
+  };
+
+  const deleteAssignmentMutation = useMutation({
+    mutationFn: async (assignmentId: string) => {
+      const { error } = await supabase
+        .from("daily_vehicle_assignments")
+        .delete()
+        .eq("id", assignmentId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["daily-vehicle-assignments"] });
+      toast({
+        title: "Success",
+        description: "Assignment deleted successfully",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to delete assignment",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const handleDeleteAssignment = (assignment: any) => {
+    if (confirm("Are you sure you want to delete this assignment? This action cannot be undone.")) {
+      deleteAssignmentMutation.mutate(assignment.id);
+    }
   };
 
   const handleCloseWizard = () => {
@@ -63,6 +107,8 @@ export function VehicleAssignments() {
           <VehicleAssignmentsContent 
             selectedDate={selectedDate} 
             onEditAssignment={handleEditAssignment}
+            onViewAssignment={handleViewAssignment}
+            onDeleteAssignment={handleDeleteAssignment}
             onCreateAssignment={() => setWizardOpen(true)}
           />
         </div>
@@ -74,6 +120,13 @@ export function VehicleAssignments() {
         onOpenChange={handleCloseWizard}
         initialDate={selectedDate}
         editingAssignment={editingAssignment}
+      />
+
+      {/* Assignment View Modal */}
+      <AssignmentViewModal
+        open={viewModalOpen}
+        onOpenChange={setViewModalOpen}
+        assignment={viewingAssignment}
       />
     </div>
   );
@@ -185,10 +238,14 @@ function VehicleAssignmentsStats({ selectedDate }: { selectedDate: Date }) {
 function VehicleAssignmentsContent({ 
   selectedDate, 
   onEditAssignment,
+  onViewAssignment,
+  onDeleteAssignment,
   onCreateAssignment
 }: { 
   selectedDate: Date; 
   onEditAssignment: (assignment: any) => void;
+  onViewAssignment: (assignment: any) => void;
+  onDeleteAssignment: (assignment: any) => void;
   onCreateAssignment: () => void;
 }) {
   const { data: assignments = [], isLoading, error } = useQuery({
@@ -392,13 +449,12 @@ function VehicleAssignmentsContent({
                     </span>
                   </div>
                   
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => onEditAssignment(assignment)}
-                  >
-                    Edit
-                  </Button>
+                  <AssignmentActionsMenu
+                    assignment={assignment}
+                    onView={onViewAssignment}
+                    onEdit={onEditAssignment}
+                    onDelete={onDeleteAssignment}
+                  />
                 </div>
               </div>
 
