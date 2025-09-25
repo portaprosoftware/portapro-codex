@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Plus, Edit, Trash2, Eye, FileText, Info } from "lucide-react";
+import { Plus, Edit, Trash2, FileText, Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { DocumentTypeDetailsModal } from "./DocumentTypeDetailsModal";
 
@@ -385,23 +385,6 @@ export const DocumentTypeManagement: React.FC = () => {
                           </div>
                           
                           <div className="flex items-center gap-1">
-                            {/* View Details Button */}
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-6 w-6 p-0 text-blue-400 hover:text-blue-600"
-                                  onClick={() => handleViewDetails(type, category)}
-                                >
-                                  <Eye className="w-3 h-3" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>View details</p>
-                              </TooltipContent>
-                            </Tooltip>
-                            
                             {/* Edit Button - Only for custom types */}
                             {!type.isPredefined && type.id && (
                               <>
