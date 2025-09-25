@@ -25,16 +25,24 @@ interface VehicleSelectorProps {
   onVehicleSelect: (vehicleId: string) => void;
   showAddButton?: boolean;
   className?: string;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
 export const VehicleSelector: React.FC<VehicleSelectorProps> = ({
   selectedVehicleId,
   onVehicleSelect,
   showAddButton = false,
-  className
+  className,
+  isOpen,
+  onClose
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // If used as a modal (isOpen and onClose props provided), use those instead of internal state
+  const modalOpen = isOpen !== undefined ? isOpen : isModalOpen;
+  const handleModalClose = onClose || (() => setIsModalOpen(false));
 
   const { data: vehicles, isLoading } = useQuery({
     queryKey: ["vehicles"],
@@ -64,7 +72,11 @@ export const VehicleSelector: React.FC<VehicleSelectorProps> = ({
 
   const handleVehicleSelect = (vehicleId: string) => {
     onVehicleSelect(vehicleId);
-    setIsModalOpen(false);
+    if (onClose) {
+      onClose();
+    } else {
+      setIsModalOpen(false);
+    }
   };
 
   const getVehicleTypeColor = (type: string) => {
@@ -157,7 +169,7 @@ export const VehicleSelector: React.FC<VehicleSelectorProps> = ({
       )}
 
       {/* Vehicle Selection Modal */}
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+      <Dialog open={modalOpen} onOpenChange={handleModalClose}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden">
           <DialogHeader>
             <DialogTitle>Select Vehicle</DialogTitle>
