@@ -348,6 +348,7 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
                     value={estimatedCost}
                     onChange={(e) => setEstimatedCost(e.target.value)}
                     placeholder="0.00"
+                    className="pl-8"
                     required
                   />
                 </div>

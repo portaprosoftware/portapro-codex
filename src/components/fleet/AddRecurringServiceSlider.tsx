@@ -384,7 +384,7 @@ export const AddRecurringServiceSlider: React.FC<AddRecurringServiceSliderProps>
                     value={estimatedCost}
                     onChange={(e) => setEstimatedCost(e.target.value)}
                     placeholder="0.00"
-                    className="pl-7"
+                    className="pl-8"
                     required
                   />
                 </div>
