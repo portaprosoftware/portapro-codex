@@ -50,63 +50,63 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // Edit mode detection
   const isEditMode = !!editingAssignment;
 
   // Populate form when editing
   React.useEffect(() => {
     if (editingAssignment) {
-      // Fix date initialization to avoid timezone issues
-      const assignmentDate = new Date(editingAssignment.assignment_date + 'T00:00:00');
-      setSelectedDate(assignmentDate);
-      setSelectedVehicle(editingAssignment.vehicles);
-      const driverProfile = editingAssignment.profiles;
-      setSelectedDriver({ ...driverProfile, status: "assigned" });
+      setSelectedDate(new Date(editingAssignment.assignment_date));
+      setSelectedVehicle(editingAssignment.vehicle);
+      setSelectedDriver(editingAssignment.driver);
+      setStartMileage(editingAssignment.start_mileage?.toString() || "");
       setNotes(editingAssignment.notes || "");
     }
   }, [editingAssignment]);
 
+  // Reset form when modal opens/closes
+  React.useEffect(() => {
+    if (!open) {
+      setTimeout(() => {
+        resetForm();
+      }, 300);
+    } else if (open && !editingAssignment) {
+      resetForm();
+      setSelectedDate(initialDate);
+    }
+  }, [open, editingAssignment, initialDate]);
+
   const createAssignmentMutation = useMutation({
     mutationFn: async () => {
-      if (isEditMode) {
-        // Update existing assignment
-        const updateData: any = {
-          vehicle_id: selectedVehicle?.id,
-          driver_id: selectedDriver?.id || selectedDriver?.clerk_user_id,
-          assignment_date: format(selectedDate, "yyyy-MM-dd"),
-          start_mileage: startMileage ? parseInt(startMileage) : null,
-          notes: notes.trim() || null
-        };
+      const assignmentData = {
+        assignment_date: selectedDate.toISOString().split('T')[0],
+        vehicle_id: selectedVehicle.id,
+        driver_id: selectedDriver.id,
+        start_mileage: startMileage ? parseInt(startMileage) : null,
+        notes: notes || null,
+      };
 
+      if (isEditMode) {
         const { error } = await supabase
           .from("daily_vehicle_assignments")
-          .update(updateData)
+          .update(assignmentData)
           .eq("id", editingAssignment.id);
-
+        
         if (error) throw error;
       } else {
-        // Create new assignment
         const { error } = await supabase
           .from("daily_vehicle_assignments")
-          .insert({
-            vehicle_id: selectedVehicle?.id,
-            driver_id: selectedDriver?.id || selectedDriver?.clerk_user_id,
-            assignment_date: format(selectedDate, "yyyy-MM-dd"),
-            start_mileage: startMileage ? parseInt(startMileage) : null,
-            notes: notes.trim() || null
-          });
-
+          .insert([assignmentData]);
+        
         if (error) throw error;
       }
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["daily-vehicle-assignments"] });
       toast({
         title: "Success",
-        description: isEditMode ? "Assignment updated successfully" : "Vehicle assignment created successfully",
+        description: isEditMode ? "Assignment updated successfully" : "Assignment created successfully",
       });
-      queryClient.invalidateQueries({ queryKey: ["daily-vehicle-assignments"] });
-      queryClient.invalidateQueries({ queryKey: ["vehicle-assignments"] });
-      queryClient.invalidateQueries({ queryKey: ["driver-assignments"] });
-      resetForm();
       onOpenChange(false);
     },
     onError: (error) => {
@@ -173,182 +173,155 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
     switch (currentStep) {
       case "basics":
         return (
-          <div className="space-y-6">
-            {/* Grid layout - side by side on desktop, stacked on mobile */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-20">
-              {/* Date Selection */}
-              <div className="flex flex-col space-y-4">
-                <div className="text-center h-16 flex flex-col justify-center">
-                  <h3 className="text-base font-semibold mb-2">Assignment Date</h3>
-                  <p className="text-sm text-muted-foreground">Select a date for this assignment</p>
-                </div>
-                <div className="flex justify-center flex-1">
-                  <div className="w-fit">
-                    <Calendar
-                      mode="single"
-                      selected={selectedDate}
-                      onSelect={(date) => date && setSelectedDate(date)}
-                      className="rounded-lg border shadow-sm pointer-events-auto scale-90 lg:scale-100"
-                      disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
-                      classNames={{
-                        day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
-                        day_today: "bg-accent text-accent-foreground",
-                        day: "h-9 w-9 text-center text-sm p-0 font-normal aria-selected:opacity-100 hover:bg-accent hover:text-accent-foreground",
-                        table: "w-full border-collapse space-y-1",
-                        head_row: "flex",
-                        head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
-                        row: "flex w-full mt-2",
-                        cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-                      }}
-                    />
+          <div className="flex flex-col lg:flex-row gap-8 h-full">
+            {/* Left Side - Assignment Controls */}
+            <div className="flex-1 lg:w-1/2">
+              <div className="space-y-6">
+                {/* Date Selection */}
+                <div className="flex flex-col space-y-4">
+                  <div className="text-center h-16 flex flex-col justify-center">
+                    <h3 className="text-base font-semibold mb-2">Assignment Date</h3>
+                    <p className="text-sm text-muted-foreground">Select a date for this assignment</p>
+                  </div>
+                  <div className="flex justify-center">
+                    <div className="w-fit">
+                      <Calendar
+                        mode="single"
+                        selected={selectedDate}
+                        onSelect={(date) => date && setSelectedDate(date)}
+                        className="rounded-lg border shadow-sm pointer-events-auto scale-90 lg:scale-100"
+                        disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                        classNames={{
+                          day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+                          day_today: "bg-accent text-accent-foreground",
+                          day: "h-9 w-9 text-center text-sm p-0 font-normal aria-selected:opacity-100 hover:bg-accent hover:text-accent-foreground",
+                          table: "w-full border-collapse space-y-1",
+                          head_row: "flex",
+                          head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
+                          row: "flex w-full mt-2",
+                          cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Vehicle Selection */}
-              <div className="flex flex-col space-y-4">
-                <div className="text-center h-16 flex flex-col justify-center">
-                  <h3 className="text-base font-semibold mb-2">Select Vehicle</h3>
-                  <p className="text-sm text-muted-foreground">Choose an available vehicle</p>
-                </div>
-                
-                <div className="flex-1 flex items-start justify-center pt-4">
-                  {!selectedVehicle && (
-                    <div className="text-center py-4 w-full">
-                      <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center mx-auto mb-3">
-                        <Truck className="h-6 w-6 text-muted-foreground" />
-                      </div>
-                      <p className="text-sm text-muted-foreground mb-3">No vehicle selected</p>
-                      <Button onClick={() => setVehicleModalOpen(true)} size="sm" className="text-xs">
-                        <Plus className="h-4 w-4 mr-1" />
-                        Select Vehicle
-                      </Button>
+                {/* Vehicle and Driver Selection Buttons */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Vehicle Selection */}
+                  <div className="flex flex-col space-y-4">
+                    <div className="text-center">
+                      <h3 className="text-base font-semibold mb-2">Vehicle</h3>
+                      <p className="text-sm text-muted-foreground">Choose an available vehicle</p>
                     </div>
-                  )}
-                  {selectedVehicle && (
-                    <div className="text-center py-4 w-full">
-                      <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-lg flex items-center justify-center mx-auto mb-3 shadow-md">
-                        <Check className="h-6 w-6 text-white font-bold stroke-[3]" />
-                      </div>
-                      <p className="text-sm font-medium mb-2">Vehicle Selected</p>
-                      <p className="text-xs text-muted-foreground mb-3">Selection details below</p>
-                      <Button onClick={() => setVehicleModalOpen(true)} variant="outline" size="sm" className="text-xs">
-                        Change Vehicle
-                      </Button>
+                    
+                    <div className="flex items-center justify-center">
+                      {!selectedVehicle ? (
+                        <Button onClick={() => setVehicleModalOpen(true)} size="lg" className="w-full">
+                          <Truck className="h-5 w-5 mr-2" />
+                          Select Vehicle
+                        </Button>
+                      ) : (
+                        <Button onClick={() => setVehicleModalOpen(true)} variant="outline" size="lg" className="w-full">
+                          <Check className="h-5 w-5 mr-2 text-green-600" />
+                          Change Vehicle
+                        </Button>
+                      )}
                     </div>
-                  )}
-                </div>
-              </div>
+                  </div>
 
-              {/* Driver Selection */}
-              <div className="flex flex-col space-y-4">
-                <div className="text-center h-16 flex flex-col justify-center">
-                  <h3 className="text-base font-semibold mb-2">Select Driver</h3>
-                  <p className="text-sm text-muted-foreground">Choose a driver for this assignment</p>
-                </div>
-                
-                <div className="flex-1 flex items-start justify-center pt-4">
-                  {!selectedDriver && (
-                    <div className="text-center py-4 w-full">
-                      <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center mx-auto mb-3">
-                        <User className="h-6 w-6 text-muted-foreground" />
-                      </div>
-                      <p className="text-sm text-muted-foreground mb-3">No driver selected</p>
-                      <Button onClick={() => setDriverModalOpen(true)} size="sm" className="text-xs">
-                        <Plus className="h-4 w-4 mr-1" />
-                        Select Driver
-                      </Button>
+                  {/* Driver Selection */}
+                  <div className="flex flex-col space-y-4">
+                    <div className="text-center">
+                      <h3 className="text-base font-semibold mb-2">Driver</h3>
+                      <p className="text-sm text-muted-foreground">Choose a driver for assignment</p>
                     </div>
-                  )}
-                  {selectedDriver && (
-                    <div className="text-center py-4 w-full">
-                      <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-lg flex items-center justify-center mx-auto mb-3 shadow-md">
-                        <Check className="h-6 w-6 text-white font-bold stroke-[3]" />
-                      </div>
-                      <p className="text-sm font-medium mb-2">Driver Selected</p>
-                      <p className="text-xs text-muted-foreground mb-3">Selection details below</p>
-                      <Button onClick={() => setDriverModalOpen(true)} variant="outline" size="sm" className="text-xs">
-                        Change Driver
-                      </Button>
+                    
+                    <div className="flex items-center justify-center">
+                      {!selectedDriver ? (
+                        <Button onClick={() => setDriverModalOpen(true)} size="lg" className="w-full">
+                          <User className="h-5 w-5 mr-2" />
+                          Select Driver
+                        </Button>
+                      ) : (
+                        <Button onClick={() => setDriverModalOpen(true)} variant="outline" size="lg" className="w-full">
+                          <Check className="h-5 w-5 mr-2 text-green-600" />
+                          Change Driver
+                        </Button>
+                      )}
                     </div>
-                  )}
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Selected Items Display at Bottom */}
-            {(selectedVehicle || selectedDriver) && (
-              <div className="mt-8 pt-6 border-t">
-                <h4 className="text-sm font-semibold text-center mb-4">Selected Items</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Right Side - Selected Items */}
+            <div className="flex-1 lg:w-1/2">
+              <div className="bg-muted/30 rounded-lg p-6 h-full">
+                <h4 className="text-lg font-semibold mb-6">Selected Items</h4>
+                
+                <div className="space-y-4">
                   {/* Selected Vehicle Card */}
-                  {selectedVehicle && (
-                    <div className="p-4 border rounded-lg bg-muted/30">
-                      <div className="space-y-3">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                            <Truck className="h-5 w-5 text-white" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <h5 className="font-semibold text-sm">{selectedVehicle.license_plate}</h5>
-                            <p className="text-xs text-muted-foreground truncate">
-                              {selectedVehicle.year} {selectedVehicle.make} {selectedVehicle.model}
-                            </p>
-                            <div className="mt-1">
-                              <span className="inline-flex items-center rounded-md bg-muted border px-2 py-1 text-xs font-bold text-foreground shadow-sm">
-                                {selectedVehicle.vehicle_type.toUpperCase()}
-                              </span>
-                            </div>
+                  {selectedVehicle ? (
+                    <div className="p-4 border rounded-lg bg-white">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <Truck className="h-6 w-6 text-white" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <h5 className="font-semibold">{selectedVehicle.license_plate}</h5>
+                          <p className="text-sm text-muted-foreground truncate">
+                            {selectedVehicle.year} {selectedVehicle.make} {selectedVehicle.model}
+                          </p>
+                          <div className="mt-2">
+                            <span className="inline-flex items-center rounded-md bg-muted border px-3 py-1 text-sm font-bold text-foreground shadow-sm">
+                              {selectedVehicle.vehicle_type?.toUpperCase() || 'TRUCK'}
+                            </span>
                           </div>
                         </div>
                       </div>
+                    </div>
+                  ) : (
+                    <div className="p-4 border-2 border-dashed border-muted-foreground/30 rounded-lg text-center">
+                      <Truck className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                      <p className="text-sm text-muted-foreground">No vehicle selected</p>
                     </div>
                   )}
 
                   {/* Selected Driver Card */}
-                  {selectedDriver && (
-                    <div className="p-4 border rounded-lg bg-muted/30">
-                      <div className="space-y-3">
-                        <div className="flex items-center space-x-3">
-                          <Avatar className="w-10 h-10 flex-shrink-0">
-                            <AvatarFallback className="bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm">
-                              {`${selectedDriver.first_name?.[0] || ''}${selectedDriver.last_name?.[0] || ''}`.toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="min-w-0 flex-1">
-                            <h5 className="font-semibold text-sm">
-                              {selectedDriver.first_name} {selectedDriver.last_name}
-                            </h5>
-                            <div className="flex items-center space-x-1 mt-1">
-                              <span className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-bold text-white shadow-sm ${
-                                selectedDriver.status === "available" 
-                                  ? "bg-gradient-to-r from-green-500 to-green-600"
-                                  : selectedDriver.status === "assigned"
-                                  ? "bg-gradient-to-r from-yellow-500 to-yellow-600"
-                                  : "bg-gradient-to-r from-red-500 to-red-600"
-                              }`}>
-                                {selectedDriver.status === "available" ? "Available" : 
-                                 selectedDriver.status === "assigned" ? "Assigned" : "Off-Duty"}
-                              </span>
-                            </div>
+                  {selectedDriver ? (
+                    <div className="p-4 border rounded-lg bg-white">
+                      <div className="flex items-center space-x-3">
+                        <Avatar className="w-12 h-12 flex-shrink-0">
+                          <AvatarFallback className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+                            {`${selectedDriver.first_name?.[0] || ''}${selectedDriver.last_name?.[0] || ''}`.toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="min-w-0 flex-1">
+                          <h5 className="font-semibold">
+                            {selectedDriver.first_name} {selectedDriver.last_name}
+                          </h5>
+                          <div className="flex items-center space-x-1 mt-2">
+                            <span className={`inline-flex items-center rounded-md px-3 py-1 text-sm font-bold text-white shadow-sm ${
+                              selectedDriver.status === "available" 
+                                ? "bg-gradient-to-r from-green-500 to-green-600"
+                                : selectedDriver.status === "assigned"
+                                ? "bg-gradient-to-r from-yellow-500 to-yellow-600"
+                                : "bg-gradient-to-r from-red-500 to-red-600"
+                            }`}>
+                              {selectedDriver.status === "available" ? "Available" : 
+                               selectedDriver.status === "assigned" ? "Assigned" : "Off-Duty"}
+                            </span>
                           </div>
                         </div>
                       </div>
                     </div>
+                  ) : (
+                    <div className="p-4 border-2 border-dashed border-muted-foreground/30 rounded-lg text-center">
+                      <User className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                      <p className="text-sm text-muted-foreground">No driver selected</p>
+                    </div>
                   )}
-                </div>
-              </div>
-            )}
-
-            {/* Required Fields Notice */}
-            <div className="bg-muted/50 border border-border rounded-lg p-4">
-              <div className="flex items-start space-x-2">
-                <div className="w-5 h-5 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-bold mt-0.5">
-                  !
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-foreground">All fields required</p>
-                  <p className="text-sm text-muted-foreground">Please select a date, vehicle, and driver to continue.</p>
                 </div>
               </div>
             </div>
@@ -360,33 +333,32 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
           <div className="space-y-6">
             <div className="text-center">
               <h3 className="text-lg font-semibold mb-2">Assignment Details</h3>
-              <p className="text-sm text-muted-foreground">Add optional mileage and notes for this assignment</p>
+              <p className="text-muted-foreground">Add optional mileage and notes</p>
             </div>
-            
-            <div className="space-y-4">
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
               <div className="space-y-2">
                 <Label htmlFor="start-mileage">Starting Mileage (Optional)</Label>
                 <Input
                   id="start-mileage"
                   type="number"
-                  placeholder={selectedVehicle?.current_mileage ? `Current: ${selectedVehicle.current_mileage}` : "Enter starting mileage"}
+                  placeholder="Enter starting mileage"
                   value={startMileage}
                   onChange={(e) => setStartMileage(e.target.value)}
                 />
-                {selectedVehicle?.current_mileage && (
-                  <p className="text-xs text-muted-foreground">
-                    Vehicle's current mileage: {selectedVehicle.current_mileage.toLocaleString()} miles
-                  </p>
-                )}
+                <p className="text-xs text-muted-foreground">
+                  Current vehicle mileage will be used if available
+                </p>
               </div>
+
               <div className="space-y-2">
                 <Label htmlFor="notes">Notes (Optional)</Label>
                 <Textarea
                   id="notes"
-                  placeholder="Add any additional notes for this assignment"
+                  placeholder="Add any special instructions or notes..."
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  rows={4}
+                  rows={3}
                 />
               </div>
             </div>
@@ -398,116 +370,79 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
           <div className="space-y-6">
             <div className="text-center">
               <h3 className="text-lg font-semibold mb-2">Review Assignment</h3>
-              <p className="text-sm text-muted-foreground">Please review all details before creating the assignment</p>
+              <p className="text-muted-foreground">
+                {isEditMode ? "Confirm the changes to this assignment" : "Review the assignment details before creating"}
+              </p>
             </div>
 
-            <div className="space-y-4">
-              <div className="p-4 bg-accent/50 rounded-lg">
-                <h4 className="font-medium text-foreground mb-3">Assignment Summary</h4>
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Date:</span>
-                    <span className="text-foreground">{format(selectedDate, "PPP")}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Vehicle Details */}
-              {selectedVehicle && (
-                <div className="p-4 bg-accent/50 rounded-lg">
-                  <h4 className="font-medium text-foreground mb-3">Vehicle Details</h4>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">License Plate:</span>
-                      <span className="text-foreground font-medium">{selectedVehicle.license_plate}</span>
+            <div className="max-w-2xl mx-auto space-y-6">
+              {/* Assignment Summary */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Assignment Details */}
+                <div className="space-y-4">
+                  <h4 className="font-semibold">Assignment Details</h4>
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-2">
+                      <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm">
+                        <strong>Date:</strong> {format(selectedDate, "PPP")}
+                      </span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Vehicle:</span>
-                      <span className="text-foreground">{selectedVehicle.year || ''} {selectedVehicle.make} {selectedVehicle.model}</span>
-                    </div>
-                    {selectedVehicle.nickname && (
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Nickname:</span>
-                        <span className="text-foreground">"{selectedVehicle.nickname}"</span>
-                      </div>
-                    )}
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Type:</span>
-                      <span className="text-foreground">{selectedVehicle.vehicle_type}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Status:</span>
-                      <span className="text-foreground capitalize">{selectedVehicle.status}</span>
-                    </div>
-                    {selectedVehicle.current_mileage && (
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Current Mileage:</span>
-                        <span className="text-foreground">{selectedVehicle.current_mileage.toLocaleString()} mi</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Driver Details */}
-              {selectedDriver && (
-                <div className="p-4 bg-accent/50 rounded-lg">
-                  <h4 className="font-medium text-foreground mb-3">Driver Details</h4>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Driver:</span>
-                      <span className="text-foreground font-medium">{selectedDriver.first_name} {selectedDriver.last_name}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Status:</span>
-                      <span className="text-foreground capitalize">{selectedDriver.availability_status || 'Available'}</span>
-                    </div>
-                    {selectedDriver.working_hours && (
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Working Hours:</span>
-                        <span className="text-foreground">{selectedDriver.working_hours}</span>
-                      </div>
-                    )}
-                    {selectedDriver.scheduled_jobs && selectedDriver.scheduled_jobs.length > 0 && (
-                      <div>
-                        <span className="text-muted-foreground">Scheduled Jobs:</span>
-                        <div className="mt-1 space-y-1">
-                          {selectedDriver.scheduled_jobs.map((job: any, index: number) => (
-                            <div key={index} className="text-xs bg-background/50 p-2 rounded">
-                              <div className="flex justify-between">
-                                <span>{job.scheduled_time}</span>
-                                <span className="text-muted-foreground">{job.job_type}</span>
-                              </div>
-                              <div className="text-muted-foreground">{job.customer_name}</div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Assignment Details */}
-              {(startMileage || notes) && (
-                <div className="p-4 bg-accent/50 rounded-lg">
-                  <h4 className="font-medium text-foreground mb-3">Assignment Details</h4>
-                  <div className="space-y-2 text-sm">
                     {startMileage && (
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Starting Mileage:</span>
-                        <span className="text-foreground">{parseInt(startMileage).toLocaleString()} mi</span>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm">
+                          <strong>Starting Mileage:</strong> {startMileage}
+                        </span>
                       </div>
                     )}
                     {notes && (
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Notes:</span>
-                        <span className="text-foreground">{notes}</span>
+                      <div className="space-y-1">
+                        <strong className="text-sm">Notes:</strong>
+                        <p className="text-sm text-muted-foreground bg-muted p-2 rounded">
+                          {notes}
+                        </p>
                       </div>
                     )}
                   </div>
                 </div>
-              )}
+
+                {/* Selected Items */}
+                <div className="space-y-4">
+                  <h4 className="font-semibold">Assigned Resources</h4>
+                  
+                  {/* Vehicle */}
+                  <div className="p-3 border rounded-lg bg-muted/30">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <Truck className="h-4 w-4 text-white" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h6 className="font-medium text-sm">{selectedVehicle?.license_plate}</h6>
+                        <p className="text-xs text-muted-foreground">
+                          {selectedVehicle?.year} {selectedVehicle?.make} {selectedVehicle?.model}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Driver */}
+                  <div className="p-3 border rounded-lg bg-muted/30">
+                    <div className="flex items-center space-x-3">
+                      <Avatar className="w-8 h-8 flex-shrink-0">
+                        <AvatarFallback className="bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs">
+                          {`${selectedDriver?.first_name?.[0] || ''}${selectedDriver?.last_name?.[0] || ''}`.toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="min-w-0 flex-1">
+                        <h6 className="font-medium text-sm">
+                          {selectedDriver?.first_name} {selectedDriver?.last_name}
+                        </h6>
+                        <p className="text-xs text-muted-foreground">Driver</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         );
@@ -530,39 +465,38 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
               {steps[currentStepIndex]?.description}
             </SheetDescription>
           </div>
-        </SheetHeader>
-
-        {/* Progress Indicator */}
-        <div className="flex items-center justify-center space-x-2 py-4 overflow-x-auto">
-          {steps.map((step, index) => (
-            <div key={step.key} className="flex items-center flex-shrink-0">
-              <div className={cn(
-                "w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors",
-                index <= currentStepIndex 
-                  ? "bg-primary text-primary-foreground" 
-                  : "bg-muted text-muted-foreground"
-              )}>
-                {index < currentStepIndex ? (
-                  <Check className="w-4 h-4" />
-                ) : (
-                  index + 1
+          
+          {/* Step Indicator */}
+          <div className="flex items-center justify-center space-x-4 mt-4">
+            {steps.map((step, index) => (
+              <div key={step.key} className="flex items-center">
+                <div
+                  className={cn(
+                    "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors",
+                    index <= currentStepIndex
+                      ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white"
+                      : "bg-muted text-muted-foreground"
+                  )}
+                >
+                  {index + 1}
+                </div>
+                <span className={cn(
+                  "ml-2 text-sm transition-colors",
+                  index === currentStepIndex ? "text-foreground font-medium" : "text-muted-foreground"
+                )}>
+                  {step.title}
+                </span>
+                {index < steps.length - 1 && (
+                  <ChevronRight className="w-4 h-4 mx-4 text-muted-foreground" />
                 )}
               </div>
-              {index < steps.length - 1 && (
-                <div className={cn(
-                  "w-8 h-0.5 transition-colors mx-2",
-                  index < currentStepIndex ? "bg-primary" : "bg-muted"
-                )} />
-              )}
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </SheetHeader>
 
         {/* Step Content */}
         <div className="flex-1 overflow-y-auto px-1">
-          <div className="max-w-2xl mx-auto">
-            {renderStepContent()}
-          </div>
+          {renderStepContent()}
         </div>
 
         {/* Navigation */}
@@ -576,6 +510,16 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
             <ChevronLeft className="w-4 h-4 mr-2" />
             Previous
           </Button>
+
+          {/* Required Fields Notice for Step 1 */}
+          {currentStep === "basics" && !canProceed() && (
+            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+              <div className="w-4 h-4 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-bold">
+                !
+              </div>
+              <span>All fields required</span>
+            </div>
+          )}
 
           <Button
             onClick={handleNext}
@@ -591,7 +535,7 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
               ) : (
                 <>
                   <Check className="w-4 h-4 mr-2" />
-                  Create Assignment
+                  {isEditMode ? "Update Assignment" : "Create Assignment"}
                 </>
               )
             ) : (
