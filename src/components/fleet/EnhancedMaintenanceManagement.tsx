@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+import { AddMaintenanceRecordDrawer } from "./AddMaintenanceRecordDrawer";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { Plus, Calendar, Settings, Bell, Package, Wrench, AlertTriangle, Clock, DollarSign, UserPlus } from "lucide-react";
 import { StatCard } from "@/components/ui/StatCard";
 import { format } from "date-fns";
@@ -408,8 +410,8 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
         </div>
       </div>
 
-      {/* Modals */}
-      <AddMaintenanceRecordModal 
+      {/* Add Maintenance Record Drawer */}
+      <AddMaintenanceRecordDrawer 
         open={addRecordOpen} 
         onOpenChange={setAddRecordOpen} 
       />
