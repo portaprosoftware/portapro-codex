@@ -48,15 +48,28 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
         .order("scheduled_date", { ascending: false });
 
       if (statusFilter !== "all") {
-        if (statusFilter === "due_today") {
-          query = query.lte("scheduled_date", new Date().toISOString().split('T')[0]);
-        } else if (statusFilter === "overdue") {
-          const yesterday = new Date();
-          yesterday.setDate(yesterday.getDate() - 1);
+        const today = new Date().toISOString().split('T')[0];
+        
+        if (statusFilter === "scheduled") {
+          // Services scheduled for today or in the future (not completed)
           query = query
-            .lt("scheduled_date", yesterday.toISOString().split('T')[0])
+            .gte("scheduled_date", today)
             .neq("status", "completed");
+        } else if (statusFilter === "due_today") {
+          // Services due only for today's date (not completed)
+          query = query
+            .eq("scheduled_date", today)
+            .neq("status", "completed");
+        } else if (statusFilter === "overdue") {
+          // Services due yesterday or prior (not completed)
+          query = query
+            .lt("scheduled_date", today)
+            .neq("status", "completed");
+        } else if (statusFilter === "completed") {
+          // Services that are marked as completed
+          query = query.eq("status", "completed");
         } else {
+          // For any other status filters
           query = query.eq("status", statusFilter);
         }
       }
