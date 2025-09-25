@@ -307,7 +307,7 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
             {/* Required Fields Notice */}
             <div className="bg-muted/50 border border-border rounded-lg p-4">
               <div className="flex items-start space-x-2">
-                <div className="w-5 h-5 rounded-full bg-muted-foreground text-background flex items-center justify-center text-xs font-bold mt-0.5">
+                <div className="w-5 h-5 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-bold mt-0.5">
                   !
                 </div>
                 <div>
