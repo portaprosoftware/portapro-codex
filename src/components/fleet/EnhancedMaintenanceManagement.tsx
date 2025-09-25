@@ -265,7 +265,7 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
               {/* Overdue List */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-lg">
                     <AlertTriangle className="w-5 h-5 text-red-500" />
                     Overdue Maintenance
                   </CardTitle>
@@ -305,7 +305,7 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
               {/* Upcoming Schedule Preview */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-lg">
                     <Calendar className="w-5 h-5 text-blue-500" />
                     Upcoming This Week
                   </CardTitle>
