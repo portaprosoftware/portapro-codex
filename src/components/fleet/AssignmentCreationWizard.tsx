@@ -191,8 +191,8 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
                   )}
                   {selectedVehicle && (
                     <div className="text-center py-4 w-full">
-                      <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mx-auto mb-3">
-                        <Check className="h-6 w-6 text-white" />
+                      <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-lg flex items-center justify-center mx-auto mb-3 shadow-md">
+                        <Check className="h-6 w-6 text-white font-bold stroke-[3]" />
                       </div>
                       <p className="text-sm font-medium mb-3">Vehicle Selected</p>
                       <Button onClick={() => setVehicleModalOpen(true)} variant="outline" size="sm" className="text-xs">
@@ -225,8 +225,8 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
                   )}
                   {selectedDriver && (
                     <div className="text-center py-4 w-full">
-                      <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mx-auto mb-3">
-                        <Check className="h-6 w-6 text-white" />
+                      <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-lg flex items-center justify-center mx-auto mb-3 shadow-md">
+                        <Check className="h-6 w-6 text-white font-bold stroke-[3]" />
                       </div>
                       <p className="text-sm font-medium mb-3">Driver Selected</p>
                       <Button onClick={() => setDriverModalOpen(true)} variant="outline" size="sm" className="text-xs">
