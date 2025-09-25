@@ -169,7 +169,7 @@ export const MaintenanceTaskSelector: React.FC<MaintenanceTaskSelectorProps> = (
             {selectedCategory ? (
               <>
                 <span className="text-2xl">{currentCategory?.icon}</span>
-                Select Task from {currentCategory?.name}
+                Select Task Type from {currentCategory?.name}
               </>
             ) : (
               <>
@@ -184,7 +184,7 @@ export const MaintenanceTaskSelector: React.FC<MaintenanceTaskSelectorProps> = (
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search maintenance tasks across all categories..."
+              placeholder="Search maintenance task type across all categories..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
