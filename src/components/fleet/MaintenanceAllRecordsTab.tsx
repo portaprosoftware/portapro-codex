@@ -11,6 +11,7 @@ import { Search, Filter, Download, Eye, Edit } from "lucide-react";
 import { format } from "date-fns";
 import { MaintenanceRecordCard } from "./maintenance/MaintenanceRecordCard";
 import { MaintenanceRecordModal } from "./maintenance/MaintenanceRecordModal";
+import { RecurringServiceModal } from "./maintenance/RecurringServiceModal";
 import { AddMaintenanceRecordDrawer } from "./AddMaintenanceRecordDrawer";
 import { AddRecurringServiceSlider } from "./AddRecurringServiceSlider";
 
@@ -24,6 +25,8 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
   const [editingRecord, setEditingRecord] = useState<any>(null);
   const [editRecurringOpen, setEditRecurringOpen] = useState(false);
   const [editingRecurringRecord, setEditingRecurringRecord] = useState<any>(null);
+  const [recurringModalOpen, setRecurringModalOpen] = useState(false);
+  const [selectedRecurringRecord, setSelectedRecurringRecord] = useState<any>(null);
 
   const { data: maintenanceRecords, isLoading } = useQuery({
     queryKey: ["maintenance-records", searchTerm, statusFilter, vehicleFilter],
@@ -106,8 +109,14 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
 
   const handleMaintenanceAction = (action: 'view' | 'edit' | 'delete', record: any) => {
     if (action === 'view') {
-      setSelectedRecord(record);
-      setIsModalOpen(true);
+      // Check if it's a recurring service (has next service date or mileage)
+      if (record.next_service_date || record.next_service_mileage) {
+        setSelectedRecurringRecord(record);
+        setRecurringModalOpen(true);
+      } else {
+        setSelectedRecord(record);
+        setIsModalOpen(true);
+      }
     } else if (action === 'edit') {
       // Check if it's a recurring service (has next service date or mileage)
       if (record.next_service_date || record.next_service_mileage) {
@@ -229,6 +238,18 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
         onClose={() => {
           setIsModalOpen(false);
           setSelectedRecord(null);
+        }}
+        onEdit={(record) => handleMaintenanceAction('edit', record)}
+        onDelete={(record) => handleMaintenanceAction('delete', record)}
+      />
+
+      {/* Recurring Service Modal */}
+      <RecurringServiceModal
+        record={selectedRecurringRecord}
+        isOpen={recurringModalOpen}
+        onClose={() => {
+          setRecurringModalOpen(false);
+          setSelectedRecurringRecord(null);
         }}
         onEdit={(record) => handleMaintenanceAction('edit', record)}
         onDelete={(record) => handleMaintenanceAction('delete', record)}
