@@ -263,9 +263,14 @@ const FleetComplianceContent: React.FC = () => {
                     <h4 className="font-medium text-gray-900">
                       {document.vehicles?.license_plate} - {document.compliance_document_types?.name}
                     </h4>
-                    <p className="text-sm text-gray-600">
-                      {document.vehicles?.vehicle_type} • Expires: {document.expiration_date ? new Date(document.expiration_date).toLocaleDateString() : "No date set"}
-                    </p>
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <Badge variant="outline" className="bg-transparent border-blue-500 text-blue-600 font-medium">
+                        {document.vehicles?.vehicle_type?.split(' ').map(word => 
+                          word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                        ).join(' ')}
+                      </Badge>
+                      • Expires: {document.expiration_date ? new Date(document.expiration_date).toLocaleDateString() : "No date set"}
+                    </div>
                   </div>
                 </div>
                 
