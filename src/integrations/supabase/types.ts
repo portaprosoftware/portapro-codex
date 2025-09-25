@@ -454,8 +454,8 @@ export type Database = {
       }
       compliance_document_types: {
         Row: {
+          category: string | null
           created_at: string
-          default_reminder_days: number
           description: string | null
           id: string
           is_active: boolean
@@ -463,8 +463,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          category?: string | null
           created_at?: string
-          default_reminder_days?: number
           description?: string | null
           id?: string
           is_active?: boolean
@@ -472,8 +472,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          category?: string | null
           created_at?: string
-          default_reminder_days?: number
           description?: string | null
           id?: string
           is_active?: boolean
