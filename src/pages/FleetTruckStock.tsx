@@ -134,7 +134,7 @@ const FleetTruckStock: React.FC = () => {
               <Package className="h-6 w-6 text-blue-600" />
               <div>
                 <CardTitle className="text-2xl">Truck Stock Management</CardTitle>
-                <CardDescription>Manage inventory and stock movements for your fleet vehicles</CardDescription>
+                <CardDescription>Manage consumables stock movements for your fleet vehicles</CardDescription>
               </div>
             </div>
           </CardHeader>
