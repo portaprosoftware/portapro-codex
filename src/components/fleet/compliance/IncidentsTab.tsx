@@ -5,12 +5,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { AlertTriangle, MapPin, Plus } from "lucide-react";
 import { IncidentCreateModal } from "./IncidentCreateModal";
 
 export const IncidentsTab: React.FC = () => {
   const qc = useQueryClient();
-  const [open, setOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ["spill-incidents"],
@@ -40,10 +41,19 @@ export const IncidentsTab: React.FC = () => {
         <AlertTriangle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
         <h3 className="text-lg font-medium">No spill incidents recorded</h3>
         <p className="text-muted-foreground mb-4">When incidents are logged, they’ll show up here.</p>
-        <Button onClick={() => setOpen(true)}>
+        <Button onClick={() => setDrawerOpen(true)}>
           <Plus className="w-4 h-4 mr-2" /> Log Incident
         </Button>
-        <IncidentCreateModal isOpen={open} onClose={() => setOpen(false)} onSaved={handleSaved} />
+        <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
+          <DrawerContent className="h-[50vh]">
+            <DrawerHeader>
+              <DrawerTitle>Log New Incident</DrawerTitle>
+            </DrawerHeader>
+            <div className="p-4 overflow-y-auto flex-1">
+              <IncidentCreateModal isOpen={true} onClose={() => setDrawerOpen(false)} onSaved={handleSaved} />
+            </div>
+          </DrawerContent>
+        </Drawer>
       </Card>
     );
   }
@@ -52,7 +62,7 @@ export const IncidentsTab: React.FC = () => {
     <>
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-base font-semibold">Incidents</h3>
-        <Button onClick={() => setOpen(true)}>
+        <Button onClick={() => setDrawerOpen(true)}>
           <Plus className="w-4 h-4 mr-2" /> Log Incident
         </Button>
       </div>
@@ -81,7 +91,16 @@ export const IncidentsTab: React.FC = () => {
         ))}
       </div>
 
-      <IncidentCreateModal isOpen={open} onClose={() => setOpen(false)} onSaved={handleSaved} />
+      <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
+        <DrawerContent className="h-[50vh]">
+          <DrawerHeader>
+            <DrawerTitle>Log New Incident</DrawerTitle>
+          </DrawerHeader>
+          <div className="p-4 overflow-y-auto flex-1">
+            <IncidentCreateModal isOpen={true} onClose={() => setDrawerOpen(false)} onSaved={handleSaved} />
+          </div>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 };

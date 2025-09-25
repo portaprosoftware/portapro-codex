@@ -6,7 +6,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { AlertTriangle, Calendar, FileText, Plus, Settings, Upload, Info, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -37,9 +36,6 @@ interface ComplianceDocument {
 }
 
 export const FleetCompliance: React.FC = () => {
-  const [incidentsDrawerOpen, setIncidentsDrawerOpen] = useState(false);
-  const [deconDrawerOpen, setDeconDrawerOpen] = useState(false);
-
   return (
     <div className="space-y-6">
       <div className="bg-white border border-gray-200 rounded-2xl shadow-sm">
@@ -99,18 +95,8 @@ export const FleetCompliance: React.FC = () => {
               <TabsTrigger value="documents" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Documents</TabsTrigger>
               <TabsTrigger value="types" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Document Types</TabsTrigger>
               <TabsTrigger value="spill-kits" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Spill Kits</TabsTrigger>
-              <button 
-                onClick={() => setIncidentsDrawerOpen(true)}
-                className="hover:bg-gray-100 text-gray-700 hover:text-gray-900 rounded-full px-3 py-2 text-sm whitespace-nowrap transition-all font-medium"
-              >
-                Incidents
-              </button>
-              <button 
-                onClick={() => setDeconDrawerOpen(true)}
-                className="hover:bg-gray-100 text-gray-700 hover:text-gray-900 rounded-full px-3 py-2 text-sm whitespace-nowrap transition-all font-medium"
-              >
-                Decon Logs
-              </button>
+              <TabsTrigger value="incidents" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Incidents</TabsTrigger>
+              <TabsTrigger value="decon" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Decon Logs</TabsTrigger>
               <TabsTrigger value="reports" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Reports</TabsTrigger>
             </TabsList>
             
@@ -130,34 +116,18 @@ export const FleetCompliance: React.FC = () => {
               <SpillKitsTab />
             </TabsContent>
 
+            <TabsContent value="incidents">
+              <IncidentsTab />
+            </TabsContent>
+
+            <TabsContent value="decon">
+              <DeconLogsTab />
+            </TabsContent>
+
             <TabsContent value="reports">
               <ComplianceReporting />
             </TabsContent>
           </Tabs>
-
-          {/* Incidents Drawer */}
-          <Drawer open={incidentsDrawerOpen} onOpenChange={setIncidentsDrawerOpen}>
-            <DrawerContent className="h-[50vh]">
-              <DrawerHeader>
-                <DrawerTitle>Incidents Management</DrawerTitle>
-              </DrawerHeader>
-              <div className="p-4 overflow-y-auto flex-1">
-                <IncidentsTab />
-              </div>
-            </DrawerContent>
-          </Drawer>
-
-          {/* Decon Logs Drawer */}
-          <Drawer open={deconDrawerOpen} onOpenChange={setDeconDrawerOpen}>
-            <DrawerContent className="h-[50vh]">
-              <DrawerHeader>
-                <DrawerTitle>Decontamination Logs</DrawerTitle>
-              </DrawerHeader>
-              <div className="p-4 overflow-y-auto flex-1">
-                <DeconLogsTab />
-              </div>
-            </DrawerContent>
-          </Drawer>
         </div>
       </div>
     </div>

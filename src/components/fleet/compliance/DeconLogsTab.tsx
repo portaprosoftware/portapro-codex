@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { CalendarDays, Shield, Plus } from "lucide-react";
 import { DeconCreateModal } from "./DeconCreateModal";
 
@@ -20,7 +21,7 @@ type DeconLog = {
 
 export const DeconLogsTab: React.FC = () => {
   const queryClient = useQueryClient();
-  const [modalOpen, setModalOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ["decon-logs"],
@@ -51,10 +52,19 @@ export const DeconLogsTab: React.FC = () => {
         <Shield className="w-12 h-12 text-gray-400 mx-auto mb-4" />
         <h3 className="text-lg font-medium">No decontamination logs</h3>
         <p className="text-muted-foreground mb-4">Record decon activities after a spill or exposure.</p>
-        <Button onClick={() => setModalOpen(true)}>
+        <Button onClick={() => setDrawerOpen(true)}>
           <Plus className="w-4 h-4 mr-2" /> Record Decon
         </Button>
-        <DeconCreateModal isOpen={modalOpen} onClose={() => setModalOpen(false)} onSaved={handleSaved} />
+        <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
+          <DrawerContent className="h-[50vh]">
+            <DrawerHeader>
+              <DrawerTitle>Record Decontamination</DrawerTitle>
+            </DrawerHeader>
+            <div className="p-4 overflow-y-auto flex-1">
+              <DeconCreateModal isOpen={true} onClose={() => setDrawerOpen(false)} onSaved={handleSaved} />
+            </div>
+          </DrawerContent>
+        </Drawer>
       </Card>
     );
   }
@@ -63,7 +73,7 @@ export const DeconLogsTab: React.FC = () => {
     <>
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-base font-semibold">Decontamination Logs</h3>
-        <Button onClick={() => setModalOpen(true)}>
+        <Button onClick={() => setDrawerOpen(true)}>
           <Plus className="w-4 h-4 mr-2" /> Record Decon
         </Button>
       </div>
@@ -88,7 +98,16 @@ export const DeconLogsTab: React.FC = () => {
         ))}
       </div>
 
-      <DeconCreateModal isOpen={modalOpen} onClose={() => setModalOpen(false)} onSaved={handleSaved} />
+      <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
+        <DrawerContent className="h-[50vh]">
+          <DrawerHeader>
+            <DrawerTitle>Record Decontamination</DrawerTitle>
+          </DrawerHeader>
+          <div className="p-4 overflow-y-auto flex-1">
+            <DeconCreateModal isOpen={true} onClose={() => setDrawerOpen(false)} onSaved={handleSaved} />
+          </div>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 };
