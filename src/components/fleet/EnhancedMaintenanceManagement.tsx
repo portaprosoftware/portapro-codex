@@ -22,6 +22,7 @@ import { DVIRList } from "./DVIRList";
 import { WorkOrdersBoard } from "./WorkOrdersBoard";
 import { PMSchedulesTab } from "./PMSchedulesTab";
 import { MaintenanceRecordCard } from "./maintenance/MaintenanceRecordCard";
+import { MaintenanceRecordModal } from "./maintenance/MaintenanceRecordModal";
 
 interface MaintenanceKPIs {
   past_due: number;
@@ -60,6 +61,8 @@ interface CompanyMaintenanceSettings {
 }
 
 export const EnhancedMaintenanceManagement: React.FC = () => {
+  const [selectedRecord, setSelectedRecord] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [addRecordOpen, setAddRecordOpen] = useState(false);
   const [scheduleRecurringOpen, setScheduleRecurringOpen] = useState(false);
   const [technicianAssignmentOpen, setTechnicianAssignmentOpen] = useState(false);
@@ -167,18 +170,12 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
   };
 
   const handleMaintenanceAction = (action: 'view' | 'edit' | 'delete', record: MaintenanceRecord) => {
-    console.log(`${action} maintenance record:`, record.id);
-    // TODO: Implement actual navigation/modal logic
-    switch (action) {
-      case 'view':
-        // Navigate to detail view or open modal
-        break;
-      case 'edit':
-        // Navigate to edit form or open modal
-        break;
-      case 'delete':
-        // Show confirmation dialog and delete
-        break;
+    if (action === 'view') {
+      setSelectedRecord(record);
+      setIsModalOpen(true);
+    } else {
+      console.log(`${action} maintenance record:`, record.id);
+      // TODO: Implement edit and delete functionality
     }
   };
 
@@ -406,6 +403,18 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
       </Tabs>
         </div>
       </div>
+
+      {/* Modals */}
+      <MaintenanceRecordModal
+        record={selectedRecord}
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedRecord(null);
+        }}
+        onEdit={(record) => handleMaintenanceAction('edit', record)}
+        onDelete={(record) => handleMaintenanceAction('delete', record)}
+      />
 
       {/* Add Maintenance Record Drawer */}
       <AddMaintenanceRecordDrawer 
