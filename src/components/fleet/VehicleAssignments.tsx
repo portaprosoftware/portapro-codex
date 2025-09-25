@@ -416,8 +416,8 @@ function VehicleAssignmentsContent({
             <div className="flex items-center justify-between">
                 {/* Vehicle & Driver Info */}
                 <div className="flex items-center space-x-4">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <Truck className="w-5 h-5 text-blue-600" />
+                  <div className="w-10 h-10 bg-gradient-blue rounded-lg flex items-center justify-center">
+                    <Truck className="w-5 h-5 text-white" />
                   </div>
                   <div>
                     <h4 className="font-medium text-gray-900">
