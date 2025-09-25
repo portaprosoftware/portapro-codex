@@ -310,10 +310,10 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
             <Button
               variant="outline"
               onClick={() => setIsVehicleModalOpen(true)}
-              className="flex items-center gap-2 min-w-[180px] justify-start"
+              className="flex items-center justify-center gap-2 px-3 py-2 w-auto"
             >
               <Truck className="h-4 w-4" />
-              <span className="truncate">{getSelectedVehicleName()}</span>
+              <span className="whitespace-nowrap">{getSelectedVehicleName()}</span>
             </Button>
             {selectedVehicle && (
               <Button
