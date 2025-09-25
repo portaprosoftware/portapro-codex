@@ -152,7 +152,8 @@ const MaintenanceManagementContent: React.FC = () => {
         />
         
         <StatCard
-          title="Completed maintenance cost"
+          title="Year-to-Date"
+          subtitle="Maintenance Spend"
           value={`$${totalCost.toFixed(2)}`}
           icon={DollarSign}
           gradientFrom="#2F855A"
