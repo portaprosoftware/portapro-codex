@@ -58,14 +58,14 @@ export const AddRecurringServiceSlider: React.FC<AddRecurringServiceSliderProps>
 
   const queryClient = useQueryClient();
 
-  // Fetch vehicles
+  // Fetch vehicles (only active vehicles, exclude maintenance and retired)
   const { data: vehicles = [], isLoading: vehiclesLoading } = useQuery({
-    queryKey: ["vehicles"],
+    queryKey: ["vehicles-active-only"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("vehicles")
         .select("*")
-        .eq("status", "available")
+        .eq("status", "active")
         .order("license_plate", { ascending: true });
       if (error) throw error;
       return data || [];

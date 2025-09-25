@@ -40,7 +40,7 @@ export const StockVehicleSelectionModal: React.FC<StockVehicleSelectionModalProp
   const { data: vehicles = [], isLoading } = useQuery({
     queryKey: ["vehicles-available-for-date", selectedDate],
     queryFn: async () => {
-      // First get all active vehicles
+      // First get only active vehicles (exclude maintenance and retired)
       const { data: allVehicles, error: vehiclesError } = await supabase
         .from("vehicles")
         .select("*")
