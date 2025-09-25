@@ -219,17 +219,20 @@ export function MaintenancePDFExportModal({ open, onOpenChange }: MaintenancePDF
           .status.cancelled { background: #fee2e2; color: #dc2626; }
           
           .priority {
-            padding: 3px 6px;
-            border-radius: 10px;
-            font-size: 10px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
             font-weight: 600;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
           }
           
           .priority.critical { background: #dc2626; color: white; }
           .priority.high { background: #ea580c; color: white; }
           .priority.medium { background: #ca8a04; color: white; }
           .priority.low { background: #16a34a; color: white; }
+          .priority.normal { background: #6b7280; color: white; }
           
           .cost { text-align: right; font-weight: 600; }
           
@@ -284,11 +287,17 @@ export function MaintenancePDFExportModal({ open, onOpenChange }: MaintenancePDF
             </div>
             <div class="summary-item">
               <div class="label">Total Cost</div>
-              <div class="value">$${records.reduce((sum, r) => sum + (r.total_cost || 0), 0).toLocaleString()}</div>
+              <div class="value">$${records.reduce((sum, r) => {
+                const cost = r.total_cost || (r.parts_cost || 0) + (r.labor_cost || 0);
+                return sum + cost;
+              }, 0).toLocaleString()}</div>
             </div>
             <div class="summary-item">
               <div class="label">Average Cost</div>
-              <div class="value">$${records.length > 0 ? (records.reduce((sum, r) => sum + (r.total_cost || 0), 0) / records.length).toFixed(2) : '0.00'}</div>
+              <div class="value">$${records.length > 0 ? (records.reduce((sum, r) => {
+                const cost = r.total_cost || (r.parts_cost || 0) + (r.labor_cost || 0);
+                return sum + cost;
+              }, 0) / records.length).toFixed(2) : '0.00'}</div>
             </div>
             <div class="summary-item">
               <div class="label">Unique Vehicles</div>
@@ -313,7 +322,15 @@ export function MaintenancePDFExportModal({ open, onOpenChange }: MaintenancePDF
             </tr>
           </thead>
           <tbody>
-            ${records.map(record => `
+            ${records.map(record => {
+              const priority = record.priority || 'normal';
+              const totalCost = record.total_cost || (record.parts_cost || 0) + (record.labor_cost || 0);
+              const technicianName = record.technician_name || 
+                (record.technician_id ? 'Assigned' : 'Unassigned');
+              const vendorName = record.maintenance_vendors?.name || 
+                record.vendor_name || 'In-House';
+              
+              return `
               <tr>
                 <td>${format(new Date(record.scheduled_date), "MMM d, yyyy")}</td>
                 <td class="vehicle-info">
@@ -323,12 +340,12 @@ export function MaintenancePDFExportModal({ open, onOpenChange }: MaintenancePDF
                 <td>${record.maintenance_task_types?.name || record.maintenance_type || 'N/A'}</td>
                 <td class="description" title="${record.description || ''}">${record.description || 'No description'}</td>
                 <td><span class="status ${record.status}">${record.status}</span></td>
-                <td><span class="priority ${record.priority || 'medium'}">${record.priority || 'Medium'}</span></td>
-                <td class="cost">$${(record.total_cost || 0).toFixed(2)}</td>
-                <td>${record.technician_name || 'Unassigned'}</td>
-                <td>${record.maintenance_vendors?.name || 'N/A'}</td>
+                <td><span class="priority ${priority}">${priority}</span></td>
+                <td class="cost">$${totalCost.toFixed(2)}</td>
+                <td>${technicianName}</td>
+                <td>${vendorName}</td>
               </tr>
-            `).join('')}
+            `}).join('')}
           </tbody>
         </table>
         
