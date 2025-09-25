@@ -16,7 +16,7 @@ interface VehicleTypeSelectorProps {
 const vehicleTypeCategories = [
   {
     id: "light",
-    name: "Light & Utility Vehicles",
+    name: "🚚 Light & Utility Vehicles",
     color: "bg-gradient-to-r from-blue-500 to-blue-600 text-white",
     types: [
       { id: "pickup", name: "Pickup Truck" },
@@ -27,7 +27,7 @@ const vehicleTypeCategories = [
   },
   {
     id: "heavy",
-    name: "Heavy & Fleet Vehicles",
+    name: "🚛 Heavy & Fleet Vehicles",
     color: "bg-gradient-to-r from-green-500 to-green-600 text-white",
     types: [
       { id: "box-truck", name: "Box Truck / Straight Truck" },
@@ -40,7 +40,7 @@ const vehicleTypeCategories = [
   },
   {
     id: "sanitation",
-    name: "Sanitation & Waste Vehicles",
+    name: "🧼 Sanitation & Waste Vehicles",
     color: "bg-gradient-to-r from-purple-500 to-purple-600 text-white",
     types: [
       { id: "vacuum-truck", name: "Vacuum Truck" },
@@ -53,7 +53,7 @@ const vehicleTypeCategories = [
   },
   {
     id: "trailers",
-    name: "Trailers",
+    name: "🛻 Trailers",
     color: "bg-gradient-to-r from-orange-500 to-orange-600 text-white",
     types: [
       { id: "enclosed-trailer", name: "Enclosed Trailer" },
@@ -65,7 +65,7 @@ const vehicleTypeCategories = [
   },
   {
     id: "other",
-    name: "Other / Special",
+    name: "🛠️ Other / Special",
     color: "bg-gradient-to-r from-gray-500 to-gray-600 text-white",
     types: [
       { id: "golf-cart", name: "Golf Cart / Utility Cart" },
