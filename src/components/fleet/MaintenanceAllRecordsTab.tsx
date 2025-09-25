@@ -22,7 +22,7 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
         .from("maintenance_records")
         .select(`
           *,
-          vehicles(license_plate, vehicle_type),
+          vehicles(license_plate, vehicle_type, make, model, nickname),
           maintenance_task_types(name),
           maintenance_vendors(name)
         `)
@@ -47,7 +47,7 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("vehicles")
-        .select("id, license_plate, vehicle_type")
+        .select("id, license_plate, vehicle_type, make, model, nickname")
         .eq("status", "active");
       if (error) throw error;
       return data;
@@ -134,10 +134,12 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Vehicles</SelectItem>
-              {vehicles?.map((vehicle) => (
-                <SelectItem key={vehicle.id} value={vehicle.id}>
-                  {vehicle.license_plate}
-                </SelectItem>
+               {vehicles?.map((vehicle) => (
+                 <SelectItem key={vehicle.id} value={vehicle.id}>
+                   {vehicle.make && vehicle.model 
+                     ? `${vehicle.make} ${vehicle.model}${vehicle.nickname ? ` - ${vehicle.nickname}` : ''}`
+                     : vehicle.license_plate}
+                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -175,12 +177,16 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
               ) : (
                 filteredRecords?.map((record) => (
                   <TableRow key={record.id}>
-                    <TableCell className="font-medium">
-                      <div>
-                        <div className="font-semibold">{record.vehicles?.license_plate}</div>
-                        <div className="text-xs text-gray-500">{record.vehicles?.vehicle_type}</div>
-                      </div>
-                    </TableCell>
+                     <TableCell className="font-medium">
+                       <div>
+                         <div className="font-semibold">
+                           {record.vehicles?.make && record.vehicles?.model 
+                             ? `${record.vehicles.make} ${record.vehicles.model}${record.vehicles.nickname ? ` - ${record.vehicles.nickname}` : ''}`
+                             : record.vehicles?.vehicle_type || 'Unknown Vehicle'}
+                         </div>
+                         <div className="text-xs text-muted-foreground">{record.vehicles?.license_plate}</div>
+                       </div>
+                     </TableCell>
                     <TableCell>
                       <div>
                         <div className="font-medium">{record.maintenance_task_types?.name || record.maintenance_type}</div>
