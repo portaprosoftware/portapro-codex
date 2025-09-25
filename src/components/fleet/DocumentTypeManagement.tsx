@@ -324,7 +324,7 @@ export const DocumentTypeManagement: React.FC = () => {
               
               <div className="flex gap-2 pt-4">
                 <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending}>
-                  {editingType ? "Update" : "Create"} Type
+                  {editingType ? "Update Document Type" : "Create Document Type"}
                 </Button>
                 <Button 
                   type="button" 
