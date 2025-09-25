@@ -173,108 +173,105 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
     switch (currentStep) {
       case "basics":
         return (
-          <div className="flex flex-col lg:flex-row gap-8 h-full">
-            {/* Left Side - Assignment Controls */}
-            <div className="flex-1 lg:w-1/2">
-              <div className="space-y-6">
-                {/* Date Selection */}
+          <div className="flex gap-6 h-full">
+            {/* Left Side - Calendar */}
+            <div className="flex-shrink-0">
+              <div className="space-y-4">
+                <div className="text-center">
+                  <h3 className="text-base font-semibold mb-2">Assignment Date</h3>
+                  <p className="text-sm text-muted-foreground">Select a date for this assignment</p>
+                </div>
+                <div className="flex justify-center">
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={(date) => date && setSelectedDate(date)}
+                    className="rounded-lg border shadow-sm pointer-events-auto"
+                    disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                    classNames={{
+                      day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+                      day_today: "bg-accent text-accent-foreground",
+                      day: "h-9 w-9 text-center text-sm p-0 font-normal aria-selected:opacity-100 hover:bg-accent hover:text-accent-foreground",
+                      table: "w-full border-collapse space-y-1",
+                      head_row: "flex",
+                      head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
+                      row: "flex w-full mt-2",
+                      cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Middle - Vehicle and Driver Selection */}
+            <div className="flex-1 px-6">
+              <div className="space-y-8">
+                {/* Vehicle Selection */}
                 <div className="flex flex-col space-y-4">
-                  <div className="text-center h-16 flex flex-col justify-center">
-                    <h3 className="text-base font-semibold mb-2">Assignment Date</h3>
-                    <p className="text-sm text-muted-foreground">Select a date for this assignment</p>
+                  <div className="text-center">
+                    <h3 className="text-base font-semibold mb-2">Vehicle</h3>
+                    <p className="text-sm text-muted-foreground">Choose an available vehicle</p>
                   </div>
-                  <div className="flex justify-center">
-                    <div className="w-fit">
-                      <Calendar
-                        mode="single"
-                        selected={selectedDate}
-                        onSelect={(date) => date && setSelectedDate(date)}
-                        className="rounded-lg border shadow-sm pointer-events-auto scale-90 lg:scale-100"
-                        disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
-                        classNames={{
-                          day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
-                          day_today: "bg-accent text-accent-foreground",
-                          day: "h-9 w-9 text-center text-sm p-0 font-normal aria-selected:opacity-100 hover:bg-accent hover:text-accent-foreground",
-                          table: "w-full border-collapse space-y-1",
-                          head_row: "flex",
-                          head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
-                          row: "flex w-full mt-2",
-                          cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-                        }}
-                      />
-                    </div>
+                  
+                  <div className="flex items-center justify-center">
+                    {!selectedVehicle ? (
+                      <Button onClick={() => setVehicleModalOpen(true)} size="lg" className="w-full max-w-sm">
+                        <Truck className="h-5 w-5 mr-2" />
+                        Select Vehicle
+                      </Button>
+                    ) : (
+                      <Button onClick={() => setVehicleModalOpen(true)} variant="outline" size="lg" className="w-full max-w-sm">
+                        <Check className="h-5 w-5 mr-2 text-green-600" />
+                        Change Vehicle
+                      </Button>
+                    )}
                   </div>
                 </div>
 
-                {/* Vehicle and Driver Selection Buttons */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Vehicle Selection */}
-                  <div className="flex flex-col space-y-4">
-                    <div className="text-center">
-                      <h3 className="text-base font-semibold mb-2">Vehicle</h3>
-                      <p className="text-sm text-muted-foreground">Choose an available vehicle</p>
-                    </div>
-                    
-                    <div className="flex items-center justify-center">
-                      {!selectedVehicle ? (
-                        <Button onClick={() => setVehicleModalOpen(true)} size="lg" className="w-full">
-                          <Truck className="h-5 w-5 mr-2" />
-                          Select Vehicle
-                        </Button>
-                      ) : (
-                        <Button onClick={() => setVehicleModalOpen(true)} variant="outline" size="lg" className="w-full">
-                          <Check className="h-5 w-5 mr-2 text-green-600" />
-                          Change Vehicle
-                        </Button>
-                      )}
-                    </div>
+                {/* Driver Selection */}
+                <div className="flex flex-col space-y-4">
+                  <div className="text-center">
+                    <h3 className="text-base font-semibold mb-2">Driver</h3>
+                    <p className="text-sm text-muted-foreground">Choose a driver for assignment</p>
                   </div>
-
-                  {/* Driver Selection */}
-                  <div className="flex flex-col space-y-4">
-                    <div className="text-center">
-                      <h3 className="text-base font-semibold mb-2">Driver</h3>
-                      <p className="text-sm text-muted-foreground">Choose a driver for assignment</p>
-                    </div>
-                    
-                    <div className="flex items-center justify-center">
-                      {!selectedDriver ? (
-                        <Button onClick={() => setDriverModalOpen(true)} size="lg" className="w-full">
-                          <User className="h-5 w-5 mr-2" />
-                          Select Driver
-                        </Button>
-                      ) : (
-                        <Button onClick={() => setDriverModalOpen(true)} variant="outline" size="lg" className="w-full">
-                          <Check className="h-5 w-5 mr-2 text-green-600" />
-                          Change Driver
-                        </Button>
-                      )}
-                    </div>
+                  
+                  <div className="flex items-center justify-center">
+                    {!selectedDriver ? (
+                      <Button onClick={() => setDriverModalOpen(true)} size="lg" className="w-full max-w-sm">
+                        <User className="h-5 w-5 mr-2" />
+                        Select Driver
+                      </Button>
+                    ) : (
+                      <Button onClick={() => setDriverModalOpen(true)} variant="outline" size="lg" className="w-full max-w-sm">
+                        <Check className="h-5 w-5 mr-2 text-green-600" />
+                        Change Driver
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Right Side - Selected Items */}
-            <div className="flex-1 lg:w-1/2">
-              <div className="bg-muted/30 rounded-lg p-6 h-full">
-                <h4 className="text-lg font-semibold mb-6">Selected Items</h4>
+            {/* Right Side - Selected Items (25% width) */}
+            <div className="w-1/4 flex-shrink-0">
+              <div className="bg-muted/30 rounded-lg p-4 h-full">
+                <h4 className="text-base font-semibold mb-4">Selected Items</h4>
                 
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {/* Selected Vehicle Card */}
                   {selectedVehicle ? (
-                    <div className="p-4 border rounded-lg bg-white">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <Truck className="h-6 w-6 text-white" />
+                    <div className="p-3 border rounded-lg bg-white">
+                      <div className="flex items-start space-x-2">
+                        <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <Truck className="h-4 w-4 text-white" />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <h5 className="font-semibold">{selectedVehicle.license_plate}</h5>
-                          <p className="text-sm text-muted-foreground truncate">
+                          <h5 className="font-semibold text-sm">{selectedVehicle.license_plate}</h5>
+                          <p className="text-xs text-muted-foreground truncate">
                             {selectedVehicle.year} {selectedVehicle.make} {selectedVehicle.model}
                           </p>
-                          <div className="mt-2">
-                            <span className="inline-flex items-center rounded-md bg-muted border px-3 py-1 text-sm font-bold text-foreground shadow-sm">
+                          <div className="mt-1">
+                            <span className="inline-flex items-center rounded-md bg-muted border px-2 py-1 text-xs font-bold text-foreground shadow-sm">
                               {selectedVehicle.vehicle_type?.toUpperCase() || 'TRUCK'}
                             </span>
                           </div>
@@ -282,27 +279,27 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
                       </div>
                     </div>
                   ) : (
-                    <div className="p-4 border-2 border-dashed border-muted-foreground/30 rounded-lg text-center">
-                      <Truck className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                      <p className="text-sm text-muted-foreground">No vehicle selected</p>
+                    <div className="p-3 border-2 border-dashed border-muted-foreground/30 rounded-lg text-center">
+                      <Truck className="h-6 w-6 text-muted-foreground mx-auto mb-1" />
+                      <p className="text-xs text-muted-foreground">No vehicle selected</p>
                     </div>
                   )}
 
                   {/* Selected Driver Card */}
                   {selectedDriver ? (
-                    <div className="p-4 border rounded-lg bg-white">
-                      <div className="flex items-center space-x-3">
-                        <Avatar className="w-12 h-12 flex-shrink-0">
-                          <AvatarFallback className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+                    <div className="p-3 border rounded-lg bg-white">
+                      <div className="flex items-start space-x-2">
+                        <Avatar className="w-8 h-8 flex-shrink-0">
+                          <AvatarFallback className="bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs">
                             {`${selectedDriver.first_name?.[0] || ''}${selectedDriver.last_name?.[0] || ''}`.toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
                         <div className="min-w-0 flex-1">
-                          <h5 className="font-semibold">
+                          <h5 className="font-semibold text-sm">
                             {selectedDriver.first_name} {selectedDriver.last_name}
                           </h5>
-                          <div className="flex items-center space-x-1 mt-2">
-                            <span className={`inline-flex items-center rounded-md px-3 py-1 text-sm font-bold text-white shadow-sm ${
+                          <div className="flex items-center space-x-1 mt-1">
+                            <span className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-bold text-white shadow-sm ${
                               selectedDriver.status === "available" 
                                 ? "bg-gradient-to-r from-green-500 to-green-600"
                                 : selectedDriver.status === "assigned"
@@ -317,9 +314,9 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
                       </div>
                     </div>
                   ) : (
-                    <div className="p-4 border-2 border-dashed border-muted-foreground/30 rounded-lg text-center">
-                      <User className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                      <p className="text-sm text-muted-foreground">No driver selected</p>
+                    <div className="p-3 border-2 border-dashed border-muted-foreground/30 rounded-lg text-center">
+                      <User className="h-6 w-6 text-muted-foreground mx-auto mb-1" />
+                      <p className="text-xs text-muted-foreground">No driver selected</p>
                     </div>
                   )}
                 </div>
