@@ -72,8 +72,14 @@ const MaintenanceManagementContent: React.FC = () => {
     ) || [];
   };
 
-  const getInProgress = () => {
-    return maintenanceRecords?.filter(record => record.status === "in_progress") || [];
+  const getScheduledToday = () => {
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+    return maintenanceRecords?.filter(record => 
+      record.scheduled_date && 
+      record.scheduled_date.split('T')[0] === todayStr &&
+      record.status === "scheduled"
+    ) || [];
   };
 
   const getTotalCompletedCost = () => {
@@ -99,7 +105,7 @@ const MaintenanceManagementContent: React.FC = () => {
 
   const overdueItems = getOverdueItems();
   const dueThisWeek = getDueThisWeek();
-  const inProgress = getInProgress();
+  const scheduledToday = getScheduledToday();
   const totalCost = getTotalCompletedCost();
 
   if (isLoading) {
@@ -135,8 +141,8 @@ const MaintenanceManagementContent: React.FC = () => {
         />
         
         <StatCard
-          title="Currently being serviced"
-          value={inProgress.length}
+          title="Scheduled Today"
+          value={scheduledToday.length}
           icon={Wrench}
           gradientFrom="#3366FF"
           gradientTo="#6699FF"
