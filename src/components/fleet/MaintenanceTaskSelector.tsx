@@ -74,7 +74,7 @@ const maintenanceCategories = [
   {
     id: "cleaning",
     name: "Cleaning & Upkeep",
-    icon: "🧹",
+    icon: "🚿",
     color: "bg-gradient-to-r from-cyan-500 to-cyan-600 text-white",
     tasks: [
       { id: "deep-cleaning", name: "Interior / Exterior Deep Cleaning" },
@@ -200,7 +200,7 @@ export const MaintenanceTaskSelector: React.FC<MaintenanceTaskSelectorProps> = (
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${currentCategory.color}`}>
+                        <div className="w-8 h-8 flex items-center justify-center">
                           <span className="text-lg">{currentCategory.icon}</span>
                         </div>
                         <span className="font-medium text-gray-900">{task.name}</span>
