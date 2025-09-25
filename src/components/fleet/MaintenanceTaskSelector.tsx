@@ -111,17 +111,11 @@ export const MaintenanceTaskSelector: React.FC<MaintenanceTaskSelectorProps> = (
   };
 
   const handleTaskSelect = (task: { id: string; name: string }) => {
-    setSelectedTask(task);
-  };
-
-  const handleConfirm = () => {
-    if (selectedTask) {
-      onTaskSelect(selectedTask.id, selectedTask.name);
-      onOpenChange(false);
-      setSelectedCategory(null);
-      setSelectedTask(null);
-      setSearchTerm("");
-    }
+    onTaskSelect(task.id, task.name);
+    onOpenChange(false);
+    setSelectedCategory(null);
+    setSelectedTask(null);
+    setSearchTerm("");
   };
 
   const handleBack = () => {
@@ -326,11 +320,6 @@ export const MaintenanceTaskSelector: React.FC<MaintenanceTaskSelectorProps> = (
             <Button variant="outline" onClick={handleCancel}>
               Cancel
             </Button>
-            {selectedTask && (
-              <Button onClick={handleConfirm} className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white">
-                Select Task
-              </Button>
-            )}
           </div>
         </div>
       </DialogContent>
