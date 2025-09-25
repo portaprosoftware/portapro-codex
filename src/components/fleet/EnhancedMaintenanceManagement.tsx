@@ -64,6 +64,8 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
   const [selectedRecord, setSelectedRecord] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [addRecordOpen, setAddRecordOpen] = useState(false);
+  const [editRecordOpen, setEditRecordOpen] = useState(false);
+  const [editingRecord, setEditingRecord] = useState<any>(null);
   const [scheduleRecurringOpen, setScheduleRecurringOpen] = useState(false);
   const [technicianAssignmentOpen, setTechnicianAssignmentOpen] = useState(false);
   const [selectedMaintenanceRecord, setSelectedMaintenanceRecord] = useState<string | null>(null);
@@ -173,9 +175,12 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
     if (action === 'view') {
       setSelectedRecord(record);
       setIsModalOpen(true);
+    } else if (action === 'edit') {
+      setEditingRecord(record);
+      setEditRecordOpen(true);
     } else {
       console.log(`${action} maintenance record:`, record.id);
-      // TODO: Implement edit and delete functionality
+      // TODO: Implement delete functionality
     }
   };
 
@@ -421,6 +426,15 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
         open={addRecordOpen} 
         onOpenChange={setAddRecordOpen} 
       />
+      
+      {/* Edit Maintenance Record Drawer */}
+      <AddMaintenanceRecordDrawer 
+        open={editRecordOpen} 
+        onOpenChange={setEditRecordOpen}
+        editRecord={editingRecord}
+        mode="edit"
+      />
+      
       <AddRecurringServiceSlider 
         open={scheduleRecurringOpen} 
         onOpenChange={setScheduleRecurringOpen} 

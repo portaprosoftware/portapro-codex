@@ -11,6 +11,7 @@ import { Search, Filter, Download, Eye, Edit } from "lucide-react";
 import { format } from "date-fns";
 import { MaintenanceRecordCard } from "./maintenance/MaintenanceRecordCard";
 import { MaintenanceRecordModal } from "./maintenance/MaintenanceRecordModal";
+import { AddMaintenanceRecordDrawer } from "./AddMaintenanceRecordDrawer";
 
 export const MaintenanceAllRecordsTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -18,6 +19,8 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
   const [vehicleFilter, setVehicleFilter] = useState("all");
   const [selectedRecord, setSelectedRecord] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editRecordOpen, setEditRecordOpen] = useState(false);
+  const [editingRecord, setEditingRecord] = useState<any>(null);
 
   const { data: maintenanceRecords, isLoading } = useQuery({
     queryKey: ["maintenance-records", searchTerm, statusFilter, vehicleFilter],
@@ -102,9 +105,12 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
     if (action === 'view') {
       setSelectedRecord(record);
       setIsModalOpen(true);
+    } else if (action === 'edit') {
+      setEditingRecord(record);
+      setEditRecordOpen(true);
     } else {
       console.log(`${action} maintenance record:`, record.id);
-      // TODO: Implement edit and delete functionality
+      // TODO: Implement delete functionality
     }
   };
 
@@ -217,6 +223,14 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
         }}
         onEdit={(record) => handleMaintenanceAction('edit', record)}
         onDelete={(record) => handleMaintenanceAction('delete', record)}
+      />
+
+      {/* Edit Maintenance Record Drawer */}
+      <AddMaintenanceRecordDrawer 
+        open={editRecordOpen} 
+        onOpenChange={setEditRecordOpen}
+        editRecord={editingRecord}
+        mode="edit"
       />
     </div>
   );

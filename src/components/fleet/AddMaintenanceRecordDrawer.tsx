@@ -28,12 +28,16 @@ interface AddMaintenanceRecordDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   preselectedVehicleId?: string;
+  editRecord?: any; // For editing existing records
+  mode?: 'create' | 'edit';
 }
 
 export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProps> = ({
   open,
   onOpenChange,
   preselectedVehicleId = "",
+  editRecord = null,
+  mode = 'create',
 }) => {
   const [vehicleId, setVehicleId] = useState(preselectedVehicleId);
   const [selectedVehicle, setSelectedVehicle] = useState<any>(null);
@@ -68,16 +72,36 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
     enabled: showVehicleModal,
   });
 
-  // Effect to set preselected vehicle
+  // Effect to set preselected vehicle or edit record data
   React.useEffect(() => {
-    if (preselectedVehicleId && vehicles) {
+    if (mode === 'edit' && editRecord) {
+      // Populate form with edit record data
+      setVehicleId(editRecord.vehicle_id);
+      setTaskTypeId(editRecord.task_type_id || "");
+      setTaskTypeName(editRecord.maintenance_task_types?.name || editRecord.maintenance_type || "");
+      setVendorId(editRecord.vendor_id || "");
+      setDescription(editRecord.description || "");
+      setVehicleMiles(editRecord.mileage_at_service?.toString() || "");
+      setScheduledDate(editRecord.scheduled_date ? new Date(editRecord.scheduled_date) : undefined);
+      setPriority(editRecord.priority || "medium");
+      setEstimatedCost(editRecord.cost?.toString() || "");
+      setNotes(editRecord.notes || "");
+      
+      // Set selected vehicle
+      if (vehicles) {
+        const vehicle = vehicles.find(v => v.id === editRecord.vehicle_id);
+        if (vehicle) {
+          setSelectedVehicle(vehicle);
+        }
+      }
+    } else if (preselectedVehicleId && vehicles) {
       const preselectedVehicle = vehicles.find(v => v.id === preselectedVehicleId);
       if (preselectedVehicle) {
         setSelectedVehicle(preselectedVehicle);
         setVehicleId(preselectedVehicleId);
       }
     }
-  }, [preselectedVehicleId, vehicles]);
+  }, [preselectedVehicleId, vehicles, editRecord, mode]);
 
   // Fetch task types
   const { data: taskTypes } = useQuery({
@@ -105,6 +129,7 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
     }
   });
 
+  // Create mutation
   const createMaintenanceRecord = useMutation({
     mutationFn: async (recordData: any) => {
       const { data, error } = await supabase
@@ -127,6 +152,33 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
     onError: (error) => {
       console.error("Error creating maintenance record:", error);
       toast.error(error.message ?? "Failed to create maintenance record");
+    }
+  });
+
+  // Update mutation
+  const updateMaintenanceRecord = useMutation({
+    mutationFn: async (recordData: any) => {
+      const { data, error } = await supabase
+        .from("maintenance_records")
+        .update(recordData)
+        .eq('id', editRecord.id)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["maintenance-kpis"] });
+      queryClient.invalidateQueries({ queryKey: ["overdue-maintenance"] });
+      queryClient.invalidateQueries({ queryKey: ["upcoming-maintenance"] });
+      queryClient.invalidateQueries({ queryKey: ["maintenance-records"] });
+      toast.success("Maintenance record updated successfully");
+      onOpenChange(false);
+      resetForm();
+    },
+    onError: (error) => {
+      console.error("Error updating maintenance record:", error);
+      toast.error(error.message ?? "Failed to update maintenance record");
     }
   });
 
@@ -221,10 +273,14 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
       cost: parseFloat(estimatedCost),
       mileage_at_service: vehicleMiles ? parseInt(vehicleMiles) : null,
       notes,
-      status: "scheduled"
+      status: mode === 'edit' ? editRecord.status : "scheduled"
     };
 
-    createMaintenanceRecord.mutate(recordData);
+    if (mode === 'edit') {
+      updateMaintenanceRecord.mutate(recordData);
+    } else {
+      createMaintenanceRecord.mutate(recordData);
+    }
   };
 
   return (
@@ -239,9 +295,14 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
           >
             <X className="h-4 w-4" />
           </Button>
-          <DrawerTitle>Create Maintenance Record</DrawerTitle>
+          <DrawerTitle>
+            {mode === 'edit' ? 'Edit Maintenance Record' : 'Create Maintenance Record'}
+          </DrawerTitle>
           <DrawerDescription>
-            Schedule a new maintenance task for a vehicle.
+            {mode === 'edit' 
+              ? 'Update the maintenance task details below.'
+              : 'Schedule a new maintenance task for a vehicle.'
+            }
           </DrawerDescription>
         </DrawerHeader>
 
@@ -425,10 +486,13 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
             </Button>
             <Button 
               onClick={handleSubmit}
-              disabled={createMaintenanceRecord.isPending}
+              disabled={createMaintenanceRecord.isPending || updateMaintenanceRecord.isPending}
               className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
             >
-              {createMaintenanceRecord.isPending ? "Creating..." : "Create Record"}
+              {createMaintenanceRecord.isPending || updateMaintenanceRecord.isPending 
+                ? (mode === 'edit' ? "Updating..." : "Creating...") 
+                : (mode === 'edit' ? "Update Record" : "Create Record")
+              }
             </Button>
           </div>
         </DrawerFooter>
