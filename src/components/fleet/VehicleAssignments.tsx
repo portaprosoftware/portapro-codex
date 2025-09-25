@@ -282,7 +282,7 @@ function VehicleAssignmentsContent({
       if (vehicleIds.length > 0) {
         const { data: vData, error: vehiclesError } = await supabase
           .from("vehicles")
-          .select("id, license_plate, vehicle_type, make, model, year, status")
+          .select("id, license_plate, vehicle_type, make, model, year, status, nickname")
           .in("id", vehicleIds);
         
         if (vehiclesError) {
@@ -421,14 +421,16 @@ function VehicleAssignmentsContent({
                   </div>
                   <div>
                     <h4 className="font-medium text-gray-900">
-                      {assignment.vehicles?.license_plate || "Unknown Vehicle"}
-                    </h4>
-                    <p className="text-sm text-gray-600">
-                      {assignment.vehicles ? 
-                        `${assignment.vehicles.make || ''} ${assignment.vehicles.model || ''} • ${assignment.vehicles.vehicle_type?.toUpperCase() || ''}`.trim() :
-                        "Vehicle details unavailable"
+                      {assignment.vehicles?.make && assignment.vehicles?.model ? 
+                        `${assignment.vehicles.make} ${assignment.vehicles.model}${assignment.vehicles.nickname ? ` - ${assignment.vehicles.nickname}` : ''}` :
+                        assignment.vehicles?.vehicle_type || "Unknown Vehicle"
                       }
-                    </p>
+                    </h4>
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <span className="text-blue-600 font-medium">{assignment.vehicles?.license_plate || "Unknown"}</span>
+                      <span>•</span>
+                      <span>{assignment.vehicles?.vehicle_type?.toUpperCase() || 'UNKNOWN TYPE'}</span>
+                    </div>
                   </div>
                 </div>
 
