@@ -185,7 +185,9 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
         <td className="text-left py-4 px-3">
           <div>
             <div className="font-medium text-foreground">{record.maintenance_task_types?.name || record.maintenance_type}</div>
-            <div className="text-sm text-muted-foreground truncate max-w-[200px] mt-1">{record.description}</div>
+            {record.description && record.description !== (record.maintenance_task_types?.name || record.maintenance_type) && (
+              <div className="text-sm text-muted-foreground truncate max-w-[200px] mt-1">{record.description}</div>
+            )}
           </div>
         </td>
         <td className="text-sm text-center py-4 px-3">{record.maintenance_vendors?.name || "In-house"}</td>
