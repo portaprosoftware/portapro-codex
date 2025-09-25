@@ -157,9 +157,8 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
                 }
               </div>
               {record.cost && (
-                <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
-                  <DollarSign className="h-3 w-3" />
-                  <span>${record.cost.toLocaleString()}</span>
+                <div className="text-sm text-muted-foreground mt-1">
+                  <span>Cost: ${record.cost.toLocaleString()}</span>
                 </div>
               )}
             </div>
