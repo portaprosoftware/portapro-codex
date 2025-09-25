@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -17,7 +18,7 @@ import { toast } from "sonner";
 export const MaintenanceSettingsTab: React.FC = () => {
   const [inHouseEnabled, setInHouseEnabled] = useState(false);
   const [vendorModalOpen, setVendorModalOpen] = useState(false);
-  const [editingVendor, setEditingVendor] = useState<any>(null);
+  const [editingVendor, setEditingVendor] = useState<Database['public']['Tables']['maintenance_vendors']['Row'] | null>(null);
   const [vendorModalMode, setVendorModalMode] = useState<"create" | "edit">("create");
   const queryClient = useQueryClient();
 
