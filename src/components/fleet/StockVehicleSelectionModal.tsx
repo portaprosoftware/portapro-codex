@@ -36,18 +36,35 @@ export const StockVehicleSelectionModal: React.FC<StockVehicleSelectionModalProp
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Fetch only available vehicles
+  // Fetch only active vehicles that are not assigned for the selected date
   const { data: vehicles = [], isLoading } = useQuery({
-    queryKey: ["vehicles-available-only"],
+    queryKey: ["vehicles-available-for-date", selectedDate],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // First get all active vehicles
+      const { data: allVehicles, error: vehiclesError } = await supabase
         .from("vehicles")
         .select("*")
-        .eq("status", "available")
+        .eq("status", "active")
         .order("license_plate", { ascending: true });
       
-      if (error) throw error;
-      return data || [];
+      if (vehiclesError) throw vehiclesError;
+
+      // Then get vehicles already assigned for the selected date
+      const dateStr = selectedDate.toISOString().split('T')[0];
+      const { data: assignedVehicles, error: assignmentsError } = await supabase
+        .from("daily_vehicle_assignments")
+        .select("vehicle_id")
+        .eq("assignment_date", dateStr);
+      
+      if (assignmentsError) throw assignmentsError;
+
+      // Filter out assigned vehicles
+      const assignedVehicleIds = new Set(assignedVehicles?.map(a => a.vehicle_id) || []);
+      const availableVehicles = allVehicles?.filter(vehicle => 
+        !assignedVehicleIds.has(vehicle.id)
+      ) || [];
+
+      return availableVehicles;
     },
     enabled: open, // Only fetch when modal is open
   });
@@ -84,10 +101,10 @@ export const StockVehicleSelectionModal: React.FC<StockVehicleSelectionModalProp
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Truck className="h-5 w-5 text-blue-600" />
-            Select Available Vehicle
+            Select Active Vehicle
           </DialogTitle>
           <DialogDescription>
-            Choose from available vehicles for assignment. You can search by license plate, vehicle type, make, or model.
+            Choose from active vehicles that are available for assignment on the selected date. Vehicles already assigned are excluded.
           </DialogDescription>
         </DialogHeader>
         
@@ -182,12 +199,12 @@ export const StockVehicleSelectionModal: React.FC<StockVehicleSelectionModalProp
 
                         <div className="flex justify-between items-center">
                           <span className="text-sm text-gray-600 font-medium">Status:</span>
-                          <Badge 
-                            variant="outline" 
-                            className="text-green-600 border-green-600"
-                          >
-                            Available
-                          </Badge>
+                           <Badge 
+                             variant="outline" 
+                             className="text-green-600 border-green-600"
+                           >
+                             Active
+                           </Badge>
                         </div>
                       </div>
                     </div>
@@ -205,7 +222,7 @@ export const StockVehicleSelectionModal: React.FC<StockVehicleSelectionModalProp
           {!isLoading && filteredVehicles.length === 0 && vehicles.length > 0 && (
             <div className="text-center py-8 text-gray-500">
               <Truck className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-              <p>No available vehicles found matching your search.</p>
+              <p>No active vehicles found matching your search that are available for this date.</p>
               <Button 
                 variant="outline" 
                 onClick={() => setSearchTerm("")}
@@ -220,15 +237,15 @@ export const StockVehicleSelectionModal: React.FC<StockVehicleSelectionModalProp
           {!isLoading && vehicles.length === 0 && (
             <div className="text-center py-8 text-gray-500">
               <Truck className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-              <p>No vehicles are currently available for assignment.</p>
-              <p className="text-sm mt-1">Check vehicle statuses or add more vehicles to your fleet.</p>
+              <p>No active vehicles are available for assignment on this date.</p>
+              <p className="text-sm mt-1">All vehicles may be assigned or inactive. Check vehicle statuses or try a different date.</p>
             </div>
           )}
         </div>
 
         <div className="flex justify-between items-center gap-2 pt-4 border-t">
           <div className="text-sm text-muted-foreground">
-            {filteredVehicles.length} vehicle{filteredVehicles.length !== 1 ? 's' : ''} available
+            {filteredVehicles.length} active vehicle{filteredVehicles.length !== 1 ? 's' : ''} available for this date
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => onOpenChange(false)}>
