@@ -32,7 +32,7 @@ interface VehicleCardProps {
 export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, viewMode, onManage }) => {
   const getStatusClasses = (status: string) => {
     switch (status?.toLowerCase()) {
-      case "available":
+      case "active":
         return "bg-gradient-green text-white font-bold border-0";
       case "maintenance":
         return "bg-gradient-orange text-white font-bold border-0";
@@ -84,7 +84,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, viewMode, onM
           
           <div className="flex items-center space-x-3">
             <Badge className={cn("text-xs font-medium", getStatusClasses(vehicle.status))}>
-              {vehicle.status === 'available' ? 'Available' : vehicle.status?.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+              {vehicle.status === 'active' ? 'Active' : vehicle.status?.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
             </Badge>
             
             <Button
@@ -138,7 +138,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, viewMode, onM
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium text-muted-foreground">Status:</span>
           <Badge className={cn("text-xs font-medium", getStatusClasses(vehicle.status))}>
-            {vehicle.status === 'available' ? 'Available' : vehicle.status?.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+            {vehicle.status === 'active' ? 'Active' : vehicle.status?.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
           </Badge>
         </div>
       </div>
