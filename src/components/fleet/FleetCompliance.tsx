@@ -26,6 +26,9 @@ interface ComplianceDocument {
   vehicle: {
     license_plate: string;
     vehicle_type: string;
+    make: string;
+    model: string;
+    nickname?: string;
   };
   compliance_document_types: {
     name: string;
@@ -145,7 +148,7 @@ const FleetComplianceContent: React.FC = () => {
         .from("vehicle_compliance_documents")
         .select(`
           *,
-          vehicles(license_plate, vehicle_type),
+          vehicles(license_plate, vehicle_type, make, model, nickname),
           compliance_document_types(name)
         `)
         .order("expiration_date", { ascending: true });
@@ -239,6 +242,13 @@ const FleetComplianceContent: React.FC = () => {
     setSelectedDocumentId(null);
   };
 
+  const getVehicleName = (vehicle: any) => {
+    if (vehicle?.make && vehicle?.model) {
+      return `${vehicle.make} ${vehicle.model}${vehicle.nickname ? ` - ${vehicle.nickname}` : ''}`;
+    }
+    return vehicle?.vehicle_type || 'Unknown Vehicle';
+  };
+
   const overdueCount = documents?.filter((doc: any) => getUrgencyLevel(doc.expiration_date) === "overdue").length || 0;
   const criticalCount = documents?.filter((doc: any) => getUrgencyLevel(doc.expiration_date) === "critical").length || 0;
   const warningCount = documents?.filter((doc: any) => getUrgencyLevel(doc.expiration_date) === "warning").length || 0;
@@ -315,15 +325,14 @@ const FleetComplianceContent: React.FC = () => {
                   </div>
                   <div>
                     <h4 className="font-medium text-gray-900">
-                      {document.vehicles?.license_plate} - {document.compliance_document_types?.name}
+                      {getVehicleName(document.vehicles)}
                     </h4>
                     <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Badge variant="outline" className="bg-transparent border-blue-500 text-blue-600 font-medium">
-                        {document.vehicles?.vehicle_type?.split(' ').map(word => 
-                          word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-                        ).join(' ')}
-                      </Badge>
-                      • Expires: {document.expiration_date ? new Date(document.expiration_date).toLocaleDateString() : "No date set"}
+                      <span className="text-blue-600 font-medium">{document.vehicles?.license_plate}</span>
+                      <span>•</span>
+                      <span>{document.compliance_document_types?.name}</span>
+                      <span>•</span>
+                      <span>Expires: {document.expiration_date ? new Date(document.expiration_date).toLocaleDateString() : "No date set"}</span>
                     </div>
                   </div>
                 </div>
