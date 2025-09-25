@@ -109,7 +109,7 @@ export const CreateServiceRecordModal: React.FC<CreateServiceRecordModalProps> =
           <div>
             <Label htmlFor="service_type">Service Type</Label>
             <Select
-              value={formData.service_type}
+              value={formData.service_type || undefined}
               onValueChange={(value) => setFormData(prev => ({ ...prev, service_type: value }))}
             >
               <SelectTrigger>
