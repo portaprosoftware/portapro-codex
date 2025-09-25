@@ -7,12 +7,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Truck, Plus } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 interface AddMaintenanceRecordModalProps {
   open: boolean;
@@ -26,6 +28,8 @@ export const AddMaintenanceRecordModal: React.FC<AddMaintenanceRecordModalProps>
   preselectedVehicleId = "",
 }) => {
   const [vehicleId, setVehicleId] = useState(preselectedVehicleId);
+  const [selectedVehicle, setSelectedVehicle] = useState<any>(null);
+  const [showVehicleModal, setShowVehicleModal] = useState(false);
   const [taskTypeId, setTaskTypeId] = useState("");
   const [vendorId, setVendorId] = useState("");
   const [description, setDescription] = useState("");
@@ -42,12 +46,23 @@ export const AddMaintenanceRecordModal: React.FC<AddMaintenanceRecordModalProps>
     queryFn: async () => {
       const { data, error } = await supabase
         .from("vehicles")
-        .select("id, license_plate, vehicle_type")
+        .select("id, license_plate, vehicle_type, make, model, year")
         .eq("status", "active");
       if (error) throw error;
       return data;
     }
   });
+
+  // Effect to set preselected vehicle
+  React.useEffect(() => {
+    if (preselectedVehicleId && vehicles) {
+      const preselectedVehicle = vehicles.find(v => v.id === preselectedVehicleId);
+      if (preselectedVehicle) {
+        setSelectedVehicle(preselectedVehicle);
+        setVehicleId(preselectedVehicleId);
+      }
+    }
+  }, [preselectedVehicleId, vehicles]);
 
   // Fetch task types
   const { data: taskTypes } = useQuery({
@@ -102,6 +117,7 @@ export const AddMaintenanceRecordModal: React.FC<AddMaintenanceRecordModalProps>
 
   const resetForm = () => {
     setVehicleId(preselectedVehicleId);
+    setSelectedVehicle(null);
     setTaskTypeId("");
     setVendorId("");
     setDescription("");
@@ -109,6 +125,12 @@ export const AddMaintenanceRecordModal: React.FC<AddMaintenanceRecordModalProps>
     setPriority("medium");
     setEstimatedCost("");
     setNotes("");
+  };
+
+  const handleVehicleSelect = (vehicle: any) => {
+    setSelectedVehicle(vehicle);
+    setVehicleId(vehicle.id);
+    setShowVehicleModal(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -149,18 +171,45 @@ export const AddMaintenanceRecordModal: React.FC<AddMaintenanceRecordModalProps>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="vehicle">Vehicle *</Label>
-              <Select value={vehicleId} onValueChange={setVehicleId} required>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select vehicle" />
-                </SelectTrigger>
-                <SelectContent>
-                  {vehicles?.map((vehicle) => (
-                    <SelectItem key={vehicle.id} value={vehicle.id}>
-                      {vehicle.license_plate} - {vehicle.vehicle_type}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {selectedVehicle ? (
+                <Card className="border-2 border-blue-200 bg-blue-50">
+                  <CardContent className="p-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                          <Truck className="h-5 w-5 text-blue-600" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900">
+                            {selectedVehicle.license_plate || `Vehicle ${selectedVehicle.id.slice(0, 8)}`}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            {selectedVehicle.make} {selectedVehicle.model} {selectedVehicle.year}
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowVehicleModal(true)}
+                      >
+                        Change
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ) : (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full h-12 border-dashed border-2 hover:border-blue-300 hover:bg-blue-50"
+                  onClick={() => setShowVehicleModal(true)}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Select Vehicle
+                </Button>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -289,6 +338,108 @@ export const AddMaintenanceRecordModal: React.FC<AddMaintenanceRecordModalProps>
           </DialogFooter>
         </form>
       </DialogContent>
+
+      {/* Vehicle Selection Modal */}
+      <Dialog open={showVehicleModal} onOpenChange={setShowVehicleModal}>
+        <DialogContent className="sm:max-w-4xl max-h-[80vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Truck className="h-5 w-5 text-blue-600" />
+              Select Vehicle for Maintenance
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 flex-1 overflow-hidden">
+            {/* Vehicle Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto pr-2 max-h-96">
+              {vehicles?.map((vehicle: any) => (
+                <Card
+                  key={vehicle.id}
+                  className={`cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02] ${
+                    selectedVehicle?.id === vehicle.id
+                      ? "ring-2 ring-blue-500 bg-blue-50"
+                      : "hover:bg-gray-50"
+                  }`}
+                  onClick={() => handleVehicleSelect(vehicle)}
+                >
+                  <CardContent className="p-0">
+                    <div className="flex flex-col">
+                      {/* Vehicle Header */}
+                      <div className="relative h-32 bg-gradient-to-br from-blue-100 to-blue-200 rounded-t-lg overflow-hidden">
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Truck className="h-8 w-8 text-blue-600" />
+                        </div>
+                        {selectedVehicle?.id === vehicle.id && (
+                          <div className="absolute top-2 right-2">
+                            <Badge className="bg-green-500 text-white font-bold border-0">
+                              Selected
+                            </Badge>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Vehicle Details */}
+                      <div className="p-4 space-y-2">
+                        <h4 className="font-bold text-lg text-gray-900">
+                          {vehicle.license_plate || `Vehicle ${vehicle.id.slice(0, 8)}`}
+                        </h4>
+                        
+                        {(vehicle.make || vehicle.model || vehicle.year) && (
+                          <div className="space-y-1">
+                            <span className="text-sm text-gray-600 font-medium">Make/Model:</span>
+                            <p className="text-sm text-gray-900 leading-tight">
+                              {[vehicle.make, vehicle.model, vehicle.year].filter(Boolean).join(' ')}
+                            </p>
+                          </div>
+                        )}
+                        
+                        {vehicle.vehicle_type && (
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-gray-600 font-medium">Type:</span>
+                            <span className="text-sm text-gray-900 capitalize">{vehicle.vehicle_type}</span>
+                          </div>
+                        )}
+
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-gray-600 font-medium">Status:</span>
+                          <Badge variant="outline" className="text-green-600 border-green-600">
+                            Available
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* No Vehicles Available */}
+            {vehicles?.length === 0 && (
+              <div className="text-center py-8 text-gray-500">
+                <Truck className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                <p>No vehicles available for maintenance.</p>
+                <p className="text-sm mt-1">Please add vehicles to your fleet first.</p>
+              </div>
+            )}
+          </div>
+
+          <div className="flex justify-between items-center gap-2 pt-4 border-t">
+            <div className="text-sm text-muted-foreground">
+              {vehicles?.length || 0} vehicle{vehicles?.length !== 1 ? 's' : ''} available
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setShowVehicleModal(false)}>
+                Cancel
+              </Button>
+              {selectedVehicle && (
+                <Button onClick={() => handleVehicleSelect(selectedVehicle)}>
+                  Confirm Selection
+                </Button>
+              )}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Dialog>
   );
 };
