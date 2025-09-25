@@ -21,7 +21,8 @@ interface MaintenanceRecord {
   status: string;
   cost?: number;
   priority?: string;
-  is_recurring?: boolean;
+  next_service_date?: string;
+  next_service_mileage?: number;
   vehicles?: {
     license_plate: string;
     vehicle_type: string;
@@ -155,7 +156,7 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
                   {record.priority.replace(/\b\w/g, l => l.toUpperCase())}
                 </Badge>
               )}
-              {record.is_recurring && (
+              {(record.next_service_date || record.next_service_mileage) && (
                 <Badge className="bg-gradient-to-r from-purple-500 to-purple-600 text-white font-bold border-0 text-xs">
                   <Recycle className="w-3 h-3 mr-1" />
                   Recurring
@@ -206,7 +207,7 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
                 {record.priority.replace(/\b\w/g, l => l.toUpperCase())}
               </Badge>
             )}
-            {record.is_recurring && (
+            {(record.next_service_date || record.next_service_mileage) && (
               <Badge className="bg-gradient-to-r from-purple-500 to-purple-600 text-white font-bold border-0 text-xs w-fit">
                 <Recycle className="w-3 h-3 mr-1" />
                 Recurring
@@ -254,7 +255,7 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
               {record.priority.replace(/\b\w/g, l => l.toUpperCase())}
             </Badge>
           )}
-          {record.is_recurring && (
+          {(record.next_service_date || record.next_service_mileage) && (
             <Badge className="bg-gradient-to-r from-purple-500 to-purple-600 text-white font-bold border-0 text-xs">
               <Recycle className="w-3 h-3 mr-1" />
               Recurring
