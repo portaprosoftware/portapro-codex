@@ -321,12 +321,12 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
                               <span className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-bold text-white shadow-sm ${
                                 selectedDriver.status === "available" 
                                   ? "bg-gradient-to-r from-green-500 to-green-600"
-                                  : selectedDriver.status === "scheduled"
+                                  : selectedDriver.status === "assigned"
                                   ? "bg-gradient-to-r from-yellow-500 to-yellow-600"
                                   : "bg-gradient-to-r from-red-500 to-red-600"
                               }`}>
                                 {selectedDriver.status === "available" ? "Available" : 
-                                 selectedDriver.status === "scheduled" ? "Scheduled" : "Busy"}
+                                 selectedDriver.status === "assigned" ? "Assigned" : "Off-Duty"}
                               </span>
                             </div>
                           </div>

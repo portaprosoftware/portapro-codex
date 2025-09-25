@@ -105,16 +105,15 @@ export const DriverAvailabilityWidget: React.FC<DriverAvailabilityWidgetProps> =
     const hasAssignment = assignments?.includes(driverId);
     const jobList = jobs?.[driverId] || [];
     
-    if (hasAssignment && jobList.length > 0) return "busy";
-    if (hasAssignment || jobList.length > 0) return "scheduled";
+    if (hasAssignment || jobList.length > 0) return "assigned";
     return "available";
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case "available": return "bg-green-100 text-green-800 border-green-200";
-      case "scheduled": return "bg-yellow-100 text-yellow-800 border-yellow-200";
-      case "busy": return "bg-red-100 text-red-800 border-red-200";
+      case "assigned": return "bg-yellow-100 text-yellow-800 border-yellow-200";
+      case "off-duty": return "bg-red-100 text-red-800 border-red-200";
       default: return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
@@ -122,8 +121,8 @@ export const DriverAvailabilityWidget: React.FC<DriverAvailabilityWidgetProps> =
   const getStatusText = (status: string) => {
     switch (status) {
       case "available": return "Available";
-      case "scheduled": return "Scheduled";
-      case "busy": return "Busy";
+      case "assigned": return "Assigned";
+      case "off-duty": return "Off-Duty";
       default: return "Unknown";
     }
   };
@@ -143,17 +142,17 @@ export const DriverAvailabilityWidget: React.FC<DriverAvailabilityWidgetProps> =
   return (
     <div className={cn("space-y-4", className)}>
       <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h3 className="text-sm font-medium text-foreground">Driver Availability</h3>
-          <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            <span>Available</span>
-            <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-            <span>Scheduled</span>
-            <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-            <span>Busy</span>
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-medium text-foreground">Driver Availability</h3>
+            <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span>Available</span>
+              <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+              <span>Assigned</span>
+              <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+              <span>Off-Duty</span>
+            </div>
           </div>
-        </div>
 
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
