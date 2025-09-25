@@ -486,15 +486,23 @@ export const AddRecurringServiceSlider: React.FC<AddRecurringServiceSliderProps>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="vendor">Vendor</Label>
+              <Label htmlFor="vendor">Service Provider</Label>
               <Select value={vendorId} onValueChange={setVendorId}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select vendor" />
+                <SelectTrigger className="bg-background">
+                  <SelectValue placeholder="Select service provider" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-background z-50">
+                  <SelectItem value="">In-house / Internal</SelectItem>
                   {vendors?.map((vendor) => (
                     <SelectItem key={vendor.id} value={vendor.id}>
-                      {vendor.name}
+                      <div className="flex items-center justify-between w-full">
+                        <span>{vendor.name}</span>
+                        {vendor.contact_name && (
+                          <span className="text-xs text-muted-foreground ml-2">
+                            ({vendor.contact_name})
+                          </span>
+                        )}
+                      </div>
                     </SelectItem>
                   ))}
                 </SelectContent>

@@ -9,11 +9,16 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import { Plus, Edit, Trash2, Settings, Users, Package } from "lucide-react";
+import { VendorManagementModal } from "./VendorManagementModal";
 import { toast } from "sonner";
 
 export const MaintenanceSettingsTab: React.FC = () => {
   const [inHouseEnabled, setInHouseEnabled] = useState(false);
+  const [vendorModalOpen, setVendorModalOpen] = useState(false);
+  const [editingVendor, setEditingVendor] = useState<any>(null);
+  const [vendorModalMode, setVendorModalMode] = useState<"create" | "edit">("create");
   const queryClient = useQueryClient();
 
   // Fetch company settings
@@ -81,9 +86,45 @@ export const MaintenanceSettingsTab: React.FC = () => {
     }
   });
 
+  // Delete vendor mutation
+  const deleteVendor = useMutation({
+    mutationFn: async (vendorId: string) => {
+      const { error } = await supabase
+        .from("maintenance_vendors")
+        .delete()
+        .eq("id", vendorId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["maintenance-vendors"] });
+      toast.success("Vendor deleted successfully");
+    },
+    onError: () => {
+      toast.error("Failed to delete vendor");
+    }
+  });
+
   const handleInHouseToggle = (enabled: boolean) => {
     setInHouseEnabled(enabled);
     updateInHouseFeatures.mutate(enabled);
+  };
+
+  const handleCreateVendor = () => {
+    setEditingVendor(null);
+    setVendorModalMode("create");
+    setVendorModalOpen(true);
+  };
+
+  const handleEditVendor = (vendor: any) => {
+    setEditingVendor(vendor);
+    setVendorModalMode("edit");
+    setVendorModalOpen(true);
+  };
+
+  const handleDeleteVendor = (vendorId: string, vendorName: string) => {
+    if (window.confirm(`Are you sure you want to delete vendor "${vendorName}"? This action cannot be undone.`)) {
+      deleteVendor.mutate(vendorId);
+    }
   };
 
   return (
@@ -186,23 +227,42 @@ export const MaintenanceSettingsTab: React.FC = () => {
                   <TableCell>{vendor.contact_name || "—"}</TableCell>
                   <TableCell>{vendor.phone || "—"}</TableCell>
                   <TableCell>
-                    {vendor.service_specialties?.join(", ") || "General"}
+                    <div className="flex flex-wrap gap-1 max-w-48">
+                      {vendor.service_specialties?.slice(0, 3).map((specialty: string) => (
+                        <Badge key={specialty} variant="outline" className="text-xs">
+                          {specialty}
+                        </Badge>
+                      ))}
+                      {vendor.service_specialties && vendor.service_specialties.length > 3 && (
+                        <Badge variant="outline" className="text-xs">
+                          +{vendor.service_specialties.length - 3} more
+                        </Badge>
+                      )}
+                      {!vendor.service_specialties?.length && "General"}
+                    </div>
                   </TableCell>
                   <TableCell>
-                    <span className={`px-2 py-1 rounded-full text-xs ${
-                      vendor.is_active 
-                        ? "bg-green-100 text-green-800" 
-                        : "bg-red-100 text-red-800"
-                    }`}>
+                    <Badge 
+                      variant={vendor.is_active ? "default" : "secondary"}
+                      className={vendor.is_active ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}
+                    >
                       {vendor.is_active ? "Active" : "Inactive"}
-                    </span>
+                    </Badge>
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2">
-                      <Button size="sm" variant="outline">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => handleEditVendor(vendor)}
+                      >
                         <Edit className="w-4 h-4" />
                       </Button>
-                      <Button size="sm" variant="outline">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => handleDeleteVendor(vendor.id, vendor.name)}
+                      >
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>
@@ -212,7 +272,7 @@ export const MaintenanceSettingsTab: React.FC = () => {
             </TableBody>
           </Table>
           <div className="mt-4">
-            <Button>
+            <Button onClick={handleCreateVendor}>
               <Plus className="w-4 h-4 mr-2" />
               Add New Vendor
             </Button>
@@ -306,6 +366,13 @@ export const MaintenanceSettingsTab: React.FC = () => {
           Save All Settings
         </Button>
       </div>
+
+      <VendorManagementModal
+        open={vendorModalOpen}
+        onOpenChange={setVendorModalOpen}
+        vendor={editingVendor}
+        mode={vendorModalMode}
+      />
     </div>
   );
 };
