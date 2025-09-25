@@ -1,6 +1,6 @@
 
-import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import React, { useState, useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,7 @@ type ViewMode = "grid" | "list";
 type StatusFilter = "all" | "active" | "maintenance";
 
 export const FleetOverview: React.FC = () => {
+  const queryClient = useQueryClient();
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -24,7 +25,14 @@ export const FleetOverview: React.FC = () => {
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
   const [isAddVehicleModalOpen, setIsAddVehicleModalOpen] = useState(false);
 
-  const { data: vehicles, isLoading } = useQuery({
+  // Invalidate and refetch vehicles query when component mounts or when returning to overview
+  useEffect(() => {
+    if (pageMode === "overview") {
+      queryClient.invalidateQueries({ queryKey: ["vehicles"] });
+    }
+  }, [pageMode, queryClient]);
+
+  const { data: vehicles, isLoading, refetch } = useQuery({
     queryKey: ["vehicles"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -35,6 +43,7 @@ export const FleetOverview: React.FC = () => {
       if (error) throw error;
       return data || [];
     },
+    staleTime: 0, // Always refetch when component mounts
   });
 
   const filteredVehicles = vehicles?.filter(vehicle => {

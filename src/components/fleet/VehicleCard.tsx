@@ -38,8 +38,27 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, viewMode, onM
         return "bg-gradient-orange text-white font-bold border-0";
       case "in_service":
         return "bg-gradient-red text-white font-bold border-0";
+      case "retired":
+        return "bg-gradient-gray text-white font-bold border-0";
       default:
-        return "bg-gradient-red text-white font-bold border-0";
+        return "bg-gradient-gray text-white font-bold border-0";
+    }
+  };
+
+  const getStatusDisplayText = (status: string) => {
+    if (!status) return "Unknown";
+    
+    switch (status.toLowerCase()) {
+      case "active":
+        return "Active";
+      case "maintenance":
+        return "Maintenance";
+      case "in_service":
+        return "In Service";
+      case "retired":
+        return "Retired";
+      default:
+        return status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
     }
   };
 
@@ -84,7 +103,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, viewMode, onM
           
           <div className="flex items-center space-x-3">
             <Badge className={cn("text-xs font-medium", getStatusClasses(vehicle.status))}>
-              {vehicle.status === 'active' ? 'Active' : vehicle.status?.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+              {getStatusDisplayText(vehicle.status)}
             </Badge>
             
             <Button
@@ -138,7 +157,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, viewMode, onM
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium text-muted-foreground">Status:</span>
           <Badge className={cn("text-xs font-medium", getStatusClasses(vehicle.status))}>
-            {vehicle.status === 'active' ? 'Active' : vehicle.status?.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+            {getStatusDisplayText(vehicle.status)}
           </Badge>
         </div>
       </div>
