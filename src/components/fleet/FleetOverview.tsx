@@ -152,12 +152,10 @@ export const FleetOverview: React.FC = () => {
               switch (status) {
                 case 'available':
                   return "bg-gradient-green text-white font-bold";
-                case 'in_service':
-                  return "bg-gradient-red text-white font-bold";
                 case 'maintenance':
                   return "bg-gradient-orange text-white font-bold";
                 default:
-                  return "bg-primary text-primary-foreground";
+                  return "bg-primary text-primary-foreground font-bold";
               }
             };
 
