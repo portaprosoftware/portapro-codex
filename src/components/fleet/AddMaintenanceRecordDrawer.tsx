@@ -21,6 +21,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MaintenanceTaskSelector } from "./MaintenanceTaskSelector";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
@@ -50,7 +51,7 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
   const [description, setDescription] = useState("");
   const [vehicleMiles, setVehicleMiles] = useState("");
   const [scheduledDate, setScheduledDate] = useState<Date>();
-  const [priority, setPriority] = useState("medium");
+  const [priority, setPriority] = useState("normal");
   const [estimatedCost, setEstimatedCost] = useState("");
   const [notes, setNotes] = useState("");
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
@@ -83,7 +84,7 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
       setDescription(editRecord.description || "");
       setVehicleMiles(editRecord.mileage_at_service?.toString() || "");
       setScheduledDate(editRecord.scheduled_date ? new Date(editRecord.scheduled_date) : undefined);
-      setPriority(editRecord.priority || "medium");
+      setPriority(editRecord.priority || "normal");
       setEstimatedCost(editRecord.cost?.toString() || "");
       setNotes(editRecord.notes || "");
       
@@ -191,7 +192,7 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
     setDescription("");
     setVehicleMiles("");
     setScheduledDate(undefined);
-    setPriority("medium");
+    setPriority("normal");
     setEstimatedCost("");
     setNotes("");
     setValidationErrors([]);
@@ -454,15 +455,52 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="notes">Notes</Label>
-              <Textarea
-                id="notes"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Additional notes or instructions..."
-                rows={3}
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="priority">Priority</Label>
+                <Select value={priority} onValueChange={setPriority}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select priority" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white z-50">
+                    <SelectItem value="low">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded bg-gradient-to-r from-green-500 to-green-600"></div>
+                        Low
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="normal">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded bg-gradient-to-r from-blue-500 to-blue-600"></div>
+                        Normal
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="high">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded bg-gradient-to-r from-yellow-500 to-yellow-600"></div>
+                        High
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="critical">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded bg-gradient-to-r from-orange-500 to-orange-600"></div>
+                        Critical
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="notes">Notes</Label>
+                <Textarea
+                  id="notes"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="Additional notes or instructions..."
+                  rows={3}
+                />
+              </div>
             </div>
           </form>
         </div>

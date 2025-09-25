@@ -49,7 +49,7 @@ export const AddRecurringServiceSlider: React.FC<AddRecurringServiceSliderProps>
   const [startDate, setStartDate] = useState<Date>();
   const [intervalType, setIntervalType] = useState("days");
   const [intervalValue, setIntervalValue] = useState("");
-  const [priority, setPriority] = useState("medium");
+  const [priority, setPriority] = useState("normal");
   const [estimatedCost, setEstimatedCost] = useState("");
   const [notes, setNotes] = useState("");
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
@@ -144,7 +144,7 @@ export const AddRecurringServiceSlider: React.FC<AddRecurringServiceSliderProps>
     setStartDate(undefined);
     setIntervalType("days");
     setIntervalValue("");
-    setPriority("medium");
+    setPriority("normal");
     setEstimatedCost("");
     setNotes("");
     setValidationErrors([]);
@@ -431,22 +431,6 @@ export const AddRecurringServiceSlider: React.FC<AddRecurringServiceSliderProps>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="vendor">Vendor</Label>
-                <Select value={vendorId} onValueChange={setVendorId}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select vendor" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {vendors?.map((vendor) => (
-                      <SelectItem key={vendor.id} value={vendor.id}>
-                        {vendor.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
                 <Label htmlFor="estimatedCost">Cost *</Label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">$</span>
@@ -462,6 +446,57 @@ export const AddRecurringServiceSlider: React.FC<AddRecurringServiceSliderProps>
                   />
                 </div>
               </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="priority">Priority</Label>
+                <Select value={priority} onValueChange={setPriority}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select priority" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white z-50">
+                    <SelectItem value="low">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded bg-gradient-to-r from-green-500 to-green-600"></div>
+                        Low
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="normal">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded bg-gradient-to-r from-blue-500 to-blue-600"></div>
+                        Normal
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="high">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded bg-gradient-to-r from-yellow-500 to-yellow-600"></div>
+                        High
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="critical">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded bg-gradient-to-r from-orange-500 to-orange-600"></div>
+                        Critical
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="vendor">Vendor</Label>
+              <Select value={vendorId} onValueChange={setVendorId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select vendor" />
+                </SelectTrigger>
+                <SelectContent>
+                  {vendors?.map((vendor) => (
+                    <SelectItem key={vendor.id} value={vendor.id}>
+                      {vendor.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">

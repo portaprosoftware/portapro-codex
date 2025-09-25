@@ -54,15 +54,16 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case "critical":
-        return "bg-gradient-to-r from-red-500 to-red-600 text-white font-bold border-0";
-      case "high":
         return "bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold border-0";
-      case "medium":
+      case "high":
         return "bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-bold border-0";
+      case "normal":
+      case "medium": // Handle legacy "medium" entries
+        return "bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0";
       case "low":
         return "bg-gradient-to-r from-green-500 to-green-600 text-white font-bold border-0";
       default:
-        return "bg-gradient-to-r from-gray-500 to-gray-600 text-white font-bold border-0";
+        return "bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0";
     }
   };
 
