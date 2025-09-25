@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { EnhancedDateNavigator } from "@/components/jobs/EnhancedDateNavigator";
 import { AssignmentCreationWizard } from "./AssignmentCreationWizard";
 import { Truck, User, Clock, Calendar, Plus, TrendingUp, BarChart3, Activity } from "lucide-react";
@@ -27,39 +28,45 @@ export function VehicleAssignments() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Driver Assignments</h1>
-          <p className="text-gray-600 mt-1">
-            Manage daily vehicle assignments for your drivers
-          </p>
-        </div>
-        <Button 
-          onClick={() => setWizardOpen(true)}
-          className="flex items-center gap-2"
+      {/* Main Content Card */}
+      <div className="bg-white rounded-lg border shadow-sm p-6">
+        {/* Header */}
+        <PageHeader 
+          title="Driver Assignments" 
+          subtitle="Manage daily vehicle assignments for your drivers"
         >
-          <Plus className="w-4 h-4" />
-          Create Assignment
-        </Button>
+          <Button 
+            onClick={() => setWizardOpen(true)}
+            className="flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            Create Assignment
+          </Button>
+        </PageHeader>
+
+        {/* Date Navigator */}
+        <div className="mt-6">
+          <EnhancedDateNavigator
+            date={selectedDate}
+            onDateChange={setSelectedDate}
+            label="Assignment Date"
+          />
+        </div>
+
+        {/* Stats Cards */}
+        <div className="mt-6">
+          <VehicleAssignmentsStats selectedDate={selectedDate} />
+        </div>
+
+        {/* Assignments Content */}
+        <div className="mt-6">
+          <VehicleAssignmentsContent 
+            selectedDate={selectedDate} 
+            onEditAssignment={handleEditAssignment}
+            onCreateAssignment={() => setWizardOpen(true)}
+          />
+        </div>
       </div>
-
-      {/* Date Navigator */}
-      <EnhancedDateNavigator
-        date={selectedDate}
-        onDateChange={setSelectedDate}
-        label="Assignment Date"
-      />
-
-      {/* Stats Cards */}
-      <VehicleAssignmentsStats selectedDate={selectedDate} />
-
-      {/* Assignments Content */}
-      <VehicleAssignmentsContent 
-        selectedDate={selectedDate} 
-        onEditAssignment={handleEditAssignment}
-        onCreateAssignment={() => setWizardOpen(true)}
-      />
 
       {/* Assignment Creation/Edit Wizard */}
       <AssignmentCreationWizard
@@ -314,19 +321,15 @@ function VehicleAssignmentsContent({
 
   if (assignments.length === 0) {
     return (
-      <Card>
-        <CardContent className="py-8">
-          <div className="text-center text-gray-500">
-            <Calendar className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-            <h3 className="text-lg font-medium mb-2">No assignments for {format(selectedDate, "PPP")}</h3>
-            <p className="text-sm mb-4">Create your first vehicle assignment for this date.</p>
-            <Button onClick={onCreateAssignment} className="inline-flex items-center gap-2">
-              <Plus className="w-4 h-4" />
-              Create Assignment
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="text-center py-8">
+        <Calendar className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+        <h3 className="text-lg font-medium mb-2">No assignments for {format(selectedDate, "PPP")}</h3>
+        <p className="text-sm mb-4">Create your first vehicle assignment for this date.</p>
+        <Button onClick={onCreateAssignment} className="inline-flex items-center gap-2">
+          <Plus className="w-4 h-4" />
+          Create Assignment
+        </Button>
+      </div>
     );
   }
 
@@ -343,9 +346,8 @@ function VehicleAssignmentsContent({
 
       <div className="grid gap-4">
         {assignments.map((assignment) => (
-          <Card key={assignment.id} className="hover:shadow-md transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
+          <div key={assignment.id} className="p-4 border rounded-lg hover:shadow-md transition-shadow bg-white">
+            <div className="flex items-center justify-between">
                 {/* Vehicle & Driver Info */}
                 <div className="flex items-center space-x-4">
                   <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -399,10 +401,9 @@ function VehicleAssignmentsContent({
                   <p className="text-sm text-gray-600">{assignment.notes}</p>
                 </div>
               )}
-            </CardContent>
-          </Card>
-        ))}
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
