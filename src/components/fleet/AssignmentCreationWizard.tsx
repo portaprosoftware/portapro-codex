@@ -488,21 +488,11 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
         className="h-[95vh] w-full max-w-none flex flex-col rounded-t-2xl border-t"
       >
         <SheetHeader className="pb-6 border-b">
-          <div className="flex items-center justify-between">
-            <div>
-              <SheetTitle className="text-xl">Create Vehicle Assignment</SheetTitle>
-              <SheetDescription className="text-sm text-muted-foreground mt-1">
-                {steps[currentStepIndex]?.description}
-              </SheetDescription>
-            </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => onOpenChange(false)}
-              className="h-8 w-8"
-            >
-              <X className="h-4 w-4" />
-            </Button>
+          <div>
+            <SheetTitle className="text-xl">Create Vehicle Assignment</SheetTitle>
+            <SheetDescription className="text-sm text-muted-foreground mt-1">
+              {steps[currentStepIndex]?.description}
+            </SheetDescription>
           </div>
         </SheetHeader>
 
