@@ -14,7 +14,8 @@ import {
   Edit, 
   Trash2,
   Clock,
-  CheckCircle
+  CheckCircle,
+  XCircle
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -59,6 +60,7 @@ interface MaintenanceRecordModalProps {
   onEdit?: (record: MaintenanceRecord) => void;
   onDelete?: (record: MaintenanceRecord) => void;
   onMarkCompleted?: (record: MaintenanceRecord) => void;
+  onMarkNotCompleted?: (record: MaintenanceRecord) => void;
 }
 
 export const MaintenanceRecordModal: React.FC<MaintenanceRecordModalProps> = ({
@@ -68,6 +70,7 @@ export const MaintenanceRecordModal: React.FC<MaintenanceRecordModalProps> = ({
   onEdit,
   onDelete,
   onMarkCompleted,
+  onMarkNotCompleted,
 }) => {
   if (!record) return null;
 
@@ -312,6 +315,18 @@ export const MaintenanceRecordModal: React.FC<MaintenanceRecordModalProps> = ({
               >
                 <CheckCircle className="h-4 w-4 mr-2" />
                 Mark Completed
+              </Button>
+            )}
+            {record.status === "completed" && onMarkNotCompleted && (
+              <Button
+                onClick={() => {
+                  onMarkNotCompleted(record);
+                  onClose();
+                }}
+                className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white"
+              >
+                <XCircle className="h-4 w-4 mr-2" />
+                Mark Not Completed
               </Button>
             )}
             {onEdit && (

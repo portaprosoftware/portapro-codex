@@ -144,6 +144,28 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
     },
   });
 
+  // Mark not completed mutation
+  const markNotCompletedMutation = useMutation({
+    mutationFn: async (recordId: string) => {
+      const { error } = await supabase
+        .from("maintenance_records")
+        .update({ 
+          status: "scheduled", 
+          completed_date: null 
+        })
+        .eq("id", recordId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["maintenance-records"] });
+      toast.success("Maintenance record marked as not completed");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to mark maintenance record as not completed");
+    },
+  });
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "completed":
@@ -184,7 +206,7 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
     );
   });
 
-  const handleMaintenanceAction = (action: 'view' | 'edit' | 'delete' | 'markCompleted', record: any) => {
+  const handleMaintenanceAction = (action: 'view' | 'edit' | 'delete' | 'markCompleted' | 'markNotCompleted', record: any) => {
     if (action === 'view') {
       // Check if it's a recurring service (has next service date or mileage)
       if (record.next_service_date || record.next_service_mileage) {
@@ -210,6 +232,9 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
     } else if (action === 'markCompleted') {
       // Handle mark completed action
       markCompletedMutation.mutate(record.id);
+    } else if (action === 'markNotCompleted') {
+      // Handle mark not completed action
+      markNotCompletedMutation.mutate(record.id);
     }
   };
 
@@ -316,6 +341,7 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
                         onEdit={(record) => handleMaintenanceAction('edit', record)}
                         onDelete={(record) => handleMaintenanceAction('delete', record)}
                         onMarkCompleted={(record) => handleMaintenanceAction('markCompleted', record)}
+                        onMarkNotCompleted={(record) => handleMaintenanceAction('markNotCompleted', record)}
                       />
                    </TableRow>
                  ))
@@ -337,6 +363,7 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
         onEdit={(record) => handleMaintenanceAction('edit', record)}
         onDelete={(record) => handleMaintenanceAction('delete', record)}
         onMarkCompleted={(record) => handleMaintenanceAction('markCompleted', record)}
+        onMarkNotCompleted={(record) => handleMaintenanceAction('markNotCompleted', record)}
       />
 
       {/* Recurring Service Modal */}
@@ -350,6 +377,7 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
         onEdit={(record) => handleMaintenanceAction('edit', record)}
         onDelete={(record) => handleMaintenanceAction('delete', record)}
         onMarkCompleted={(record) => handleMaintenanceAction('markCompleted', record)}
+        onMarkNotCompleted={(record) => handleMaintenanceAction('markNotCompleted', record)}
       />
 
       {/* Edit Maintenance Record Drawer */}

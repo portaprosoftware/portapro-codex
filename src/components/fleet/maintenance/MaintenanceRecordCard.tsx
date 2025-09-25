@@ -8,7 +8,7 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
-import { Calendar, DollarSign, MoreVertical, Eye, Edit, Trash, Recycle, CheckCircle } from "lucide-react";
+import { Calendar, DollarSign, MoreVertical, Eye, Edit, Trash, Recycle, CheckCircle, XCircle } from "lucide-react";
 import { format } from "date-fns";
 
 interface MaintenanceRecord {
@@ -45,6 +45,7 @@ interface MaintenanceRecordCardProps {
   onEdit?: (record: MaintenanceRecord) => void;
   onDelete?: (record: MaintenanceRecord) => void;
   onMarkCompleted?: (record: MaintenanceRecord) => void;
+  onMarkNotCompleted?: (record: MaintenanceRecord) => void;
 }
 
 export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
@@ -53,7 +54,8 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
   onView,
   onEdit,
   onDelete,
-  onMarkCompleted
+  onMarkCompleted,
+  onMarkNotCompleted
 }) => {
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -113,6 +115,12 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
           <DropdownMenuItem onClick={() => onMarkCompleted(record)}>
             <CheckCircle className="mr-2 h-4 w-4" />
             Mark Completed
+          </DropdownMenuItem>
+        )}
+        {record.status === "completed" && onMarkNotCompleted && (
+          <DropdownMenuItem onClick={() => onMarkNotCompleted(record)}>
+            <XCircle className="mr-2 h-4 w-4" />
+            Mark Not Completed
           </DropdownMenuItem>
         )}
         <DropdownMenuItem 
