@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,8 @@ import { MaintenanceRecordModal } from "./maintenance/MaintenanceRecordModal";
 import { RecurringServiceModal } from "./maintenance/RecurringServiceModal";
 import { AddMaintenanceRecordDrawer } from "./AddMaintenanceRecordDrawer";
 import { AddRecurringServiceSlider } from "./AddRecurringServiceSlider";
+import { DeleteMaintenanceConfirmDialog } from "./maintenance/DeleteMaintenanceConfirmDialog";
+import { toast } from "sonner";
 
 export const MaintenanceAllRecordsTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -27,6 +29,10 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
   const [editingRecurringRecord, setEditingRecurringRecord] = useState<any>(null);
   const [recurringModalOpen, setRecurringModalOpen] = useState(false);
   const [selectedRecurringRecord, setSelectedRecurringRecord] = useState<any>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deletingRecord, setDeletingRecord] = useState<any>(null);
+  
+  const queryClient = useQueryClient();
 
   const { data: maintenanceRecords, isLoading } = useQuery({
     queryKey: ["maintenance-records", searchTerm, statusFilter, vehicleFilter],
@@ -69,6 +75,32 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
       if (error) throw error;
       return data;
     }
+  });
+
+  // Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (recordId: string) => {
+      const { error } = await supabase
+        .from("maintenance_records")
+        .delete()
+        .eq("id", recordId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["maintenance-records"] });
+      toast.success("Maintenance record deleted successfully");
+      setDeleteDialogOpen(false);
+      setDeletingRecord(null);
+      // Close any open modals
+      setIsModalOpen(false);
+      setRecurringModalOpen(false);
+      setSelectedRecord(null);
+      setSelectedRecurringRecord(null);
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to delete maintenance record");
+    },
   });
 
   const getStatusColor = (status: string) => {
@@ -131,14 +163,28 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
         setEditRecordOpen(true);
       }
     } else {
-      console.log(`${action} maintenance record:`, record.id);
-      // TODO: Implement delete functionality
+      // Handle delete action
+      setDeletingRecord(record);
+      setDeleteDialogOpen(true);
     }
   };
 
   const handleExport = () => {
     // Export functionality would be implemented here
     console.log("Export to CSV/PDF");
+  };
+
+  const handleDeleteConfirm = () => {
+    if (deletingRecord) {
+      deleteMutation.mutate(deletingRecord.id);
+    }
+  };
+
+  const getVehicleName = (record: any) => {
+    if (record.vehicles?.make && record.vehicles?.model) {
+      return `${record.vehicles.make} ${record.vehicles.model}${record.vehicles.nickname ? ` - ${record.vehicles.nickname}` : ''}`;
+    }
+    return record.vehicles?.vehicle_type || 'Unknown Vehicle';
   };
 
   return (
@@ -272,6 +318,19 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
         onOpenChange={setEditRecurringOpen}
         preselectedVehicleId={editingRecurringRecord?.vehicle_id}
         editRecord={editingRecurringRecord}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteMaintenanceConfirmDialog
+        isOpen={deleteDialogOpen}
+        onClose={() => {
+          setDeleteDialogOpen(false);
+          setDeletingRecord(null);
+        }}
+        onConfirm={handleDeleteConfirm}
+        recordTitle={deletingRecord?.maintenance_task_types?.name || deletingRecord?.maintenance_type || ""}
+        vehicleName={deletingRecord ? getVehicleName(deletingRecord) : ""}
+        isDeleting={deleteMutation.isPending}
       />
     </div>
   );
