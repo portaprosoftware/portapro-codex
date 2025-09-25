@@ -20,14 +20,9 @@ interface MaintenanceRecord {
   completed_date?: string;
   status: string;
   cost?: number;
-  total_cost?: number;
-  labor_cost?: number;
-  parts_cost?: number;
   priority?: string;
   next_service_date?: string;
   next_service_mileage?: number;
-  technician_name?: string;
-  vendor_name?: string;
   vehicles?: {
     license_plate: string;
     vehicle_type: string;
@@ -51,7 +46,6 @@ interface MaintenanceRecordCardProps {
   onDelete?: (record: MaintenanceRecord) => void;
   onMarkCompleted?: (record: MaintenanceRecord) => void;
   onMarkNotCompleted?: (record: MaintenanceRecord) => void;
-  isLoading?: boolean;
 }
 
 export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
@@ -61,8 +55,7 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
   onEdit,
   onDelete,
   onMarkCompleted,
-  onMarkNotCompleted,
-  isLoading = false
+  onMarkNotCompleted
 }) => {
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -163,22 +156,12 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
                   : `Scheduled: ${format(new Date(record.scheduled_date), "MMM d, yyyy")}`
                 }
               </div>
-              {(() => {
-                const total =
-                  record.total_cost != null
-                    ? record.total_cost
-                    : (record.parts_cost != null || record.labor_cost != null)
-                    ? (record.parts_cost ?? 0) + (record.labor_cost ?? 0)
-                    : record.cost;
-                if (total == null) return null;
-                return (
-                  <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
-                    <DollarSign className="h-3 w-3" />
-                    <span>${Number(total).toLocaleString()}</span>
-                  </div>
-                );
-              })()}
-
+              {record.cost && (
+                <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
+                  <DollarSign className="h-3 w-3" />
+                  <span>${record.cost.toLocaleString()}</span>
+                </div>
+              )}
             </div>
             <div className="flex flex-col items-end gap-2">
               <Badge className={getStatusColor(record.status)}>
@@ -251,19 +234,7 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
           </div>
         </td>
         <td className="text-sm text-right py-4 px-3">
-          {isLoading ? (
-            <span className="inline-block h-4 w-12 rounded bg-gray-200 animate-pulse" />
-          ) : (
-            (() => {
-              const total =
-                record.total_cost != null
-                  ? record.total_cost
-                  : (record.parts_cost != null || record.labor_cost != null)
-                  ? (record.parts_cost ?? 0) + (record.labor_cost ?? 0)
-                  : (record.cost ?? 0);
-              return `$${Number(total).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-            })()
-          )}
+          {record.cost ? `$${record.cost.toLocaleString()}` : "—"}
         </td>
         <td className="text-right py-4 px-3">
           {renderActions()}

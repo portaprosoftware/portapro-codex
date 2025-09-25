@@ -386,7 +386,6 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
                         onDelete={(record) => handleMaintenanceAction('delete', record)}
                         onMarkCompleted={(record) => handleMaintenanceAction('markCompleted', record)}
                         onMarkNotCompleted={(record) => handleMaintenanceAction('markNotCompleted', record)}
-                        isLoading={isLoading}
                       />
                    </TableRow>
                  ))
