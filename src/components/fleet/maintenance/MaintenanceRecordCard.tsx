@@ -54,30 +54,30 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case "critical":
-        return "bg-red-500 text-white";
+        return "bg-gradient-to-r from-red-500 to-red-600 text-white font-bold border-0";
       case "high":
-        return "bg-orange-500 text-white";
+        return "bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold border-0";
       case "medium":
-        return "bg-yellow-500 text-white";
+        return "bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-bold border-0";
       case "low":
-        return "bg-green-500 text-white";
+        return "bg-gradient-to-r from-green-500 to-green-600 text-white font-bold border-0";
       default:
-        return "bg-gray-500 text-white";
+        return "bg-gradient-to-r from-gray-500 to-gray-600 text-white font-bold border-0";
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case "completed":
-        return "bg-green-100 text-green-800";
+        return "bg-gradient-to-r from-green-500 to-green-600 text-white font-bold border-0";
       case "in_progress":
-        return "bg-blue-100 text-blue-800";
+        return "bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0";
       case "scheduled":
-        return "bg-gray-100 text-gray-800";
+        return "bg-gradient-to-r from-gray-500 to-gray-600 text-white font-bold border-0";
       case "cancelled":
-        return "bg-red-100 text-red-800";
+        return "bg-gradient-to-r from-red-500 to-red-600 text-white font-bold border-0";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gradient-to-r from-gray-500 to-gray-600 text-white font-bold border-0";
     }
   };
 
@@ -146,11 +146,11 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
             </div>
             <div className="flex flex-col items-end gap-2">
               <Badge className={getStatusColor(record.status)}>
-                {record.status.replace("_", " ")}
+                {record.status.replace("_", " ").replace(/\b\w/g, l => l.toUpperCase())}
               </Badge>
               {record.priority && (
                 <Badge className={`${getPriorityColor(record.priority)} text-xs`}>
-                  {record.priority}
+                  {record.priority.replace(/\b\w/g, l => l.toUpperCase())}
                 </Badge>
               )}
               {renderActions()}
@@ -173,14 +173,14 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
             <div className="text-xs text-muted-foreground mt-1">{record.vehicles?.license_plate}</div>
           </div>
         </td>
-        <td className="py-4 text-center">
+        <td className="py-4 text-left">
           <div>
             <div className="font-medium text-foreground">{record.maintenance_task_types?.name || record.maintenance_type}</div>
             <div className="text-sm text-muted-foreground truncate max-w-[180px] mt-1">{record.description}</div>
           </div>
         </td>
-        <td className="text-sm py-4">{record.maintenance_vendors?.name || "In-house"}</td>
-        <td className="py-4">
+        <td className="text-sm py-4 text-left">{record.maintenance_vendors?.name || "In-house"}</td>
+        <td className="py-4 text-left">
           <div className="text-sm">
             <div>Scheduled: {format(new Date(record.scheduled_date), "MMM d")}</div>
             {record.completed_date && (
@@ -191,16 +191,16 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
         <td className="py-4">
           <div className="flex flex-col gap-2">
             <Badge className={`${getStatusColor(record.status)} w-fit`}>
-              {record.status.replace("_", " ")}
+              {record.status.replace("_", " ").replace(/\b\w/g, l => l.toUpperCase())}
             </Badge>
             {record.priority && (
               <Badge className={`${getPriorityColor(record.priority)} text-xs w-fit`}>
-                {record.priority}
+                {record.priority.replace(/\b\w/g, l => l.toUpperCase())}
               </Badge>
             )}
           </div>
         </td>
-        <td className="text-sm py-4 text-center">
+        <td className="text-sm py-4 text-left">
           {record.cost ? `$${record.cost.toLocaleString()}` : "—"}
         </td>
         <td className="text-right py-4">
