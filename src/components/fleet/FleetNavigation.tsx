@@ -82,6 +82,10 @@ export const FleetNavigation: React.FC = () => {
 
   const isActiveRoute = (href: string, end?: boolean) => {
     if (end) {
+      // For overview, match both /fleet-management and /fleet routes
+      if (href === "/fleet-management") {
+        return location.pathname === "/fleet-management" || location.pathname === "/fleet";
+      }
       return location.pathname === href;
     }
     return location.pathname.startsWith(href);
