@@ -69,15 +69,18 @@ export function MaintenancePDFExportModal({ open, onOpenChange }: MaintenancePDF
           *,
           vehicles(license_plate, vehicle_type, make, model, nickname),
           maintenance_task_types(name),
-          maintenance_vendors(name),
-          profiles!maintenance_records_technician_id_fkey(first_name, last_name)
+          maintenance_vendors(name)
         `)
         .gte("scheduled_date", format(dateRange.from, "yyyy-MM-dd"))
         .lte("scheduled_date", format(dateRange.to, "yyyy-MM-dd"))
         .order("scheduled_date", { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching maintenance records:", error);
+        throw error;
+      }
 
+      console.log("Fetched records for PDF:", records);
       return records || [];
     },
     onSuccess: (records) => {
@@ -322,7 +325,7 @@ export function MaintenancePDFExportModal({ open, onOpenChange }: MaintenancePDF
                 <td><span class="status ${record.status}">${record.status}</span></td>
                 <td><span class="priority ${record.priority || 'medium'}">${record.priority || 'Medium'}</span></td>
                 <td class="cost">$${(record.total_cost || 0).toFixed(2)}</td>
-                <td>${record.profiles ? `${record.profiles.first_name || ''} ${record.profiles.last_name || ''}`.trim() : 'Unassigned'}</td>
+                <td>${record.technician_name || 'Unassigned'}</td>
                 <td>${record.maintenance_vendors?.name || 'N/A'}</td>
               </tr>
             `).join('')}
