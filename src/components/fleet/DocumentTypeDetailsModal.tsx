@@ -1,7 +1,6 @@
 import React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
-import { FileText, Settings } from "lucide-react";
+import { FileText } from "lucide-react";
 
 interface DocumentTypeDetailsModalProps {
   isOpen: boolean;
@@ -56,15 +55,7 @@ export const DocumentTypeDetailsModal: React.FC<DocumentTypeDetailsModalProps> =
           {/* Document Name */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">Document Name</label>
-            <div className="flex items-center gap-2">
-              <span className="text-gray-900">{documentType.name}</span>
-              <Badge 
-                variant={documentType.isPredefined ? "secondary" : "outline"}
-                className="text-xs"
-              >
-                {documentType.isPredefined ? "Predefined" : "Custom"}
-              </Badge>
-            </div>
+            <div className="text-gray-900">{documentType.name}</div>
           </div>
 
           {/* Description */}
@@ -77,19 +68,6 @@ export const DocumentTypeDetailsModal: React.FC<DocumentTypeDetailsModalProps> =
             </div>
           </div>
 
-          {/* Type Information */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Type Information</label>
-            <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
-              <Settings className="w-4 h-4 text-gray-500" />
-              <span className="text-sm text-gray-700">
-                {documentType.isPredefined 
-                  ? "This is a predefined document type that comes built-in with the system."
-                  : "This is a custom document type created specifically for your organization."
-                }
-              </span>
-            </div>
-          </div>
         </div>
       </DialogContent>
     </Dialog>
