@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { VehicleCard } from "./VehicleCard";
-import { VehicleDetailModal } from "./VehicleDetailModal";
+import { VehicleDetailDrawer } from "./VehicleDetailDrawer";
 import { VehicleManagement } from "./VehicleManagement";
 import { FuelManagement } from "./FuelManagement";
 import { AddVehicleModal } from "./AddVehicleModal";
@@ -202,9 +202,9 @@ export const FleetOverview: React.FC = () => {
         </div>
       )}
 
-      {/* Vehicle Detail Modal */}
+      {/* Vehicle Detail Drawer */}
       {selectedVehicle && (
-        <VehicleDetailModal
+        <VehicleDetailDrawer
           vehicle={selectedVehicle}
           isOpen={isVehicleModalOpen}
           onClose={() => {
