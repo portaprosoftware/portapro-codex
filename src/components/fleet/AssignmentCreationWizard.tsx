@@ -16,7 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { VehicleFilterModal } from "./VehicleFilterModal";
+import { StockVehicleSelectionModal } from "./StockVehicleSelectionModal";
 import { DriverSelectionModal } from "./DriverSelectionModal";
 import { CalendarIcon, ChevronLeft, ChevronRight, Check, Truck, User, Plus, X } from "lucide-react";
 import { format } from "date-fns";
@@ -605,12 +605,15 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
       </SheetContent>
 
       {/* Vehicle Selection Modal */}
-      <VehicleFilterModal
-        open={vehicleModalOpen}
-        onOpenChange={setVehicleModalOpen}
-        selectedDate={selectedDate}
-        selectedVehicle={selectedVehicle}
-        onVehicleSelect={setSelectedVehicle}
+      <StockVehicleSelectionModal
+        isOpen={vehicleModalOpen}
+        onClose={() => setVehicleModalOpen(false)}
+        selectedVehicleId={selectedVehicle?.id}
+        onSelectVehicle={(vehicleId) => {
+          // Find the full vehicle object from the vehicleId
+          setSelectedVehicle({ id: vehicleId });
+          setVehicleModalOpen(false);
+        }}
       />
 
       {/* Driver Selection Modal */}

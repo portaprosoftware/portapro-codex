@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useJobWizard } from '@/contexts/JobWizardContext';
 import { DriverSelectionModal } from '@/components/fleet/DriverSelectionModal';
-import { VehicleFilterModal } from '@/components/fleet/VehicleFilterModal';
+import { StockVehicleSelectionModal } from '@/components/fleet/StockVehicleSelectionModal';
 import { useQuery } from '@tanstack/react-query';
 import { calculateServiceVisits } from '@/lib/serviceCalculations';
 
@@ -2154,22 +2154,22 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
       />
 
       {/* Vehicle Selection Modal */}
-      <VehicleFilterModal
-        open={showVehicleModal}
-        onOpenChange={(open) => {
-          setShowVehicleModal(open);
-          if (!open) {
-            setSelectedServiceId('');
-            setSelectedDateKey('');
-            setSelectedDayForAssignment('');
-          }
+      <StockVehicleSelectionModal
+        isOpen={showVehicleModal}
+        onClose={() => {
+          setShowVehicleModal(false);
+          setSelectedServiceId('');
+          setSelectedDateKey('');
+          setSelectedDayForAssignment('');
         }}
-        selectedDate={selectedServiceDate}
-        selectedVehicle={selectedServiceId && selectedDateKey 
-          ? getIndividualAssignment(selectedServiceId, selectedDateKey)?.vehicle || data.scheduledVehicleForAll
-          : data.scheduledVehicleForAll
-        }
-        onVehicleSelect={handleVehicleSelect}
+        selectedVehicleId={(selectedServiceId && selectedDateKey 
+          ? getIndividualAssignment(selectedServiceId, selectedDateKey)?.vehicle?.id || data.scheduledVehicleForAll?.id
+          : data.scheduledVehicleForAll?.id
+        )}
+        onSelectVehicle={(vehicleId) => {
+          // Convert vehicleId to vehicle object for handleVehicleSelect
+          handleVehicleSelect({ id: vehicleId });
+        }}
       />
 
       {/* Remove Override Confirmation Dialog */}
