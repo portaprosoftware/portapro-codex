@@ -487,23 +487,35 @@ export const AddRecurringServiceSlider: React.FC<AddRecurringServiceSliderProps>
                             </div>
                           )}
                         </div>
-
+                        
                         {/* Vehicle Details */}
-                        <div className="p-4">
-                          <div className="flex items-center justify-between mb-2">
-                            <h3 className="font-medium text-gray-900">
-                              {vehicle.license_plate || `Vehicle ${vehicle.id.slice(0, 8)}`}
-                            </h3>
-                            <Badge variant="outline" className="text-xs">
-                              {vehicle.status}
+                        <div className="p-4 space-y-2">
+                          <h4 className="font-bold text-lg text-gray-900">
+                            {vehicle.license_plate || `Vehicle ${vehicle.id.slice(0, 8)}`}
+                          </h4>
+                          
+                          {(vehicle.make || vehicle.model || vehicle.year) && (
+                            <div className="space-y-1">
+                              <span className="text-sm text-gray-600 font-medium">Make/Model:</span>
+                              <p className="text-sm text-gray-900 leading-tight">
+                                {[vehicle.make, vehicle.model, vehicle.year].filter(Boolean).join(' ')}
+                              </p>
+                            </div>
+                          )}
+                          
+                          {vehicle.vehicle_type && (
+                            <div className="flex justify-between items-center">
+                              <span className="text-sm text-gray-600 font-medium">Type:</span>
+                              <span className="text-sm text-gray-900 capitalize">{vehicle.vehicle_type}</span>
+                            </div>
+                          )}
+
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-gray-600 font-medium">Status:</span>
+                            <Badge variant="outline" className="text-green-600 border-green-600">
+                              Available
                             </Badge>
                           </div>
-                          <p className="text-sm text-gray-600 mb-1">
-                            {vehicle.make} {vehicle.model} {vehicle.year}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            Type: {vehicle.vehicle_type || "N/A"}
-                          </p>
                         </div>
                       </div>
                     </CardContent>
@@ -513,21 +525,54 @@ export const AddRecurringServiceSlider: React.FC<AddRecurringServiceSliderProps>
             )}
 
             {/* No Results */}
-            {!vehiclesLoading && filteredVehicles.length === 0 && (
-              <div className="text-center py-8">
-                <Truck className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500">No vehicles found matching your search.</p>
+            {!vehiclesLoading && filteredVehicles.length === 0 && vehicles.length > 0 && (
+              <div className="text-center py-8 text-gray-500">
+                <Truck className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                <p>No vehicles found matching your search.</p>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setSearchTerm("")}
+                  className="mt-2"
+                >
+                  Clear Search
+                </Button>
               </div>
             )}
+
+            {/* No Vehicles Available */}
+            {!vehiclesLoading && vehicles.length === 0 && (
+              <div className="text-center py-8 text-gray-500">
+                <Truck className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                <p>No vehicles available for recurring services.</p>
+                <p className="text-sm mt-1">Please add vehicles to your fleet first.</p>
+              </div>
+            )}
+          </div>
+
+          <div className="flex justify-between items-center gap-2 pt-4 border-t">
+            <div className="text-sm text-muted-foreground">
+              {filteredVehicles.length} vehicle{filteredVehicles.length !== 1 ? 's' : ''} available
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setShowVehicleModal(false)}>
+                Cancel
+              </Button>
+              {selectedVehicle && (
+                <Button onClick={() => handleVehicleSelect(selectedVehicle)}>
+                  Confirm Selection
+                </Button>
+              )}
+            </div>
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* Task Selector Modal */}
+      {/* Maintenance Task Selector Modal */}
       <MaintenanceTaskSelector
         open={showTaskSelector}
         onOpenChange={setShowTaskSelector}
         onTaskSelect={handleTaskSelect}
+        selectedTaskId={taskTypeId}
       />
     </Drawer>
   );
