@@ -16,7 +16,7 @@ interface VehicleTypeSelectorProps {
 const vehicleTypeCategories = [
   {
     id: "light",
-    name: "🚚 Light & Utility Vehicles",
+    name: "🛻 Light & Utility Vehicles",
     color: "bg-gradient-to-r from-blue-500 to-blue-600 text-white",
     types: [
       { id: "pickup", name: "Pickup Truck" },
@@ -53,7 +53,7 @@ const vehicleTypeCategories = [
   },
   {
     id: "trailers",
-    name: "🛻 Trailers",
+    name: "🪝 Trailers",
     color: "bg-gradient-to-r from-orange-500 to-orange-600 text-white",
     types: [
       { id: "enclosed-trailer", name: "Enclosed Trailer" },
