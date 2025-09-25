@@ -59,8 +59,8 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
       const assignmentDate = new Date(editingAssignment.assignment_date + 'T00:00:00');
       setSelectedDate(assignmentDate);
       setSelectedVehicle(editingAssignment.vehicles);
-      setSelectedDriver(editingAssignment.profiles);
-      setStartMileage(editingAssignment.start_mileage?.toString() || "");
+      const driverProfile = editingAssignment.profiles;
+      setSelectedDriver({ ...driverProfile, status: "assigned" });
       setNotes(editingAssignment.notes || "");
     }
   }, [editingAssignment]);

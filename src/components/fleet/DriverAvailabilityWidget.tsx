@@ -205,11 +205,14 @@ export const DriverAvailabilityWidget: React.FC<DriverAvailabilityWidgetProps> =
               )}
               onClick={() => {
                 if (selectionMode && onDriverSelect) {
+                  const wh = workingHours?.[driver.id];
+                  const workingHoursStr = wh ? `${wh.start_time.slice(0, 5)} - ${wh.end_time.slice(0, 5)}` : "Not scheduled";
                   const driverWithDetails = {
                     ...driver,
+                    status,
                     availability_status: getStatusText(status),
-                    working_hours: "08:00:00 - 17:00:00",
-                    scheduled_jobs: jobList
+                    working_hours: workingHoursStr,
+                    scheduled_jobs: jobList,
                   };
                   onDriverSelect(driverWithDetails);
                 }

@@ -111,19 +111,31 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
     enabled: !!selectedDate,
   });
 
-  // For now, disable scheduled jobs query due to schema mismatch
-  // This can be enabled once the jobs table schema is clarified
-  const jobs: any[] = [];
+  const { data: jobsRaw = [] } = useQuery({
+    queryKey: ["driver-jobs-modal", selectedDate?.toISOString().split('T')[0]],
+    queryFn: async () => {
+      if (!selectedDate) return [];
+      const dateStr = selectedDate.toISOString().split('T')[0];
+      const { data, error } = await supabase
+        .from("jobs")
+        .select("id, driver_id, scheduled_time, job_type")
+        .eq("scheduled_date", dateStr)
+        .in("status", ["assigned", "in_progress"]);
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!selectedDate,
+  });
 
   const assignedDriverIds = new Set(assignments.map(a => a.driver_id));
-  const jobsByDriver = jobs.reduce((acc, job) => {
+  const jobsByDriver = jobsRaw.reduce((acc, job: any) => {
     if (!acc[job.driver_id]) acc[job.driver_id] = [];
     acc[job.driver_id].push({
       id: job.id,
       job_type: job.job_type,
-      scheduled_start: job.scheduled_start,
-      scheduled_end: job.scheduled_end,
-      service_locations: job.service_locations
+      scheduled_start: job.scheduled_time,
+      scheduled_end: job.scheduled_time,
+      service_locations: undefined,
     });
     return acc;
   }, {} as Record<string, ScheduledJob[]>);
@@ -281,7 +293,17 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
             <div className="space-y-3">
               {filteredDrivers.map((driver) => {
                 const isSelected = selectedDriver?.id === driver.id;
-                
+                const driverJobs = (driver.scheduledJobs || []) as any[];
+                const morningBooked = driverJobs.some((j) => {
+                  const t = (j.scheduled_start || '') as string;
+                  const h = parseInt((t.split(':')[0] || '0'), 10);
+                  return !isNaN(h) && h < 12;
+                });
+                const afternoonBooked = driverJobs.some((j) => {
+                  const t = (j.scheduled_start || '') as string;
+                  const h = parseInt((t.split(':')[0] || '0'), 10);
+                  return !isNaN(h) && h >= 12;
+                });
                 return (
                   <div
                     key={driver.id}
@@ -327,11 +349,11 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
 
                         {/* Time Slots */}
                         <div className="flex gap-2 mb-3">
-                          <Badge variant="outline" className="text-xs font-medium bg-gradient-to-r from-green-500 to-green-600 text-white border-0">
-                            Morning: Available
+                          <Badge variant="outline" className={`text-xs font-medium ${morningBooked ? 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white border-0' : 'bg-gradient-to-r from-green-500 to-green-600 text-white border-0'}`}>
+                            Morning: {morningBooked ? 'Assigned' : 'Available'}
                           </Badge>
-                          <Badge variant="outline" className="text-xs font-medium bg-gradient-to-r from-green-500 to-green-600 text-white border-0">
-                            Afternoon: Available
+                          <Badge variant="outline" className={`text-xs font-medium ${afternoonBooked ? 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white border-0' : 'bg-gradient-to-r from-green-500 to-green-600 text-white border-0'}`}>
+                            Afternoon: {afternoonBooked ? 'Assigned' : 'Available'}
                           </Badge>
                         </div>
 
