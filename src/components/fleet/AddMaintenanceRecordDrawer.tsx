@@ -44,6 +44,7 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
   const [showTaskSelector, setShowTaskSelector] = useState(false);
   const [vendorId, setVendorId] = useState("");
   const [description, setDescription] = useState("");
+  const [vehicleMiles, setVehicleMiles] = useState("");
   const [scheduledDate, setScheduledDate] = useState<Date>();
   const [priority, setPriority] = useState("medium");
   const [estimatedCost, setEstimatedCost] = useState("");
@@ -135,6 +136,7 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
     setTaskTypeName("");
     setVendorId("");
     setDescription("");
+    setVehicleMiles("");
     setScheduledDate(undefined);
     setPriority("medium");
     setEstimatedCost("");
@@ -174,8 +176,8 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!vehicleId || !description || !scheduledDate) {
-      toast.error("Please fill in all required fields");
+    if (!vehicleId || !scheduledDate || !estimatedCost) {
+      toast.error("Please fill in all required fields (Vehicle, Date, and Cost)");
       return;
     }
 
@@ -183,13 +185,14 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
       vehicle_id: vehicleId,
       task_type_id: taskTypeId || null,
       vendor_id: vendorId || null,
-      description,
+      description: description || null,
+      vehicle_miles: vehicleMiles ? parseInt(vehicleMiles) : null,
       scheduled_date: scheduledDate.toISOString().split('T')[0],
       priority,
-      cost: estimatedCost ? parseFloat(estimatedCost) : null,
+      cost: parseFloat(estimatedCost),
       notes,
       status: "scheduled",
-      maintenance_type: description
+      maintenance_type: taskTypeName || description || "General Maintenance"
     };
 
     createMaintenanceRecord.mutate(recordData);
@@ -283,15 +286,27 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="description">Description *</Label>
-              <Input
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="e.g., Oil change, brake inspection..."
-                required
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Input
+                  id="description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="e.g., Oil change, brake inspection..."
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="vehicleMiles">Vehicle Miles</Label>
+                <Input
+                  id="vehicleMiles"
+                  type="number"
+                  value={vehicleMiles}
+                  onChange={(e) => setVehicleMiles(e.target.value)}
+                  placeholder="Current odometer reading"
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -323,7 +338,7 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="estimatedCost">Cost</Label>
+                <Label htmlFor="estimatedCost">Cost *</Label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">$</span>
                   <Input
@@ -333,7 +348,7 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
                     value={estimatedCost}
                     onChange={(e) => setEstimatedCost(e.target.value)}
                     placeholder="0.00"
-                    className="pl-7"
+                    required
                   />
                 </div>
               </div>
