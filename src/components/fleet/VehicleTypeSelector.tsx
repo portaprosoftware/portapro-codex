@@ -155,12 +155,11 @@ export const VehicleTypeSelector: React.FC<VehicleTypeSelectorProps> = ({
             )}
             {selectedCategory ? (
               <>
-                <span className="text-2xl">{currentCategory?.icon}</span>
-                Select Vehicle Type from {currentCategory?.name}
+                Select: {currentCategory?.name}
               </>
             ) : (
               <>
-                🚚 Select Vehicle Category
+                Select Vehicle Category
               </>
             )}
           </DialogTitle>
@@ -242,8 +241,8 @@ export const VehicleTypeSelector: React.FC<VehicleTypeSelectorProps> = ({
                   onClick={() => handleCategorySelect(category.id)}
                 >
                   <CardContent className="p-6 text-center">
-                    <div className="text-4xl mb-3">{category.icon}</div>
-                    <h3 className="font-semibold text-lg text-gray-900 mb-2">
+                    <h3 className="font-semibold text-lg text-gray-900 mb-2 flex items-center justify-center gap-2">
+                      <span className="text-lg">{category.icon}</span>
                       {category.name}
                     </h3>
                     <Badge className={category.color}>
