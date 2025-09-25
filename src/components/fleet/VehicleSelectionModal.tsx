@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Truck, Search, Calendar, CheckCircle } from "lucide-react";
+import { Truck, Search, Calendar, CheckCircle, Filter } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 
@@ -36,15 +36,16 @@ export const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
   onVehicleSelect,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   // Fetch vehicles
   const { data: vehicles = [], isLoading } = useQuery({
-    queryKey: ["vehicles"],
+    queryKey: ["vehicles-all-statuses"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("vehicles")
         .select("*")
-        .eq("status", "available")
+        .in("status", ["available", "maintenance", "permanently_retired"])
         .order("license_plate", { ascending: true });
       
       if (error) throw error;
@@ -53,13 +54,18 @@ export const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
     enabled: open, // Only fetch when modal is open
   });
 
-  // Filter vehicles based on search term
-  const filteredVehicles = vehicles.filter(vehicle =>
-    (vehicle.license_plate?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
-    (vehicle.vehicle_type?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
-    (vehicle.make?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
-    (vehicle.model?.toLowerCase().includes(searchTerm.toLowerCase()) || false)
-  );
+  // Filter vehicles based on search term and status
+  const filteredVehicles = vehicles.filter(vehicle => {
+    const matchesSearch = 
+      (vehicle.license_plate?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
+      (vehicle.vehicle_type?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
+      (vehicle.make?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
+      (vehicle.model?.toLowerCase().includes(searchTerm.toLowerCase()) || false);
+    
+    const matchesStatus = statusFilter === "all" || vehicle.status === statusFilter;
+    
+    return matchesSearch && matchesStatus;
+  });
 
   const handleSelectVehicle = (vehicle: Vehicle) => {
     onVehicleSelect(vehicle);
@@ -82,14 +88,37 @@ export const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Truck className="h-5 w-5 text-blue-600" />
-            Select Vehicle for {format(selectedDate, 'MMM dd, yyyy')}
+            Select Vehicle for Filtering
           </DialogTitle>
           <DialogDescription>
-            Choose a vehicle to assign for the selected date. You can search by license plate, vehicle type, make, or model.
+            Choose a vehicle to filter maintenance records. You can search by license plate, vehicle type, make, or model.
           </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-4 flex-1 overflow-hidden">
+          {/* Status Filter Tabs */}
+          <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
+            <Filter className="h-4 w-4 text-gray-500" />
+            <div className="flex gap-1">
+              {[
+                { value: "all", label: "All Vehicles" },
+                { value: "available", label: "Available" },
+                { value: "maintenance", label: "Maintenance" },
+                { value: "permanently_retired", label: "Retired" }
+              ].map((status) => (
+                <Button
+                  key={status.value}
+                  variant={statusFilter === status.value ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setStatusFilter(status.value)}
+                  className="text-xs"
+                >
+                  {status.label}
+                </Button>
+              ))}
+            </div>
+          </div>
+
           {/* Search */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -104,7 +133,7 @@ export const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
           {/* Selected Date Info */}
           <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted p-3 rounded-lg">
             <Calendar className="h-4 w-4" />
-            <span>Assigning vehicle for: {format(selectedDate, 'EEEE, MMMM dd, yyyy')}</span>
+            <span>Filtering maintenance records for vehicle selection</span>
           </div>
 
           {/* Loading State */}
@@ -180,8 +209,22 @@ export const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
 
                         <div className="flex justify-between items-center">
                           <span className="text-sm text-gray-600 font-medium">Status:</span>
-                          <Badge variant="outline" className="text-green-600 border-green-600">
-                            Available
+                          <Badge 
+                            variant="outline" 
+                            className={
+                              vehicle.status === "available" 
+                                ? "text-green-600 border-green-600" 
+                                : vehicle.status === "maintenance"
+                                ? "text-yellow-600 border-yellow-600"
+                                : "text-red-600 border-red-600"
+                            }
+                          >
+                            {vehicle.status === "available" 
+                              ? "Available" 
+                              : vehicle.status === "maintenance"
+                              ? "Maintenance"
+                              : "Retired"
+                            }
                           </Badge>
                         </div>
                       </div>
