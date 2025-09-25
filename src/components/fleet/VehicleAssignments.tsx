@@ -136,18 +136,41 @@ const VehicleAssignmentsContent: React.FC<{
     queryKey: ["daily-vehicle-assignments", selectedDate],
     queryFn: async () => {
       const dateStr = format(selectedDate, "yyyy-MM-dd");
-      const { data, error } = await supabase
+      
+      // Get assignments first
+      const { data: assignmentsData, error: assignmentsError } = await supabase
         .from("daily_vehicle_assignments")
-        .select(`
-          *,
-          vehicles(license_plate, vehicle_type, make, model),
-          profiles(first_name, last_name)
-        `)
+        .select("*")
         .eq("assignment_date", dateStr)
         .order("created_at", { ascending: false });
       
-      if (error) throw error;
-      return data || [];
+      if (assignmentsError) throw assignmentsError;
+      if (!assignmentsData || assignmentsData.length === 0) return [];
+
+      // Get vehicle data for assigned vehicles
+      const vehicleIds = assignmentsData.map(a => a.vehicle_id);
+      const { data: vehiclesData, error: vehiclesError } = await supabase
+        .from("vehicles")
+        .select("id, license_plate, vehicle_type, make, model")
+        .in("id", vehicleIds);
+      
+      if (vehiclesError) throw vehiclesError;
+
+      // Get profile data for assigned drivers  
+      const driverIds = assignmentsData.map(a => a.driver_id);
+      const { data: profilesData, error: profilesError } = await supabase
+        .from("profiles")
+        .select("id, first_name, last_name")
+        .in("id", driverIds);
+      
+      if (profilesError) throw profilesError;
+
+      // Combine the data
+      return assignmentsData.map(assignment => ({
+        ...assignment,
+        vehicles: vehiclesData?.find(v => v.id === assignment.vehicle_id),
+        profiles: profilesData?.find(p => p.id === assignment.driver_id)
+      }));
     },
   });
 
@@ -172,10 +195,13 @@ const VehicleAssignmentsContent: React.FC<{
                 </div>
                 <div>
                   <h4 className="font-medium text-gray-900">
-                    {assignment.vehicles?.license_plate}
+                    {assignment.vehicles?.license_plate || "Unknown Vehicle"}
                   </h4>
                   <p className="text-sm text-gray-600">
-                    {assignment.vehicles?.make} {assignment.vehicles?.model} • {assignment.vehicles?.vehicle_type}
+                    {assignment.vehicles ? 
+                      `${assignment.vehicles.make} ${assignment.vehicles.model} • ${assignment.vehicles.vehicle_type?.toUpperCase()}` :
+                      "Vehicle details unavailable"
+                    }
                   </p>
                 </div>
               </div>
@@ -184,7 +210,10 @@ const VehicleAssignmentsContent: React.FC<{
                 <div className="flex items-center space-x-2">
                   <User className="w-4 h-4 text-gray-400" />
                   <span className="text-sm text-gray-700">
-                    {assignment.profiles?.first_name} {assignment.profiles?.last_name}
+                    {assignment.profiles?.first_name && assignment.profiles?.last_name ? 
+                      `${assignment.profiles.first_name} ${assignment.profiles.last_name}` :
+                      "Driver not found"
+                    }
                   </span>
                 </div>
                 
@@ -195,7 +224,14 @@ const VehicleAssignmentsContent: React.FC<{
                   )}
                 </div>
                 
-                <Button variant="outline" size="sm">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    // For now, just log the assignment - you can implement edit functionality later
+                    console.log('Edit assignment:', assignment);
+                  }}
+                >
                   Edit
                 </Button>
               </div>
