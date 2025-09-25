@@ -81,6 +81,7 @@ export const FleetCompliance: React.FC = () => {
                 </Dialog>
               </div>
               <p className="text-base text-gray-600 font-inter mt-1">DOT/FMCSA, state permits, spill readiness, and EPA/OSHA docs</p>
+              <p className="text-sm text-gray-500 font-inter mt-1">Documents also accessible from each vehicle's details page</p>
             </div>
           </div>
 
