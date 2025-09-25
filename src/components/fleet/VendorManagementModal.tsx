@@ -103,6 +103,8 @@ export const VendorManagementModal: React.FC<VendorManagementModalProps> = ({
     state: "",
     zip: "",
     service_specialties: [] as string[],
+    hourly_rate: "",
+    daily_rate: "",
     notes: ""
   });
 
@@ -121,6 +123,8 @@ export const VendorManagementModal: React.FC<VendorManagementModalProps> = ({
         state: vendor.state || "",
         zip: vendor.zip || "",
         service_specialties: vendor.service_specialties || [],
+        hourly_rate: vendor.hourly_rate?.toString() || "",
+        daily_rate: vendor.daily_rate?.toString() || "",
         notes: vendor.notes || ""
       });
     } else {
@@ -136,6 +140,8 @@ export const VendorManagementModal: React.FC<VendorManagementModalProps> = ({
         state: "",
         zip: "",
         service_specialties: [],
+        hourly_rate: "",
+        daily_rate: "",
         notes: ""
       });
     }
@@ -180,9 +186,14 @@ export const VendorManagementModal: React.FC<VendorManagementModalProps> = ({
 
   const createVendor = useMutation({
     mutationFn: async (data: typeof formData) => {
+      const submitData = {
+        ...data,
+        hourly_rate: data.hourly_rate ? parseFloat(data.hourly_rate) : null,
+        daily_rate: data.daily_rate ? parseFloat(data.daily_rate) : null
+      };
       const { error } = await supabase
         .from("maintenance_vendors")
-        .insert([data]);
+        .insert([submitData]);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -197,9 +208,14 @@ export const VendorManagementModal: React.FC<VendorManagementModalProps> = ({
 
   const updateVendor = useMutation({
     mutationFn: async (data: typeof formData) => {
+      const submitData = {
+        ...data,
+        hourly_rate: data.hourly_rate ? parseFloat(data.hourly_rate) : null,
+        daily_rate: data.daily_rate ? parseFloat(data.daily_rate) : null
+      };
       const { error } = await supabase
         .from("maintenance_vendors")
-        .update(data)
+        .update(submitData)
         .eq("id", vendor.id);
       if (error) throw error;
     },
@@ -285,6 +301,32 @@ export const VendorManagementModal: React.FC<VendorManagementModalProps> = ({
                   value={formData.email}
                   onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                   placeholder="contact@abcmechanics.com"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="hourly_rate">Hourly Rate</Label>
+                <Input
+                  id="hourly_rate"
+                  type="number"
+                  step="0.01"
+                  value={formData.hourly_rate}
+                  onChange={(e) => setFormData(prev => ({ ...prev, hourly_rate: e.target.value }))}
+                  placeholder="0.00"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="daily_rate">Daily Rate</Label>
+                <Input
+                  id="daily_rate"
+                  type="number"
+                  step="0.01"
+                  value={formData.daily_rate}
+                  onChange={(e) => setFormData(prev => ({ ...prev, daily_rate: e.target.value }))}
+                  placeholder="0.00"
                 />
               </div>
             </div>

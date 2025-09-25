@@ -172,6 +172,8 @@ export const MaintenanceSettingsTab: React.FC = () => {
                 <TableHead>Contact</TableHead>
                 <TableHead>Phone</TableHead>
                 <TableHead>Specialties</TableHead>
+                <TableHead>Hourly Rate</TableHead>
+                <TableHead>Daily Rate</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -199,6 +201,8 @@ export const MaintenanceSettingsTab: React.FC = () => {
                       "General"
                     )}
                   </TableCell>
+                  <TableCell>{vendor.hourly_rate ? `$${vendor.hourly_rate}` : "—"}</TableCell>
+                  <TableCell>{vendor.daily_rate ? `$${vendor.daily_rate}` : "—"}</TableCell>
                   <TableCell>
                     <div className="flex gap-2">
                       <Button 
