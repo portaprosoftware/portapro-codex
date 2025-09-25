@@ -42,18 +42,6 @@ export const MaintenanceSettingsTab: React.FC = () => {
     }
   }, [companySettings]);
 
-  // Fetch task types
-  const { data: taskTypes } = useQuery({
-    queryKey: ["maintenance-task-types"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("maintenance_task_types")
-        .select("*")
-        .order("name");
-      if (error) throw error;
-      return data;
-    }
-  });
 
   // Fetch vendors
   const { data: vendors } = useQuery({
@@ -235,96 +223,6 @@ export const MaintenanceSettingsTab: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Default Intervals */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Default Maintenance Intervals</CardTitle>
-          <CardDescription>
-            Configure default service intervals for different maintenance types
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Task Type</TableHead>
-                <TableHead>Default Miles</TableHead>
-                <TableHead>Default Days</TableHead>
-                <TableHead>Default Cost</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {taskTypes?.map((taskType) => (
-                <TableRow key={taskType.id}>
-                  <TableCell className="font-medium">{taskType.name}</TableCell>
-                  <TableCell>{taskType.default_interval_miles || "—"}</TableCell>
-                  <TableCell>{taskType.default_interval_days || "—"}</TableCell>
-                  <TableCell>${taskType.default_cost || 0}</TableCell>
-                  <TableCell>
-                    <Button size="sm" variant="outline">
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <div className="mt-4">
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              Add New Task Type
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Notification Timing */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Notification Timing</CardTitle>
-          <CardDescription>
-            Configure when and how maintenance reminders are sent
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <Label htmlFor="advance-days">Advance Notice (Days)</Label>
-              <Input 
-                id="advance-days"
-                type="number" 
-                defaultValue="7"
-                min="1"
-                max="30"
-              />
-            </div>
-            <div>
-              <Label htmlFor="send-time">Daily Send Time</Label>
-              <Select defaultValue="08:00">
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {Array.from({ length: 24 }, (_, i) => (
-                    <SelectItem key={i} value={`${i.toString().padStart(2, '0')}:00`}>
-                      {`${i.toString().padStart(2, '0')}:00`}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="from-email">From Email</Label>
-              <Input 
-                id="from-email"
-                type="email" 
-                placeholder="maintenance@company.com"
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Data Retention */}
       <Card>
