@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StatCard } from "@/components/ui/StatCard";
 import { AlertTriangle, Clock, Settings, DollarSign, Wrench } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { addManualRefreshButton } from "@/utils/devUtils";
 
 interface MaintenanceRecord {
   id: string;
@@ -26,6 +27,7 @@ interface MaintenanceRecord {
     vehicle_type: string;
   };
 }
+const HMR_KEY = new Date().toISOString();
 
 export const MaintenanceManagement: React.FC = () => {
   return (
@@ -108,6 +110,24 @@ const MaintenanceManagementContent: React.FC = () => {
   const scheduledToday = getScheduledToday();
   const totalCost = getTotalCompletedCost();
 
+  // Dev helpers: add cache clear button and log metrics
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      addManualRefreshButton();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!import.meta.env.DEV) return;
+    console.log('[MaintenanceManagement] metrics', {
+      records: maintenanceRecords?.length ?? 0,
+      overdue: overdueItems.length,
+      dueThisWeek: dueThisWeek.length,
+      scheduledToday: scheduledToday.length,
+      totalCost,
+    });
+  }, [maintenanceRecords, overdueItems.length, dueThisWeek.length, scheduledToday.length, totalCost]);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -117,10 +137,10 @@ const MaintenanceManagementContent: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div key={HMR_KEY} className="space-y-6">
       {/* Overview Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
+        <StatCard key={`overdue-${overdueItems.length}-${HMR_KEY}`}
           title="Maintenance items past due"
           value={overdueItems.length}
           icon={AlertTriangle}
@@ -130,7 +150,7 @@ const MaintenanceManagementContent: React.FC = () => {
           subtitleColor="text-red-600"
         />
         
-        <StatCard
+        <StatCard key={`week-${dueThisWeek.length}-${HMR_KEY}`}
           title="Items scheduled this week"
           value={dueThisWeek.length}
           icon={Clock}
@@ -140,7 +160,7 @@ const MaintenanceManagementContent: React.FC = () => {
           subtitleColor="text-orange-600"
         />
         
-        <StatCard
+        <StatCard key={`today-${scheduledToday.length}-${HMR_KEY}`}
           title="Scheduled Today"
           value={scheduledToday.length}
           icon={Wrench}
@@ -151,7 +171,7 @@ const MaintenanceManagementContent: React.FC = () => {
           animateValue={true}
         />
         
-        <StatCard
+        <StatCard key={`ytd-${totalCost.toFixed(2)}-${HMR_KEY}`}
           title="Year-to-Date"
           subtitle="Maintenance Spend"
           value={`$${totalCost.toFixed(2)}`}
