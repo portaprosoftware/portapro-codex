@@ -227,7 +227,7 @@ export default function FleetFiles() {
       <div className="bg-white rounded-lg border shadow-sm p-6">
         <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-foreground font-inter">
+            <h1 className="text-2xl font-bold text-foreground font-inter">
               Documents & Photos
             </h1>
             <p className="text-muted-foreground mt-1">
@@ -240,7 +240,7 @@ export default function FleetFiles() {
               vehicles={vehicles || []}
               categories={categories || []}
               trigger={
-                <Button size="lg" className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800">
+                <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800">
                   <Upload className="w-4 h-4 mr-2" />
                   Upload Documents
                 </Button>
