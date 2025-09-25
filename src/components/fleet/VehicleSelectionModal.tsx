@@ -233,8 +233,8 @@ export const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
                 </Card>
               ))}
               {/* Spacer blank card to allow scrolling past last row */}
-              <Card key="spacer" className="bg-white border pointer-events-none select-none">
-                <CardContent className="h-[150px] sm:h-[180px]" />
+              <Card key="spacer" className="col-span-full bg-white border pointer-events-none select-none">
+                <CardContent className="h-16" />
               </Card>
             </div>
           )}
