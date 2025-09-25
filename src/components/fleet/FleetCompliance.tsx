@@ -85,7 +85,7 @@ export const FleetCompliance: React.FC = () => {
             </div>
           </div>
 
-          <Tabs defaultValue="documents" className="space-y-4">
+          <Tabs defaultValue="documents" className="space-y-6">
             <TabsList className="bg-white rounded-full p-1 shadow-sm border w-fit overflow-x-auto">
               <TabsTrigger value="documents" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Documents</TabsTrigger>
               <TabsTrigger value="types" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Document Types</TabsTrigger>
