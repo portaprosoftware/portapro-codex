@@ -422,7 +422,6 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
         <StockVehicleSelectionModal
           isOpen={showVehicleModal}
           onClose={() => setShowVehicleModal(false)}
-          vehicles={vehicles || []}
           selectedVehicleId={stockVehicleId}
           onSelectVehicle={(vehicleId) => {
             setStockVehicleId(vehicleId);

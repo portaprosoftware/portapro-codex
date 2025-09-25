@@ -510,7 +510,6 @@ export const EnhancedJobFilters: React.FC<EnhancedJobFiltersProps> = ({
         <StockVehicleSelectionModal
           isOpen={showVehicleModal}
           onClose={() => setShowVehicleModal(false)}
-          vehicles={vehicles || []}
           selectedVehicleId={stockVehicleId}
           onSelectVehicle={(vehicleId) => {
             setStockVehicleId(vehicleId);

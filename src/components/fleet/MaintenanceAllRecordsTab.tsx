@@ -15,7 +15,7 @@ import { RecurringServiceModal } from "./maintenance/RecurringServiceModal";
 import { AddMaintenanceRecordDrawer } from "./AddMaintenanceRecordDrawer";
 import { AddRecurringServiceSlider } from "./AddRecurringServiceSlider";
 import { DeleteMaintenanceConfirmDialog } from "./maintenance/DeleteMaintenanceConfirmDialog";
-import { VehicleSelectionModal } from "./VehicleSelectionModal";
+import { VehicleFilterModal } from "./VehicleFilterModal";
 import { toast } from "sonner";
 
 export const MaintenanceAllRecordsTab: React.FC = () => {
@@ -436,7 +436,7 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
       />
 
       {/* Vehicle Selection Modal */}
-      <VehicleSelectionModal
+      <VehicleFilterModal
         open={isVehicleModalOpen}
         onOpenChange={setIsVehicleModalOpen}
         selectedDate={new Date()}

@@ -7,6 +7,7 @@ import { Truck, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 
 interface Vehicle {
   id: string;
@@ -21,7 +22,6 @@ interface Vehicle {
 interface StockVehicleSelectionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  vehicles: Vehicle[];
   selectedVehicleId?: string;
   onSelectVehicle: (vehicleId: string) => void;
 }
@@ -29,11 +29,26 @@ interface StockVehicleSelectionModalProps {
 export const StockVehicleSelectionModal: React.FC<StockVehicleSelectionModalProps> = ({
   isOpen,
   onClose,
-  vehicles,
   selectedVehicleId,
   onSelectVehicle,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
+
+  // Fetch only available vehicles for assignment
+  const { data: vehicles = [], isLoading } = useQuery({
+    queryKey: ["available-vehicles"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("vehicles")
+        .select("*")
+        .eq("status", "available")
+        .order("license_plate", { ascending: true });
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: isOpen, // Only fetch when modal is open
+  });
 
   const filteredVehicles = vehicles.filter(vehicle =>
     (vehicle.license_plate?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
@@ -63,7 +78,7 @@ export const StockVehicleSelectionModal: React.FC<StockVehicleSelectionModalProp
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Truck className="h-5 w-5 text-blue-600" />
-            Select Vehicle
+            Select Available Vehicle
           </DialogTitle>
         </DialogHeader>
         
@@ -72,15 +87,24 @@ export const StockVehicleSelectionModal: React.FC<StockVehicleSelectionModalProp
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search by license plate, vehicle type, make or model..."
+              placeholder="Search available vehicles by license plate, type, make or model..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 bg-white"
             />
           </div>
 
+          {/* Loading State */}
+          {isLoading && (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Loading available vehicles...</p>
+            </div>
+          )}
+
           {/* Vehicle Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 overflow-y-auto pr-2 max-h-96">
+          {!isLoading && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 overflow-y-auto pr-2 max-h-96">
             {filteredVehicles.map((vehicle) => (
               <Card
                 key={vehicle.id}
@@ -146,12 +170,23 @@ export const StockVehicleSelectionModal: React.FC<StockVehicleSelectionModalProp
                 </CardContent>
               </Card>
             ))}
-          </div>
+            </div>
+          )}
 
-          {filteredVehicles.length === 0 && (
+          {/* No Results */}
+          {!isLoading && filteredVehicles.length === 0 && vehicles.length > 0 && (
             <div className="text-center py-8 text-gray-500">
               <Truck className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-              <p>No vehicles found matching your search.</p>
+              <p>No available vehicles found matching your search.</p>
+            </div>
+          )}
+
+          {/* No Available Vehicles */}
+          {!isLoading && vehicles.length === 0 && (
+            <div className="text-center py-8 text-gray-500">
+              <Truck className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+              <p>No vehicles are currently available for assignment.</p>
+              <p className="text-sm mt-1">Check vehicle statuses or add more vehicles to your fleet.</p>
             </div>
           )}
         </div>

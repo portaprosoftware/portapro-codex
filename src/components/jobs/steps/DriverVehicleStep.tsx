@@ -3,7 +3,7 @@ import { useJobWizard } from '@/contexts/JobWizardContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { DriverSelectionModal } from '@/components/fleet/DriverSelectionModal';
-import { VehicleSelectionModal } from '@/components/fleet/VehicleSelectionModal';
+import { VehicleFilterModal } from '@/components/fleet/VehicleFilterModal';
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock, Truck, User } from 'lucide-react';
@@ -374,7 +374,7 @@ export const DriverVehicleStep: React.FC = () => {
         onDriverSelect={handleDriverSelect}
       />
 
-      <VehicleSelectionModal
+      <VehicleFilterModal
         open={vehicleOpen}
         onOpenChange={setVehicleOpen}
         selectedDate={selectedDate}

@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useJobWizard } from '@/contexts/JobWizardContext';
 import { DriverSelectionModal } from '@/components/fleet/DriverSelectionModal';
-import { VehicleSelectionModal } from '@/components/fleet/VehicleSelectionModal';
+import { VehicleFilterModal } from '@/components/fleet/VehicleFilterModal';
 import { useQuery } from '@tanstack/react-query';
 import { calculateServiceVisits } from '@/lib/serviceCalculations';
 
@@ -2154,7 +2154,7 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
       />
 
       {/* Vehicle Selection Modal */}
-      <VehicleSelectionModal
+      <VehicleFilterModal
         open={showVehicleModal}
         onOpenChange={(open) => {
           setShowVehicleModal(open);

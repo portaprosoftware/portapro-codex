@@ -293,7 +293,6 @@ const FleetTruckStock: React.FC = () => {
         <StockVehicleSelectionModal
           isOpen={isVehicleModalOpen}
           onClose={() => setIsVehicleModalOpen(false)}
-          vehicles={vehicles}
           selectedVehicleId={vehicleId}
           onSelectVehicle={setVehicleId}
         />

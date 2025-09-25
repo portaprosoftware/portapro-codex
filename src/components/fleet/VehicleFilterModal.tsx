@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Truck, Search, Calendar, CheckCircle, Filter } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { format } from "date-fns";
 
 interface Vehicle {
   id: string;
@@ -20,7 +19,7 @@ interface Vehicle {
   vehicle_image?: string | null;
 }
 
-interface VehicleSelectionModalProps {
+interface VehicleFilterModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   selectedDate: Date;
@@ -28,7 +27,7 @@ interface VehicleSelectionModalProps {
   onVehicleSelect: (vehicle: any) => void;
 }
 
-export const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
+export const VehicleFilterModal: React.FC<VehicleFilterModalProps> = ({
   open,
   onOpenChange,
   selectedDate,
@@ -88,10 +87,10 @@ export const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Truck className="h-5 w-5 text-blue-600" />
-            Select Vehicle for Filtering
+            Filter Vehicles
           </DialogTitle>
           <DialogDescription>
-            Choose a vehicle to filter maintenance records. You can search by license plate, vehicle type, make, or model.
+            Filter vehicles by status and search criteria. Use the tabs to view available, maintenance, or retired vehicles.
           </DialogDescription>
         </DialogHeader>
         
