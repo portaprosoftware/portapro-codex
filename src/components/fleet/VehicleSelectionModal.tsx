@@ -78,7 +78,7 @@ export const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-4xl max-h-[80vh] flex flex-col">
+      <DialogContent className="sm:max-w-4xl max-h-[85vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Truck className="h-5 w-5 text-blue-600" />
@@ -114,7 +114,7 @@ export const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
 
           {/* Vehicle Grid */}
           {!isLoading && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto pr-2 max-h-96">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto pr-2 flex-1 pb-4">
               {filteredVehicles.map((vehicle) => (
                 <Card
                   key={vehicle.id}
