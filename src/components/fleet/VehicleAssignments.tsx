@@ -429,7 +429,9 @@ function VehicleAssignmentsContent({
                     <div className="flex items-center gap-2 text-sm text-gray-600">
                       <span className="text-blue-600 font-medium">{assignment.vehicles?.license_plate || "Unknown"}</span>
                       <span>•</span>
-                      <span>{assignment.vehicles?.vehicle_type?.toUpperCase() || 'UNKNOWN TYPE'}</span>
+                      <Badge variant="outline" className="bg-transparent border-blue-500 text-blue-600 text-xs">
+                        {assignment.vehicles?.vehicle_type?.charAt(0).toUpperCase() + assignment.vehicles?.vehicle_type?.slice(1).toLowerCase() || 'Unknown type'}
+                      </Badge>
                     </div>
                   </div>
                 </div>

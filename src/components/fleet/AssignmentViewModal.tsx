@@ -7,6 +7,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ModernBadge } from "@/components/ui/modern-badge";
+import { Badge } from "@/components/ui/badge";
 import { Truck, User, Calendar, Clock, FileText, MapPin } from "lucide-react";
 import { format } from "date-fns";
 
@@ -64,7 +65,9 @@ export const AssignmentViewModal: React.FC<AssignmentViewModalProps> = ({
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Vehicle Type</span>
-                  <span className="font-medium text-gray-900">{assignment.vehicles.vehicle_type?.toUpperCase() || 'N/A'}</span>
+                  <Badge variant="outline" className="bg-transparent border-blue-500 text-blue-600 text-xs">
+                    {assignment.vehicles.vehicle_type?.charAt(0).toUpperCase() + assignment.vehicles.vehicle_type?.slice(1).toLowerCase() || 'N/A'}
+                  </Badge>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Make & Model</span>

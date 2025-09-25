@@ -551,7 +551,9 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-600">Type:</span>
-                          <span className="font-medium">{vehicle.vehicle_type}</span>
+                          <Badge variant="outline" className="bg-transparent border-blue-500 text-blue-600 text-xs">
+                            {vehicle.vehicle_type.charAt(0).toUpperCase() + vehicle.vehicle_type.slice(1).toLowerCase()}
+                          </Badge>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-600">Make:</span>

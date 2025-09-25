@@ -271,9 +271,9 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
                             {selectedVehicle.year} {selectedVehicle.make} {selectedVehicle.model}
                           </p>
                           <div className="mt-1">
-                            <span className="inline-flex items-center rounded-md bg-muted border px-2 py-1 text-xs font-bold text-foreground shadow-sm">
-                              {selectedVehicle.vehicle_type?.toUpperCase() || 'TRUCK'}
-                            </span>
+                            <Badge variant="outline" className="bg-transparent border-blue-500 text-blue-600 text-xs">
+                              {selectedVehicle.vehicle_type?.charAt(0).toUpperCase() + selectedVehicle.vehicle_type?.slice(1).toLowerCase() || 'Truck'}
+                            </Badge>
                           </div>
                         </div>
                       </div>
