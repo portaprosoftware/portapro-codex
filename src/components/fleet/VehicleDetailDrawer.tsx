@@ -30,6 +30,7 @@ import { AddWorkOrderDrawer } from "./work-orders/AddWorkOrderDrawer";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { VehicleTypeSelector } from "./VehicleTypeSelector";
 
 interface Vehicle {
   id: string;
@@ -70,6 +71,9 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
   const [addFuelLogOpen, setAddFuelLogOpen] = useState(false);
   const [addWorkOrderOpen, setAddWorkOrderOpen] = useState(false);
   const [addDocumentOpen, setAddDocumentOpen] = useState(false);
+  const [showVehicleTypeSelector, setShowVehicleTypeSelector] = useState(false);
+  const [selectedVehicleType, setSelectedVehicleType] = useState<string>(vehicle.vehicle_type || "");
+  const [selectedVehicleTypeName, setSelectedVehicleTypeName] = useState<string>("");
   
   const queryClient = useQueryClient();
 
@@ -99,6 +103,12 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
     current_mileage: vehicle.current_mileage || 0,
     notes: vehicle.notes || ""
   });
+
+  const handleVehicleTypeSelect = (typeId: string, typeName: string) => {
+    setSelectedVehicleType(typeId);
+    setSelectedVehicleTypeName(typeName);
+    setFormData({ ...formData, vehicle_type: typeId });
+  };
 
   const updateVehicleMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
@@ -439,18 +449,46 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
                       </div>
                       <div>
                         <Label htmlFor="vehicle_type">Vehicle Type</Label>
-                        <Select value={formData.vehicle_type} onValueChange={(value) => setFormData({ ...formData, vehicle_type: value })}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="truck">Truck</SelectItem>
-                            <SelectItem value="van">Van</SelectItem>
-                            <SelectItem value="trailer">Trailer</SelectItem>
-                            <SelectItem value="pickup">Pickup Truck</SelectItem>
-                            <SelectItem value="suv">SUV</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        {selectedVehicleTypeName || formData.vehicle_type ? (
+                          <div className="flex items-center justify-between p-3 border rounded-md bg-gray-50">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium text-gray-900">
+                                {selectedVehicleTypeName || formData.vehicle_type?.charAt(0).toUpperCase() + formData.vehicle_type?.slice(1).toLowerCase()}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setShowVehicleTypeSelector(true)}
+                              >
+                                Change
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedVehicleType("");
+                                  setSelectedVehicleTypeName("");
+                                  setFormData({ ...formData, vehicle_type: "" });
+                                }}
+                              >
+                                Clear
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="w-full justify-start text-muted-foreground"
+                            onClick={() => setShowVehicleTypeSelector(true)}
+                          >
+                            Select Vehicle Type
+                          </Button>
+                        )}
                       </div>
                     </div>
 
@@ -930,6 +968,14 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
           </div>
         </div>
       )}
+
+      {/* Vehicle Type Selector Modal */}
+      <VehicleTypeSelector
+        open={showVehicleTypeSelector}
+        onOpenChange={setShowVehicleTypeSelector}
+        onTypeSelect={handleVehicleTypeSelect}
+        selectedTypeId={selectedVehicleType}
+      />
     </>
   );
 };

@@ -30,6 +30,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Upload, X } from "lucide-react";
+import { VehicleTypeSelector } from "./VehicleTypeSelector";
 
 const vehicleSchema = z.object({
   license_plate: z.string().min(1, "License plate is required"),
@@ -66,6 +67,9 @@ export const AddVehicleModal: React.FC<AddVehicleModalProps> = ({
 }) => {
   const [vehicleImage, setVehicleImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [showVehicleTypeSelector, setShowVehicleTypeSelector] = useState(false);
+  const [selectedVehicleType, setSelectedVehicleType] = useState<string>("");
+  const [selectedVehicleTypeName, setSelectedVehicleTypeName] = useState<string>("");
   const queryClient = useQueryClient();
 
   const form = useForm<VehicleFormData>({
@@ -77,6 +81,12 @@ export const AddVehicleModal: React.FC<AddVehicleModalProps> = ({
       current_mileage: 0,
     },
   });
+
+  const handleVehicleTypeSelect = (typeId: string, typeName: string) => {
+    setSelectedVehicleType(typeId);
+    setSelectedVehicleTypeName(typeName);
+    form.setValue("vehicle_type", typeId);
+  };
 
   const createVehicleMutation = useMutation({
     mutationFn: async (data: VehicleFormData) => {
@@ -313,30 +323,47 @@ export const AddVehicleModal: React.FC<AddVehicleModalProps> = ({
               />
 
               {/* Vehicle Type */}
-              <FormField
-                control={form.control}
-                name="vehicle_type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Vehicle Type</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select type" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="truck">Truck</SelectItem>
-                        <SelectItem value="van">Van</SelectItem>
-                        <SelectItem value="trailer">Trailer</SelectItem>
-                        <SelectItem value="pickup">Pickup</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
+              <div>
+                <FormLabel>Vehicle Type</FormLabel>
+                {selectedVehicleTypeName ? (
+                  <div className="flex items-center justify-between p-3 border rounded-md bg-gray-50">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-gray-900">{selectedVehicleTypeName}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowVehicleTypeSelector(true)}
+                      >
+                        Change
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedVehicleType("");
+                          setSelectedVehicleTypeName("");
+                          form.setValue("vehicle_type", "");
+                        }}
+                      >
+                        Clear
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full justify-start text-muted-foreground"
+                    onClick={() => setShowVehicleTypeSelector(true)}
+                  >
+                    Select Vehicle Type
+                  </Button>
                 )}
-              />
+              </div>
 
               {/* Fuel Type */}
               <FormField
@@ -554,6 +581,14 @@ export const AddVehicleModal: React.FC<AddVehicleModalProps> = ({
           </form>
         </Form>
       </DialogContent>
+
+      {/* Vehicle Type Selector Modal */}
+      <VehicleTypeSelector
+        open={showVehicleTypeSelector}
+        onOpenChange={setShowVehicleTypeSelector}
+        onTypeSelect={handleVehicleTypeSelect}
+        selectedTypeId={selectedVehicleType}
+      />
     </Dialog>
   );
 };
