@@ -42,7 +42,11 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
         .order("scheduled_date", { ascending: false });
 
       if (statusFilter !== "all") {
-        query = query.eq("status", statusFilter);
+        if (statusFilter === "due_today") {
+          query = query.lte("scheduled_date", new Date().toISOString().split('T')[0]);
+        } else {
+          query = query.eq("status", statusFilter);
+        }
       }
 
       if (vehicleFilter !== "all") {
@@ -160,9 +164,8 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
             <SelectContent>
               <SelectItem value="all">All Status</SelectItem>
               <SelectItem value="scheduled">Scheduled</SelectItem>
-              <SelectItem value="in_progress">In Progress</SelectItem>
-              <SelectItem value="completed">Completed</SelectItem>
-              <SelectItem value="cancelled">Cancelled</SelectItem>
+              <SelectItem value="due_today">Due Today</SelectItem>
+              <SelectItem value="completed">Marked Completed</SelectItem>
             </SelectContent>
           </Select>
 
