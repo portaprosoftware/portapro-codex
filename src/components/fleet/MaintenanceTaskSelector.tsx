@@ -17,7 +17,7 @@ const maintenanceCategories = [
     id: "routine",
     name: "Routine Maintenance & Wear Items",
     icon: "🔧",
-    color: "bg-blue-100 text-blue-800 border-blue-200",
+    color: "bg-gradient-to-r from-blue-500 to-blue-600 text-white",
     tasks: [
       { id: "oil-change", name: "Oil Change" },
       { id: "tire-rotation", name: "Tire Rotation" },
@@ -33,7 +33,7 @@ const maintenanceCategories = [
     id: "engine",
     name: "Engine & Powertrain Services",
     icon: "🛠️",
-    color: "bg-green-100 text-green-800 border-green-200",
+    color: "bg-gradient-to-r from-green-500 to-green-600 text-white",
     tasks: [
       { id: "transmission-service", name: "Transmission Service" },
       { id: "air-filter", name: "Air Filter Replacement" },
@@ -50,7 +50,7 @@ const maintenanceCategories = [
     id: "electrical",
     name: "Electrical & Systems",
     icon: "⚡",
-    color: "bg-yellow-100 text-yellow-800 border-yellow-200",
+    color: "bg-gradient-to-r from-yellow-500 to-yellow-600 text-white",
     tasks: [
       { id: "alternator-check", name: "Alternator Check" },
       { id: "starter-service", name: "Starter Motor Service" },
@@ -61,7 +61,7 @@ const maintenanceCategories = [
     id: "compliance",
     name: "Compliance & Safety",
     icon: "🧾",
-    color: "bg-purple-100 text-purple-800 border-purple-200",
+    color: "bg-gradient-to-r from-purple-500 to-purple-600 text-white",
     tasks: [
       { id: "dot-inspection", name: "DOT Inspection" },
       { id: "safety-inspection", name: "Annual / Quarterly Safety Inspection" },
@@ -75,7 +75,7 @@ const maintenanceCategories = [
     id: "cleaning",
     name: "Cleaning & Upkeep",
     icon: "🧹",
-    color: "bg-cyan-100 text-cyan-800 border-cyan-200",
+    color: "bg-gradient-to-r from-cyan-500 to-cyan-600 text-white",
     tasks: [
       { id: "deep-cleaning", name: "Interior / Exterior Deep Cleaning" },
       { id: "detailing", name: "Detailing / Sanitization" },
@@ -85,7 +85,7 @@ const maintenanceCategories = [
     id: "custom",
     name: "Custom & Miscellaneous",
     icon: "🔩",
-    color: "bg-gray-100 text-gray-800 border-gray-200",
+    color: "bg-gradient-to-r from-gray-500 to-gray-600 text-white",
     tasks: [
       { id: "accident-repair", name: "Accident / Damage Repair" },
       { id: "body-work", name: "Body Work / Paint" },
@@ -177,7 +177,7 @@ export const MaintenanceTaskSelector: React.FC<MaintenanceTaskSelectorProps> = (
                     <h3 className="font-semibold text-lg text-gray-900 mb-2">
                       {category.name}
                     </h3>
-                    <Badge variant="outline" className={category.color}>
+                    <Badge className={category.color}>
                       {category.tasks.length} tasks
                     </Badge>
                   </CardContent>
