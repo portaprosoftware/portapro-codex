@@ -16,7 +16,7 @@ interface VehicleTypeSelectorProps {
 const vehicleTypeCategories = [
   {
     id: "trucks",
-    name: "🚚 Common Fleet Vehicle Types",
+    name: "Common Fleet Vehicle Types",
     icon: "🚚",
     color: "bg-gradient-to-r from-blue-500 to-blue-600 text-white",
     types: [
@@ -31,7 +31,7 @@ const vehicleTypeCategories = [
   },
   {
     id: "vans",
-    name: "🚐 Vans & Light Vehicles",
+    name: "Vans & Light Vehicles",
     icon: "🚐",
     color: "bg-gradient-to-r from-green-500 to-green-600 text-white",
     types: [
@@ -44,7 +44,7 @@ const vehicleTypeCategories = [
   },
   {
     id: "trailers",
-    name: "🚛 Trailers",
+    name: "Trailers",
     icon: "🚛",
     color: "bg-gradient-to-r from-purple-500 to-purple-600 text-white",
     types: [
@@ -58,7 +58,7 @@ const vehicleTypeCategories = [
   },
   {
     id: "specialized",
-    name: "🚌 Specialized & Heavy Vehicles",
+    name: "Specialized & Heavy Vehicles",
     icon: "🚌",
     color: "bg-gradient-to-r from-orange-500 to-orange-600 text-white",
     types: [
@@ -72,7 +72,7 @@ const vehicleTypeCategories = [
   },
   {
     id: "other",
-    name: "🧑‍🔧 Other / Flexible",
+    name: "Other / Flexible",
     icon: "🛠️",
     color: "bg-gradient-to-r from-gray-500 to-gray-600 text-white",
     types: [
