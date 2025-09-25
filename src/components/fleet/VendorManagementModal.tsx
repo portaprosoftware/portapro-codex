@@ -1,214 +1,225 @@
 import React, { useState, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { X, Plus } from "lucide-react";
+import { X } from "lucide-react";
 import { toast } from "sonner";
-import { z } from "zod";
-
-interface Vendor {
-  id?: string;
-  name: string;
-  contact_name: string | null;
-  phone: string | null;
-  email: string | null;
-  address: string | null;
-  service_specialties: string[] | null;
-  hourly_rate: number | null;
-  notes: string | null;
-  is_active: boolean | null;
-}
 
 interface VendorManagementModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  vendor?: Vendor | null;
+  vendor?: any;
   mode: "create" | "edit";
 }
 
-const vendorSchema = z.object({
-  name: z.string().trim().min(1, "Vendor name is required").max(100, "Name must be less than 100 characters"),
-  contact_name: z.string().trim().max(100, "Contact name must be less than 100 characters").optional(),
-  phone: z.string().trim().max(20, "Phone must be less than 20 characters").optional(),
-  email: z.string().trim().email("Invalid email address").max(255, "Email must be less than 255 characters").optional().or(z.literal("")),
-  address: z.string().trim().max(500, "Address must be less than 500 characters").optional(),
-  hourly_rate: z.number().min(0, "Hourly rate must be positive").max(9999, "Hourly rate must be less than $9999").optional(),
-  notes: z.string().trim().max(1000, "Notes must be less than 1000 characters").optional(),
-});
-
-const DEFAULT_SPECIALTIES = [
+const SPECIALTY_OPTIONS = [
   "Engine Repair",
   "Transmission",
-  "Electrical",
-  "HVAC",
+  "Electrical", 
+  "Hydraulics",
   "Brakes",
   "Tires",
-  "Oil Changes",
-  "DOT Inspections",
-  "Hydraulics",
   "Body Work",
   "Glass Repair",
-  "Detailing",
-  "Towing",
-  "General Maintenance"
+  "Painting",
+  "Welding",
+  "General Maintenance",
+  "Emergency Service"
+];
+
+const US_STATES = [
+  { code: "AL", name: "Alabama" },
+  { code: "AK", name: "Alaska" },
+  { code: "AZ", name: "Arizona" },
+  { code: "AR", name: "Arkansas" },
+  { code: "CA", name: "California" },
+  { code: "CO", name: "Colorado" },
+  { code: "CT", name: "Connecticut" },
+  { code: "DE", name: "Delaware" },
+  { code: "FL", name: "Florida" },
+  { code: "GA", name: "Georgia" },
+  { code: "HI", name: "Hawaii" },
+  { code: "ID", name: "Idaho" },
+  { code: "IL", name: "Illinois" },
+  { code: "IN", name: "Indiana" },
+  { code: "IA", name: "Iowa" },
+  { code: "KS", name: "Kansas" },
+  { code: "KY", name: "Kentucky" },
+  { code: "LA", name: "Louisiana" },
+  { code: "ME", name: "Maine" },
+  { code: "MD", name: "Maryland" },
+  { code: "MA", name: "Massachusetts" },
+  { code: "MI", name: "Michigan" },
+  { code: "MN", name: "Minnesota" },
+  { code: "MS", name: "Mississippi" },
+  { code: "MO", name: "Missouri" },
+  { code: "MT", name: "Montana" },
+  { code: "NE", name: "Nebraska" },
+  { code: "NV", name: "Nevada" },
+  { code: "NH", name: "New Hampshire" },
+  { code: "NJ", name: "New Jersey" },
+  { code: "NM", name: "New Mexico" },
+  { code: "NY", name: "New York" },
+  { code: "NC", name: "North Carolina" },
+  { code: "ND", name: "North Dakota" },
+  { code: "OH", name: "Ohio" },
+  { code: "OK", name: "Oklahoma" },
+  { code: "OR", name: "Oregon" },
+  { code: "PA", name: "Pennsylvania" },
+  { code: "RI", name: "Rhode Island" },
+  { code: "SC", name: "South Carolina" },
+  { code: "SD", name: "South Dakota" },
+  { code: "TN", name: "Tennessee" },
+  { code: "TX", name: "Texas" },
+  { code: "UT", name: "Utah" },
+  { code: "VT", name: "Vermont" },
+  { code: "VA", name: "Virginia" },
+  { code: "WA", name: "Washington" },
+  { code: "WV", name: "West Virginia" },
+  { code: "WI", name: "Wisconsin" },
+  { code: "WY", name: "Wyoming" }
 ];
 
 export const VendorManagementModal: React.FC<VendorManagementModalProps> = ({
   open,
   onOpenChange,
   vendor,
-  mode,
+  mode
 }) => {
-  const [formData, setFormData] = useState<Vendor>({
+  const [formData, setFormData] = useState({
     name: "",
     contact_name: "",
     phone: "",
     email: "",
-    address: "",
-    service_specialties: [],
-    hourly_rate: null,
-    notes: "",
-    is_active: true,
+    street: "",
+    street2: "",
+    city: "",
+    state: "",
+    zip: "",
+    service_specialties: [] as string[],
+    notes: ""
   });
-  const [newSpecialty, setNewSpecialty] = useState("");
-  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const queryClient = useQueryClient();
 
   useEffect(() => {
     if (vendor && mode === "edit") {
       setFormData({
-        ...vendor,
+        name: vendor.name || "",
         contact_name: vendor.contact_name || "",
-        phone: vendor.phone || "",
+        phone: formatPhoneNumber(vendor.phone || ""),
         email: vendor.email || "",
-        address: vendor.address || "",
+        street: vendor.street || "",
+        street2: vendor.street2 || "",
+        city: vendor.city || "",
+        state: vendor.state || "",
+        zip: vendor.zip || "",
         service_specialties: vendor.service_specialties || [],
-        notes: vendor.notes || "",
-        is_active: vendor.is_active ?? true,
+        notes: vendor.notes || ""
       });
     } else {
+      // Reset form for create mode
       setFormData({
         name: "",
         contact_name: "",
         phone: "",
         email: "",
-        address: "",
+        street: "",
+        street2: "",
+        city: "",
+        state: "",
+        zip: "",
         service_specialties: [],
-        hourly_rate: null,
-        notes: "",
-        is_active: true,
+        notes: ""
       });
     }
-    setErrors({});
-    setNewSpecialty("");
   }, [vendor, mode, open]);
 
-  const validateForm = () => {
-    try {
-      const cleanData = {
-        ...formData,
-        contact_name: formData.contact_name || undefined,
-        phone: formData.phone || undefined,
-        email: formData.email || undefined,
-        address: formData.address || undefined,
-        notes: formData.notes || undefined,
-      };
-      vendorSchema.parse(cleanData);
-      setErrors({});
-      return true;
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        const newErrors: Record<string, string> = {};
-        error.errors.forEach((err) => {
-          if (err.path[0]) {
-            newErrors[err.path[0] as string] = err.message;
-          }
-        });
-        setErrors(newErrors);
-      }
-      return false;
+  const formatPhoneNumber = (value: string) => {
+    // Remove all non-numeric characters
+    const phoneNumber = value.replace(/\D/g, '');
+    
+    // Format as (123) 555-1234
+    if (phoneNumber.length >= 10) {
+      return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`;
+    } else if (phoneNumber.length >= 6) {
+      return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6)}`;
+    } else if (phoneNumber.length >= 3) {
+      return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`;
+    } else {
+      return phoneNumber;
     }
   };
 
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatPhoneNumber(e.target.value);
+    setFormData(prev => ({ ...prev, phone: formatted }));
+  };
+
+  const addSpecialty = (specialty: string) => {
+    if (!formData.service_specialties.includes(specialty)) {
+      setFormData(prev => ({
+        ...prev,
+        service_specialties: [...prev.service_specialties, specialty]
+      }));
+    }
+  };
+
+  const removeSpecialty = (specialty: string) => {
+    setFormData(prev => ({
+      ...prev,
+      service_specialties: prev.service_specialties.filter(s => s !== specialty)
+    }));
+  };
+
   const createVendor = useMutation({
-    mutationFn: async (vendorData: Vendor) => {
-      const { data, error } = await supabase
+    mutationFn: async (data: typeof formData) => {
+      const { error } = await supabase
         .from("maintenance_vendors")
-        .insert([{
-          name: vendorData.name.trim(),
-          contact_name: vendorData.contact_name?.trim() || null,
-          phone: vendorData.phone?.trim() || null,
-          email: vendorData.email?.trim() || null,
-          address: vendorData.address?.trim() || null,
-          service_specialties: vendorData.service_specialties,
-          hourly_rate: vendorData.hourly_rate,
-          notes: vendorData.notes?.trim() || null,
-          is_active: vendorData.is_active,
-        }])
-        .select()
-        .single();
+        .insert([data]);
       if (error) throw error;
-      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["maintenance-vendors"] });
       toast.success("Vendor created successfully");
       onOpenChange(false);
     },
-    onError: (error) => {
-      console.error("Error creating vendor:", error);
+    onError: () => {
       toast.error("Failed to create vendor");
-    },
+    }
   });
 
   const updateVendor = useMutation({
-    mutationFn: async (vendorData: Vendor) => {
-      const { data, error } = await supabase
+    mutationFn: async (data: typeof formData) => {
+      const { error } = await supabase
         .from("maintenance_vendors")
-        .update({
-          name: vendorData.name.trim(),
-          contact_name: vendorData.contact_name?.trim() || null,
-          phone: vendorData.phone?.trim() || null,
-          email: vendorData.email?.trim() || null,
-          address: vendorData.address?.trim() || null,
-          service_specialties: vendorData.service_specialties,
-          hourly_rate: vendorData.hourly_rate,
-          notes: vendorData.notes?.trim() || null,
-          is_active: vendorData.is_active,
-        })
-        .eq("id", vendor?.id)
-        .select()
-        .single();
+        .update(data)
+        .eq("id", vendor.id);
       if (error) throw error;
-      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["maintenance-vendors"] });
       toast.success("Vendor updated successfully");
       onOpenChange(false);
     },
-    onError: (error) => {
-      console.error("Error updating vendor:", error);
+    onError: () => {
       toast.error("Failed to update vendor");
-    },
+    }
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    
+    if (!formData.name.trim()) {
+      toast.error("Vendor name is required");
+      return;
+    }
 
     if (mode === "create") {
       createVendor.mutate(formData);
@@ -217,39 +228,19 @@ export const VendorManagementModal: React.FC<VendorManagementModalProps> = ({
     }
   };
 
-  const addSpecialty = (specialty: string) => {
-    const trimmedSpecialty = specialty.trim();
-    if (trimmedSpecialty && !formData.service_specialties?.includes(trimmedSpecialty)) {
-      setFormData(prev => ({
-        ...prev,
-        service_specialties: [...(prev.service_specialties || []), trimmedSpecialty]
-      }));
-    }
-    setNewSpecialty("");
-  };
-
-  const removeSpecialty = (specialty: string) => {
-    setFormData(prev => ({
-      ...prev,
-      service_specialties: prev.service_specialties?.filter(s => s !== specialty) || []
-    }));
-  };
-
-  const isSubmitting = createVendor.isPending || updateVendor.isPending;
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {mode === "create" ? "Add New Vendor" : "Edit Vendor"}
           </DialogTitle>
         </DialogHeader>
-
+        
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Basic Information */}
           <div className="space-y-4">
-            <h3 className="font-semibold text-lg">Basic Information</h3>
+            <h3 className="text-lg font-medium">Basic Information</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -258,185 +249,173 @@ export const VendorManagementModal: React.FC<VendorManagementModalProps> = ({
                   id="name"
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="Enter vendor name"
-                  className={errors.name ? "border-red-500" : ""}
+                  placeholder="ABC Mechanics"
+                  required
                 />
-                {errors.name && <p className="text-sm text-red-500 mt-1">{errors.name}</p>}
               </div>
-
+              
               <div>
-                <Label htmlFor="contact_name">Contact Person</Label>
+                <Label htmlFor="contact_name">Contact Name</Label>
                 <Input
                   id="contact_name"
                   value={formData.contact_name}
                   onChange={(e) => setFormData(prev => ({ ...prev, contact_name: e.target.value }))}
-                  placeholder="Primary contact name"
-                  className={errors.contact_name ? "border-red-500" : ""}
+                  placeholder="John Smith"
                 />
-                {errors.contact_name && <p className="text-sm text-red-500 mt-1">{errors.contact_name}</p>}
               </div>
+            </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="phone">Phone Number</Label>
+                <Label htmlFor="phone">Phone</Label>
                 <Input
                   id="phone"
                   value={formData.phone}
-                  onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                  placeholder="(555) 123-4567"
-                  className={errors.phone ? "border-red-500" : ""}
+                  onChange={handlePhoneChange}
+                  placeholder="(123) 555-1234"
+                  maxLength={14}
                 />
-                {errors.phone && <p className="text-sm text-red-500 mt-1">{errors.phone}</p>}
               </div>
-
+              
               <div>
-                <Label htmlFor="email">Email Address</Label>
+                <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                  placeholder="vendor@example.com"
-                  className={errors.email ? "border-red-500" : ""}
+                  placeholder="contact@abcmechanics.com"
                 />
-                {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
               </div>
+            </div>
+          </div>
+
+          {/* Address Information */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium">Address</h3>
+            
+            <div>
+              <Label htmlFor="street">Street Address</Label>
+              <Input
+                id="street"
+                value={formData.street}
+                onChange={(e) => setFormData(prev => ({ ...prev, street: e.target.value }))}
+                placeholder="123 Main Street"
+              />
             </div>
 
             <div>
-              <Label htmlFor="address">Address</Label>
-              <Textarea
-                id="address"
-                value={formData.address}
-                onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
-                placeholder="Full business address"
-                rows={2}
-                className={errors.address ? "border-red-500" : ""}
+              <Label htmlFor="street2">Street Address 2</Label>
+              <Input
+                id="street2"
+                value={formData.street2}
+                onChange={(e) => setFormData(prev => ({ ...prev, street2: e.target.value }))}
+                placeholder="Suite 100, Building A"
               />
-              {errors.address && <p className="text-sm text-red-500 mt-1">{errors.address}</p>}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <Label htmlFor="city">City</Label>
+                <Input
+                  id="city"
+                  value={formData.city}
+                  onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
+                  placeholder="New York"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="state">State</Label>
+                <Select value={formData.state} onValueChange={(value) => setFormData(prev => ({ ...prev, state: value }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select state" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {US_STATES.map((state) => (
+                      <SelectItem key={state.code} value={state.code}>
+                        {state.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <Label htmlFor="zip">ZIP Code</Label>
+                <Input
+                  id="zip"
+                  value={formData.zip}
+                  onChange={(e) => setFormData(prev => ({ ...prev, zip: e.target.value }))}
+                  placeholder="10001"
+                  maxLength={10}
+                />
+              </div>
             </div>
           </div>
 
           {/* Service Specialties */}
           <div className="space-y-4">
-            <h3 className="font-semibold text-lg">Service Specialties</h3>
+            <h3 className="text-lg font-medium">Service Specialties</h3>
             
-            <div className="flex flex-wrap gap-2 min-h-[40px] p-3 border rounded-md">
-              {formData.service_specialties?.map((specialty) => (
-                <Badge key={specialty} variant="secondary" className="flex items-center gap-1">
-                  {specialty}
-                  <button
-                    type="button"
-                    onClick={() => removeSpecialty(specialty)}
-                    className="ml-1 hover:bg-gray-300 rounded-full p-0.5"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </Badge>
-              ))}
-              {!formData.service_specialties?.length && (
-                <span className="text-muted-foreground text-sm">No specialties added yet</span>
-              )}
-            </div>
-
-            <div className="flex gap-2">
-              <Input
-                value={newSpecialty}
-                onChange={(e) => setNewSpecialty(e.target.value)}
-                placeholder="Enter specialty and press Enter"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    addSpecialty(newSpecialty);
-                  }
-                }}
-              />
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => addSpecialty(newSpecialty)}
-                disabled={!newSpecialty.trim()}
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
-
-            <div className="text-sm text-muted-foreground">
-              <p className="mb-2">Quick add common specialties:</p>
-              <div className="flex flex-wrap gap-1">
-                {DEFAULT_SPECIALTIES.map((specialty) => (
-                  <Button
-                    key={specialty}
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => addSpecialty(specialty)}
-                    disabled={formData.service_specialties?.includes(specialty)}
-                    className="text-xs h-7"
-                  >
-                    {specialty}
-                  </Button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Pricing & Notes */}
-          <div className="space-y-4">
-            <h3 className="font-semibold text-lg">Additional Information</h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="hourly_rate">Hourly Rate ($)</Label>
-                <Input
-                  id="hourly_rate"
-                  type="number"
-                  min="0"
-                  max="9999"
-                  step="0.01"
-                  value={formData.hourly_rate || ""}
-                  onChange={(e) => setFormData(prev => ({ 
-                    ...prev, 
-                    hourly_rate: e.target.value ? parseFloat(e.target.value) : null 
-                  }))}
-                  placeholder="0.00"
-                  className={errors.hourly_rate ? "border-red-500" : ""}
-                />
-                {errors.hourly_rate && <p className="text-sm text-red-500 mt-1">{errors.hourly_rate}</p>}
-              </div>
-
-              <div className="flex items-center justify-between">
-                <Label htmlFor="is_active">Active Status</Label>
-                <Switch
-                  id="is_active"
-                  checked={formData.is_active ?? true}
-                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_active: checked }))}
-                />
-              </div>
-            </div>
-
             <div>
-              <Label htmlFor="notes">Notes</Label>
-              <Textarea
-                id="notes"
-                value={formData.notes}
-                onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
-                placeholder="Additional notes about this vendor..."
-                rows={3}
-                className={errors.notes ? "border-red-500" : ""}
-              />
-              {errors.notes && <p className="text-sm text-red-500 mt-1">{errors.notes}</p>}
+              <Label>Add Specialty</Label>
+              <Select onValueChange={addSpecialty}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a specialty to add" />
+                </SelectTrigger>
+                <SelectContent>
+                  {SPECIALTY_OPTIONS.filter(specialty => !formData.service_specialties.includes(specialty)).map((specialty) => (
+                    <SelectItem key={specialty} value={specialty}>
+                      {specialty}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-          </div>
-        </form>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit} disabled={isSubmitting}>
-            {isSubmitting ? "Saving..." : mode === "create" ? "Create Vendor" : "Update Vendor"}
-          </Button>
-        </DialogFooter>
+            {formData.service_specialties.length > 0 && (
+              <div className="space-y-2">
+                <Label>Selected Specialties</Label>
+                <div className="flex flex-wrap gap-2">
+                  {formData.service_specialties.map((specialty) => (
+                    <Badge key={specialty} variant="outline" className="flex items-center gap-1">
+                      {specialty}
+                      <X 
+                        className="w-3 h-3 cursor-pointer hover:text-red-500" 
+                        onClick={() => removeSpecialty(specialty)}
+                      />
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Notes */}
+          <div>
+            <Label htmlFor="notes">Notes</Label>
+            <Textarea
+              id="notes"
+              value={formData.notes}
+              onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+              placeholder="Additional notes about this vendor..."
+              rows={3}
+            />
+          </div>
+
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              Cancel
+            </Button>
+            <Button 
+              type="submit" 
+              disabled={createVendor.isPending || updateVendor.isPending}
+            >
+              {mode === "create" ? "Create Vendor" : "Update Vendor"}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );

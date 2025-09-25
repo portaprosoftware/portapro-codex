@@ -4727,46 +4727,55 @@ export type Database = {
       }
       maintenance_vendors: {
         Row: {
-          address: string | null
+          city: string | null
           contact_name: string | null
           created_at: string
           email: string | null
           hourly_rate: number | null
           id: string
-          is_active: boolean | null
           name: string
           notes: string | null
           phone: string | null
           service_specialties: string[] | null
+          state: string | null
+          street: string | null
+          street2: string | null
           updated_at: string
+          zip: string | null
         }
         Insert: {
-          address?: string | null
+          city?: string | null
           contact_name?: string | null
           created_at?: string
           email?: string | null
           hourly_rate?: number | null
           id?: string
-          is_active?: boolean | null
           name: string
           notes?: string | null
           phone?: string | null
           service_specialties?: string[] | null
+          state?: string | null
+          street?: string | null
+          street2?: string | null
           updated_at?: string
+          zip?: string | null
         }
         Update: {
-          address?: string | null
+          city?: string | null
           contact_name?: string | null
           created_at?: string
           email?: string | null
           hourly_rate?: number | null
           id?: string
-          is_active?: boolean | null
           name?: string
           notes?: string | null
           phone?: string | null
           service_specialties?: string[] | null
+          state?: string | null
+          street?: string | null
+          street2?: string | null
           updated_at?: string
+          zip?: string | null
         }
         Relationships: []
       }

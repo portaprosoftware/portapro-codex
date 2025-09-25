@@ -172,7 +172,6 @@ export const MaintenanceSettingsTab: React.FC = () => {
                 <TableHead>Contact</TableHead>
                 <TableHead>Phone</TableHead>
                 <TableHead>Specialties</TableHead>
-                <TableHead>Status</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -183,27 +182,22 @@ export const MaintenanceSettingsTab: React.FC = () => {
                   <TableCell>{vendor.contact_name || "—"}</TableCell>
                   <TableCell>{vendor.phone || "—"}</TableCell>
                   <TableCell>
-                    <div className="flex flex-wrap gap-1 max-w-48">
-                      {vendor.service_specialties?.slice(0, 3).map((specialty: string) => (
-                        <Badge key={specialty} variant="outline" className="text-xs">
-                          {specialty}
-                        </Badge>
-                      ))}
-                      {vendor.service_specialties && vendor.service_specialties.length > 3 && (
-                        <Badge variant="outline" className="text-xs">
-                          +{vendor.service_specialties.length - 3} more
-                        </Badge>
-                      )}
-                      {!vendor.service_specialties?.length && "General"}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge 
-                      variant={vendor.is_active ? "default" : "secondary"}
-                      className={vendor.is_active ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}
-                    >
-                      {vendor.is_active ? "Active" : "Inactive"}
-                    </Badge>
+                    {vendor.service_specialties && vendor.service_specialties.length > 0 ? (
+                      <Select>
+                        <SelectTrigger className="w-40">
+                          <SelectValue placeholder={`${vendor.service_specialties.length} specialties`} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {vendor.service_specialties.map((specialty: string) => (
+                            <SelectItem key={specialty} value={specialty}>
+                              {specialty}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      "General"
+                    )}
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2">

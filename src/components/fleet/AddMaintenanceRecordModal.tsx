@@ -90,7 +90,7 @@ export const AddMaintenanceRecordModal: React.FC<AddMaintenanceRecordModalProps>
       const { data, error } = await supabase
         .from("maintenance_vendors")
         .select("*")
-        .eq("is_active", true);
+        .order("name");
       if (error) throw error;
       return data;
     }
