@@ -166,7 +166,7 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
   if (variant === "table") {
     return (
       <>
-        <td className="font-medium py-4 text-left">
+        <td className="font-medium text-left">
           <div>
             <div className="font-semibold text-foreground">
               {getVehicleName()}
@@ -174,14 +174,14 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
             <div className="text-xs text-muted-foreground mt-1">{record.vehicles?.license_plate}</div>
           </div>
         </td>
-        <td className="py-4 text-left">
+        <td className="text-left">
           <div>
             <div className="font-medium text-foreground">{record.maintenance_task_types?.name || record.maintenance_type}</div>
             <div className="text-sm text-muted-foreground truncate max-w-[200px] mt-1">{record.description}</div>
           </div>
         </td>
-        <td className="text-sm py-4 text-left">{record.maintenance_vendors?.name || "In-house"}</td>
-        <td className="py-4 text-left">
+        <td className="text-sm text-left">{record.maintenance_vendors?.name || "In-house"}</td>
+        <td className="text-left">
           <div className="text-sm">
             <div>Scheduled: {format(new Date(record.scheduled_date), "MMM d")}</div>
             {record.completed_date && (
@@ -189,7 +189,7 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
             )}
           </div>
         </td>
-        <td className="py-4 text-left">
+        <td className="text-left">
           <div className="flex flex-col gap-2">
             <Badge className={`${getStatusColor(record.status)} w-fit`}>
               {record.status.replace("_", " ").replace(/\b\w/g, l => l.toUpperCase())}
@@ -201,10 +201,10 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
             )}
           </div>
         </td>
-        <td className="text-sm py-4 text-left">
+        <td className="text-sm text-left">
           {record.cost ? `$${record.cost.toLocaleString()}` : "—"}
         </td>
-        <td className="text-right py-4">
+        <td className="text-right">
           {renderActions()}
         </td>
       </>
