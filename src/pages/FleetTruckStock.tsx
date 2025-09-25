@@ -252,17 +252,17 @@ const FleetTruckStock: React.FC = () => {
                     </CardContent>
                   </Card>
 
-                  <Card className="border-0 shadow-none bg-gray-50/50">
-                    <CardHeader className="pb-2 pt-3">
-                      <CardTitle className="flex items-center gap-2 text-base">
-                        <ArrowLeftRight className="h-4 w-4"/> Transfer Between Trucks
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <ArrowLeftRight className="h-5 w-5"/> Transfer Between Trucks
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-2 pt-0">
+                    <CardContent className="space-y-3">
                       <div>
                         <Label className="text-sm text-muted-foreground">Destination Vehicle</Label>
                         <Select value={destVehicleId} onValueChange={setDestVehicleId}>
-                          <SelectTrigger className="h-8">
+                          <SelectTrigger>
                             <SelectValue placeholder="Select destination vehicle" />
                           </SelectTrigger>
                           <SelectContent>
@@ -272,11 +272,11 @@ const FleetTruckStock: React.FC = () => {
                           </SelectContent>
                         </Select>
                       </div>
-                      <div className="flex gap-2 pt-2">
+                      <div className="flex gap-2">
                         <Button
                           disabled={!vehicleId || !destVehicleId || !consumableId || !quantity || transferMutation.isPending}
                           onClick={() => transferMutation.mutate({ consumable_id: consumableId, qty: Number(quantity), from_vehicle_id: vehicleId, to_vehicle_id: destVehicleId })}
-                          className="gap-2 h-8"
+                          className="gap-2"
                         >
                           <ArrowLeftRight className="h-4 w-4"/> Transfer
                         </Button>
