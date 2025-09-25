@@ -50,6 +50,12 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
       if (statusFilter !== "all") {
         if (statusFilter === "due_today") {
           query = query.lte("scheduled_date", new Date().toISOString().split('T')[0]);
+        } else if (statusFilter === "overdue") {
+          const yesterday = new Date();
+          yesterday.setDate(yesterday.getDate() - 1);
+          query = query
+            .lt("scheduled_date", yesterday.toISOString().split('T')[0])
+            .neq("status", "completed");
         } else {
           query = query.eq("status", statusFilter);
         }
@@ -211,6 +217,7 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
               <SelectItem value="all">All Status</SelectItem>
               <SelectItem value="scheduled">Scheduled</SelectItem>
               <SelectItem value="due_today">Due Today</SelectItem>
+              <SelectItem value="overdue">Overdue</SelectItem>
               <SelectItem value="completed">Marked Completed</SelectItem>
             </SelectContent>
           </Select>
