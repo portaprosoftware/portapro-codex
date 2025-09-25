@@ -198,7 +198,7 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
           </div>
         </td>
         <td className="text-left">
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 py-2">
             <Badge className={`${getStatusColor(record.status)} w-fit`}>
               {record.status.replace("_", " ").replace(/\b\w/g, l => l.toUpperCase())}
             </Badge>
