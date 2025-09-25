@@ -2,13 +2,15 @@ import React, { useMemo, useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { StockVehicleSelectionModal } from "@/components/fleet/StockVehicleSelectionModal";
+import { DriverSelectionModal } from "@/components/fleet/DriverSelectionModal";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ChevronDown, ChevronRight, Truck, Calendar } from "lucide-react";
+import { ChevronDown, ChevronRight, Truck, Calendar, User } from "lucide-react";
 
 interface DVIRFormProps {
   open: boolean;
@@ -52,7 +54,9 @@ export const DVIRForm: React.FC<DVIRFormProps> = ({ open, onOpenChange }) => {
   const [assetType, setAssetType] = useState<"vehicle"|"trailer">("vehicle");
   const [assetId, setAssetId] = useState("");
   const [selectedVehicle, setSelectedVehicle] = useState<any>(null);
+  const [selectedDriver, setSelectedDriver] = useState<any>(null);
   const [showVehicleModal, setShowVehicleModal] = useState(false);
+  const [showDriverModal, setShowDriverModal] = useState(false);
   const [driverId, setDriverId] = useState("");
   const [reportType, setReportType] = useState<"pre_trip"|"post_trip">("pre_trip");
   const [odometer, setOdometer] = useState<string>("");
@@ -109,6 +113,7 @@ export const DVIRForm: React.FC<DVIRFormProps> = ({ open, onOpenChange }) => {
     setAssetType("vehicle");
     setAssetId("");
     setSelectedVehicle(null);
+    setSelectedDriver(null);
     setDriverId("");
     setReportType("pre_trip");
     setOdometer("");
@@ -145,6 +150,12 @@ export const DVIRForm: React.FC<DVIRFormProps> = ({ open, onOpenChange }) => {
     setSelectedVehicle(vehicle);
     setAssetId(vehicle.id);
     setShowVehicleModal(false);
+  };
+
+  const handleDriverSelect = (driver: any) => {
+    setSelectedDriver(driver);
+    setDriverId(driver?.id || "");
+    setShowDriverModal(false);
   };
 
   const handleSubmit = async () => {
@@ -385,31 +396,66 @@ export const DVIRForm: React.FC<DVIRFormProps> = ({ open, onOpenChange }) => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Driver ID (optional)</label>
-                <input 
-                  className="w-full border rounded-md p-2 bg-background" 
-                  placeholder="Driver ID" 
-                  value={driverId} 
-                  onChange={e => setDriverId(e.target.value)} 
-                />
+                <label className="block text-sm font-medium mb-1">Driver</label>
+                <div className="space-y-2">
+                  {!selectedDriver ? (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full h-12 justify-start"
+                      onClick={() => setShowDriverModal(true)}
+                    >
+                      <User className="h-4 w-4 mr-2" />
+                      Select Driver (Optional)...
+                    </Button>
+                  ) : (
+                    <Card className="cursor-pointer hover:bg-muted/50" onClick={() => setShowDriverModal(true)}>
+                      <CardContent className="p-3">
+                        <div className="flex items-center space-x-3">
+                          <Avatar className="w-12 h-12">
+                            <AvatarFallback className="bg-primary text-white font-semibold">
+                              {`${selectedDriver.first_name?.[0] || ''}${selectedDriver.last_name?.[0] || ''}`.toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold text-sm truncate">
+                              {selectedDriver.first_name} {selectedDriver.last_name}
+                            </h4>
+                            <p className="text-xs text-muted-foreground">
+                              {selectedDriver.status === "available" ? "Available" : 
+                               selectedDriver.status === "assigned" ? "Assigned" : "Off-Duty"}
+                            </p>
+                            {selectedDriver.working_hours && (
+                              <p className="text-xs text-muted-foreground">
+                                {selectedDriver.working_hours.start_time?.slice(0, 5)} - {selectedDriver.working_hours.end_time?.slice(0, 5)}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Odometer (miles)</label>
-                <input 
-                  type="number" 
-                  className="w-full border rounded-md p-2 bg-background" 
-                  value={odometer} 
-                  onChange={e => setOdometer(e.target.value)} 
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Engine Hours</label>
-                <input 
-                  type="number" 
-                  className="w-full border rounded-md p-2 bg-background" 
-                  value={engineHours} 
-                  onChange={e => setEngineHours(e.target.value)} 
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Odometer (miles)</label>
+                  <input 
+                    type="number" 
+                    className="w-full border rounded-md p-2 bg-background" 
+                    value={odometer} 
+                    onChange={e => setOdometer(e.target.value)} 
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Engine Hours</label>
+                  <input 
+                    type="number" 
+                    className="w-full border rounded-md p-2 bg-background" 
+                    value={engineHours} 
+                    onChange={e => setEngineHours(e.target.value)} 
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -501,6 +547,14 @@ export const DVIRForm: React.FC<DVIRFormProps> = ({ open, onOpenChange }) => {
           selectedDate={new Date()}
           selectedVehicle={selectedVehicle}
           onVehicleSelect={handleVehicleSelect}
+        />
+
+        <DriverSelectionModal
+          open={showDriverModal}
+          onOpenChange={setShowDriverModal}
+          selectedDate={new Date()}
+          selectedDriver={selectedDriver}
+          onDriverSelect={handleDriverSelect}
         />
 
         <SheetFooter className="mt-6 flex gap-2">
