@@ -74,27 +74,33 @@ export function VehicleAssignments() {
     <div className="space-y-6">
       {/* Main Content Card */}
       <div className="bg-white rounded-lg border shadow-sm p-6">
-        {/* Header */}
-        <PageHeader 
-          title="Driver Assignments" 
-          subtitle="Manage daily vehicle assignments for your drivers"
-        >
-          <Button 
-            onClick={() => setWizardOpen(true)}
-            className="flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            Create Assignment
-          </Button>
-        </PageHeader>
-
-        {/* Date Navigator */}
-        <div className="mt-6">
-          <EnhancedDateNavigator
-            date={selectedDate}
-            onDateChange={setSelectedDate}
-            label="Assignment Date"
-          />
+        {/* Header with Date Navigator */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between w-full">
+            {/* Left side - Title and Date Navigator */}
+            <div className="flex items-center gap-6">
+              <div>
+                <h1 className="text-2xl font-bold tracking-tight">Driver Assignments</h1>
+                <p className="text-muted-foreground">Manage daily vehicle assignments for your drivers</p>
+              </div>
+              <div className="flex-shrink-0">
+                <EnhancedDateNavigator
+                  date={selectedDate}
+                  onDateChange={setSelectedDate}
+                  label="Assignment Date"
+                />
+              </div>
+            </div>
+            
+            {/* Right side - Create Button */}
+            <Button 
+              onClick={() => setWizardOpen(true)}
+              className="flex items-center gap-2 flex-shrink-0"
+            >
+              <Plus className="w-4 h-4" />
+              Create Assignment
+            </Button>
+          </div>
         </div>
 
         {/* Stats Cards */}
