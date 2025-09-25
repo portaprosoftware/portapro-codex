@@ -79,19 +79,19 @@ export const FleetOverview: React.FC = () => {
       {/* Page Header with Stats */}
       <div className="bg-white rounded-lg border shadow-sm p-6">
         <div className="grid grid-cols-4 gap-4 mb-6">
-          <div className="bg-card p-4 rounded-lg border shadow-sm">
+          <div className="bg-card p-3 rounded-lg border shadow-sm">
             <div className="text-sm text-muted-foreground">Total Vehicles</div>
             <div className="text-2xl font-bold">{vehicles?.length || 0}</div>
           </div>
-          <div className="bg-card p-4 rounded-lg border shadow-sm">
+          <div className="bg-card p-3 rounded-lg border shadow-sm">
             <div className="text-sm text-muted-foreground">Available</div>
             <div className="text-2xl font-bold text-green-600">{statusCounts.available}</div>
           </div>
-          <div className="bg-card p-4 rounded-lg border shadow-sm">
+          <div className="bg-card p-3 rounded-lg border shadow-sm">
             <div className="text-sm text-muted-foreground">In Service</div>
             <div className="text-2xl font-bold text-blue-600">{statusCounts.in_service}</div>
           </div>
-          <div className="bg-card p-4 rounded-lg border shadow-sm">
+          <div className="bg-card p-3 rounded-lg border shadow-sm">
             <div className="text-sm text-muted-foreground">Maintenance</div>
             <div className="text-2xl font-bold text-orange-600">{statusCounts.maintenance}</div>
           </div>
