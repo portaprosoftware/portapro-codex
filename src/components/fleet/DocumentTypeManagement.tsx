@@ -25,7 +25,6 @@ interface DocumentType {
 interface DocumentTypeFormData {
   name: string;
   description: string;
-  default_reminder_days: number;
   category: string;
 }
 
@@ -100,7 +99,6 @@ export const DocumentTypeManagement: React.FC = () => {
   const [formData, setFormData] = useState<DocumentTypeFormData>({
     name: "",
     description: "",
-    default_reminder_days: 30,
     category: ""
   });
   const { toast } = useToast();
@@ -202,7 +200,6 @@ export const DocumentTypeManagement: React.FC = () => {
     setFormData({
       name: "",
       description: "",
-      default_reminder_days: 30,
       category: ""
     });
   };
@@ -212,7 +209,6 @@ export const DocumentTypeManagement: React.FC = () => {
     setFormData({
       name: docType.name,
       description: docType.description || "",
-      default_reminder_days: docType.default_reminder_days,
       category: docType.category || ""
     });
     setIsDialogOpen(true);
@@ -315,21 +311,6 @@ export const DocumentTypeManagement: React.FC = () => {
                 />
               </div>
               
-              <div>
-                <Label htmlFor="reminder_days">Default Reminder Days *</Label>
-                <Input
-                  id="reminder_days"
-                  type="number"
-                  min="1"
-                  max="365"
-                  value={formData.default_reminder_days}
-                  onChange={(e) => setFormData({ ...formData, default_reminder_days: parseInt(e.target.value) || 30 })}
-                  required
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Days before expiration to show warnings
-                </p>
-              </div>
               
               <div className="flex gap-2 pt-4">
                 <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending}>
