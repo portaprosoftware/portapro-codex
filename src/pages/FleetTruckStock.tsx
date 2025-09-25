@@ -252,10 +252,10 @@ const FleetTruckStock: React.FC = () => {
                     </CardContent>
                   </Card>
 
-                  <Card className="border-0 shadow-none">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="flex items-center gap-2 text-lg">
-                        <ArrowLeftRight className="h-5 w-5"/> Transfer Between Trucks
+                  <Card className="border-0 shadow-none bg-gray-50/50">
+                    <CardHeader className="pb-2 pt-3">
+                      <CardTitle className="flex items-center gap-2 text-base">
+                        <ArrowLeftRight className="h-4 w-4"/> Transfer Between Trucks
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-2 pt-0">
