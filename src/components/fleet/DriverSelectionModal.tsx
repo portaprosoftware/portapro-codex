@@ -107,7 +107,7 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
     return acc;
   }, {} as Record<string, ScheduledJob[]>);
 
-  const driversWithDetails: DriverWithDetails[] = drivers.map(driver => {
+  const driversWithDetails: DriverWithDetails[] = (drivers || []).map(driver => {
     const hasAssignment = assignedDriverIds.has(driver.id);
     const scheduledJobs = jobsByDriver[driver.id] || [];
     
@@ -132,9 +132,9 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
     };
   });
 
-  const filteredDrivers = driversWithDetails.filter(driver => {
+  const filteredDrivers = (driversWithDetails || []).filter(driver => {
     const matchesSearch = 
-      `${driver.first_name} ${driver.last_name}`.toLowerCase().includes(searchQuery.toLowerCase());
+      `${driver.first_name || ''} ${driver.last_name || ''}`.toLowerCase().includes(searchQuery.toLowerCase());
     
     if (statusFilter === "available") return matchesSearch && driver.status === "available";
     if (statusFilter === "assigned") return matchesSearch && driver.status === "assigned";
@@ -215,7 +215,7 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
                 onClick={() => setStatusFilter("all")}
                 className={statusFilter === "all" ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0" : ""}
               >
-                All ({driversWithDetails.length})
+                All ({(driversWithDetails || []).length})
               </Button>
               <Button
                 variant={statusFilter === "available" ? "default" : "outline"}
@@ -223,7 +223,7 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
                 onClick={() => setStatusFilter("available")}
                 className={statusFilter === "available" ? "bg-gradient-to-r from-green-500 to-green-600 text-white border-0" : ""}
               >
-                Available ({driversWithDetails.filter(d => d.status === "available").length})
+                Available ({(driversWithDetails || []).filter(d => d.status === "available").length})
               </Button>
               <Button
                 variant={statusFilter === "assigned" ? "default" : "outline"}
@@ -231,7 +231,7 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
                 onClick={() => setStatusFilter("assigned")}
                 className={statusFilter === "assigned" ? "bg-gradient-to-r from-yellow-500 to-yellow-600 text-white border-0" : ""}
               >
-                Assigned ({driversWithDetails.filter(d => d.status === "assigned").length})
+                Assigned ({(driversWithDetails || []).filter(d => d.status === "assigned").length})
               </Button>
               <Button
                 variant={statusFilter === "off-duty" ? "default" : "outline"}
@@ -239,7 +239,7 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
                 onClick={() => setStatusFilter("off-duty")}
                 className={statusFilter === "off-duty" ? "bg-gradient-to-r from-red-500 to-red-600 text-white border-0" : ""}
               >
-                Off-Duty ({driversWithDetails.filter(d => d.status === "off-duty").length})
+                Off-Duty ({(driversWithDetails || []).filter(d => d.status === "off-duty").length})
               </Button>
             </div>
 
@@ -316,11 +316,11 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
                             <span>Schedule for {format(selectedDate, 'MMM d, yyyy')}</span>
                           </div>
                           
-                          {driver.scheduledJobs.length === 0 ? (
+                          {(driver.scheduledJobs || []).length === 0 ? (
                             <p className="text-sm text-muted-foreground ml-5">No jobs scheduled</p>
                           ) : (
                             <div className="ml-5 space-y-1">
-                              {driver.scheduledJobs.map((job) => (
+                              {(driver.scheduledJobs || []).map((job) => (
                                 <div key={job.id} className="text-sm bg-muted/50 p-2 rounded">
                                   <div className="flex justify-between items-start">
                                     <div>
@@ -352,7 +352,7 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
               })}
             </div>
 
-            {filteredDrivers.length === 0 && (
+            {(filteredDrivers || []).length === 0 && (
               <div className="text-center py-12">
                 <User className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <p className="text-muted-foreground">No drivers found matching your criteria</p>
@@ -368,7 +368,7 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
               <div>
                 <p className="font-medium">{selectedDriver.first_name} {selectedDriver.last_name}</p>
                 <p className="text-sm text-muted-foreground">
-                  {getStatusText(selectedDriver.status)} • {selectedDriver.scheduledJobs.length} scheduled jobs
+                  {getStatusText(selectedDriver.status)} • {(selectedDriver.scheduledJobs || []).length} scheduled jobs
                 </p>
               </div>
               <div className="flex gap-2">
