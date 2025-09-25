@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Fuel, Plus, Upload, Edit } from "lucide-react";
+import { Fuel, Plus, Upload, Edit, RefreshCw } from "lucide-react";
 import { FleetSidebar } from "@/components/fleet/FleetSidebar";
+import { toast } from "@/hooks/use-toast";
 
 interface FuelLog {
   id: string;
@@ -22,23 +23,47 @@ interface FuelLog {
 
 export default function FleetFuel() {
   const [searchQuery, setSearchQuery] = useState("");
+  const queryClient = useQueryClient();
 
-  const { data: fuelLogs, isLoading } = useQuery({
+  const { data: fuelLogs, isLoading, error, refetch } = useQuery({
     queryKey: ["fuel-logs"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("fuel_logs")
-        .select(`
-          *,
-          vehicles!inner(license_plate, vehicle_type, make, model),
-          profiles!fuel_logs_driver_id_fkey(first_name, last_name)
-        `)
-        .order("log_date", { ascending: false });
-      
-      if (error) throw error;
-      return data || [];
+      try {
+        const { data, error } = await supabase
+          .from("fuel_logs")
+          .select(`
+            *,
+            vehicles!inner(license_plate, vehicle_type, make, model),
+            profiles!fuel_logs_driver_id_fkey(first_name, last_name)
+          `)
+          .order("log_date", { ascending: false });
+        
+        if (error) throw error;
+        return data || [];
+      } catch (err) {
+        console.error("Error fetching fuel logs:", err);
+        throw err;
+      }
     },
+    retry: 3,
+    retryDelay: 1000,
   });
+
+  const handleRetry = async () => {
+    try {
+      await refetch();
+      toast({
+        title: "Success",
+        description: "Data refreshed successfully",
+      });
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Failed to refresh data. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   // Calculate summary metrics
   const totalGallons = fuelLogs?.reduce((sum, log) => sum + log.gallons_purchased, 0) || 0;
@@ -56,6 +81,23 @@ export default function FleetFuel() {
         <FleetSidebar />
         <div className="flex-1 flex items-center justify-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-screen">
+        <FleetSidebar />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-red-600 mb-4">Error loading fuel logs: {error.message}</p>
+            <Button onClick={handleRetry} variant="outline">
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Retry
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -108,6 +150,10 @@ export default function FleetFuel() {
             </div>
             
             <div className="flex items-center space-x-2">
+              <Button variant="outline" onClick={handleRetry}>
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Refresh
+              </Button>
               <Button variant="outline">
                 <Upload className="w-4 h-4 mr-2" />
                 Import CSV
