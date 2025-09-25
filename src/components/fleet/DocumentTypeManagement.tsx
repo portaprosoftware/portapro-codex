@@ -343,23 +343,16 @@ export const DocumentTypeManagement: React.FC = () => {
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {predefinedCategories.map((category) => {
-            // Get custom types for this category  
+            // Get only custom types for this category from database
             const customTypesForCategory = allDocumentTypes?.filter(type => 
               (type as any).category === category.id
             ) || [];
             
-            // Combine predefined and custom types
-            const predefinedTypes: TypeDisplayItem[] = category.types.map(typeName => ({
-              name: typeName,
-              isPredefined: true
-            }));
-            
-            const customTypes: TypeDisplayItem[] = customTypesForCategory.map(type => ({
+            // Only show custom types, no predefined ones
+            const allTypesForCategory = customTypesForCategory.map(type => ({
               ...type,
               isPredefined: false
             }));
-            
-            const allTypesForCategory = [...predefinedTypes, ...customTypes];
 
             return (
               <Card key={category.id} className="p-4">
