@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { AlertTriangle, MapPin, Plus } from "lucide-react";
-import { IncidentCreateModal } from "./IncidentCreateModal";
+import { IncidentCreateForm } from "./IncidentCreateForm";
 
 export const IncidentsTab: React.FC = () => {
   const qc = useQueryClient();
@@ -31,6 +31,7 @@ export const IncidentsTab: React.FC = () => {
 
   const handleSaved = () => {
     qc.invalidateQueries({ queryKey: ["spill-incidents"] });
+    setDrawerOpen(false);
   };
 
   if (isLoading) return <div className="py-10 text-center">Loading...</div>;
@@ -50,7 +51,10 @@ export const IncidentsTab: React.FC = () => {
               <DrawerTitle>Log New Incident</DrawerTitle>
             </DrawerHeader>
             <div className="p-4 overflow-y-auto flex-1">
-              <IncidentCreateModal isOpen={true} onClose={() => setDrawerOpen(false)} onSaved={handleSaved} />
+              <IncidentCreateForm 
+                onSaved={handleSaved} 
+                onCancel={() => setDrawerOpen(false)} 
+              />
             </div>
           </DrawerContent>
         </Drawer>
@@ -97,7 +101,10 @@ export const IncidentsTab: React.FC = () => {
             <DrawerTitle>Log New Incident</DrawerTitle>
           </DrawerHeader>
           <div className="p-4 overflow-y-auto flex-1">
-            <IncidentCreateModal isOpen={true} onClose={() => setDrawerOpen(false)} onSaved={handleSaved} />
+            <IncidentCreateForm 
+              onSaved={handleSaved} 
+              onCancel={() => setDrawerOpen(false)} 
+            />
           </div>
         </DrawerContent>
       </Drawer>

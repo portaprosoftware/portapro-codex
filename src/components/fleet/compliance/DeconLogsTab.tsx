@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { CalendarDays, Shield, Plus } from "lucide-react";
-import { DeconCreateModal } from "./DeconCreateModal";
+import { DeconCreateForm } from "./DeconCreateForm";
 
 // Local fallback type
 type DeconLog = {
@@ -42,6 +42,7 @@ export const DeconLogsTab: React.FC = () => {
 
   const handleSaved = () => {
     queryClient.invalidateQueries({ queryKey: ["decon-logs"] });
+    setDrawerOpen(false);
   };
 
   if (isLoading) return <div className="py-10 text-center">Loading...</div>;
@@ -61,7 +62,10 @@ export const DeconLogsTab: React.FC = () => {
               <DrawerTitle>Record Decontamination</DrawerTitle>
             </DrawerHeader>
             <div className="p-4 overflow-y-auto flex-1">
-              <DeconCreateModal isOpen={true} onClose={() => setDrawerOpen(false)} onSaved={handleSaved} />
+              <DeconCreateForm 
+                onSaved={handleSaved} 
+                onCancel={() => setDrawerOpen(false)} 
+              />
             </div>
           </DrawerContent>
         </Drawer>
@@ -104,7 +108,10 @@ export const DeconLogsTab: React.FC = () => {
             <DrawerTitle>Record Decontamination</DrawerTitle>
           </DrawerHeader>
           <div className="p-4 overflow-y-auto flex-1">
-            <DeconCreateModal isOpen={true} onClose={() => setDrawerOpen(false)} onSaved={handleSaved} />
+            <DeconCreateForm 
+              onSaved={handleSaved} 
+              onCancel={() => setDrawerOpen(false)} 
+            />
           </div>
         </DrawerContent>
       </Drawer>
