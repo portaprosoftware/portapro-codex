@@ -82,6 +82,19 @@ export const AddRecurringServiceSlider: React.FC<AddRecurringServiceSliderProps>
     }
   }, [preselectedVehicleId, vehicles]);
 
+  // Fetch task types
+  const { data: taskTypes } = useQuery({
+    queryKey: ["maintenance-task-types"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("maintenance_task_types")
+        .select("*")
+        .eq("is_active", true);
+      if (error) throw error;
+      return data;
+    }
+  });
+
   // Fetch vendors
   const { data: vendors } = useQuery({
     queryKey: ["maintenance-vendors"],
@@ -98,7 +111,7 @@ export const AddRecurringServiceSlider: React.FC<AddRecurringServiceSliderProps>
   const createRecurringService = useMutation({
     mutationFn: async (serviceData: any) => {
       const { data, error } = await supabase
-        .from("routine_maintenance_services")
+        .from("maintenance_records")
         .insert([serviceData])
         .select()
         .single();
@@ -106,14 +119,17 @@ export const AddRecurringServiceSlider: React.FC<AddRecurringServiceSliderProps>
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["routine-maintenance"] });
+      queryClient.invalidateQueries({ queryKey: ["maintenance-records"] });
+      queryClient.invalidateQueries({ queryKey: ["maintenance-kpis"] });
+      queryClient.invalidateQueries({ queryKey: ["overdue-maintenance"] });
+      queryClient.invalidateQueries({ queryKey: ["upcoming-maintenance"] });
       toast.success("Recurring service scheduled successfully");
       onOpenChange(false);
       resetForm();
     },
     onError: (error) => {
       console.error("Error creating recurring service:", error);
-      toast.error("Failed to schedule recurring service");
+      toast.error(error.message ?? "Failed to schedule recurring service");
     }
   });
 
@@ -183,20 +199,56 @@ export const AddRecurringServiceSlider: React.FC<AddRecurringServiceSliderProps>
     // Clear validation errors
     setValidationErrors([]);
 
+    // Find task type UUID by name if taskTypeName is set
+    let finalTaskTypeId = null;
+    if (taskTypeName && taskTypes) {
+      const foundTaskType = taskTypes.find(type => 
+        type.name.toLowerCase() === taskTypeName.toLowerCase()
+      );
+      if (foundTaskType) {
+        finalTaskTypeId = foundTaskType.id;
+      }
+    } else if (taskTypeId) {
+      // Only use taskTypeId if it's a valid UUID format
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      if (uuidRegex.test(taskTypeId)) {
+        finalTaskTypeId = taskTypeId;
+      }
+    }
+
+    // Calculate notification fields based on interval type
+    const notificationTriggerType = intervalType === "miles" ? "mileage_based" : "date_based";
+    
+    let nextServiceDate = null;
+    let nextServiceMileage = null;
+    
+    if (intervalType === "miles") {
+      // For mileage-based, set next service mileage
+      const currentMileage = vehicleMiles ? parseInt(vehicleMiles) : 0;
+      nextServiceMileage = currentMileage + parseInt(intervalValue);
+    } else {
+      // For date-based, calculate next service date
+      const intervalDays = intervalType === "days" ? parseInt(intervalValue) : 
+                          intervalType === "weeks" ? parseInt(intervalValue) * 7 :
+                          parseInt(intervalValue) * 30; // Approximate months as 30 days
+      nextServiceDate = new Date(startDate.getTime() + intervalDays * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    }
+
     const serviceData = {
       vehicle_id: vehicleId,
-      task_type_id: taskTypeId || null,
+      task_type_id: finalTaskTypeId,
       vendor_id: vendorId || null,
-      description: description || null,
-      vehicle_miles: vehicleMiles ? parseInt(vehicleMiles) : null,
-      start_date: startDate.toISOString().split('T')[0],
-      interval_type: intervalType,
-      interval_value: parseInt(intervalValue),
+      description: description || taskTypeName || "General Maintenance",
+      maintenance_type: taskTypeName || description || "General Maintenance",
+      scheduled_date: startDate.toISOString().split('T')[0],
       priority,
       cost: parseFloat(estimatedCost),
+      mileage_at_service: vehicleMiles ? parseInt(vehicleMiles) : null,
       notes,
-      is_active: true,
-      maintenance_type: taskTypeName || description || "General Maintenance"
+      status: "scheduled",
+      notification_trigger_type: notificationTriggerType,
+      next_service_date: nextServiceDate,
+      next_service_mileage: nextServiceMileage
     };
 
     createRecurringService.mutate(serviceData);

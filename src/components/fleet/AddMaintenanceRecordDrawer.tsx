@@ -193,9 +193,26 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
     // Clear validation errors
     setValidationErrors([]);
 
+    // Find task type UUID by name if taskTypeName is set
+    let finalTaskTypeId = null;
+    if (taskTypeName && taskTypes) {
+      const foundTaskType = taskTypes.find(type => 
+        type.name.toLowerCase() === taskTypeName.toLowerCase()
+      );
+      if (foundTaskType) {
+        finalTaskTypeId = foundTaskType.id;
+      }
+    } else if (taskTypeId) {
+      // Only use taskTypeId if it's a valid UUID format
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      if (uuidRegex.test(taskTypeId)) {
+        finalTaskTypeId = taskTypeId;
+      }
+    }
+
     const recordData = {
       vehicle_id: vehicleId,
-      task_type_id: taskTypeId || null,
+      task_type_id: finalTaskTypeId,
       vendor_id: vendorId || null,
       description: description || taskTypeName || "General Maintenance",
       maintenance_type: taskTypeName || description || "General Maintenance",

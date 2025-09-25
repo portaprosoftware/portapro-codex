@@ -24,8 +24,7 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
           *,
           vehicles(license_plate, vehicle_type),
           maintenance_task_types(name),
-          maintenance_vendors(name),
-          maintenance_technicians(first_name, last_name)
+          maintenance_vendors(name)
         `)
         .order("scheduled_date", { ascending: false });
 
