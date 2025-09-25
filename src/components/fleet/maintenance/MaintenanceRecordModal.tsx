@@ -13,7 +13,8 @@ import {
   TruckIcon, 
   Edit, 
   Trash2,
-  Clock
+  Clock,
+  CheckCircle
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -57,6 +58,7 @@ interface MaintenanceRecordModalProps {
   onClose: () => void;
   onEdit?: (record: MaintenanceRecord) => void;
   onDelete?: (record: MaintenanceRecord) => void;
+  onMarkCompleted?: (record: MaintenanceRecord) => void;
 }
 
 export const MaintenanceRecordModal: React.FC<MaintenanceRecordModalProps> = ({
@@ -65,6 +67,7 @@ export const MaintenanceRecordModal: React.FC<MaintenanceRecordModalProps> = ({
   onClose,
   onEdit,
   onDelete,
+  onMarkCompleted,
 }) => {
   if (!record) return null;
 
@@ -299,6 +302,18 @@ export const MaintenanceRecordModal: React.FC<MaintenanceRecordModalProps> = ({
             <Button variant="outline" onClick={onClose}>
               Close
             </Button>
+            {record.status !== "completed" && onMarkCompleted && (
+              <Button
+                onClick={() => {
+                  onMarkCompleted(record);
+                  onClose();
+                }}
+                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
+              >
+                <CheckCircle className="h-4 w-4 mr-2" />
+                Mark Completed
+              </Button>
+            )}
             {onEdit && (
               <Button
                 onClick={() => {

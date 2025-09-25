@@ -15,7 +15,8 @@ import {
   Trash2,
   Recycle,
   Clock,
-  Route
+  Route,
+  CheckCircle
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -62,6 +63,7 @@ interface RecurringServiceModalProps {
   onClose: () => void;
   onEdit?: (record: RecurringServiceRecord) => void;
   onDelete?: (record: RecurringServiceRecord) => void;
+  onMarkCompleted?: (record: RecurringServiceRecord) => void;
 }
 
 export const RecurringServiceModal: React.FC<RecurringServiceModalProps> = ({
@@ -69,7 +71,8 @@ export const RecurringServiceModal: React.FC<RecurringServiceModalProps> = ({
   isOpen,
   onClose,
   onEdit,
-  onDelete
+  onDelete,
+  onMarkCompleted
 }) => {
   if (!record) return null;
 
@@ -330,6 +333,18 @@ export const RecurringServiceModal: React.FC<RecurringServiceModalProps> = ({
             <Button variant="outline" onClick={onClose}>
               Close
             </Button>
+            {record.status !== "completed" && onMarkCompleted && (
+              <Button
+                onClick={() => {
+                  onMarkCompleted(record);
+                  onClose();
+                }}
+                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
+              >
+                <CheckCircle className="h-4 w-4 mr-2" />
+                Mark Completed
+              </Button>
+            )}
             {onEdit && (
               <Button
                 onClick={() => {
