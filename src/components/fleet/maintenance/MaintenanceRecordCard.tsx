@@ -117,7 +117,7 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
   );
 
   // Card variant for overview sections
-  if (variant === "card") {
+  if (variant === "card" || variant === "overview") {
     return (
       <Card className="bg-gray-50 border rounded-lg">
         <CardContent className="p-3">
@@ -232,9 +232,16 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
         </div>
       </div>
       <div className="flex items-center gap-2">
-        <Badge className={getStatusColor(record.status)}>
-          {record.status.replace("_", " ")}
-        </Badge>
+        <div className="flex flex-col gap-1">
+          <Badge className={getStatusColor(record.status)}>
+            {record.status.replace("_", " ").replace(/\b\w/g, l => l.toUpperCase())}
+          </Badge>
+          {record.priority && (
+            <Badge className={`${getPriorityColor(record.priority)} text-xs`}>
+              {record.priority.replace(/\b\w/g, l => l.toUpperCase())}
+            </Badge>
+          )}
+        </div>
         {renderActions()}
       </div>
     </div>
