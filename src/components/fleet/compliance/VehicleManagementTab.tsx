@@ -156,7 +156,6 @@ export const VehicleManagementTab: React.FC = () => {
       <VehicleSelector
         selectedVehicleId={selectedVehicleId}
         onVehicleSelect={setSelectedVehicleId}
-        showAddButton={true}
       />
 
       {/* Vehicle Details & Documents */}
