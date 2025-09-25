@@ -521,7 +521,7 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent 
         side="bottom" 
-        className="h-[75vh] w-full max-w-none flex flex-col rounded-t-2xl border-t"
+        className="h-[85vh] w-full max-w-none flex flex-col rounded-t-2xl border-t"
       >
         <SheetHeader className="pb-6 border-b">
           <div>
