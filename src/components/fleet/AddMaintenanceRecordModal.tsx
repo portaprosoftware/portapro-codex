@@ -322,15 +322,19 @@ export const AddMaintenanceRecordModal: React.FC<AddMaintenanceRecordModalProps>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="estimatedCost">Estimated Cost</Label>
-              <Input
-                id="estimatedCost"
-                type="number"
-                step="0.01"
-                value={estimatedCost}
-                onChange={(e) => setEstimatedCost(e.target.value)}
-                placeholder="0.00"
-              />
+              <Label htmlFor="estimatedCost">Cost</Label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">$</span>
+                <Input
+                  id="estimatedCost"
+                  type="number"
+                  step="0.01"
+                  value={estimatedCost}
+                  onChange={(e) => setEstimatedCost(e.target.value)}
+                  placeholder="0.00"
+                  className="pl-7"
+                />
+              </div>
             </div>
           </div>
 
