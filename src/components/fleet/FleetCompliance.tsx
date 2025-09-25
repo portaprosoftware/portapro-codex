@@ -101,13 +101,13 @@ export const FleetCompliance: React.FC = () => {
               <TabsTrigger value="spill-kits" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Spill Kits</TabsTrigger>
               <button 
                 onClick={() => setIncidentsDrawerOpen(true)}
-                className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap hover:from-blue-600 hover:to-blue-700 transition-all"
+                className="hover:bg-gray-100 text-gray-700 hover:text-gray-900 rounded-full px-3 py-2 text-sm whitespace-nowrap transition-all font-medium"
               >
                 Incidents
               </button>
               <button 
                 onClick={() => setDeconDrawerOpen(true)}
-                className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap hover:from-blue-600 hover:to-blue-700 transition-all"
+                className="hover:bg-gray-100 text-gray-700 hover:text-gray-900 rounded-full px-3 py-2 text-sm whitespace-nowrap transition-all font-medium"
               >
                 Decon Logs
               </button>
