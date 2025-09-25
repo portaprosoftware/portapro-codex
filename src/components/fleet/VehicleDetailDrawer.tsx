@@ -387,14 +387,6 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
               <Button 
                 variant="outline" 
                 size="sm"
-                onClick={() => setIsEditing(!isEditing)}
-              >
-                <Edit className="w-4 h-4 mr-2" />
-                {isEditing ? "Cancel" : "Edit"}
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm"
                 onClick={onClose}
               >
                 <X className="w-4 h-4" />
@@ -577,9 +569,19 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <Card>
                       <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                          <Truck className="w-5 h-5" />
-                          Vehicle Information
+                        <CardTitle className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Truck className="w-5 h-5" />
+                            Vehicle Information
+                          </div>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => setIsEditing(!isEditing)}
+                          >
+                            <Edit className="w-4 h-4 mr-2" />
+                            {isEditing ? "Cancel" : "Edit"}
+                          </Button>
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="space-y-2">
