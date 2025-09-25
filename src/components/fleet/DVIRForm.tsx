@@ -395,6 +395,26 @@ export const DVIRForm: React.FC<DVIRFormProps> = ({ open, onOpenChange }) => {
                   <option value="post_trip">Post-trip</option>
                 </select>
               </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Odometer (miles)</label>
+                  <input 
+                    type="number" 
+                    className="w-full border rounded-md p-2 bg-background" 
+                    value={odometer} 
+                    onChange={e => setOdometer(e.target.value)} 
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Engine Hours</label>
+                  <input 
+                    type="number" 
+                    className="w-full border rounded-md p-2 bg-background" 
+                    value={engineHours} 
+                    onChange={e => setEngineHours(e.target.value)} 
+                  />
+                </div>
+              </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Driver</label>
                 <div className="space-y-2">
@@ -435,26 +455,6 @@ export const DVIRForm: React.FC<DVIRFormProps> = ({ open, onOpenChange }) => {
                       </CardContent>
                     </Card>
                   )}
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Odometer (miles)</label>
-                  <input 
-                    type="number" 
-                    className="w-full border rounded-md p-2 bg-background" 
-                    value={odometer} 
-                    onChange={e => setOdometer(e.target.value)} 
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Engine Hours</label>
-                  <input 
-                    type="number" 
-                    className="w-full border rounded-md p-2 bg-background" 
-                    value={engineHours} 
-                    onChange={e => setEngineHours(e.target.value)} 
-                  />
                 </div>
               </div>
             </div>
