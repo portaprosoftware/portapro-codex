@@ -148,6 +148,7 @@ const MaintenanceManagementContent: React.FC = () => {
           gradientTo="#6699FF"
           iconBg="#3366FF"
           subtitleColor="text-blue-600"
+          animateValue={true}
         />
         
         <StatCard
