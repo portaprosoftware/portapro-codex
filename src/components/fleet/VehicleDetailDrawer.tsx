@@ -401,19 +401,19 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
           <div className="p-6">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
               {/* Desktop Tabs */}
-              <TabsList className="hidden sm:grid w-full grid-cols-6 bg-gradient-to-r from-blue-500 to-blue-600 p-1 rounded-lg">
-                <TabsTrigger value="overview" className="data-[state=active]:bg-white data-[state=active]:text-blue-600 text-white font-medium">Overview</TabsTrigger>
-                <TabsTrigger value="maintenance" className="data-[state=active]:bg-white data-[state=active]:text-blue-600 text-white font-medium">Maintenance</TabsTrigger>
-                <TabsTrigger value="fuel" className="data-[state=active]:bg-white data-[state=active]:text-blue-600 text-white font-medium">Fuel</TabsTrigger>
-                <TabsTrigger value="assignments" className="data-[state=active]:bg-white data-[state=active]:text-blue-600 text-white font-medium">Assignments</TabsTrigger>
-                <TabsTrigger value="damage" className="data-[state=active]:bg-white data-[state=active]:text-blue-600 text-white font-medium">Damage Log</TabsTrigger>
-                <TabsTrigger value="documents" className="data-[state=active]:bg-white data-[state=active]:text-blue-600 text-white font-medium">Documents</TabsTrigger>
+              <TabsList className="hidden sm:grid w-full grid-cols-6">
+                <TabsTrigger value="overview">Overview</TabsTrigger>
+                <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
+                <TabsTrigger value="fuel">Fuel</TabsTrigger>
+                <TabsTrigger value="assignments">Assignments</TabsTrigger>
+                <TabsTrigger value="damage">Damage Log</TabsTrigger>
+                <TabsTrigger value="documents">Documents</TabsTrigger>
               </TabsList>
 
               {/* Mobile Dropdown */}
               <div className="block sm:hidden mb-4">
                 <Select value={activeTab} onValueChange={setActiveTab}>
-                  <SelectTrigger className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 shadow-sm">
+                  <SelectTrigger className="w-full bg-white border-gray-200 shadow-sm">
                     <SelectValue placeholder="Select a tab" />
                   </SelectTrigger>
                   <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
