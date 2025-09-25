@@ -194,7 +194,8 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
                       <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-lg flex items-center justify-center mx-auto mb-3 shadow-md">
                         <Check className="h-6 w-6 text-white font-bold stroke-[3]" />
                       </div>
-                      <p className="text-sm font-medium mb-3">Vehicle Selected</p>
+                      <p className="text-sm font-medium mb-2">Vehicle Selected</p>
+                      <p className="text-xs text-muted-foreground mb-3">Selection details below</p>
                       <Button onClick={() => setVehicleModalOpen(true)} variant="outline" size="sm" className="text-xs">
                         Change Vehicle
                       </Button>
@@ -228,7 +229,8 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
                       <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-lg flex items-center justify-center mx-auto mb-3 shadow-md">
                         <Check className="h-6 w-6 text-white font-bold stroke-[3]" />
                       </div>
-                      <p className="text-sm font-medium mb-3">Driver Selected</p>
+                      <p className="text-sm font-medium mb-2">Driver Selected</p>
+                      <p className="text-xs text-muted-foreground mb-3">Selection details below</p>
                       <Button onClick={() => setDriverModalOpen(true)} variant="outline" size="sm" className="text-xs">
                         Change Driver
                       </Button>
@@ -238,18 +240,9 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
               </div>
             </div>
 
-            {/* Selection Info Text */}
-            {(selectedVehicle || selectedDriver) && (
-              <div className="text-center mt-6">
-                <p className="text-sm text-muted-foreground font-medium">
-                  📋 Selection details below
-                </p>
-              </div>
-            )}
-
             {/* Selected Items Display at Bottom */}
             {(selectedVehicle || selectedDriver) && (
-              <div className="mt-6 pt-6 border-t">
+              <div className="mt-8 pt-6 border-t">
                 <h4 className="text-sm font-semibold text-center mb-4">Selected Items</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Selected Vehicle Card */}
