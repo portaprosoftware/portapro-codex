@@ -13,6 +13,7 @@ import { CalendarIcon, Upload, FileText } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { VehicleSelector } from "./VehicleSelector";
 
 interface AddDocumentModalProps {
   isOpen: boolean;
@@ -42,20 +43,6 @@ export const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
   });
   const { toast } = useToast();
   const queryClient = useQueryClient();
-
-  const { data: vehicles } = useQuery({
-    queryKey: ["vehicles"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("vehicles")
-        .select("id, license_plate, make, model, vehicle_type")
-        .eq("status", "active")
-        .order("license_plate");
-      
-      if (error) throw error;
-      return data || [];
-    },
-  });
 
   const { data: documentTypes } = useQuery({
     queryKey: ["compliance-document-types"],
@@ -160,27 +147,16 @@ export const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add Compliance Document</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="vehicle">Vehicle *</Label>
-            <Select value={formData.vehicle_id} onValueChange={(value) => setFormData({ ...formData, vehicle_id: value })}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select vehicle" />
-              </SelectTrigger>
-              <SelectContent>
-                {vehicles?.map((vehicle) => (
-                  <SelectItem key={vehicle.id} value={vehicle.id}>
-                    {vehicle.license_plate} - {vehicle.make} {vehicle.model}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <VehicleSelector
+            selectedVehicleId={formData.vehicle_id}
+            onVehicleSelect={(vehicleId) => setFormData({ ...formData, vehicle_id: vehicleId })}
+          />
 
           <div>
             <Label htmlFor="document_type">Document Type *</Label>
@@ -268,7 +244,7 @@ export const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
           </div>
 
           <div className="flex gap-2 pt-4">
-            <Button type="submit" disabled={uploadMutation.isPending}>
+            <Button type="submit" disabled={uploadMutation.isPending} className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0">
               {uploadMutation.isPending ? "Adding..." : "Add Document"}
             </Button>
             <Button type="button" variant="outline" onClick={onClose}>

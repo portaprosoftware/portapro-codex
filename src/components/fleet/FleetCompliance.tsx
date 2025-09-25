@@ -15,6 +15,7 @@ import { SpillKitsTab } from "./compliance/SpillKitsTab";
 import { IncidentsTab } from "./compliance/IncidentsTab";
 import { DeconLogsTab } from "./compliance/DeconLogsTab";
 import { ComplianceReporting } from "./ComplianceReporting";
+import { VehicleManagementTab } from "./compliance/VehicleManagementTab";
 
 interface ComplianceDocument {
   id: string;
@@ -95,6 +96,10 @@ export const FleetCompliance: React.FC = () => {
               <TabsTrigger value="reports" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Reports</TabsTrigger>
             </TabsList>
             
+            <TabsContent value="vehicles">
+              <VehicleManagementTab />
+            </TabsContent>
+
             <TabsContent value="documents">
               <FleetComplianceContent />
             </TabsContent>
