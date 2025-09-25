@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, Download, Eye, Edit, Check } from "lucide-react";
+import { Search, Filter, Download, Eye, Edit, Check, Truck } from "lucide-react";
 import { format } from "date-fns";
 import { MaintenanceRecordCard } from "./maintenance/MaintenanceRecordCard";
 import { MaintenanceRecordModal } from "./maintenance/MaintenanceRecordModal";
@@ -15,12 +15,15 @@ import { RecurringServiceModal } from "./maintenance/RecurringServiceModal";
 import { AddMaintenanceRecordDrawer } from "./AddMaintenanceRecordDrawer";
 import { AddRecurringServiceSlider } from "./AddRecurringServiceSlider";
 import { DeleteMaintenanceConfirmDialog } from "./maintenance/DeleteMaintenanceConfirmDialog";
+import { VehicleSelectionModal } from "./VehicleSelectionModal";
 import { toast } from "sonner";
 
 export const MaintenanceAllRecordsTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [vehicleFilter, setVehicleFilter] = useState("all");
+  const [selectedVehicle, setSelectedVehicle] = useState<any>(null);
+  const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editRecordOpen, setEditRecordOpen] = useState(false);
@@ -35,7 +38,7 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
   const queryClient = useQueryClient();
 
   const { data: maintenanceRecords, isLoading } = useQuery({
-    queryKey: ["maintenance-records", searchTerm, statusFilter, vehicleFilter],
+    queryKey: ["maintenance-records", searchTerm, statusFilter, selectedVehicle?.id],
     queryFn: async () => {
       let query = supabase
         .from("maintenance_records")
@@ -74,8 +77,8 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
         }
       }
 
-      if (vehicleFilter !== "all") {
-        query = query.eq("vehicle_id", vehicleFilter);
+      if (selectedVehicle) {
+        query = query.eq("vehicle_id", selectedVehicle.id);
       }
 
       const { data, error } = await query;
@@ -250,12 +253,21 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
   };
 
   const getSelectedVehicleName = () => {
-    if (vehicleFilter === "all") return "All Vehicles";
-    const vehicle = vehicles?.find(v => v.id === vehicleFilter);
-    if (vehicle?.make && vehicle?.model) {
-      return `${vehicle.make} ${vehicle.model}${vehicle.nickname ? ` - ${vehicle.nickname}` : ''}`;
+    if (!selectedVehicle) return "All Vehicles";
+    if (selectedVehicle.make && selectedVehicle.model) {
+      return `${selectedVehicle.make} ${selectedVehicle.model}${selectedVehicle.nickname ? ` - ${selectedVehicle.nickname}` : ''}`;
     }
-    return vehicle?.license_plate || "Unknown Vehicle";
+    return selectedVehicle.license_plate || "Unknown Vehicle";
+  };
+
+  const handleVehicleSelect = (vehicle: any) => {
+    setSelectedVehicle(vehicle);
+    setVehicleFilter(vehicle.id);
+  };
+
+  const handleClearVehicleFilter = () => {
+    setSelectedVehicle(null);
+    setVehicleFilter("all");
   };
 
   const getVehicleName = (record: any) => {
@@ -294,34 +306,26 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
             </SelectContent>
           </Select>
 
-          <Select value={vehicleFilter} onValueChange={setVehicleFilter}>
-            <SelectTrigger className="w-full sm:w-48">
-              <SelectValue placeholder={getSelectedVehicleName()} />
-            </SelectTrigger>
-            <SelectContent className="max-h-[300px]">
-              <SelectItem value="all" className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  {vehicleFilter === "all" && <Check className="h-4 w-4 text-green-600" />}
-                  <span>All Vehicles</span>
-                </div>
-              </SelectItem>
-               {vehicles?.map((vehicle) => (
-                 <SelectItem key={vehicle.id} value={vehicle.id} className="flex items-center justify-between">
-                   <div className="flex items-center gap-2">
-                     {vehicleFilter === vehicle.id && <Check className="h-4 w-4 text-green-600" />}
-                     <div className="flex flex-col">
-                       <span className="font-medium">
-                         {vehicle.make && vehicle.model 
-                           ? `${vehicle.make} ${vehicle.model}${vehicle.nickname ? ` - ${vehicle.nickname}` : ''}`
-                           : vehicle.license_plate}
-                       </span>
-                       <span className="text-xs text-muted-foreground">{vehicle.license_plate}</span>
-                     </div>
-                   </div>
-                 </SelectItem>
-               ))}
-            </SelectContent>
-          </Select>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setIsVehicleModalOpen(true)}
+              className="flex items-center gap-2 min-w-[180px] justify-start"
+            >
+              <Truck className="h-4 w-4" />
+              <span className="truncate">{getSelectedVehicleName()}</span>
+            </Button>
+            {selectedVehicle && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleClearVehicleFilter}
+                className="px-2"
+              >
+                ×
+              </Button>
+            )}
+          </div>
 
           <Button variant="outline" onClick={handleExport}>
             <Download className="w-4 h-4 mr-2" />
@@ -429,6 +433,15 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
         recordTitle={deletingRecord?.maintenance_task_types?.name || deletingRecord?.maintenance_type || ""}
         vehicleName={deletingRecord ? getVehicleName(deletingRecord) : ""}
         isDeleting={deleteMutation.isPending}
+      />
+
+      {/* Vehicle Selection Modal */}
+      <VehicleSelectionModal
+        open={isVehicleModalOpen}
+        onOpenChange={setIsVehicleModalOpen}
+        selectedDate={new Date()}
+        selectedVehicle={selectedVehicle}
+        onVehicleSelect={handleVehicleSelect}
       />
     </div>
   );
