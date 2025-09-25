@@ -245,6 +245,7 @@ export const AddMaintenanceRecordModal: React.FC<AddMaintenanceRecordModalProps>
                       {taskType.name}
                     </SelectItem>
                   ))}
+                  <SelectItem value="custom">Custom</SelectItem>
                 </SelectContent>
               </Select>
             </div>
