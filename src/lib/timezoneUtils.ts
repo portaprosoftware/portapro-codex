@@ -3,6 +3,8 @@
  * Handles all US states including split-timezone states
  */
 
+import { formatInTimeZone } from 'date-fns-tz';
+
 interface TimezoneMapping {
   [key: string]: string;
 }
@@ -183,12 +185,7 @@ export const getCompanyTimezone = (): string => {
  * Get current date in a specific timezone as YYYY-MM-DD format
  */
 export const getCurrentDateInTimezone = (timezone: string): string => {
-  const now = new Date();
-  const zonedDate = new Date(now.toLocaleString("en-US", { timeZone: timezone }));
-  const year = zonedDate.getFullYear();
-  const month = String(zonedDate.getMonth() + 1).padStart(2, '0');
-  const day = String(zonedDate.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+  return formatInTimeZone(new Date(), timezone, 'yyyy-MM-dd');
 };
 
 export const formatTimezoneLabel = (timezone: string): string => {
