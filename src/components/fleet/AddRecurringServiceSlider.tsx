@@ -29,12 +29,14 @@ interface AddRecurringServiceSliderProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   preselectedVehicleId?: string;
+  editRecord?: any;
 }
 
 export const AddRecurringServiceSlider: React.FC<AddRecurringServiceSliderProps> = ({
   open,
   onOpenChange,
   preselectedVehicleId = "",
+  editRecord,
 }) => {
   const [vehicleId, setVehicleId] = useState(preselectedVehicleId);
   const [selectedVehicle, setSelectedVehicle] = useState<any>(null);

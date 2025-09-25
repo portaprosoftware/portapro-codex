@@ -12,6 +12,7 @@ import { format } from "date-fns";
 import { MaintenanceRecordCard } from "./maintenance/MaintenanceRecordCard";
 import { MaintenanceRecordModal } from "./maintenance/MaintenanceRecordModal";
 import { AddMaintenanceRecordDrawer } from "./AddMaintenanceRecordDrawer";
+import { AddRecurringServiceSlider } from "./AddRecurringServiceSlider";
 
 export const MaintenanceAllRecordsTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -21,6 +22,8 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editRecordOpen, setEditRecordOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState<any>(null);
+  const [editRecurringOpen, setEditRecurringOpen] = useState(false);
+  const [editingRecurringRecord, setEditingRecurringRecord] = useState<any>(null);
 
   const { data: maintenanceRecords, isLoading } = useQuery({
     queryKey: ["maintenance-records", searchTerm, statusFilter, vehicleFilter],
@@ -106,8 +109,14 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
       setSelectedRecord(record);
       setIsModalOpen(true);
     } else if (action === 'edit') {
-      setEditingRecord(record);
-      setEditRecordOpen(true);
+      // Check if it's a recurring service (has next service date or mileage)
+      if (record.next_service_date || record.next_service_mileage) {
+        setEditingRecurringRecord(record);
+        setEditRecurringOpen(true);
+      } else {
+        setEditingRecord(record);
+        setEditRecordOpen(true);
+      }
     } else {
       console.log(`${action} maintenance record:`, record.id);
       // TODO: Implement delete functionality
@@ -231,6 +240,14 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
         onOpenChange={setEditRecordOpen}
         editRecord={editingRecord}
         mode="edit"
+      />
+
+      {/* Edit Recurring Service Slider */}
+      <AddRecurringServiceSlider 
+        open={editRecurringOpen} 
+        onOpenChange={setEditRecurringOpen}
+        preselectedVehicleId={editingRecurringRecord?.vehicle_id}
+        editRecord={editingRecurringRecord}
       />
     </div>
   );
