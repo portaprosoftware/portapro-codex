@@ -186,13 +186,11 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
       task_type_id: taskTypeId || null,
       vendor_id: vendorId || null,
       description: description || null,
-      vehicle_miles: vehicleMiles ? parseInt(vehicleMiles) : null,
       scheduled_date: scheduledDate.toISOString().split('T')[0],
       priority,
       cost: parseFloat(estimatedCost),
       notes,
-      status: "scheduled",
-      maintenance_type: taskTypeName || description || "General Maintenance"
+      status: "scheduled"
     };
 
     createMaintenanceRecord.mutate(recordData);
