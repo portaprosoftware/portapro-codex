@@ -174,8 +174,8 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
       case "basics":
         return (
           <div className="flex gap-6 h-full">
-            {/* Left Side - Calendar */}
-            <div className="flex-shrink-0">
+            {/* Left Side - Calendar (moved 20% right) */}
+            <div className="flex-shrink-0 ml-[20%]">
               <div className="space-y-4">
                 <div className="text-center">
                   <h3 className="text-base font-semibold mb-2">Assignment Date</h3>
@@ -215,13 +215,13 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
                   
                   <div className="flex items-center justify-center">
                     {!selectedVehicle ? (
-                      <Button onClick={() => setVehicleModalOpen(true)} size="lg" className="w-full max-w-sm">
-                        <Truck className="h-5 w-5 mr-2" />
+                      <Button onClick={() => setVehicleModalOpen(true)} size="default" className="w-full max-w-xs">
+                        <Truck className="h-4 w-4 mr-2" />
                         Select Vehicle
                       </Button>
                     ) : (
-                      <Button onClick={() => setVehicleModalOpen(true)} variant="outline" size="lg" className="w-full max-w-sm">
-                        <Check className="h-5 w-5 mr-2 text-green-600" />
+                      <Button onClick={() => setVehicleModalOpen(true)} variant="outline" size="default" className="w-full max-w-xs">
+                        <Check className="h-4 w-4 mr-2 text-green-600" />
                         Change Vehicle
                       </Button>
                     )}
@@ -237,13 +237,13 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
                   
                   <div className="flex items-center justify-center">
                     {!selectedDriver ? (
-                      <Button onClick={() => setDriverModalOpen(true)} size="lg" className="w-full max-w-sm">
-                        <User className="h-5 w-5 mr-2" />
+                      <Button onClick={() => setDriverModalOpen(true)} size="default" className="w-full max-w-xs">
+                        <User className="h-4 w-4 mr-2" />
                         Select Driver
                       </Button>
                     ) : (
-                      <Button onClick={() => setDriverModalOpen(true)} variant="outline" size="lg" className="w-full max-w-sm">
-                        <Check className="h-5 w-5 mr-2 text-green-600" />
+                      <Button onClick={() => setDriverModalOpen(true)} variant="outline" size="default" className="w-full max-w-xs">
+                        <Check className="h-4 w-4 mr-2 text-green-600" />
                         Change Driver
                       </Button>
                     )}
@@ -252,8 +252,8 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
               </div>
             </div>
 
-            {/* Right Side - Selected Items (25% width) */}
-            <div className="w-1/4 flex-shrink-0">
+            {/* Right Side - Selected Items (25% width, moved 20% left) */}
+            <div className="w-1/4 flex-shrink-0 mr-[20%]">
               <div className="bg-muted/30 rounded-lg p-4 h-full">
                 <h4 className="text-base font-semibold mb-4">Selected Items</h4>
                 
