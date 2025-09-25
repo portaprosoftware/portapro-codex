@@ -232,7 +232,7 @@ export function MaintenancePDFExportModal({ open, onOpenChange }: MaintenancePDF
           .priority.high { background: #ea580c; color: white; }
           .priority.medium { background: #ca8a04; color: white; }
           .priority.low { background: #16a34a; color: white; }
-          .priority.normal { background: #6b7280; color: white; }
+          .priority.normal { background: #2563eb; color: white; }
           
           .cost { text-align: right; font-weight: 600; }
           

@@ -20,9 +20,14 @@ interface MaintenanceRecord {
   completed_date?: string;
   status: string;
   cost?: number;
+  total_cost?: number;
+  labor_cost?: number;
+  parts_cost?: number;
   priority?: string;
   next_service_date?: string;
   next_service_mileage?: number;
+  technician_name?: string;
+  vendor_name?: string;
   vehicles?: {
     license_plate: string;
     vehicle_type: string;
@@ -46,6 +51,7 @@ interface MaintenanceRecordCardProps {
   onDelete?: (record: MaintenanceRecord) => void;
   onMarkCompleted?: (record: MaintenanceRecord) => void;
   onMarkNotCompleted?: (record: MaintenanceRecord) => void;
+  isLoading?: boolean;
 }
 
 export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
@@ -55,7 +61,8 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
   onEdit,
   onDelete,
   onMarkCompleted,
-  onMarkNotCompleted
+  onMarkNotCompleted,
+  isLoading = false
 }) => {
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -234,7 +241,14 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
           </div>
         </td>
         <td className="text-sm text-right py-4 px-3">
-          {record.cost ? `$${record.cost.toLocaleString()}` : "—"}
+          {isLoading ? (
+            <span className="inline-block h-4 w-12 rounded bg-gray-200 animate-pulse" />
+          ) : (
+            (() => {
+              const total = (record.total_cost ?? ((record.parts_cost ?? 0) + (record.labor_cost ?? 0)) ?? record.cost ?? 0);
+              return `$${Number(total).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            })()
+          )}
         </td>
         <td className="text-right py-4 px-3">
           {renderActions()}
