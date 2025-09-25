@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { VehicleSelector } from "@/components/fleet/VehicleSelector";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -126,8 +127,16 @@ export const DVIRForm: React.FC<DVIRFormProps> = ({ open, onOpenChange }) => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Asset ID</label>
-              <input className="mt-1 w-full border rounded-md p-2" placeholder="UUID" value={assetId} onChange={e=>setAssetId(e.target.value)} />
+              <label className="block text-sm font-medium text-gray-700">Vehicle</label>
+              {assetType === "vehicle" ? (
+                <VehicleSelector
+                  selectedVehicleId={assetId}
+                  onVehicleSelect={(vehicleId) => setAssetId(vehicleId)}
+                  className="mt-1"
+                />
+              ) : (
+                <input className="mt-1 w-full border rounded-md p-2" placeholder="UUID" value={assetId} onChange={e=>setAssetId(e.target.value)} />
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Type</label>
