@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
+import { ModernBadge } from "@/components/ui/modern-badge";
 import { Truck, User, Calendar, Clock, FileText, MapPin } from "lucide-react";
 import { format } from "date-fns";
 
@@ -44,9 +44,9 @@ export const AssignmentViewModal: React.FC<AssignmentViewModalProps> = ({
               <span className="font-medium">Assignment Date</span>
             </div>
             <div className="pl-6">
-              <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+              <ModernBadge variant="blue">
                 {format(new Date(assignment.assignment_date), "EEEE, MMMM d, yyyy")}
-              </Badge>
+              </ModernBadge>
             </div>
           </div>
 
@@ -60,23 +60,23 @@ export const AssignmentViewModal: React.FC<AssignmentViewModalProps> = ({
               <div className="pl-6 space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">License Plate</span>
-                  <span className="font-medium text-blue-600">{assignment.vehicles.license_plate}</span>
+                  <span className="font-medium text-gray-900">{assignment.vehicles.license_plate}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Vehicle Type</span>
-                  <span className="font-medium">{assignment.vehicles.vehicle_type?.toUpperCase() || 'N/A'}</span>
+                  <span className="font-medium text-gray-900">{assignment.vehicles.vehicle_type?.toUpperCase() || 'N/A'}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Make & Model</span>
-                  <span className="font-medium text-blue-600">
+                  <span className="font-medium text-gray-900">
                     {assignment.vehicles.year} {assignment.vehicles.make} {assignment.vehicles.model}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Status</span>
-                  <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                  <ModernBadge variant="blue">
                     {assignment.vehicles.status}
-                  </Badge>
+                  </ModernBadge>
                 </div>
               </div>
             ) : (
@@ -96,22 +96,17 @@ export const AssignmentViewModal: React.FC<AssignmentViewModalProps> = ({
               <div className="pl-6 space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Name</span>
-                  <span className="font-medium">
+                  <span className="font-medium text-gray-900">
                     {assignment.profiles.first_name} {assignment.profiles.last_name}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Status</span>
-                  <Badge 
-                    variant="outline" 
-                    className={`${
-                      assignment.profiles.status === "assigned" 
-                        ? "bg-green-50 text-green-700 border-green-200" 
-                        : "bg-yellow-50 text-yellow-700 border-yellow-200"
-                    }`}
+                  <ModernBadge 
+                    variant={assignment.profiles.status === "assigned" ? "success" : "warning"}
                   >
                     {assignment.profiles.status === "assigned" ? "Assigned" : assignment.profiles.status || "Unknown"}
-                  </Badge>
+                  </ModernBadge>
                 </div>
               </div>
             ) : (
@@ -128,26 +123,26 @@ export const AssignmentViewModal: React.FC<AssignmentViewModalProps> = ({
               <span className="font-medium">Mileage Information</span>
             </div>
             <div className="pl-6 space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Start Mileage</span>
-                <span className="font-medium">
-                  {assignment.start_mileage ? assignment.start_mileage.toLocaleString() : "Not recorded"}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">End Mileage</span>
-                <span className="font-medium">
-                  {assignment.end_mileage ? assignment.end_mileage.toLocaleString() : "Not recorded"}
-                </span>
-              </div>
-              {assignment.start_mileage && assignment.end_mileage && (
-                <div className="flex justify-between items-center border-t pt-2">
-                  <span className="text-sm text-gray-600 font-medium">Total Miles</span>
-                  <span className="font-semibold text-blue-600">
-                    {(assignment.end_mileage - assignment.start_mileage).toLocaleString()}
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Start Mileage</span>
+                  <span className="font-medium text-gray-900">
+                    {assignment.start_mileage ? assignment.start_mileage.toLocaleString() : "Not recorded"}
                   </span>
                 </div>
-              )}
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">End Mileage</span>
+                  <span className="font-medium text-gray-900">
+                    {assignment.end_mileage ? assignment.end_mileage.toLocaleString() : "Not recorded"}
+                  </span>
+                </div>
+                {assignment.start_mileage && assignment.end_mileage && (
+                  <div className="flex justify-between items-center border-t pt-2">
+                    <span className="text-sm text-gray-600 font-medium">Total Miles</span>
+                    <span className="font-semibold text-gray-900">
+                      {(assignment.end_mileage - assignment.start_mileage).toLocaleString()}
+                    </span>
+                  </div>
+                )}
             </div>
           </div>
 
@@ -173,20 +168,20 @@ export const AssignmentViewModal: React.FC<AssignmentViewModalProps> = ({
             <div className="pl-6 space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600">Created</span>
-                <span className="text-sm text-purple-600">
+                <span className="text-sm text-gray-900">
                   {format(new Date(assignment.created_at), "MMM d, yyyy 'at' h:mm a")}
                 </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600">Last Updated</span>
-                <span className="text-sm text-purple-600">
+                <span className="text-sm text-gray-900">
                   {format(new Date(assignment.updated_at), "MMM d, yyyy 'at' h:mm a")}
                 </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600">Assignment ID</span>
-                <span className="text-xs font-mono text-gray-500">
-                  {assignment.id.slice(0, 8)}...
+                <span className="text-sm font-medium text-gray-900">
+                  ASN-{String(assignment.id).slice(-6).toUpperCase()}
                 </span>
               </div>
             </div>
