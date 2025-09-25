@@ -375,10 +375,11 @@ export const DriverVehicleStep: React.FC = () => {
       />
 
       <StockVehicleSelectionModal
-        isOpen={vehicleOpen}
-        onClose={() => setVehicleOpen(false)}
-        selectedVehicleId={undefined}
-        onSelectVehicle={handleVehicleSelect}
+        open={vehicleOpen}
+        onOpenChange={setVehicleOpen}
+        selectedDate={selectedDate}
+        selectedVehicle={undefined}
+        onVehicleSelect={handleVehicleSelect}
       />
     </div>
   );

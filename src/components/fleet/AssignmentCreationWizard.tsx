@@ -606,14 +606,11 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
 
       {/* Vehicle Selection Modal */}
       <StockVehicleSelectionModal
-        isOpen={vehicleModalOpen}
-        onClose={() => setVehicleModalOpen(false)}
-        selectedVehicleId={selectedVehicle?.id}
-        onSelectVehicle={(vehicleId) => {
-          // Find the full vehicle object from the vehicleId
-          setSelectedVehicle({ id: vehicleId });
-          setVehicleModalOpen(false);
-        }}
+        open={vehicleModalOpen}
+        onOpenChange={setVehicleModalOpen}
+        selectedDate={selectedDate}
+        selectedVehicle={selectedVehicle}
+        onVehicleSelect={setSelectedVehicle}
       />
 
       {/* Driver Selection Modal */}

@@ -2155,21 +2155,21 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
 
       {/* Vehicle Selection Modal */}
       <StockVehicleSelectionModal
-        isOpen={showVehicleModal}
-        onClose={() => {
-          setShowVehicleModal(false);
-          setSelectedServiceId('');
-          setSelectedDateKey('');
-          setSelectedDayForAssignment('');
+        open={showVehicleModal}
+        onOpenChange={(open) => {
+          setShowVehicleModal(open);
+          if (!open) {
+            setSelectedServiceId('');
+            setSelectedDateKey('');
+            setSelectedDayForAssignment('');
+          }
         }}
-        selectedVehicleId={(selectedServiceId && selectedDateKey 
-          ? getIndividualAssignment(selectedServiceId, selectedDateKey)?.vehicle?.id || data.scheduledVehicleForAll?.id
-          : data.scheduledVehicleForAll?.id
-        )}
-        onSelectVehicle={(vehicleId) => {
-          // Convert vehicleId to vehicle object for handleVehicleSelect
-          handleVehicleSelect({ id: vehicleId });
-        }}
+        selectedDate={selectedServiceDate}
+        selectedVehicle={selectedServiceId && selectedDateKey 
+          ? getIndividualAssignment(selectedServiceId, selectedDateKey)?.vehicle || data.scheduledVehicleForAll
+          : data.scheduledVehicleForAll
+        }
+        onVehicleSelect={handleVehicleSelect}
       />
 
       {/* Remove Override Confirmation Dialog */}

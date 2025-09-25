@@ -420,12 +420,12 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
         
         {/* Vehicle Selection Modal */}
         <StockVehicleSelectionModal
-          isOpen={showVehicleModal}
-          onClose={() => setShowVehicleModal(false)}
-          selectedVehicleId={stockVehicleId}
-          onSelectVehicle={(vehicleId) => {
-            setStockVehicleId(vehicleId);
-            setShowVehicleModal(false);
+          open={showVehicleModal}
+          onOpenChange={setShowVehicleModal}
+          selectedDate={new Date()}
+          selectedVehicle={{ id: stockVehicleId }}
+          onVehicleSelect={(vehicle) => {
+            setStockVehicleId(vehicle.id);
           }}
         />
 

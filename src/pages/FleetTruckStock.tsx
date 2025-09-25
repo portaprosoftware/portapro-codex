@@ -291,10 +291,11 @@ const FleetTruckStock: React.FC = () => {
 
         {/* Vehicle Selection Modal */}
         <StockVehicleSelectionModal
-          isOpen={isVehicleModalOpen}
-          onClose={() => setIsVehicleModalOpen(false)}
-          selectedVehicleId={vehicleId}
-          onSelectVehicle={setVehicleId}
+          open={isVehicleModalOpen}
+          onOpenChange={setIsVehicleModalOpen}
+          selectedDate={new Date()}
+          selectedVehicle={{ id: vehicleId }}
+          onVehicleSelect={(vehicle) => setVehicleId(vehicle.id)}
         />
       </div>
     </FleetLayout>
