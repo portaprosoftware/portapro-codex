@@ -39,9 +39,9 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, viewMode, onM
       case "in_service":
         return "bg-gradient-red text-white font-bold border-0";
       case "retired":
-        return "bg-gradient-gray text-white font-bold border-0";
+        return "bg-gray-500 text-white font-bold border-0";
       default:
-        return "bg-gradient-gray text-white font-bold border-0";
+        return "bg-gray-500 text-white font-bold border-0";
     }
   };
 

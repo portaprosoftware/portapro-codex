@@ -169,7 +169,7 @@ export const FleetOverview: React.FC = () => {
                 case 'maintenance':
                   return "bg-gradient-orange text-white font-bold";
                 case 'retired':
-                  return "bg-gradient-gray text-white font-bold";
+                  return "bg-gray-500 text-white font-bold";
                 default:
                   return "bg-primary text-primary-foreground font-bold";
               }
