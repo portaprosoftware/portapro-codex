@@ -163,12 +163,22 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
                   : `Scheduled: ${format(new Date(record.scheduled_date), "MMM d, yyyy")}`
                 }
               </div>
-              {record.cost && (
-                <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
-                  <DollarSign className="h-3 w-3" />
-                  <span>${record.cost.toLocaleString()}</span>
-                </div>
-              )}
+              {(() => {
+                const total =
+                  record.total_cost != null
+                    ? record.total_cost
+                    : (record.parts_cost != null || record.labor_cost != null)
+                    ? (record.parts_cost ?? 0) + (record.labor_cost ?? 0)
+                    : record.cost;
+                if (total == null) return null;
+                return (
+                  <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
+                    <DollarSign className="h-3 w-3" />
+                    <span>${Number(total).toLocaleString()}</span>
+                  </div>
+                );
+              })()}
+
             </div>
             <div className="flex flex-col items-end gap-2">
               <Badge className={getStatusColor(record.status)}>
@@ -245,7 +255,12 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
             <span className="inline-block h-4 w-12 rounded bg-gray-200 animate-pulse" />
           ) : (
             (() => {
-              const total = (record.total_cost ?? ((record.parts_cost ?? 0) + (record.labor_cost ?? 0)) ?? record.cost ?? 0);
+              const total =
+                record.total_cost != null
+                  ? record.total_cost
+                  : (record.parts_cost != null || record.labor_cost != null)
+                  ? (record.parts_cost ?? 0) + (record.labor_cost ?? 0)
+                  : (record.cost ?? 0);
               return `$${Number(total).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
             })()
           )}
