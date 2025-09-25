@@ -20,12 +20,13 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { FileText, Upload, X, Calendar } from "lucide-react";
+import { FileText, Upload, X, Calendar, Trash2 } from "lucide-react";
 
 interface UpdateDocumentModalProps {
   isOpen: boolean;
   onClose: () => void;
   documentId: string | null;
+  onDelete?: (documentId: string) => void;
 }
 
 interface ComplianceDocument {
@@ -57,6 +58,7 @@ export const UpdateDocumentModal: React.FC<UpdateDocumentModalProps> = ({
   isOpen,
   onClose,
   documentId,
+  onDelete,
 }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [expirationDate, setExpirationDate] = useState("");
@@ -237,6 +239,15 @@ export const UpdateDocumentModal: React.FC<UpdateDocumentModalProps> = ({
 
   const removeSelectedFile = () => {
     setSelectedFile(null);
+  };
+
+  const handleDelete = () => {
+    if (documentId && onDelete) {
+      if (window.confirm("Are you sure you want to delete this document? This action cannot be undone.")) {
+        onDelete(documentId);
+        onClose();
+      }
+    }
   };
 
   const getUrgencyLevel = (expirationDate: string | null) => {
@@ -445,22 +456,38 @@ export const UpdateDocumentModal: React.FC<UpdateDocumentModalProps> = ({
           </div>
 
           {/* Action Buttons */}
-          <div className="flex justify-end space-x-3 pt-6 border-t">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onClose}
-              disabled={uploading}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              disabled={uploading || !documentTypeId}
-              className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
-            >
-              {uploading ? "Updating..." : "Update Document"}
-            </Button>
+          <div className="flex justify-between pt-6 border-t">
+            <div>
+              {onDelete && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleDelete}
+                  disabled={uploading}
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Delete Document
+                </Button>
+              )}
+            </div>
+            <div className="flex space-x-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onClose}
+                disabled={uploading}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={uploading || !documentTypeId}
+                className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
+              >
+                {uploading ? "Updating..." : "Update Document"}
+              </Button>
+            </div>
           </div>
         </form>
       </DialogContent>

@@ -1,13 +1,14 @@
 import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { AlertTriangle, Calendar, FileText, Plus, Settings, Upload, Info } from "lucide-react";
+import { AlertTriangle, Calendar, FileText, Plus, Settings, Upload, Info, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 import { DocumentTypeManagement } from "./DocumentTypeManagement";
 import { AddDocumentModal } from "./AddDocumentModal";
 import { UpdateDocumentModal } from "./UpdateDocumentModal";
@@ -134,6 +135,9 @@ const FleetComplianceContent: React.FC = () => {
   const [isAddDocumentModalOpen, setIsAddDocumentModalOpen] = useState(false);
   const [isUpdateDocumentModalOpen, setIsUpdateDocumentModalOpen] = useState(false);
   const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
   const { data: documents, isLoading } = useQuery({
     queryKey: ["vehicle-compliance"],
     queryFn: async () => {
@@ -197,6 +201,37 @@ const FleetComplianceContent: React.FC = () => {
   const handleUpdateDocument = (documentId: string) => {
     setSelectedDocumentId(documentId);
     setIsUpdateDocumentModalOpen(true);
+  };
+
+  const deleteDocumentMutation = useMutation({
+    mutationFn: async (documentId: string) => {
+      const { error } = await supabase
+        .from("vehicle_compliance_documents")
+        .delete()
+        .eq("id", documentId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["vehicle-compliance"] });
+      toast({
+        title: "Success",
+        description: "Document deleted successfully.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete document.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleDeleteDocument = (documentId: string) => {
+    if (window.confirm("Are you sure you want to delete this document? This action cannot be undone.")) {
+      deleteDocumentMutation.mutate(documentId);
+    }
   };
 
   const closeUpdateModal = () => {
@@ -304,6 +339,15 @@ const FleetComplianceContent: React.FC = () => {
                   >
                     Update
                   </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleDeleteDocument(document.id)}
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    disabled={deleteDocumentMutation.isPending}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
                 </div>
               </div>
             </Card>
@@ -330,6 +374,7 @@ const FleetComplianceContent: React.FC = () => {
         isOpen={isUpdateDocumentModalOpen}
         onClose={closeUpdateModal}
         documentId={selectedDocumentId}
+        onDelete={handleDeleteDocument}
       />
     </div>
   );
