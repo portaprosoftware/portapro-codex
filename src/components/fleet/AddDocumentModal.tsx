@@ -14,6 +14,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { VehicleSelector } from "./VehicleSelector";
+import { DocumentTypeSelector } from "./DocumentTypeSelector";
 
 interface AddDocumentModalProps {
   isOpen: boolean;
@@ -23,6 +24,7 @@ interface AddDocumentModalProps {
 interface FormData {
   vehicle_id: string;
   document_type_id: string;
+  document_type_name: string;
   document_name: string;
   expiration_date: Date | null;
   notes: string;
@@ -36,27 +38,17 @@ export const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
   const [formData, setFormData] = useState<FormData>({
     vehicle_id: "",
     document_type_id: "",
+    document_type_name: "",
     document_name: "",
     expiration_date: null,
     notes: "",
     file: null
   });
+  const [isDocumentTypeSelectorOpen, setIsDocumentTypeSelectorOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: documentTypes } = useQuery({
-    queryKey: ["compliance-document-types"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("compliance_document_types")
-        .select("*")
-        .eq("is_active", true)
-        .order("name");
-      
-      if (error) throw error;
-      return data || [];
-    },
-  });
+  // Remove the document types query since we're using DocumentTypeSelector component
 
   const uploadMutation = useMutation({
     mutationFn: async (data: FormData) => {
@@ -118,6 +110,7 @@ export const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
     setFormData({
       vehicle_id: "",
       document_type_id: "",
+      document_type_name: "",
       document_name: "",
       expiration_date: null,
       notes: "",
@@ -160,18 +153,30 @@ export const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
 
           <div>
             <Label htmlFor="document_type">Document Type *</Label>
-            <Select value={formData.document_type_id} onValueChange={(value) => setFormData({ ...formData, document_type_id: value })}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select document type" />
-              </SelectTrigger>
-              <SelectContent>
-                {documentTypes?.map((type) => (
-                  <SelectItem key={type.id} value={type.id}>
-                    {type.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="space-y-2">
+              {formData.document_type_name ? (
+                <div className="flex items-center justify-between p-3 border rounded-md bg-gray-50">
+                  <span className="font-medium">{formData.document_type_name}</span>
+                  <Button 
+                    type="button"
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setIsDocumentTypeSelectorOpen(true)}
+                  >
+                    Change
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full justify-start"
+                  onClick={() => setIsDocumentTypeSelectorOpen(true)}
+                >
+                  Select document type
+                </Button>
+              )}
+            </div>
           </div>
 
           <div>
@@ -252,6 +257,16 @@ export const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
             </Button>
           </div>
         </form>
+
+        {/* Document Type Selector Modal */}
+        <DocumentTypeSelector
+          open={isDocumentTypeSelectorOpen}
+          onOpenChange={setIsDocumentTypeSelectorOpen}
+          onDocumentTypeSelect={(typeId, typeName) => {
+            setFormData({ ...formData, document_type_id: typeId, document_type_name: typeName });
+          }}
+          selectedTypeId={formData.document_type_id}
+        />
       </DialogContent>
     </Dialog>
   );
