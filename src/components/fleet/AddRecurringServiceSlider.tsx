@@ -52,6 +52,7 @@ export const AddRecurringServiceSlider: React.FC<AddRecurringServiceSliderProps>
   const [priority, setPriority] = useState("medium");
   const [estimatedCost, setEstimatedCost] = useState("");
   const [notes, setNotes] = useState("");
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
   const queryClient = useQueryClient();
 
@@ -130,6 +131,7 @@ export const AddRecurringServiceSlider: React.FC<AddRecurringServiceSliderProps>
     setPriority("medium");
     setEstimatedCost("");
     setNotes("");
+    setValidationErrors([]);
   };
 
   const handleTaskSelect = (taskId: string, taskName: string) => {
@@ -166,10 +168,20 @@ export const AddRecurringServiceSlider: React.FC<AddRecurringServiceSliderProps>
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!vehicleId || !startDate || !estimatedCost || !intervalType || !intervalValue) {
-      toast.error("Please fill in all required fields (Vehicle, Start Date, Cost, Interval Type, and Interval Value)");
+    const errors = [];
+    if (!vehicleId) errors.push("Please select a vehicle");
+    if (!startDate) errors.push("Please select a start date");
+    if (!estimatedCost) errors.push("Please enter a cost");
+    if (!intervalType) errors.push("Please select an interval type");
+    if (!intervalValue) errors.push("Please enter an interval value");
+    
+    if (errors.length > 0) {
+      setValidationErrors(errors);
       return;
     }
+
+    // Clear validation errors
+    setValidationErrors([]);
 
     const serviceData = {
       vehicle_id: vehicleId,
@@ -414,6 +426,22 @@ export const AddRecurringServiceSlider: React.FC<AddRecurringServiceSliderProps>
         </div>
 
         <DrawerFooter>
+          {/* Validation Errors */}
+          {validationErrors.length > 0 && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <div className="flex items-start gap-2">
+                <div className="w-4 h-4 rounded-full bg-red-500 flex-shrink-0 mt-0.5"></div>
+                <div>
+                  <h4 className="text-sm font-medium text-red-800 mb-1">Please fix the following issues:</h4>
+                  <ul className="text-sm text-red-700 space-y-1">
+                    {validationErrors.map((error, index) => (
+                      <li key={index}>• {error}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          )}
           <div className="flex gap-3">
             <Button variant="outline" onClick={() => onOpenChange(false)}>
               Cancel

@@ -49,6 +49,7 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
   const [priority, setPriority] = useState("medium");
   const [estimatedCost, setEstimatedCost] = useState("");
   const [notes, setNotes] = useState("");
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
   const queryClient = useQueryClient();
 
@@ -141,6 +142,7 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
     setPriority("medium");
     setEstimatedCost("");
     setNotes("");
+    setValidationErrors([]);
   };
 
   const handleTaskSelect = (taskId: string, taskName: string) => {
@@ -177,10 +179,19 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!vehicleId || !scheduledDate || !estimatedCost || !description) {
-      toast.error("Please fill in all required fields (Vehicle, Date, Cost, and Description)");
+    const errors = [];
+    if (!vehicleId) errors.push("Please select a vehicle");
+    if (!scheduledDate) errors.push("Please select a scheduled date");
+    if (!estimatedCost) errors.push("Please enter a cost");
+    if (!description) errors.push("Please enter a description");
+    
+    if (errors.length > 0) {
+      setValidationErrors(errors);
       return;
     }
+
+    // Clear validation errors
+    setValidationErrors([]);
 
     const recordData = {
       vehicle_id: vehicleId,
@@ -379,6 +390,22 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
         </div>
 
         <DrawerFooter>
+          {/* Validation Errors */}
+          {validationErrors.length > 0 && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <div className="flex items-start gap-2">
+                <div className="w-4 h-4 rounded-full bg-red-500 flex-shrink-0 mt-0.5"></div>
+                <div>
+                  <h4 className="text-sm font-medium text-red-800 mb-1">Please fix the following issues:</h4>
+                  <ul className="text-sm text-red-700 space-y-1">
+                    {validationErrors.map((error, index) => (
+                      <li key={index}>• {error}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          )}
           <div className="flex gap-3">
             <Button variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
