@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -78,12 +78,15 @@ export const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-4xl max-h-[85vh] flex flex-col">
+      <DialogContent className="sm:max-w-4xl max-h-[85vh] flex flex-col overflow-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Truck className="h-5 w-5 text-blue-600" />
             Select Vehicle for {format(selectedDate, 'MMM dd, yyyy')}
           </DialogTitle>
+          <DialogDescription>
+            Choose a vehicle to assign for the selected date. You can search by license plate, vehicle type, make, or model.
+          </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-4 flex-1 overflow-hidden">
