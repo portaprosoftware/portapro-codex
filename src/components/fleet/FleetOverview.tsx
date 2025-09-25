@@ -13,7 +13,7 @@ import { Grid, List, Search, Plus, Truck, Fuel, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type ViewMode = "grid" | "list";
-type StatusFilter = "all" | "active" | "maintenance";
+type StatusFilter = "all" | "active" | "maintenance" | "retired";
 
 export const FleetOverview: React.FC = () => {
   const queryClient = useQueryClient();
@@ -59,6 +59,7 @@ export const FleetOverview: React.FC = () => {
     all: vehicles?.length || 0,
     active: vehicles?.filter(v => v.status === "active").length || 0,
     maintenance: vehicles?.filter(v => v.status === "maintenance").length || 0,
+    retired: vehicles?.filter(v => v.status === "retired").length || 0,
   };
 
   if (isLoading) {
@@ -98,6 +99,10 @@ export const FleetOverview: React.FC = () => {
           <div className="bg-card p-3 rounded-lg border shadow-sm">
             <div className="text-sm text-muted-foreground">Maintenance</div>
             <div className="text-2xl font-bold text-orange-600">{statusCounts.maintenance}</div>
+          </div>
+          <div className="bg-card p-3 rounded-lg border shadow-sm">
+            <div className="text-sm text-muted-foreground">Retired</div>
+            <div className="text-2xl font-bold text-gray-600">{statusCounts.retired}</div>
           </div>
         </div>
 
@@ -152,7 +157,7 @@ export const FleetOverview: React.FC = () => {
 
         {/* Status Filters */}
         <div className="flex flex-wrap gap-2">
-          {(['all', 'active', 'maintenance'] as const).map((status) => {
+          {(['all', 'active', 'maintenance', 'retired'] as const).map((status) => {
             const getFilterButtonClass = (status: string, isActive: boolean) => {
               if (!isActive) {
                 return "bg-muted text-muted-foreground hover:bg-muted/80";
@@ -163,6 +168,8 @@ export const FleetOverview: React.FC = () => {
                   return "bg-gradient-green text-white font-bold";
                 case 'maintenance':
                   return "bg-gradient-orange text-white font-bold";
+                case 'retired':
+                  return "bg-gradient-gray text-white font-bold";
                 default:
                   return "bg-primary text-primary-foreground font-bold";
               }
