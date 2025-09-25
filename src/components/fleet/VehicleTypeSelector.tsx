@@ -65,7 +65,7 @@ const vehicleTypeCategories = [
   },
   {
     id: "other",
-    name: "🛠️ Other / Special",
+    name: "🦺 Other / Special",
     color: "bg-gradient-to-r from-gray-500 to-gray-600 text-white",
     types: [
       { id: "golf-cart", name: "Golf Cart / Utility Cart" },
