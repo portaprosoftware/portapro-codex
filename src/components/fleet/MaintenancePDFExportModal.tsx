@@ -427,12 +427,12 @@ export function MaintenancePDFExportModal({ open, onOpenChange }: MaintenancePDF
 
           {/* Date Range Preview */}
           {dateRange?.from && dateRange?.to && (
-            <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
-              <div className="flex items-center gap-2 text-sm text-blue-800">
+            <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+              <div className="flex items-center gap-2 text-sm text-black">
                 <Calendar className="w-4 h-4" />
                 <span className="font-medium">Report will include records from:</span>
               </div>
-              <p className="text-sm text-blue-700 mt-1">
+              <p className="text-sm text-black mt-1">
                 {format(dateRange.from, "MMMM d, yyyy")} to {format(dateRange.to, "MMMM d, yyyy")}
               </p>
             </div>
