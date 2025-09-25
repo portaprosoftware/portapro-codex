@@ -17,7 +17,6 @@ const vehicleTypeCategories = [
   {
     id: "trucks",
     name: "Common Fleet Vehicle Types",
-    icon: "🚚",
     color: "bg-gradient-to-r from-blue-500 to-blue-600 text-white",
     types: [
       { id: "truck", name: "Truck (general)" },
@@ -32,7 +31,6 @@ const vehicleTypeCategories = [
   {
     id: "vans",
     name: "Vans & Light Vehicles",
-    icon: "🚐",
     color: "bg-gradient-to-r from-green-500 to-green-600 text-white",
     types: [
       { id: "cargo-van", name: "Cargo Van" },
@@ -45,7 +43,6 @@ const vehicleTypeCategories = [
   {
     id: "trailers",
     name: "Trailers",
-    icon: "🚛",
     color: "bg-gradient-to-r from-purple-500 to-purple-600 text-white",
     types: [
       { id: "trailer", name: "Trailer (general)" },
@@ -59,7 +56,6 @@ const vehicleTypeCategories = [
   {
     id: "specialized",
     name: "Specialized & Heavy Vehicles",
-    icon: "🚌",
     color: "bg-gradient-to-r from-orange-500 to-orange-600 text-white",
     types: [
       { id: "bus", name: "Bus / Shuttle" },
@@ -73,7 +69,6 @@ const vehicleTypeCategories = [
   {
     id: "other",
     name: "Other / Flexible",
-    icon: "🛠️",
     color: "bg-gradient-to-r from-gray-500 to-gray-600 text-white",
     types: [
       { id: "golf-cart", name: "Golf Cart / Utility Cart" },
@@ -123,7 +118,6 @@ export const VehicleTypeSelector: React.FC<VehicleTypeSelectorProps> = ({
       ...type,
       categoryId: category.id,
       categoryName: category.name,
-      categoryIcon: category.icon,
       categoryColor: category.color
     }))
   );
@@ -155,7 +149,7 @@ export const VehicleTypeSelector: React.FC<VehicleTypeSelectorProps> = ({
             )}
             {selectedCategory ? (
               <>
-                Select: {currentCategory?.name}
+                {currentCategory?.name}
               </>
             ) : (
               <>
@@ -196,9 +190,6 @@ export const VehicleTypeSelector: React.FC<VehicleTypeSelectorProps> = ({
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 flex items-center justify-center">
-                          <span className="text-lg">{type.categoryIcon}</span>
-                        </div>
                         <div>
                           <span className="font-medium text-gray-900">{type.name}</span>
                           <div className="text-xs text-muted-foreground mt-1">
@@ -241,8 +232,7 @@ export const VehicleTypeSelector: React.FC<VehicleTypeSelectorProps> = ({
                   onClick={() => handleCategorySelect(category.id)}
                 >
                   <CardContent className="p-6 text-center">
-                    <h3 className="font-semibold text-lg text-gray-900 mb-2 flex items-center justify-center gap-2">
-                      <span className="text-lg">{category.icon}</span>
+                    <h3 className="font-semibold text-lg text-gray-900 mb-2">
                       {category.name}
                     </h3>
                     <Badge className={category.color}>
@@ -270,9 +260,6 @@ export const VehicleTypeSelector: React.FC<VehicleTypeSelectorProps> = ({
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 flex items-center justify-center">
-                          <span className="text-lg">{currentCategory.icon}</span>
-                        </div>
                         <span className="font-medium text-gray-900">{type.name}</span>
                       </div>
                       {selectedType?.id === type.id && (
