@@ -57,7 +57,7 @@ export const DeconLogsTab: React.FC = () => {
           <Plus className="w-4 h-4 mr-2" /> Record Decon
         </Button>
         <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
-          <DrawerContent className="h-[50vh]">
+          <DrawerContent className="h-[75vh]">
             <DrawerHeader>
               <DrawerTitle>Record Decontamination</DrawerTitle>
             </DrawerHeader>
@@ -103,7 +103,7 @@ export const DeconLogsTab: React.FC = () => {
       </div>
 
       <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
-        <DrawerContent className="h-[50vh]">
+        <DrawerContent className="h-[75vh]">
           <DrawerHeader>
             <DrawerTitle>Record Decontamination</DrawerTitle>
           </DrawerHeader>

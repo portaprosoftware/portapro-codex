@@ -46,7 +46,7 @@ export const IncidentsTab: React.FC = () => {
           <Plus className="w-4 h-4 mr-2" /> Log Incident
         </Button>
         <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
-          <DrawerContent className="h-[50vh]">
+          <DrawerContent className="h-[75vh]">
             <DrawerHeader>
               <DrawerTitle>Log New Incident</DrawerTitle>
             </DrawerHeader>
@@ -96,7 +96,7 @@ export const IncidentsTab: React.FC = () => {
       </div>
 
       <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
-        <DrawerContent className="h-[50vh]">
+        <DrawerContent className="h-[75vh]">
           <DrawerHeader>
             <DrawerTitle>Log New Incident</DrawerTitle>
           </DrawerHeader>
