@@ -368,7 +368,9 @@ export const DocumentTypeManagement: React.FC = () => {
                       {allTypesForCategory.map((type, index) => (
                         <div key={index} className={`flex items-center justify-between p-2 rounded ${index % 2 === 0 ? 'bg-gray-50' : 'bg-gray-100'}`}>
                           <div className="flex items-center gap-2 text-xs text-gray-600">
-                            <FileText className="w-3 h-3" />
+                            <div className="w-6 h-6 bg-gradient-blue rounded-lg flex items-center justify-center">
+                              <FileText className="w-3 h-3 text-white" />
+                            </div>
                             <span className="flex-1">{type.name}</span>
                             
                             {/* Description indicator */}
