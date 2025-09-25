@@ -44,9 +44,17 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
   const [notes, setNotes] = useState<string>("");
   const [vehicleModalOpen, setVehicleModalOpen] = useState(false);
   const [driverModalOpen, setDriverModalOpen] = useState(false);
+  const [showValidationError, setShowValidationError] = useState(false);
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Reset validation error when selections are made
+  React.useEffect(() => {
+    if (selectedDate && selectedVehicle && selectedDriver) {
+      setShowValidationError(false);
+    }
+  }, [selectedDate, selectedVehicle, selectedDriver]);
 
   const createAssignmentMutation = useMutation({
     mutationFn: async () => {
@@ -89,6 +97,7 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
     setSelectedDriver(null);
     setStartMileage("");
     setNotes("");
+    setShowValidationError(false);
   };
 
   const steps: { key: Step; title: string; description: string }[] = [
@@ -114,6 +123,12 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
     if (isLastStep) {
       createAssignmentMutation.mutate();
     } else {
+      // Check if required fields are filled for current step
+      if (!canProceed()) {
+        setShowValidationError(true);
+        return;
+      }
+      
       const nextStepIndex = currentStepIndex + 1;
       const nextStep = steps[nextStepIndex].key;
       
@@ -123,6 +138,7 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
       }
       
       setCurrentStep(nextStep);
+      setShowValidationError(false);
     }
   };
 
@@ -304,18 +320,20 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
               </div>
             )}
 
-            {/* Required Fields Notice */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <div className="flex items-start space-x-2">
-                <div className="w-5 h-5 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-bold mt-0.5">
-                  !
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-blue-900">All fields required</p>
-                  <p className="text-sm text-blue-700">Please select a date, vehicle, and driver to continue.</p>
+            {/* Required Fields Notice - Only show when validation fails */}
+            {showValidationError && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <div className="flex items-start space-x-2">
+                  <div className="w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center text-xs font-bold mt-0.5">
+                    !
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-red-900">All fields required</p>
+                    <p className="text-sm text-red-700">Please select a date, vehicle, and driver to continue.</p>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         );
 
