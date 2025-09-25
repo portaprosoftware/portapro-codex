@@ -1,12 +1,14 @@
 import React, { useMemo, useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { VehicleSelector } from "@/components/fleet/VehicleSelector";
+import { StockVehicleSelectionModal } from "@/components/fleet/StockVehicleSelectionModal";
 import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight, Truck, Calendar } from "lucide-react";
 
 interface DVIRFormProps {
   open: boolean;
@@ -49,6 +51,8 @@ export const DVIRForm: React.FC<DVIRFormProps> = ({ open, onOpenChange }) => {
   const qc = useQueryClient();
   const [assetType, setAssetType] = useState<"vehicle"|"trailer">("vehicle");
   const [assetId, setAssetId] = useState("");
+  const [selectedVehicle, setSelectedVehicle] = useState<any>(null);
+  const [showVehicleModal, setShowVehicleModal] = useState(false);
   const [driverId, setDriverId] = useState("");
   const [reportType, setReportType] = useState<"pre_trip"|"post_trip">("pre_trip");
   const [odometer, setOdometer] = useState<string>("");
@@ -104,6 +108,7 @@ export const DVIRForm: React.FC<DVIRFormProps> = ({ open, onOpenChange }) => {
   const reset = () => {
     setAssetType("vehicle");
     setAssetId("");
+    setSelectedVehicle(null);
     setDriverId("");
     setReportType("pre_trip");
     setOdometer("");
@@ -134,6 +139,12 @@ export const DVIRForm: React.FC<DVIRFormProps> = ({ open, onOpenChange }) => {
         notes: notes !== undefined ? notes : prev[itemKey]?.notes || ""
       }
     }));
+  };
+
+  const handleVehicleSelect = (vehicle: any) => {
+    setSelectedVehicle(vehicle);
+    setAssetId(vehicle.id);
+    setShowVehicleModal(false);
   };
 
   const handleSubmit = async () => {
@@ -317,10 +328,42 @@ export const DVIRForm: React.FC<DVIRFormProps> = ({ open, onOpenChange }) => {
                   {assetType === "vehicle" ? "Vehicle" : "Trailer Number"}
                 </label>
                 {assetType === "vehicle" ? (
-                  <VehicleSelector
-                    selectedVehicleId={assetId}
-                    onVehicleSelect={(vehicleId) => setAssetId(vehicleId)}
-                  />
+                  <div className="space-y-2">
+                    {!selectedVehicle ? (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full h-12 justify-start"
+                        onClick={() => setShowVehicleModal(true)}
+                      >
+                        <Truck className="h-4 w-4 mr-2" />
+                        Select Vehicle...
+                      </Button>
+                    ) : (
+                      <Card className="cursor-pointer hover:bg-muted/50" onClick={() => setShowVehicleModal(true)}>
+                        <CardContent className="p-3">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex items-center justify-center">
+                              <Truck className="h-6 w-6 text-blue-600" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-semibold text-sm truncate">
+                                {selectedVehicle.license_plate || `Vehicle ${selectedVehicle.id?.slice(0, 8)}`}
+                              </h4>
+                              <p className="text-xs text-muted-foreground truncate">
+                                {[selectedVehicle.make, selectedVehicle.model, selectedVehicle.year].filter(Boolean).join(' ')}
+                              </p>
+                              {selectedVehicle.vehicle_type && (
+                                <Badge variant="outline" className="text-xs mt-1">
+                                  {selectedVehicle.vehicle_type}
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+                  </div>
                 ) : (
                   <input 
                     className="w-full border rounded-md p-2 bg-background" 
@@ -451,6 +494,14 @@ export const DVIRForm: React.FC<DVIRFormProps> = ({ open, onOpenChange }) => {
             </div>
           </div>
         </div>
+
+        <StockVehicleSelectionModal
+          open={showVehicleModal}
+          onOpenChange={setShowVehicleModal}
+          selectedDate={new Date()}
+          selectedVehicle={selectedVehicle}
+          onVehicleSelect={handleVehicleSelect}
+        />
 
         <SheetFooter className="mt-6 flex gap-2">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
