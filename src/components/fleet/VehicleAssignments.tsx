@@ -273,17 +273,23 @@ function VehicleAssignmentsContent({
           p.id === assignment.driver_id || p.clerk_user_id === assignment.driver_id
         );
         
+        // Set driver status as "assigned" since they have an active assignment
+        const driverWithStatus = profile ? {
+          ...profile,
+          status: "assigned"
+        } : null;
+        
         console.log(`Assignment ${assignment.id}:`, {
           vehicle_id: assignment.vehicle_id,
           driver_id: assignment.driver_id,
           found_vehicle: vehicle,
-          found_profile: profile
+          found_profile: driverWithStatus
         });
 
         return {
           ...assignment,
           vehicles: vehicle,
-          profiles: profile
+          profiles: driverWithStatus
         };
       });
 
