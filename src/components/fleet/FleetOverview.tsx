@@ -13,7 +13,7 @@ import { Grid, List, Search, Plus, Truck, Fuel, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type ViewMode = "grid" | "list";
-type StatusFilter = "all" | "available" | "in_service" | "maintenance";
+type StatusFilter = "all" | "available" | "maintenance";
 
 export const FleetOverview: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
@@ -49,7 +49,6 @@ export const FleetOverview: React.FC = () => {
   const statusCounts = {
     all: vehicles?.length || 0,
     available: vehicles?.filter(v => v.status === "available").length || 0,
-    in_service: vehicles?.filter(v => v.status === "in_service").length || 0,
     maintenance: vehicles?.filter(v => v.status === "maintenance").length || 0,
   };
 
@@ -86,10 +85,6 @@ export const FleetOverview: React.FC = () => {
           <div className="bg-card p-3 rounded-lg border shadow-sm">
             <div className="text-sm text-muted-foreground">Available</div>
             <div className="text-2xl font-bold text-green-600">{statusCounts.available}</div>
-          </div>
-          <div className="bg-card p-3 rounded-lg border shadow-sm">
-            <div className="text-sm text-muted-foreground">In Service</div>
-            <div className="text-2xl font-bold text-blue-600">{statusCounts.in_service}</div>
           </div>
           <div className="bg-card p-3 rounded-lg border shadow-sm">
             <div className="text-sm text-muted-foreground">Maintenance</div>
@@ -148,7 +143,7 @@ export const FleetOverview: React.FC = () => {
 
         {/* Status Filters */}
         <div className="flex flex-wrap gap-2">
-          {(['all', 'available', 'in_service', 'maintenance'] as const).map((status) => {
+          {(['all', 'available', 'maintenance'] as const).map((status) => {
             const getFilterButtonClass = (status: string, isActive: boolean) => {
               if (!isActive) {
                 return "bg-muted text-muted-foreground hover:bg-muted/80";
