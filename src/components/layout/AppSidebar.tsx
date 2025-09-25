@@ -106,12 +106,6 @@ const inventoryItems: NavigationItem[] = [
 
 const managementItems: NavigationItem[] = [
   { 
-    title: 'Team Management', 
-    url: '/team-management', 
-    icon: UserCog,
-    permission: 'admin'
-  },
-  { 
     title: 'Fleet Management', 
     url: '/fleet', 
     icon: Truck,
@@ -122,6 +116,12 @@ const managementItems: NavigationItem[] = [
     url: '/maintenance-hub', 
     icon: ClipboardCheck,
     permission: 'staff'
+  },
+  { 
+    title: 'Team Management', 
+    url: '/team-management', 
+    icon: UserCog,
+    permission: 'admin'
   },
 ];
 
