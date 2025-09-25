@@ -283,7 +283,7 @@ export const DVIRForm: React.FC<DVIRFormProps> = ({ open, onOpenChange }) => {
 
   return (
     <Sheet open={open} onOpenChange={(v) => { if (!v) reset(); onOpenChange(v); }}>
-      <SheetContent side="right" className="w-[95vw] max-w-none overflow-y-auto">
+      <SheetContent side="bottom" className="h-[95vh] max-h-none overflow-y-auto">
         <SheetHeader className="pb-6">
           <SheetTitle className="text-xl font-bold">Driver Vehicle Inspection Report (DVIR)</SheetTitle>
         </SheetHeader>
