@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { MaintenanceTaskSelector } from "./MaintenanceTaskSelector";
 
 interface AddMaintenanceRecordModalProps {
   open: boolean;
@@ -32,6 +33,8 @@ export const AddMaintenanceRecordModal: React.FC<AddMaintenanceRecordModalProps>
   const [showVehicleModal, setShowVehicleModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [taskTypeId, setTaskTypeId] = useState("");
+  const [taskTypeName, setTaskTypeName] = useState("");
+  const [showTaskSelector, setShowTaskSelector] = useState(false);
   const [vendorId, setVendorId] = useState("");
   const [description, setDescription] = useState("");
   const [scheduledDate, setScheduledDate] = useState<Date>();
@@ -122,12 +125,19 @@ export const AddMaintenanceRecordModal: React.FC<AddMaintenanceRecordModalProps>
     setVehicleId(preselectedVehicleId);
     setSelectedVehicle(null);
     setTaskTypeId("");
+    setTaskTypeName("");
     setVendorId("");
     setDescription("");
     setScheduledDate(undefined);
     setPriority("medium");
     setEstimatedCost("");
     setNotes("");
+  };
+
+  const handleTaskSelect = (taskId: string, taskName: string) => {
+    setTaskTypeId(taskId);
+    setTaskTypeName(taskName);
+    setShowTaskSelector(false);
   };
 
   // Filter vehicles based on search term
@@ -235,76 +245,33 @@ export const AddMaintenanceRecordModal: React.FC<AddMaintenanceRecordModalProps>
 
             <div className="space-y-2">
               <Label htmlFor="taskType">Task Type</Label>
-              <Select value={taskTypeId} onValueChange={setTaskTypeId}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select task type" />
-                </SelectTrigger>
-                <SelectContent>
-                  {/* Existing Task Types */}
-                  {taskTypes?.map((taskType) => (
-                    <SelectItem key={taskType.id} value={taskType.id}>
-                      {taskType.name}
-                    </SelectItem>
-                  ))}
-                  
-                  {/* Routine Maintenance & Wear Items */}
-                  <SelectGroup>
-                    <SelectLabel>🔧 Routine Maintenance & Wear Items</SelectLabel>
-                    <SelectItem value="tire-alignment">Tire Alignment / Balancing</SelectItem>
-                    <SelectItem value="brake-replacement">Brake Pad / Rotor Replacement</SelectItem>
-                    <SelectItem value="suspension-service">Suspension / Shock Service</SelectItem>
-                    <SelectItem value="steering-check">Steering System Check</SelectItem>
-                    <SelectItem value="wiper-replacement">Wiper Blade Replacement</SelectItem>
-                    <SelectItem value="lighting-replacement">Lighting / Bulb Replacement</SelectItem>
-                    <SelectItem value="fluid-topoffs">Fluid Top-offs (windshield, power steering, etc.)</SelectItem>
-                  </SelectGroup>
-
-                  {/* Engine & Powertrain Services */}
-                  <SelectGroup>
-                    <SelectLabel>🛠️ Engine & Powertrain Services</SelectLabel>
-                    <SelectItem value="spark-plug">Spark Plug Replacement</SelectItem>
-                    <SelectItem value="timing-belt">Timing Belt / Chain Service</SelectItem>
-                    <SelectItem value="fuel-filter">Fuel Filter Replacement</SelectItem>
-                    <SelectItem value="dpf-cleaning">Diesel Particulate Filter (DPF) Cleaning / Regen</SelectItem>
-                    <SelectItem value="exhaust-inspection">Exhaust System Inspection</SelectItem>
-                  </SelectGroup>
-
-                  {/* Electrical & Systems */}
-                  <SelectGroup>
-                    <SelectLabel>⚡ Electrical & Systems</SelectLabel>
-                    <SelectItem value="battery-replacement">Battery Replacement</SelectItem>
-                    <SelectItem value="alternator-check">Alternator Check</SelectItem>
-                    <SelectItem value="starter-service">Starter Motor Service</SelectItem>
-                    <SelectItem value="diagnostic-scan">Diagnostic Scan (OBD-II / Engine Codes)</SelectItem>
-                  </SelectGroup>
-
-                  {/* Compliance & Safety */}
-                  <SelectGroup>
-                    <SelectLabel>🧾 Compliance & Safety</SelectLabel>
-                    <SelectItem value="dot-inspection">Annual DOT Inspection</SelectItem>
-                    <SelectItem value="emissions-test">Emissions Test / Smog Check</SelectItem>
-                    <SelectItem value="safety-equipment">Safety Equipment Check (first aid, fire extinguisher, triangles)</SelectItem>
-                    <SelectItem value="license-renewal">License / Registration Renewal Reminder</SelectItem>
-                  </SelectGroup>
-
-                  {/* Cleaning & Upkeep */}
-                  <SelectGroup>
-                    <SelectLabel>🧹 Cleaning & Upkeep</SelectLabel>
-                    <SelectItem value="deep-cleaning">Interior / Exterior Deep Cleaning</SelectItem>
-                    <SelectItem value="detailing">Detailing / Sanitization</SelectItem>
-                  </SelectGroup>
-
-                  {/* Custom / Miscellaneous */}
-                  <SelectGroup>
-                    <SelectLabel>🔩 Custom / Miscellaneous</SelectLabel>
-                    <SelectItem value="accident-repair">Accident / Damage Repair</SelectItem>
-                    <SelectItem value="body-work">Body Work / Paint</SelectItem>
-                    <SelectItem value="glass-replacement">Glass / Windshield Replacement</SelectItem>
-                    <SelectItem value="recall-service">Recall Service (OEM recall compliance)</SelectItem>
-                    <SelectItem value="custom">Custom</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              {taskTypeName ? (
+                <Card className="border-2 border-blue-200 bg-blue-50">
+                  <CardContent className="p-3">
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium text-gray-900">{taskTypeName}</span>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowTaskSelector(true)}
+                      >
+                        Change
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ) : (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full h-12 border-dashed border-2 hover:border-blue-300 hover:bg-blue-50"
+                  onClick={() => setShowTaskSelector(true)}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Select Task Type
+                </Button>
+              )}
             </div>
           </div>
 
@@ -571,6 +538,14 @@ export const AddMaintenanceRecordModal: React.FC<AddMaintenanceRecordModalProps>
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Maintenance Task Selector Modal */}
+      <MaintenanceTaskSelector
+        open={showTaskSelector}
+        onOpenChange={setShowTaskSelector}
+        onTaskSelect={handleTaskSelect}
+        selectedTaskId={taskTypeId}
+      />
     </Dialog>
   );
 };
