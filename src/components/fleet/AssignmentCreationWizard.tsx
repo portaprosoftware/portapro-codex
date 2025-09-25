@@ -238,9 +238,18 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
               </div>
             </div>
 
+            {/* Selection Info Text */}
+            {(selectedVehicle || selectedDriver) && (
+              <div className="text-center mt-6">
+                <p className="text-sm text-muted-foreground font-medium">
+                  📋 Selection details below
+                </p>
+              </div>
+            )}
+
             {/* Selected Items Display at Bottom */}
             {(selectedVehicle || selectedDriver) && (
-              <div className="mt-8 pt-6 border-t">
+              <div className="mt-6 pt-6 border-t">
                 <h4 className="text-sm font-semibold text-center mb-4">Selected Items</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Selected Vehicle Card */}
