@@ -181,19 +181,19 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
             </div>
             <div className="flex gap-3">
               <Button
-                onClick={() => setAddRecordOpen(true)}
-                className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Create Maintenance Record
-              </Button>
-              <Button
                 variant="outline"
                 onClick={() => setScheduleRecurringOpen(true)}
                 className="border-blue-500 text-blue-600 hover:bg-blue-50"
               >
                 <Calendar className="w-4 h-4 mr-2" />
                 Schedule Recurring Service
+              </Button>
+              <Button
+                onClick={() => setAddRecordOpen(true)}
+                className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Create Maintenance Record
               </Button>
             </div>
           </div>
