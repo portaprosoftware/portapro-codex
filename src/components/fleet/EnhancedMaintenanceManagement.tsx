@@ -12,7 +12,7 @@ import { StatCard } from "@/components/ui/StatCard";
 import { format } from "date-fns";
 import { AddMaintenanceRecordModal } from "./AddMaintenanceRecordModal";
 import { TechnicianAssignmentModal } from "./TechnicianAssignmentModal";
-import { ScheduleRecurringServiceModal } from "./ScheduleRecurringServiceModal";
+import { AddRecurringServiceSlider } from "./AddRecurringServiceSlider";
 import { MaintenanceAllRecordsTab } from "./MaintenanceAllRecordsTab";
 import { MaintenanceNotificationsTab } from "./MaintenanceNotificationsTab";
 import { MaintenanceSettingsTab } from "./MaintenanceSettingsTab";
@@ -415,7 +415,7 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
         open={addRecordOpen} 
         onOpenChange={setAddRecordOpen} 
       />
-      <ScheduleRecurringServiceModal 
+      <AddRecurringServiceSlider 
         open={scheduleRecurringOpen} 
         onOpenChange={setScheduleRecurringOpen} 
       />
