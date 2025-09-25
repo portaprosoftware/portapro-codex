@@ -15,64 +15,62 @@ interface VehicleTypeSelectorProps {
 
 const vehicleTypeCategories = [
   {
-    id: "trucks",
-    name: "Common Fleet Vehicle Types",
+    id: "light",
+    name: "Light & Utility Vehicles",
     color: "bg-gradient-to-r from-blue-500 to-blue-600 text-white",
     types: [
-      { id: "truck", name: "Truck (general)" },
       { id: "pickup", name: "Pickup Truck" },
-      { id: "box-truck", name: "Box Truck / Straight Truck" },
-      { id: "semi-truck", name: "Semi-Truck / Tractor" },
-      { id: "flatbed-truck", name: "Flatbed Truck" },
+      { id: "cargo-van", name: "Cargo Van" },
       { id: "service-truck", name: "Service / Utility Truck" },
-      { id: "dump-truck", name: "Dump Truck" },
+      { id: "suv-car", name: "SUV / Car" },
     ]
   },
   {
-    id: "vans",
-    name: "Vans & Light Vehicles",
+    id: "heavy",
+    name: "Heavy & Fleet Vehicles",
     color: "bg-gradient-to-r from-green-500 to-green-600 text-white",
     types: [
-      { id: "cargo-van", name: "Cargo Van" },
-      { id: "passenger-van", name: "Passenger Van" },
-      { id: "minivan", name: "Minivan" },
-      { id: "suv", name: "SUV" },
-      { id: "car", name: "Car (Sedan / Hatchback)" },
+      { id: "box-truck", name: "Box Truck / Straight Truck" },
+      { id: "flatbed-truck", name: "Flatbed Truck" },
+      { id: "semi-truck", name: "Semi-Truck / Tractor" },
+      { id: "dump-truck", name: "Dump Truck" },
+      { id: "step-van", name: "Step Van / Delivery Van" },
+      { id: "bus", name: "Bus / Shuttle" },
+    ]
+  },
+  {
+    id: "sanitation",
+    name: "Sanitation & Waste Vehicles",
+    color: "bg-gradient-to-r from-purple-500 to-purple-600 text-white",
+    types: [
+      { id: "vacuum-truck", name: "Vacuum Truck" },
+      { id: "pumper-truck", name: "Pumper Truck (portable toilet service truck)" },
+      { id: "septic-tank-truck", name: "Septic Tank Truck" },
+      { id: "combination-unit", name: "Combination Unit (Vac + Jet)" },
+      { id: "sludge-tanker", name: "Sludge Tanker" },
+      { id: "grease-trap-truck", name: "Grease Trap Pump Truck" },
     ]
   },
   {
     id: "trailers",
     name: "Trailers",
-    color: "bg-gradient-to-r from-purple-500 to-purple-600 text-white",
+    color: "bg-gradient-to-r from-orange-500 to-orange-600 text-white",
     types: [
-      { id: "trailer", name: "Trailer (general)" },
       { id: "enclosed-trailer", name: "Enclosed Trailer" },
       { id: "flatbed-trailer", name: "Flatbed Trailer" },
-      { id: "tank-trailer", name: "Tank Trailer" },
-      { id: "refrigerated-trailer", name: "Refrigerated Trailer" },
+      { id: "tank-trailer", name: "Tank Trailer (waste hauling)" },
+      { id: "vacuum-trailer", name: "Vacuum Trailer" },
       { id: "lowboy-trailer", name: "Lowboy Trailer" },
     ]
   },
   {
-    id: "specialized",
-    name: "Specialized & Heavy Vehicles",
-    color: "bg-gradient-to-r from-orange-500 to-orange-600 text-white",
-    types: [
-      { id: "bus", name: "Bus / Shuttle" },
-      { id: "concrete-mixer", name: "Concrete Mixer" },
-      { id: "tow-truck", name: "Tow Truck" },
-      { id: "step-van", name: "Step Van / Delivery Van" },
-      { id: "bucket-truck", name: "Bucket Truck / Boom Truck" },
-      { id: "heavy-equipment", name: "Heavy Equipment (loader, backhoe, etc.)" },
-    ]
-  },
-  {
     id: "other",
-    name: "Other / Flexible",
+    name: "Other / Special",
     color: "bg-gradient-to-r from-gray-500 to-gray-600 text-white",
     types: [
       { id: "golf-cart", name: "Golf Cart / Utility Cart" },
       { id: "atv", name: "ATV / UTV" },
+      { id: "heavy-equipment", name: "Heavy Equipment (loader, backhoe, etc.)" },
       { id: "custom", name: "Custom" },
     ]
   }
