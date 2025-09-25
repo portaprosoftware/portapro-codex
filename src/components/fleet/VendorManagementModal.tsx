@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { X } from "lucide-react";
+
 import { toast } from "sonner";
 
 interface VendorManagementModalProps {
@@ -168,21 +168,6 @@ export const VendorManagementModal: React.FC<VendorManagementModalProps> = ({
     setFormData(prev => ({ ...prev, phone: formatted }));
   };
 
-  const addSpecialty = (specialty: string) => {
-    if (!formData.service_specialties.includes(specialty)) {
-      setFormData(prev => ({
-        ...prev,
-        service_specialties: [...prev.service_specialties, specialty]
-      }));
-    }
-  };
-
-  const removeSpecialty = (specialty: string) => {
-    setFormData(prev => ({
-      ...prev,
-      service_specialties: prev.service_specialties.filter(s => s !== specialty)
-    }));
-  };
 
   const createVendor = useMutation({
     mutationFn: async (data: typeof formData) => {
@@ -396,41 +381,23 @@ export const VendorManagementModal: React.FC<VendorManagementModalProps> = ({
             </div>
           </div>
 
-          {/* Service Specialties */}
+          {/* Service Specialties - View Only */}
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Service Specialties</h3>
             
-            <div>
-              <Label>Add Specialty</Label>
-              <Select onValueChange={addSpecialty}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a specialty to add" />
-                </SelectTrigger>
-                <SelectContent>
-                  {SPECIALTY_OPTIONS.filter(specialty => !formData.service_specialties.includes(specialty)).map((specialty) => (
-                    <SelectItem key={specialty} value={specialty}>
-                      {specialty}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {formData.service_specialties.length > 0 && (
+            {formData.service_specialties.length > 0 ? (
               <div className="space-y-2">
-                <Label>Selected Specialties</Label>
+                <Label>Current Specialties</Label>
                 <div className="flex flex-wrap gap-2">
                   {formData.service_specialties.map((specialty) => (
-                    <Badge key={specialty} variant="outline" className="flex items-center gap-1">
+                    <Badge key={specialty} variant="secondary">
                       {specialty}
-                      <X 
-                        className="w-3 h-3 cursor-pointer hover:text-red-500" 
-                        onClick={() => removeSpecialty(specialty)}
-                      />
                     </Badge>
                   ))}
                 </div>
               </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">No specialties listed</p>
             )}
           </div>
 
