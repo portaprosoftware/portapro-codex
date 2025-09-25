@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Search, Filter, Download, Eye, Edit, Check, Truck } from "lucide-react";
 import { format } from "date-fns";
+import { getCurrentDateInTimezone } from "@/lib/timezoneUtils";
 import { MaintenanceRecordCard } from "./maintenance/MaintenanceRecordCard";
 import { MaintenanceRecordModal } from "./maintenance/MaintenanceRecordModal";
 import { RecurringServiceModal } from "./maintenance/RecurringServiceModal";
@@ -37,8 +38,21 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
   
   const queryClient = useQueryClient();
 
+  // Fetch company timezone
+  const { data: companySettings } = useQuery({
+    queryKey: ["company-settings"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("company_settings")
+        .select("company_timezone")
+        .single();
+      if (error) throw error;
+      return data;
+    }
+  });
+
   const { data: maintenanceRecords, isLoading } = useQuery({
-    queryKey: ["maintenance-records", searchTerm, statusFilter, selectedVehicle?.id],
+    queryKey: ["maintenance-records", searchTerm, statusFilter, selectedVehicle?.id, companySettings?.company_timezone],
     queryFn: async () => {
       let query = supabase
         .from("maintenance_records")
@@ -51,7 +65,8 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
         .order("scheduled_date", { ascending: false });
 
       if (statusFilter !== "all") {
-        const today = new Date().toISOString().split('T')[0];
+        const companyTimezone = companySettings?.company_timezone || 'America/New_York';
+        const today = getCurrentDateInTimezone(companyTimezone);
         
         if (statusFilter === "scheduled") {
           // Services scheduled for today or in the future (not completed)

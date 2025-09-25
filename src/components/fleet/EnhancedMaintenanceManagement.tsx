@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { Plus, Calendar, Settings, Bell, Package, Wrench, AlertTriangle, Clock, DollarSign, UserPlus } from "lucide-react";
 import { StatCard } from "@/components/ui/StatCard";
 import { format } from "date-fns";
+import { getCurrentDateInTimezone } from "@/lib/timezoneUtils";
 import { AddMaintenanceRecordModal } from "./AddMaintenanceRecordModal";
 import { TechnicianAssignmentModal } from "./TechnicianAssignmentModal";
 import { AddRecurringServiceSlider } from "./AddRecurringServiceSlider";
@@ -83,6 +84,19 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
     }
   });
 
+  // Fetch company timezone
+  const { data: companyTimezoneSettings } = useQuery({
+    queryKey: ["company-timezone-settings"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("company_settings")
+        .select("company_timezone")
+        .single();
+      if (error) throw error;
+      return data;
+    }
+  });
+
   const inHouseEnabled = companySettings?.enable_inhouse_features || false;
 
   // Fetch maintenance KPIs
@@ -97,7 +111,7 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
 
   // Fetch overdue maintenance records for overview
   const { data: overdueRecords } = useQuery({
-    queryKey: ["overdue-maintenance"],
+    queryKey: ["overdue-maintenance", companyTimezoneSettings?.company_timezone],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("maintenance_records")
@@ -107,7 +121,7 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
           maintenance_task_types(name),
           maintenance_vendors(name)
         `)
-        .lt("scheduled_date", new Date().toISOString().split('T')[0])
+        .lt("scheduled_date", getCurrentDateInTimezone(companyTimezoneSettings?.company_timezone || 'America/New_York'))
         .in("status", ["scheduled", "in_progress"])
         .order("scheduled_date", { ascending: true })
         .limit(10);
@@ -118,10 +132,19 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
 
   // Fetch upcoming maintenance records for overview
   const { data: upcomingRecords } = useQuery({
-    queryKey: ["upcoming-maintenance"],
+    queryKey: ["upcoming-maintenance", companyTimezoneSettings?.company_timezone],
     queryFn: async () => {
-      const today = new Date();
-      const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+      const companyTimezone = companyTimezoneSettings?.company_timezone || 'America/New_York';
+      const today = getCurrentDateInTimezone(companyTimezone);
+      const nextWeek = getCurrentDateInTimezone(companyTimezone);
+      
+      // Add 7 days to today for next week calculation
+      const todayDate = new Date(today + 'T00:00:00');
+      const nextWeekDate = new Date(todayDate);
+      nextWeekDate.setDate(nextWeekDate.getDate() + 7);
+      const nextWeekStr = nextWeekDate.getFullYear() + '-' + 
+                          String(nextWeekDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                          String(nextWeekDate.getDate()).padStart(2, '0');
       
       const { data, error } = await supabase
         .from("maintenance_records")
@@ -131,8 +154,8 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
           maintenance_task_types(name),
           maintenance_vendors(name)
         `)
-        .gte("scheduled_date", today.toISOString().split('T')[0])
-        .lte("scheduled_date", nextWeek.toISOString().split('T')[0])
+        .gte("scheduled_date", today)
+        .lte("scheduled_date", nextWeekStr)
         .eq("status", "scheduled")
         .order("scheduled_date", { ascending: true })
         .limit(5);
