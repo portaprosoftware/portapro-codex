@@ -183,14 +183,16 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
               <Button
                 variant="outline"
                 onClick={() => setScheduleRecurringOpen(true)}
-                className="border-blue-500 text-blue-600 hover:bg-blue-50"
+                className="border-blue-500 text-blue-600 hover:bg-blue-50 px-4 py-2 h-10"
+                size="sm"
               >
                 <Calendar className="w-4 h-4 mr-2" />
                 Schedule Recurring Service
               </Button>
               <Button
                 onClick={() => setAddRecordOpen(true)}
-                className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
+                className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0 px-4 py-2 h-10"
+                size="sm"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Create Maintenance Record
