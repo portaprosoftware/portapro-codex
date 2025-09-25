@@ -129,20 +129,6 @@ export const AssignmentViewModal: React.FC<AssignmentViewModalProps> = ({
                     {assignment.start_mileage ? assignment.start_mileage.toLocaleString() : "Not recorded"}
                   </span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">End Mileage</span>
-                  <span className="font-medium text-gray-900">
-                    {assignment.end_mileage ? assignment.end_mileage.toLocaleString() : "Not recorded"}
-                  </span>
-                </div>
-                {assignment.start_mileage && assignment.end_mileage && (
-                  <div className="flex justify-between items-center border-t pt-2">
-                    <span className="text-sm text-gray-600 font-medium">Total Miles</span>
-                    <span className="font-semibold text-gray-900">
-                      {(assignment.end_mileage - assignment.start_mileage).toLocaleString()}
-                    </span>
-                  </div>
-                )}
             </div>
           </div>
 
