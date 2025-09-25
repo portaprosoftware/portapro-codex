@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Plus, Edit, Trash2, Settings, FileText, Info } from "lucide-react";
@@ -18,12 +19,14 @@ interface DocumentType {
   description: string | null;
   default_reminder_days: number;
   is_active: boolean;
+  category?: string;
 }
 
 interface DocumentTypeFormData {
   name: string;
   description: string;
   default_reminder_days: number;
+  category: string;
 }
 
 // Predefined document categories matching the DocumentTypeSelector
@@ -87,12 +90,13 @@ export const DocumentTypeManagement: React.FC = () => {
   const [formData, setFormData] = useState<DocumentTypeFormData>({
     name: "",
     description: "",
-    default_reminder_days: 30
+    default_reminder_days: 30,
+    category: ""
   });
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: customDocumentTypes, isLoading } = useQuery({
+  const { data: allDocumentTypes, isLoading } = useQuery({
     queryKey: ["compliance-document-types"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -101,10 +105,7 @@ export const DocumentTypeManagement: React.FC = () => {
         .order("name");
       
       if (error) throw error;
-      
-      // Filter out predefined types and return only custom ones
-      const predefinedTypeNames = predefinedCategories.flatMap(cat => cat.types);
-      return (data || []).filter(type => !predefinedTypeNames.includes(type.name));
+      return data || [];
     },
   });
 
@@ -191,7 +192,8 @@ export const DocumentTypeManagement: React.FC = () => {
     setFormData({
       name: "",
       description: "",
-      default_reminder_days: 30
+      default_reminder_days: 30,
+      category: ""
     });
   };
 
@@ -200,13 +202,23 @@ export const DocumentTypeManagement: React.FC = () => {
     setFormData({
       name: docType.name,
       description: docType.description || "",
-      default_reminder_days: docType.default_reminder_days
+      default_reminder_days: docType.default_reminder_days,
+      category: docType.category || ""
     });
     setIsDialogOpen(true);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!formData.category) {
+      toast({
+        title: "Error",
+        description: "Please select a category for the document type.",
+        variant: "destructive",
+      });
+      return;
+    }
     
     if (editingType) {
       updateMutation.mutate({ id: editingType.id, data: formData });
@@ -228,7 +240,7 @@ export const DocumentTypeManagement: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold text-gray-900">Document Types</h3>
-          <p className="text-sm text-gray-600">Manage predefined categories and custom document types</p>
+          <p className="text-sm text-gray-600">Manage document types organized by predefined categories</p>
         </div>
         
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -241,17 +253,36 @@ export const DocumentTypeManagement: React.FC = () => {
               className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
             >
               <Plus className="w-4 h-4 mr-2" />
-              Add Custom Type
+              Add Document Type
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>
-                {editingType ? "Edit Custom Document Type" : "Add Custom Document Type"}
+                {editingType ? "Edit Document Type" : "Add New Document Type"}
               </DialogTitle>
             </DialogHeader>
             
             <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <Label htmlFor="category">Category *</Label>
+                <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {predefinedCategories.map((category) => (
+                      <SelectItem key={category.id} value={category.id}>
+                        <div className="flex items-center gap-2">
+                          <span>{category.icon}</span>
+                          <span>{category.name}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
               <div>
                 <Label htmlFor="name">Name *</Label>
                 <Input
@@ -307,139 +338,93 @@ export const DocumentTypeManagement: React.FC = () => {
         </Dialog>
       </div>
 
-      {/* Predefined Categories */}
+      {/* Categories with both predefined and custom types */}
       <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <h4 className="text-md font-semibold text-gray-900">Predefined Categories</h4>
-          <Badge variant="outline" className="text-xs">Built-in</Badge>
-        </div>
-        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {predefinedCategories.map((category) => (
-            <Card key={category.id} className="p-4">
-              <div className="flex items-start gap-3">
-                <div className="text-2xl">{category.icon}</div>
-                <div className="flex-1">
-                  <h5 className="font-medium text-gray-900 mb-1">{category.name}</h5>
-                  <p className="text-sm text-gray-600 mb-3">{category.description}</p>
-                  <Badge className={category.color}>
-                    {category.types.length} types
-                  </Badge>
-                  <div className="mt-3 space-y-1">
-                    {category.types.map((type, index) => (
-                      <div key={index} className="flex items-center gap-2 text-xs text-gray-600">
-                        <FileText className="w-3 h-3" />
-                        <span>{type}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
-      </div>
+          {predefinedCategories.map((category) => {
+            // Get custom types for this category
+            const customTypesForCategory = allDocumentTypes?.filter(type => 
+              type.category === category.id
+            ) || [];
+            
+            // Combine predefined and custom types
+            const allTypesForCategory = [
+              ...category.types.map(type => ({ name: type, isPredefined: true })),
+              ...customTypesForCategory.map(type => ({ ...type, isPredefined: false }))
+            ];
 
-      {/* Custom Document Types */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <h4 className="text-md font-semibold text-gray-900">Custom Document Types</h4>
-          <Badge variant="outline" className="text-xs">User-defined</Badge>
-        </div>
-
-        {customDocumentTypes && customDocumentTypes.length > 0 ? (
-          <div className="grid gap-4">
-            {customDocumentTypes.map((docType) => (
-              <Card key={docType.id} className="p-4">
-                <div className="flex items-center justify-between">
+            return (
+              <Card key={category.id} className="p-4">
+                <div className="flex items-start gap-3">
+                  <div className="text-2xl">{category.icon}</div>
                   <div className="flex-1">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-gradient-to-r from-gray-500 to-gray-600 rounded-lg flex items-center justify-center">
-                        <FileText className="w-4 h-4 text-white" />
-                      </div>
-                      <h4 className="font-medium text-gray-900">{docType.name}</h4>
+                    <h5 className="font-medium text-gray-900 mb-1">{category.name}</h5>
+                    <p className="text-sm text-gray-600 mb-3">{category.description}</p>
+                    <Badge className={category.color}>
+                      {allTypesForCategory.length} types
+                    </Badge>
+                    <div className="mt-3 space-y-1">
+                      {allTypesForCategory.map((type, index) => (
+                        <div key={index} className="flex items-center justify-between group">
+                          <div className="flex items-center gap-2 text-xs text-gray-600">
+                            <FileText className="w-3 h-3" />
+                            <span>{type.name}</span>
+                            {!type.isPredefined && (
+                              <Badge variant="outline" className="text-xs px-1 py-0">Custom</Badge>
+                            )}
+                          </div>
+                          
+                          {!type.isPredefined && (
+                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600"
+                                onClick={() => handleEdit(type as DocumentType)}
+                              >
+                                <Edit className="w-3 h-3" />
+                              </Button>
+                              
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-6 w-6 p-0 text-red-400 hover:text-red-600"
+                                  >
+                                    <Trash2 className="w-3 h-3" />
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Delete Document Type</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Are you sure you want to delete "{type.name}"? This action cannot be undone.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={() => deleteMutation.mutate((type as DocumentType).id)}
+                                      className="bg-red-600 hover:bg-red-700"
+                                    >
+                                      Delete
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </div>
+                          )}
+                        </div>
+                      ))}
                     </div>
-                    {docType.description && (
-                      <p className="text-sm text-gray-600 mt-1 ml-11">{docType.description}</p>
-                    )}
-                    <p className="text-xs text-gray-500 mt-1 ml-11">
-                      Default reminder: {docType.default_reminder_days} days before expiration
-                    </p>
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleEdit(docType)}
-                    >
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                    
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-red-600 hover:bg-red-50"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Delete Custom Document Type</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Are you sure you want to delete "{docType.name}"? This action cannot be undone.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => deleteMutation.mutate(docType.id)}
-                            className="bg-red-600 hover:bg-red-700"
-                          >
-                            Delete
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
                   </div>
                 </div>
               </Card>
-            ))}
-          </div>
-        ) : (
-          <Card className="p-8 text-center">
-            <Settings className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No custom document types</h3>
-            <p className="text-gray-600 mb-4">
-              Create custom document types for specialized compliance needs beyond the predefined categories.
-            </p>
-            <Button 
-              onClick={() => setIsDialogOpen(true)}
-              className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Custom Type
-            </Button>
-          </Card>
-        )}
-      </div>
-
-      {/* Info Card */}
-      <Card className="p-4 bg-blue-50 border-blue-200">
-        <div className="flex items-start gap-3">
-          <Info className="w-5 h-5 text-blue-600 mt-0.5" />
-          <div>
-            <h5 className="font-medium text-blue-900 mb-1">Document Type Organization</h5>
-            <p className="text-sm text-blue-800">
-              Predefined categories cover common compliance needs and are organized for easy selection. 
-              Add custom types for specialized requirements specific to your operation.
-            </p>
-          </div>
+            );
+          })}
         </div>
-      </Card>
+      </div>
     </div>
   );
 };
