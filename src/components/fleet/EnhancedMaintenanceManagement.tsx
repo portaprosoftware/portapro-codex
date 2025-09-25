@@ -248,8 +248,8 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
               <TabsTrigger value="overview" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Overview</TabsTrigger>
               <TabsTrigger value="records" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">All Records</TabsTrigger>
               <TabsTrigger value="dvir" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">DVIR</TabsTrigger>
-              <TabsTrigger value="workorders" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Work Orders</TabsTrigger>
               <TabsTrigger value="pm" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">PM Schedules</TabsTrigger>
+              <TabsTrigger value="workorders" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Work Orders</TabsTrigger>
               
               <TabsTrigger value="settings" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Settings</TabsTrigger>
               {inHouseEnabled && (
@@ -384,17 +384,17 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
           </div>
         </TabsContent>
 
-        {/* Work Orders Tab */}
-        <TabsContent value="workorders">
-          <div className="max-w-6xl">
-            <WorkOrdersBoard />
-          </div>
-        </TabsContent>
-
         {/* PM Schedules Tab */}
         <TabsContent value="pm">
           <div className="max-w-6xl">
             <PMSchedulesTab />
+          </div>
+        </TabsContent>
+
+        {/* Work Orders Tab */}
+        <TabsContent value="workorders">
+          <div className="max-w-6xl">
+            <WorkOrdersBoard />
           </div>
         </TabsContent>
 
