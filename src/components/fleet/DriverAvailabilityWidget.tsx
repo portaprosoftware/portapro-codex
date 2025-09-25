@@ -51,6 +51,24 @@ export const DriverAvailabilityWidget: React.FC<DriverAvailabilityWidgetProps> =
     },
   });
 
+  const { data: workingHours } = useQuery({
+    queryKey: ["driver-working-hours", selectedDate],
+    queryFn: async () => {
+      const dayOfWeek = selectedDate.getDay();
+      const { data, error } = await supabase
+        .from("driver_working_hours")
+        .select("driver_id, is_active, start_time, end_time")
+        .eq("day_of_week", dayOfWeek)
+        .eq("is_active", true);
+      
+      if (error) throw error;
+      return data.reduce((acc, hour) => {
+        acc[hour.driver_id] = hour;
+        return acc;
+      }, {} as Record<string, any>);
+    },
+  });
+
   const { data: assignments } = useQuery({
     queryKey: ["driver-assignments", selectedDate],
     queryFn: async () => {
@@ -106,7 +124,12 @@ export const DriverAvailabilityWidget: React.FC<DriverAvailabilityWidgetProps> =
     const jobList = jobs?.[driverId] || [];
     
     if (hasAssignment || jobList.length > 0) return "assigned";
-    return "available";
+    
+    // Check if driver has working hours set for this day
+    const driverWorkingHour = workingHours?.[driverId];
+    const isScheduledToWork = !!driverWorkingHour;
+    
+    return isScheduledToWork ? "available" : "off-duty";
   };
 
   const getStatusColor = (status: string) => {
@@ -221,7 +244,10 @@ export const DriverAvailabilityWidget: React.FC<DriverAvailabilityWidgetProps> =
                     <div className="flex items-center space-x-1">
                       <Clock className="w-3 h-3 text-muted-foreground" />
                       <span className="text-xs text-muted-foreground">
-                        8:00 AM - 5:00 PM
+                        {workingHours?.[driver.id] 
+                          ? `${workingHours[driver.id].start_time.slice(0, 5)} - ${workingHours[driver.id].end_time.slice(0, 5)}`
+                          : "Not scheduled"
+                        }
                       </span>
                     </div>
                   </div>

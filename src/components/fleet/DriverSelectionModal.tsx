@@ -90,6 +90,27 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
     enabled: !!selectedDate,
   });
 
+  const { data: workingHours = {} } = useQuery({
+    queryKey: ["driver-working-hours-modal", selectedDate?.getDay()],
+    queryFn: async () => {
+      if (!selectedDate) return {};
+      
+      const dayOfWeek = selectedDate.getDay();
+      const { data, error } = await supabase
+        .from("driver_working_hours")
+        .select("driver_id, is_active, start_time, end_time")
+        .eq("day_of_week", dayOfWeek)
+        .eq("is_active", true);
+      
+      if (error) throw error;
+      return data.reduce((acc, hour) => {
+        acc[hour.driver_id] = hour;
+        return acc;
+      }, {} as Record<string, any>);
+    },
+    enabled: !!selectedDate,
+  });
+
   // For now, disable scheduled jobs query due to schema mismatch
   // This can be enabled once the jobs table schema is clarified
   const jobs: any[] = [];
@@ -111,10 +132,9 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
     const hasAssignment = assignedDriverIds.has(driver.id);
     const scheduledJobs = jobsByDriver[driver.id] || [];
     
-    // Check if driver is scheduled to work today (simplified - checking if they have working hours)
-    // In a real implementation, this would check against driver_working_hours table for the selected day
-    const dayOfWeek = selectedDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
-    const isScheduledToWork = true; // For now, assume all drivers are scheduled - this should check working_hours table
+    // Check if driver has working hours set for this day
+    const driverWorkingHour = workingHours[driver.id];
+    const isScheduledToWork = !!driverWorkingHour;
     
     // Status logic:
     // - Off-Duty: Not scheduled to work that day
@@ -129,6 +149,7 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
       ...driver,
       status,
       scheduledJobs,
+      working_hours: driverWorkingHour,
     };
   });
 
@@ -296,7 +317,12 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
                         {/* Working Hours */}
                         <div className="flex items-center text-sm text-muted-foreground mb-2">
                           <Clock className="h-4 w-4 mr-1" />
-                          <span>8:00 AM - 5:00 PM</span>
+                          <span>
+                            {driver.working_hours 
+                              ? `${driver.working_hours.start_time.slice(0, 5)} - ${driver.working_hours.end_time.slice(0, 5)}`
+                              : "Not scheduled"
+                            }
+                          </span>
                         </div>
 
                         {/* Time Slots */}

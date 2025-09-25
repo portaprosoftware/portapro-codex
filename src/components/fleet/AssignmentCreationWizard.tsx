@@ -55,7 +55,9 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
   // Populate form when editing
   React.useEffect(() => {
     if (editingAssignment) {
-      setSelectedDate(new Date(editingAssignment.assignment_date));
+      // Fix date initialization to avoid timezone issues
+      const assignmentDate = new Date(editingAssignment.assignment_date + 'T00:00:00');
+      setSelectedDate(assignmentDate);
       setSelectedVehicle(editingAssignment.vehicles);
       setSelectedDriver(editingAssignment.profiles);
       setStartMileage(editingAssignment.start_mileage?.toString() || "");
