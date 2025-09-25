@@ -14,7 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CalendarIcon, Truck, Plus, Search, CheckCircle } from "lucide-react";
+import { CalendarIcon, Truck, Plus, Search, CheckCircle, X } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -192,7 +192,15 @@ export const AddRecurringServiceSlider: React.FC<AddRecurringServiceSliderProps>
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="max-h-[90vh]">
-        <DrawerHeader>
+        <DrawerHeader className="relative">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onOpenChange(false)}
+            className="absolute right-4 top-4 h-8 w-8 p-0"
+          >
+            <X className="h-4 w-4" />
+          </Button>
           <DrawerTitle>Schedule Recurring Service</DrawerTitle>
           <DrawerDescription>
             Set up recurring maintenance for a vehicle.
@@ -412,7 +420,7 @@ export const AddRecurringServiceSlider: React.FC<AddRecurringServiceSliderProps>
             <Button 
               onClick={handleSubmit}
               disabled={createRecurringService.isPending}
-              className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
+              className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
             >
               {createRecurringService.isPending ? "Scheduling..." : "Schedule Recurring Service"}
             </Button>

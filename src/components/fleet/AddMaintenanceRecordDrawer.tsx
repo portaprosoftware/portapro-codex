@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, Truck, Plus, Search, CheckCircle } from "lucide-react";
+import { CalendarIcon, Truck, Plus, Search, CheckCircle, X } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -201,7 +201,15 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="max-h-[90vh]">
-        <DrawerHeader>
+        <DrawerHeader className="relative">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onOpenChange(false)}
+            className="absolute right-4 top-4 h-8 w-8 p-0"
+          >
+            <X className="h-4 w-4" />
+          </Button>
           <DrawerTitle>Create Maintenance Record</DrawerTitle>
           <DrawerDescription>
             Schedule a new maintenance task for a vehicle.
