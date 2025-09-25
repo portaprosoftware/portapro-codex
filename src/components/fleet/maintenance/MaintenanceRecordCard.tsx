@@ -165,43 +165,45 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
   if (variant === "table") {
     return (
       <>
-        <td className="font-medium">
+        <td className="font-medium py-4">
           <div>
-            <div className="font-semibold">
+            <div className="font-semibold text-foreground">
               {getVehicleName()}
             </div>
-            <div className="text-xs text-muted-foreground">{record.vehicles?.license_plate}</div>
+            <div className="text-xs text-muted-foreground mt-1">{record.vehicles?.license_plate}</div>
           </div>
         </td>
-        <td>
+        <td className="py-4">
           <div>
-            <div className="font-medium">{record.maintenance_task_types?.name || record.maintenance_type}</div>
-            <div className="text-sm text-gray-500 truncate max-w-[180px]">{record.description}</div>
+            <div className="font-medium text-foreground">{record.maintenance_task_types?.name || record.maintenance_type}</div>
+            <div className="text-sm text-muted-foreground truncate max-w-[180px] mt-1">{record.description}</div>
+          </div>
+        </td>
+        <td className="text-sm py-4">{record.maintenance_vendors?.name || "In-house"}</td>
+        <td className="py-4">
+          <div className="text-sm">
+            <div>Scheduled: {format(new Date(record.scheduled_date), "MMM d")}</div>
+            {record.completed_date && (
+              <div className="text-green-600 mt-1">Completed: {format(new Date(record.completed_date), "MMM d")}</div>
+            )}
+          </div>
+        </td>
+        <td className="py-4">
+          <div className="flex flex-col gap-2">
+            <Badge className={getStatusColor(record.status)}>
+              {record.status.replace("_", " ")}
+            </Badge>
             {record.priority && (
-              <Badge className={`${getPriorityColor(record.priority)} text-xs mt-1`}>
+              <Badge className={`${getPriorityColor(record.priority)} text-xs`}>
                 {record.priority}
               </Badge>
             )}
           </div>
         </td>
-        <td className="text-sm">{record.maintenance_vendors?.name || "In-house"}</td>
-        <td>
-          <div className="text-sm">
-            <div>Scheduled: {format(new Date(record.scheduled_date), "MMM d")}</div>
-            {record.completed_date && (
-              <div className="text-green-600">Completed: {format(new Date(record.completed_date), "MMM d")}</div>
-            )}
-          </div>
-        </td>
-        <td>
-          <Badge className={getStatusColor(record.status)}>
-            {record.status.replace("_", " ")}
-          </Badge>
-        </td>
-        <td className="text-sm">
+        <td className="text-sm py-4">
           {record.cost ? `$${record.cost.toLocaleString()}` : "—"}
         </td>
-        <td className="text-right">
+        <td className="text-right py-4">
           {renderActions()}
         </td>
       </>
