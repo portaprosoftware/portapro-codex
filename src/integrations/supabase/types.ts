@@ -4730,6 +4730,7 @@ export type Database = {
           city: string | null
           contact_name: string | null
           created_at: string
+          daily_rate: number | null
           email: string | null
           hourly_rate: number | null
           id: string
@@ -4747,6 +4748,7 @@ export type Database = {
           city?: string | null
           contact_name?: string | null
           created_at?: string
+          daily_rate?: number | null
           email?: string | null
           hourly_rate?: number | null
           id?: string
@@ -4764,6 +4766,7 @@ export type Database = {
           city?: string | null
           contact_name?: string | null
           created_at?: string
+          daily_rate?: number | null
           email?: string | null
           hourly_rate?: number | null
           id?: string
