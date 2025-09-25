@@ -183,7 +183,7 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
                 <TableHead className="w-24 text-left font-medium">Vendor</TableHead>
                 <TableHead className="w-32 text-left font-medium">Dates</TableHead>
                 <TableHead className="w-24 text-left font-medium">Status</TableHead>
-                <TableHead className="w-16 text-left font-medium">Cost</TableHead>
+                <TableHead className="w-16 text-right font-medium">Cost</TableHead>
                 <TableHead className="w-12 text-right font-medium">Actions</TableHead>
               </TableRow>
             </TableHeader>

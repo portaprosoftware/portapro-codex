@@ -201,7 +201,7 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
             )}
           </div>
         </td>
-        <td className="text-sm text-left">
+        <td className="text-sm text-right">
           {record.cost ? `$${record.cost.toLocaleString()}` : "—"}
         </td>
         <td className="text-right">
