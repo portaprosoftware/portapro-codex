@@ -57,8 +57,8 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
   React.useEffect(() => {
     if (editingAssignment) {
       setSelectedDate(new Date(editingAssignment.assignment_date));
-      setSelectedVehicle(editingAssignment.vehicle);
-      setSelectedDriver(editingAssignment.driver);
+      setSelectedVehicle(editingAssignment.vehicles);
+      setSelectedDriver(editingAssignment.profiles);
       setStartMileage(editingAssignment.start_mileage?.toString() || "");
       setNotes(editingAssignment.notes || "");
     }
