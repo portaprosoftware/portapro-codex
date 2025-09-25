@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Search, Filter, Download, Eye, Edit } from "lucide-react";
 import { format } from "date-fns";
+import { MaintenanceRecordCard } from "./maintenance/MaintenanceRecordCard";
 
 export const MaintenanceAllRecordsTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -94,6 +95,11 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
     );
   });
 
+  const handleMaintenanceAction = (action: 'view' | 'edit' | 'delete', record: any) => {
+    console.log(`${action} maintenance record:`, record.id);
+    // TODO: Implement actual navigation/modal logic
+  };
+
   const handleExport = () => {
     // Export functionality would be implemented here
     console.log("Export to CSV/PDF");
@@ -175,56 +181,17 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredRecords?.map((record) => (
-                  <TableRow key={record.id}>
-                     <TableCell className="font-medium">
-                       <div>
-                         <div className="font-semibold">
-                           {record.vehicles?.make && record.vehicles?.model 
-                             ? `${record.vehicles.make} ${record.vehicles.model}${record.vehicles.nickname ? ` - ${record.vehicles.nickname}` : ''}`
-                             : record.vehicles?.vehicle_type || 'Unknown Vehicle'}
-                         </div>
-                         <div className="text-xs text-muted-foreground">{record.vehicles?.license_plate}</div>
-                       </div>
-                     </TableCell>
-                    <TableCell>
-                      <div>
-                        <div className="font-medium">{record.maintenance_task_types?.name || record.maintenance_type}</div>
-                        <div className="text-sm text-gray-500 truncate max-w-[180px]">{record.description}</div>
-                        <Badge className={`${getPriorityColor(record.priority || "medium")} text-xs mt-1`}>
-                          {record.priority || "medium"}
-                        </Badge>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-sm">{record.maintenance_vendors?.name || "In-house"}</TableCell>
-                    <TableCell>
-                      <div className="text-sm">
-                        <div>Scheduled: {format(new Date(record.scheduled_date), "MMM d")}</div>
-                        {record.completed_date && (
-                          <div className="text-green-600">Completed: {format(new Date(record.completed_date), "MMM d")}</div>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge className={getStatusColor(record.status)}>
-                        {record.status.replace("_", " ")}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-sm">
-                      {record.cost ? `$${record.cost.toLocaleString()}` : "—"}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-1">
-                        <Button size="sm" variant="outline" className="h-8 w-8 p-0">
-                          <Eye className="w-3 h-3" />
-                        </Button>
-                        <Button size="sm" variant="outline" className="h-8 w-8 p-0">
-                          <Edit className="w-3 h-3" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
+                 filteredRecords?.map((record) => (
+                   <TableRow key={record.id}>
+                     <MaintenanceRecordCard
+                       record={record}
+                       variant="table"
+                       onView={(record) => handleMaintenanceAction('view', record)}
+                       onEdit={(record) => handleMaintenanceAction('edit', record)}
+                       onDelete={(record) => handleMaintenanceAction('delete', record)}
+                     />
+                   </TableRow>
+                 ))
               )}
             </TableBody>
             </Table>

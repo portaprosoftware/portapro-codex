@@ -21,6 +21,7 @@ import { MaintenanceCalendarTab } from "./MaintenanceCalendarTab";
 import { DVIRList } from "./DVIRList";
 import { WorkOrdersBoard } from "./WorkOrdersBoard";
 import { PMSchedulesTab } from "./PMSchedulesTab";
+import { MaintenanceRecordCard } from "./maintenance/MaintenanceRecordCard";
 
 interface MaintenanceKPIs {
   past_due: number;
@@ -165,9 +166,20 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
     }
   };
 
-  const handleAssignTechnician = (recordId: string) => {
-    setSelectedMaintenanceRecord(recordId);
-    setTechnicianAssignmentOpen(true);
+  const handleMaintenanceAction = (action: 'view' | 'edit' | 'delete', record: MaintenanceRecord) => {
+    console.log(`${action} maintenance record:`, record.id);
+    // TODO: Implement actual navigation/modal logic
+    switch (action) {
+      case 'view':
+        // Navigate to detail view or open modal
+        break;
+      case 'edit':
+        // Navigate to edit form or open modal
+        break;
+      case 'delete':
+        // Show confirmation dialog and delete
+        break;
+    }
   };
 
   return (
@@ -279,32 +291,19 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {overdueRecords && overdueRecords.length > 0 ? (
+                   {overdueRecords && overdueRecords.length > 0 ? (
                      <div className="space-y-3">
                        {overdueRecords.map((record) => (
-                         <div key={record.id} className="flex items-center justify-between p-3 bg-red-50 border border-red-200 rounded-lg">
-                           <div className="flex-1">
-                             <div className="font-medium text-foreground">
-                               {record.vehicles?.make && record.vehicles?.model 
-                                 ? `${record.vehicles.make} ${record.vehicles.model}${record.vehicles.nickname ? ` - ${record.vehicles.nickname}` : ''}`
-                                 : record.vehicles?.vehicle_type || 'Unknown Vehicle'}
-                             </div>
-                             <div className="text-sm text-muted-foreground mt-1">
-                               {record.vehicles?.license_plate}
-                             </div>
-                             <div className="text-sm text-foreground mt-1">
-                               {record.maintenance_task_types?.name || record.maintenance_type}
-                             </div>
-                             <div className="text-sm text-muted-foreground mt-1">
-                               Due: {format(new Date(record.scheduled_date), "MMM d, yyyy")}
-                             </div>
-                           </div>
-                           <Button size="sm" variant="outline">
-                             View & Update
-                           </Button>
-                         </div>
+                         <MaintenanceRecordCard
+                           key={record.id}
+                           record={record}
+                           variant="overview"
+                           onView={(record) => handleMaintenanceAction('view', record)}
+                           onEdit={(record) => handleMaintenanceAction('edit', record)}
+                           onDelete={(record) => handleMaintenanceAction('delete', record)}
+                         />
                        ))}
-                    </div>
+                     </div>
                   ) : (
                     <p className="text-gray-500 text-center py-4">No overdue maintenance tasks</p>
                   )}
@@ -323,32 +322,19 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {upcomingRecords && upcomingRecords.length > 0 ? (
+                   {upcomingRecords && upcomingRecords.length > 0 ? (
                      <div className="space-y-3">
                        {upcomingRecords.map((record) => (
-                         <div key={record.id} className="flex items-center justify-between p-3 bg-gray-50 border rounded-lg">
-                           <div className="flex-1">
-                             <div className="font-medium text-foreground">
-                               {record.vehicles?.make && record.vehicles?.model 
-                                 ? `${record.vehicles.make} ${record.vehicles.model}${record.vehicles.nickname ? ` - ${record.vehicles.nickname}` : ''}`
-                                 : record.vehicles?.vehicle_type || 'Unknown Vehicle'}
-                             </div>
-                             <div className="text-sm text-muted-foreground mt-1">
-                               {record.vehicles?.license_plate}
-                             </div>
-                             <div className="text-sm text-foreground mt-1">
-                               {record.maintenance_task_types?.name || record.maintenance_type}
-                             </div>
-                             <div className="text-sm text-muted-foreground mt-1">
-                               Scheduled: {format(new Date(record.scheduled_date), "MMM d, yyyy")}
-                             </div>
-                           </div>
-                           <Button size="sm" variant="outline">
-                             View Details
-                           </Button>
-                         </div>
+                         <MaintenanceRecordCard
+                           key={record.id}
+                           record={record}
+                           variant="overview"
+                           onView={(record) => handleMaintenanceAction('view', record)}
+                           onEdit={(record) => handleMaintenanceAction('edit', record)}
+                           onDelete={(record) => handleMaintenanceAction('delete', record)}
+                         />
                        ))}
-                    </div>
+                     </div>
                   ) : (
                     <p className="text-gray-500 text-center py-4">No upcoming maintenance scheduled</p>
                   )}
