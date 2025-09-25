@@ -309,7 +309,7 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
                       <div className="space-y-3">
                         <div className="flex items-center space-x-3">
                           <Avatar className="w-10 h-10 flex-shrink-0">
-                            <AvatarFallback className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold text-sm">
+                            <AvatarFallback className="bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm">
                               {`${selectedDriver.first_name?.[0] || ''}${selectedDriver.last_name?.[0] || ''}`.toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
