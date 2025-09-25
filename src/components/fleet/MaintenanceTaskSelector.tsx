@@ -3,7 +3,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Check } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { ArrowLeft, Check, Search } from "lucide-react";
 
 interface MaintenanceTaskSelectorProps {
   open: boolean;
@@ -103,6 +104,7 @@ export const MaintenanceTaskSelector: React.FC<MaintenanceTaskSelectorProps> = (
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedTask, setSelectedTask] = useState<{ id: string; name: string } | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleCategorySelect = (categoryId: string) => {
     setSelectedCategory(categoryId);
@@ -118,6 +120,7 @@ export const MaintenanceTaskSelector: React.FC<MaintenanceTaskSelectorProps> = (
       onOpenChange(false);
       setSelectedCategory(null);
       setSelectedTask(null);
+      setSearchTerm("");
     }
   };
 
@@ -130,7 +133,27 @@ export const MaintenanceTaskSelector: React.FC<MaintenanceTaskSelectorProps> = (
     onOpenChange(false);
     setSelectedCategory(null);
     setSelectedTask(null);
+    setSearchTerm("");
   };
+
+  // Get all tasks from all categories for search
+  const allTasks = maintenanceCategories.flatMap(category => 
+    category.tasks.map(task => ({
+      ...task,
+      categoryId: category.id,
+      categoryName: category.name,
+      categoryIcon: category.icon,
+      categoryColor: category.color
+    }))
+  );
+
+  // Filter tasks based on search term
+  const filteredTasks = searchTerm.trim() 
+    ? allTasks.filter(task => 
+        task.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        task.categoryName.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : [];
 
   const currentCategory = selectedCategory ? maintenanceCategories.find(cat => cat.id === selectedCategory) : null;
 
@@ -163,8 +186,73 @@ export const MaintenanceTaskSelector: React.FC<MaintenanceTaskSelectorProps> = (
         </DialogHeader>
         
         <div className="space-y-4 flex-1 overflow-hidden">
-          {!selectedCategory ? (
-            // Category Selection View
+          {/* Search Bar */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search maintenance tasks across all categories..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+
+          {/* Show search results if user is searching */}
+          {searchTerm.trim() && filteredTasks.length > 0 && (
+            <div className="space-y-3 overflow-y-auto pr-2 max-h-96">
+              <div className="text-sm text-muted-foreground mb-3">
+                Found {filteredTasks.length} task{filteredTasks.length !== 1 ? 's' : ''} matching "{searchTerm}"
+              </div>
+              {filteredTasks.map((task) => (
+                <Card
+                  key={`${task.categoryId}-${task.id}`}
+                  className={`cursor-pointer transition-all hover:shadow-md hover:scale-[1.01] ${
+                    selectedTask?.id === task.id
+                      ? "ring-2 ring-blue-500 bg-blue-50"
+                      : "hover:bg-gray-50"
+                  }`}
+                  onClick={() => handleTaskSelect(task)}
+                >
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 flex items-center justify-center">
+                          <span className="text-lg">{task.categoryIcon}</span>
+                        </div>
+                        <div>
+                          <span className="font-medium text-gray-900">{task.name}</span>
+                          <div className="text-xs text-muted-foreground mt-1">
+                            from {task.categoryName}
+                          </div>
+                        </div>
+                      </div>
+                      {selectedTask?.id === task.id && (
+                        <Check className="h-5 w-5 text-green-600" />
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          {/* Show "no results" if searching but no matches */}
+          {searchTerm.trim() && filteredTasks.length === 0 && (
+            <div className="text-center py-8 text-gray-500">
+              <Search className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+              <p>No tasks found matching "{searchTerm}"</p>
+              <Button 
+                variant="outline" 
+                onClick={() => setSearchTerm("")}
+                className="mt-2"
+              >
+                Clear Search
+              </Button>
+            </div>
+          )}
+
+          {/* Category Selection View (only show if not searching) */}
+          {!searchTerm.trim() && !selectedCategory && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto pr-2 max-h-96">
               {maintenanceCategories.map((category) => (
                 <Card
@@ -184,8 +272,10 @@ export const MaintenanceTaskSelector: React.FC<MaintenanceTaskSelectorProps> = (
                 </Card>
               ))}
             </div>
-          ) : (
-            // Task Selection View
+          )}
+
+          {/* Task Selection View (only show if category selected and not searching) */}
+          {!searchTerm.trim() && selectedCategory && (
             <div className="space-y-3 overflow-y-auto pr-2 max-h-96">
               {currentCategory?.tasks.map((task) => (
                 <Card
@@ -218,7 +308,11 @@ export const MaintenanceTaskSelector: React.FC<MaintenanceTaskSelectorProps> = (
 
         <div className="flex justify-between items-center gap-2 pt-4 border-t">
           <div className="text-sm text-muted-foreground">
-            {selectedCategory ? (
+            {searchTerm.trim() ? (
+              <>
+                {filteredTasks.length} result{filteredTasks.length !== 1 ? 's' : ''} found
+              </>
+            ) : selectedCategory ? (
               <>
                 {currentCategory?.tasks.length} tasks in {currentCategory?.name}
               </>
