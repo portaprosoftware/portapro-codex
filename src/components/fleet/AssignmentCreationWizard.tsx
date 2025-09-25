@@ -259,8 +259,8 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
                               {selectedVehicle.year} {selectedVehicle.make} {selectedVehicle.model}
                             </p>
                             <div className="mt-1">
-                              <span className="inline-flex items-center rounded-md bg-gradient-to-r from-blue-500 to-blue-600 px-2 py-1 text-xs font-bold text-white shadow-sm">
-                                {selectedVehicle.vehicle_type}
+                              <span className="inline-flex items-center rounded-md bg-muted border px-2 py-1 text-xs font-bold text-foreground shadow-sm">
+                                {selectedVehicle.vehicle_type.toUpperCase()}
                               </span>
                             </div>
                           </div>
@@ -305,14 +305,14 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
             )}
 
             {/* Required Fields Notice */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="bg-muted/50 border border-border rounded-lg p-4">
               <div className="flex items-start space-x-2">
-                <div className="w-5 h-5 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-bold mt-0.5">
+                <div className="w-5 h-5 rounded-full bg-muted-foreground text-background flex items-center justify-center text-xs font-bold mt-0.5">
                   !
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-blue-900">All fields required</p>
-                  <p className="text-sm text-blue-700">Please select a date, vehicle, and driver to continue.</p>
+                  <p className="text-sm font-medium text-foreground">All fields required</p>
+                  <p className="text-sm text-muted-foreground">Please select a date, vehicle, and driver to continue.</p>
                 </div>
               </div>
             </div>

@@ -73,7 +73,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, viewMode, onM
                   <span className="text-sm text-muted-foreground">{vehicle.make} {vehicle.model}</span>
                 )}
                 {vehicle.vehicle_type && (
-                  <span className="text-sm text-muted-foreground">• {vehicle.vehicle_type.charAt(0).toUpperCase() + vehicle.vehicle_type.slice(1)}</span>
+                  <span className="text-sm text-muted-foreground">• {vehicle.vehicle_type.toUpperCase()}</span>
                 )}
               </div>
             </div>
@@ -126,7 +126,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, viewMode, onM
         {vehicle.vehicle_type && (
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-muted-foreground">Type:</span>
-            <span className="text-sm">{vehicle.vehicle_type.charAt(0).toUpperCase() + vehicle.vehicle_type.slice(1)}</span>
+            <span className="text-sm">{vehicle.vehicle_type.toUpperCase()}</span>
           </div>
         )}
         
