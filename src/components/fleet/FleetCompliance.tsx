@@ -10,6 +10,7 @@ import { AlertTriangle, Calendar, FileText, Plus, Settings, Upload, Info } from 
 import { cn } from "@/lib/utils";
 import { DocumentTypeManagement } from "./DocumentTypeManagement";
 import { AddDocumentModal } from "./AddDocumentModal";
+import { UpdateDocumentModal } from "./UpdateDocumentModal";
 import { SpillKitsTab } from "./compliance/SpillKitsTab";
 import { IncidentsTab } from "./compliance/IncidentsTab";
 import { DeconLogsTab } from "./compliance/DeconLogsTab";
@@ -125,6 +126,8 @@ export const FleetCompliance: React.FC = () => {
 
 const FleetComplianceContent: React.FC = () => {
   const [isAddDocumentModalOpen, setIsAddDocumentModalOpen] = useState(false);
+  const [isUpdateDocumentModalOpen, setIsUpdateDocumentModalOpen] = useState(false);
+  const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null);
   const { data: documents, isLoading } = useQuery({
     queryKey: ["vehicle-compliance"],
     queryFn: async () => {
@@ -183,6 +186,16 @@ const FleetComplianceContent: React.FC = () => {
     if (diffDays === 0) return "Expires today";
     if (diffDays === 1) return "Expires tomorrow";
     return `${diffDays} days remaining`;
+  };
+
+  const handleUpdateDocument = (documentId: string) => {
+    setSelectedDocumentId(documentId);
+    setIsUpdateDocumentModalOpen(true);
+  };
+
+  const closeUpdateModal = () => {
+    setIsUpdateDocumentModalOpen(false);
+    setSelectedDocumentId(null);
   };
 
   const overdueCount = documents?.filter((doc: any) => getUrgencyLevel(doc.expiration_date) === "overdue").length || 0;
@@ -278,7 +291,11 @@ const FleetComplianceContent: React.FC = () => {
                   <Badge className={cn(getUrgencyColor(urgency))}>
                     {formatDaysRemaining(document.expiration_date)}
                   </Badge>
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleUpdateDocument(document.id)}
+                  >
                     Update
                   </Button>
                 </div>
@@ -299,6 +316,12 @@ const FleetComplianceContent: React.FC = () => {
       <AddDocumentModal 
         isOpen={isAddDocumentModalOpen}
         onClose={() => setIsAddDocumentModalOpen(false)}
+      />
+
+      <UpdateDocumentModal 
+        isOpen={isUpdateDocumentModalOpen}
+        onClose={closeUpdateModal}
+        documentId={selectedDocumentId}
       />
     </div>
   );
