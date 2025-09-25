@@ -15,7 +15,7 @@ import { AddMaintenanceRecordModal } from "./AddMaintenanceRecordModal";
 import { TechnicianAssignmentModal } from "./TechnicianAssignmentModal";
 import { AddRecurringServiceSlider } from "./AddRecurringServiceSlider";
 import { MaintenanceAllRecordsTab } from "./MaintenanceAllRecordsTab";
-import { MaintenanceNotificationsTab } from "./MaintenanceNotificationsTab";
+
 import { MaintenanceSettingsTab } from "./MaintenanceSettingsTab";
 import { MaintenancePartsInventoryTab } from "./MaintenancePartsInventoryTab";
 import { MaintenanceCalendarTab } from "./MaintenanceCalendarTab";
@@ -250,7 +250,7 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
               <TabsTrigger value="dvir" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">DVIR</TabsTrigger>
               <TabsTrigger value="workorders" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Work Orders</TabsTrigger>
               <TabsTrigger value="pm" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">PM Schedules</TabsTrigger>
-              <TabsTrigger value="notifications" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Notifications</TabsTrigger>
+              
               <TabsTrigger value="settings" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Settings</TabsTrigger>
               {inHouseEnabled && (
                 <>
@@ -376,12 +376,6 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
           </div>
         </TabsContent>
 
-        {/* Notifications Tab */}
-        <TabsContent value="notifications">
-          <div className="max-w-6xl">
-            <MaintenanceNotificationsTab />
-          </div>
-        </TabsContent>
 
         {/* DVIR Tab */}
         <TabsContent value="dvir">
