@@ -174,8 +174,8 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
       case "basics":
         return (
           <div className="flex gap-6 h-full">
-            {/* Left Side - Calendar (moved 20% right) */}
-            <div className="flex-shrink-0 ml-[20%]">
+            {/* Left Side - Calendar (moved 10% right) */}
+            <div className="flex-shrink-0 ml-[10%]">
               <div className="space-y-4">
                 <div className="text-center">
                   <h3 className="text-base font-semibold mb-2">Assignment Date</h3>
@@ -252,8 +252,8 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
               </div>
             </div>
 
-            {/* Right Side - Selected Items (25% width, moved 20% left) */}
-            <div className="w-1/4 flex-shrink-0 mr-[20%]">
+            {/* Right Side - Selected Items (25% width, moved 10% left) */}
+            <div className="w-1/4 flex-shrink-0 mr-[10%]">
               <div className="bg-muted/30 rounded-lg p-4 h-full">
                 <h4 className="text-base font-semibold mb-4">Selected Items</h4>
                 
