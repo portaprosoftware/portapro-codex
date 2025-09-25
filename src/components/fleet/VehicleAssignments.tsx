@@ -6,20 +6,23 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { EnhancedDateNavigator } from "@/components/jobs/EnhancedDateNavigator";
 import { AssignmentCreationWizard } from "./AssignmentCreationWizard";
-import { AssignmentEditModal } from "./AssignmentEditModal";
 import { Truck, User, Clock, Calendar, Plus, TrendingUp, BarChart3, Activity } from "lucide-react";
 import { format } from "date-fns";
 
 export function VehicleAssignments() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [wizardOpen, setWizardOpen] = useState(false);
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [selectedAssignment, setSelectedAssignment] = useState<any>(null);
+  const [editingAssignment, setEditingAssignment] = useState<any>(null);
 
   const handleEditAssignment = (assignment: any) => {
     console.log('Edit assignment clicked:', assignment);
-    setSelectedAssignment(assignment);
-    setEditModalOpen(true);
+    setEditingAssignment(assignment);
+    setWizardOpen(true);
+  };
+
+  const handleCloseWizard = () => {
+    setWizardOpen(false);
+    setEditingAssignment(null);
   };
 
   return (
@@ -58,18 +61,12 @@ export function VehicleAssignments() {
         onCreateAssignment={() => setWizardOpen(true)}
       />
 
-      {/* Assignment Creation Wizard */}
+      {/* Assignment Creation/Edit Wizard */}
       <AssignmentCreationWizard
         open={wizardOpen}
-        onOpenChange={setWizardOpen}
+        onOpenChange={handleCloseWizard}
         initialDate={selectedDate}
-      />
-
-      {/* Assignment Edit Modal */}
-      <AssignmentEditModal
-        open={editModalOpen}
-        onOpenChange={setEditModalOpen}
-        assignment={selectedAssignment}
+        editingAssignment={editingAssignment}
       />
     </div>
   );

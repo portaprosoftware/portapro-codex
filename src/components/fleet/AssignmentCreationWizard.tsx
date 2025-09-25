@@ -27,6 +27,7 @@ interface AssignmentCreationWizardProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   initialDate?: Date;
+  editingAssignment?: any;
 }
 
 type Step = "basics" | "details" | "review";
@@ -34,7 +35,8 @@ type Step = "basics" | "details" | "review";
 export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> = ({
   open,
   onOpenChange,
-  initialDate = new Date()
+  initialDate = new Date(),
+  editingAssignment
 }) => {
   const [currentStep, setCurrentStep] = useState<Step>("basics");
   const [selectedDate, setSelectedDate] = useState<Date>(initialDate);
@@ -48,24 +50,56 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  const isEditMode = !!editingAssignment;
+
+  // Populate form when editing
+  React.useEffect(() => {
+    if (editingAssignment) {
+      setSelectedDate(new Date(editingAssignment.assignment_date));
+      setSelectedVehicle(editingAssignment.vehicles);
+      setSelectedDriver(editingAssignment.profiles);
+      setStartMileage(editingAssignment.start_mileage?.toString() || "");
+      setNotes(editingAssignment.notes || "");
+    }
+  }, [editingAssignment]);
+
   const createAssignmentMutation = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase
-        .from("daily_vehicle_assignments")
-        .insert({
+      if (isEditMode) {
+        // Update existing assignment
+        const updateData: any = {
           vehicle_id: selectedVehicle?.id,
-          driver_id: selectedDriver?.id,
+          driver_id: selectedDriver?.id || selectedDriver?.clerk_user_id,
           assignment_date: format(selectedDate, "yyyy-MM-dd"),
           start_mileage: startMileage ? parseInt(startMileage) : null,
           notes: notes.trim() || null
-        });
+        };
 
-      if (error) throw error;
+        const { error } = await supabase
+          .from("daily_vehicle_assignments")
+          .update(updateData)
+          .eq("id", editingAssignment.id);
+
+        if (error) throw error;
+      } else {
+        // Create new assignment
+        const { error } = await supabase
+          .from("daily_vehicle_assignments")
+          .insert({
+            vehicle_id: selectedVehicle?.id,
+            driver_id: selectedDriver?.id || selectedDriver?.clerk_user_id,
+            assignment_date: format(selectedDate, "yyyy-MM-dd"),
+            start_mileage: startMileage ? parseInt(startMileage) : null,
+            notes: notes.trim() || null
+          });
+
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       toast({
         title: "Success",
-        description: "Vehicle assignment created successfully",
+        description: isEditMode ? "Assignment updated successfully" : "Vehicle assignment created successfully",
       });
       queryClient.invalidateQueries({ queryKey: ["daily-vehicle-assignments"] });
       queryClient.invalidateQueries({ queryKey: ["vehicle-assignments"] });
@@ -76,7 +110,7 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
     onError: (error) => {
       toast({
         title: "Error",
-        description: "Failed to create assignment",
+        description: isEditMode ? "Failed to update assignment" : "Failed to create assignment",
         variant: "destructive",
       });
     }
@@ -92,9 +126,9 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
   };
 
   const steps: { key: Step; title: string; description: string }[] = [
-    { key: "basics", title: "Assignment Basics", description: "Choose date, vehicle, and driver" },
+    { key: "basics", title: isEditMode ? "Edit Assignment" : "Assignment Basics", description: isEditMode ? "Update vehicle and driver details" : "Choose date, vehicle, and driver" },
     { key: "details", title: "Assignment Details", description: "Add mileage and notes" },
-    { key: "review", title: "Review & Create", description: "Confirm the assignment details" }
+    { key: "review", title: isEditMode ? "Review Changes" : "Review & Create", description: isEditMode ? "Confirm the updated assignment" : "Confirm the assignment details" }
   ];
 
   const currentStepIndex = steps.findIndex(step => step.key === currentStep);
@@ -544,7 +578,7 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
           <Button
             onClick={handleNext}
             disabled={!canProceed() || createAssignmentMutation.isPending}
-            className="min-w-[140px]"
+            className={`min-w-[140px] ${isLastStep ? "bg-gradient-to-r from-green-500 to-green-600 text-white border-0" : "bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0"}`}
           >
             {isLastStep ? (
               createAssignmentMutation.isPending ? (
