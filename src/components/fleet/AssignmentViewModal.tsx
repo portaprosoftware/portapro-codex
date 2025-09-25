@@ -72,12 +72,6 @@ export const AssignmentViewModal: React.FC<AssignmentViewModalProps> = ({
                     {assignment.vehicles.year} {assignment.vehicles.make} {assignment.vehicles.model}
                   </span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Status</span>
-                  <ModernBadge variant="blue">
-                    {assignment.vehicles.status}
-                  </ModernBadge>
-                </div>
               </div>
             ) : (
               <div className="pl-6 text-sm text-red-600">
