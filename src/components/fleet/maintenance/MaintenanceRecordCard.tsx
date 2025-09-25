@@ -8,7 +8,7 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
-import { Calendar, DollarSign, MoreVertical, Eye, Edit, Trash } from "lucide-react";
+import { Calendar, DollarSign, MoreVertical, Eye, Edit, Trash, Recycle } from "lucide-react";
 import { format } from "date-fns";
 
 interface MaintenanceRecord {
@@ -21,6 +21,7 @@ interface MaintenanceRecord {
   status: string;
   cost?: number;
   priority?: string;
+  is_recurring?: boolean;
   vehicles?: {
     license_plate: string;
     vehicle_type: string;
@@ -154,6 +155,12 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
                   {record.priority.replace(/\b\w/g, l => l.toUpperCase())}
                 </Badge>
               )}
+              {record.is_recurring && (
+                <Badge className="bg-gradient-to-r from-purple-500 to-purple-600 text-white font-bold border-0 text-xs">
+                  <Recycle className="w-3 h-3 mr-1" />
+                  Recurring
+                </Badge>
+              )}
               {renderActions()}
             </div>
           </div>
@@ -180,7 +187,7 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
             <div className="text-sm text-muted-foreground truncate max-w-[200px] mt-1">{record.description}</div>
           </div>
         </td>
-        <td className="text-sm text-left">{record.maintenance_vendors?.name || "In-house"}</td>
+        <td className="text-sm text-center">{record.maintenance_vendors?.name || "In-house"}</td>
         <td className="text-left">
           <div className="text-sm">
             <div>Scheduled: {format(new Date(record.scheduled_date), "MMM d")}</div>
@@ -197,6 +204,12 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
             {record.priority && (
               <Badge className={`${getPriorityColor(record.priority)} text-xs w-fit`}>
                 {record.priority.replace(/\b\w/g, l => l.toUpperCase())}
+              </Badge>
+            )}
+            {record.is_recurring && (
+              <Badge className="bg-gradient-to-r from-purple-500 to-purple-600 text-white font-bold border-0 text-xs w-fit">
+                <Recycle className="w-3 h-3 mr-1" />
+                Recurring
               </Badge>
             )}
           </div>
@@ -239,6 +252,12 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
           {record.priority && (
             <Badge className={`${getPriorityColor(record.priority)} text-xs`}>
               {record.priority.replace(/\b\w/g, l => l.toUpperCase())}
+            </Badge>
+          )}
+          {record.is_recurring && (
+            <Badge className="bg-gradient-to-r from-purple-500 to-purple-600 text-white font-bold border-0 text-xs">
+              <Recycle className="w-3 h-3 mr-1" />
+              Recurring
             </Badge>
           )}
         </div>
