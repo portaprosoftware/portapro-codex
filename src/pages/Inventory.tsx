@@ -275,7 +275,7 @@ const Inventory: React.FC = () => {
   };
 
   const filters = [
-    { key: "all" as FilterType, label: "All Bulk Products", count: null },
+    { key: "all" as FilterType, label: "All Products", count: null },
     { key: "in_stock" as FilterType, label: "In Stock", count: null },
     { key: "low_stock" as FilterType, label: "Low Stock", count: null },
     { key: "out_of_stock" as FilterType, label: "Out of Stock", count: null },
