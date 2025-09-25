@@ -279,7 +279,7 @@ const Dashboard = () => {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold text-gray-900 font-sans">Company Overview</h2>
-          <p className="text-sm text-gray-600 font-sans">Select any card to explore that section</p>
+          <p className="text-sm text-gray-600 font-sans">Select any card to explore corresponding section</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3">
           <StatCard
