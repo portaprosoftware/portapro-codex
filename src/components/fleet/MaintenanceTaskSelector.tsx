@@ -193,7 +193,7 @@ export const MaintenanceTaskSelector: React.FC<MaintenanceTaskSelectorProps> = (
 
           {/* Show search results if user is searching */}
           {searchTerm.trim() && filteredTasks.length > 0 && (
-            <div className="space-y-3 overflow-y-auto pr-2 max-h-96">
+            <div className="space-y-3 overflow-y-auto max-h-96 px-1">
               <div className="text-sm text-muted-foreground mb-3">
                 Found {filteredTasks.length} task{filteredTasks.length !== 1 ? 's' : ''} matching "{searchTerm}"
               </div>
@@ -247,7 +247,7 @@ export const MaintenanceTaskSelector: React.FC<MaintenanceTaskSelectorProps> = (
 
           {/* Category Selection View (only show if not searching) */}
           {!searchTerm.trim() && !selectedCategory && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto pr-2 max-h-96">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto max-h-96 px-1">
               {maintenanceCategories.map((category) => (
                 <Card
                   key={category.id}
@@ -270,7 +270,7 @@ export const MaintenanceTaskSelector: React.FC<MaintenanceTaskSelectorProps> = (
 
           {/* Task Selection View (only show if category selected and not searching) */}
           {!searchTerm.trim() && selectedCategory && (
-            <div className="space-y-3 overflow-y-auto pr-2 max-h-96">
+            <div className="space-y-3 overflow-y-auto max-h-96 px-1">
               {currentCategory?.tasks.map((task) => (
                 <Card
                   key={task.id}
