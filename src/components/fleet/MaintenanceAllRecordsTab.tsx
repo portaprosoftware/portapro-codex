@@ -164,13 +164,13 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
             <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-28">Vehicle</TableHead>
-                <TableHead className="w-48">Task & Details</TableHead>
+                <TableHead className="w-32">Vehicle</TableHead>
+                <TableHead className="w-48 text-center">Task & Details</TableHead>
                 <TableHead className="w-24">Vendor</TableHead>
                 <TableHead className="w-28">Dates</TableHead>
                 <TableHead className="w-24">Status</TableHead>
-                <TableHead className="w-20">Cost</TableHead>
-                <TableHead className="w-20 text-right">Actions</TableHead>
+                <TableHead className="w-16 text-center">Cost</TableHead>
+                <TableHead className="w-12 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

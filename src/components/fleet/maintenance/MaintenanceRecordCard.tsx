@@ -173,7 +173,7 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
             <div className="text-xs text-muted-foreground mt-1">{record.vehicles?.license_plate}</div>
           </div>
         </td>
-        <td className="py-4">
+        <td className="py-4 text-center">
           <div>
             <div className="font-medium text-foreground">{record.maintenance_task_types?.name || record.maintenance_type}</div>
             <div className="text-sm text-muted-foreground truncate max-w-[180px] mt-1">{record.description}</div>
@@ -190,17 +190,17 @@ export const MaintenanceRecordCard: React.FC<MaintenanceRecordCardProps> = ({
         </td>
         <td className="py-4">
           <div className="flex flex-col gap-2">
-            <Badge className={getStatusColor(record.status)}>
+            <Badge className={`${getStatusColor(record.status)} w-fit`}>
               {record.status.replace("_", " ")}
             </Badge>
             {record.priority && (
-              <Badge className={`${getPriorityColor(record.priority)} text-xs`}>
+              <Badge className={`${getPriorityColor(record.priority)} text-xs w-fit`}>
                 {record.priority}
               </Badge>
             )}
           </div>
         </td>
-        <td className="text-sm py-4">
+        <td className="text-sm py-4 text-center">
           {record.cost ? `$${record.cost.toLocaleString()}` : "—"}
         </td>
         <td className="text-right py-4">
