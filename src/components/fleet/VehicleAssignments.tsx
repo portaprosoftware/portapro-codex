@@ -12,6 +12,7 @@ import { AssignmentActionsMenu } from "./AssignmentActionsMenu";
 import { Truck, User, Clock, Calendar, Plus, TrendingUp, BarChart3, Activity } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
+import { getVehicleTypeDisplayName } from "@/lib/vehicleTypeUtils";
 
 export function VehicleAssignments() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -430,7 +431,7 @@ function VehicleAssignmentsContent({
                       <span className="text-blue-600 font-medium">{assignment.vehicles?.license_plate || "Unknown"}</span>
                       <span>•</span>
                       <Badge variant="outline" className="bg-transparent border-blue-500 text-blue-600 text-xs">
-                        {assignment.vehicles?.vehicle_type?.charAt(0).toUpperCase() + assignment.vehicles?.vehicle_type?.slice(1).toLowerCase() || 'Unknown type'}
+                        {getVehicleTypeDisplayName(assignment.vehicles?.vehicle_type) || 'Unknown type'}
                       </Badge>
                     </div>
                   </div>

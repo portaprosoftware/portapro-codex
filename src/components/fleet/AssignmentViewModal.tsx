@@ -9,6 +9,7 @@ import {
 import { ModernBadge } from "@/components/ui/modern-badge";
 import { Badge } from "@/components/ui/badge";
 import { Truck, User, Calendar, Clock, FileText, MapPin } from "lucide-react";
+import { getVehicleTypeDisplayName } from "@/lib/vehicleTypeUtils";
 import { format } from "date-fns";
 
 interface AssignmentViewModalProps {
@@ -66,7 +67,7 @@ export const AssignmentViewModal: React.FC<AssignmentViewModalProps> = ({
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Vehicle Type</span>
                   <Badge variant="outline" className="bg-transparent border-blue-500 text-blue-600 text-xs">
-                    {assignment.vehicles.vehicle_type?.charAt(0).toUpperCase() + assignment.vehicles.vehicle_type?.slice(1).toLowerCase() || 'N/A'}
+                    {getVehicleTypeDisplayName(assignment.vehicles.vehicle_type) || 'N/A'}
                   </Badge>
                 </div>
                 <div className="flex justify-between items-center">

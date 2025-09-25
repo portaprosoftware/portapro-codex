@@ -20,6 +20,7 @@ import { StockVehicleSelectionModal } from "./StockVehicleSelectionModal";
 import { DriverSelectionModal } from "./DriverSelectionModal";
 import { CalendarIcon, ChevronLeft, ChevronRight, Check, Truck, User, Plus, X } from "lucide-react";
 import { format } from "date-fns";
+import { getVehicleTypeDisplayName } from "@/lib/vehicleTypeUtils";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 
@@ -272,7 +273,7 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
                           </p>
                           <div className="mt-1">
                             <Badge variant="outline" className="bg-transparent border-blue-500 text-blue-600 text-xs">
-                              {selectedVehicle.vehicle_type?.charAt(0).toUpperCase() + selectedVehicle.vehicle_type?.slice(1).toLowerCase() || 'Truck'}
+                              {getVehicleTypeDisplayName(selectedVehicle.vehicle_type) || 'Truck'}
                             </Badge>
                           </div>
                         </div>

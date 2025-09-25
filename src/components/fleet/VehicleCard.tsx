@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Truck, MapPin, Calendar, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import { getVehicleTypeDisplayName } from "@/lib/vehicleTypeUtils";
 
 interface Vehicle {
   id: string;
@@ -74,7 +75,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, viewMode, onM
                 )}
                 {vehicle.vehicle_type && (
                   <Badge variant="outline" className="bg-transparent border-blue-500 text-blue-600 text-xs">
-                    {vehicle.vehicle_type.charAt(0).toUpperCase() + vehicle.vehicle_type.slice(1).toLowerCase()}
+                    {getVehicleTypeDisplayName(vehicle.vehicle_type)}
                   </Badge>
                 )}
               </div>
@@ -129,7 +130,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, viewMode, onM
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-muted-foreground">Type:</span>
             <Badge variant="outline" className="bg-transparent border-blue-500 text-blue-600 text-xs">
-              {vehicle.vehicle_type.charAt(0).toUpperCase() + vehicle.vehicle_type.slice(1).toLowerCase()}
+              {getVehicleTypeDisplayName(vehicle.vehicle_type)}
             </Badge>
           </div>
         )}

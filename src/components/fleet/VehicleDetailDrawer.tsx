@@ -31,6 +31,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { VehicleTypeSelector } from "./VehicleTypeSelector";
+import { getVehicleTypeDisplayName } from "@/lib/vehicleTypeUtils";
 
 interface Vehicle {
   id: string;
@@ -445,7 +446,7 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
                           <div className="flex items-center justify-between p-3 border rounded-md bg-gray-50">
                             <div className="flex items-center gap-2">
                               <span className="font-medium text-gray-900">
-                                {selectedVehicleTypeName || formData.vehicle_type?.charAt(0).toUpperCase() + formData.vehicle_type?.slice(1).toLowerCase()}
+                                {selectedVehicleTypeName || getVehicleTypeDisplayName(formData.vehicle_type)}
                               </span>
                             </div>
                             <div className="flex items-center gap-2">
@@ -589,12 +590,12 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
                           <span className="text-gray-600">License Plate:</span>
                           <span className="font-medium">{vehicle.license_plate}</span>
                         </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Type:</span>
-                          <Badge variant="outline" className="bg-transparent border-blue-500 text-blue-600 text-xs">
-                            {vehicle.vehicle_type.charAt(0).toUpperCase() + vehicle.vehicle_type.slice(1).toLowerCase()}
-                          </Badge>
-                        </div>
+                         <div className="flex justify-between">
+                           <span className="text-gray-600">Type:</span>
+                           <Badge variant="outline" className="bg-transparent border-blue-500 text-blue-600 text-xs">
+                             {getVehicleTypeDisplayName(vehicle.vehicle_type)}
+                           </Badge>
+                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-600">Make:</span>
                           <span className="font-medium">{vehicle.make || "N/A"}</span>
