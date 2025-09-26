@@ -27,16 +27,20 @@ export function useUserRole() {
   const isDispatcher = role === 'dispatcher';
   const isAdmin = role === 'admin';
   const isDriver = role === 'driver';
+  
+  // DEVELOPMENT MODE: Grant admin access when no role is found
+  const developmentAdminAccess = process.env.NODE_ENV === 'development' && role === 'unknown' && isLoaded;
+  
   // Temporarily allow all roles to access customer docs for testing
   const canViewCustomerDocs = true; // isOwner || isDispatcher;
   const hasAdminAccess = true; // isOwner || isDispatcher || isAdmin;
   const hasStaffAccess = isOwner || isDispatcher || isAdmin || isDriver;
 
   return {
-    role,
-    isOwner,
-    isDispatcher,
-    isAdmin,
+    role: developmentAdminAccess ? 'admin' : role,
+    isOwner: developmentAdminAccess || isOwner,
+    isDispatcher: developmentAdminAccess || isDispatcher,
+    isAdmin: developmentAdminAccess || isAdmin,
     isDriver,
     canViewCustomerDocs,
     hasAdminAccess,
