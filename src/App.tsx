@@ -41,6 +41,8 @@ import { DriverMapPage } from './pages/DriverMapPage';
 import { DriverSchedulePage } from './pages/DriverSchedulePage';
 import { DriverProfilePage } from './pages/DriverProfilePage';
 import { DriverReportsPage } from './pages/DriverReportsPage';
+import DriverVehiclesPage from './pages/DriverVehiclesPage';
+import DriverDVIRPage from './pages/DriverDVIRPage';
 import TeamManagement from './pages/TeamManagement';
 import ProductItemDetail from './pages/ProductItemDetail';
 import { ComingSoon } from './pages/ComingSoon';
@@ -92,7 +94,9 @@ const App = () => {
             }
           >
             <Route index element={<DriverDashboardPage />} />
-            <Route path="map" element={<DriverMapPage />} />
+            <Route path="vehicles" element={<DriverVehiclesPage />} />
+            <Route path="vehicles/:vehicleId/dvir" element={<DriverDVIRPage />} />
+            <Route path="vehicles/:vehicleId/dvir/new" element={<DriverDVIRPage />} />
             <Route path="schedule" element={<DriverSchedulePage />} />
             <Route path="reports" element={<DriverReportsPage />} />
             <Route path="profile" element={<DriverProfilePage />} />

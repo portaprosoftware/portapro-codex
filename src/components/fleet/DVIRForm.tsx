@@ -15,6 +15,9 @@ import { ChevronDown, ChevronRight, Truck, Calendar, User } from "lucide-react";
 interface DVIRFormProps {
   open: boolean;
   onOpenChange: (v: boolean) => void;
+  preSelectedVehicleId?: string;
+  preSelectedDriverId?: string;
+  preSelectedType?: "pre_trip" | "post_trip";
 }
 
 const VEHICLE_ITEMS = [
@@ -49,7 +52,13 @@ const INSPECTION_CATEGORIES = {
   safety: { title: "Safety & Compliance", items: SAFETY_ITEMS }
 };
 
-export const DVIRForm: React.FC<DVIRFormProps> = ({ open, onOpenChange }) => {
+export const DVIRForm: React.FC<DVIRFormProps> = ({ 
+  open, 
+  onOpenChange, 
+  preSelectedVehicleId,
+  preSelectedDriverId,
+  preSelectedType 
+}) => {
   const qc = useQueryClient();
   const [assetType, setAssetType] = useState<"vehicle"|"trailer">("vehicle");
   const [assetId, setAssetId] = useState("");
@@ -58,7 +67,7 @@ export const DVIRForm: React.FC<DVIRFormProps> = ({ open, onOpenChange }) => {
   const [showVehicleModal, setShowVehicleModal] = useState(false);
   const [showDriverModal, setShowDriverModal] = useState(false);
   const [driverId, setDriverId] = useState("");
-  const [reportType, setReportType] = useState<"pre_trip"|"post_trip">("pre_trip");
+  const [reportType, setReportType] = useState<"pre_trip"|"post_trip">(preSelectedType || "pre_trip");
   const [odometer, setOdometer] = useState<string>("");
   const [engineHours, setEngineHours] = useState<string>("");
   const [submitting, setSubmitting] = useState(false);
@@ -77,6 +86,21 @@ export const DVIRForm: React.FC<DVIRFormProps> = ({ open, onOpenChange }) => {
     status: "pass" | "fail" | "na", 
     notes: string 
   }>>({});
+
+  // Initialize with pre-selected values
+  React.useEffect(() => {
+    if (preSelectedVehicleId && !selectedVehicle) {
+      // Fetch vehicle details if we have an ID but no vehicle object
+      // For now, just set the ID
+      setAssetId(preSelectedVehicleId);
+    }
+    if (preSelectedDriverId && !selectedDriver) {
+      setDriverId(preSelectedDriverId);
+    }
+    if (preSelectedType) {
+      setReportType(preSelectedType);
+    }
+  }, [preSelectedVehicleId, preSelectedDriverId, preSelectedType, selectedVehicle, selectedDriver]);
 
   // Initialize inspection items for all categories
   React.useEffect(() => {

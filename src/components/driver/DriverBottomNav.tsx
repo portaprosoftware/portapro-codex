@@ -12,9 +12,9 @@ const navItems = [
     end: true
   },
   {
-    to: '/driver/map',
+    to: '/driver/vehicles',
     icon: Map,
-    label: 'Map'
+    label: 'Vehicles'
   },
   {
     to: '/driver/schedule',
