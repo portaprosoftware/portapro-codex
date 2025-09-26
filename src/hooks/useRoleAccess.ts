@@ -26,6 +26,15 @@ export interface RolePermissions {
   canUploadDocuments: boolean;
   canViewExpirationDashboard: boolean;
   canManageTraining: boolean;
+  
+  // Spill kit compliance permissions
+  canPerformSpillKitChecks: boolean;
+  canViewSpillKitHistory: boolean;
+  canManageSpillKitTemplates: boolean;
+  canViewSpillKitReports: boolean;
+  canManageSpillKitNotifications: boolean;
+  canManageSpillKitRestock: boolean;
+  canViewAllSpillKitChecks: boolean;
 }
 
 export function useRoleAccess(targetDriverId?: string): RolePermissions {
@@ -60,6 +69,15 @@ export function useRoleAccess(targetDriverId?: string): RolePermissions {
     canUploadDocuments: false,
     canViewExpirationDashboard: false,
     canManageTraining: false,
+    
+    // Spill kit compliance permissions
+    canPerformSpillKitChecks: false,
+    canViewSpillKitHistory: false,
+    canManageSpillKitTemplates: false,
+    canViewSpillKitReports: false,
+    canManageSpillKitNotifications: false,
+    canManageSpillKitRestock: false,
+    canViewAllSpillKitChecks: false,
   };
 
   // Driver permissions
@@ -72,6 +90,10 @@ export function useRoleAccess(targetDriverId?: string): RolePermissions {
       canUploadOwnDocuments: isOwnProfile,
       canViewOwnHistory: isOwnProfile,
       canUploadDocuments: isOwnProfile,
+      
+      // Drivers can perform their own spill kit checks
+      canPerformSpillKitChecks: true,
+      canViewSpillKitHistory: isOwnProfile,
     };
   }
 
@@ -94,6 +116,13 @@ export function useRoleAccess(targetDriverId?: string): RolePermissions {
       canUploadDocuments: true,
       canViewExpirationDashboard: true,
       canManageTraining: true,
+      
+      // Dispatchers can view and manage most spill kit features
+      canPerformSpillKitChecks: true,
+      canViewSpillKitHistory: true,
+      canViewSpillKitReports: true,
+      canManageSpillKitRestock: true,
+      canViewAllSpillKitChecks: true,
     };
   }
 
@@ -122,6 +151,15 @@ export function useRoleAccess(targetDriverId?: string): RolePermissions {
       canUploadDocuments: true,
       canViewExpirationDashboard: true,
       canManageTraining: true,
+      
+      // Admins have full spill kit compliance access
+      canPerformSpillKitChecks: true,
+      canViewSpillKitHistory: true,
+      canManageSpillKitTemplates: true,
+      canViewSpillKitReports: true,
+      canManageSpillKitNotifications: true,
+      canManageSpillKitRestock: true,
+      canViewAllSpillKitChecks: true,
     };
   }
 
