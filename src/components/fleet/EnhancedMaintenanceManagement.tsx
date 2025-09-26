@@ -100,6 +100,22 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
   const inHouseEnabled = companySettings?.enable_inhouse_features || false;
 
   // Fetch maintenance KPIs
+  // Query for due today count
+  const { data: dueTodayCount, isLoading: dueTodayLoading } = useQuery({
+    queryKey: ["maintenance-due-today"],
+    queryFn: async () => {
+      const today = format(new Date(), 'yyyy-MM-dd');
+      const { data, error } = await supabase
+        .from("maintenance_records")
+        .select("id")
+        .eq("scheduled_date", today)
+        .in("status", ["scheduled", "in_progress"]);
+      
+      if (error) throw error;
+      return data?.length || 0;
+    }
+  });
+
   const { data: kpis, isLoading: kpisLoading } = useQuery({
     queryKey: ["maintenance-kpis"],
     queryFn: async () => {
@@ -282,6 +298,15 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
                 gradientTo="#ea580c"
                 iconBg="#f97316"
                 animateValue={!kpisLoading}
+              />
+              <StatCard
+                title="Due Today"
+                value={dueTodayCount || 0}
+                icon={Calendar}
+                gradientFrom="#8b5cf6"
+                gradientTo="#7c3aed"
+                iconBg="#8b5cf6"
+                animateValue={!dueTodayLoading}
               />
             </div>
 
