@@ -482,6 +482,36 @@ export type Database = {
         }
         Relationships: []
       }
+      configurable_spill_types: {
+        Row: {
+          category: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          subcategory: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          subcategory?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          subcategory?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       consumable_bundle_items: {
         Row: {
           bundle_id: string
@@ -3059,6 +3089,120 @@ export type Database = {
           zip?: string | null
         }
         Relationships: []
+      }
+      incident_follow_up_actions: {
+        Row: {
+          action_type: string
+          assigned_to: string | null
+          completed_at: string | null
+          created_at: string | null
+          description: string | null
+          due_date: string | null
+          id: string
+          incident_id: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          action_type: string
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          incident_id?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          action_type?: string
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          incident_id?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incident_follow_up_actions_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "spill_incident_reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      incident_photos: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          incident_id: string | null
+          photo_type: string | null
+          photo_url: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          incident_id?: string | null
+          photo_type?: string | null
+          photo_url: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          incident_id?: string | null
+          photo_type?: string | null
+          photo_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incident_photos_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "spill_incident_reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      incident_witnesses: {
+        Row: {
+          contact_info: string | null
+          created_at: string | null
+          id: string
+          incident_id: string | null
+          name: string
+        }
+        Insert: {
+          contact_info?: string | null
+          created_at?: string | null
+          id?: string
+          incident_id?: string | null
+          name: string
+        }
+        Update: {
+          contact_info?: string | null
+          created_at?: string | null
+          id?: string
+          incident_id?: string | null
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incident_witnesses_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "spill_incident_reports"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       instance_deployments: {
         Row: {
@@ -7453,11 +7597,14 @@ export type Database = {
       }
       spill_incident_reports: {
         Row: {
+          assigned_to: string | null
           authorities_notified: boolean | null
           authority_contact_info: string | null
           cause_description: string
+          cleanup_actions: string[] | null
           cleanup_method: string | null
           cleanup_photos: Json | null
+          closed_at: string | null
           created_at: string
           disposal_method: string | null
           driver_id: string
@@ -7469,17 +7616,29 @@ export type Database = {
           incident_date: string
           incident_photos: Json | null
           location_description: string
+          regulatory_notification_required: boolean | null
+          regulatory_notification_sent: boolean | null
+          resolution_notes: string | null
+          responsible_party: string | null
+          severity: Database["public"]["Enums"]["incident_severity"] | null
           spill_type: string
           status: string
           updated_at: string
           vehicle_id: string
+          volume_estimate: number | null
+          volume_unit: string | null
+          weather_conditions: string | null
+          witnesses_present: boolean | null
         }
         Insert: {
+          assigned_to?: string | null
           authorities_notified?: boolean | null
           authority_contact_info?: string | null
           cause_description: string
+          cleanup_actions?: string[] | null
           cleanup_method?: string | null
           cleanup_photos?: Json | null
+          closed_at?: string | null
           created_at?: string
           disposal_method?: string | null
           driver_id: string
@@ -7491,17 +7650,29 @@ export type Database = {
           incident_date: string
           incident_photos?: Json | null
           location_description: string
+          regulatory_notification_required?: boolean | null
+          regulatory_notification_sent?: boolean | null
+          resolution_notes?: string | null
+          responsible_party?: string | null
+          severity?: Database["public"]["Enums"]["incident_severity"] | null
           spill_type: string
           status?: string
           updated_at?: string
           vehicle_id: string
+          volume_estimate?: number | null
+          volume_unit?: string | null
+          weather_conditions?: string | null
+          witnesses_present?: boolean | null
         }
         Update: {
+          assigned_to?: string | null
           authorities_notified?: boolean | null
           authority_contact_info?: string | null
           cause_description?: string
+          cleanup_actions?: string[] | null
           cleanup_method?: string | null
           cleanup_photos?: Json | null
+          closed_at?: string | null
           created_at?: string
           disposal_method?: string | null
           driver_id?: string
@@ -7513,10 +7684,19 @@ export type Database = {
           incident_date?: string
           incident_photos?: Json | null
           location_description?: string
+          regulatory_notification_required?: boolean | null
+          regulatory_notification_sent?: boolean | null
+          resolution_notes?: string | null
+          responsible_party?: string | null
+          severity?: Database["public"]["Enums"]["incident_severity"] | null
           spill_type?: string
           status?: string
           updated_at?: string
           vehicle_id?: string
+          volume_estimate?: number | null
+          volume_unit?: string | null
+          weather_conditions?: string | null
+          witnesses_present?: boolean | null
         }
         Relationships: [
           {
@@ -10471,6 +10651,7 @@ export type Database = {
         | "defects_found"
         | "verified"
         | "rejected"
+      incident_severity: "minor" | "moderate" | "major" | "reportable"
       pm_target_type: "vehicle" | "trailer" | "group"
       product_type:
         | "standard_toilet"
@@ -10665,6 +10846,7 @@ export const Constants = {
         "verified",
         "rejected",
       ],
+      incident_severity: ["minor", "moderate", "major", "reportable"],
       pm_target_type: ["vehicle", "trailer", "group"],
       product_type: [
         "standard_toilet",
