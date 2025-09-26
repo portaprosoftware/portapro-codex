@@ -10,6 +10,9 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/u
 import { PackageOpen, Plus, Settings, Calendar, AlertTriangle, CheckCircle, Clock } from "lucide-react";
 import { EnhancedSpillKitCheckForm } from "./EnhancedSpillKitCheckForm";
 import { SpillKitTemplateManager } from "./SpillKitTemplateManager";
+import { SpillKitComplianceReports } from "./SpillKitComplianceReports";
+import { SpillKitNotificationManager } from "./SpillKitNotificationManager";
+import { RestockRequestManager } from "./RestockRequestManager";
 
 type DVIR = {
   id: string;
@@ -180,6 +183,8 @@ export const SpillKitsTab: React.FC = () => {
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="templates">Templates</TabsTrigger>
           <TabsTrigger value="reports">Reports</TabsTrigger>
+          <TabsTrigger value="notifications">Notifications</TabsTrigger>
+          <TabsTrigger value="restock">Restock Requests</TabsTrigger>
         </TabsList>
         <Button onClick={() => setDrawerOpen(true)}>
           <Plus className="w-4 h-4 mr-2" /> New Inspection
@@ -313,18 +318,15 @@ export const SpillKitsTab: React.FC = () => {
       </TabsContent>
 
       <TabsContent value="reports">
-        <Card>
-          <CardHeader>
-            <CardTitle>Compliance Reports</CardTitle>
-          </CardHeader>
-          <CardContent className="text-center py-8">
-            <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium mb-2">Reports Coming Soon</h3>
-            <p className="text-muted-foreground">
-              Detailed compliance reports and audit documentation will be available here.
-            </p>
-          </CardContent>
-        </Card>
+        <SpillKitComplianceReports />
+      </TabsContent>
+
+      <TabsContent value="notifications">
+        <SpillKitNotificationManager />
+      </TabsContent>
+
+      <TabsContent value="restock">
+        <RestockRequestManager />
       </TabsContent>
 
       <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>

@@ -10,8 +10,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { Camera, Clock, CheckCircle, AlertCircle, Package, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { PhotoCapture } from "./PhotoCapture";
 
 type Props = {
   onSaved?: () => void;
@@ -43,6 +46,7 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
   const [weather, setWeather] = useState("");
   const [checkDuration, setCheckDuration] = useState<number>(0);
   const [checkStartTime] = useState(Date.now());
+  const [autoRestockRequests, setAutoRestockRequests] = useState<boolean>(true);
 
   // Fetch vehicles
   const { data: vehicles } = useQuery({
@@ -133,8 +137,19 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
       }
 
       const duration = Math.round((Date.now() - checkStartTime) / 1000 / 60); // minutes
-
       const nextCheckDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+      
+      // Calculate missing items
+      const missingItems = Object.entries(itemConditions)
+        .filter(([_, condition]) => condition.status === 'missing')
+        .map(([itemId, _]) => {
+          const items = Array.isArray(selectedTemplate.items) ? selectedTemplate.items : [];
+          const item = items.find((i: any) => i.id === itemId);
+          return {
+            name: item?.item_name || itemId,
+            quantity: item?.required_quantity || 1
+          };
+        });
       
       const { data, error } = await supabase
         .from("vehicle_spill_kit_checks")
@@ -143,6 +158,7 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
           template_id: selectedTemplate.template_id,
           has_kit: kitStatus !== 'failed',
           item_conditions: itemConditions,
+          missing_items: missingItems,
           photos,
           notes,
           weather_conditions: weather,
@@ -153,6 +169,16 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
         });
 
       if (error) throw error;
+
+      // Generate automatic restock request if enabled and items are missing
+      if (autoRestockRequests && missingItems.length > 0) {
+        await supabase.rpc("generate_spill_kit_restock_request", {
+          p_vehicle_id: vehicleId,
+          p_missing_items: missingItems,
+          p_template_id: selectedTemplate.template_id || null
+        });
+      }
+
       return data;
     },
     onSuccess: () => {
@@ -351,14 +377,31 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Photo Upload Placeholder */}
+            {/* Photo Documentation */}
             <div>
-              <label className="text-sm font-medium mb-2 block">Photos (Optional)</label>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">
-                  Photo upload feature coming soon
-                </p>
+              <Label className="text-sm font-medium mb-2 block">Photo Documentation</Label>
+              <PhotoCapture 
+                onPhotosChange={setPhotos}
+                maxPhotos={5}
+                initialPhotos={photos}
+              />
+            </div>
+
+            {/* Automation Options */}
+            <div className="space-y-3">
+              <Label className="text-sm font-medium">Automation Options</Label>
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <Label htmlFor="auto-restock">Automatic Restock Requests</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Automatically generate restock requests for missing items
+                  </p>
+                </div>
+                <Switch
+                  id="auto-restock"
+                  checked={autoRestockRequests}
+                  onCheckedChange={setAutoRestockRequests}
+                />
               </div>
             </div>
 

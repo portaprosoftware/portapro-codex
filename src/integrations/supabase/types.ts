@@ -7612,6 +7612,53 @@ export type Database = {
         }
         Relationships: []
       }
+      spill_kit_compliance_alerts: {
+        Row: {
+          acknowledged: boolean
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          alert_level: string
+          alert_type: string
+          created_at: string
+          id: string
+          message: string
+          resolved_at: string | null
+          vehicle_id: string
+        }
+        Insert: {
+          acknowledged?: boolean
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          alert_level?: string
+          alert_type: string
+          created_at?: string
+          id?: string
+          message: string
+          resolved_at?: string | null
+          vehicle_id: string
+        }
+        Update: {
+          acknowledged?: boolean
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          alert_level?: string
+          alert_type?: string
+          created_at?: string
+          id?: string
+          message?: string
+          resolved_at?: string | null
+          vehicle_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "spill_kit_compliance_alerts_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       spill_kit_inspections: {
         Row: {
           company_id: string | null
@@ -7689,6 +7736,108 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      spill_kit_notification_settings: {
+        Row: {
+          created_at: string
+          email_notifications: boolean
+          email_recipients: string[]
+          id: string
+          notification_frequency: string
+          overdue_threshold_days: number
+          reminder_advance_days: number
+          sms_notifications: boolean
+          sms_recipients: string[]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email_notifications?: boolean
+          email_recipients?: string[]
+          id?: string
+          notification_frequency?: string
+          overdue_threshold_days?: number
+          reminder_advance_days?: number
+          sms_notifications?: boolean
+          sms_recipients?: string[]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email_notifications?: boolean
+          email_recipients?: string[]
+          id?: string
+          notification_frequency?: string
+          overdue_threshold_days?: number
+          reminder_advance_days?: number
+          sms_notifications?: boolean
+          sms_recipients?: string[]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      spill_kit_restock_requests: {
+        Row: {
+          assigned_to: string | null
+          completed_at: string | null
+          created_at: string
+          estimated_cost: number | null
+          id: string
+          missing_items: Json
+          notes: string | null
+          priority: string
+          requested_by: string | null
+          status: string
+          template_id: string | null
+          updated_at: string
+          vehicle_id: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          estimated_cost?: number | null
+          id?: string
+          missing_items?: Json
+          notes?: string | null
+          priority?: string
+          requested_by?: string | null
+          status?: string
+          template_id?: string | null
+          updated_at?: string
+          vehicle_id: string
+        }
+        Update: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          estimated_cost?: number | null
+          id?: string
+          missing_items?: Json
+          notes?: string | null
+          priority?: string
+          requested_by?: string | null
+          status?: string
+          template_id?: string | null
+          updated_at?: string
+          vehicle_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "spill_kit_restock_requests_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "spill_kit_templates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "spill_kit_restock_requests_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       spill_kit_template_items: {
         Row: {
@@ -9695,6 +9844,22 @@ export type Database = {
         Args: { template_type: string }
         Returns: string
       }
+      generate_spill_kit_compliance_report: {
+        Args: {
+          p_end_date?: string
+          p_start_date?: string
+          p_vehicle_ids?: string[]
+        }
+        Returns: Json
+      }
+      generate_spill_kit_restock_request: {
+        Args: {
+          p_missing_items: Json
+          p_template_id?: string
+          p_vehicle_id: string
+        }
+        Returns: string
+      }
       generate_storage_location_report: {
         Args: Record<PropertyKey, never>
         Returns: Json
@@ -9935,10 +10100,10 @@ export type Database = {
       get_overdue_spill_kit_checks: {
         Args: Record<PropertyKey, never>
         Returns: {
+          compliance_status: string
           days_overdue: number
           last_check_date: string
           license_plate: string
-          next_check_due: string
           vehicle_id: string
         }[]
       }
