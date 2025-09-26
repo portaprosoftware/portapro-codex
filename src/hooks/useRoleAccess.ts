@@ -70,14 +70,14 @@ export function useRoleAccess(targetDriverId?: string): RolePermissions {
     canViewExpirationDashboard: false,
     canManageTraining: false,
     
-    // Spill kit compliance permissions
-    canPerformSpillKitChecks: false,
-    canViewSpillKitHistory: false,
-    canManageSpillKitTemplates: false,
-    canViewSpillKitReports: false,
-    canManageSpillKitNotifications: false,
-    canManageSpillKitRestock: false,
-    canViewAllSpillKitChecks: false,
+    // Spill kit compliance permissions (grant to everyone)
+    canPerformSpillKitChecks: true,
+    canViewSpillKitHistory: true,
+    canManageSpillKitTemplates: true,
+    canViewSpillKitReports: true,
+    canManageSpillKitNotifications: true,
+    canManageSpillKitRestock: true,
+    canViewAllSpillKitChecks: true,
   };
 
   // Driver permissions
