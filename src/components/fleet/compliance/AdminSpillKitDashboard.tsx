@@ -4,11 +4,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ProtectedComponent } from '@/components/shared/ProtectedComponent';
 import { SpillKitTemplateManager } from './SpillKitTemplateManager';
 import { SpillKitComplianceReports } from './SpillKitComplianceReports';
-import { SpillKitNotificationManager } from './SpillKitNotificationManager';
 import { RestockRequestManager } from './RestockRequestManager';
 import { EnhancedSpillKitCheckForm } from './EnhancedSpillKitCheckForm';
 import { Button } from '@/components/ui/button';
-import { Plus, Settings, FileText, Bell, Package } from 'lucide-react';
+import { Plus, Settings, FileText, Package } from 'lucide-react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 
 export function AdminSpillKitDashboard() {
@@ -35,7 +34,7 @@ export function AdminSpillKitDashboard() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <ProtectedComponent requiredPermission="canManageSpillKitTemplates" fallback={null} showError={false}>
             <TabsTrigger value="templates">
@@ -47,12 +46,6 @@ export function AdminSpillKitDashboard() {
             <TabsTrigger value="reports">
               <FileText className="h-4 w-4 mr-2" />
               Reports
-            </TabsTrigger>
-          </ProtectedComponent>
-          <ProtectedComponent requiredPermission="canManageSpillKitNotifications" fallback={null} showError={false}>
-            <TabsTrigger value="notifications">
-              <Bell className="h-4 w-4 mr-2" />
-              Notifications
             </TabsTrigger>
           </ProtectedComponent>
           <ProtectedComponent requiredPermission="canManageSpillKitRestock" fallback={null} showError={false}>
@@ -88,12 +81,6 @@ export function AdminSpillKitDashboard() {
         <TabsContent value="reports">
           <ProtectedComponent requiredPermission="canViewSpillKitReports">
             <SpillKitComplianceReports />
-          </ProtectedComponent>
-        </TabsContent>
-
-        <TabsContent value="notifications">
-          <ProtectedComponent requiredPermission="canManageSpillKitNotifications">
-            <SpillKitNotificationManager />
           </ProtectedComponent>
         </TabsContent>
 
