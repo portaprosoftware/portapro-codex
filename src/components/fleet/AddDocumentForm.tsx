@@ -224,7 +224,7 @@ export const AddDocumentForm: React.FC<Props> = ({ onSaved, onCancel }) => {
               </div>
             )}
           </div>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-gray-500 mt-3 text-center">
             Supported formats: PDF, JPG, PNG, DOC, DOCX (max 10MB)
           </p>
         </div>
