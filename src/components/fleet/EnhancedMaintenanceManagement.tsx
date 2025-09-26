@@ -328,9 +328,9 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
                 title="Due Today"
                 value={dueTodayCount || 0}
                 icon={Calendar}
-                gradientFrom="#8b5cf6"
-                gradientTo="#7c3aed"
-                iconBg="#8b5cf6"
+                gradientFrom="#3b82f6"
+                gradientTo="#2563eb"
+                iconBg="#3b82f6"
                 animateValue={!dueTodayLoading}
               />
               <StatCard
