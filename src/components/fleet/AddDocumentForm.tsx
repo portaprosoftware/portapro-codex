@@ -209,13 +209,13 @@ export const AddDocumentForm: React.FC<Props> = ({ onSaved, onCancel }) => {
 
         <div>
           <Label htmlFor="file">Upload Document</Label>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col items-center gap-2">
             <Input
               id="file"
               type="file"
               onChange={handleFileChange}
               accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-              className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gradient-to-r file:from-blue-500 file:to-blue-600 file:text-white hover:file:from-blue-600 hover:file:to-blue-700"
             />
             {formData.file && (
               <div className="flex items-center gap-1 text-sm text-gray-600">
