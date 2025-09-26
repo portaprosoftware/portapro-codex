@@ -303,9 +303,8 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
 
             {/* Overview Tab */}
             <TabsContent value="overview" className="space-y-6">
-          <div className="max-w-6xl">
             {/* KPI Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
               <StatCard
                 title="Past Due"
                 value={kpis?.past_due || 0}
@@ -345,7 +344,7 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
               />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
               {/* Overdue List */}
               <Card>
                 <CardHeader>
@@ -408,60 +407,43 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
                 </CardContent>
               </Card>
             </div>
-          </div>
-        </TabsContent>
+            </TabsContent>
 
-        {/* All Records Tab */}
         <TabsContent value="records">
-          <div className="max-w-6xl">
-            <MaintenanceAllRecordsTab />
-          </div>
+          <MaintenanceAllRecordsTab />
         </TabsContent>
-
 
         {/* DVIR Tab */}
         <TabsContent value="dvir">
-          <div className="max-w-6xl">
-            <DVIRList />
-          </div>
+          <DVIRList />
         </TabsContent>
 
         {/* PM Schedules Tab */}
         <TabsContent value="pm">
-          <div className="max-w-6xl">
-            <PMSchedulesTab />
-          </div>
+          <PMSchedulesTab />
         </TabsContent>
 
         {/* Work Orders Tab */}
         <TabsContent value="workorders">
-          <div className="max-w-6xl">
-            <WorkOrdersBoard />
-          </div>
+          <WorkOrdersBoard />
         </TabsContent>
 
         {/* Settings Tab */}
         <TabsContent value="settings">
-          <div className="max-w-6xl">
-            <MaintenanceSettingsTab />
-          </div>
+          <MaintenanceSettingsTab />
         </TabsContent>
 
         {/* Parts & Inventory Tab (In-House Only) */}
         {inHouseEnabled && (
           <TabsContent value="parts">
-            <div className="max-w-6xl">
-              <MaintenancePartsInventoryTab />
-            </div>
+            <MaintenancePartsInventoryTab />
           </TabsContent>
         )}
 
         {/* Calendar Tab (In-House Only) */}
         {inHouseEnabled && (
           <TabsContent value="calendar">
-            <div className="max-w-6xl">
-              <MaintenanceCalendarTab />
-            </div>
+            <MaintenanceCalendarTab />
           </TabsContent>
         )}
       </Tabs>
