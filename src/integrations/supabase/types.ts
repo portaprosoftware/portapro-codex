@@ -7654,6 +7654,119 @@ export type Database = {
         }
         Relationships: []
       }
+      spill_kit_inventory: {
+        Row: {
+          created_at: string
+          current_stock: number | null
+          id: string
+          item_name: string
+          last_restocked: string | null
+          minimum_threshold: number | null
+          supplier_info: Json | null
+          unit_cost: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          current_stock?: number | null
+          id?: string
+          item_name: string
+          last_restocked?: string | null
+          minimum_threshold?: number | null
+          supplier_info?: Json | null
+          unit_cost?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          current_stock?: number | null
+          id?: string
+          item_name?: string
+          last_restocked?: string | null
+          minimum_threshold?: number | null
+          supplier_info?: Json | null
+          unit_cost?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      spill_kit_template_items: {
+        Row: {
+          category: string | null
+          created_at: string
+          critical_item: boolean | null
+          display_order: number | null
+          expiration_trackable: boolean | null
+          id: string
+          item_name: string
+          required_quantity: number | null
+          template_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          critical_item?: boolean | null
+          display_order?: number | null
+          expiration_trackable?: boolean | null
+          id?: string
+          item_name: string
+          required_quantity?: number | null
+          template_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          critical_item?: boolean | null
+          display_order?: number | null
+          expiration_trackable?: boolean | null
+          id?: string
+          item_name?: string
+          required_quantity?: number | null
+          template_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "spill_kit_template_items_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "spill_kit_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      spill_kit_templates: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          is_default: boolean | null
+          name: string
+          updated_at: string
+          vehicle_types: string[] | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_default?: boolean | null
+          name: string
+          updated_at?: string
+          vehicle_types?: string[] | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_default?: boolean | null
+          name?: string
+          updated_at?: string
+          vehicle_types?: string[] | null
+        }
+        Relationships: []
+      }
       stock_adjustments: {
         Row: {
           adjusted_by: string | null
@@ -8814,37 +8927,65 @@ export type Database = {
         Row: {
           checked_at: string
           checked_by_clerk: string | null
+          completion_status: string | null
           contents: Json
           created_at: string
           has_kit: boolean
           id: string
+          inspection_duration_minutes: number | null
+          item_conditions: Json | null
+          next_check_due: string | null
           notes: string | null
+          photos: string[] | null
+          template_id: string | null
           updated_at: string
           vehicle_id: string
+          weather_conditions: string | null
         }
         Insert: {
           checked_at?: string
           checked_by_clerk?: string | null
+          completion_status?: string | null
           contents?: Json
           created_at?: string
           has_kit: boolean
           id?: string
+          inspection_duration_minutes?: number | null
+          item_conditions?: Json | null
+          next_check_due?: string | null
           notes?: string | null
+          photos?: string[] | null
+          template_id?: string | null
           updated_at?: string
           vehicle_id: string
+          weather_conditions?: string | null
         }
         Update: {
           checked_at?: string
           checked_by_clerk?: string | null
+          completion_status?: string | null
           contents?: Json
           created_at?: string
           has_kit?: boolean
           id?: string
+          inspection_duration_minutes?: number | null
+          item_conditions?: Json | null
+          next_check_due?: string | null
           notes?: string | null
+          photos?: string[] | null
+          template_id?: string | null
           updated_at?: string
           vehicle_id?: string
+          weather_conditions?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "vehicle_spill_kit_checks_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "spill_kit_templates"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "vehicle_spill_kit_checks_vehicle_id_fkey"
             columns: ["vehicle_id"]
@@ -9791,6 +9932,16 @@ export type Database = {
           product_name: string
         }[]
       }
+      get_overdue_spill_kit_checks: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          days_overdue: number
+          last_check_date: string
+          license_plate: string
+          next_check_due: string
+          vehicle_id: string
+        }[]
+      }
       get_padlock_security_incidents: {
         Args: {
           limit_count?: number
@@ -9855,6 +10006,14 @@ export type Database = {
       get_service_analytics: {
         Args: { end_date?: string; start_date?: string }
         Returns: Json
+      }
+      get_spill_kit_template_for_vehicle: {
+        Args: { vehicle_type_param: string }
+        Returns: {
+          items: Json
+          template_id: string
+          template_name: string
+        }[]
       }
       get_system_wide_availability: {
         Args: Record<PropertyKey, never>
