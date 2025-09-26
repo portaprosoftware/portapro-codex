@@ -116,6 +116,31 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
     }
   });
 
+  // Query for YTD maintenance costs
+  const { data: ytdMaintenanceCosts, isLoading: ytdCostsLoading } = useQuery({
+    queryKey: ["maintenance-ytd-costs"],
+    queryFn: async () => {
+      const currentYear = new Date().getFullYear();
+      const startOfYear = `${currentYear}-01-01`;
+      const { data, error } = await supabase
+        .from("maintenance_records")
+        .select("cost, total_cost, parts_cost, labor_cost")
+        .eq("status", "completed")
+        .gte("completed_date", startOfYear);
+      
+      if (error) throw error;
+      
+      // Sum up all the costs
+      const totalCosts = data?.reduce((sum, record) => {
+        // Use total_cost if available, otherwise fall back to cost, parts_cost + labor_cost
+        const recordCost = record.total_cost || record.cost || (record.parts_cost || 0) + (record.labor_cost || 0);
+        return sum + (recordCost || 0);
+      }, 0) || 0;
+      
+      return totalCosts;
+    }
+  });
+
   const { data: kpis, isLoading: kpisLoading } = useQuery({
     queryKey: ["maintenance-kpis"],
     queryFn: async () => {
@@ -307,6 +332,16 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
                 gradientTo="#7c3aed"
                 iconBg="#8b5cf6"
                 animateValue={!dueTodayLoading}
+              />
+              <StatCard
+                title="Year-to-Date"
+                subtitle="Maintenance Costs"
+                value={`$${(ytdMaintenanceCosts || 0).toLocaleString()}`}
+                icon={DollarSign}
+                gradientFrom="#10b981"
+                gradientTo="#059669"
+                iconBg="#10b981"
+                animateValue={!ytdCostsLoading}
               />
             </div>
 
