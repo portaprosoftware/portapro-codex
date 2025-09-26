@@ -283,24 +283,6 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
                 iconBg="#f97316"
                 animateValue={!kpisLoading}
               />
-              <StatCard
-                title="In Progress"
-                value={kpis?.in_progress || 0}
-                icon={Wrench}
-                gradientFrom="#3b82f6"
-                gradientTo="#2563eb"
-                iconBg="#3b82f6"
-                animateValue={!kpisLoading}
-              />
-              <StatCard
-                title="YTD Maintenance Spend"
-                value={`$${(kpis?.ytd_spend || 0).toLocaleString()}`}
-                icon={DollarSign}
-                gradientFrom="#10b981"
-                gradientTo="#059669"
-                iconBg="#10b981"
-                animateValue={!kpisLoading}
-              />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
