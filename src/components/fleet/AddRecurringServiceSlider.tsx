@@ -239,7 +239,7 @@ export const AddRecurringServiceSlider: React.FC<AddRecurringServiceSliderProps>
     const serviceData = {
       vehicle_id: vehicleId,
       task_type_id: finalTaskTypeId,
-      vendor_id: vendorId || null,
+      vendor_id: vendorId === "internal" || vendorId === "" ? null : vendorId,
       description: description || taskTypeName || "General Maintenance",
       maintenance_type: taskTypeName || description || "General Maintenance",
       scheduled_date: startDate.toISOString().split('T')[0],
@@ -492,7 +492,7 @@ export const AddRecurringServiceSlider: React.FC<AddRecurringServiceSliderProps>
                   <SelectValue placeholder="Select service provider" />
                 </SelectTrigger>
                 <SelectContent className="bg-background z-50">
-                  <SelectItem value="">In-house / Internal</SelectItem>
+                  <SelectItem value="internal">In-house / Internal</SelectItem>
                   {vendors?.map((vendor) => (
                     <SelectItem key={vendor.id} value={vendor.id}>
                       <div className="flex items-center justify-between w-full">

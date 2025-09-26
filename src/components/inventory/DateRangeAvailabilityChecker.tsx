@@ -215,7 +215,7 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
               </SelectTrigger>
               <SelectContent className="bg-background border border-border shadow-lg z-[99999] pointer-events-auto">
                 {productsLoading ? (
-                  <SelectItem value="" disabled>Loading products...</SelectItem>
+                  <SelectItem value="loading" disabled>Loading products...</SelectItem>
                 ) : products && products.length > 0 ? (
                   products.map((product) => (
                     <SelectItem key={product.id} value={product.id}>
@@ -223,7 +223,7 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
                     </SelectItem>
                   ))
                 ) : (
-                  <SelectItem value="" disabled>No products available</SelectItem>
+                  <SelectItem value="no_products" disabled>No products available</SelectItem>
                 )}
               </SelectContent>
             </Select>

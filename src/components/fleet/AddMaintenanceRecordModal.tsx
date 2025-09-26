@@ -175,7 +175,7 @@ export const AddMaintenanceRecordModal: React.FC<AddMaintenanceRecordModalProps>
     const recordData = {
       vehicle_id: vehicleId,
       task_type_id: taskTypeId || null,
-      vendor_id: vendorId || null,
+      vendor_id: vendorId === "internal" || vendorId === "" ? null : vendorId,
       description,
       scheduled_date: scheduledDate.toISOString().split('T')[0],
       priority,
@@ -282,8 +282,8 @@ export const AddMaintenanceRecordModal: React.FC<AddMaintenanceRecordModalProps>
                 <SelectTrigger className="bg-background">
                   <SelectValue placeholder="Select service provider" />
                 </SelectTrigger>
-                <SelectContent className="bg-background z-50">
-                  <SelectItem value="">In-house / Internal</SelectItem>
+                  <SelectContent className="bg-background z-50">
+                    <SelectItem value="internal">In-house / Internal</SelectItem>
                   {vendors?.map((vendor) => (
                     <SelectItem key={vendor.id} value={vendor.id}>
                       <div className="flex items-center justify-between w-full">

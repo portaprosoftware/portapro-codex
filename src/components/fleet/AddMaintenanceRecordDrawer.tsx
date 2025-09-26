@@ -80,7 +80,7 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
       setVehicleId(editRecord.vehicle_id);
       setTaskTypeId(editRecord.task_type_id || "");
       setTaskTypeName(editRecord.maintenance_task_types?.name || editRecord.maintenance_type || "");
-      setVendorId(editRecord.vendor_id || "");
+      setVendorId(editRecord.vendor_id ?? "internal");
       setDescription(editRecord.description || "");
       setVehicleMiles(editRecord.mileage_at_service?.toString() || "");
       setScheduledDate(editRecord.scheduled_date ? new Date(editRecord.scheduled_date) : undefined);
@@ -266,7 +266,7 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
     const recordData = {
       vehicle_id: vehicleId,
       task_type_id: finalTaskTypeId,
-      vendor_id: vendorId || null,
+      vendor_id: vendorId === "internal" || vendorId === "" ? null : vendorId,
       description: description || taskTypeName || "General Maintenance",
       maintenance_type: taskTypeName || description || "General Maintenance",
       scheduled_date: scheduledDate.toISOString().split('T')[0],
@@ -498,7 +498,7 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
                     <SelectValue placeholder="Select service provider" />
                   </SelectTrigger>
                   <SelectContent className="bg-background z-50">
-                    <SelectItem value="">In-house / Internal</SelectItem>
+                    <SelectItem value="internal">In-house / Internal</SelectItem>
                     {vendors?.map((vendor) => (
                       <SelectItem key={vendor.id} value={vendor.id}>
                         <div className="flex items-center justify-between w-full">

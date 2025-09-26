@@ -321,12 +321,12 @@ export const FuelManagement = () => {
       {/* Vehicle Filter */}
       <div className="flex items-center space-x-4">
         <Label htmlFor="vehicle-filter">Filter by Vehicle:</Label>
-        <Select value={selectedVehicle} onValueChange={setSelectedVehicle}>
+        <Select value={selectedVehicle} onValueChange={(v) => setSelectedVehicle(v === "all" ? "" : v)}>
           <SelectTrigger className="w-64">
             <SelectValue placeholder="All vehicles" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All vehicles</SelectItem>
+            <SelectItem value="all">All vehicles</SelectItem>
             {vehicles?.map((vehicle) => (
               <SelectItem key={vehicle.id} value={vehicle.id}>
                 {vehicle.license_plate} ({vehicle.vehicle_type})

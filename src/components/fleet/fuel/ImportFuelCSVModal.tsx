@@ -273,13 +273,13 @@ export const ImportFuelCSVModal: React.FC<ImportFuelCSVModalProps> = ({
                   <div>
                     <Label>Station Column (Optional)</Label>
                     <Select value={mapping.station} onValueChange={(value) => 
-                      setMapping(prev => ({ ...prev, station: value }))
+                      setMapping(prev => ({ ...prev, station: value === "none" ? "" : value }))
                     }>
                       <SelectTrigger>
                         <SelectValue placeholder="Select column" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">None</SelectItem>
+                        <SelectItem value="none">None</SelectItem>
                         {csvHeaders.map((header, index) => (
                           <SelectItem key={index} value={header}>
                             {header}
@@ -292,13 +292,13 @@ export const ImportFuelCSVModal: React.FC<ImportFuelCSVModalProps> = ({
                   <div>
                     <Label>Notes Column (Optional)</Label>
                     <Select value={mapping.notes} onValueChange={(value) => 
-                      setMapping(prev => ({ ...prev, notes: value }))
+                      setMapping(prev => ({ ...prev, notes: value === "none" ? "" : value }))
                     }>
                       <SelectTrigger>
                         <SelectValue placeholder="Select column" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">None</SelectItem>
+                        <SelectItem value="none">None</SelectItem>
                         {csvHeaders.map((header, index) => (
                           <SelectItem key={index} value={header}>
                             {header}
