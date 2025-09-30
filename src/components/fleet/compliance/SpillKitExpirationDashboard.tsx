@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertTriangle, CheckCircle, Clock, Search } from "lucide-react";
 import { format, differenceInDays, parseISO } from "date-fns";
+import { SpillKitExpirationReport } from "./SpillKitExpirationReport";
 
 type ExpirationItem = {
   id: string;
@@ -288,11 +289,12 @@ export function SpillKitExpirationDashboard() {
 
       {/* Tabbed View */}
       <Tabs defaultValue="all" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="all">All Items ({filteredItems.length})</TabsTrigger>
           <TabsTrigger value="expired">Expired ({expired.length})</TabsTrigger>
           <TabsTrigger value="expiring">Expiring Soon ({expiringSoon.length})</TabsTrigger>
           <TabsTrigger value="ok">OK ({ok.length})</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics & Reports</TabsTrigger>
         </TabsList>
 
         <TabsContent value="all">
@@ -309,6 +311,10 @@ export function SpillKitExpirationDashboard() {
 
         <TabsContent value="ok">
           <Card>{renderTable(ok)}</Card>
+        </TabsContent>
+
+        <TabsContent value="analytics">
+          <SpillKitExpirationReport />
         </TabsContent>
       </Tabs>
     </div>

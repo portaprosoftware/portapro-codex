@@ -4,10 +4,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ProtectedComponent } from '@/components/shared/ProtectedComponent';
 import { SpillKitTemplateManager } from './SpillKitTemplateManager';
 import { SpillKitComplianceReports } from './SpillKitComplianceReports';
+import { SpillKitInspectionHistory } from './SpillKitInspectionHistory';
 import { RestockRequestManager } from './RestockRequestManager';
 import { EnhancedSpillKitCheckForm } from './EnhancedSpillKitCheckForm';
 import { Button } from '@/components/ui/button';
-import { Plus, Settings, FileText, Package } from 'lucide-react';
+import { Plus, Settings, FileText, Package, History } from 'lucide-react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 
 export function AdminSpillKitDashboard() {
@@ -34,8 +35,12 @@ export function AdminSpillKitDashboard() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="history">
+            <History className="h-4 w-4 mr-2" />
+            History
+          </TabsTrigger>
           <ProtectedComponent requiredPermission="canManageSpillKitTemplates" fallback={null} showError={false}>
             <TabsTrigger value="templates">
               <Settings className="h-4 w-4 mr-2" />
@@ -70,6 +75,10 @@ export function AdminSpillKitDashboard() {
               </p>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="history">
+          <SpillKitInspectionHistory />
         </TabsContent>
 
         <TabsContent value="templates">
