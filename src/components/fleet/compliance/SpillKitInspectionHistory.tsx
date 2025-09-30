@@ -238,11 +238,11 @@ export function SpillKitInspectionHistory() {
     <div className="space-y-4">
       {/* Header with Search */}
       <div className="flex items-center gap-4">
-        <div>
+        <div className="flex-shrink-0">
           <h3 className="text-lg font-semibold">Inspection History</h3>
           <p className="text-sm text-muted-foreground">View past inspections and tracked expiration dates</p>
         </div>
-        <div className="relative w-[27rem]">
+        <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search vehicle, plate, or person..."
