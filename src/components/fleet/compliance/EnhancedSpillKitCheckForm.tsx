@@ -27,6 +27,9 @@ type SpillKitTemplate = {
   template_id: string;
   template_name: string;
   items: any; // JSON from database
+  description?: string;
+  is_default?: boolean;
+  vehicle_types?: string[];
 };
 
 type ItemCondition = {
@@ -72,8 +75,38 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
     }
   });
 
-  // Fetch spill kit template for selected vehicle
-  const { data: templateData, isLoading: templateLoading } = useQuery({
+  // Fetch all available spill kit templates
+  const { data: allTemplates } = useQuery({
+    queryKey: ["spill-kit-templates-list"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("spill_kit_templates")
+        .select(`
+          id,
+          name,
+          description,
+          vehicle_types,
+          is_default,
+          is_active,
+          spill_kit_template_items(*)
+        `)
+        .eq("is_active", true)
+        .order("is_default", { ascending: false })
+        .order("name");
+      if (error) throw error;
+      return data.map(template => ({
+        template_id: template.id,
+        template_name: template.name,
+        items: template.spill_kit_template_items || [],
+        description: template.description,
+        is_default: template.is_default,
+        vehicle_types: template.vehicle_types
+      }));
+    }
+  });
+
+  // Fetch default spill kit template for selected vehicle
+  const { data: autoTemplateData, isLoading: templateLoading } = useQuery({
     queryKey: ["spill-kit-template", vehicleId],
     queryFn: async () => {
       if (!vehicleId) return null;
@@ -90,19 +123,32 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
     enabled: !!vehicleId && !!vehicles
   });
 
-  // Update template when data loads
+  const [manuallySelectedTemplateId, setManuallySelectedTemplateId] = useState<string | null>(null);
+
+  // Update template when data loads or manual selection changes
   useEffect(() => {
-    if (templateData) {
-      setSelectedTemplate(templateData);
+    let templateToUse = null;
+    
+    // If user manually selected a template, use that
+    if (manuallySelectedTemplateId && allTemplates) {
+      templateToUse = allTemplates.find(t => t.template_id === manuallySelectedTemplateId);
+    } 
+    // Otherwise use the auto-selected template
+    else if (autoTemplateData) {
+      templateToUse = autoTemplateData;
+    }
+    
+    if (templateToUse) {
+      setSelectedTemplate(templateToUse);
       // Initialize item conditions
       const initialConditions: Record<string, ItemCondition> = {};
-      const items = Array.isArray(templateData.items) ? templateData.items : [];
+      const items = Array.isArray(templateToUse.items) ? templateToUse.items : [];
       items.forEach((item: any) => {
         initialConditions[item.id] = { status: 'present' };
       });
       setItemConditions(initialConditions);
     }
-  }, [templateData]);
+  }, [autoTemplateData, manuallySelectedTemplateId, allTemplates]);
 
   // Calculate completion percentage
   const completionPercentage = useMemo(() => {
@@ -269,6 +315,38 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
             selectedVehicle={selectedVehicle}
             onVehicleSelect={handleVehicleSelect}
           />
+
+          {/* Template Selection */}
+          {vehicleId && allTemplates && allTemplates.length > 0 && (
+            <div>
+              <label className="text-sm font-medium mb-2 block">Inspection Template</label>
+              <Select
+                value={manuallySelectedTemplateId || autoTemplateData?.template_id || ""}
+                onValueChange={(value) => setManuallySelectedTemplateId(value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a template..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {allTemplates.map((template) => (
+                    <SelectItem key={template.template_id} value={template.template_id}>
+                      <div className="flex items-center gap-2">
+                        <span>{template.template_name}</span>
+                        {template.is_default && (
+                          <Badge variant="secondary" className="text-xs">Default</Badge>
+                        )}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {selectedTemplate?.description && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  {selectedTemplate.description}
+                </p>
+              )}
+            </div>
+          )}
 
           {/* Inspection Progress */}
           {selectedTemplate && (
