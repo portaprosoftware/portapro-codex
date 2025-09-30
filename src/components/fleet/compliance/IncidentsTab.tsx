@@ -141,7 +141,7 @@ export const IncidentsTab: React.FC = () => {
       {/* Header with Analytics Cards */}
       <div className="flex justify-between items-start">
         <div>
-          <h2 className="text-2xl font-bold">Incident Management</h2>
+          <h2 className="text-xl font-semibold">Incident Management</h2>
           <p className="text-muted-foreground">Comprehensive spill incident tracking and compliance</p>
         </div>
         <div className="flex gap-2">
