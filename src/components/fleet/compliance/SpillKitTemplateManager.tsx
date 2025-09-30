@@ -12,9 +12,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Plus, Edit, Trash2, Package, Shield, Clock, Car } from "lucide-react";
+import { Plus, Edit, Trash2, Package, Shield, Clock, Car, Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { VehicleTypesMultiSelector } from "./VehicleTypesMultiSelector";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 type SpillKitTemplate = {
   id: string;
@@ -164,7 +165,8 @@ export const SpillKitTemplateManager: React.FC = () => {
               </DialogTitle>
             </DialogHeader>
             <TemplateForm 
-              template={editingTemplate} 
+              template={editingTemplate}
+              templates={templates}
               onClose={closeDialog}
               onSaved={() => {
                 queryClient.invalidateQueries({ queryKey: ["spill-kit-templates"] });
@@ -299,9 +301,10 @@ export const SpillKitTemplateManager: React.FC = () => {
 // Template Form Component
 const TemplateForm: React.FC<{
   template?: SpillKitTemplate | null;
+  templates?: SpillKitTemplate[];
   onClose: () => void;
   onSaved: () => void;
-}> = ({ template, onClose, onSaved }) => {
+}> = ({ template, templates, onClose, onSaved }) => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: template?.name || "",
@@ -315,6 +318,10 @@ const TemplateForm: React.FC<{
     ]
   );
   const [vehicleSelectorOpen, setVehicleSelectorOpen] = useState(false);
+
+  // Check if there's another template that's already set as default
+  const otherDefaultTemplate = templates?.find(t => t.is_default && t.id !== template?.id);
+  const canSetAsDefault = !otherDefaultTemplate || template?.is_default;
 
   const saveMutation = useMutation({
     mutationFn: async () => {
@@ -477,12 +484,32 @@ const TemplateForm: React.FC<{
         </div>
 
         <div className="flex items-center justify-between p-3 border rounded-lg bg-muted/50">
-          <Label htmlFor="form-default" className="text-sm font-medium cursor-pointer">
-            Set as default template
-          </Label>
+          <div className="flex items-center gap-2">
+            <Label htmlFor="form-default" className="text-sm font-medium cursor-pointer">
+              Set as default template
+            </Label>
+            {!canSetAsDefault && (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button type="button" className="text-muted-foreground hover:text-foreground transition-colors">
+                    <Info className="h-4 w-4" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80">
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium">Only one default template allowed</p>
+                    <p className="text-sm text-muted-foreground">
+                      Only one template can be set as default. To make this one the default, first unmark the current default template "{otherDefaultTemplate?.name}", then return here.
+                    </p>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            )}
+          </div>
           <Switch
             id="form-default"
             checked={formData.is_default}
+            disabled={!canSetAsDefault}
             onCheckedChange={(checked) => 
               setFormData(prev => ({ ...prev, is_default: !!checked }))
             }
