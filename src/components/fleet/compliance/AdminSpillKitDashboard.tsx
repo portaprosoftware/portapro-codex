@@ -13,7 +13,7 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/u
 
 export function AdminSpillKitDashboard() {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState("history");
 
   const handleSaved = () => {
     setDrawerOpen(false);
@@ -35,8 +35,7 @@ export function AdminSpillKitDashboard() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="history">
             <History className="h-4 w-4 mr-2" />
             History
@@ -60,22 +59,6 @@ export function AdminSpillKitDashboard() {
             </TabsTrigger>
           </ProtectedComponent>
         </TabsList>
-
-        <TabsContent value="overview">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-xl font-semibold">Compliance Overview</CardTitle>
-              <CardDescription>
-                Monitor spill kit compliance across your fleet
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">
-                Overview dashboard will be implemented here with compliance statistics and alerts.
-              </p>
-            </CardContent>
-          </Card>
-        </TabsContent>
 
         <TabsContent value="history">
           <SpillKitInspectionHistory />
