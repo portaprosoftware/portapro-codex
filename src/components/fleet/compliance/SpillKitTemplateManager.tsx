@@ -441,21 +441,26 @@ const TemplateForm: React.FC<{
           <Button 
             type="button"
             variant="outline" 
-            className="w-full justify-start h-auto py-3"
+            className="w-full justify-start h-auto py-3 flex-col items-start gap-2"
             onClick={() => setVehicleSelectorOpen(true)}
           >
-            <Car className="w-4 h-4 mr-2 flex-shrink-0" />
-            {formData.vehicle_types.length > 0 ? (
-              <div className="flex flex-wrap gap-1 flex-1">
-                {formData.vehicle_types.map(type => (
-                  <Badge key={type} variant="secondary" className="text-xs">
-                    {type.replace(/-/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
-                  </Badge>
-                ))}
-              </div>
-            ) : (
-              <span className="text-muted-foreground">Select vehicle types...</span>
-            )}
+            <div className="flex items-center w-full">
+              <Car className="w-4 h-4 mr-2 flex-shrink-0" />
+              {formData.vehicle_types.length > 0 ? (
+                <div className="flex flex-wrap gap-1 flex-1">
+                  {formData.vehicle_types.map(type => (
+                    <Badge key={type} variant="secondary" className="text-xs">
+                      {type.replace(/-/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                    </Badge>
+                  ))}
+                </div>
+              ) : (
+                <span className="text-muted-foreground">No vehicle types selected</span>
+              )}
+            </div>
+            <span className="text-xs text-muted-foreground">
+              Select to add/remove existing vehicle type(s)
+            </span>
           </Button>
           
           <VehicleTypesMultiSelector
