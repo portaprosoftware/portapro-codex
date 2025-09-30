@@ -373,9 +373,26 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
       {selectedTemplate && (
         <Card>
           <CardHeader>
-            <CardTitle>
-              Kit Contents Inspection - {selectedTemplate.template_name}
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle>
+                Kit Contents Inspection - {selectedTemplate.template_name}
+              </CardTitle>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const items = Array.isArray(selectedTemplate.items) ? selectedTemplate.items : [];
+                  const allPresent: Record<string, ItemCondition> = {};
+                  items.forEach((item: any) => {
+                    allPresent[item.id] = { status: 'present' };
+                  });
+                  setItemConditions(allPresent);
+                }}
+              >
+                <CheckCircle className="w-4 h-4 mr-2" />
+                Mark All as Present
+              </Button>
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
             {templateLoading ? (
