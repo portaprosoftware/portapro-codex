@@ -236,15 +236,13 @@ export function SpillKitInspectionHistory() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h3 className="text-lg font-semibold">Inspection History</h3>
-        <p className="text-sm text-muted-foreground">View past inspections and tracked expiration dates</p>
-      </div>
-
-      {/* Filters */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-        {/* Search Input */}
-        <div className="relative">
+      {/* Header with Search */}
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <h3 className="text-lg font-semibold">Inspection History</h3>
+          <p className="text-sm text-muted-foreground">View past inspections and tracked expiration dates</p>
+        </div>
+        <div className="relative w-80">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search vehicle, plate, or person..."
@@ -253,7 +251,10 @@ export function SpillKitInspectionHistory() {
             className="pl-9"
           />
         </div>
+      </div>
 
+      {/* Filters */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {/* Vehicle Multi-Select Filter */}
         <Button
           variant="outline"
