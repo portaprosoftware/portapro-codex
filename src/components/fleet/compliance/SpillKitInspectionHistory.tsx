@@ -3,12 +3,17 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { format, parseISO, differenceInDays } from "date-fns";
-import { CheckCircle, XCircle, Clock, AlertTriangle } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format, parseISO, differenceInDays, startOfDay, endOfDay } from "date-fns";
+import { CheckCircle, XCircle, Clock, AlertTriangle, CalendarIcon, Search, ChevronLeft, ChevronRight as ChevronRightIcon } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronDown, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type InspectionRecord = {
   id: string;
@@ -23,9 +28,14 @@ type InspectionRecord = {
 
 export function SpillKitInspectionHistory() {
   const [filterVehicle, setFilterVehicle] = useState<string>("all");
+  const [searchText, setSearchText] = useState<string>("");
+  const [startDate, setStartDate] = useState<Date | undefined>();
+  const [endDate, setEndDate] = useState<Date | undefined>();
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const rowsPerPage = 25;
 
-  const { data: inspections, isLoading } = useQuery({
-    queryKey: ["spill-kit-inspection-history", filterVehicle],
+  const { data: allInspections, isLoading } = useQuery({
+    queryKey: ["spill-kit-inspection-history", filterVehicle, startDate, endDate],
     queryFn: async () => {
       let query = supabase
         .from("vehicle_spill_kit_checks")
@@ -39,11 +49,18 @@ export function SpillKitInspectionHistory() {
           checked_by_clerk,
           vehicles(id, license_plate, vehicle_type, make, model, nickname)
         `)
-        .order("created_at", { ascending: false })
-        .limit(50);
+        .order("created_at", { ascending: false });
 
       if (filterVehicle !== "all") {
         query = query.eq("vehicle_id", filterVehicle);
+      }
+
+      // Apply date filters
+      if (startDate) {
+        query = query.gte("created_at", startOfDay(startDate).toISOString());
+      }
+      if (endDate) {
+        query = query.lte("created_at", endOfDay(endDate).toISOString());
       }
 
       const { data: checks, error } = await query;
@@ -94,6 +111,33 @@ export function SpillKitInspectionHistory() {
       }) || [];
     }
   });
+
+  // Filter inspections by search text
+  const filteredInspections = React.useMemo(() => {
+    if (!allInspections) return [];
+    
+    if (!searchText.trim()) return allInspections;
+    
+    const searchLower = searchText.toLowerCase();
+    return allInspections.filter(inspection => 
+      inspection.vehicle_name.toLowerCase().includes(searchLower) ||
+      inspection.license_plate.toLowerCase().includes(searchLower) ||
+      inspection.performed_by.toLowerCase().includes(searchLower)
+    );
+  }, [allInspections, searchText]);
+
+  // Paginate filtered inspections
+  const totalPages = Math.ceil(filteredInspections.length / rowsPerPage);
+  const paginatedInspections = React.useMemo(() => {
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage;
+    return filteredInspections.slice(startIndex, endIndex);
+  }, [filteredInspections, currentPage, rowsPerPage]);
+
+  // Reset to page 1 when filters change
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [filterVehicle, searchText, startDate, endDate]);
 
   const { data: vehicles } = useQuery({
     queryKey: ["vehicles-for-history-filter"],
@@ -202,13 +246,27 @@ export function SpillKitInspectionHistory() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-lg font-semibold">Inspection History</h3>
-          <p className="text-sm text-muted-foreground">View past inspections and tracked expiration dates</p>
+      <div>
+        <h3 className="text-lg font-semibold">Inspection History</h3>
+        <p className="text-sm text-muted-foreground">View past inspections and tracked expiration dates</p>
+      </div>
+
+      {/* Filters */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+        {/* Search Input */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search vehicle, plate, or person..."
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            className="pl-9"
+          />
         </div>
+
+        {/* Vehicle Filter */}
         <Select value={filterVehicle} onValueChange={setFilterVehicle}>
-          <SelectTrigger className="w-[250px]">
+          <SelectTrigger>
             <SelectValue placeholder="Filter by vehicle" />
           </SelectTrigger>
           <SelectContent>
@@ -220,7 +278,78 @@ export function SpillKitInspectionHistory() {
             ))}
           </SelectContent>
         </Select>
+
+        {/* Start Date Filter */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn(
+                "justify-start text-left font-normal",
+                !startDate && "text-muted-foreground"
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {startDate ? format(startDate, "MMM dd, yyyy") : "Start date"}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={startDate}
+              onSelect={setStartDate}
+              initialFocus
+              className="pointer-events-auto"
+            />
+          </PopoverContent>
+        </Popover>
+
+        {/* End Date Filter */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn(
+                "justify-start text-left font-normal",
+                !endDate && "text-muted-foreground"
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {endDate ? format(endDate, "MMM dd, yyyy") : "End date"}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={endDate}
+              onSelect={setEndDate}
+              initialFocus
+              className="pointer-events-auto"
+            />
+          </PopoverContent>
+        </Popover>
       </div>
+
+      {/* Clear Filters */}
+      {(searchText || filterVehicle !== "all" || startDate || endDate) && (
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setSearchText("");
+              setFilterVehicle("all");
+              setStartDate(undefined);
+              setEndDate(undefined);
+            }}
+          >
+            Clear all filters
+          </Button>
+          <span className="text-sm text-muted-foreground">
+            Showing {filteredInspections.length} of {allInspections?.length || 0} inspections
+          </span>
+        </div>
+      )}
 
       <Card>
         <Table>
@@ -234,19 +363,74 @@ export function SpillKitInspectionHistory() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {inspections && inspections.length > 0 ? (
-              inspections.map((inspection) => (
+            {paginatedInspections && paginatedInspections.length > 0 ? (
+              paginatedInspections.map((inspection) => (
                 <InspectionRow key={inspection.id} inspection={inspection} />
               ))
             ) : (
               <TableRow>
                 <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
-                  No inspection records found
+                  {isLoading ? "Loading..." : "No inspection records found"}
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between px-4 py-3 border-t">
+            <div className="text-sm text-muted-foreground">
+              Page {currentPage} of {totalPages} ({filteredInspections.length} total records)
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="h-4 w-4 mr-1" />
+                Previous
+              </Button>
+              <div className="flex items-center gap-1">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum;
+                  if (totalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (currentPage <= 3) {
+                    pageNum = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = currentPage - 2 + i;
+                  }
+                  
+                  return (
+                    <Button
+                      key={pageNum}
+                      variant={currentPage === pageNum ? "default" : "outline"}
+                      size="sm"
+                      className="w-9"
+                      onClick={() => setCurrentPage(pageNum)}
+                    >
+                      {pageNum}
+                    </Button>
+                  );
+                })}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+              >
+                Next
+                <ChevronRightIcon className="h-4 w-4 ml-1" />
+              </Button>
+            </div>
+          </div>
+        )}
       </Card>
     </div>
   );
