@@ -12,7 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Plus, Edit, Trash2, Package, Shield, Clock, Car, Info } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Plus, Edit, Trash2, Package, Shield, Clock, Car, Info, MoreVertical } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { VehicleTypesMultiSelector } from "./VehicleTypesMultiSelector";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -177,91 +178,86 @@ export const SpillKitTemplateManager: React.FC = () => {
         </Dialog>
       </div>
 
-      {/* Templates Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Templates List */}
+      <div className="space-y-3">
         {templates?.map((template) => (
           <Card key={template.id} className="relative">
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <Package className="w-5 h-5" />
-                    {template.name}
-                    {template.is_default && (
-                      <Badge variant="secondary">Default</Badge>
-                    )}
-                  </CardTitle>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {template.description}
-                  </p>
-                </div>
-                <div className="flex gap-1">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => openEditDialog(template)}
-                  >
-                    <Edit className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => deleteMutation.mutate(template.id)}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Vehicle Types */}
-              <div>
-                <label className="text-sm font-medium mb-2 block">Vehicle Types</label>
-                <div className="flex flex-wrap gap-1">
-                  {template.vehicle_types.map((type) => (
-                    <Badge key={type} variant="outline" className="text-xs">
-                      {type.replace(/-/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
+            <CardContent className="p-6">
+              <div className="flex items-start gap-6">
+                {/* Left: Template Info */}
+                <div className="flex-1 space-y-4">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <Package className="w-5 h-5" />
+                      <h3 className="text-lg font-semibold">{template.name}</h3>
+                      {template.is_default && (
+                        <Badge variant="secondary">Default</Badge>
+                      )}
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {template.description}
+                    </p>
+                  </div>
 
-              {/* Items Summary */}
-              <div>
-                <label className="text-sm font-medium mb-2 block">Items Summary</label>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>Total Items:</span>
-                    <span className="font-medium">{template.items?.length || 0}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span>Critical Items:</span>
-                    <span className="font-medium text-red-600">
-                      {template.items?.filter(item => item.critical_item).length || 0}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span>Categories:</span>
-                    <span className="font-medium">
-                      {new Set(template.items?.map(item => item.category)).size || 0}
-                    </span>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Vehicle Types */}
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground mb-2 block">Vehicle Types</label>
+                      <div className="flex flex-wrap gap-1">
+                        {template.vehicle_types.map((type) => (
+                          <Badge key={type} variant="outline" className="text-xs">
+                            {type.replace(/-/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Items Summary */}
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground mb-2 block">Items Summary</label>
+                      <div className="flex gap-6">
+                        <div className="flex flex-col">
+                          <span className="text-xs text-muted-foreground">Total</span>
+                          <span className="text-sm font-medium">{template.items?.length || 0}</span>
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-xs text-muted-foreground">Critical</span>
+                          <span className="text-sm font-medium text-red-600">
+                            {template.items?.filter(item => item.critical_item).length || 0}
+                          </span>
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-xs text-muted-foreground">Categories</span>
+                          <span className="text-sm font-medium">
+                            {new Set(template.items?.map(item => item.category)).size || 0}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <Separator />
-
-              {/* Actions */}
-              <div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => openEditDialog(template)}
-                  className="w-full"
-                >
-                  <Edit className="w-4 h-4 mr-1" />
-                  Edit Template
-                </Button>
+                {/* Right: Actions Menu */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => openEditDialog(template)}>
+                      <Edit className="w-4 h-4 mr-2" />
+                      Edit Template
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => deleteMutation.mutate(template.id)}
+                      className="text-red-600"
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Delete Template
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </CardContent>
           </Card>
