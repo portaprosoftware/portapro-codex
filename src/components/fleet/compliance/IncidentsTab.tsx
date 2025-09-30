@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,12 +9,14 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/u
 import { EnhancedIncidentForm } from "./EnhancedIncidentForm";
 import { EnhancedIncidentCard } from "./EnhancedIncidentCard";
 import { IncidentDetailsModal } from "./IncidentDetailsModal";
-import { Plus, Calendar, MapPin, Filter, TrendingUp } from "lucide-react";
+import { IncidentAnalyticsCard } from "./IncidentAnalyticsCard";
+import { Plus, Calendar, MapPin, Filter, TrendingUp, Download } from "lucide-react";
 import { format } from "date-fns";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export const IncidentsTab: React.FC = () => {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedIncident, setSelectedIncident] = useState<any>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
@@ -38,14 +41,72 @@ export const IncidentsTab: React.FC = () => {
     },
   });
 
-  const handleSaved = () => {
+  const handleSaved = async () => {
     queryClient.invalidateQueries({ queryKey: ["spill-incident-reports"] });
     setIsDrawerOpen(false);
+    
+    // Trigger notification if needed
+    const lastIncident = incidents?.[0];
+    if (lastIncident && ['major', 'reportable'].includes(lastIncident.severity)) {
+      try {
+        await supabase.functions.invoke('notify-incident', {
+          body: {
+            incident_id: lastIncident.id,
+            severity: lastIncident.severity,
+            spill_type: lastIncident.spill_type,
+            location_description: lastIncident.location_description,
+          }
+        });
+      } catch (error) {
+        console.error("Notification error:", error);
+      }
+    }
   };
 
   const handleViewDetails = (incident: any) => {
     setSelectedIncident(incident);
     setIsDetailsModalOpen(true);
+  };
+
+  const handleExport = async () => {
+    try {
+      const { data, error } = await supabase.rpc('export_incident_data', {
+        start_date: null,
+        end_date: null,
+        severity_filter: severityFilter === 'all' ? null : severityFilter,
+        status_filter: statusFilter === 'all' ? null : statusFilter,
+      });
+
+      if (error) throw error;
+
+      // Convert to CSV
+      if (!data || data.length === 0) {
+        toast({ title: "No Data", description: "No incidents to export" });
+        return;
+      }
+
+      const headers = Object.keys(data[0]).join(',');
+      const rows = data.map((row: any) => 
+        Object.values(row).map(val => 
+          typeof val === 'string' ? `"${val}"` : val
+        ).join(',')
+      );
+      const csv = [headers, ...rows].join('\n');
+
+      // Download
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `incidents-export-${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+
+      toast({ title: "Success", description: "Incidents exported successfully" });
+    } catch (error) {
+      console.error("Export error:", error);
+      toast({ title: "Error", description: "Failed to export incidents", variant: "destructive" });
+    }
   };
 
   // Filter incidents based on severity and status
@@ -83,10 +144,16 @@ export const IncidentsTab: React.FC = () => {
           <h2 className="text-2xl font-bold">Incident Management</h2>
           <p className="text-muted-foreground">Comprehensive spill incident tracking and compliance</p>
         </div>
-        <Button onClick={() => setIsDrawerOpen(true)} className="bg-red-600 hover:bg-red-700 text-white">
-          <Plus className="mr-2 h-4 w-4" />
-          Log New Incident
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={handleExport} variant="outline">
+            <Download className="mr-2 h-4 w-4" />
+            Export CSV
+          </Button>
+          <Button onClick={() => setIsDrawerOpen(true)} className="bg-red-600 hover:bg-red-700 text-white">
+            <Plus className="mr-2 h-4 w-4" />
+            Log New Incident
+          </Button>
+        </div>
       </div>
 
       {/* Analytics Overview */}
@@ -139,6 +206,9 @@ export const IncidentsTab: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Analytics Overview Chart */}
+      <IncidentAnalyticsCard />
 
       {/* Filters */}
       <div className="flex gap-4">

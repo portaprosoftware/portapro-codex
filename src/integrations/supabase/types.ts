@@ -3137,6 +3137,83 @@ export type Database = {
           },
         ]
       }
+      incident_notification_logs: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          id: string
+          incident_id: string
+          notification_type: string
+          recipient: string
+          sent_at: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          incident_id: string
+          notification_type: string
+          recipient: string
+          sent_at?: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          incident_id?: string
+          notification_type?: string
+          recipient?: string
+          sent_at?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incident_notification_logs_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "spill_incident_reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      incident_notification_settings: {
+        Row: {
+          business_hours_only: boolean
+          created_at: string
+          email_notifications: boolean
+          id: string
+          immediate_notification_for_reportable: boolean
+          notification_recipients: string[]
+          severity_threshold: string
+          sms_notifications: boolean
+          updated_at: string
+        }
+        Insert: {
+          business_hours_only?: boolean
+          created_at?: string
+          email_notifications?: boolean
+          id?: string
+          immediate_notification_for_reportable?: boolean
+          notification_recipients?: string[]
+          severity_threshold?: string
+          sms_notifications?: boolean
+          updated_at?: string
+        }
+        Update: {
+          business_hours_only?: boolean
+          created_at?: string
+          email_notifications?: boolean
+          id?: string
+          immediate_notification_for_reportable?: boolean
+          notification_recipients?: string[]
+          severity_threshold?: string
+          sms_notifications?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       incident_photos: {
         Row: {
           created_at: string | null
@@ -9735,6 +9812,21 @@ export type Database = {
         }
         Relationships: []
       }
+      incident_analytics: {
+        Row: {
+          avg_resolution_hours: number | null
+          closed_incidents: number | null
+          major_incidents: number | null
+          minor_incidents: number | null
+          moderate_incidents: number | null
+          open_incidents: number | null
+          period: string | null
+          regulatory_required: number | null
+          reportable_incidents: number | null
+          total_incidents: number | null
+        }
+        Relationships: []
+      }
       job_materials_cost: {
         Row: {
           job_id: string | null
@@ -9969,6 +10061,32 @@ export type Database = {
               role_param?: string
             }
         Returns: string
+      }
+      export_incident_data: {
+        Args: {
+          end_date?: string
+          severity_filter?: string
+          start_date?: string
+          status_filter?: string
+        }
+        Returns: {
+          cause_description: string
+          cleanup_action_count: number
+          created_date: string
+          incident_id: string
+          location_description: string
+          photo_count: number
+          regulatory_required: boolean
+          regulatory_sent: boolean
+          responsible_party: string
+          severity: string
+          spill_type: string
+          status: string
+          vehicle_license_plate: string
+          volume_estimate: number
+          volume_unit: string
+          witness_count: number
+        }[]
       }
       export_maintenance_data: {
         Args: {

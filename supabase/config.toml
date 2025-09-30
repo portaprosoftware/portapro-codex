@@ -10,3 +10,6 @@ verify_jwt = false
 [functions.taxjar-rate]
 verify_jwt = false
 
+[functions.notify-incident]
+verify_jwt = false
+

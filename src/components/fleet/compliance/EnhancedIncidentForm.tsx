@@ -46,6 +46,7 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
   const [cleanupActions, setCleanupActions] = useState<string[]>([]);
   const [witnesses, setWitnesses] = useState<Witness[]>([]);
   const [photos, setPhotos] = useState<string[]>([]);
+  const [photoFiles, setPhotoFiles] = useState<File[]>([]);
   
   // New witness form
   const [newWitnessName, setNewWitnessName] = useState<string>("");
@@ -153,19 +154,33 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
         if (witnessError) throw witnessError;
       }
 
-      // Add photos
-      if (photos.length > 0) {
-        const photoData = photos.map(photo => ({
-          incident_id: incident.id,
-          photo_url: photo,
-          photo_type: 'general'
-        }));
+      // Upload and add photos
+      if (photoFiles.length > 0) {
+        for (const file of photoFiles) {
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${incident.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+          
+          const { error: uploadError } = await supabase.storage
+            .from('incident-photos')
+            .upload(fileName, file);
 
-        const { error: photoError } = await supabase
-          .from("incident_photos")
-          .insert(photoData);
+          if (uploadError) {
+            console.error("Error uploading photo:", uploadError);
+            continue;
+          }
 
-        if (photoError) throw photoError;
+          const { data: { publicUrl } } = supabase.storage
+            .from('incident-photos')
+            .getPublicUrl(fileName);
+
+          await supabase
+            .from("incident_photos")
+            .insert({
+              incident_id: incident.id,
+              photo_url: publicUrl,
+              photo_type: "incident_photo",
+            });
+        }
       }
 
       toast({
@@ -430,11 +445,36 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <PhotoCapture
-            onPhotosChange={setPhotos}
-            maxPhotos={10}
-            initialPhotos={photos}
-          />
+          <div className="space-y-4">
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={(e) => {
+                if (e.target.files) {
+                  setPhotoFiles(Array.from(e.target.files));
+                }
+              }}
+              className="block w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
+            />
+            {photoFiles.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-sm font-medium">{photoFiles.length} file(s) selected:</p>
+                <div className="flex flex-wrap gap-2">
+                  {Array.from(photoFiles).map((file, idx) => (
+                    <Badge key={idx} variant="secondary">
+                      {file.name}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+            <PhotoCapture
+              onPhotosChange={setPhotos}
+              maxPhotos={10}
+              initialPhotos={photos}
+            />
+          </div>
         </CardContent>
       </Card>
 
