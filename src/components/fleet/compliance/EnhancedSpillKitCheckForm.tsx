@@ -150,12 +150,8 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
     
     if (templateToUse) {
       setSelectedTemplate(templateToUse);
-      // Initialize item conditions
+      // Initialize item conditions - don't pre-select any status
       const initialConditions: Record<string, ItemCondition> = {};
-      const items = Array.isArray(templateToUse.items) ? templateToUse.items : [];
-      items.forEach((item: any) => {
-        initialConditions[item.id] = { status: 'present' };
-      });
       setItemConditions(initialConditions);
     }
   }, [autoTemplateData, manuallySelectedTemplateId, allTemplates]);
@@ -165,7 +161,10 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
     if (!selectedTemplate) return 0;
     const items = Array.isArray(selectedTemplate.items) ? selectedTemplate.items : [];
     const totalItems = items.length;
-    const checkedItems = Object.keys(itemConditions).length;
+    if (totalItems === 0) return 0;
+    
+    // Count items that have any status selected
+    const checkedItems = Object.values(itemConditions).filter(condition => condition.status).length;
     return Math.round((checkedItems / totalItems) * 100);
   }, [selectedTemplate, itemConditions]);
 
@@ -265,7 +264,16 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
     }
   });
 
-  const canSave = vehicleId && selectedTemplate && Object.keys(itemConditions).length > 0;
+  const canSave = useMemo(() => {
+    if (!vehicleId || !selectedTemplate) return false;
+    
+    const items = Array.isArray(selectedTemplate.items) ? selectedTemplate.items : [];
+    if (items.length === 0) return false;
+    
+    // Check if at least some items have been checked (have a status)
+    const checkedItems = Object.values(itemConditions).filter(condition => condition.status).length;
+    return checkedItems > 0;
+  }, [vehicleId, selectedTemplate, itemConditions]);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -279,11 +287,11 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'compliant': return 'bg-green-100 text-green-800 border-green-200';
-      case 'warning': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'partial': return 'bg-orange-100 text-orange-800 border-orange-200';
-      case 'failed': return 'bg-red-100 text-red-800 border-red-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'compliant': return 'bg-gradient-to-r from-green-500 to-green-600 text-white font-bold border-0';
+      case 'warning': return 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-bold border-0';
+      case 'partial': return 'bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold border-0';
+      case 'failed': return 'bg-gradient-to-r from-red-500 to-red-600 text-white font-bold border-0';
+      default: return 'bg-gradient-to-r from-gray-400 to-gray-500 text-white font-bold border-0';
     }
   };
 
@@ -356,23 +364,6 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
                   {selectedTemplate.description}
                 </p>
               )}
-            </div>
-          )}
-
-          {/* Inspection Progress */}
-          {selectedTemplate && (
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Inspection Progress</span>
-                <span className="text-sm text-muted-foreground">{completionPercentage}% Complete</span>
-              </div>
-              <Progress value={completionPercentage} className="h-2" />
-              <div className="flex items-center gap-2">
-                {getStatusIcon(kitStatus)}
-                <Badge className={getStatusColor(kitStatus)}>
-                  {kitStatus.charAt(0).toUpperCase() + kitStatus.slice(1)}
-                </Badge>
-              </div>
             </div>
           )}
         </CardContent>
@@ -542,6 +533,27 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
                 onChange={(e) => setNotes(e.target.value)}
                 rows={3}
               />
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Inspection Progress - Moved to bottom */}
+      {selectedTemplate && (
+        <Card>
+          <CardContent className="pt-6">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Inspection Progress</span>
+                <span className="text-sm text-muted-foreground">{completionPercentage}% Complete</span>
+              </div>
+              <Progress value={completionPercentage} className="h-2" />
+              <div className="flex items-center gap-2">
+                {getStatusIcon(kitStatus)}
+                <Badge className={getStatusColor(kitStatus)}>
+                  {kitStatus.charAt(0).toUpperCase() + kitStatus.slice(1)}
+                </Badge>
+              </div>
             </div>
           </CardContent>
         </Card>
