@@ -12,8 +12,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Plus, Edit, Trash2, Package, Shield, Clock } from "lucide-react";
+import { Plus, Edit, Trash2, Package, Shield, Clock, Car } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { VehicleTypesMultiSelector } from "./VehicleTypesMultiSelector";
 
 type SpillKitTemplate = {
   id: string;
@@ -313,6 +314,7 @@ const TemplateForm: React.FC<{
       { item_name: "", required_quantity: 1, critical_item: false, category: "absorbents", expiration_trackable: false }
     ]
   );
+  const [vehicleSelectorOpen, setVehicleSelectorOpen] = useState(false);
 
   const saveMutation = useMutation({
     mutationFn: async () => {
@@ -446,29 +448,32 @@ const TemplateForm: React.FC<{
 
         <div>
           <label className="text-sm font-medium mb-2 block">Vehicle Types</label>
-          <div className="grid grid-cols-3 gap-2">
-            {vehicleTypeOptions.map(type => (
-              <label key={type} className="flex items-center space-x-2">
-                <Checkbox
-                  checked={formData.vehicle_types.includes(type)}
-                  onCheckedChange={(checked) => {
-                    if (checked) {
-                      setFormData(prev => ({
-                        ...prev,
-                        vehicle_types: [...prev.vehicle_types, type]
-                      }));
-                    } else {
-                      setFormData(prev => ({
-                        ...prev,
-                        vehicle_types: prev.vehicle_types.filter(t => t !== type)
-                      }));
-                    }
-                  }}
-                />
-                <span className="text-sm capitalize">{type}</span>
-              </label>
-            ))}
-          </div>
+          <Button 
+            type="button"
+            variant="outline" 
+            className="w-full justify-start h-auto py-3"
+            onClick={() => setVehicleSelectorOpen(true)}
+          >
+            <Car className="w-4 h-4 mr-2 flex-shrink-0" />
+            {formData.vehicle_types.length > 0 ? (
+              <div className="flex flex-wrap gap-1 flex-1">
+                {formData.vehicle_types.map(type => (
+                  <Badge key={type} variant="secondary" className="text-xs">
+                    {type.replace(/-/g, ' ')}
+                  </Badge>
+                ))}
+              </div>
+            ) : (
+              <span className="text-muted-foreground">Select vehicle types...</span>
+            )}
+          </Button>
+          
+          <VehicleTypesMultiSelector
+            open={vehicleSelectorOpen}
+            onOpenChange={setVehicleSelectorOpen}
+            selectedTypes={formData.vehicle_types}
+            onSelectionChange={(types) => setFormData(prev => ({ ...prev, vehicle_types: types }))}
+          />
         </div>
 
         <div className="flex items-center justify-between p-3 border rounded-lg bg-muted/50">
