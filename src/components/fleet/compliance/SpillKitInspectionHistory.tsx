@@ -6,14 +6,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format, parseISO, differenceInDays, startOfDay, endOfDay } from "date-fns";
-import { CheckCircle, XCircle, Clock, AlertTriangle, CalendarIcon, Search, ChevronLeft, ChevronRight as ChevronRightIcon } from "lucide-react";
+import { CheckCircle, XCircle, Clock, AlertTriangle, CalendarIcon, Search, ChevronLeft, ChevronRight as ChevronRightIcon, Truck, Filter as FilterIcon } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { MultiSelectVehicleFilter } from "../MultiSelectVehicleFilter";
 
 type InspectionRecord = {
   id: string;
@@ -27,7 +27,8 @@ type InspectionRecord = {
 };
 
 export function SpillKitInspectionHistory() {
-  const [filterVehicle, setFilterVehicle] = useState<string>("all");
+  const [selectedVehicles, setSelectedVehicles] = useState<any[]>([]);
+  const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
   const [searchText, setSearchText] = useState<string>("");
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [endDate, setEndDate] = useState<Date | undefined>();
@@ -35,7 +36,7 @@ export function SpillKitInspectionHistory() {
   const rowsPerPage = 25;
 
   const { data: allInspections, isLoading } = useQuery({
-    queryKey: ["spill-kit-inspection-history", filterVehicle, startDate, endDate],
+    queryKey: ["spill-kit-inspection-history", selectedVehicles.map(v => v.id), startDate, endDate],
     queryFn: async () => {
       let query = supabase
         .from("vehicle_spill_kit_checks")
@@ -51,8 +52,10 @@ export function SpillKitInspectionHistory() {
         `)
         .order("created_at", { ascending: false });
 
-      if (filterVehicle !== "all") {
-        query = query.eq("vehicle_id", filterVehicle);
+      // Filter by selected vehicles
+      if (selectedVehicles.length > 0) {
+        const vehicleIds = selectedVehicles.map(v => v.id);
+        query = query.in("vehicle_id", vehicleIds);
       }
 
       // Apply date filters
@@ -137,20 +140,7 @@ export function SpillKitInspectionHistory() {
   // Reset to page 1 when filters change
   React.useEffect(() => {
     setCurrentPage(1);
-  }, [filterVehicle, searchText, startDate, endDate]);
-
-  const { data: vehicles } = useQuery({
-    queryKey: ["vehicles-for-history-filter"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("vehicles")
-        .select("id, license_plate, make, model, nickname")
-        .eq("status", "active")
-        .order("license_plate");
-      if (error) throw error;
-      return data || [];
-    }
-  });
+  }, [selectedVehicles, searchText, startDate, endDate]);
 
   const getExpirationStatus = (expirationDate: string | null) => {
     if (!expirationDate) return null;
@@ -264,20 +254,21 @@ export function SpillKitInspectionHistory() {
           />
         </div>
 
-        {/* Vehicle Filter */}
-        <Select value={filterVehicle} onValueChange={setFilterVehicle}>
-          <SelectTrigger>
-            <SelectValue placeholder="Filter by vehicle" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Vehicles</SelectItem>
-            {vehicles?.map((v) => (
-              <SelectItem key={v.id} value={v.id}>
-                {v.license_plate} - {v.make} {v.model}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        {/* Vehicle Multi-Select Filter */}
+        <Button
+          variant="outline"
+          onClick={() => setIsVehicleModalOpen(true)}
+          className="justify-start"
+        >
+          <Truck className="mr-2 h-4 w-4" />
+          {selectedVehicles.length === 0 ? (
+            "All Vehicles"
+          ) : selectedVehicles.length === 1 ? (
+            `${selectedVehicles[0].license_plate || 'Vehicle'}`
+          ) : (
+            `${selectedVehicles.length} Vehicles`
+          )}
+        </Button>
 
         {/* Start Date Filter */}
         <Popover>
@@ -331,14 +322,14 @@ export function SpillKitInspectionHistory() {
       </div>
 
       {/* Clear Filters */}
-      {(searchText || filterVehicle !== "all" || startDate || endDate) && (
+      {(searchText || selectedVehicles.length > 0 || startDate || endDate) && (
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => {
               setSearchText("");
-              setFilterVehicle("all");
+              setSelectedVehicles([]);
               setStartDate(undefined);
               setEndDate(undefined);
             }}
@@ -350,6 +341,14 @@ export function SpillKitInspectionHistory() {
           </span>
         </div>
       )}
+
+      {/* Vehicle Multi-Select Modal */}
+      <MultiSelectVehicleFilter
+        open={isVehicleModalOpen}
+        onOpenChange={setIsVehicleModalOpen}
+        selectedVehicles={selectedVehicles}
+        onVehiclesChange={setSelectedVehicles}
+      />
 
       <Card>
         <Table>
