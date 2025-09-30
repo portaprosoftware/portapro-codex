@@ -43,7 +43,7 @@ export const MultiSelectVehicleFilter: React.FC<MultiSelectVehicleFilterProps> =
       const { data, error } = await supabase
         .from("vehicles")
         .select("*")
-        .in("status", ["available", "maintenance", "permanently_retired"])
+        .in("status", ["active", "maintenance", "permanently_retired"])
         .order("license_plate", { ascending: true });
       
       if (error) throw error;
@@ -125,7 +125,7 @@ export const MultiSelectVehicleFilter: React.FC<MultiSelectVehicleFilterProps> =
             <div className="flex gap-1">
               {[
                 { value: "all", label: "All Vehicles" },
-                { value: "available", label: "Available" },
+                { value: "active", label: "Active" },
                 { value: "maintenance", label: "Maintenance" },
                 { value: "permanently_retired", label: "Retired" }
               ].map((status) => (
@@ -273,15 +273,15 @@ export const MultiSelectVehicleFilter: React.FC<MultiSelectVehicleFilterProps> =
                             <Badge 
                               variant="outline" 
                               className={
-                                vehicle.status === "available" 
+                                vehicle.status === "active" 
                                   ? "text-green-600 border-green-600" 
                                   : vehicle.status === "maintenance"
                                   ? "text-yellow-600 border-yellow-600"
                                   : "text-red-600 border-red-600"
                               }
                             >
-                              {vehicle.status === "available" 
-                                ? "Available" 
+                              {vehicle.status === "active" 
+                                ? "Active" 
                                 : vehicle.status === "maintenance"
                                 ? "Maintenance"
                                 : "Retired"
