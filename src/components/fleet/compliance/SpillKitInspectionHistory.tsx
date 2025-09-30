@@ -254,7 +254,7 @@ export function SpillKitInspectionHistory() {
       </div>
 
       {/* Filters */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         {/* Vehicle Multi-Select Filter */}
         <Button
           variant="outline"
@@ -277,7 +277,7 @@ export function SpillKitInspectionHistory() {
             <Button
               variant="outline"
               className={cn(
-                "justify-start text-left font-normal",
+                "justify-start text-left font-normal min-w-[140px]",
                 !startDate && "text-muted-foreground"
               )}
             >
@@ -302,7 +302,7 @@ export function SpillKitInspectionHistory() {
             <Button
               variant="outline"
               className={cn(
-                "justify-start text-left font-normal",
+                "justify-start text-left font-normal min-w-[140px]",
                 !endDate && "text-muted-foreground"
               )}
             >
@@ -320,28 +320,28 @@ export function SpillKitInspectionHistory() {
             />
           </PopoverContent>
         </Popover>
-      </div>
 
-      {/* Clear Filters */}
-      {(searchText || selectedVehicles.length > 0 || startDate || endDate) && (
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setSearchText("");
-              setSelectedVehicles([]);
-              setStartDate(undefined);
-              setEndDate(undefined);
-            }}
-          >
-            Clear all filters
-          </Button>
-          <span className="text-sm text-muted-foreground">
-            Showing {filteredInspections.length} of {allInspections?.length || 0} inspections
-          </span>
-        </div>
-      )}
+        {/* Clear Filters - Now inline */}
+        {(searchText || selectedVehicles.length > 0 || startDate || endDate) && (
+          <>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setSearchText("");
+                setSelectedVehicles([]);
+                setStartDate(undefined);
+                setEndDate(undefined);
+              }}
+            >
+              Clear all filters
+            </Button>
+            <span className="text-sm text-muted-foreground">
+              Showing {filteredInspections.length} of {allInspections?.length || 0} inspections
+            </span>
+          </>
+        )}
+      </div>
 
       {/* Vehicle Multi-Select Modal */}
       <MultiSelectVehicleFilter
