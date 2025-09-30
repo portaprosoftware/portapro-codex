@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useUser } from "@clerk/clerk-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -42,6 +43,7 @@ type ItemCondition = {
 export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { user } = useUser();
   
   const [vehicleId, setVehicleId] = useState<string>("");
   const [selectedVehicle, setSelectedVehicle] = useState<any>(null);
@@ -229,7 +231,8 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
           inspection_duration_minutes: duration,
           completion_status: kitStatus,
           next_check_due: nextCheckDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
-          checked_at: new Date().toISOString()
+          checked_at: new Date().toISOString(),
+          checked_by_clerk: user?.id || null
         });
 
       if (error) throw error;

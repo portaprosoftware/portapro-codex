@@ -36,6 +36,7 @@ export function SpillKitInspectionHistory() {
           item_conditions,
           notes,
           created_at,
+          checked_by_clerk,
           vehicles(id, license_plate, vehicle_type, make, model, nickname)
         `)
         .order("created_at", { ascending: false })
@@ -45,13 +46,40 @@ export function SpillKitInspectionHistory() {
         query = query.eq("vehicle_id", filterVehicle);
       }
 
-      const { data, error } = await query;
+      const { data: checks, error } = await query;
       if (error) throw error;
 
-      return data?.map((check) => {
+      // Get unique clerk user IDs to fetch profiles
+      const clerkIds = [...new Set(checks?.map(c => c.checked_by_clerk).filter(Boolean))] as string[];
+      
+      // Fetch profiles for these clerk IDs
+      const { data: profiles } = clerkIds.length > 0 
+        ? await supabase
+            .from("profiles")
+            .select("clerk_user_id, first_name, last_name")
+            .in("clerk_user_id", clerkIds)
+        : { data: [] };
+
+      // Create a lookup map for profiles
+      const profileMap: Record<string, { first_name: string | null, last_name: string | null }> = {};
+      profiles?.forEach(p => {
+        if (p.clerk_user_id) {
+          profileMap[p.clerk_user_id] = {
+            first_name: p.first_name,
+            last_name: p.last_name
+          };
+        }
+      });
+
+      return checks?.map((check) => {
         const vehicleName = check.vehicles?.make && check.vehicles?.model 
           ? `${check.vehicles.make} ${check.vehicles.model}${check.vehicles.nickname ? ` - ${check.vehicles.nickname}` : ''}`
           : check.vehicles?.vehicle_type || 'Unknown';
+
+        const profile = check.checked_by_clerk ? profileMap[check.checked_by_clerk] : null;
+        const performedBy = profile?.first_name && profile?.last_name
+          ? `${profile.first_name} ${profile.last_name}`
+          : 'System';
 
         return {
           id: check.id,
@@ -61,7 +89,7 @@ export function SpillKitInspectionHistory() {
           has_kit: check.has_kit,
           item_conditions: check.item_conditions,
           created_at: check.created_at,
-          performed_by: 'System' // Default since we don't have performed_by_clerk field
+          performed_by: performedBy
         };
       }) || [];
     }
@@ -105,7 +133,9 @@ export function SpillKitInspectionHistory() {
         <TableRow className="cursor-pointer hover:bg-muted/50" onClick={() => setIsOpen(!isOpen)}>
           <TableCell>
             <div className="flex items-center gap-2">
-              {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+              {itemsWithExpiration.length > 0 && (
+                isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />
+              )}
               {format(parseISO(inspection.created_at), 'MMM dd, yyyy HH:mm')}
             </div>
           </TableCell>
