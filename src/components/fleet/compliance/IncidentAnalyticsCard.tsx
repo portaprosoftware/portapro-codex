@@ -31,7 +31,7 @@ export const IncidentAnalyticsCard: React.FC = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 text-xl font-semibold">
           <TrendingUp className="h-5 w-5" />
           Incident Trends (Last 6 Months)
         </CardTitle>
