@@ -12,9 +12,11 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Camera, Clock, CheckCircle, AlertCircle, Package, Upload } from "lucide-react";
+import { Camera, Clock, CheckCircle, AlertCircle, Package, Upload, Truck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { PhotoCapture } from "./PhotoCapture";
+import { StockVehicleSelectionModal } from "../StockVehicleSelectionModal";
+import { VehicleSelectedDisplay } from "../VehicleSelectedDisplay";
 
 type Props = {
   onSaved?: () => void;
@@ -39,6 +41,8 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
   const queryClient = useQueryClient();
   
   const [vehicleId, setVehicleId] = useState<string>("");
+  const [selectedVehicle, setSelectedVehicle] = useState<any>(null);
+  const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<SpillKitTemplate | null>(null);
   const [itemConditions, setItemConditions] = useState<Record<string, ItemCondition>>({});
   const [photos, setPhotos] = useState<string[]>([]);
@@ -47,6 +51,12 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
   const [checkDuration, setCheckDuration] = useState<number>(0);
   const [checkStartTime] = useState(Date.now());
   const [autoRestockRequests, setAutoRestockRequests] = useState<boolean>(true);
+
+  const handleVehicleSelect = (vehicle: any) => {
+    setSelectedVehicle(vehicle);
+    setVehicleId(vehicle.id);
+    setIsVehicleModalOpen(false);
+  };
 
   // Fetch vehicles
   const { data: vehicles } = useQuery({
@@ -233,20 +243,32 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
         <CardContent className="space-y-4">
           {/* Vehicle Selection */}
           <div>
-            <label className="text-sm font-medium mb-2 block">Select Vehicle</label>
-            <Select value={vehicleId} onValueChange={setVehicleId}>
-              <SelectTrigger>
-                <SelectValue placeholder="Choose a vehicle to inspect..." />
-              </SelectTrigger>
-              <SelectContent>
-                {vehicles?.map((vehicle) => (
-                  <SelectItem key={vehicle.id} value={vehicle.id}>
-                    {vehicle.license_plate} ({vehicle.vehicle_type})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <label className="text-sm font-medium mb-2 block">Select Vehicle *</label>
+            {selectedVehicle ? (
+              <VehicleSelectedDisplay 
+                vehicleId={vehicleId}
+                onChangeClick={() => setIsVehicleModalOpen(true)}
+              />
+            ) : (
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full justify-start"
+                onClick={() => setIsVehicleModalOpen(true)}
+              >
+                <Package className="mr-2 h-4 w-4" />
+                Select vehicle to inspect...
+              </Button>
+            )}
           </div>
+
+          <StockVehicleSelectionModal
+            open={isVehicleModalOpen}
+            onOpenChange={setIsVehicleModalOpen}
+            selectedDate={new Date()}
+            selectedVehicle={selectedVehicle}
+            onVehicleSelect={handleVehicleSelect}
+          />
 
           {/* Inspection Progress */}
           {selectedTemplate && (

@@ -1,8 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { StockVehicleSelectionModal } from "../StockVehicleSelectionModal";
+import { VehicleSelectedDisplay } from "../VehicleSelectedDisplay";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Truck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 type Props = {
@@ -16,10 +20,19 @@ export const DeconCreateForm: React.FC<Props> = ({ onSaved, onCancel }) => {
   const { toast } = useToast();
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [incidentId, setIncidentId] = useState<string>("");
+  const [vehicleId, setVehicleId] = useState<string>("");
+  const [selectedVehicle, setSelectedVehicle] = useState<any>(null);
+  const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
   const [vehicleArea, setVehicleArea] = useState<string>("");
   const [ppeUsed, setPpeUsed] = useState<string>("");
   const [deconMethod, setDeconMethod] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
+
+  const handleVehicleSelect = (vehicle: any) => {
+    setSelectedVehicle(vehicle);
+    setVehicleId(vehicle.id);
+    setIsVehicleModalOpen(false);
+  };
 
   useEffect(() => {
     // Load recent incidents for linking
@@ -38,8 +51,8 @@ export const DeconCreateForm: React.FC<Props> = ({ onSaved, onCancel }) => {
   }, []);
 
   const canSave = useMemo(() => {
-    return incidentId.trim().length > 0;
-  }, [incidentId]);
+    return incidentId.trim().length > 0 && vehicleId.trim().length > 0;
+  }, [incidentId, vehicleId]);
 
   const handleSave = async () => {
     try {
@@ -47,6 +60,7 @@ export const DeconCreateForm: React.FC<Props> = ({ onSaved, onCancel }) => {
         .from("decon_logs")
         .insert({
           incident_id: incidentId,
+          vehicle_id: vehicleId,
           vehicle_area: vehicleArea || null,
           ppe_used: ppeUsed || null,
           decon_method: deconMethod || null,
@@ -83,7 +97,7 @@ export const DeconCreateForm: React.FC<Props> = ({ onSaved, onCancel }) => {
   return (
     <div className="space-y-4">
       <div>
-        <Label className="mb-2 block">Related Incident</Label>
+        <Label className="mb-2 block">Related Incident *</Label>
         <select
           value={incidentId}
           onChange={(e) => setIncidentId(e.target.value)}
@@ -97,6 +111,35 @@ export const DeconCreateForm: React.FC<Props> = ({ onSaved, onCancel }) => {
           ))}
         </select>
       </div>
+
+      {/* Vehicle Selection */}
+      <div>
+        <Label className="mb-2 block">Vehicle *</Label>
+        {selectedVehicle ? (
+          <VehicleSelectedDisplay 
+            vehicleId={vehicleId}
+            onChangeClick={() => setIsVehicleModalOpen(true)}
+          />
+        ) : (
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full justify-start"
+            onClick={() => setIsVehicleModalOpen(true)}
+          >
+            <Truck className="mr-2 h-4 w-4" />
+            Select vehicle
+          </Button>
+        )}
+      </div>
+
+      <StockVehicleSelectionModal
+        open={isVehicleModalOpen}
+        onOpenChange={setIsVehicleModalOpen}
+        selectedDate={new Date()}
+        selectedVehicle={selectedVehicle}
+        onVehicleSelect={handleVehicleSelect}
+      />
 
       <div>
         <Label className="mb-2 block">Vehicle Area</Label>

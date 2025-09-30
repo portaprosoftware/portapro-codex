@@ -2,13 +2,14 @@ import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Calendar, FileText, AlertTriangle, Truck, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, Truck, Plus, FileText, Calendar, AlertTriangle, Settings } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { VehicleFilterModal } from "../VehicleFilterModal";
+import { Label } from "@/components/ui/label";
+import { format } from "date-fns";
+import { StockVehicleSelectionModal } from "../StockVehicleSelectionModal";
+import { VehicleSelectedDisplay } from "../VehicleSelectedDisplay";
 
 interface Vehicle {
   id: string;
@@ -16,7 +17,7 @@ interface Vehicle {
   make: string;
   model: string;
   vehicle_type: string;
-  year?: number;
+  year: number;
   status: string;
 }
 
@@ -25,7 +26,6 @@ interface ComplianceDocument {
   vehicle_id: string;
   document_type_id: string;
   expiration_date: string | null;
-  created_at: string;
   compliance_document_types: {
     name: string;
   };
@@ -33,8 +33,15 @@ interface ComplianceDocument {
 
 export const VehicleManagementTab: React.FC = () => {
   const [selectedVehicleId, setSelectedVehicleId] = useState<string>("");
+  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
+
+  const handleVehicleSelect = (vehicle: Vehicle) => {
+    setSelectedVehicle(vehicle);
+    setSelectedVehicleId(vehicle.id);
+    setIsVehicleModalOpen(false);
+  };
 
   const { data: vehicles, isLoading: vehiclesLoading } = useQuery({
     queryKey: ["vehicles"],
@@ -69,8 +76,6 @@ export const VehicleManagementTab: React.FC = () => {
     },
     enabled: !!selectedVehicleId,
   });
-
-  const selectedVehicle = vehicles?.find(v => v.id === selectedVehicleId);
 
   const getUrgencyLevel = (expirationDate: string | null) => {
     if (!expirationDate) return "unknown";
@@ -153,7 +158,6 @@ export const VehicleManagementTab: React.FC = () => {
         </div>
       </div>
 
-      {/* Vehicle Selection */}
       {selectedVehicleId ? (
         <VehicleSelectedDisplay 
           vehicleId={selectedVehicleId}
@@ -170,15 +174,12 @@ export const VehicleManagementTab: React.FC = () => {
         </Button>
       )}
 
-      <VehicleFilterModal
+      <StockVehicleSelectionModal
         open={isVehicleModalOpen}
         onOpenChange={setIsVehicleModalOpen}
         selectedDate={new Date()}
-        selectedVehicle={selectedVehicleId}
-        onVehicleSelect={(vehicle) => {
-          setSelectedVehicleId(vehicle.id);
-          setIsVehicleModalOpen(false);
-        }}
+        selectedVehicle={selectedVehicle}
+        onVehicleSelect={handleVehicleSelect}
       />
 
       {/* Vehicle Details & Documents */}
@@ -237,120 +238,62 @@ export const VehicleManagementTab: React.FC = () => {
             </Card>
           </div>
 
-          {/* Documents List */}
-          <Card className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="text-lg font-semibold text-gray-900">
-                Compliance Documents for {selectedVehicle.license_plate}
-              </h4>
-              <Button className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0">
-                <Plus className="w-4 h-4 mr-2" />
-                Add Document
-              </Button>
-            </div>
+          {/* Document List */}
+          <Card>
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="text-lg font-semibold text-gray-900">Compliance Documents</h4>
+                <Button className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Document
+                </Button>
+              </div>
 
-            {complianceDocuments && complianceDocuments.length > 0 ? (
-              <div className="space-y-3">
-                {complianceDocuments.map((document) => {
-                  const urgency = getUrgencyLevel(document.expiration_date);
-                  return (
-                    <Card key={document.id} className="p-4 hover:shadow-md transition-shadow">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                          <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+              {complianceDocuments && complianceDocuments.length > 0 ? (
+                <div className="space-y-3">
+                  {complianceDocuments.map((doc) => {
+                    const urgency = getUrgencyLevel(doc.expiration_date);
+                    return (
+                      <div
+                        key={doc.id}
+                        className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
+                      >
+                        <div className="flex items-center gap-4 flex-1">
+                          <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
                             <FileText className="w-5 h-5 text-white" />
                           </div>
-                          <div>
-                            <h5 className="font-medium text-gray-900">
-                              {document.compliance_document_types?.name}
-                            </h5>
+                          <div className="flex-1">
+                            <p className="font-medium text-gray-900">
+                              {doc.compliance_document_types.name}
+                            </p>
                             <p className="text-sm text-gray-600">
-                              {document.expiration_date 
-                                ? `Expires: ${new Date(document.expiration_date).toLocaleDateString()}`
-                                : "No expiration date"
-                              }
+                              {doc.expiration_date 
+                                ? `Expires: ${format(new Date(doc.expiration_date), "MMM dd, yyyy")}` 
+                                : "No expiration date"}
                             </p>
                           </div>
                         </div>
-                        
-                        <div className="flex items-center space-x-3">
-                          <Badge className={cn(getUrgencyColor(urgency))}>
-                            {formatDaysRemaining(document.expiration_date)}
-                          </Badge>
-                          <Button variant="outline" size="sm">
-                            <Settings className="w-4 h-4 mr-1" />
-                            Manage
-                          </Button>
-                        </div>
+                        <Badge className={getUrgencyColor(urgency)}>
+                          {formatDaysRemaining(doc.expiration_date)}
+                        </Badge>
                       </div>
-                    </Card>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No compliance documents</h3>
-                <p className="text-gray-600 mb-4">This vehicle doesn't have any compliance documents yet.</p>
-                <Button className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add First Document
-                </Button>
-              </div>
-            )}
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-600 mb-4">This vehicle doesn't have any compliance documents yet.</p>
+                  <Button className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add First Document
+                  </Button>
+                </div>
+              )}
+            </div>
           </Card>
         </div>
       )}
-    </div>
-  );
-};
-
-// Component to display selected vehicle
-const VehicleSelectedDisplay: React.FC<{
-  vehicleId: string;
-  onChangeClick: () => void;
-}> = ({ vehicleId, onChangeClick }) => {
-  const { data: vehicles } = useQuery({
-    queryKey: ["vehicles"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("vehicles")
-        .select("id, license_plate, make, model, vehicle_type, year, status")
-        .eq("status", "active");
-      
-      if (error) throw error;
-      return data;
-    },
-  });
-
-  const selectedVehicle = vehicles?.find(v => v.id === vehicleId);
-
-  if (!selectedVehicle) {
-    return (
-      <div className="flex items-center justify-between p-3 border rounded-md bg-gray-50">
-        <span className="text-gray-500">Loading vehicle...</span>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex items-center justify-between p-3 border rounded-md bg-gray-50">
-      <div className="flex items-center gap-3">
-        <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-          <Truck className="w-4 h-4 text-white" />
-        </div>
-        <span className="font-medium">
-          {selectedVehicle.license_plate} - {selectedVehicle.make} {selectedVehicle.model}
-        </span>
-      </div>
-      <Button 
-        type="button"
-        variant="outline" 
-        size="sm"
-        onClick={onChangeClick}
-      >
-        Change
-      </Button>
     </div>
   );
 };

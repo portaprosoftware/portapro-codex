@@ -13,14 +13,15 @@ import { PhotoCapture } from "./PhotoCapture";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { X, Plus, Camera, AlertTriangle, Truck } from "lucide-react";
-import { VehicleFilterModal } from "../VehicleFilterModal";
+import { StockVehicleSelectionModal } from "../StockVehicleSelectionModal";
+import { VehicleSelectedDisplay } from "../VehicleSelectedDisplay";
 
 type Props = {
   onSaved?: () => void;
   onCancel?: () => void;
 };
 
-type Vehicle = { id: string; license_plate: string };
+type Vehicle = { id: string; license_plate: string; make?: string; model?: string; year?: number };
 type SpillType = { id: string; name: string; category: string; subcategory?: string };
 type Witness = { name: string; contact_info: string };
 
@@ -31,6 +32,7 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [spillTypes, setSpillTypes] = useState<SpillType[]>([]);
   const [vehicleId, setVehicleId] = useState<string>("");
+  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [spillTypeId, setSpillTypeId] = useState<string>("");
   const [location, setLocation] = useState<string>("");
   const [cause, setCause] = useState<string>("");
@@ -100,6 +102,12 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
 
   const removeWitness = (index: number) => {
     setWitnesses(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleVehicleSelect = (vehicle: Vehicle) => {
+    setSelectedVehicle(vehicle);
+    setVehicleId(vehicle.id);
+    setIsVehicleModalOpen(false);
   };
 
   const canSave = useMemo(() => {
@@ -495,66 +503,13 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
         </Button>
       </div>
 
-      <VehicleFilterModal
+      <StockVehicleSelectionModal
         open={isVehicleModalOpen}
         onOpenChange={setIsVehicleModalOpen}
         selectedDate={new Date()}
-        selectedVehicle={vehicleId}
-        onVehicleSelect={(vehicle) => {
-          setVehicleId(vehicle.id);
-          setIsVehicleModalOpen(false);
-        }}
+        selectedVehicle={selectedVehicle}
+        onVehicleSelect={handleVehicleSelect}
       />
-    </div>
-  );
-};
-
-// Component to display selected vehicle
-const VehicleSelectedDisplay: React.FC<{
-  vehicleId: string;
-  onChangeClick: () => void;
-}> = ({ vehicleId, onChangeClick }) => {
-  const { data: vehicles } = useQuery({
-    queryKey: ["vehicles"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("vehicles")
-        .select("id, license_plate, make, model, vehicle_type, year, status")
-        .eq("status", "active");
-      
-      if (error) throw error;
-      return data;
-    },
-  });
-
-  const selectedVehicle = vehicles?.find(v => v.id === vehicleId);
-
-  if (!selectedVehicle) {
-    return (
-      <div className="flex items-center justify-between p-3 border rounded-md bg-gray-50">
-        <span className="text-gray-500">Loading vehicle...</span>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex items-center justify-between p-3 border rounded-md bg-gray-50">
-      <div className="flex items-center gap-3">
-        <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-          <Truck className="w-4 h-4 text-white" />
-        </div>
-        <span className="font-medium">
-          {selectedVehicle.license_plate} - {selectedVehicle.make} {selectedVehicle.model}
-        </span>
-      </div>
-      <Button 
-        type="button"
-        variant="outline" 
-        size="sm"
-        onClick={onChangeClick}
-      >
-        Change
-      </Button>
     </div>
   );
 };
