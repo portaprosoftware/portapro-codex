@@ -300,9 +300,8 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
       {/* Header */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Package className="w-5 h-5" />
-            Enhanced Spill Kit Inspection
+          <CardTitle>
+            Select Vehicle and Template
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
