@@ -252,20 +252,7 @@ export const SpillKitTemplateManager: React.FC = () => {
               <Separator />
 
               {/* Actions */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 border rounded-lg bg-muted/50">
-                  <Label htmlFor={`default-${template.id}`} className="text-sm font-medium cursor-pointer">
-                    Set as default template
-                  </Label>
-                  <Switch
-                    id={`default-${template.id}`}
-                    checked={template.is_default}
-                    onCheckedChange={(checked) => 
-                      toggleDefaultMutation.mutate({ templateId: template.id, isDefault: checked })
-                    }
-                    disabled={toggleDefaultMutation.isPending}
-                  />
-                </div>
+              <div>
                 <Button
                   variant="outline"
                   size="sm"
