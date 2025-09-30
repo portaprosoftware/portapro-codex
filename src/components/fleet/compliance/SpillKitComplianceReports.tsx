@@ -7,9 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileText, Download, Calendar, TrendingUp, BarChart3, PieChart, Filter } from "lucide-react";
+import { FileText, Download, Calendar, BarChart3, Filter, Truck } from "lucide-react";
 import { format, subDays, subMonths } from "date-fns";
 import { toast } from "@/hooks/use-toast";
+import { MultiSelectVehicleFilter } from "../MultiSelectVehicleFilter";
 
 interface ComplianceReport {
   report_generated_at: string;
@@ -38,17 +39,19 @@ export const SpillKitComplianceReports: React.FC = () => {
   const [startDate, setStartDate] = useState(format(subDays(new Date(), 30), "yyyy-MM-dd"));
   const [endDate, setEndDate] = useState(format(new Date(), "yyyy-MM-dd"));
   const [reportPeriod, setReportPeriod] = useState("30days");
-  const [selectedVehicles, setSelectedVehicles] = useState<string[]>([]);
+  const [selectedVehicles, setSelectedVehicles] = useState<any[]>([]);
+  const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
 
   // Generate compliance report
   const { data: report, isLoading: reportLoading, refetch: generateReport } = useQuery({
     queryKey: ["spill-kit-compliance-report", startDate, endDate, selectedVehicles],
     queryFn: async () => {
+      const vehicleIds = selectedVehicles.map(v => v.id);
       const { data, error } = await supabase
         .rpc("generate_spill_kit_compliance_report", {
           p_start_date: startDate,
           p_end_date: endDate,
-          p_vehicle_ids: selectedVehicles.length > 0 ? selectedVehicles : null
+          p_vehicle_ids: vehicleIds.length > 0 ? vehicleIds : null
         });
       
       if (error) throw error;
@@ -187,6 +190,14 @@ Has Kit: ${v.has_kit ? 'Yes' : 'No'}
         <FileText className="h-6 w-6 text-muted-foreground" />
       </div>
 
+      {/* Vehicle Multi-Select Modal */}
+      <MultiSelectVehicleFilter
+        open={isVehicleModalOpen}
+        onOpenChange={setIsVehicleModalOpen}
+        selectedVehicles={selectedVehicles}
+        onVehiclesChange={setSelectedVehicles}
+      />
+
       {/* Report Configuration */}
       <Card>
         <CardHeader>
@@ -236,22 +247,18 @@ Has Kit: ${v.has_kit ? 'Yes' : 'No'}
 
             <div className="space-y-2">
               <Label htmlFor="vehicle-filter">Vehicle Filter</Label>
-              <Select 
-                value={selectedVehicles.length > 0 ? "selected" : "all"}
-                onValueChange={(value) => {
-                  if (value === "all") {
-                    setSelectedVehicles([]);
-                  }
-                }}
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full justify-start"
+                onClick={() => setIsVehicleModalOpen(true)}
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="All Vehicles" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Vehicles</SelectItem>
-                  <SelectItem value="selected">Selected Vehicles</SelectItem>
-                </SelectContent>
-              </Select>
+                <Truck className="mr-2 h-4 w-4" />
+                {selectedVehicles.length > 0 
+                  ? `${selectedVehicles.length} vehicle${selectedVehicles.length > 1 ? 's' : ''} selected`
+                  : "All Vehicles"
+                }
+              </Button>
             </div>
           </div>
 
