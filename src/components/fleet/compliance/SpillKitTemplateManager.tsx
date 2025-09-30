@@ -218,7 +218,7 @@ export const SpillKitTemplateManager: React.FC = () => {
                 <div className="flex flex-wrap gap-1">
                   {template.vehicle_types.map((type) => (
                     <Badge key={type} variant="outline" className="text-xs">
-                      {type}
+                      {type.replace(/-/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
                     </Badge>
                   ))}
                 </div>
