@@ -23,7 +23,7 @@ export function AdminSpillKitDashboard() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Spill Kit Compliance</h2>
+          <h2 className="text-xl font-semibold">Spill Kit Compliance</h2>
           <p className="text-muted-foreground">Manage templates, reports, and compliance monitoring</p>
         </div>
         <ProtectedComponent requiredPermission="canPerformSpillKitChecks">
@@ -64,7 +64,7 @@ export function AdminSpillKitDashboard() {
         <TabsContent value="overview">
           <Card>
             <CardHeader>
-              <CardTitle>Compliance Overview</CardTitle>
+              <CardTitle className="text-xl font-semibold">Compliance Overview</CardTitle>
               <CardDescription>
                 Monitor spill kit compliance across your fleet
               </CardDescription>
