@@ -129,7 +129,11 @@ export const SpillKitTemplateManager: React.FC = () => {
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => openEditDialog()}>
+            <Button 
+              onClick={() => openEditDialog()}
+              variant="outline"
+              className="h-10 bg-gray-50 hover:bg-gray-100 border-gray-300"
+            >
               <Plus className="w-4 h-4 mr-2" />
               New Template
             </Button>
