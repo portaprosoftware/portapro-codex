@@ -12,6 +12,7 @@ import { PhotoCapture } from "./PhotoCapture";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { X, Plus, Camera, AlertTriangle } from "lucide-react";
+import { VehicleSelector } from "../VehicleSelector";
 
 type Props = {
   onSaved?: () => void;
@@ -213,18 +214,11 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label>Vehicle *</Label>
-              <Select value={vehicleId} onValueChange={setVehicleId}>
-                <SelectTrigger className="bg-white">
-                  <SelectValue placeholder="Select vehicle..." />
-                </SelectTrigger>
-                <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
-                  {vehicles.map((vehicle) => (
-                    <SelectItem key={vehicle.id} value={vehicle.id}>
-                      {vehicle.license_plate}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <VehicleSelector
+                selectedVehicleId={vehicleId}
+                onVehicleSelect={setVehicleId}
+                placeholder="Select vehicle"
+              />
             </div>
 
             <div>
