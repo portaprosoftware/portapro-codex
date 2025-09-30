@@ -10,6 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { Plus, Edit, Trash2, Package, Shield, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -83,23 +85,39 @@ export const SpillKitTemplateManager: React.FC = () => {
 
   // Toggle default template mutation
   const toggleDefaultMutation = useMutation({
-    mutationFn: async (templateId: string) => {
-      // First, unset all other default templates
-      await supabase
-        .from("spill_kit_templates")
-        .update({ is_default: false })
-        .neq("id", templateId);
-      
-      // Then set this one as default
-      const { error } = await supabase
-        .from("spill_kit_templates")
-        .update({ is_default: true })
-        .eq("id", templateId);
-      if (error) throw error;
+    mutationFn: async ({ templateId, isDefault }: { templateId: string; isDefault: boolean }) => {
+      if (isDefault) {
+        // Check if there's already a default template
+        const currentDefault = templates?.find(t => t.is_default && t.id !== templateId);
+        if (currentDefault) {
+          throw new Error(`Cannot set as default. "${currentDefault.name}" is already the default template. Remove default from that template first.`);
+        }
+        
+        // Set this one as default
+        const { error } = await supabase
+          .from("spill_kit_templates")
+          .update({ is_default: true })
+          .eq("id", templateId);
+        if (error) throw error;
+      } else {
+        // Remove default status
+        const { error } = await supabase
+          .from("spill_kit_templates")
+          .update({ is_default: false })
+          .eq("id", templateId);
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       toast({ title: "Default template updated" });
       queryClient.invalidateQueries({ queryKey: ["spill-kit-templates"] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Cannot set as default",
+        description: error.message,
+        variant: "destructive"
+      });
     }
   });
 
@@ -231,26 +249,28 @@ export const SpillKitTemplateManager: React.FC = () => {
               <Separator />
 
               {/* Actions */}
-              <div className="flex gap-2">
-                {!template.is_default && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => toggleDefaultMutation.mutate(template.id)}
-                    className="flex-1"
-                  >
-                    <Shield className="w-4 h-4 mr-1" />
-                    Set Default
-                  </Button>
-                )}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 border rounded-lg bg-muted/50">
+                  <Label htmlFor={`default-${template.id}`} className="text-sm font-medium cursor-pointer">
+                    Set as default template
+                  </Label>
+                  <Switch
+                    id={`default-${template.id}`}
+                    checked={template.is_default}
+                    onCheckedChange={(checked) => 
+                      toggleDefaultMutation.mutate({ templateId: template.id, isDefault: checked })
+                    }
+                    disabled={toggleDefaultMutation.isPending}
+                  />
+                </div>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => openEditDialog(template)}
-                  className="flex-1"
+                  className="w-full"
                 >
                   <Edit className="w-4 h-4 mr-1" />
-                  Edit
+                  Edit Template
                 </Button>
               </div>
             </CardContent>
@@ -296,6 +316,20 @@ const TemplateForm: React.FC<{
 
   const saveMutation = useMutation({
     mutationFn: async () => {
+      // Check if trying to set as default when another template is already default
+      if (formData.is_default && !template?.is_default) {
+        const { data: existingDefault } = await supabase
+          .from("spill_kit_templates")
+          .select("id, name")
+          .eq("is_default", true)
+          .neq("id", template?.id || "")
+          .single();
+        
+        if (existingDefault) {
+          throw new Error(`Cannot set as default. "${existingDefault.name}" is already the default template. Remove default from that template first.`);
+        }
+      }
+      
       // Save template
       const templateData = {
         ...formData,
@@ -437,16 +471,17 @@ const TemplateForm: React.FC<{
           </div>
         </div>
 
-        <div>
-          <label className="flex items-center space-x-2">
-            <Checkbox
-              checked={formData.is_default}
-              onCheckedChange={(checked) => 
-                setFormData(prev => ({ ...prev, is_default: !!checked }))
-              }
-            />
-            <span className="text-sm">Set as default template</span>
-          </label>
+        <div className="flex items-center justify-between p-3 border rounded-lg bg-muted/50">
+          <Label htmlFor="form-default" className="text-sm font-medium cursor-pointer">
+            Set as default template
+          </Label>
+          <Switch
+            id="form-default"
+            checked={formData.is_default}
+            onCheckedChange={(checked) => 
+              setFormData(prev => ({ ...prev, is_default: !!checked }))
+            }
+          />
         </div>
       </div>
 

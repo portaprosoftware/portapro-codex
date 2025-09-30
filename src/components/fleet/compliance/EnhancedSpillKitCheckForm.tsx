@@ -137,6 +137,14 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
     else if (autoTemplateData) {
       templateToUse = autoTemplateData;
     }
+    // If no auto template but we have templates, use the default one
+    else if (allTemplates && allTemplates.length > 0 && !manuallySelectedTemplateId) {
+      const defaultTemplate = allTemplates.find(t => t.is_default);
+      if (defaultTemplate) {
+        templateToUse = defaultTemplate;
+        setManuallySelectedTemplateId(defaultTemplate.template_id);
+      }
+    }
     
     if (templateToUse) {
       setSelectedTemplate(templateToUse);
