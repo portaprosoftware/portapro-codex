@@ -13,11 +13,15 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Camera, Clock, CheckCircle, AlertCircle, Package, Upload, Truck } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { Camera, Clock, CheckCircle, AlertCircle, Package, Upload, Truck, CalendarIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { PhotoCapture } from "./PhotoCapture";
 import { StockVehicleSelectionModal } from "../StockVehicleSelectionModal";
 import { VehicleSelectedDisplay } from "../VehicleSelectedDisplay";
+import { format, parseISO } from "date-fns";
+import { cn } from "@/lib/utils";
 
 type Props = {
   onSaved?: () => void;
@@ -453,11 +457,37 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
                                 {item.expiration_trackable && (
                                   <div>
                                     <label className="text-xs font-medium mb-1 block">Expiration Date</label>
-                                    <Input
-                                      type="date"
-                                      value={itemConditions[item.id]?.expiration_date || ''}
-                                      onChange={(e) => updateItemCondition(item.id, 'expiration_date', e.target.value)}
-                                    />
+                                    <Popover>
+                                      <PopoverTrigger asChild>
+                                        <Button
+                                          variant="outline"
+                                          className={cn(
+                                            "w-full justify-start text-left font-normal",
+                                            !itemConditions[item.id]?.expiration_date && "text-muted-foreground"
+                                          )}
+                                        >
+                                          <CalendarIcon className="mr-2 h-4 w-4" />
+                                          {itemConditions[item.id]?.expiration_date ? (
+                                            format(parseISO(itemConditions[item.id].expiration_date), "MMM dd, yyyy")
+                                          ) : (
+                                            <span>Select date</span>
+                                          )}
+                                        </Button>
+                                      </PopoverTrigger>
+                                      <PopoverContent className="w-auto p-0" align="start">
+                                        <Calendar
+                                          mode="single"
+                                          selected={itemConditions[item.id]?.expiration_date ? parseISO(itemConditions[item.id].expiration_date) : undefined}
+                                          onSelect={(date) => {
+                                            if (date) {
+                                              updateItemCondition(item.id, 'expiration_date', format(date, 'yyyy-MM-dd'));
+                                            }
+                                          }}
+                                          initialFocus
+                                          className="pointer-events-auto"
+                                        />
+                                      </PopoverContent>
+                                    </Popover>
                                   </div>
                                 )}
                               </div>
