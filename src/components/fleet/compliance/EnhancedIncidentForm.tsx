@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,8 +12,8 @@ import { useToast } from "@/hooks/use-toast";
 import { PhotoCapture } from "./PhotoCapture";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { X, Plus, Camera, AlertTriangle } from "lucide-react";
-import { VehicleSelector } from "../VehicleSelector";
+import { X, Plus, Camera, AlertTriangle, Truck } from "lucide-react";
+import { VehicleFilterModal } from "../VehicleFilterModal";
 
 type Props = {
   onSaved?: () => void;
@@ -42,6 +43,7 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
   const [weatherConditions, setWeatherConditions] = useState<string>("");
   const [responsibleParty, setResponsibleParty] = useState<string>("unknown");
   const [regulatoryNotificationRequired, setRegulatoryNotificationRequired] = useState<boolean>(false);
+  const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
   
   // Cleanup actions
   const [cleanupActions, setCleanupActions] = useState<string[]>([]);
@@ -214,11 +216,22 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label>Vehicle *</Label>
-              <VehicleSelector
-                selectedVehicleId={vehicleId}
-                onVehicleSelect={setVehicleId}
-                placeholder="Select vehicle"
-              />
+              {vehicleId ? (
+                <VehicleSelectedDisplay 
+                  vehicleId={vehicleId}
+                  onChangeClick={() => setIsVehicleModalOpen(true)}
+                />
+              ) : (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full justify-start"
+                  onClick={() => setIsVehicleModalOpen(true)}
+                >
+                  <Truck className="mr-2 h-4 w-4" />
+                  Select vehicle
+                </Button>
+              )}
             </div>
 
             <div>
@@ -481,6 +494,67 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
           Save Incident Report
         </Button>
       </div>
+
+      <VehicleFilterModal
+        open={isVehicleModalOpen}
+        onOpenChange={setIsVehicleModalOpen}
+        selectedDate={new Date()}
+        selectedVehicle={vehicleId}
+        onVehicleSelect={(vehicle) => {
+          setVehicleId(vehicle.id);
+          setIsVehicleModalOpen(false);
+        }}
+      />
+    </div>
+  );
+};
+
+// Component to display selected vehicle
+const VehicleSelectedDisplay: React.FC<{
+  vehicleId: string;
+  onChangeClick: () => void;
+}> = ({ vehicleId, onChangeClick }) => {
+  const { data: vehicles } = useQuery({
+    queryKey: ["vehicles"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("vehicles")
+        .select("id, license_plate, make, model, vehicle_type, year, status")
+        .eq("status", "active");
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const selectedVehicle = vehicles?.find(v => v.id === vehicleId);
+
+  if (!selectedVehicle) {
+    return (
+      <div className="flex items-center justify-between p-3 border rounded-md bg-gray-50">
+        <span className="text-gray-500">Loading vehicle...</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center justify-between p-3 border rounded-md bg-gray-50">
+      <div className="flex items-center gap-3">
+        <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+          <Truck className="w-4 h-4 text-white" />
+        </div>
+        <span className="font-medium">
+          {selectedVehicle.license_plate} - {selectedVehicle.make} {selectedVehicle.model}
+        </span>
+      </div>
+      <Button 
+        type="button"
+        variant="outline" 
+        size="sm"
+        onClick={onChangeClick}
+      >
+        Change
+      </Button>
     </div>
   );
 };

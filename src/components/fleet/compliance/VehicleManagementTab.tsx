@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, Truck, Plus, FileText, Calendar, AlertTriangle, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { VehicleSelector } from "../VehicleSelector";
+import { VehicleFilterModal } from "../VehicleFilterModal";
 
 interface Vehicle {
   id: string;
@@ -34,6 +34,7 @@ interface ComplianceDocument {
 export const VehicleManagementTab: React.FC = () => {
   const [selectedVehicleId, setSelectedVehicleId] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
 
   const { data: vehicles, isLoading: vehiclesLoading } = useQuery({
     queryKey: ["vehicles"],
@@ -153,9 +154,31 @@ export const VehicleManagementTab: React.FC = () => {
       </div>
 
       {/* Vehicle Selection */}
-      <VehicleSelector
-        selectedVehicleId={selectedVehicleId}
-        onVehicleSelect={setSelectedVehicleId}
+      {selectedVehicleId ? (
+        <VehicleSelectedDisplay 
+          vehicleId={selectedVehicleId}
+          onChangeClick={() => setIsVehicleModalOpen(true)}
+        />
+      ) : (
+        <Button
+          variant="outline"
+          className="max-w-md justify-start"
+          onClick={() => setIsVehicleModalOpen(true)}
+        >
+          <Truck className="mr-2 h-4 w-4" />
+          Select a vehicle to view compliance...
+        </Button>
+      )}
+
+      <VehicleFilterModal
+        open={isVehicleModalOpen}
+        onOpenChange={setIsVehicleModalOpen}
+        selectedDate={new Date()}
+        selectedVehicle={selectedVehicleId}
+        onVehicleSelect={(vehicle) => {
+          setSelectedVehicleId(vehicle.id);
+          setIsVehicleModalOpen(false);
+        }}
       />
 
       {/* Vehicle Details & Documents */}
@@ -278,6 +301,56 @@ export const VehicleManagementTab: React.FC = () => {
           </Card>
         </div>
       )}
+    </div>
+  );
+};
+
+// Component to display selected vehicle
+const VehicleSelectedDisplay: React.FC<{
+  vehicleId: string;
+  onChangeClick: () => void;
+}> = ({ vehicleId, onChangeClick }) => {
+  const { data: vehicles } = useQuery({
+    queryKey: ["vehicles"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("vehicles")
+        .select("id, license_plate, make, model, vehicle_type, year, status")
+        .eq("status", "active");
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const selectedVehicle = vehicles?.find(v => v.id === vehicleId);
+
+  if (!selectedVehicle) {
+    return (
+      <div className="flex items-center justify-between p-3 border rounded-md bg-gray-50">
+        <span className="text-gray-500">Loading vehicle...</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center justify-between p-3 border rounded-md bg-gray-50">
+      <div className="flex items-center gap-3">
+        <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+          <Truck className="w-4 h-4 text-white" />
+        </div>
+        <span className="font-medium">
+          {selectedVehicle.license_plate} - {selectedVehicle.make} {selectedVehicle.model}
+        </span>
+      </div>
+      <Button 
+        type="button"
+        variant="outline" 
+        size="sm"
+        onClick={onChangeClick}
+      >
+        Change
+      </Button>
     </div>
   );
 };
