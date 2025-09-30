@@ -60,6 +60,7 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
   const [checkDuration, setCheckDuration] = useState<number>(0);
   const [checkStartTime] = useState(Date.now());
   const [autoRestockRequests, setAutoRestockRequests] = useState<boolean>(true);
+  const [allMarkedPresent, setAllMarkedPresent] = useState(false);
 
   const handleVehicleSelect = (vehicle: any) => {
     setSelectedVehicle(vehicle);
@@ -384,16 +385,32 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
                 variant="outline"
                 size="sm"
                 onClick={() => {
-                  const items = Array.isArray(selectedTemplate.items) ? selectedTemplate.items : [];
-                  const allPresent: Record<string, ItemCondition> = {};
-                  items.forEach((item: any) => {
-                    allPresent[item.id] = { status: 'present' };
-                  });
-                  setItemConditions(allPresent);
+                  if (allMarkedPresent) {
+                    // Clear all selections
+                    setItemConditions({});
+                    setAllMarkedPresent(false);
+                    toast({
+                      title: "All selections cleared",
+                      description: "All item conditions have been reset",
+                    });
+                  } else {
+                    // Mark all as present
+                    const items = Array.isArray(selectedTemplate.items) ? selectedTemplate.items : [];
+                    const allPresent: Record<string, ItemCondition> = {};
+                    items.forEach((item: any) => {
+                      allPresent[item.id] = { status: 'present' };
+                    });
+                    setItemConditions(allPresent);
+                    setAllMarkedPresent(true);
+                    toast({
+                      title: "All items marked as present",
+                      description: `${items.length} items updated`,
+                    });
+                  }
                 }}
               >
                 <CheckCircle className="w-4 h-4 mr-2" />
-                Mark All as Present
+                {allMarkedPresent ? "Clear All Selections" : "Mark All as Present"}
               </Button>
             </div>
           </CardHeader>
