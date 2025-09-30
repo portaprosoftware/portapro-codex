@@ -211,6 +211,12 @@ export function SpillKitExpirationDashboard() {
 
   return (
     <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h2 className="text-xl font-semibold">Spill Kit Item Expiration</h2>
+        <p className="text-muted-foreground">Track and monitor expiration dates for spill kit items across your fleet</p>
+      </div>
+
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="p-6 border-l-4 border-l-destructive">
