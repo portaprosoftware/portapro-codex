@@ -49,6 +49,15 @@ export function SpillKitInspectionHistory() {
   const { user } = useUser();
   const queryClient = useQueryClient();
 
+  const formatCategory = (category?: string) => {
+    if (!category) return '';
+    if (category.toLowerCase() === 'ppe') return 'PPE';
+    return category
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  };
+
   // Permission checks
   const canDelete = () => hasAdminAccess;
 
@@ -346,7 +355,7 @@ export function SpillKitInspectionHistory() {
                         <div className="flex-1">
                           <p className="font-medium text-sm">{itemName}</p>
                           {itemCategory && (
-                            <p className="text-xs text-muted-foreground">{itemCategory}</p>
+                            <p className="text-xs text-muted-foreground">{formatCategory(itemCategory)}</p>
                           )}
                         </div>
                         <div className="flex items-center gap-3">

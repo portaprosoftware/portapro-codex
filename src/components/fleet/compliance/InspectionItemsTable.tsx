@@ -43,6 +43,15 @@ export function InspectionItemsTable({
     return condition.actual_quantity < item.required_quantity;
   };
 
+  const formatCategory = (category?: string) => {
+    if (!category) return '';
+    if (category.toLowerCase() === 'ppe') return 'PPE';
+    return category
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  };
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'present':
@@ -96,7 +105,7 @@ export function InspectionItemsTable({
                 <div className="flex-1">
                   <h4 className="font-medium">{item.item_name}</h4>
                   {item.category && (
-                    <p className="text-sm text-muted-foreground">{item.category}</p>
+                    <p className="text-sm text-muted-foreground">{formatCategory(item.category)}</p>
                   )}
                   <div className="flex items-center gap-2 mt-1">
                     {item.required_quantity && (
@@ -111,8 +120,8 @@ export function InspectionItemsTable({
                           Actual: {condition.actual_quantity}
                         </p>
                         {isQuantityLow(item, condition) && (
-                          <Badge className="bg-gradient-to-r from-orange-600 to-orange-500 text-white font-bold">
-                            Low Quantity
+                          <Badge className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-bold">
+                            Low
                           </Badge>
                         )}
                       </>

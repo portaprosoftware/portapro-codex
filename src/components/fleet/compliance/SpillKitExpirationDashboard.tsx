@@ -32,6 +32,15 @@ export function SpillKitExpirationDashboard() {
 
   const hasActiveFilters = searchTerm || filterVehicle !== "all" || filterCategory !== "all";
 
+  const formatCategory = (category?: string) => {
+    if (!category) return '';
+    if (category.toLowerCase() === 'ppe') return 'PPE';
+    return category
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  };
+
   // Fetch template items for name lookup
   const { data: templateItems } = useQuery({
     queryKey: ['spill-kit-template-items'],
@@ -228,7 +237,7 @@ export function SpillKitExpirationDashboard() {
                 </div>
               </TableCell>
               <TableCell className="font-medium">{item.item_name}</TableCell>
-              <TableCell>{item.item_category}</TableCell>
+              <TableCell>{formatCategory(item.item_category)}</TableCell>
               <TableCell>{format(parseISO(item.expiration_date), 'MMM dd, yyyy')}</TableCell>
               <TableCell className="text-sm text-muted-foreground">
                 {format(parseISO(item.last_inspection_date), 'MMM dd, yyyy')}
@@ -311,7 +320,7 @@ export function SpillKitExpirationDashboard() {
               <SelectItem value="all">All Categories</SelectItem>
               {categories.map((cat) => (
                 <SelectItem key={cat} value={cat}>
-                  {cat}
+                  {formatCategory(cat)}
                 </SelectItem>
               ))}
             </SelectContent>
