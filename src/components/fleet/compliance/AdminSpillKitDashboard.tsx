@@ -11,8 +11,9 @@ import { SpillKitInventoryDashboard } from './SpillKitInventoryDashboard';
 import { EnhancedSpillKitInventoryManager } from './EnhancedSpillKitInventoryManager';
 import { EnhancedSpillKitCheckForm } from './EnhancedSpillKitCheckForm';
 import { Button } from '@/components/ui/button';
-import { Plus, Settings, FileText, Package, History, Box } from 'lucide-react';
+import { Plus, Settings, FileText, Package, History, Box, MapPin } from 'lucide-react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
+import { useNavigate } from 'react-router-dom';
 
 interface AdminSpillKitDashboardProps {
   inspectionDrawerOpen?: boolean;
@@ -25,6 +26,7 @@ export function AdminSpillKitDashboard({
 }: AdminSpillKitDashboardProps) {
   const [internalDrawerOpen, setInternalDrawerOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("history");
+  const navigate = useNavigate();
   
   const drawerOpen = externalDrawerOpen ?? internalDrawerOpen;
   const setDrawerOpen = externalSetDrawerOpen ?? setInternalDrawerOpen;
@@ -43,7 +45,7 @@ export function AdminSpillKitDashboard({
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="history">
             <History className="h-4 w-4 mr-2" />
             History
@@ -64,6 +66,12 @@ export function AdminSpillKitDashboard({
             <TabsTrigger value="inventory">
               <Package className="h-4 w-4 mr-2" />
               Inventory
+            </TabsTrigger>
+          </ProtectedComponent>
+          <ProtectedComponent requiredPermission="canManageSpillKitRestock" fallback={null} showError={false}>
+            <TabsTrigger value="locations" onClick={() => navigate('/fleet/spill-kit-storage')}>
+              <MapPin className="h-4 w-4 mr-2" />
+              Locations
             </TabsTrigger>
           </ProtectedComponent>
           <ProtectedComponent requiredPermission="canViewSpillKitReports" fallback={null} showError={false}>

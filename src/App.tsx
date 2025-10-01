@@ -31,6 +31,7 @@ import { FleetFuelManagement } from './pages/FleetFuelManagement';
 import FleetFiles from './pages/FleetFiles';
 import { ScanFeedback } from "./pages/ScanFeedback";
 import TestingPage from './pages/TestingPage';
+import SpillKitStoragePage from './pages/SpillKitStoragePage';
 import Consumables from './pages/Consumables';
 import PurchaseOrders from './pages/PurchaseOrders';
 import StorageSites from './pages/StorageSites';
@@ -307,6 +308,12 @@ const App = () => {
           <Route path="/fleet/spill-kit-inventory" element={
             <>
               <SignedIn><Layout><SpillKitInventoryPage /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/fleet/spill-kit-storage" element={
+            <>
+              <SignedIn><Layout><SpillKitStoragePage /></Layout></SignedIn>
               <SignedOut><Auth /></SignedOut>
             </>
           } />
