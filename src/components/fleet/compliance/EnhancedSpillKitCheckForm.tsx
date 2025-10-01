@@ -90,7 +90,12 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
 
       // Set as single condition in array
       setWeather([data.weather]);
-      setWeatherDetails(`${data.description} • ${data.temp}°F • ${data.humidity}% humidity • Wind: ${data.windSpeed} mph`);
+      // Format description to Title Case
+      const titleCaseDescription = data.description
+        .split(' ')
+        .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
+      setWeatherDetails(`${titleCaseDescription} • ${data.temp}°F • ${data.humidity}% humidity • Wind: ${data.windSpeed} mph`);
       
       toast({
         title: "Weather Updated",
