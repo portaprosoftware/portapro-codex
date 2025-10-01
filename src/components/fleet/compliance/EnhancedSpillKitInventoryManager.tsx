@@ -553,29 +553,6 @@ export function EnhancedSpillKitInventoryManager() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="storage_location">Storage Garage Location</Label>
-                    <Select
-                      value={formData.storage_location_id}
-                      onValueChange={(value) => setFormData({ ...formData, storage_location_id: value })}
-                    >
-                      <SelectTrigger className="h-12">
-                        <SelectValue placeholder="Select storage garage" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {inventoryStorageLocations?.map((location) => (
-                          <SelectItem key={location.id} value={location.id}>
-                            {location.name}
-                            {location.description && (
-                              <span className="text-xs text-muted-foreground ml-2">
-                                ({location.description})
-                              </span>
-                            )}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
                     <Label htmlFor="item_type">Category Type *</Label>
                     <Button
                       type="button"
