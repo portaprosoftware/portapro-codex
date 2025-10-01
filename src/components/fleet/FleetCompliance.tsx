@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -38,8 +39,17 @@ interface ComplianceDocument {
 }
 
 export const FleetCompliance: React.FC = () => {
+  const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState("documents");
   const [documentDrawerOpen, setDocumentDrawerOpen] = useState(false);
+
+  // Set initial tab from URL parameter
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam) {
+      setActiveTab(tabParam);
+    }
+  }, [searchParams]);
   const [documentTypeDrawerOpen, setDocumentTypeDrawerOpen] = useState(false);
   const [inspectionDrawerOpen, setInspectionDrawerOpen] = useState(false);
   const [incidentDrawerOpen, setIncidentDrawerOpen] = useState(false);

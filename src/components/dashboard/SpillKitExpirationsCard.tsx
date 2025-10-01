@@ -71,7 +71,7 @@ export const SpillKitExpirationsCard: React.FC = () => {
       subtitleColor="text-orange-600"
       delay={400}
       clickable
-      onClick={() => navigate('/fleet/compliance')}
+      onClick={() => navigate('/fleet/compliance?tab=spill-kits')}
     />
   );
 };
