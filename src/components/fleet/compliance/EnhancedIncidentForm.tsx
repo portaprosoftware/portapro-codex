@@ -733,24 +733,60 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <input
-              type="file"
-              accept=".pdf,.doc,.docx,.txt,.xls,.xlsx"
-              multiple
-              onChange={(e) => {
-                if (e.target.files) {
-                  setDocumentFiles(Array.from(e.target.files));
-                }
-              }}
-              className="block w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
-            />
+            <div>
+              <input
+                type="file"
+                accept=".pdf,.doc,.docx,.txt,.xls,.xlsx"
+                onChange={(e) => {
+                  if (e.target.files && e.target.files.length > 0) {
+                    const newFiles = Array.from(e.target.files);
+                    const remainingSlots = 5 - documentFiles.length;
+                    
+                    if (remainingSlots <= 0) {
+                      toast({
+                        title: "Maximum files reached",
+                        description: "You can only upload up to 5 documents",
+                        variant: "destructive"
+                      });
+                      e.target.value = '';
+                      return;
+                    }
+                    
+                    const filesToAdd = newFiles.slice(0, remainingSlots);
+                    setDocumentFiles([...documentFiles, ...filesToAdd]);
+                    e.target.value = ''; // Reset input so same file can be selected again if removed
+                    
+                    if (filesToAdd.length < newFiles.length) {
+                      toast({
+                        title: "Some files not added",
+                        description: `Only ${filesToAdd.length} file(s) added. Maximum 5 documents allowed.`,
+                      });
+                    }
+                  }
+                }}
+                className="block w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
+                disabled={documentFiles.length >= 5}
+              />
+              {documentFiles.length >= 5 && (
+                <p className="text-xs text-muted-foreground mt-1">Maximum of 5 documents reached</p>
+              )}
+            </div>
             {documentFiles.length > 0 && (
               <div className="space-y-2">
-                <p className="text-sm font-medium">{documentFiles.length} document(s) selected:</p>
+                <p className="text-sm font-medium">{documentFiles.length} / 5 document(s) selected:</p>
                 <div className="flex flex-wrap gap-2">
                   {Array.from(documentFiles).map((file, idx) => (
-                    <Badge key={idx} variant="secondary">
-                      {file.name}
+                    <Badge key={idx} variant="secondary" className="flex items-center gap-1 pr-1">
+                      <span className="truncate max-w-[200px]">{file.name}</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setDocumentFiles(documentFiles.filter((_, i) => i !== idx));
+                        }}
+                        className="ml-1 hover:bg-destructive/20 rounded-full p-0.5"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
                     </Badge>
                   ))}
                 </div>
