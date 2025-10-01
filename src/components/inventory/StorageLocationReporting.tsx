@@ -229,28 +229,6 @@ export function StorageLocationReporting() {
 
   return (
     <div className="space-y-6">
-      {/* Export Buttons */}
-      <div className="flex justify-end gap-2">
-        <Button
-          variant="outline"
-          onClick={exportToPDF}
-          disabled={isExporting || !reportData}
-          className="gap-2"
-        >
-          <Download className="h-4 w-4" />
-          Export PDF
-        </Button>
-        <Button
-          variant="outline"
-          onClick={exportToCSV}
-          disabled={!reportData}
-          className="gap-2"
-        >
-          <Download className="h-4 w-4" />
-          Export CSV
-        </Button>
-      </div>
-
       {reportData && (
         <>
           {/* Summary Cards */}
@@ -294,8 +272,30 @@ export function StorageLocationReporting() {
 
           {/* Location Details */}
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
               <CardTitle>Location Details</CardTitle>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={exportToPDF}
+                  disabled={isExporting || !reportData}
+                  className="gap-2"
+                >
+                  <Download className="h-4 w-4" />
+                  Export PDF
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={exportToCSV}
+                  disabled={!reportData}
+                  className="gap-2"
+                >
+                  <Download className="h-4 w-4" />
+                  Export CSV
+                </Button>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               {reportData.location_details.map((location) => (
