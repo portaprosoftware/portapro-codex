@@ -7968,53 +7968,74 @@ export type Database = {
         Row: {
           created_at: string
           current_stock: number | null
+          expiration_date: string | null
           id: string
+          is_critical: boolean | null
           item_name: string
           item_type: string | null
           last_restocked: string | null
+          last_usage_date: string | null
+          linked_template_ids: Json | null
+          lot_batch_number: string | null
           minimum_threshold: number | null
           notes: string | null
           reorder_quantity: number | null
           supplier_contact: string | null
           supplier_info: Json | null
           supplier_name: string | null
+          supplier_portal_url: string | null
           supplier_sku: string | null
           unit_cost: number | null
           updated_at: string
+          usage_count: number | null
         }
         Insert: {
           created_at?: string
           current_stock?: number | null
+          expiration_date?: string | null
           id?: string
+          is_critical?: boolean | null
           item_name: string
           item_type?: string | null
           last_restocked?: string | null
+          last_usage_date?: string | null
+          linked_template_ids?: Json | null
+          lot_batch_number?: string | null
           minimum_threshold?: number | null
           notes?: string | null
           reorder_quantity?: number | null
           supplier_contact?: string | null
           supplier_info?: Json | null
           supplier_name?: string | null
+          supplier_portal_url?: string | null
           supplier_sku?: string | null
           unit_cost?: number | null
           updated_at?: string
+          usage_count?: number | null
         }
         Update: {
           created_at?: string
           current_stock?: number | null
+          expiration_date?: string | null
           id?: string
+          is_critical?: boolean | null
           item_name?: string
           item_type?: string | null
           last_restocked?: string | null
+          last_usage_date?: string | null
+          linked_template_ids?: Json | null
+          lot_batch_number?: string | null
           minimum_threshold?: number | null
           notes?: string | null
           reorder_quantity?: number | null
           supplier_contact?: string | null
           supplier_info?: Json | null
           supplier_name?: string | null
+          supplier_portal_url?: string | null
           supplier_sku?: string | null
           unit_cost?: number | null
           updated_at?: string
+          usage_count?: number | null
         }
         Relationships: []
       }
@@ -8196,6 +8217,67 @@ export type Database = {
           vehicle_types?: string[] | null
         }
         Relationships: []
+      }
+      spill_kit_usage_log: {
+        Row: {
+          check_id: string | null
+          created_at: string | null
+          id: string
+          incident_id: string | null
+          inventory_item_id: string
+          notes: string | null
+          quantity_used: number
+          used_at: string
+          used_by_clerk: string | null
+          vehicle_id: string | null
+        }
+        Insert: {
+          check_id?: string | null
+          created_at?: string | null
+          id?: string
+          incident_id?: string | null
+          inventory_item_id: string
+          notes?: string | null
+          quantity_used: number
+          used_at?: string
+          used_by_clerk?: string | null
+          vehicle_id?: string | null
+        }
+        Update: {
+          check_id?: string | null
+          created_at?: string | null
+          id?: string
+          incident_id?: string | null
+          inventory_item_id?: string
+          notes?: string | null
+          quantity_used?: number
+          used_at?: string
+          used_by_clerk?: string | null
+          vehicle_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "spill_kit_usage_log_check_id_fkey"
+            columns: ["check_id"]
+            isOneToOne: false
+            referencedRelation: "vehicle_spill_kit_checks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "spill_kit_usage_log_inventory_item_id_fkey"
+            columns: ["inventory_item_id"]
+            isOneToOne: false
+            referencedRelation: "spill_kit_inventory"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "spill_kit_usage_log_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       stock_adjustments: {
         Row: {

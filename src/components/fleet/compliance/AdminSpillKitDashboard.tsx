@@ -7,6 +7,8 @@ import { SpillKitComplianceReports } from './SpillKitComplianceReports';
 import { SpillKitInspectionHistory } from './SpillKitInspectionHistory';
 import { RestockRequestManager } from './RestockRequestManager';
 import { SpillKitInventoryManager } from './SpillKitInventoryManager';
+import { SpillKitInventoryDashboard } from './SpillKitInventoryDashboard';
+import { EnhancedSpillKitInventoryManager } from './EnhancedSpillKitInventoryManager';
 import { EnhancedSpillKitCheckForm } from './EnhancedSpillKitCheckForm';
 import { Button } from '@/components/ui/button';
 import { Plus, Settings, FileText, Package, History, Box } from 'lucide-react';
@@ -41,7 +43,7 @@ export function AdminSpillKitDashboard({
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="history">
             <History className="h-4 w-4 mr-2" />
             History
@@ -50,6 +52,12 @@ export function AdminSpillKitDashboard({
             <TabsTrigger value="templates">
               <Settings className="h-4 w-4 mr-2" />
               Templates
+            </TabsTrigger>
+          </ProtectedComponent>
+          <ProtectedComponent requiredPermission="canManageSpillKitRestock" fallback={null} showError={false}>
+            <TabsTrigger value="dashboard">
+              <Box className="h-4 w-4 mr-2" />
+              Dashboard
             </TabsTrigger>
           </ProtectedComponent>
           <ProtectedComponent requiredPermission="canManageSpillKitRestock" fallback={null} showError={false}>
@@ -82,9 +90,15 @@ export function AdminSpillKitDashboard({
           </ProtectedComponent>
         </TabsContent>
 
+        <TabsContent value="dashboard">
+          <ProtectedComponent requiredPermission="canManageSpillKitRestock">
+            <SpillKitInventoryDashboard />
+          </ProtectedComponent>
+        </TabsContent>
+
         <TabsContent value="inventory">
           <ProtectedComponent requiredPermission="canManageSpillKitRestock">
-            <SpillKitInventoryManager />
+            <EnhancedSpillKitInventoryManager />
           </ProtectedComponent>
         </TabsContent>
 

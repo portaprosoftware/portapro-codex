@@ -91,9 +91,14 @@ export function useRoleAccess(targetDriverId?: string): RolePermissions {
       canViewOwnHistory: isOwnProfile,
       canUploadDocuments: isOwnProfile,
       
-      // Drivers can perform their own spill kit checks
+      // Drivers can perform their own spill kit checks only
       canPerformSpillKitChecks: true,
-      canViewSpillKitHistory: isOwnProfile,
+      canViewSpillKitHistory: true, // Can view their own check history
+      canManageSpillKitTemplates: false,
+      canViewSpillKitReports: false,
+      canManageSpillKitNotifications: false,
+      canManageSpillKitRestock: false,
+      canViewAllSpillKitChecks: false,
     };
   }
 
@@ -117,10 +122,12 @@ export function useRoleAccess(targetDriverId?: string): RolePermissions {
       canViewExpirationDashboard: true,
       canManageTraining: true,
       
-      // Dispatchers can view and manage most spill kit features
+      // Dispatchers can view and manage most spill kit features (but not templates/notifications)
       canPerformSpillKitChecks: true,
       canViewSpillKitHistory: true,
+      canManageSpillKitTemplates: false,
       canViewSpillKitReports: true,
+      canManageSpillKitNotifications: false,
       canManageSpillKitRestock: true,
       canViewAllSpillKitChecks: true,
     };
