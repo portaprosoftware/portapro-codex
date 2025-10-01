@@ -9,13 +9,19 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/u
 import { CalendarDays, Shield, Plus } from "lucide-react";
 import { DeconCreateForm } from "./DeconCreateForm";
 
-// Local fallback type
+// Enhanced decon log type
 type DeconLog = {
   id: string;
   performed_at: string;
   incident_id?: string | null;
-  vehicle_area?: string | null;
-  ppe_used?: string | null;
+  vehicle_areas?: string[] | null;
+  location_type?: string | null;
+  weather_conditions?: string | null;
+  ppe_items?: string[] | null;
+  ppe_compliance_status?: boolean | null;
+  decon_methods?: string[] | null;
+  post_inspection_status?: string | null;
+  photos?: string[] | null;
   notes?: string | null;
 };
 
@@ -37,10 +43,9 @@ export const DeconLogsTab: React.FC<DeconLogsTabProps> = ({
   const { data, isLoading } = useQuery({
     queryKey: ["decon-logs"],
     queryFn: async () => {
-      // Select only columns that exist on public.decon_logs and limit for perf
       const { data, error } = await supabase
         .from("decon_logs")
-        .select("id, performed_at, incident_id, vehicle_area, ppe_used, notes")
+        .select("id, performed_at, incident_id, vehicle_areas, location_type, weather_conditions, ppe_items, ppe_compliance_status, decon_methods, post_inspection_status, photos, notes")
         .order("performed_at", { ascending: false })
         .limit(50);
       if (error) throw error;
@@ -102,19 +107,94 @@ export const DeconLogsTab: React.FC<DeconLogsTabProps> = ({
 
       <div className="space-y-3">
         {data.map((log) => (
-          <Card key={log.id} className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-sm text-muted-foreground flex items-center gap-2">
-                  <CalendarDays className="w-4 h-4" />
-                  {new Date(log.performed_at).toLocaleString()}
+          <Card key={log.id} className="p-4 hover:shadow-lg transition-shadow">
+            <div className="space-y-3">
+              {/* Header */}
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="text-sm text-muted-foreground flex items-center gap-2">
+                    <CalendarDays className="w-4 h-4" />
+                    {new Date(log.performed_at).toLocaleString()}
+                  </div>
+                  <div className="mt-1 font-medium">
+                    Incident: {log.incident_id ? log.incident_id.slice(0, 8) : "—"}
+                    {log.location_type && ` • ${log.location_type.replace(/_/g, " ")}`}
+                  </div>
                 </div>
-                <div className="mt-1 font-medium">
-                  Incident: {log.incident_id ? log.incident_id.slice(0, 8) : "—"} • Area: {log.vehicle_area || "—"}
+                <div className="flex flex-col gap-1 items-end">
+                  {log.post_inspection_status === "pass" && (
+                    <Badge className="bg-green-500 text-white">Pass</Badge>
+                  )}
+                  {log.post_inspection_status === "fail" && (
+                    <Badge variant="destructive">Fail</Badge>
+                  )}
+                  {log.post_inspection_status === "conditional" && (
+                    <Badge variant="secondary">Conditional</Badge>
+                  )}
+                  {log.photos && log.photos.length > 0 && (
+                    <Badge variant="outline" className="gap-1">
+                      {log.photos.length} photo{log.photos.length > 1 ? "s" : ""}
+                    </Badge>
+                  )}
                 </div>
-                {log.notes && <div className="text-sm text-muted-foreground mt-1">{log.notes}</div>}
               </div>
-              <Badge variant="secondary">{log.ppe_used ? "PPE used" : "No PPE noted"}</Badge>
+
+              {/* Areas Cleaned */}
+              {log.vehicle_areas && log.vehicle_areas.length > 0 && (
+                <div>
+                  <div className="text-xs text-muted-foreground mb-1">Areas Cleaned:</div>
+                  <div className="flex flex-wrap gap-1">
+                    {log.vehicle_areas.map((area, idx) => (
+                      <Badge key={idx} variant="secondary" className="text-xs">
+                        {area.startsWith("other:") ? area.substring(6) : area.replace(/_/g, " ")}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Methods Used */}
+              {log.decon_methods && log.decon_methods.length > 0 && (
+                <div>
+                  <div className="text-xs text-muted-foreground mb-1">Methods:</div>
+                  <div className="flex flex-wrap gap-1">
+                    {log.decon_methods.map((method, idx) => (
+                      <Badge key={idx} variant="outline" className="text-xs">
+                        {method.replace(/_/g, " ")}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* PPE Info */}
+              {log.ppe_items && log.ppe_items.length > 0 && (
+                <div className="flex items-center gap-2 text-sm">
+                  <Shield className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-muted-foreground">
+                    {log.ppe_items.length} PPE item{log.ppe_items.length > 1 ? "s" : ""}
+                  </span>
+                  {log.ppe_compliance_status && (
+                    <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
+                      Compliant
+                    </Badge>
+                  )}
+                </div>
+              )}
+
+              {/* Weather */}
+              {log.weather_conditions && (
+                <div className="text-sm text-muted-foreground">
+                  Weather: {log.weather_conditions}
+                </div>
+              )}
+
+              {/* Notes */}
+              {log.notes && (
+                <div className="text-sm text-muted-foreground pt-2 border-t">
+                  {log.notes}
+                </div>
+              )}
             </div>
           </Card>
         ))}

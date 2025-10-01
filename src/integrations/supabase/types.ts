@@ -1777,47 +1777,71 @@ export type Database = {
         Row: {
           company_id: string | null
           created_at: string
-          decon_method: string | null
+          decon_methods: string[] | null
           id: string
           incident_id: string
+          inspector_clerk_id: string | null
+          inspector_signature: string | null
+          location_type: string | null
           notes: string | null
           performed_at: string
           performed_by_clerk: string | null
           photos: string[]
-          ppe_used: string | null
+          post_inspection_status: string | null
+          ppe_compliance_status: boolean | null
+          ppe_items: string[] | null
           updated_at: string
-          vehicle_area: string | null
+          vehicle_areas: string[] | null
+          vehicle_id: string | null
           verification_by_clerk: string | null
+          weather_conditions: string | null
+          weather_details: string | null
         }
         Insert: {
           company_id?: string | null
           created_at?: string
-          decon_method?: string | null
+          decon_methods?: string[] | null
           id?: string
           incident_id: string
+          inspector_clerk_id?: string | null
+          inspector_signature?: string | null
+          location_type?: string | null
           notes?: string | null
           performed_at?: string
           performed_by_clerk?: string | null
           photos?: string[]
-          ppe_used?: string | null
+          post_inspection_status?: string | null
+          ppe_compliance_status?: boolean | null
+          ppe_items?: string[] | null
           updated_at?: string
-          vehicle_area?: string | null
+          vehicle_areas?: string[] | null
+          vehicle_id?: string | null
           verification_by_clerk?: string | null
+          weather_conditions?: string | null
+          weather_details?: string | null
         }
         Update: {
           company_id?: string | null
           created_at?: string
-          decon_method?: string | null
+          decon_methods?: string[] | null
           id?: string
           incident_id?: string
+          inspector_clerk_id?: string | null
+          inspector_signature?: string | null
+          location_type?: string | null
           notes?: string | null
           performed_at?: string
           performed_by_clerk?: string | null
           photos?: string[]
-          ppe_used?: string | null
+          post_inspection_status?: string | null
+          ppe_compliance_status?: boolean | null
+          ppe_items?: string[] | null
           updated_at?: string
-          vehicle_area?: string | null
+          vehicle_areas?: string[] | null
+          vehicle_id?: string | null
           verification_by_clerk?: string | null
+          weather_conditions?: string | null
+          weather_details?: string | null
         }
         Relationships: [
           {
@@ -1825,6 +1849,13 @@ export type Database = {
             columns: ["incident_id"]
             isOneToOne: false
             referencedRelation: "spill_incident_reports"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "decon_logs_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
             referencedColumns: ["id"]
           },
         ]
