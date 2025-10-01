@@ -715,36 +715,11 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <input
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={(e) => {
-                if (e.target.files) {
-                  setPhotoFiles(Array.from(e.target.files));
-                }
-              }}
-              className="block w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
-            />
-            {photoFiles.length > 0 && (
-              <div className="space-y-2">
-                <p className="text-sm font-medium">{photoFiles.length} photo(s) selected:</p>
-                <div className="flex flex-wrap gap-2">
-                  {Array.from(photoFiles).map((file, idx) => (
-                    <Badge key={idx} variant="secondary">
-                      {file.name}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-            <PhotoCapture
-              onPhotosChange={setPhotos}
-              maxPhotos={10}
-              initialPhotos={photos}
-            />
-          </div>
+          <PhotoCapture
+            onPhotosChange={setPhotos}
+            maxPhotos={10}
+            initialPhotos={photos}
+          />
         </CardContent>
       </Card>
 
