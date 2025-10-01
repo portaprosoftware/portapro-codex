@@ -42,10 +42,18 @@ export function AdminSpillKitDashboard({
           <h2 className="text-xl font-semibold">Spill Kit Compliance</h2>
           <p className="text-muted-foreground">Manage templates, reports, and compliance monitoring</p>
         </div>
+        <Button 
+          variant="outline" 
+          onClick={() => navigate('/fleet/spill-kit-storage')}
+          className="gap-2"
+        >
+          <MapPin className="h-4 w-4" />
+          Storage Locations
+        </Button>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-7">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="history">
             <History className="h-4 w-4 mr-2" />
             History
@@ -66,12 +74,6 @@ export function AdminSpillKitDashboard({
             <TabsTrigger value="inventory">
               <Package className="h-4 w-4 mr-2" />
               Inventory
-            </TabsTrigger>
-          </ProtectedComponent>
-          <ProtectedComponent requiredPermission="canManageSpillKitRestock" fallback={null} showError={false}>
-            <TabsTrigger value="locations" onClick={() => navigate('/fleet/spill-kit-storage')}>
-              <MapPin className="h-4 w-4 mr-2" />
-              Locations
             </TabsTrigger>
           </ProtectedComponent>
           <ProtectedComponent requiredPermission="canViewSpillKitReports" fallback={null} showError={false}>

@@ -27,6 +27,9 @@ import { SpillKitTypeSelectionModal } from './SpillKitTypeSelectionModal';
 import { MarkItemUsedModal } from './MarkItemUsedModal';
 import { Switch } from '@/components/ui/switch';
 import { format } from 'date-fns';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { MapPin, X } from 'lucide-react';
+import { AddSpillKitStorageLocationModal } from './AddSpillKitStorageLocationModal';
 
 type SpillKitInventoryItem = {
   id: string;
@@ -77,6 +80,9 @@ export function EnhancedSpillKitInventoryManager() {
     lot_batch_number: '',
   });
 
+  const [locationAssignments, setLocationAssignments] = useState<Array<{ location_id: string; quantity: number }>>([]);
+  const [showLocationModal, setShowLocationModal] = useState(false);
+
   // Fetch inventory items
   const { data: inventoryItems, isLoading } = useQuery({
     queryKey: ['spill-kit-inventory'],
@@ -88,6 +94,20 @@ export function EnhancedSpillKitInventoryManager() {
       
       if (error) throw error;
       return data as SpillKitInventoryItem[];
+    },
+  });
+
+  // Fetch storage locations
+  const { data: storageLocations } = useQuery({
+    queryKey: ['spill_kit_storage_locations'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('spill_kit_storage_locations')
+        .select('*')
+        .eq('is_active', true)
+        .order('name');
+      if (error) throw error;
+      return data;
     },
   });
 
@@ -117,11 +137,48 @@ export function EnhancedSpillKitInventoryManager() {
           .update(payload)
           .eq('id', editingItem.id);
         if (error) throw error;
+
+        // Update location stock for existing items
+        if (locationAssignments.length > 0) {
+          // Delete existing location stock
+          await supabase
+            .from('spill_kit_location_stock')
+            .delete()
+            .eq('inventory_item_id', editingItem.id);
+
+          // Insert new location assignments
+          const stockRecords = locationAssignments.map(loc => ({
+            inventory_item_id: editingItem.id,
+            storage_location_id: loc.location_id,
+            quantity: loc.quantity,
+          }));
+
+          const { error: stockError } = await supabase
+            .from('spill_kit_location_stock')
+            .insert(stockRecords);
+          if (stockError) throw stockError;
+        }
       } else {
-        const { error } = await supabase
+        const { data: newItem, error } = await supabase
           .from('spill_kit_inventory')
-          .insert([payload]);
+          .insert([payload])
+          .select()
+          .single();
         if (error) throw error;
+
+        // Create location stock records for new items
+        if (locationAssignments.length > 0 && newItem) {
+          const stockRecords = locationAssignments.map(loc => ({
+            inventory_item_id: newItem.id,
+            storage_location_id: loc.location_id,
+            quantity: loc.quantity,
+          }));
+
+          const { error: stockError } = await supabase
+            .from('spill_kit_location_stock')
+            .insert(stockRecords);
+          if (stockError) throw stockError;
+        }
       }
     },
     onSuccess: () => {
@@ -152,7 +209,7 @@ export function EnhancedSpillKitInventoryManager() {
     },
   });
 
-  const handleOpenDialog = (item?: SpillKitInventoryItem) => {
+  const handleOpenDialog = async (item?: SpillKitInventoryItem) => {
     if (item) {
       setEditingItem(item);
       setFormData({
@@ -171,6 +228,19 @@ export function EnhancedSpillKitInventoryManager() {
         expiration_date: item.expiration_date || '',
         lot_batch_number: item.lot_batch_number || '',
       });
+
+      // Fetch existing location assignments
+      const { data: existingStock } = await supabase
+        .from('spill_kit_location_stock')
+        .select('storage_location_id, quantity')
+        .eq('inventory_item_id', item.id);
+      
+      if (existingStock) {
+        setLocationAssignments(existingStock.map(s => ({
+          location_id: s.storage_location_id,
+          quantity: s.quantity
+        })));
+      }
     } else {
       setEditingItem(null);
       setFormData({
@@ -189,6 +259,7 @@ export function EnhancedSpillKitInventoryManager() {
         expiration_date: '',
         lot_batch_number: '',
       });
+      setLocationAssignments([]);
     }
     setCurrentStep(1);
     setIsDialogOpen(true);
@@ -198,6 +269,7 @@ export function EnhancedSpillKitInventoryManager() {
     setIsDialogOpen(false);
     setEditingItem(null);
     setCurrentStep(1);
+    setLocationAssignments([]);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -275,8 +347,24 @@ export function EnhancedSpillKitInventoryManager() {
     return '';
   };
 
-  const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 3));
+  const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 4));
   const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
+
+  const handleAddLocation = (locationId: string) => {
+    if (!locationAssignments.find(loc => loc.location_id === locationId)) {
+      setLocationAssignments([...locationAssignments, { location_id: locationId, quantity: 0 }]);
+    }
+  };
+
+  const handleRemoveLocation = (locationId: string) => {
+    setLocationAssignments(locationAssignments.filter(loc => loc.location_id !== locationId));
+  };
+
+  const handleUpdateLocationQuantity = (locationId: string, quantity: number) => {
+    setLocationAssignments(locationAssignments.map(loc => 
+      loc.location_id === locationId ? { ...loc, quantity } : loc
+    ));
+  };
 
   if (isLoading) {
     return <div className="p-8 text-center">Loading inventory...</div>;
@@ -394,11 +482,12 @@ export function EnhancedSpillKitInventoryManager() {
       <Drawer open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DrawerContent className="h-[85vh] max-sm:h-[100vh]">
           <DrawerHeader>
-            <DrawerTitle>{editingItem ? 'Edit' : 'Add'} Inventory Item - Step {currentStep} of 3</DrawerTitle>
+            <DrawerTitle>{editingItem ? 'Edit' : 'Add'} Inventory Item - Step {currentStep} of 4</DrawerTitle>
             <p className="text-sm text-muted-foreground">
               {currentStep === 1 && 'Basic information and category'}
               {currentStep === 2 && 'Stock levels and costs'}
               {currentStep === 3 && 'Supplier and tracking details'}
+              {currentStep === 4 && 'Storage location assignment'}
             </p>
           </DrawerHeader>
           <div className="overflow-y-auto px-6 pb-6">
@@ -571,6 +660,99 @@ export function EnhancedSpillKitInventoryManager() {
                 </div>
               )}
 
+              {/* Step 4: Storage Location Assignment */}
+              {currentStep === 4 && (
+                <div className="grid gap-4 py-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-base">Storage Locations</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Assign this item to storage locations and set initial quantities
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowLocationModal(true)}
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      New Location
+                    </Button>
+                  </div>
+
+                  {storageLocations && storageLocations.length > 0 && (
+                    <div className="space-y-2">
+                      <Label>Add Location</Label>
+                      <Select onValueChange={handleAddLocation}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a location to add..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {storageLocations
+                            .filter(loc => !locationAssignments.find(a => a.location_id === loc.id))
+                            .map(loc => (
+                              <SelectItem key={loc.id} value={loc.id}>
+                                <div className="flex items-center gap-2">
+                                  <MapPin className="h-4 w-4" />
+                                  {loc.name} ({loc.location_type})
+                                </div>
+                              </SelectItem>
+                            ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  {locationAssignments.length > 0 ? (
+                    <div className="space-y-3 mt-4">
+                      <Label>Assigned Locations</Label>
+                      {locationAssignments.map(assignment => {
+                        const location = storageLocations?.find(l => l.id === assignment.location_id);
+                        return (
+                          <div key={assignment.location_id} className="flex items-center gap-3 p-3 border rounded-lg">
+                            <MapPin className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                            <div className="flex-1">
+                              <p className="font-medium">{location?.name}</p>
+                              <p className="text-xs text-muted-foreground capitalize">{location?.location_type}</p>
+                            </div>
+                            <div className="w-24">
+                              <Input
+                                type="number"
+                                min="0"
+                                placeholder="Qty"
+                                value={assignment.quantity || ''}
+                                onChange={(e) => handleUpdateLocationQuantity(assignment.location_id, parseInt(e.target.value) || 0)}
+                              />
+                            </div>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleRemoveLocation(assignment.location_id)}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        );
+                      })}
+                      <div className="pt-2 border-t">
+                        <p className="text-sm font-medium">
+                          Total Quantity Assigned: {locationAssignments.reduce((sum, loc) => sum + loc.quantity, 0)}
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 border-2 border-dashed rounded-lg">
+                      <MapPin className="h-12 w-12 mx-auto mb-2 text-muted-foreground opacity-50" />
+                      <p className="text-sm text-muted-foreground">
+                        No locations assigned yet. Add locations to track inventory.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div className="flex justify-between pt-4 border-t">
                 <div>
                   {currentStep > 1 && (
@@ -584,7 +766,7 @@ export function EnhancedSpillKitInventoryManager() {
                   <Button type="button" variant="outline" onClick={handleCloseDialog}>
                     Cancel
                   </Button>
-                  {currentStep < 3 ? (
+                  {currentStep < 4 ? (
                     <Button type="button" onClick={nextStep}>
                       Next
                       <ChevronRight className="h-4 w-4 ml-2" />
@@ -621,6 +803,16 @@ export function EnhancedSpillKitInventoryManager() {
           item={selectedItemForUsage}
         />
       )}
+
+      {/* Add Storage Location Modal */}
+      <AddSpillKitStorageLocationModal
+        open={showLocationModal}
+        onOpenChange={setShowLocationModal}
+        onSuccess={() => {
+          queryClient.invalidateQueries({ queryKey: ['spill_kit_storage_locations'] });
+          toast.success('Storage location added successfully');
+        }}
+      />
     </div>
   );
 }
