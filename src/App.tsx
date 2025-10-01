@@ -383,6 +383,8 @@ const App = () => {
               <SignedOut><Auth /></SignedOut>
             </>
           } />
+          {/* Redirect old route to new location */}
+          <Route path="/storage-sites" element={<Navigate to="/admin/storage-locations" replace />} />
           <Route path="/team-management" element={
             <>
               <SignedIn><Layout><TeamManagement /></Layout></SignedIn>
