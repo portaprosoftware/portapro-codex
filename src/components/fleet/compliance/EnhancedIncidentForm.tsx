@@ -88,13 +88,21 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
 
       if (error) throw error;
 
+      // Helper function to capitalize first letter of each word
+      const capitalizeWords = (str: string) => {
+        return str.split(' ').map(word => 
+          word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        ).join(' ');
+      };
+
       // Set as single condition in array
       setWeatherConditions([data.weather]);
-      setWeatherDetails(`${data.description} • ${data.temp}°F • ${data.humidity}% humidity • Wind: ${data.windSpeed} mph`);
+      const formattedDescription = capitalizeWords(data.description);
+      setWeatherDetails(`${formattedDescription} • ${data.temp}°F • ${data.humidity}% Humidity • Wind ${data.windSpeed} MPH`);
       
       toast({
         title: "Weather Updated",
-        description: `Current conditions: ${data.description}`,
+        description: `Current conditions: ${formattedDescription}`,
       });
     } catch (error) {
       console.error('Weather fetch error:', error);
