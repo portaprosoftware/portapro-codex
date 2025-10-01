@@ -367,7 +367,7 @@ export const WeatherSelectionModal: React.FC<Props> = ({ isOpen, onClose, onSele
                 required
               />
               {selectedConditions.includes("other") && !otherDescription.trim() && (
-                <p className="text-sm text-red-500">Description is required when "Other" is selected</p>
+                <p className="text-sm text-muted-foreground">Description is required when "Other" is selected</p>
               )}
             </div>
           )}
