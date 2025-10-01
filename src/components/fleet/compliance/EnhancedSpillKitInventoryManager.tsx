@@ -19,7 +19,7 @@ import {
   DrawerTitle,
 } from '@/components/ui/drawer';
 import { Card, CardContent } from '@/components/ui/card';
-import { Plus, Pencil, Trash2, Minus, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Plus, Pencil, Trash2, Minus, ChevronRight, ChevronLeft, MoreVertical } from 'lucide-react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
@@ -30,6 +30,12 @@ import { format } from 'date-fns';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { MapPin, X } from 'lucide-react';
 import { AddSpillKitStorageLocationModal } from './AddSpillKitStorageLocationModal';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 type SpillKitInventoryItem = {
   id: string;
@@ -399,10 +405,11 @@ export function EnhancedSpillKitInventoryManager() {
                 <TableHead>Item Name</TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead>Unit Cost</TableHead>
-                <TableHead>Stock</TableHead>
+                <TableHead>Current Stock</TableHead>
+                <TableHead>Minimum Threshold</TableHead>
                 <TableHead>Expiration</TableHead>
                 <TableHead>Usage</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -429,7 +436,11 @@ export function EnhancedSpillKitInventoryManager() {
                     <span className={item.current_stock !== null && item.minimum_threshold !== null && item.current_stock <= item.minimum_threshold ? 'font-bold text-destructive' : ''}>
                       {item.current_stock !== null ? item.current_stock : '—'}
                     </span>
-                    <span className="text-muted-foreground text-xs"> / {item.minimum_threshold !== null ? item.minimum_threshold : '—'}</span>
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-muted-foreground">
+                      {item.minimum_threshold !== null ? item.minimum_threshold : '—'}
+                    </span>
                   </TableCell>
                   <TableCell className={getExpirationColor(item.expiration_date)}>
                     {item.expiration_date ? format(new Date(item.expiration_date), 'MMM dd, yyyy') : '—'}
@@ -438,31 +449,33 @@ export function EnhancedSpillKitInventoryManager() {
                     {item.usage_count || 0} times
                   </TableCell>
                   <TableCell>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleMarkUsed(item)}
-                        disabled={item.current_stock === 0}
-                        title="Mark as used"
-                      >
-                        <Minus className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleOpenDialog(item)}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDelete(item.id)}
-                      >
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
-                    </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          onClick={() => handleMarkUsed(item)}
+                          disabled={item.current_stock === 0}
+                        >
+                          <Minus className="h-4 w-4 mr-2" />
+                          Mark as Used
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleOpenDialog(item)}>
+                          <Pencil className="h-4 w-4 mr-2" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleDelete(item.id)}
+                          className="text-destructive focus:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))}
