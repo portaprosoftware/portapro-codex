@@ -33,6 +33,7 @@ import { AddSpillKitStorageLocationModal } from './AddSpillKitStorageLocationMod
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
+import { StorageLocationAssignmentModal } from './StorageLocationAssignmentModal';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -104,6 +105,7 @@ export function EnhancedSpillKitInventoryManager() {
 
   const [locationAssignments, setLocationAssignments] = useState<Array<{ location_id: string; quantity: number }>>([]);
   const [showLocationModal, setShowLocationModal] = useState(false);
+  const [showLocationAssignmentModal, setShowLocationAssignmentModal] = useState(false);
 
   // Fetch inventory items
   const { data: inventoryItems, isLoading } = useQuery({
@@ -529,12 +531,11 @@ export function EnhancedSpillKitInventoryManager() {
       <Drawer open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DrawerContent className="h-[85vh] max-sm:h-[100vh] flex flex-col">
           <DrawerHeader>
-            <DrawerTitle>{editingItem ? 'Edit' : 'Add'} Inventory Item - Step {currentStep} of 4</DrawerTitle>
+            <DrawerTitle>{editingItem ? 'Edit' : 'Add'} Inventory Item - Step {currentStep} of 3</DrawerTitle>
             <p className="text-sm text-muted-foreground">
               {currentStep === 1 && 'Basic information and category'}
               {currentStep === 2 && 'Stock levels and costs'}
               {currentStep === 3 && 'Supplier and tracking details'}
-              {currentStep === 4 && 'Storage location assignment'}
             </p>
           </DrawerHeader>
           <div className="flex-1 overflow-y-auto px-6 pb-24">
@@ -610,6 +611,36 @@ export function EnhancedSpillKitInventoryManager() {
               {/* Step 2: Stock & Costs */}
               {currentStep === 2 && (
                 <div className="grid gap-4 py-4">
+                  {/* Storage Location Assignment Button */}
+                  <div className="space-y-2 p-4 border rounded-lg bg-muted/30">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Label className="text-base">Storage Locations</Label>
+                        <p className="text-sm text-muted-foreground">
+                          Assign quantities to storage garage locations
+                        </p>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setShowLocationAssignmentModal(true)}
+                      >
+                        <MapPin className="h-4 w-4 mr-2" />
+                        Manage Locations
+                        {locationAssignments.length > 0 && (
+                          <Badge variant="secondary" className="ml-2">
+                            {locationAssignments.length}
+                          </Badge>
+                        )}
+                      </Button>
+                    </div>
+                    {locationAssignments.length > 0 && (
+                      <p className="text-sm text-muted-foreground">
+                        Total assigned: {locationAssignments.reduce((sum, loc) => sum + loc.quantity, 0)} units across {locationAssignments.length} location(s)
+                      </p>
+                    )}
+                  </div>
+
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="unit_cost">Unit Cost ($) *</Label>
@@ -751,99 +782,6 @@ export function EnhancedSpillKitInventoryManager() {
                 </div>
               )}
 
-              {/* Step 4: Storage Location Assignment */}
-              {currentStep === 4 && (
-                <div className="grid gap-4 py-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label className="text-base">Storage Locations</Label>
-                      <p className="text-sm text-muted-foreground">
-                        Assign this item to storage locations and set initial quantities
-                      </p>
-                    </div>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowLocationModal(true)}
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      New Location
-                    </Button>
-                  </div>
-
-                  {storageLocations && storageLocations.length > 0 && (
-                    <div className="space-y-2">
-                      <Label>Add Location</Label>
-                      <Select onValueChange={handleAddLocation}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a location to add..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {storageLocations
-                            .filter(loc => !locationAssignments.find(a => a.location_id === loc.id))
-                            .map(loc => (
-                              <SelectItem key={loc.id} value={loc.id}>
-                                <div className="flex items-center gap-2">
-                                  <MapPin className="h-4 w-4" />
-                                  {loc.name} ({loc.location_type})
-                                </div>
-                              </SelectItem>
-                            ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
-
-                  {locationAssignments.length > 0 ? (
-                    <div className="space-y-3 mt-4">
-                      <Label>Assigned Locations</Label>
-                      {locationAssignments.map(assignment => {
-                        const location = storageLocations?.find(l => l.id === assignment.location_id);
-                        return (
-                          <div key={assignment.location_id} className="flex items-center gap-3 p-3 border rounded-lg">
-                            <MapPin className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                            <div className="flex-1">
-                              <p className="font-medium">{location?.name}</p>
-                              <p className="text-xs text-muted-foreground capitalize">{location?.location_type}</p>
-                            </div>
-                            <div className="w-24">
-                              <Input
-                                type="number"
-                                min="0"
-                                placeholder="Qty"
-                                value={assignment.quantity || ''}
-                                onChange={(e) => handleUpdateLocationQuantity(assignment.location_id, parseInt(e.target.value) || 0)}
-                              />
-                            </div>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleRemoveLocation(assignment.location_id)}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        );
-                      })}
-                      <div className="pt-2 border-t">
-                        <p className="text-sm font-medium">
-                          Total Quantity Assigned: {locationAssignments.reduce((sum, loc) => sum + loc.quantity, 0)}
-                        </p>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-center py-8 border-2 border-dashed rounded-lg">
-                      <MapPin className="h-12 w-12 mx-auto mb-2 text-muted-foreground opacity-50" />
-                      <p className="text-sm text-muted-foreground">
-                        No locations assigned yet. Add locations to track inventory.
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )}
-
             </form>
           </div>
           
@@ -862,7 +800,7 @@ export function EnhancedSpillKitInventoryManager() {
                 <Button type="button" variant="outline" onClick={handleCloseDialog}>
                   Cancel
                 </Button>
-                {currentStep < 4 ? (
+                {currentStep < 3 ? (
                   <Button type="button" onClick={nextStep}>
                     Next
                     <ChevronRight className="h-4 w-4 ml-2" />
@@ -907,6 +845,15 @@ export function EnhancedSpillKitInventoryManager() {
           queryClient.invalidateQueries({ queryKey: ['spill_kit_storage_locations'] });
           toast.success('Storage location added successfully');
         }}
+      />
+
+      {/* Storage Location Assignment Modal */}
+      <StorageLocationAssignmentModal
+        isOpen={showLocationAssignmentModal}
+        onClose={() => setShowLocationAssignmentModal(false)}
+        storageLocations={storageLocations || []}
+        locationAssignments={locationAssignments}
+        onUpdateAssignments={setLocationAssignments}
       />
 
       {/* Delete Confirmation Dialog */}
