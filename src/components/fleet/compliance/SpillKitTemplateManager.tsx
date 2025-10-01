@@ -156,8 +156,7 @@ export const SpillKitTemplateManager: React.FC = () => {
               variant="outline"
               className="h-10 bg-gray-50 hover:bg-gray-100 border-gray-300"
             >
-              <Plus className="w-4 h-4 mr-2" />
-              New Template
+              Create New Template
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
