@@ -250,7 +250,7 @@ export function StorageLocationReporting() {
       yPosition += 10;
 
       pdf.setFontSize(12);
-      pdf.text(`Active Garages: ${reportData.summary.total_locations}`, 20, yPosition);
+      pdf.text(`Active Garage Site Locations: ${reportData.summary.total_locations}`, 20, yPosition);
       yPosition += 8;
       pdf.text(`Consumable Types: ${reportData.summary.total_consumable_types}`, 20, yPosition);
       yPosition += 8;
@@ -307,7 +307,7 @@ export function StorageLocationReporting() {
 
     const csvData = [
       ['Summary'],
-      ['Active Garages', reportData.summary.total_locations.toString()],
+      ['Active Garage Site Locations', reportData.summary.total_locations.toString()],
       ['Consumable Types', reportData.summary.total_consumable_types.toString()],
       ['Product Types', reportData.summary.total_product_types.toString()],
       ['Total Stock Value', reportData.summary.total_stock_value.toString()],
@@ -366,7 +366,7 @@ export function StorageLocationReporting() {
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-2xl font-bold">{reportData.summary.total_locations}</div>
-                    <div className="text-sm text-muted-foreground">Active Garages</div>
+                    <div className="text-sm text-muted-foreground">Active Garage Site Locations</div>
                   </div>
                   <Warehouse className="h-8 w-8 text-primary" />
                 </div>
