@@ -109,8 +109,8 @@ export function SpillKitTypeSelectionModal({ isOpen, onClose, onSelect, currentV
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose} modal={true}>
-      <DialogContent className="max-w-4xl max-h-[85vh] bg-background z-[100]" onPointerDownOutside={(e) => e.preventDefault()}>
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) handleClose(); }} modal={true}>
+      <DialogContent className="max-w-4xl max-h-[85vh] bg-background" onPointerDownOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>Select Spill Kit Item Type</DialogTitle>
           <DialogDescription>
