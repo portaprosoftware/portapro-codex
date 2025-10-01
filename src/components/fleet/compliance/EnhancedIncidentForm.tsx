@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { PhotoCapture } from "./PhotoCapture";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { X, Plus, Camera, AlertTriangle, Truck } from "lucide-react";
+import { X, Plus, Camera, AlertTriangle, Truck, MapPin } from "lucide-react";
 import { StockVehicleSelectionModal } from "../StockVehicleSelectionModal";
 import { VehicleSelectedDisplay } from "../VehicleSelectedDisplay";
 import { WeatherSelectionModal } from "./WeatherSelectionModal";
@@ -393,19 +393,6 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
               <Label>Weather Conditions</Label>
               <div className="space-y-2">
                 <div className="grid grid-cols-2 gap-2 max-w-4xl">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setIsWeatherModalOpen(true)}
-                    className="justify-center gap-2 bg-white"
-                  >
-                    <Cloud className="h-4 w-4" />
-                    {weatherConditions.length > 0 ? (
-                      <span className="capitalize truncate">{weatherConditions.join(", ")}</span>
-                    ) : (
-                      <span className="hidden sm:inline">Select Weather Conditions | Manual</span>
-                    )}
-                  </Button>
                   <Button 
                     type="button" 
                     variant="outline" 
@@ -420,9 +407,22 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
                       </>
                     ) : (
                       <>
-                        <Cloud className="h-4 w-4" />
-                        <span className="hidden sm:inline">Auto Add Weather | Current Location</span>
+                        <MapPin className="h-4 w-4" />
+                        <span className="hidden sm:inline">Auto-Add Weather</span>
                       </>
+                    )}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsWeatherModalOpen(true)}
+                    className="justify-center gap-2 bg-white"
+                  >
+                    <Cloud className="h-4 w-4" />
+                    {weatherConditions.length > 0 ? (
+                      <span className="capitalize truncate">{weatherConditions.join(", ")}</span>
+                    ) : (
+                      <span className="hidden sm:inline">Select Weather Condition | Manual Entry</span>
                     )}
                   </Button>
                 </div>
