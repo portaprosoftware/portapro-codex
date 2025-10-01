@@ -298,7 +298,7 @@ const TemplateForm: React.FC<{
   });
   const [items, setItems] = useState<Partial<TemplateItem>[]>(
     template?.items || [
-      { item_name: "", required_quantity: 1, critical_item: false, category: "absorbent", expiration_trackable: false }
+      { item_name: "", required_quantity: 1, critical_item: false, category: "", expiration_trackable: false }
     ]
   );
   const [vehicleSelectorOpen, setVehicleSelectorOpen] = useState(false);
@@ -398,7 +398,7 @@ const TemplateForm: React.FC<{
       item_name: "",
       required_quantity: 1,
       critical_item: false,
-      category: "absorbent",
+      category: "",
       expiration_trackable: false
     }]);
   };
@@ -427,6 +427,7 @@ const TemplateForm: React.FC<{
   };
 
   const getCategoryLabel = (category: string) => {
+    if (!category) return 'Select Category Type';
     const labels: Record<string, string> = {
       'absorbent': 'Absorbents',
       'containment': 'Containment & Control',
@@ -577,9 +578,9 @@ const TemplateForm: React.FC<{
                     type="button"
                     variant="outline"
                     onClick={() => handleOpenTypeModal(index)}
-                    className="w-full justify-start text-left font-normal"
+                    className={`w-full justify-start text-left font-normal ${!item.category ? 'text-muted-foreground' : ''}`}
                   >
-                    {getCategoryLabel(item.category || "absorbent")}
+                    {getCategoryLabel(item.category || "")}
                   </Button>
                 </div>
               </div>

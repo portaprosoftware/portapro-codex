@@ -50,7 +50,7 @@ export function SpillKitInventoryManager() {
   const [typeModalOpen, setTypeModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     item_name: '',
-    item_type: 'absorbent',
+    item_type: '',
     unit_cost: '',
     current_stock: '',
     minimum_threshold: '',
@@ -151,7 +151,7 @@ export function SpillKitInventoryManager() {
       setEditingItem(null);
       setFormData({
         item_name: '',
-        item_type: 'absorbent',
+        item_type: '',
         unit_cost: '',
         current_stock: '',
         minimum_threshold: '',
@@ -187,6 +187,7 @@ export function SpillKitInventoryManager() {
   };
 
   const getTypeLabel = (type: string) => {
+    if (!type) return 'Select Category Type';
     const labels: Record<string, string> = {
       'absorbent': 'Absorbents',
       'containment': 'Containment & Control',
@@ -360,7 +361,7 @@ export function SpillKitInventoryManager() {
                     type="button"
                     variant="outline"
                     onClick={() => setTypeModalOpen(true)}
-                    className="w-full justify-start text-left font-normal h-12"
+                    className={`w-full justify-start text-left font-normal h-12 ${!formData.item_type ? 'text-muted-foreground' : ''}`}
                   >
                     {getTypeLabel(formData.item_type)}
                   </Button>
