@@ -164,6 +164,29 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
     }
   });
 
+  // Fetch inventory items for enriching inspection data
+  const { data: inventoryItems } = useQuery({
+    queryKey: ['spill-kit-inventory'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('spill_kit_inventory')
+        .select('id, item_name, item_type')
+        .order('item_name');
+      
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  // Create inventory lookup map
+  const inventoryMap = useMemo(() => {
+    const map: Record<string, { name: string; category: string }> = {};
+    inventoryItems?.forEach(item => {
+      map[item.id] = { name: item.item_name, category: item.item_type || 'Uncategorized' };
+    });
+    return map;
+  }, [inventoryItems]);
+
   // Fetch default spill kit template for selected vehicle
   const { data: autoTemplateData, isLoading: templateLoading } = useQuery({
     queryKey: ["spill-kit-template", vehicleId],
@@ -263,11 +286,22 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
       const duration = Math.round((Date.now() - checkStartTime) / 1000 / 60); // minutes
       const nextCheckDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
       
+      // Enrich item conditions with item names and categories from inventory
+      const enrichedItemConditions: Record<string, ItemCondition & { item_name?: string; item_category?: string }> = {};
+      Object.entries(itemConditions).forEach(([itemId, condition]) => {
+        const inventoryItem = inventoryMap[itemId];
+        enrichedItemConditions[itemId] = {
+          ...condition,
+          item_name: inventoryItem?.name,
+          item_category: inventoryItem?.category
+        };
+      });
+      
       const checkData = {
         vehicle_id: vehicleId,
         template_id: selectedTemplate.template_id,
         has_kit: kitStatus !== 'failed',
-        item_conditions: itemConditions,
+        item_conditions: enrichedItemConditions,
         photos,
         notes,
         weather_conditions: weather.length > 0 ? weather.join(", ") : null,

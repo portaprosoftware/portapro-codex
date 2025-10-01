@@ -31,6 +31,29 @@ export function SpillKitExpirationDashboard() {
   const [filterCategory, setFilterCategory] = useState<string>("all");
 
   const hasActiveFilters = searchTerm || filterVehicle !== "all" || filterCategory !== "all";
+
+  // Fetch inventory items for name lookup
+  const { data: inventoryItems } = useQuery({
+    queryKey: ['spill-kit-inventory'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('spill_kit_inventory')
+        .select('id, item_name, item_type')
+        .order('item_name');
+      
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  // Create inventory lookup map
+  const inventoryMap = useMemo(() => {
+    const map: Record<string, { name: string; category: string }> = {};
+    inventoryItems?.forEach(item => {
+      map[item.id] = { name: item.item_name, category: item.item_type || 'Uncategorized' };
+    });
+    return map;
+  }, [inventoryItems]);
   
   const clearAllFilters = () => {
     setSearchTerm("");
@@ -80,13 +103,18 @@ export function SpillKitExpirationDashboard() {
               ? `${check.vehicles.make} ${check.vehicles.model}${check.vehicles.nickname ? ` - ${check.vehicles.nickname}` : ''}`
               : check.vehicles?.vehicle_type || 'Unknown';
             
+            // Use inventory lookup to get item name and category, fall back to stored values or ID
+            const inventoryItem = inventoryMap[itemId];
+            const itemName = inventoryItem?.name || condition.item_name || itemId;
+            const itemCategory = inventoryItem?.category || condition.item_category || 'Uncategorized';
+            
             items.push({
               id: `${check.id}-${itemId}`,
               vehicle_id: check.vehicle_id,
               vehicle_name: vehicleName,
               license_plate: check.vehicles?.license_plate || 'N/A',
-              item_name: condition.item_name || itemId,
-              item_category: condition.item_category || 'Uncategorized',
+              item_name: itemName,
+              item_category: itemCategory,
               expiration_date: condition.expiration_date,
               last_inspection_date: inspectionDate,
               check_id: check.id,
