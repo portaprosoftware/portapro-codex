@@ -772,7 +772,7 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
               )}
             </div>
             <div className="space-y-2">
-              <p className="text-sm font-medium">{documentFiles.length} / 5 document(s) selected:</p>
+              <p className="text-sm text-muted-foreground">{documentFiles.length} / 5 document(s) selected:</p>
               {documentFiles.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                   {Array.from(documentFiles).map((file, idx) => (
