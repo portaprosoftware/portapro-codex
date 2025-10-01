@@ -236,25 +236,14 @@ export function SpillKitInspectionHistory() {
 
   return (
     <div className="space-y-4">
-      {/* Header with Search */}
-      <div className="flex items-center gap-4">
-        <div className="flex-shrink-0">
-          <h3 className="text-lg font-semibold">Inspection History</h3>
-          <p className="text-sm text-muted-foreground">View past inspections and tracked expiration dates</p>
-        </div>
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search vehicle, plate, or person..."
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            className="pl-9"
-          />
-        </div>
+      {/* Header */}
+      <div>
+        <h3 className="text-lg font-semibold">Inspection History</h3>
+        <p className="text-sm text-muted-foreground">View past inspections and tracked expiration dates</p>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-wrap items-center gap-3">
+      {/* Filters Row */}
+      <div className="flex items-center gap-3">
         {/* Vehicle Multi-Select Filter */}
         <Button
           variant="outline"
@@ -321,27 +310,37 @@ export function SpillKitInspectionHistory() {
           </PopoverContent>
         </Popover>
 
-        {/* Clear Filters - Now inline */}
-        {(searchText || selectedVehicles.length > 0 || startDate || endDate) && (
-          <>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                setSearchText("");
-                setSelectedVehicles([]);
-                setStartDate(undefined);
-                setEndDate(undefined);
-              }}
-            >
-              Clear all filters
-            </Button>
-            <span className="text-sm text-muted-foreground">
-              Showing {filteredInspections.length} of {allInspections?.length || 0} inspections
-            </span>
-          </>
-        )}
+        {/* Search Bar */}
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search vehicle, plate, or person..."
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            className="pl-9"
+          />
+        </div>
       </div>
+
+      {/* Clear Filters and Results Count Row */}
+      {(searchText || selectedVehicles.length > 0 || startDate || endDate) && (
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => {
+              setSearchText("");
+              setSelectedVehicles([]);
+              setStartDate(undefined);
+              setEndDate(undefined);
+            }}
+            className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+          >
+            Clear all filters
+          </button>
+          <p className="text-sm text-muted-foreground">
+            Showing {filteredInspections.length} of {allInspections?.length || 0} inspections
+          </p>
+        </div>
+      )}
 
       {/* Vehicle Multi-Select Modal */}
       <MultiSelectVehicleFilter
