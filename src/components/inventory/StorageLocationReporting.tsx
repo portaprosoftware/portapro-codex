@@ -126,7 +126,7 @@ export function StorageLocationReporting() {
 
       // Title
       pdf.setFontSize(20);
-      pdf.text('Storage Location Report', pageWidth / 2, yPosition, { align: 'center' });
+      pdf.text('Storage Garage Report', pageWidth / 2, yPosition, { align: 'center' });
       yPosition += 20;
 
       // Date
@@ -140,16 +140,16 @@ export function StorageLocationReporting() {
       yPosition += 10;
 
       pdf.setFontSize(12);
-      pdf.text(`Active Locations: ${reportData.summary.total_locations}`, 20, yPosition);
+      pdf.text(`Active Garages: ${reportData.summary.total_locations}`, 20, yPosition);
       yPosition += 8;
       pdf.text(`Consumable Types: ${reportData.summary.total_consumable_types}`, 20, yPosition);
       yPosition += 8;
       pdf.text(`Total Stock Value: $${reportData.summary.total_stock_value.toLocaleString()}`, 20, yPosition);
       yPosition += 20;
 
-      // Location Details
+      // Garage Details
       pdf.setFontSize(16);
-      pdf.text('Location Details', 20, yPosition);
+      pdf.text('Garage Details', 20, yPosition);
       yPosition += 10;
 
       reportData.location_details.forEach((location) => {
@@ -173,7 +173,7 @@ export function StorageLocationReporting() {
         yPosition += 15;
       });
 
-      pdf.save(`storage-location-report-${new Date().toISOString().split('T')[0]}.pdf`);
+      pdf.save(`storage-garage-report-${new Date().toISOString().split('T')[0]}.pdf`);
       toast.success("PDF report exported successfully");
     } catch (error) {
       toast.error("Failed to export PDF");
@@ -186,7 +186,7 @@ export function StorageLocationReporting() {
     if (!reportData) return;
 
     const csvData = [
-      ['Location Name', 'Description', 'Is Default', 'Consumable Types', 'Total Units', 'Total Value'],
+      ['Garage Name', 'Description', 'Is Default', 'Consumable Types', 'Total Units', 'Total Value'],
       ...reportData.location_details.map(location => [
         location.location_name,
         location.description || '',
@@ -202,7 +202,7 @@ export function StorageLocationReporting() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `storage-location-report-${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `storage-garage-report-${new Date().toISOString().split('T')[0]}.csv`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -238,7 +238,7 @@ export function StorageLocationReporting() {
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-2xl font-bold">{reportData.summary.total_locations}</div>
-                    <div className="text-sm text-muted-foreground">Active Locations</div>
+                    <div className="text-sm text-muted-foreground">Active Garages</div>
                   </div>
                   <Building className="h-8 w-8 text-primary" />
                 </div>
@@ -270,10 +270,10 @@ export function StorageLocationReporting() {
             </Card>
           </div>
 
-          {/* Location Details */}
+          {/* Garage Details */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-              <CardTitle>Location Details</CardTitle>
+              <CardTitle>Garage Details</CardTitle>
               <div className="flex gap-2">
                 <Button
                   variant="outline"

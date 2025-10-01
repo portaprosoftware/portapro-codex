@@ -1,6 +1,6 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Building, BarChart3, Plus } from "lucide-react";
+import { Warehouse, BarChart3, Plus } from "lucide-react";
 import { TabNav } from "@/components/ui/TabNav";
 import { Button } from "@/components/ui/button";
 
@@ -14,12 +14,12 @@ export const StorageSitesNavigation: React.FC<StorageSitesNavigationProps> = ({ 
 
   const navigationItems = [
     {
-      title: "Storage Locations",
+      title: "Garages",
       value: "locations",
-      icon: Building
+      icon: Warehouse
     },
     {
-      title: "Location Reporting", 
+      title: "Garage Reporting", 
       value: "reporting",
       icon: BarChart3
     }
@@ -37,19 +37,19 @@ export const StorageSitesNavigation: React.FC<StorageSitesNavigationProps> = ({ 
         <div className="flex items-center justify-between mb-4">
           <div>
             <h1 className="text-2xl font-semibold text-gray-900 font-inter">
-              Storage Sites
+              Storage Garages
             </h1>
             <p className="text-gray-600 mt-1">
-              Manage storage locations and view location analytics
+              Manage storage garages and view garage analytics
             </p>
           </div>
           <Button onClick={onAddStorage} className="bg-gradient-to-r from-blue-700 to-blue-800 text-white hover:from-blue-800 hover:to-blue-900 gap-2">
             <Plus className="h-4 w-4" />
-            Add Storage Site
+            Add Storage Garage
           </Button>
         </div>
         
-        <TabNav ariaLabel="Storage Sites Navigation">
+        <TabNav ariaLabel="Storage Garages Navigation">
           {navigationItems.map((item) => (
             <TabNav.Item
               key={item.value}
