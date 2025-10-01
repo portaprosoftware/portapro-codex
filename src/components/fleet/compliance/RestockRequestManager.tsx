@@ -147,7 +147,23 @@ export const RestockRequestManager: React.FC = () => {
           <h2 className="text-lg font-semibold">Restock Requests</h2>
           <p className="text-muted-foreground">Manage spill kit inventory restock requests</p>
         </div>
-        <Package className="h-6 w-6 text-muted-foreground" />
+        <div className="flex items-center gap-4">
+          <div className="flex flex-col gap-1">
+            <Label htmlFor="status-filter" className="text-sm">Filter by Status</Label>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger id="status-filter" className="w-[200px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Requests</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="in_progress">In Progress</SelectItem>
+                <SelectItem value="completed">Completed</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <Package className="h-6 w-6 text-muted-foreground" />
+        </div>
       </div>
 
       {/* Summary Cards */}
@@ -200,28 +216,6 @@ export const RestockRequestManager: React.FC = () => {
           </CardContent>
         </Card>
       </div>
-
-      {/* Filters */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex gap-4">
-            <div className="w-64">
-              <Label htmlFor="status-filter">Filter by Status</Label>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Requests</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="in_progress">In Progress</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Requests List */}
       <div className="space-y-4">
