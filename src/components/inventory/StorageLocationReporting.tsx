@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Download, Warehouse, Package, DollarSign } from "lucide-react";
+import { Download, Warehouse, Package, DollarSign, Box } from "lucide-react";
 import { toast } from "sonner";
 import jsPDF from 'jspdf';
 
@@ -12,6 +12,7 @@ interface LocationReportData {
   summary: {
     total_locations: number;
     total_consumable_types: number;
+    total_product_types: number;
     total_stock_value: number;
   };
   location_details: Array<{
@@ -47,9 +48,19 @@ export function StorageLocationReporting() {
       
       if (consumablesError) throw consumablesError;
 
+      // Get all products (product types) with stock in locations
+      const { data: products, error: productsError } = await supabase
+        .from('products')
+        .select('id, name, stock_total')
+        .eq('is_active', true)
+        .gt('stock_total', 0);
+      
+      if (productsError) throw productsError;
+
       // Calculate summary data
       const totalLocations = locations?.length || 0;
       const totalConsumableTypes = consumables?.length || 0;
+      const totalProductTypes = products?.length || 0;
       
       // Calculate total stock value from location_stock JSON
       let totalStockValue = 0;
@@ -101,6 +112,7 @@ export function StorageLocationReporting() {
         summary: {
           total_locations: totalLocations,
           total_consumable_types: totalConsumableTypes,
+          total_product_types: totalProductTypes,
           total_stock_value: totalStockValue
         },
         location_details: locationDetails.sort((a, b) => {
@@ -144,6 +156,8 @@ export function StorageLocationReporting() {
       yPosition += 8;
       pdf.text(`Consumable Types: ${reportData.summary.total_consumable_types}`, 20, yPosition);
       yPosition += 8;
+      pdf.text(`Product Types: ${reportData.summary.total_product_types}`, 20, yPosition);
+      yPosition += 8;
       pdf.text(`Total Stock Value: $${reportData.summary.total_stock_value.toLocaleString()}`, 20, yPosition);
       yPosition += 20;
 
@@ -186,6 +200,12 @@ export function StorageLocationReporting() {
     if (!reportData) return;
 
     const csvData = [
+      ['Summary'],
+      ['Active Garages', reportData.summary.total_locations.toString()],
+      ['Consumable Types', reportData.summary.total_consumable_types.toString()],
+      ['Product Types', reportData.summary.total_product_types.toString()],
+      ['Total Stock Value', reportData.summary.total_stock_value.toString()],
+      [],
       ['Garage Name', 'Description', 'Is Default', 'Consumable Types', 'Total Units', 'Total Value'],
       ...reportData.location_details.map(location => [
         location.location_name,
@@ -232,7 +252,7 @@ export function StorageLocationReporting() {
       {reportData && (
         <>
           {/* Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
@@ -252,6 +272,17 @@ export function StorageLocationReporting() {
                     <div className="text-sm text-muted-foreground">Consumable Types</div>
                   </div>
                   <Package className="h-8 w-8 text-primary" />
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-2xl font-bold">{reportData.summary.total_product_types}</div>
+                    <div className="text-sm text-muted-foreground">Product Types</div>
+                  </div>
+                  <Box className="h-8 w-8 text-primary" />
                 </div>
               </CardContent>
             </Card>
