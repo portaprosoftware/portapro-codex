@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Download, Warehouse, Package, DollarSign, Box, Shield } from "lucide-react";
+import { Download, Warehouse, Package, DollarSign, Box, Shield, Droplet } from "lucide-react";
 import { toast } from "sonner";
 import jsPDF from 'jspdf';
 
@@ -365,7 +365,7 @@ export function StorageLocationReporting() {
                     <div className="text-2xl font-bold">{reportData.summary.total_consumable_types}</div>
                     <div className="text-sm text-muted-foreground">Consumable Types</div>
                   </div>
-                  <Package className="h-8 w-8 text-primary" />
+                  <Droplet className="h-8 w-8 text-primary" />
                 </div>
               </CardContent>
             </Card>
@@ -411,7 +411,7 @@ export function StorageLocationReporting() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
                 <CardTitle className="flex items-center gap-2">
-                  <Package className="h-5 w-5 text-primary" />
+                  <Droplet className="h-5 w-5 text-primary" />
                   Consumable Details by Location
                 </CardTitle>
                 <div className="flex gap-2">
@@ -458,9 +458,6 @@ export function StorageLocationReporting() {
                             <div key={idx} className="flex justify-between items-center text-sm p-2 bg-muted/50 rounded">
                               <div className="flex items-center gap-2">
                                 <span className="font-medium">{item.item_name}</span>
-                                <Badge variant="outline" className="text-xs">
-                                  {item.category}
-                                </Badge>
                               </div>
                               <div className="flex items-center gap-3 text-muted-foreground">
                                 <span>{item.quantity} units</span>
