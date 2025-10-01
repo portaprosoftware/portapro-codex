@@ -15,7 +15,7 @@ import { AddDocumentForm } from "./AddDocumentForm";
 import { UpdateDocumentModal } from "./UpdateDocumentModal";
 import { SpillKitsTab } from "./compliance/SpillKitsTab";
 import { SpillKitExpirationDashboard } from "./compliance/SpillKitExpirationDashboard";
-import { IncidentsTab } from "./compliance/IncidentsTab";
+import { IncidentRoleGateway } from "./compliance/IncidentRoleGateway";
 import { DeconLogsTab } from "./compliance/DeconLogsTab";
 import { ComplianceReporting } from "./ComplianceReporting";
 import { VehicleManagementTab } from "./compliance/VehicleManagementTab";
@@ -124,7 +124,7 @@ export const FleetCompliance: React.FC = () => {
             </TabsContent>
 
             <TabsContent value="incidents">
-              <IncidentsTab />
+              <IncidentRoleGateway />
             </TabsContent>
 
             <TabsContent value="decon">

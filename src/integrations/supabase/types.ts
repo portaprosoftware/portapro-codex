@@ -7683,6 +7683,8 @@ export type Database = {
           cleanup_photos: Json | null
           closed_at: string | null
           created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
           disposal_method: string | null
           driver_id: string
           environmental_impact: string | null
@@ -7717,6 +7719,8 @@ export type Database = {
           cleanup_photos?: Json | null
           closed_at?: string | null
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           disposal_method?: string | null
           driver_id: string
           environmental_impact?: string | null
@@ -7751,6 +7755,8 @@ export type Database = {
           cleanup_photos?: Json | null
           closed_at?: string | null
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           disposal_method?: string | null
           driver_id?: string
           environmental_impact?: string | null
