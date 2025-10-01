@@ -423,17 +423,38 @@ const TemplateForm: React.FC<{
   const handleSelectType = (type: string, selectedExamples?: string[]) => {
     if (editingItemIndex !== null) {
       if (selectedExamples && selectedExamples.length > 0) {
-        // Auto-add multiple items based on selected examples
+        // Auto-add multiple items based on selected examples, but check for duplicates
         const newItems = [...items];
-        // Update the current item with the first example
+        
+        // Filter out examples that already exist in the template
+        const existingItemNames = new Set(
+          items.map(item => `${item.item_name}|${item.category}`).filter(Boolean)
+        );
+        
+        const uniqueExamples = selectedExamples.filter(example => 
+          !existingItemNames.has(`${example}|${type}`)
+        );
+        
+        if (uniqueExamples.length === 0) {
+          toast({
+            title: "Items already exist",
+            description: "All selected items are already in this template.",
+            variant: "default"
+          });
+          setTypeModalOpen(false);
+          setEditingItemIndex(null);
+          return;
+        }
+        
+        // Update the current item with the first unique example
         newItems[editingItemIndex] = {
           ...newItems[editingItemIndex],
           category: type,
-          item_name: selectedExamples[0]
+          item_name: uniqueExamples[0]
         };
         
-        // Add additional items for remaining examples
-        const additionalItems = selectedExamples.slice(1).map(example => ({
+        // Add additional items for remaining unique examples
+        const additionalItems = uniqueExamples.slice(1).map(example => ({
           item_name: example,
           required_quantity: 1,
           critical_item: false,
@@ -444,6 +465,16 @@ const TemplateForm: React.FC<{
         // Insert additional items after the current item
         newItems.splice(editingItemIndex + 1, 0, ...additionalItems);
         setItems(newItems);
+        
+        // Show toast if some items were skipped
+        const skippedCount = selectedExamples.length - uniqueExamples.length;
+        if (skippedCount > 0) {
+          toast({
+            title: "Some items skipped",
+            description: `${skippedCount} item(s) already exist in the template and were not added.`,
+            variant: "default"
+          });
+        }
       } else {
         // Just update category if no examples selected
         updateItem(editingItemIndex, 'category', type);
