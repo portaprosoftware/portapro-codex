@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { 
   Sun, 
@@ -94,10 +95,19 @@ type Props = {
 export const WeatherSelectionModal: React.FC<Props> = ({ isOpen, onClose, onSelect, currentValue = [] }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedConditions, setSelectedConditions] = useState<string[]>(currentValue);
+  const [otherDescription, setOtherDescription] = useState("");
 
   // Update selected conditions when modal opens with new currentValue
   useEffect(() => {
-    setSelectedConditions(currentValue);
+    // Parse the currentValue to extract "other" and its description
+    const parsedConditions = currentValue.map(v => {
+      if (v.startsWith("other:")) {
+        setOtherDescription(v.substring(6).trim());
+        return "other";
+      }
+      return v;
+    });
+    setSelectedConditions(parsedConditions);
   }, [isOpen, currentValue]);
 
   const toggleCondition = (value: string, categoryId: string) => {
@@ -131,12 +141,26 @@ export const WeatherSelectionModal: React.FC<Props> = ({ isOpen, onClose, onSele
   };
 
   const handleApply = () => {
-    onSelect(selectedConditions);
+    // If "other" is selected, validate that description is provided
+    if (selectedConditions.includes("other")) {
+      if (!otherDescription.trim()) {
+        return; // Don't submit if description is empty
+      }
+      // Replace "other" with "other: description"
+      const updatedConditions = selectedConditions
+        .filter(c => c !== "other")
+        .concat([`other: ${otherDescription.trim()}`]);
+      onSelect(updatedConditions);
+    } else {
+      onSelect(selectedConditions);
+    }
     onClose();
+    setOtherDescription("");
   };
 
   const handleClear = () => {
     setSelectedConditions([]);
+    setOtherDescription("");
   };
 
   // Filter categories based on search query
@@ -186,6 +210,7 @@ export const WeatherSelectionModal: React.FC<Props> = ({ isOpen, onClose, onSele
                 return option ? (
                   <Badge key={value} variant="default" className="gap-1">
                     {option.label}
+                    {value === "other" && otherDescription && `: ${otherDescription}`}
                   </Badge>
                 ) : null;
               })}
@@ -238,6 +263,26 @@ export const WeatherSelectionModal: React.FC<Props> = ({ isOpen, onClose, onSele
             ))}
           </Accordion>
 
+          {/* Other description field */}
+          {selectedConditions.includes("other") && (
+            <div className="space-y-2 p-4 border rounded-lg bg-muted/30">
+              <Label htmlFor="other-description" className="text-sm font-semibold">
+                Other Description <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="other-description"
+                placeholder="Please describe the weather conditions..."
+                value={otherDescription}
+                onChange={(e) => setOtherDescription(e.target.value)}
+                className="w-full"
+                required
+              />
+              {selectedConditions.includes("other") && !otherDescription.trim() && (
+                <p className="text-sm text-red-500">Description is required when "Other" is selected</p>
+              )}
+            </div>
+          )}
+
           {filteredCategories.length === 0 && (
             <div className="text-center py-8 text-muted-foreground">
               No weather conditions match your search
@@ -254,7 +299,10 @@ export const WeatherSelectionModal: React.FC<Props> = ({ isOpen, onClose, onSele
             <Button variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button onClick={handleApply}>
+            <Button 
+              onClick={handleApply}
+              disabled={selectedConditions.includes("other") && !otherDescription.trim()}
+            >
               Apply ({selectedConditions.length})
             </Button>
           </div>

@@ -231,11 +231,25 @@ export function SpillKitInspectionDetailModal({
       hot: <ThermometerSun className="h-4 w-4" />,
       cold: <ThermometerSnowflake className="h-4 w-4" />,
       icy: <Droplets className="h-4 w-4" />,
-      other: <HelpCircle className="h-4 w-4" />,
     };
     
     const normalizedCondition = condition.toLowerCase().trim();
-    return iconMap[normalizedCondition] || iconMap.other;
+    // Check if it's "other: description" format
+    if (normalizedCondition.startsWith("other")) {
+      return <HelpCircle className="h-4 w-4" />;
+    }
+    return iconMap[normalizedCondition] || <HelpCircle className="h-4 w-4" />;
+  };
+
+  // Format weather condition text for display
+  const formatWeatherCondition = (condition: string) => {
+    const trimmed = condition.trim();
+    // If it starts with "other:", keep the full text but capitalize properly
+    if (trimmed.toLowerCase().startsWith("other:")) {
+      const description = trimmed.substring(6).trim();
+      return `Other: ${description.charAt(0).toUpperCase() + description.slice(1)}`;
+    }
+    return toTitleCase(trimmed);
   };
 
   return (
@@ -344,14 +358,14 @@ export function SpillKitInspectionDetailModal({
                   </Button>
                   {editedData?.weather_conditions && (
                     <div className="flex flex-wrap gap-2">
-                      {editedData.weather_conditions.split(',').map((condition: string) => (
+                      {editedData.weather_conditions.split(',').map((condition: string, index: number) => (
                         <Badge 
-                          key={condition} 
+                          key={`${condition}-${index}`}
                           variant="outline"
                           className="border-blue-500 text-blue-600 bg-transparent font-bold gap-2"
                         >
                           {getWeatherIcon(condition.trim())}
-                          {toTitleCase(condition.trim())}
+                          {formatWeatherCondition(condition)}
                         </Badge>
                       ))}
                     </div>
@@ -360,14 +374,14 @@ export function SpillKitInspectionDetailModal({
               ) : (
                 <div className="flex flex-wrap gap-2">
                   {inspection.weather_conditions ? (
-                    inspection.weather_conditions.split(',').map((condition: string) => (
+                    inspection.weather_conditions.split(',').map((condition: string, index: number) => (
                       <Badge 
-                        key={condition} 
+                        key={`${condition}-${index}`}
                         variant="outline"
                         className="border-blue-500 text-blue-600 bg-transparent font-bold gap-2"
                       >
                         {getWeatherIcon(condition.trim())}
-                        {toTitleCase(condition.trim())}
+                        {formatWeatherCondition(condition)}
                       </Badge>
                     ))
                   ) : (
