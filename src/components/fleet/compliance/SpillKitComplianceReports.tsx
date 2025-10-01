@@ -201,7 +201,7 @@ Has Kit: ${v.has_kit ? 'Yes' : 'No'}
       {/* Report Configuration */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-lg">
             <Filter className="h-5 w-5" />
             Report Configuration
           </CardTitle>
