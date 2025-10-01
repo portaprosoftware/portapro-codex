@@ -180,12 +180,17 @@ export const FleetOverview: React.FC = () => {
                   <h3 className="text-lg font-semibold">Spill Kit Compliance</h3>
                   <span className="text-sm text-muted-foreground">DOT/OSHA compliance monitoring</span>
                 </div>
-                <ChevronDown 
-                  className={cn(
-                    "h-4 w-4 transition-transform flex-shrink-0",
-                    isSpillKitCollapsed && "rotate-180"
-                  )} 
-                />
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">
+                    {isSpillKitCollapsed ? 'Expand' : 'Collapse'}
+                  </span>
+                  <ChevronDown 
+                    className={cn(
+                      "h-4 w-4 transition-transform flex-shrink-0",
+                      isSpillKitCollapsed && "rotate-180"
+                    )} 
+                  />
+                </div>
               </CollapsibleTrigger>
               <Button 
                 variant="outline" 
