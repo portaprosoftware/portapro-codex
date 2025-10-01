@@ -18,6 +18,7 @@ import FleetAssignmentsPage from './pages/FleetAssignmentsPage';
 import FleetCompliancePage from './pages/FleetCompliancePage';
 import FleetMaintenancePage from './pages/FleetMaintenancePage';
 import FleetLoadsPage from './pages/FleetLoadsPage';
+import SpillKitInventoryPage from './pages/SpillKitInventoryPage';
 import Marketing from './pages/Marketing';
 import Analytics from "./pages/Analytics";
 import MaintenanceHub from "./pages/MaintenanceHub";
@@ -300,6 +301,12 @@ const App = () => {
           <Route path="/fleet/maintenance" element={
             <>
               <SignedIn><Layout><FleetMaintenancePage /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/fleet/spill-kit-inventory" element={
+            <>
+              <SignedIn><Layout><SpillKitInventoryPage /></Layout></SignedIn>
               <SignedOut><Auth /></SignedOut>
             </>
           } />

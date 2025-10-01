@@ -7970,9 +7970,15 @@ export type Database = {
           current_stock: number | null
           id: string
           item_name: string
+          item_type: string | null
           last_restocked: string | null
           minimum_threshold: number | null
+          notes: string | null
+          reorder_quantity: number | null
+          supplier_contact: string | null
           supplier_info: Json | null
+          supplier_name: string | null
+          supplier_sku: string | null
           unit_cost: number | null
           updated_at: string
         }
@@ -7981,9 +7987,15 @@ export type Database = {
           current_stock?: number | null
           id?: string
           item_name: string
+          item_type?: string | null
           last_restocked?: string | null
           minimum_threshold?: number | null
+          notes?: string | null
+          reorder_quantity?: number | null
+          supplier_contact?: string | null
           supplier_info?: Json | null
+          supplier_name?: string | null
+          supplier_sku?: string | null
           unit_cost?: number | null
           updated_at?: string
         }
@@ -7992,9 +8004,15 @@ export type Database = {
           current_stock?: number | null
           id?: string
           item_name?: string
+          item_type?: string | null
           last_restocked?: string | null
           minimum_threshold?: number | null
+          notes?: string | null
+          reorder_quantity?: number | null
+          supplier_contact?: string | null
           supplier_info?: Json | null
+          supplier_name?: string | null
+          supplier_sku?: string | null
           unit_cost?: number | null
           updated_at?: string
         }
