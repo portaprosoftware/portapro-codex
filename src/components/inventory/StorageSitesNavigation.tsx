@@ -14,12 +14,12 @@ export const StorageSitesNavigation: React.FC<StorageSitesNavigationProps> = ({ 
 
   const navigationItems = [
     {
-      title: "Garage Site Locations",
+      title: "Garage Storage Locations",
       value: "locations",
       icon: Warehouse
     },
     {
-      title: "Garage Sites | Inventory Details", 
+      title: "Garage Location Data", 
       value: "reporting",
       icon: BarChart3
     }
