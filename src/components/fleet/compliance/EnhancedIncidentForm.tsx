@@ -16,8 +16,9 @@ import { X, Plus, Camera, AlertTriangle, Truck, MapPin } from "lucide-react";
 import { StockVehicleSelectionModal } from "../StockVehicleSelectionModal";
 import { VehicleSelectedDisplay } from "../VehicleSelectedDisplay";
 import { WeatherSelectionModal } from "./WeatherSelectionModal";
+import { SpillTypeSelectionModal } from "./SpillTypeSelectionModal";
 import { useGeolocation } from "@/hooks/useGeolocation";
-import { Cloud, Loader2 } from "lucide-react";
+import { Cloud, Loader2, AlertOctagon } from "lucide-react";
 
 type Props = {
   onSaved?: () => void;
@@ -37,6 +38,8 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
   const [vehicleId, setVehicleId] = useState<string>("");
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [spillTypeId, setSpillTypeId] = useState<string>("");
+  const [spillTypeName, setSpillTypeName] = useState<string>("");
+  const [spillTypeClassification, setSpillTypeClassification] = useState<string>("");
   const [location, setLocation] = useState<string>("");
   const [cause, setCause] = useState<string>("");
   const [action, setAction] = useState<string>("");
@@ -62,6 +65,7 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
   const [fetchingWeather, setFetchingWeather] = useState(false);
   const [weatherDetails, setWeatherDetails] = useState<string>("");
   const [isWeatherModalOpen, setIsWeatherModalOpen] = useState(false);
+  const [isSpillTypeModalOpen, setIsSpillTypeModalOpen] = useState(false);
   
   const { latitude, longitude, error: gpsError } = useGeolocation();
 
@@ -156,20 +160,26 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
     setIsVehicleModalOpen(false);
   };
 
+  const handleSpillTypeSelect = (typeName: string, classification: string) => {
+    setSpillTypeName(typeName);
+    setSpillTypeClassification(classification);
+    setSpillTypeId(typeName); // Use name as ID for now
+  };
+
   const canSave = useMemo(() => {
     return (
       vehicleId.trim().length > 0 &&
-      spillTypeId.trim().length > 0 &&
+      spillTypeName.trim().length > 0 &&
       location.trim().length > 0 &&
       cause.trim().length > 0
     );
-  }, [vehicleId, spillTypeId, location, cause]);
+  }, [vehicleId, spillTypeName, location, cause]);
 
   const handleSave = async () => {
     try {
       const incidentData = {
         vehicle_id: vehicleId,
-        spill_type: spillTypes.find(st => st.id === spillTypeId)?.name || "",
+        spill_type: spillTypeName,
         location_description: location,
         cause_description: cause,
         immediate_action_taken: action || null,
@@ -290,18 +300,24 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
 
             <div>
               <Label>Spill Type *</Label>
-              <Select value={spillTypeId} onValueChange={setSpillTypeId}>
-                <SelectTrigger className="bg-white">
-                  <SelectValue placeholder="Select spill type..." />
-                </SelectTrigger>
-                <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
-                  {spillTypes.map((type) => (
-                    <SelectItem key={type.id} value={type.id}>
-                      {type.name} ({type.category})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full justify-start bg-white"
+                onClick={() => setIsSpillTypeModalOpen(true)}
+              >
+                <AlertOctagon className="mr-2 h-4 w-4 text-red-500" />
+                {spillTypeName ? (
+                  <span className="flex items-center gap-2">
+                    <span className="font-medium">{spillTypeName}</span>
+                    {spillTypeClassification && (
+                      <Badge variant="secondary" className="text-xs">{spillTypeClassification}</Badge>
+                    )}
+                  </span>
+                ) : (
+                  <span>Select spill type...</span>
+                )}
+              </Button>
             </div>
 
             <div>
@@ -440,6 +456,13 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
               onClose={() => setIsWeatherModalOpen(false)}
               onSelect={setWeatherConditions}
               currentValue={weatherConditions}
+            />
+
+            <SpillTypeSelectionModal
+              isOpen={isSpillTypeModalOpen}
+              onClose={() => setIsSpillTypeModalOpen(false)}
+              onSelect={handleSpillTypeSelect}
+              currentValue={spillTypeName}
             />
           </div>
 
