@@ -597,7 +597,7 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
             {Object.entries(cleanupActionCategories).map(([category, actions], index) => (
               <div 
                 key={category} 
-                className={`p-4 flex items-center gap-4 border rounded-lg ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
+                className={`p-4 flex items-center gap-4 border rounded-lg ${index % 2 === 0 ? 'bg-white' : 'bg-gray-100'}`}
               >
                 <h4 className="font-semibold text-base text-gray-700 w-64 flex-shrink-0">{category}</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 flex-1">
