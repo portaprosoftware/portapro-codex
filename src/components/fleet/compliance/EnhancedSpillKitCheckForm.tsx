@@ -603,7 +603,7 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
             {/* Automation Options */}
             <div className="space-y-3">
               <Label className="text-sm font-medium">Automation Options</Label>
-              <div className="flex items-center justify-between">
+              <div className="space-y-2">
                 <div className="space-y-1">
                   <Label htmlFor="auto-restock">Automatic Restock Requests</Label>
                   <p className="text-sm text-muted-foreground">
