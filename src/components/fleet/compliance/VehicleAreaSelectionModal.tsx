@@ -12,16 +12,54 @@ type VehicleArea = {
   label: string;
 };
 
-const vehicleAreas: VehicleArea[] = [
-  { value: "exterior", label: "Exterior" },
-  { value: "interior", label: "Interior" },
-  { value: "engine_bay", label: "Engine Bay" },
-  { value: "tank_area", label: "Tank/Holding System" },
-  { value: "pump_system", label: "Pump System" },
-  { value: "undercarriage", label: "Undercarriage" },
-  { value: "wheels_tires", label: "Wheels/Tires" },
-  { value: "other", label: "Other" },
+type VehicleAreaCategory = {
+  category: string;
+  areas: VehicleArea[];
+};
+
+const vehicleAreaCategories: VehicleAreaCategory[] = [
+  {
+    category: "Vehicle Systems",
+    areas: [
+      { value: "engine_bay", label: "Engine Bay" },
+      { value: "tank_holding_system", label: "Tank / Holding System" },
+      { value: "pump_system", label: "Pump System" },
+      { value: "water_refill_system", label: "Water Refill System" },
+      { value: "wheels_tires", label: "Wheels / Tires" },
+      { value: "undercarriage", label: "Undercarriage" },
+    ],
+  },
+  {
+    category: "Contact & Work Areas",
+    areas: [
+      { value: "exterior", label: "Exterior" },
+      { value: "interior_cabin", label: "Interior / Cabin" },
+      { value: "liftgate_rear_platform", label: "Liftgate / Rear Platform" },
+      { value: "storage_compartments", label: "Storage Compartments / Toolboxes" },
+    ],
+  },
+  {
+    category: "High-Risk Components",
+    areas: [
+      { value: "hoses_lines", label: "Hoses / Lines" },
+      { value: "valves_couplings", label: "Valves / Couplings" },
+    ],
+  },
+  {
+    category: "Safety Equipment",
+    areas: [
+      { value: "ppe_equipment", label: "PPE / Equipment" },
+    ],
+  },
+  {
+    category: "Other",
+    areas: [
+      { value: "other", label: "Other" },
+    ],
+  },
 ];
+
+const allVehicleAreas = vehicleAreaCategories.flatMap(cat => cat.areas);
 
 type Props = {
   isOpen: boolean;
@@ -101,7 +139,7 @@ export const VehicleAreaSelectionModal: React.FC<Props> = ({
           {selectedAreas.length > 0 && (
             <div className="flex flex-wrap gap-2 p-3 bg-muted/50 rounded-lg">
               {selectedAreas.map(value => {
-                const area = vehicleAreas.find(a => a.value === value);
+                const area = allVehicleAreas.find(a => a.value === value);
                 if (!area) return null;
                 
                 const displayText = area.label + 
@@ -116,20 +154,30 @@ export const VehicleAreaSelectionModal: React.FC<Props> = ({
             </div>
           )}
 
-          {/* Area checkboxes */}
-          <div className="space-y-2">
-            {vehicleAreas.map((area) => (
-              <div key={area.value}>
-                <label className="flex items-center gap-3 p-3 rounded-lg border hover:bg-accent cursor-pointer transition-colors">
-                  <Checkbox
-                    checked={selectedAreas.includes(area.value)}
-                    onCheckedChange={() => toggleArea(area.value)}
-                  />
-                  <span className="font-medium flex-1">{area.label}</span>
-                  {selectedAreas.includes(area.value) && (
-                    <Check className="h-4 w-4 text-primary" />
-                  )}
-                </label>
+          {/* Area checkboxes - Categorized */}
+          <div className="space-y-4">
+            {vehicleAreaCategories.map((category) => (
+              <div key={category.category} className="space-y-2">
+                <h3 className="text-sm font-semibold text-muted-foreground px-1">
+                  {category.category}
+                </h3>
+                <div className="space-y-2">
+                  {category.areas.map((area) => (
+                    <label 
+                      key={area.value}
+                      className="flex items-center gap-3 p-3 rounded-lg border hover:bg-accent cursor-pointer transition-colors"
+                    >
+                      <Checkbox
+                        checked={selectedAreas.includes(area.value)}
+                        onCheckedChange={() => toggleArea(area.value)}
+                      />
+                      <span className="font-medium flex-1">{area.label}</span>
+                      {selectedAreas.includes(area.value) && (
+                        <Check className="h-4 w-4 text-primary" />
+                      )}
+                    </label>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
