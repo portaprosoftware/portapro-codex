@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -152,6 +152,11 @@ export const VehicleTypesMultiSelector: React.FC<VehicleTypesMultiSelectorProps>
               </>
             )}
           </DialogTitle>
+          {!selectedCategory && (
+            <DialogDescription>
+              Select one or multiple vehicle types
+            </DialogDescription>
+          )}
         </DialogHeader>
         
         <div className="space-y-4 flex-1 overflow-hidden">
