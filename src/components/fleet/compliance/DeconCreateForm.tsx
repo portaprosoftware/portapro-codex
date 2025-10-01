@@ -293,9 +293,7 @@ export const DeconCreateForm: React.FC<Props> = ({ onSaved, onCancel }) => {
               </Button>
             </div>
             {weatherDetails && (
-              <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                <p className="text-sm font-medium text-blue-900 dark:text-blue-100">{weatherDetails}</p>
-              </div>
+              <p className="text-xs text-muted-foreground mt-2">{weatherDetails}</p>
             )}
           </div>
         </CardContent>
