@@ -47,8 +47,8 @@ export const ComplianceGuideContent: React.FC = () => {
     <div className="space-y-6">
       {/* Setup Phase */}
       <div>
-        <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
-          <span className="text-blue-600">⚙️</span> Setup Phase
+        <h3 className="text-sm font-bold text-gray-900 mb-3">
+          Setup Phase
         </h3>
         <div className="space-y-3">
           <FeatureCard
@@ -71,8 +71,8 @@ export const ComplianceGuideContent: React.FC = () => {
 
       {/* Daily Operations */}
       <div>
-        <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
-          <span className="text-orange-600">🔄</span> Daily Operations
+        <h3 className="text-sm font-bold text-gray-900 mb-3">
+          Daily Operations
         </h3>
         <div className="space-y-3">
           <FeatureCard
@@ -108,8 +108,8 @@ export const ComplianceGuideContent: React.FC = () => {
 
       {/* Reporting & Analysis */}
       <div>
-        <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
-          <span className="text-green-600">📊</span> Reporting & Analysis
+        <h3 className="text-sm font-bold text-gray-900 mb-3">
+          Reporting & Analysis
         </h3>
         <div className="space-y-3">
           <FeatureCard
