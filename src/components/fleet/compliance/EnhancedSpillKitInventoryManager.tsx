@@ -313,26 +313,26 @@ export function EnhancedSpillKitInventoryManager() {
   const getStatusBadge = (item: SpillKitInventoryItem) => {
     // Check expired first
     if (item.expiration_date && new Date(item.expiration_date) < new Date()) {
-      return <Badge variant="destructive" className="bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold border-none">⚠️ Expired</Badge>;
+      return <Badge variant="destructive" className="bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold border-none">Expired</Badge>;
     }
     
     // Check critical missing
     if (item.is_critical && item.current_stock === 0) {
-      return <Badge variant="destructive" className="bg-gradient-to-r from-red-500 to-red-700 text-white font-bold border-none animate-pulse">🚨 Critical Missing</Badge>;
+      return <Badge variant="destructive" className="bg-gradient-to-r from-red-500 to-red-700 text-white font-bold border-none animate-pulse">Critical Missing</Badge>;
     }
     
     // Check out of stock
     if (item.current_stock === 0) {
-      return <Badge variant="destructive" className="bg-gradient-to-r from-red-500 to-red-600 text-white font-bold border-none">🔴 Out of Stock</Badge>;
+      return <Badge variant="destructive" className="bg-gradient-to-r from-red-500 to-red-600 text-white font-bold border-none">Out of Stock</Badge>;
     }
     
     // Check low stock
     if (item.current_stock <= item.minimum_threshold) {
-      return <Badge className="bg-gradient-to-r from-yellow-400 to-orange-400 text-black font-bold border-none">🟡 Low Stock</Badge>;
+      return <Badge className="bg-gradient-to-r from-yellow-400 to-orange-400 text-black font-bold border-none">Low Stock</Badge>;
     }
     
     // In stock
-    return <Badge className="bg-gradient-to-r from-green-400 to-emerald-500 text-white font-bold border-none">🟢 In Stock</Badge>;
+    return <Badge className="bg-gradient-to-r from-green-400 to-emerald-500 text-white font-bold border-none">In Stock</Badge>;
   };
 
   const getExpirationColor = (expirationDate?: string) => {
@@ -420,8 +420,8 @@ export function EnhancedSpillKitInventoryManager() {
                     )}
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline" className="capitalize">
-                      {item.item_type}
+                    <Badge className="bg-gradient-to-r from-blue-500 to-blue-700 text-white font-bold border-none">
+                      {getTypeLabel(item.item_type)}
                     </Badge>
                   </TableCell>
                   <TableCell>${item.unit_cost !== null ? item.unit_cost.toFixed(2) : 'N/A'}</TableCell>
