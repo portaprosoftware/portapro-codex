@@ -146,7 +146,7 @@ export const RestockRequestManager: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-semibold">Restock Requests</h2>
+          <h2 className="text-lg font-semibold">Restock Requests</h2>
           <p className="text-muted-foreground">Manage spill kit inventory restock requests</p>
         </div>
         <Package className="h-6 w-6 text-muted-foreground" />

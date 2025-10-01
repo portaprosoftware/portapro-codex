@@ -144,7 +144,7 @@ export const SpillKitTemplateManager: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold">Spill Kit Templates</h2>
+          <h2 className="text-lg font-semibold">Spill Kit Templates</h2>
           <p className="text-muted-foreground">
             Manage standardized spill kit configurations for different vehicle types
           </p>
