@@ -213,6 +213,24 @@ export function SpillKitInventoryManager() {
 
   return (
     <div className="space-y-6">
+      {/* Header with Add Item Button */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-semibold">Spill Kit Inventory</h2>
+          <p className="text-muted-foreground">
+            Manage stock levels, costs, and supplier information for spill kit components
+          </p>
+        </div>
+        <Button 
+          onClick={() => handleOpenDialog()}
+          variant="outline"
+          className="h-10 bg-gray-50 hover:bg-gray-100 border-gray-300"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Add Item
+        </Button>
+      </div>
+
       {/* Header Stats */}
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
@@ -246,23 +264,6 @@ export function SpillKitInventoryManager() {
         </Card>
       </div>
 
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-semibold">Spill Kit Inventory</h2>
-          <p className="text-muted-foreground">
-            Manage stock levels, costs, and supplier information for spill kit components
-          </p>
-        </div>
-        <Button 
-          onClick={() => handleOpenDialog()}
-          variant="outline"
-          className="h-10 bg-gray-50 hover:bg-gray-100 border-gray-300"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Add Item
-        </Button>
-      </div>
 
       {/* Main Table */}
       <Card>

@@ -271,7 +271,7 @@ const FleetComplianceContent: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header with Add Document Button */}
+      {/* Header with Add Document Button - moved to top */}
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold text-gray-900">All Compliance Documents</h3>

@@ -49,13 +49,19 @@ export const DeconLogsTab: React.FC = () => {
 
   if (!data || data.length === 0) {
     return (
-      <Card className="p-8 text-center">
-        <Shield className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-        <h3 className="text-lg font-medium">No decontamination logs</h3>
-        <p className="text-muted-foreground mb-4">Record decon activities after a spill or exposure.</p>
-        <Button onClick={() => setDrawerOpen(true)}>
-          <Plus className="w-4 h-4 mr-2" /> Record Decon
-        </Button>
+      <>
+        <Card className="p-8 text-center">
+          <Shield className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-medium">No decontamination logs</h3>
+          <p className="text-muted-foreground mb-4">Record decon activities after a spill or exposure.</p>
+          <Button 
+            onClick={() => setDrawerOpen(true)}
+            className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
+          >
+            <Plus className="w-4 h-4 mr-2" /> 
+            Record Decon
+          </Button>
+        </Card>
         <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
           <DrawerContent className="h-[75vh]">
             <DrawerHeader>
@@ -69,16 +75,24 @@ export const DeconLogsTab: React.FC = () => {
             </div>
           </DrawerContent>
         </Drawer>
-      </Card>
+      </>
     );
   }
 
   return (
     <>
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-base font-semibold">Decontamination Logs</h3>
-        <Button onClick={() => setDrawerOpen(true)}>
-          <Plus className="w-4 h-4 mr-2" /> Record Decon
+      {/* Header with Record Decon Button */}
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h3 className="text-base font-semibold">Decontamination Logs</h3>
+          <p className="text-sm text-muted-foreground">Record decon activities after a spill or exposure</p>
+        </div>
+        <Button 
+          onClick={() => setDrawerOpen(true)}
+          className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
+        >
+          <Plus className="w-4 h-4 mr-2" /> 
+          Record Decon
         </Button>
       </div>
 
