@@ -386,7 +386,7 @@ const Dashboard = () => {
         <h2 className="text-base font-semibold text-gray-900 font-sans">Alerts & Expiring Documents</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3">
           <StatCard
-            title="Maintenance Alerts"
+            title="Vehicle Maintenance"
             value={maintenanceData?.count || 0}
             icon={Wrench}
             gradientFrom="#fb7c1f"
