@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -149,23 +149,25 @@ export const SpillKitTemplateManager: React.FC = () => {
             Manage standardized spill kit configurations for different vehicle types
           </p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button 
-              onClick={() => openEditDialog()}
-              variant="outline"
-              className="h-10 bg-gray-50 hover:bg-gray-100 border-gray-300"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Create New Template
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>
-                {editingTemplate ? "Edit Template" : "Create New Template"}
-              </DialogTitle>
-            </DialogHeader>
+        <Button 
+          onClick={() => openEditDialog()}
+          variant="outline"
+          className="h-10 bg-gray-50 hover:bg-gray-100 border-gray-300"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Create New Template
+        </Button>
+      </div>
+
+      {/* Create/Edit Drawer */}
+      <Drawer open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DrawerContent className="h-[85vh] max-sm:h-[100vh]">
+          <DrawerHeader>
+            <DrawerTitle>
+              {editingTemplate ? "Edit Template" : "Create New Template"}
+            </DrawerTitle>
+          </DrawerHeader>
+          <div className="overflow-y-auto px-6 pb-6">
             <TemplateForm 
               template={editingTemplate}
               templates={templates}
@@ -175,9 +177,9 @@ export const SpillKitTemplateManager: React.FC = () => {
                 closeDialog();
               }}
             />
-          </DialogContent>
-        </Dialog>
-      </div>
+          </div>
+        </DrawerContent>
+      </Drawer>
 
       {/* Templates List */}
       <div className="space-y-3">

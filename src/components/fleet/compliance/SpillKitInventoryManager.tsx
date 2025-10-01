@@ -13,13 +13,11 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from '@/components/ui/drawer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, Pencil, Trash2, Package, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
@@ -335,140 +333,142 @@ export function SpillKitInventoryManager() {
         </CardContent>
       </Card>
 
-      {/* Add/Edit Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>{editingItem ? 'Edit' : 'Add'} Inventory Item</DialogTitle>
-            <DialogDescription>
+      {/* Add/Edit Drawer */}
+      <Drawer open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DrawerContent className="h-[85vh] max-sm:h-[100vh]">
+          <DrawerHeader>
+            <DrawerTitle>{editingItem ? 'Edit' : 'Add'} Inventory Item</DrawerTitle>
+            <p className="text-sm text-muted-foreground">
               {editingItem ? 'Update' : 'Add'} spill kit component information
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleSubmit}>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="item_name">Item Name *</Label>
-                  <Input
-                    id="item_name"
-                    value={formData.item_name}
-                    onChange={(e) => setFormData({ ...formData, item_name: e.target.value })}
-                    required
-                  />
+            </p>
+          </DrawerHeader>
+          <div className="overflow-y-auto px-6 pb-6">
+            <form onSubmit={handleSubmit}>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="item_name">Item Name *</Label>
+                    <Input
+                      id="item_name"
+                      value={formData.item_name}
+                      onChange={(e) => setFormData({ ...formData, item_name: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="item_type">Type *</Label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setTypeModalOpen(true)}
+                      className={`w-full justify-start text-left font-normal h-12 ${!formData.item_type ? 'text-muted-foreground' : ''}`}
+                    >
+                      {getTypeLabel(formData.item_type)}
+                    </Button>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="item_type">Type *</Label>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setTypeModalOpen(true)}
-                    className={`w-full justify-start text-left font-normal h-12 ${!formData.item_type ? 'text-muted-foreground' : ''}`}
-                  >
-                    {getTypeLabel(formData.item_type)}
-                  </Button>
-                </div>
-              </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="unit_cost">Unit Cost ($) *</Label>
-                  <Input
-                    id="unit_cost"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={formData.unit_cost}
-                    onChange={(e) => setFormData({ ...formData, unit_cost: e.target.value })}
-                    required
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="unit_cost">Unit Cost ($) *</Label>
+                    <Input
+                      id="unit_cost"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={formData.unit_cost}
+                      onChange={(e) => setFormData({ ...formData, unit_cost: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="current_stock">Current Stock *</Label>
+                    <Input
+                      id="current_stock"
+                      type="number"
+                      min="0"
+                      value={formData.current_stock}
+                      onChange={(e) => setFormData({ ...formData, current_stock: e.target.value })}
+                      required
+                    />
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="current_stock">Current Stock *</Label>
-                  <Input
-                    id="current_stock"
-                    type="number"
-                    min="0"
-                    value={formData.current_stock}
-                    onChange={(e) => setFormData({ ...formData, current_stock: e.target.value })}
-                    required
-                  />
-                </div>
-              </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="minimum_threshold">Minimum Threshold *</Label>
-                  <Input
-                    id="minimum_threshold"
-                    type="number"
-                    min="0"
-                    value={formData.minimum_threshold}
-                    onChange={(e) => setFormData({ ...formData, minimum_threshold: e.target.value })}
-                    required
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="minimum_threshold">Minimum Threshold *</Label>
+                    <Input
+                      id="minimum_threshold"
+                      type="number"
+                      min="0"
+                      value={formData.minimum_threshold}
+                      onChange={(e) => setFormData({ ...formData, minimum_threshold: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="reorder_quantity">Reorder Quantity *</Label>
+                    <Input
+                      id="reorder_quantity"
+                      type="number"
+                      min="1"
+                      value={formData.reorder_quantity}
+                      onChange={(e) => setFormData({ ...formData, reorder_quantity: e.target.value })}
+                      required
+                    />
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="reorder_quantity">Reorder Quantity *</Label>
-                  <Input
-                    id="reorder_quantity"
-                    type="number"
-                    min="1"
-                    value={formData.reorder_quantity}
-                    onChange={(e) => setFormData({ ...formData, reorder_quantity: e.target.value })}
-                    required
-                  />
-                </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="supplier_name">Supplier Name</Label>
-                <Input
-                  id="supplier_name"
-                  value={formData.supplier_name}
-                  onChange={(e) => setFormData({ ...formData, supplier_name: e.target.value })}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="supplier_contact">Supplier Contact</Label>
+                  <Label htmlFor="supplier_name">Supplier Name</Label>
                   <Input
-                    id="supplier_contact"
-                    value={formData.supplier_contact}
-                    onChange={(e) => setFormData({ ...formData, supplier_contact: e.target.value })}
+                    id="supplier_name"
+                    value={formData.supplier_name}
+                    onChange={(e) => setFormData({ ...formData, supplier_name: e.target.value })}
                   />
                 </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="supplier_contact">Supplier Contact</Label>
+                    <Input
+                      id="supplier_contact"
+                      value={formData.supplier_contact}
+                      onChange={(e) => setFormData({ ...formData, supplier_contact: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="supplier_sku">Supplier SKU</Label>
+                    <Input
+                      id="supplier_sku"
+                      value={formData.supplier_sku}
+                      onChange={(e) => setFormData({ ...formData, supplier_sku: e.target.value })}
+                    />
+                  </div>
+                </div>
+
                 <div className="space-y-2">
-                  <Label htmlFor="supplier_sku">Supplier SKU</Label>
-                  <Input
-                    id="supplier_sku"
-                    value={formData.supplier_sku}
-                    onChange={(e) => setFormData({ ...formData, supplier_sku: e.target.value })}
+                  <Label htmlFor="notes">Notes</Label>
+                  <Textarea
+                    id="notes"
+                    value={formData.notes}
+                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                    rows={3}
                   />
                 </div>
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="notes">Notes</Label>
-                <Textarea
-                  id="notes"
-                  value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  rows={3}
-                />
+              <div className="flex justify-end gap-2 pt-4 border-t">
+                <Button type="button" variant="outline" onClick={handleCloseDialog}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={saveMutation.isPending}>
+                  {saveMutation.isPending ? 'Saving...' : 'Save'}
+                </Button>
               </div>
-            </div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={handleCloseDialog}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={saveMutation.isPending}>
-                {saveMutation.isPending ? 'Saving...' : 'Save'}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+            </form>
+          </div>
+        </DrawerContent>
+      </Drawer>
 
       {/* Spill Kit Type Selection Modal */}
       <SpillKitTypeSelectionModal
