@@ -9,7 +9,23 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { format, parseISO, isToday, startOfDay } from 'date-fns';
-import { CheckCircle, XCircle, Save, X } from 'lucide-react';
+import { 
+  CheckCircle, 
+  XCircle, 
+  Save, 
+  X,
+  Sun,
+  Cloud,
+  CloudRain,
+  Snowflake,
+  CloudFog,
+  Wind,
+  CloudLightning,
+  ThermometerSun,
+  ThermometerSnowflake,
+  Droplets,
+  HelpCircle
+} from 'lucide-react';
 import { WeatherSelectionModal } from './WeatherSelectionModal';
 import { InspectionItemsTable } from './InspectionItemsTable';
 import { InspectionPhotoGallery } from './InspectionPhotoGallery';
@@ -201,6 +217,27 @@ export function SpillKitInspectionDetailModal({
     });
   };
 
+  // Weather icon mapping
+  const getWeatherIcon = (condition: string) => {
+    const iconMap: Record<string, React.ReactNode> = {
+      clear: <Sun className="h-4 w-4" />,
+      sunny: <Sun className="h-4 w-4" />,
+      cloudy: <Cloud className="h-4 w-4" />,
+      rainy: <CloudRain className="h-4 w-4" />,
+      snowy: <Snowflake className="h-4 w-4" />,
+      foggy: <CloudFog className="h-4 w-4" />,
+      windy: <Wind className="h-4 w-4" />,
+      storm: <CloudLightning className="h-4 w-4" />,
+      hot: <ThermometerSun className="h-4 w-4" />,
+      cold: <ThermometerSnowflake className="h-4 w-4" />,
+      icy: <Droplets className="h-4 w-4" />,
+      other: <HelpCircle className="h-4 w-4" />,
+    };
+    
+    const normalizedCondition = condition.toLowerCase().trim();
+    return iconMap[normalizedCondition] || iconMap.other;
+  };
+
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
@@ -308,7 +345,12 @@ export function SpillKitInspectionDetailModal({
                   {editedData?.weather_conditions && (
                     <div className="flex flex-wrap gap-2">
                       {editedData.weather_conditions.split(',').map((condition: string) => (
-                        <Badge key={condition} className="bg-gradient-to-r from-green-600 to-green-500 text-white font-bold">
+                        <Badge 
+                          key={condition} 
+                          variant="outline"
+                          className="border-blue-500 text-blue-600 bg-transparent font-bold gap-2"
+                        >
+                          {getWeatherIcon(condition.trim())}
                           {toTitleCase(condition.trim())}
                         </Badge>
                       ))}
@@ -319,7 +361,12 @@ export function SpillKitInspectionDetailModal({
                 <div className="flex flex-wrap gap-2">
                   {inspection.weather_conditions ? (
                     inspection.weather_conditions.split(',').map((condition: string) => (
-                      <Badge key={condition} className="bg-gradient-to-r from-green-600 to-green-500 text-white font-bold">
+                      <Badge 
+                        key={condition} 
+                        variant="outline"
+                        className="border-blue-500 text-blue-600 bg-transparent font-bold gap-2"
+                      >
+                        {getWeatherIcon(condition.trim())}
                         {toTitleCase(condition.trim())}
                       </Badge>
                     ))
