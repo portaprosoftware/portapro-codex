@@ -282,19 +282,29 @@ export function SpillKitInspectionHistory() {
           </TableCell>
           <TableCell>
             {(() => {
-              if (!inspection.has_kit) {
-                return <Badge className="gap-1 bg-gradient-to-r from-red-600 to-red-500 text-white font-bold"><XCircle className="h-3 w-3" />Missing</Badge>;
-              }
-              
               // Calculate missing items from item_conditions
               const conditions = inspection.item_conditions as any || {};
-              const missingItems = Object.entries(conditions).filter(([_, condition]: [string, any]) => 
+              const itemEntries = Object.entries(conditions);
+              const missingItems = itemEntries.filter(([_, condition]: [string, any]) => 
                 condition.status === 'missing' || condition.status === 'expired'
               );
               
-              if (missingItems.length > 0) {
+              // If no kit or has missing items
+              if (!inspection.has_kit || missingItems.length > 0) {
+                // Try to count total items if we have conditions data
+                const totalItems = itemEntries.length;
+                const missingCount = missingItems.length;
+                
+                // If we have item data, show count
+                if (totalItems > 0 && missingCount > 0) {
+                  return <Badge className="gap-1 bg-gradient-to-r from-red-600 to-red-500 text-white font-bold">
+                    <XCircle className="h-3 w-3" />Missing {missingCount} Item{missingCount > 1 ? 's' : ''}
+                  </Badge>;
+                }
+                
+                // Otherwise just show Missing
                 return <Badge className="gap-1 bg-gradient-to-r from-red-600 to-red-500 text-white font-bold">
-                  <XCircle className="h-3 w-3" />Missing {missingItems.length} Item{missingItems.length > 1 ? 's' : ''}
+                  <XCircle className="h-3 w-3" />Missing
                 </Badge>;
               }
               
