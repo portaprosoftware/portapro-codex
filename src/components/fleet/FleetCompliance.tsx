@@ -20,6 +20,7 @@ import { IncidentRoleGateway } from "./compliance/IncidentRoleGateway";
 import { DeconLogsTab } from "./compliance/DeconLogsTab";
 import { ComplianceReporting } from "./ComplianceReporting";
 import { VehicleManagementTab } from "./compliance/VehicleManagementTab";
+import { ComplianceGuideContent } from "./compliance/ComplianceGuideContent";
 
 interface ComplianceDocument {
   id: string;
@@ -127,38 +128,14 @@ export const FleetCompliance: React.FC = () => {
                       <Info className="h-4 w-4 text-muted-foreground" />
                     </button>
                   </DialogTrigger>
-                  <DialogContent className="sm:max-w-md">
+                  <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-y-auto">
                     <DialogHeader>
-                      <DialogTitle>How this works</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-3">
-                      <p className="text-sm text-muted-foreground">
-                        Quick guide for roles and usage:
+                      <DialogTitle className="text-xl font-bold">How This Works</DialogTitle>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        A quick guide to Transport & Spill Compliance features and roles
                       </p>
-                      <ul className="space-y-2 text-sm">
-                        <li>
-                          <span className="font-medium">Documents</span> — Track permits and required paperwork. Audience: Dispatch, Admins.
-                        </li>
-                        <li>
-                          <span className="font-medium">Types</span> — Manage the list of compliance document types. Audience: Admins.
-                        </li>
-                        <li>
-                          <span className="font-medium">Spill Kits</span> — Check which vehicles have spill kits. Drivers verify in DVIR; Dispatch can record checks directly.
-                        </li>
-                        <li>
-                          <span className="font-medium">Incidents</span> — Log spills or exposures. Audience: Dispatch; Drivers may report in field.
-                        </li>
-                        <li>
-                          <span className="font-medium">Decon Logs</span> — Record decontamination after incidents. Audience: Dispatch, Safety.
-                        </li>
-                        <li>
-                          <span className="font-medium">Reports</span> — Generate daily compliance summaries when needed. Audience: Admins.
-                        </li>
-                      </ul>
-                      <div className="mt-4 text-sm text-muted-foreground">
-                        Tip: Use "Log Incident" and "Record Spill Kit Check" to add data without waiting on DVIRs.
-                      </div>
-                    </div>
+                    </DialogHeader>
+                    <ComplianceGuideContent />
                   </DialogContent>
                 </Dialog>
               </div>
