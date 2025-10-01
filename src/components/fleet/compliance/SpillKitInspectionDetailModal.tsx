@@ -322,15 +322,31 @@ export function SpillKitInspectionDetailModal({
                 <div className="p-4 border rounded-lg">
                   <Label className="text-sm text-muted-foreground">Kit Status</Label>
                   <div className="mt-2">
-                    {inspection.has_kit ? (
-                      <Badge variant="default" className="gap-1 bg-gradient-to-r from-green-600 to-green-500 text-white font-bold">
-                        <CheckCircle className="h-3 w-3" /> Present
-                      </Badge>
-                    ) : (
-                      <Badge variant="destructive" className="gap-1 bg-gradient-to-r from-red-600 to-red-500 text-white font-bold">
-                        <XCircle className="h-3 w-3" /> Missing
-                      </Badge>
-                    )}
+                    {(() => {
+                      // Count missing items
+                      const missingCount = Object.values(inspection.item_conditions || {}).filter((c: any) => c.status === 'missing').length;
+                      const allPresent = Object.values(inspection.item_conditions || {}).every((c: any) => c.status === 'present');
+                      
+                      if (allPresent && missingCount === 0) {
+                        return (
+                          <Badge variant="default" className="gap-1 bg-gradient-to-r from-green-600 to-green-500 text-white font-bold">
+                            <CheckCircle className="h-3 w-3" /> Kit Complete
+                          </Badge>
+                        );
+                      } else if (missingCount > 0) {
+                        return (
+                          <Badge variant="destructive" className="gap-1 bg-gradient-to-r from-red-600 to-red-500 text-white font-bold">
+                            <XCircle className="h-3 w-3" /> Missing {missingCount} Item{missingCount > 1 ? 's' : ''}
+                          </Badge>
+                        );
+                      } else {
+                        return (
+                          <Badge variant="default" className="gap-1 bg-gradient-to-r from-green-600 to-green-500 text-white font-bold">
+                            <CheckCircle className="h-3 w-3" /> Kit Complete
+                          </Badge>
+                        );
+                      }
+                    })()}
                   </div>
                 </div>
                 
