@@ -15,7 +15,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description, rol
     <div className="group relative p-4 rounded-lg border border-blue-200 hover:border-blue-300 hover:shadow-md transition-all duration-200 bg-white">
       <div className="absolute left-0 top-0 bottom-0 w-1 rounded-l-lg bg-gradient-to-br from-blue-500 to-blue-600" />
       <div className="flex gap-3">
-        <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white shadow-sm">
+        <div className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center text-blue-600">
           {icon}
         </div>
         <div className="flex-1 min-w-0">
