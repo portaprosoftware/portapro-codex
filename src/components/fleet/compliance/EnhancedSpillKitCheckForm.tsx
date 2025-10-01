@@ -295,11 +295,26 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
 
       // Generate automatic restock request if enabled and items are missing
       if (autoRestockRequests && missingItems.length > 0) {
-        await supabase.rpc("generate_spill_kit_restock_request", {
+        const { data: restockRequestId, error: restockError } = await supabase.rpc("generate_spill_kit_restock_request", {
           p_vehicle_id: vehicleId,
           p_missing_items: missingItems,
           p_template_id: selectedTemplate.template_id || null
         });
+        
+        if (restockError) {
+          console.error('Failed to create restock request:', restockError);
+          toast({
+            title: "Restock Request Failed",
+            description: `Inspection saved, but automatic restock request failed: ${restockError.message}`,
+            variant: "destructive"
+          });
+        } else if (restockRequestId) {
+          console.log('Restock request created successfully:', restockRequestId);
+          toast({
+            title: "Restock Request Created",
+            description: `Automatic restock request created for ${missingItems.length} missing item(s)`,
+          });
+        }
       }
 
       return data;
