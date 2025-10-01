@@ -55,7 +55,7 @@ export const FleetSidebar: React.FC = () => {
       description: "Per-vehicle consumables"
     },
     {
-      title: "Storage Locations",
+      title: "Garages",
       href: "/fleet/storage-locations",
       icon: Warehouse,
       description: "Inventory & spill kit storage"

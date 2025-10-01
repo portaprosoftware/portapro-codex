@@ -49,7 +49,7 @@ export const FleetNavigation: React.FC = () => {
       icon: Package
     },
     {
-      title: "Storage Locations",
+      title: "Garages",
       href: "/fleet/storage-locations",
       icon: Warehouse
     },
