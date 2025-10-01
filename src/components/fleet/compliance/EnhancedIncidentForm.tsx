@@ -45,7 +45,7 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
   const [severity, setSeverity] = useState<string>("minor");
   const [volumeEstimate, setVolumeEstimate] = useState<string>("");
   const [volumeUnit, setVolumeUnit] = useState<string>("gallons");
-  const [weatherConditions, setWeatherConditions] = useState<string>("");
+  const [weatherConditions, setWeatherConditions] = useState<string[]>([]);
   const [responsibleParty, setResponsibleParty] = useState<string>("unknown");
   const [regulatoryNotificationRequired, setRegulatoryNotificationRequired] = useState<boolean>(false);
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
@@ -83,7 +83,8 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
 
       if (error) throw error;
 
-      setWeatherConditions(data.weather);
+      // Set as single condition in array
+      setWeatherConditions([data.weather]);
       setWeatherDetails(`${data.description} • ${data.temp}°F • ${data.humidity}% humidity • Wind: ${data.windSpeed} mph`);
       
       toast({
@@ -176,7 +177,7 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
         severity: severity as any,
         volume_estimate: volumeEstimate ? parseFloat(volumeEstimate) : null,
         volume_unit: volumeUnit,
-        weather_conditions: weatherConditions || null,
+        weather_conditions: weatherConditions.length > 0 ? weatherConditions.join(", ") : null,
         responsible_party: responsibleParty,
         cleanup_actions: cleanupActions,
         witnesses_present: witnesses.length > 0,
@@ -189,7 +190,7 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
 
       const { data: incident, error: incidentError } = await supabase
         .from("spill_incident_reports")
-        .insert(incidentData)
+        .insert([incidentData])
         .select()
         .single();
 
@@ -398,8 +399,8 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
                     onClick={() => setIsWeatherModalOpen(true)}
                     className="flex-1 justify-start bg-white"
                   >
-                    {weatherConditions ? (
-                      <span className="capitalize">{weatherConditions}</span>
+                    {weatherConditions.length > 0 ? (
+                      <span className="capitalize">{weatherConditions.join(", ")}</span>
                     ) : (
                       <span className="text-muted-foreground">Select weather conditions...</span>
                     )}

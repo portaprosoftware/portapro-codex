@@ -59,7 +59,7 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
   const [itemConditions, setItemConditions] = useState<Record<string, ItemCondition>>({});
   const [photos, setPhotos] = useState<string[]>([]);
   const [notes, setNotes] = useState("");
-  const [weather, setWeather] = useState("");
+  const [weather, setWeather] = useState<string[]>([]);
   const [checkDuration, setCheckDuration] = useState<number>(0);
   const [checkStartTime] = useState(Date.now());
   const [autoRestockRequests, setAutoRestockRequests] = useState<boolean>(true);
@@ -88,7 +88,8 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
 
       if (error) throw error;
 
-      setWeather(data.weather);
+      // Set as single condition in array
+      setWeather([data.weather]);
       setWeatherDetails(`${data.description} • ${data.temp}°F • ${data.humidity}% humidity • Wind: ${data.windSpeed} mph`);
       
       toast({
@@ -270,20 +271,20 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
       
       const { data, error } = await supabase
         .from("vehicle_spill_kit_checks")
-        .insert({
+        .insert([{
           vehicle_id: vehicleId,
           template_id: selectedTemplate.template_id,
           has_kit: kitStatus !== 'failed',
           item_conditions: itemConditions,
           photos,
           notes,
-          weather_conditions: weather,
+          weather_conditions: weather.length > 0 ? weather.join(", ") : null,
           inspection_duration_minutes: duration,
           completion_status: kitStatus,
           next_check_due: nextCheckDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
           checked_at: new Date().toISOString(),
           checked_by_clerk: user?.id || null
-        });
+        }]);
 
       if (error) throw error;
 
@@ -628,8 +629,8 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
                     onClick={() => setIsWeatherModalOpen(true)}
                     className="flex-1 justify-start"
                   >
-                    {weather ? (
-                      <span className="capitalize">{weather}</span>
+                    {weather.length > 0 ? (
+                      <span className="capitalize">{weather.join(", ")}</span>
                     ) : (
                       <span className="text-muted-foreground">Select weather conditions...</span>
                     )}
