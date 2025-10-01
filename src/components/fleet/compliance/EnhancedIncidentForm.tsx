@@ -28,7 +28,7 @@ type Props = {
 
 type Vehicle = { id: string; license_plate: string; make?: string; model?: string; year?: number };
 type SpillType = { id: string; name: string; category: string; subcategory?: string };
-type Witness = { name: string; contact_info: string };
+type Witness = { firstName: string; lastName: string; phone: string; email: string };
 
 export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => {
   const { toast } = useToast();
@@ -61,8 +61,10 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
   const [photoFiles, setPhotoFiles] = useState<File[]>([]);
   
   // New witness form
-  const [newWitnessName, setNewWitnessName] = useState<string>("");
-  const [newWitnessContact, setNewWitnessContact] = useState<string>("");
+  const [newWitnessFirstName, setNewWitnessFirstName] = useState<string>("");
+  const [newWitnessLastName, setNewWitnessLastName] = useState<string>("");
+  const [newWitnessPhone, setNewWitnessPhone] = useState<string>("");
+  const [newWitnessEmail, setNewWitnessEmail] = useState<string>("");
   const [fetchingWeather, setFetchingWeather] = useState(false);
   const [weatherDetails, setWeatherDetails] = useState<string>("");
   const [isWeatherModalOpen, setIsWeatherModalOpen] = useState(false);
@@ -155,11 +157,38 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
     );
   };
 
+  const formatPhoneNumber = (value: string) => {
+    const cleaned = value.replace(/\D/g, '');
+    const match = cleaned.match(/^(\d{0,3})(\d{0,3})(\d{0,4})$/);
+    if (match) {
+      const formatted = [
+        match[1] ? `(${match[1]}` : '',
+        match[2] ? `) ${match[2]}` : '',
+        match[3] ? `-${match[3]}` : ''
+      ].join('');
+      return formatted;
+    }
+    return value;
+  };
+
+  const handlePhoneChange = (value: string) => {
+    const formatted = formatPhoneNumber(value);
+    setNewWitnessPhone(formatted);
+  };
+
   const addWitness = () => {
-    if (newWitnessName.trim()) {
-      setWitnesses(prev => [...prev, { name: newWitnessName, contact_info: newWitnessContact }]);
-      setNewWitnessName("");
-      setNewWitnessContact("");
+    // At least one field should have content to add a witness
+    if (newWitnessFirstName.trim() || newWitnessLastName.trim() || newWitnessPhone.trim() || newWitnessEmail.trim()) {
+      setWitnesses(prev => [...prev, { 
+        firstName: newWitnessFirstName, 
+        lastName: newWitnessLastName,
+        phone: newWitnessPhone,
+        email: newWitnessEmail
+      }]);
+      setNewWitnessFirstName("");
+      setNewWitnessLastName("");
+      setNewWitnessPhone("");
+      setNewWitnessEmail("");
     }
   };
 
@@ -231,8 +260,8 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
       if (witnesses.length > 0) {
         const witnessData = witnesses.map(w => ({
           incident_id: incident.id,
-          name: w.name,
-          contact_info: w.contact_info
+          name: `${w.firstName} ${w.lastName}`.trim() || 'No name provided',
+          contact_info: [w.phone, w.email].filter(Boolean).join(' | ') || 'No contact provided'
         }));
 
         const { error: witnessError } = await supabase
@@ -561,8 +590,15 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
               {witnesses.map((witness, index) => (
                 <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <div>
-                    <div className="font-medium">{witness.name}</div>
-                    <div className="text-sm text-gray-600">{witness.contact_info}</div>
+                    <div className="font-medium">
+                      {witness.firstName && witness.lastName 
+                        ? `${witness.firstName} ${witness.lastName}`
+                        : witness.firstName || witness.lastName || 'No name provided'}
+                    </div>
+                    <div className="text-sm text-gray-600 space-y-0.5">
+                      {witness.phone && <div>Phone: {witness.phone}</div>}
+                      {witness.email && <div>Email: {witness.email}</div>}
+                    </div>
                   </div>
                   <Button
                     variant="ghost"
@@ -576,20 +612,42 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-            <Input
-              placeholder="Witness name"
-              value={newWitnessName}
-              onChange={(e) => setNewWitnessName(e.target.value)}
-              className="bg-white"
-            />
-            <Input
-              placeholder="Contact info"
-              value={newWitnessContact}
-              onChange={(e) => setNewWitnessContact(e.target.value)}
-              className="bg-white"
-            />
-            <Button onClick={addWitness} disabled={!newWitnessName.trim()}>
+          <div className="space-y-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <Input
+                placeholder="First name"
+                value={newWitnessFirstName}
+                onChange={(e) => setNewWitnessFirstName(e.target.value)}
+                className="bg-white"
+              />
+              <Input
+                placeholder="Last name"
+                value={newWitnessLastName}
+                onChange={(e) => setNewWitnessLastName(e.target.value)}
+                className="bg-white"
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <Input
+                placeholder="Phone number (555) 123-9876"
+                value={newWitnessPhone}
+                onChange={(e) => handlePhoneChange(e.target.value)}
+                className="bg-white"
+                maxLength={14}
+              />
+              <Input
+                placeholder="Email address"
+                type="email"
+                value={newWitnessEmail}
+                onChange={(e) => setNewWitnessEmail(e.target.value)}
+                className="bg-white"
+              />
+            </div>
+            <Button 
+              onClick={addWitness} 
+              disabled={!newWitnessFirstName.trim() && !newWitnessLastName.trim() && !newWitnessPhone.trim() && !newWitnessEmail.trim()}
+              className="w-full"
+            >
               <Plus className="h-4 w-4 mr-2" />
               Add Witness
             </Button>
