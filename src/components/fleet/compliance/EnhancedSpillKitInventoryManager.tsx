@@ -152,11 +152,14 @@ export function EnhancedSpillKitInventoryManager() {
   // Create/Update mutation
   const saveMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
+      // Calculate current stock from location assignments
+      const calculatedStock = locationAssignments.reduce((sum, loc) => sum + loc.quantity, 0);
+      
       const payload = {
         item_name: data.item_name,
         item_type: data.item_type,
         unit_cost: parseFloat(data.unit_cost),
-        current_stock: parseInt(data.current_stock),
+        current_stock: calculatedStock, // Use calculated stock from locations
         minimum_threshold: parseInt(data.minimum_threshold),
         reorder_quantity: parseInt(data.reorder_quantity),
         supplier_name: data.supplier_name || null,
@@ -588,7 +591,8 @@ export function EnhancedSpillKitInventoryManager() {
               {/* Step 2: Stock & Costs */}
               {currentStep === 2 && (
                 <div className="grid gap-4 py-4">
-                  <div className="grid grid-cols-2 gap-4">
+                  {/* Condensed row with 3 fields */}
+                  <div className="grid grid-cols-3 gap-3">
                     <div className="space-y-2">
                       <Label htmlFor="unit_cost">Unit Cost ($) *</Label>
                       <Input
@@ -602,21 +606,7 @@ export function EnhancedSpillKitInventoryManager() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="current_stock">Current Stock *</Label>
-                      <Input
-                        id="current_stock"
-                        type="number"
-                        min="0"
-                        value={formData.current_stock}
-                        onChange={(e) => setFormData({ ...formData, current_stock: e.target.value })}
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="minimum_threshold">Minimum Threshold *</Label>
+                      <Label htmlFor="minimum_threshold">Min Threshold *</Label>
                       <Input
                         id="minimum_threshold"
                         type="number"
@@ -625,10 +615,9 @@ export function EnhancedSpillKitInventoryManager() {
                         onChange={(e) => setFormData({ ...formData, minimum_threshold: e.target.value })}
                         required
                       />
-                      <p className="text-xs text-muted-foreground">Alert when stock drops to this level</p>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="reorder_quantity">Reorder Quantity *</Label>
+                      <Label htmlFor="reorder_quantity">Reorder Qty *</Label>
                       <Input
                         id="reorder_quantity"
                         type="number"
@@ -637,7 +626,6 @@ export function EnhancedSpillKitInventoryManager() {
                         onChange={(e) => setFormData({ ...formData, reorder_quantity: e.target.value })}
                         required
                       />
-                      <p className="text-xs text-muted-foreground">Suggested quantity to order</p>
                     </div>
                   </div>
 
@@ -669,6 +657,21 @@ export function EnhancedSpillKitInventoryManager() {
                         Total assigned: {locationAssignments.reduce((sum, loc) => sum + loc.quantity, 0)} units across {locationAssignments.length} location(s)
                       </p>
                     )}
+                  </div>
+
+                  {/* Current Stock - Auto-calculated from locations */}
+                  <div className="space-y-2">
+                    <Label htmlFor="current_stock">Current Stock (Auto-calculated from locations)</Label>
+                    <Input
+                      id="current_stock"
+                      type="number"
+                      value={locationAssignments.reduce((sum, loc) => sum + loc.quantity, 0)}
+                      disabled
+                      className="bg-muted"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      This value is automatically calculated from the quantities assigned in storage locations above
+                    </p>
                   </div>
                 </div>
               )}
