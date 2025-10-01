@@ -47,6 +47,10 @@ export function AdminSpillKitDashboard({
               Dashboard
             </TabsTrigger>
           </ProtectedComponent>
+          <TabsTrigger value="history">
+            <History className="h-4 w-4 mr-2" />
+            History
+          </TabsTrigger>
           <ProtectedComponent requiredPermission="canManageSpillKitRestock" fallback={null} showError={false}>
             <TabsTrigger value="inventory">
               <Package className="h-4 w-4 mr-2" />
@@ -70,10 +74,6 @@ export function AdminSpillKitDashboard({
               Restock
             </TabsTrigger>
           </ProtectedComponent>
-          <TabsTrigger value="history">
-            <History className="h-4 w-4 mr-2" />
-            History
-          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="dashboard">
