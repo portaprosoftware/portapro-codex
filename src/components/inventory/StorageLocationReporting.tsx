@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Download, Warehouse, Package, DollarSign, Box } from "lucide-react";
+import { Download, Warehouse, Package, DollarSign, Box, Shield } from "lucide-react";
 import { toast } from "sonner";
 import jsPDF from 'jspdf';
 
@@ -14,6 +14,9 @@ interface LocationReportData {
     total_consumable_types: number;
     total_product_types: number;
     total_stock_value: number;
+    total_spill_kit_types: number;
+    total_spill_kit_units: number;
+    total_spill_kit_value: number;
   };
   location_details: Array<{
     location_id: string;
@@ -22,6 +25,20 @@ interface LocationReportData {
     is_default: boolean;
     consumable_types: number;
     total_units: number;
+    total_value: number;
+  }>;
+  spill_kit_details: Array<{
+    location_id: string;
+    location_name: string;
+    items: Array<{
+      item_name: string;
+      item_type: string;
+      quantity: number;
+      unit_cost: number;
+      total_value: number;
+    }>;
+    total_items: number;
+    total_quantity: number;
     total_value: number;
   }>;
 }
@@ -57,6 +74,20 @@ export function StorageLocationReporting() {
       
       if (productsError) throw productsError;
 
+      // Get spill kit inventory data
+      const { data: spillKits, error: spillKitsError } = await supabase
+        .from('spill_kit_inventory')
+        .select('*');
+      
+      if (spillKitsError) throw spillKitsError;
+
+      // Get spill kit location stock
+      const { data: spillKitLocationStock, error: spillKitStockError } = await supabase
+        .from('spill_kit_location_stock')
+        .select('*');
+      
+      if (spillKitStockError) throw spillKitStockError;
+
       // Calculate summary data
       const totalLocations = locations?.length || 0;
       const totalConsumableTypes = consumables?.length || 0;
@@ -73,6 +104,19 @@ export function StorageLocationReporting() {
           locationStock.forEach((stock: any) => {
             totalStockValue += (stock.quantity || 0) * (consumable.unit_cost || 0);
           });
+        }
+      });
+
+      // Calculate spill kit summary
+      const totalSpillKitTypes = spillKits?.length || 0;
+      let totalSpillKitUnits = 0;
+      let totalSpillKitValue = 0;
+      
+      spillKitLocationStock?.forEach(stock => {
+        const item = spillKits?.find(kit => kit.id === stock.inventory_item_id);
+        if (item) {
+          totalSpillKitUnits += stock.quantity;
+          totalSpillKitValue += stock.quantity * (item.unit_cost || 0);
         }
       });
 
@@ -108,12 +152,42 @@ export function StorageLocationReporting() {
         };
       }) || [];
 
+      // Calculate spill kit details by location
+      const spillKitDetails = locations?.map(location => {
+        const locationStock = spillKitLocationStock?.filter(
+          stock => stock.storage_location_id === location.id
+        ) || [];
+
+        const items = locationStock.map(stock => {
+          const item = spillKits?.find(kit => kit.id === stock.inventory_item_id);
+          return {
+            item_name: item?.item_name || 'Unknown',
+            item_type: item?.item_type || '',
+            quantity: stock.quantity,
+            unit_cost: item?.unit_cost || 0,
+            total_value: stock.quantity * (item?.unit_cost || 0)
+          };
+        }).filter(item => item.quantity > 0);
+
+        return {
+          location_id: location.id,
+          location_name: location.name,
+          items,
+          total_items: items.length,
+          total_quantity: items.reduce((sum, item) => sum + item.quantity, 0),
+          total_value: items.reduce((sum, item) => sum + item.total_value, 0)
+        };
+      }).filter(loc => loc.total_items > 0) || [];
+
       return {
         summary: {
           total_locations: totalLocations,
           total_consumable_types: totalConsumableTypes,
           total_product_types: totalProductTypes,
-          total_stock_value: totalStockValue
+          total_stock_value: totalStockValue,
+          total_spill_kit_types: totalSpillKitTypes,
+          total_spill_kit_units: totalSpillKitUnits,
+          total_spill_kit_value: totalSpillKitValue
         },
         location_details: locationDetails.sort((a, b) => {
           // Default location always first
@@ -122,7 +196,10 @@ export function StorageLocationReporting() {
           
           // If both or neither are default, sort alphabetically
           return a.location_name.localeCompare(b.location_name);
-        })
+        }),
+        spill_kit_details: spillKitDetails.sort((a, b) => 
+          a.location_name.localeCompare(b.location_name)
+        )
       };
     }
   });
@@ -233,8 +310,8 @@ export function StorageLocationReporting() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {[...Array(3)].map((_, i) => (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {[...Array(4)].map((_, i) => (
             <Card key={i} className="animate-pulse">
               <CardContent className="p-6">
                 <div className="h-8 bg-muted rounded mb-2"></div>
@@ -252,7 +329,7 @@ export function StorageLocationReporting() {
       {reportData && (
         <>
           {/* Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
@@ -283,6 +360,17 @@ export function StorageLocationReporting() {
                     <div className="text-sm text-muted-foreground">Product Types</div>
                   </div>
                   <Box className="h-8 w-8 text-primary" />
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-2xl font-bold">{reportData.summary.total_spill_kit_types}</div>
+                    <div className="text-sm text-muted-foreground">Spill Kit Types</div>
+                  </div>
+                  <Shield className="h-8 w-8 text-orange-500" />
                 </div>
               </CardContent>
             </Card>
@@ -358,6 +446,57 @@ export function StorageLocationReporting() {
               ))}
             </CardContent>
           </Card>
+
+          {/* Spill Kits by Location */}
+          {reportData.spill_kit_details.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="h-5 w-5 text-orange-500" />
+                  Spill Kits by Location
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {reportData.spill_kit_details.map((location) => (
+                  <Card key={location.location_id} className="border-l-4 border-l-orange-500">
+                    <CardContent className="p-4">
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <h5 className="font-medium text-lg">{location.location_name}</h5>
+                          <div className="text-right">
+                            <div className="text-sm font-medium">
+                              {location.total_items} items • {location.total_quantity} units
+                            </div>
+                            <div className="text-lg font-bold text-orange-600">
+                              ${location.total_value.toLocaleString()}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          {location.items.map((item, idx) => (
+                            <div key={idx} className="flex justify-between items-center text-sm p-2 bg-muted/50 rounded">
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium">{item.item_name}</span>
+                                <Badge variant="outline" className="text-xs">
+                                  {item.item_type}
+                                </Badge>
+                              </div>
+                              <div className="flex items-center gap-3 text-muted-foreground">
+                                <span>{item.quantity} units</span>
+                                <span className="font-medium text-foreground">
+                                  ${(item.total_value).toLocaleString()}
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </CardContent>
+            </Card>
+          )}
         </>
       )}
     </div>
