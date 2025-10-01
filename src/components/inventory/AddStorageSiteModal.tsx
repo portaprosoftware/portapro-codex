@@ -325,10 +325,10 @@ export function AddStorageSiteModal({ open, onOpenChange, onClose }: AddStorageS
                         <SelectTrigger id="custom_state">
                           <SelectValue placeholder="Select state" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="max-h-[200px] overflow-y-auto">
                           {US_STATES.map((state) => (
                             <SelectItem key={state.value} value={state.value}>
-                              {state.label}
+                              {state.label} ({state.value})
                             </SelectItem>
                           ))}
                         </SelectContent>
