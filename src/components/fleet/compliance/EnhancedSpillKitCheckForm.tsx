@@ -88,8 +88,7 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
 
       if (error) throw error;
 
-      // Set as single condition in array
-      setWeather([data.weather]);
+      // Don't auto-select manual weather - only set weather details
       // Format description to Title Case
       const titleCaseDescription = data.description
         .split(' ')
