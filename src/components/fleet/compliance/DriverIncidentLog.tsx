@@ -46,6 +46,9 @@ export const DriverIncidentLog: React.FC<Props> = ({ onSaved, onCancel }) => {
   const [photoFiles, setPhotoFiles] = useState<File[]>([]);
   const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
   
+  // Spill kit integration
+  const [spillKitStatus, setSpillKitStatus] = useState<{hasKit: boolean; lastCheckDate?: string} | null>(null);
+  
   // GPS location
   const { latitude, longitude, error: gpsError, isLoading: gpsLoading } = useGeolocation();
 
@@ -70,6 +73,36 @@ export const DriverIncidentLog: React.FC<Props> = ({ onSaved, onCancel }) => {
       }
     });
   }, []);
+
+  // Check spill kit status when vehicle is selected
+  useEffect(() => {
+    if (!vehicleId) {
+      setSpillKitStatus(null);
+      return;
+    }
+
+    const checkSpillKit = async () => {
+      const { data, error } = await supabase
+        .from('vehicle_spill_kit_checks')
+        .select('has_kit, created_at')
+        .eq('vehicle_id', vehicleId)
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (!error && data) {
+        setSpillKitStatus({
+          hasKit: data.has_kit,
+          lastCheckDate: data.created_at
+        });
+      } else {
+        setSpillKitStatus(null);
+      }
+    };
+
+    checkSpillKit();
+  }, [vehicleId]);
 
   const handleVehicleSelect = (vehicle: Vehicle) => {
     setSelectedVehicle(vehicle);
@@ -322,7 +355,7 @@ export const DriverIncidentLog: React.FC<Props> = ({ onSaved, onCancel }) => {
             Vehicle *
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-3">
           <Select value={vehicleId} onValueChange={setVehicleId}>
             <SelectTrigger className="h-14 text-lg">
               <SelectValue placeholder="Select vehicle..." />
@@ -336,6 +369,26 @@ export const DriverIncidentLog: React.FC<Props> = ({ onSaved, onCancel }) => {
               ))}
             </SelectContent>
           </Select>
+          
+          {/* Spill Kit Status Integration */}
+          {spillKitStatus && (
+            <Card className={spillKitStatus.hasKit ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"}>
+              <CardContent className="pt-3 pb-3">
+                <div className="flex items-start gap-2">
+                  {spillKitStatus.hasKit ? (
+                    <Badge className="bg-green-600 text-white">Spill Kit: Present</Badge>
+                  ) : (
+                    <Badge className="bg-red-600 text-white">Spill Kit: Missing</Badge>
+                  )}
+                  {spillKitStatus.lastCheckDate && (
+                    <span className="text-xs text-muted-foreground">
+                      Last check: {new Date(spillKitStatus.lastCheckDate).toLocaleDateString()}
+                    </span>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </CardContent>
       </Card>
 

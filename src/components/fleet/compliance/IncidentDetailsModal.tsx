@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { IncidentIntegrations } from "./IncidentIntegrations";
 import { 
   AlertTriangle, 
   Calendar, 
@@ -16,7 +19,9 @@ import {
   User,
   CheckCircle,
   XCircle,
-  Clock
+  Clock,
+  Wrench,
+  Shield
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -84,7 +89,16 @@ export const IncidentDetailsModal: React.FC<Props> = ({
   onClose, 
   onEdit 
 }) => {
+  const { toast } = useToast();
+
   if (!incident) return null;
+
+  const handleCreateWorkOrder = async () => {
+    toast({
+      title: "Work Order Integration",
+      description: "Work order creation will be implemented based on your maintenance workflow",
+    });
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -105,6 +119,12 @@ export const IncidentDetailsModal: React.FC<Props> = ({
 
         <ScrollArea className="max-h-[70vh] pr-4">
           <div className="space-y-6">
+            {/* Integration Points - Phase 5 */}
+            <IncidentIntegrations 
+              vehicleId={incident.vehicle_id}
+              incidentDate={incident.created_at}
+            />
+
             {/* Status and Severity */}
             <div className="flex gap-3">
               <Badge className={getSeverityColor(incident.severity)}>
@@ -289,15 +309,29 @@ export const IncidentDetailsModal: React.FC<Props> = ({
           </div>
         </ScrollArea>
 
-        <div className="flex justify-end gap-2 pt-4 border-t">
-          <Button variant="outline" onClick={onClose}>
-            Close
-          </Button>
-          {onEdit && (
-            <Button onClick={() => onEdit(incident)}>
-              Edit Incident
+        <div className="flex justify-between items-center pt-4 border-t">
+          {/* Integration Actions - Phase 5 */}
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={handleCreateWorkOrder}
+            >
+              <Wrench className="h-4 w-4 mr-2" />
+              Create Work Order
             </Button>
-          )}
+          </div>
+
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={onClose}>
+              Close
+            </Button>
+            {onEdit && (
+              <Button onClick={() => onEdit(incident)}>
+                Edit Incident
+              </Button>
+            )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>
