@@ -12,7 +12,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { AddStorageSiteModal } from "@/components/inventory/AddStorageSiteModal";
 import { EditStorageSiteModal } from "@/components/inventory/EditStorageSiteModal";
 import { StorageLocationReporting } from "@/components/inventory/StorageLocationReporting";
-import { Plus, MapPin, Edit, Trash2, Building, BarChart3, MoreHorizontal } from "lucide-react";
+import { Plus, MapPin, Edit, Trash2, Warehouse, BarChart3, MoreHorizontal } from "lucide-react";
 import { toast } from "sonner";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Navigate, useLocation } from "react-router-dom";
@@ -189,7 +189,7 @@ export default function StorageSites() {
                         <TableRow key={site.id}>
                           <TableCell>
                             <div className="flex items-center gap-2">
-                              <Building className="h-4 w-4 text-muted-foreground" />
+                              <Warehouse className="h-4 w-4 text-muted-foreground" />
                               <div>
                                 <div className="font-medium">{site.name}</div>
                                 {site.description && (
@@ -287,7 +287,7 @@ export default function StorageSites() {
 
             {storageLocations?.length === 0 && !isLoading && (
               <Card className="p-8 text-center">
-                <Building className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <Warehouse className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-semibold mb-2">No Storage Sites</h3>
                 <p className="text-muted-foreground mb-4">
                   Get started by adding your first storage location
