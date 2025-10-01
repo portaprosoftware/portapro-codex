@@ -10,8 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { Badge } from "@/components/ui/badge";
 import { VehicleDocumentsCard } from "@/components/dashboard/VehicleDocumentsCard";
-import { DriverDocumentsCard } from "@/components/dashboard/DriverDocumentsCard";
-import { DriverCredentialsCard } from "@/components/dashboard/DriverCredentialsCard";
+import { DriverComplianceCard } from "@/components/dashboard/DriverComplianceCard";
 import { StaffCertificationsCard } from "@/components/dashboard/StaffCertificationsCard";
 import { CompactConsumablesCard } from "@/components/dashboard/CompactConsumablesCard";
 import { SpillKitExpirationWidget } from "@/components/fleet/compliance/SpillKitExpirationWidget";
@@ -406,8 +405,7 @@ const Dashboard = () => {
           
           {/* Document Cards */}
           <VehicleDocumentsCard />
-          <DriverDocumentsCard />
-          <DriverCredentialsCard />
+          <DriverComplianceCard />
           <StaffCertificationsCard />
         </div>
       </div>
