@@ -30,6 +30,14 @@ export function SpillKitExpirationDashboard() {
   const [filterVehicle, setFilterVehicle] = useState<string>("all");
   const [filterCategory, setFilterCategory] = useState<string>("all");
 
+  const hasActiveFilters = searchTerm || filterVehicle !== "all" || filterCategory !== "all";
+  
+  const clearAllFilters = () => {
+    setSearchTerm("");
+    setFilterVehicle("all");
+    setFilterCategory("all");
+  };
+
   // Fetch all spill kit checks with expiration tracking
   const { data: expirationData, isLoading } = useQuery({
     queryKey: ["spill-kit-expirations"],
@@ -252,20 +260,10 @@ export function SpillKitExpirationDashboard() {
 
       {/* Filters */}
       <Card className="p-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search items or vehicles..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          
+        <div className="flex items-center gap-4">
           <Select value={filterVehicle} onValueChange={setFilterVehicle}>
-            <SelectTrigger>
-              <SelectValue placeholder="Filter by vehicle" />
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="All Vehicles" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Vehicles</SelectItem>
@@ -278,8 +276,8 @@ export function SpillKitExpirationDashboard() {
           </Select>
           
           <Select value={filterCategory} onValueChange={setFilterCategory}>
-            <SelectTrigger>
-              <SelectValue placeholder="Filter by category" />
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="All Categories" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Categories</SelectItem>
@@ -290,7 +288,31 @@ export function SpillKitExpirationDashboard() {
               ))}
             </SelectContent>
           </Select>
+          
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search items or vehicles..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
         </div>
+
+        {hasActiveFilters && (
+          <div className="flex items-center justify-between mt-4 pt-4 border-t">
+            <button
+              onClick={clearAllFilters}
+              className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+            >
+              Clear all filters
+            </button>
+            <p className="text-sm text-muted-foreground">
+              Showing {filteredItems.length} of {expirationData?.length || 0} items
+            </p>
+          </div>
+        )}
       </Card>
 
       {/* Tabbed View */}
