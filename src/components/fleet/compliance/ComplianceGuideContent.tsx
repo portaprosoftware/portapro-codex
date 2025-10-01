@@ -30,7 +30,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description, rol
             <div className="mt-3 space-y-1.5">
               {tips.map((tip, index) => (
                 <div key={index} className="flex items-start gap-2 text-xs text-gray-600">
-                  <Lightbulb className="h-3 w-3 text-blue-500 flex-shrink-0 mt-0.5" />
+                  <Lightbulb className="h-3 w-3 text-yellow-500 flex-shrink-0 mt-0.5" />
                   <span>{tip}</span>
                 </div>
               ))}
