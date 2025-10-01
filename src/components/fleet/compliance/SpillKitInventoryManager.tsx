@@ -476,6 +476,7 @@ export function SpillKitInventoryManager() {
         onClose={() => setTypeModalOpen(false)}
         onSelect={handleSelectType}
         currentValue={formData.item_type}
+        multiSelect={false}
       />
     </div>
   );

@@ -89,9 +89,10 @@ type Props = {
   onSelect: (type: string, selectedExamples?: string[]) => void;
   currentValue?: string;
   existingItems?: Array<{ item_name: string; category: string }>;
+  multiSelect?: boolean;
 };
 
-export function SpillKitTypeSelectionModal({ isOpen, onClose, onSelect, currentValue, existingItems = [] }: Props) {
+export function SpillKitTypeSelectionModal({ isOpen, onClose, onSelect, currentValue, existingItems = [], multiSelect = true }: Props) {
   const [selectedType, setSelectedType] = useState<string>(currentValue || '');
   const [selectedExamples, setSelectedExamples] = useState<Record<string, boolean>>({});
 
@@ -211,19 +212,21 @@ export function SpillKitTypeSelectionModal({ isOpen, onClose, onSelect, currentV
                   
                   {selectedType === type.value ? (
                     <div className="space-y-3">
-                      <div className="flex items-center gap-2 pb-2 border-b" onClick={(e) => e.stopPropagation()}>
-                        <Checkbox
-                          id={`select-all-${type.value}`}
-                          checked={type.examples.filter(ex => !isItemAlreadyAdded(ex, type.value)).every(ex => selectedExamples[ex])}
-                          onCheckedChange={toggleSelectAll}
-                        />
-                        <label
-                          htmlFor={`select-all-${type.value}`}
-                          className="text-sm font-medium cursor-pointer"
-                        >
-                          Select All ({type.examples.filter(ex => !isItemAlreadyAdded(ex, type.value)).length})
-                        </label>
-                      </div>
+                      {multiSelect && (
+                        <div className="flex items-center gap-2 pb-2 border-b" onClick={(e) => e.stopPropagation()}>
+                          <Checkbox
+                            id={`select-all-${type.value}`}
+                            checked={type.examples.filter(ex => !isItemAlreadyAdded(ex, type.value)).every(ex => selectedExamples[ex])}
+                            onCheckedChange={toggleSelectAll}
+                          />
+                          <label
+                            htmlFor={`select-all-${type.value}`}
+                            className="text-sm font-medium cursor-pointer"
+                          >
+                            Select All ({type.examples.filter(ex => !isItemAlreadyAdded(ex, type.value)).length})
+                          </label>
+                        </div>
+                      )}
                       <div className="grid grid-cols-1 gap-2">
                         {type.examples.map((example, idx) => {
                           const alreadyAdded = isItemAlreadyAdded(example, type.value);
@@ -236,17 +239,19 @@ export function SpillKitTypeSelectionModal({ isOpen, onClose, onSelect, currentV
                               )} 
                               onClick={(e) => e.stopPropagation()}
                             >
-                              <Checkbox
-                                id={`${type.value}-${idx}`}
-                                checked={selectedExamples[example] || false}
-                                onCheckedChange={() => toggleExample(example)}
-                                disabled={alreadyAdded}
-                              />
+                              {multiSelect && (
+                                <Checkbox
+                                  id={`${type.value}-${idx}`}
+                                  checked={selectedExamples[example] || false}
+                                  onCheckedChange={() => toggleExample(example)}
+                                  disabled={alreadyAdded}
+                                />
+                              )}
                               <label
                                 htmlFor={`${type.value}-${idx}`}
                                 className={cn(
                                   "text-sm flex-1 flex items-center gap-2",
-                                  alreadyAdded ? "cursor-not-allowed" : "cursor-pointer"
+                                  multiSelect && (alreadyAdded ? "cursor-not-allowed" : "cursor-pointer")
                                 )}
                               >
                                 {example}
@@ -282,10 +287,12 @@ export function SpillKitTypeSelectionModal({ isOpen, onClose, onSelect, currentV
           <Button variant="outline" onClick={handleClose}>
             Cancel
           </Button>
-          <Button onClick={handleConfirm} disabled={!selectedType || selectedCount === 0}>
-            {selectedType && selectedCount > 0 
-              ? `Add ${selectedCount} Selected Item${selectedCount > 1 ? 's' : ''}`
-              : 'Select Items'}
+          <Button onClick={handleConfirm} disabled={multiSelect ? (!selectedType || selectedCount === 0) : !selectedType}>
+            {multiSelect 
+              ? (selectedType && selectedCount > 0 
+                  ? `Add ${selectedCount} Selected Item${selectedCount > 1 ? 's' : ''}`
+                  : 'Select Items')
+              : 'Select'}
           </Button>
         </div>
       </DialogContent>
