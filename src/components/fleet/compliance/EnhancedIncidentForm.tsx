@@ -101,7 +101,8 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
 
       // Only set weatherDetails for auto-weather, don't touch manual weatherConditions
       const formattedDescription = capitalizeWords(data.description);
-      setWeatherDetails(`${formattedDescription} • ${data.temp}°F • ${data.humidity}% Humidity • Wind ${data.windSpeed} MPH`);
+      const locationStr = data.city && data.state ? ` - ${data.city}, ${data.state}` : '';
+      setWeatherDetails(`${formattedDescription} • ${data.temp}°F • ${data.humidity}% Humidity • Wind ${data.windSpeed} MPH${locationStr}`);
       
       toast({
         title: "Weather Updated",

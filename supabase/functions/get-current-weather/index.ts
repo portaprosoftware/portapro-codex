@@ -11,6 +11,8 @@ interface WeatherResponse {
   temp: number;
   humidity: number;
   windSpeed: number;
+  city?: string;
+  state?: string;
 }
 
 serve(async (req) => {
@@ -37,19 +39,35 @@ serve(async (req) => {
       );
     }
 
-    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=imperial`;
+    const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=imperial`;
+    const geoUrl = `http://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${apiKey}`;
     
-    const response = await fetch(url);
+    // Fetch weather and location data in parallel
+    const [weatherResponse, geoResponse] = await Promise.all([
+      fetch(weatherUrl),
+      fetch(geoUrl)
+    ]);
     
-    if (!response.ok) {
-      console.error('OpenWeatherMap API error:', response.status, await response.text());
+    if (!weatherResponse.ok) {
+      console.error('OpenWeatherMap API error:', weatherResponse.status, await weatherResponse.text());
       return new Response(
         JSON.stringify({ error: 'Failed to fetch weather data' }),
-        { status: response.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: weatherResponse.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    const data = await response.json();
+    const data = await weatherResponse.json();
+    
+    // Get location data (city, state)
+    let city = '';
+    let state = '';
+    if (geoResponse.ok) {
+      const geoData = await geoResponse.json();
+      if (geoData && geoData.length > 0) {
+        city = geoData[0].name || '';
+        state = geoData[0].state || '';
+      }
+    }
     
     // Map OpenWeatherMap condition codes to our dropdown values
     const weatherCode = data.weather[0].id;
@@ -100,7 +118,9 @@ serve(async (req) => {
       description: data.weather[0].description,
       temp: Math.round(temp),
       humidity: data.main.humidity,
-      windSpeed: Math.round(windSpeed)
+      windSpeed: Math.round(windSpeed),
+      city: city,
+      state: state
     };
 
     return new Response(
