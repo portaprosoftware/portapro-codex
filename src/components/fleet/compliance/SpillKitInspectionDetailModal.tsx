@@ -248,7 +248,7 @@ export function SpillKitInspectionDetailModal({
 
           <Tabs defaultValue="items" className="mt-6">
             <TabsList className="w-full">
-              <TabsTrigger value="items" className="flex-1">Kit Items</TabsTrigger>
+              <TabsTrigger value="items" className="flex-1">Kit Overview</TabsTrigger>
               <TabsTrigger value="weather" className="flex-1">Weather</TabsTrigger>
               <TabsTrigger value="photos" className="flex-1">Photos</TabsTrigger>
               <TabsTrigger value="notes" className="flex-1">Notes</TabsTrigger>
@@ -308,7 +308,7 @@ export function SpillKitInspectionDetailModal({
                   {editedData?.weather_conditions && (
                     <div className="flex flex-wrap gap-2">
                       {editedData.weather_conditions.split(',').map((condition: string) => (
-                        <Badge key={condition} variant="secondary" className="font-bold">
+                        <Badge key={condition} className="bg-gradient-to-r from-green-600 to-green-500 text-white font-bold">
                           {toTitleCase(condition.trim())}
                         </Badge>
                       ))}
@@ -319,7 +319,7 @@ export function SpillKitInspectionDetailModal({
                 <div className="flex flex-wrap gap-2">
                   {inspection.weather_conditions ? (
                     inspection.weather_conditions.split(',').map((condition: string) => (
-                      <Badge key={condition} variant="secondary" className="font-bold">
+                      <Badge key={condition} className="bg-gradient-to-r from-green-600 to-green-500 text-white font-bold">
                         {toTitleCase(condition.trim())}
                       </Badge>
                     ))
