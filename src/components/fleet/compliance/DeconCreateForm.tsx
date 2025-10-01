@@ -17,6 +17,7 @@ import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Truck, MapPin, Cloud, Shield, Sparkles, CheckCircle, Camera, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { formatBadgeText } from "@/lib/textUtils";
 
 type Props = {
   onSaved?: () => void;
@@ -104,7 +105,8 @@ export const DeconCreateForm: React.FC<Props> = ({ onSaved, onCancel }) => {
 
             if (data) {
               const locationStr = data.city && data.state ? ` - ${data.city}, ${data.state}` : '';
-              setWeatherDetails(`${data.description} • ${data.temp}°F • ${data.humidity}% Humidity • Wind ${data.windSpeed} MPH${locationStr}`);
+              const formattedDescription = formatBadgeText(data.description);
+              setWeatherDetails(`${formattedDescription} • ${data.temp}°F • ${data.humidity}% Humidity • Wind ${data.windSpeed} MPH${locationStr}`);
               setWeatherConditions(data.description || "");
               toast({ title: "Weather Added", description: "Current weather conditions have been recorded" });
             }
