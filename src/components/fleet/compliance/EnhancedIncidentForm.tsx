@@ -362,7 +362,7 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
       {/* Basic Information */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-base">
             <AlertTriangle className="h-5 w-5 text-red-500" />
             Basic Incident Information
           </CardTitle>
@@ -470,7 +470,7 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
       {/* Volume and Conditions */}
       <Card>
         <CardHeader>
-          <CardTitle>Volume & Environmental Conditions</CardTitle>
+          <CardTitle className="text-base">Volume & Environmental Conditions</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -590,7 +590,7 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
       {/* Cleanup Actions */}
       <Card>
         <CardHeader>
-          <CardTitle>Cleanup Actions Taken</CardTitle>
+          <CardTitle className="text-base">Cleanup Actions Taken</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-0">
@@ -633,7 +633,7 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
       {/* Witnesses */}
       <Card>
         <CardHeader>
-          <CardTitle>Witnesses</CardTitle>
+          <CardTitle className="text-base">Witnesses</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {witnesses.length > 0 && (
@@ -709,7 +709,7 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
       {/* Photos */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-base">
             <Camera className="h-5 w-5" />
             Photos
           </CardTitle>
@@ -726,7 +726,7 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
       {/* Documentation */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-base">
             <FileText className="h-5 w-5" />
             Documentation
           </CardTitle>
