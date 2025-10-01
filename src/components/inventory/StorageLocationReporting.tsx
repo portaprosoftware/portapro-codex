@@ -518,41 +518,55 @@ export function StorageLocationReporting() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {reportData.spill_kit_details.map((location) => (
-                  <Card key={location.location_id} className="border-l-4 border-l-orange-500">
-                    <CardContent className="p-4">
-                      <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                          <h5 className="font-medium text-lg">{location.location_name}</h5>
-                          <div className="text-right">
-                            <div className="text-sm font-medium">
-                              {location.total_items} items • {location.total_quantity} units
-                            </div>
-                            <div className="text-lg font-bold text-orange-600">
-                              ${location.total_value.toLocaleString()}
+                  <Collapsible
+                    key={location.location_id}
+                    open={expandedLocations.has(location.location_id + '_spill')}
+                    onOpenChange={() => toggleLocation(location.location_id + '_spill')}
+                  >
+                    <Card className="border-l-4 border-l-orange-500">
+                      <CardContent className="p-4">
+                        <CollapsibleTrigger className="w-full">
+                          <div className="space-y-3">
+                            <div className="flex justify-between items-center">
+                              <div className="flex items-center gap-2">
+                                <ChevronDown 
+                                  className={`h-4 w-4 transition-transform ${
+                                    expandedLocations.has(location.location_id + '_spill') ? 'rotate-180' : ''
+                                  }`}
+                                />
+                                <h5 className="font-medium text-lg">{location.location_name}</h5>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-sm font-medium">
+                                  {location.total_items} spill kit {location.total_items === 1 ? 'item' : 'items'} • {location.total_quantity} total units
+                                </div>
+                                <div className="text-lg font-bold text-orange-600">
+                                  ${location.total_value.toLocaleString()}
+                                </div>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        <div className="space-y-2">
-                          {location.items.map((item, idx) => (
-                            <div key={idx} className="flex justify-between items-center text-sm p-2 bg-muted/50 rounded">
-                              <div className="flex items-center gap-2">
-                                <span className="font-medium">{item.item_name}</span>
-                                <Badge variant="outline" className="text-xs">
-                                  {item.item_type}
-                                </Badge>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="mt-3">
+                          <div className="space-y-2">
+                            {location.items.map((item, idx) => (
+                              <div key={idx} className="flex justify-between items-center text-sm p-2 bg-muted/50 rounded">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-medium">{item.item_name}</span>
+                                </div>
+                                <div className="flex items-center gap-3 text-muted-foreground">
+                                  <span>{item.quantity} units</span>
+                                  <span className="font-medium text-foreground">
+                                    ${(item.total_value).toLocaleString()}
+                                  </span>
+                                </div>
                               </div>
-                              <div className="flex items-center gap-3 text-muted-foreground">
-                                <span>{item.quantity} units</span>
-                                <span className="font-medium text-foreground">
-                                  ${(item.total_value).toLocaleString()}
-                                </span>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                            ))}
+                          </div>
+                        </CollapsibleContent>
+                      </CardContent>
+                    </Card>
+                  </Collapsible>
                 ))}
               </CardContent>
             </Card>
