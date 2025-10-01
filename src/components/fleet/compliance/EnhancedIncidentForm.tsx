@@ -597,10 +597,10 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
             {Object.entries(cleanupActionCategories).map(([category, actions], index) => (
               <div 
                 key={category} 
-                className={`p-4 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-200'}`}
+                className={`p-4 flex items-center gap-4 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-200'}`}
               >
-                <h4 className="font-semibold text-base text-gray-700 mb-3">{category}</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-2 max-w-4xl mx-auto">
+                <h4 className="font-semibold text-base text-gray-700 min-w-fit">{category}</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-2 flex-1 max-w-4xl mx-auto">
                   {actions.map((action) => (
                     <div key={action} className="flex items-center space-x-2">
                       <Checkbox
