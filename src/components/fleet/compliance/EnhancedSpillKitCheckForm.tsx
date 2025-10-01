@@ -279,6 +279,7 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
           photos,
           notes,
           weather_conditions: weather.length > 0 ? weather.join(", ") : null,
+          weather_details: weatherDetails || null,
           inspection_duration_minutes: duration,
           completion_status: kitStatus,
           next_check_due: nextCheckDate.toISOString().split('T')[0], // Format as YYYY-MM-DD

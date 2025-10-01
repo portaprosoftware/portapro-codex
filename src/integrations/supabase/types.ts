@@ -9354,6 +9354,7 @@ export type Database = {
           updated_at: string
           vehicle_id: string
           weather_conditions: string | null
+          weather_details: string | null
         }
         Insert: {
           checked_at?: string
@@ -9373,6 +9374,7 @@ export type Database = {
           updated_at?: string
           vehicle_id: string
           weather_conditions?: string | null
+          weather_details?: string | null
         }
         Update: {
           checked_at?: string
@@ -9392,6 +9394,7 @@ export type Database = {
           updated_at?: string
           vehicle_id?: string
           weather_conditions?: string | null
+          weather_details?: string | null
         }
         Relationships: [
           {

@@ -384,21 +384,40 @@ export function SpillKitInspectionDetailModal({
                   )}
                 </div>
               ) : (
-                <div className="flex flex-wrap gap-2">
-                  {inspection.weather_conditions ? (
-                    inspection.weather_conditions.split(',').map((condition: string, index: number) => (
-                      <Badge 
-                        key={`${condition}-${index}`}
-                        variant="outline"
-                        className="border-blue-500 text-blue-600 bg-transparent font-bold gap-2"
-                      >
-                        {getWeatherIcon(condition.trim())}
-                        {formatWeatherCondition(condition)}
-                      </Badge>
-                    ))
-                  ) : (
-                    <p className="text-muted-foreground">No weather conditions recorded</p>
-                  )}
+                <div className="space-y-3">
+                  <div className="flex flex-wrap gap-2">
+                    {inspection.weather_conditions ? (
+                      inspection.weather_conditions.split(',').map((condition: string, index: number) => (
+                        <Badge 
+                          key={`${condition}-${index}`}
+                          variant="outline"
+                          className="border-blue-500 text-blue-600 bg-transparent font-bold gap-2"
+                        >
+                          {getWeatherIcon(condition.trim())}
+                          {formatWeatherCondition(condition)}
+                        </Badge>
+                      ))
+                    ) : null}
+                    
+                    {inspection.weather_details && (
+                      <div className="w-full mt-2">
+                        <Badge 
+                          variant="outline"
+                          className="border-blue-500 text-blue-600 bg-transparent font-bold gap-2"
+                        >
+                          <Cloud className="h-4 w-4" />
+                          Live Weather
+                        </Badge>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {inspection.weather_details}
+                        </p>
+                      </div>
+                    )}
+                    
+                    {!inspection.weather_conditions && !inspection.weather_details && (
+                      <p className="text-muted-foreground">No weather conditions recorded</p>
+                    )}
+                  </div>
                 </div>
               )}
             </TabsContent>
