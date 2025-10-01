@@ -194,7 +194,7 @@ export function SpillKitTypeSelectionModal({ isOpen, onClose, onSelect, currentV
                   
                   {selectedType === type.value ? (
                     <div className="space-y-3">
-                      <div className="flex items-center gap-2 pb-2 border-b">
+                      <div className="flex items-center gap-2 pb-2 border-b" onClick={(e) => e.stopPropagation()}>
                         <Checkbox
                           id={`select-all-${type.value}`}
                           checked={type.examples.every(ex => selectedExamples[ex])}
@@ -209,7 +209,7 @@ export function SpillKitTypeSelectionModal({ isOpen, onClose, onSelect, currentV
                       </div>
                       <div className="grid grid-cols-1 gap-2">
                         {type.examples.map((example, idx) => (
-                          <div key={idx} className="flex items-center gap-2">
+                          <div key={idx} className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                             <Checkbox
                               id={`${type.value}-${idx}`}
                               checked={selectedExamples[example] || false}
