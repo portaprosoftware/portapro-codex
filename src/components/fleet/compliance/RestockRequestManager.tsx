@@ -107,17 +107,15 @@ export const RestockRequestManager: React.FC = () => {
   };
 
   const getStatusBadge = (status: string) => {
-    const statusLabel = status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' ');
-    
     switch (status) {
       case "completed":
-        return <Badge className="bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold border-none">{statusLabel}</Badge>;
+        return <Badge className="bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold border-none">Completed</Badge>;
       case "in_progress":
-        return <Badge className="bg-gradient-to-r from-blue-500 to-blue-700 text-white font-bold border-none">{statusLabel}</Badge>;
+        return <Badge className="bg-gradient-to-r from-blue-500 to-blue-700 text-white font-bold border-none">In Progress</Badge>;
       case "pending":
-        return <Badge className="bg-gradient-to-r from-yellow-400 to-orange-400 text-white font-bold border-none">{statusLabel}</Badge>;
+        return <Badge className="bg-gradient-to-r from-yellow-400 to-orange-400 text-white font-bold border-none">Pending</Badge>;
       default:
-        return <Badge className="bg-gradient-to-r from-gray-400 to-gray-600 text-white font-bold border-none">{statusLabel}</Badge>;
+        return <Badge className="bg-gradient-to-r from-gray-400 to-gray-600 text-white font-bold border-none">Unknown</Badge>;
     }
   };
 
@@ -292,21 +290,12 @@ export const RestockRequestManager: React.FC = () => {
 
                 <div className="flex gap-2">
                   {request.status === "pending" && (
-                    <>
-                      <Button
-                        size="sm"
-                        onClick={() => handleStatusChange(request.id, "in_progress")}
-                      >
-                        Start
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleAssignRequest(request.id, "current_user")}
-                      >
-                        Assign to Me
-                      </Button>
-                    </>
+                    <Button
+                      size="sm"
+                      onClick={() => handleStatusChange(request.id, "in_progress")}
+                    >
+                      Start
+                    </Button>
                   )}
                   
                   {request.status === "in_progress" && (
