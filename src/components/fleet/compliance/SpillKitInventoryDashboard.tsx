@@ -179,7 +179,7 @@ export function SpillKitInventoryDashboard() {
       {/* Category Breakdown */}
       <Card>
         <CardHeader>
-          <CardTitle>Inventory by Category</CardTitle>
+          <h3 className="text-lg font-semibold text-gray-900">Inventory by Category</h3>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
