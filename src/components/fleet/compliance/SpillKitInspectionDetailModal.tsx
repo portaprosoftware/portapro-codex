@@ -9,8 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { format, parseISO, isToday, startOfDay } from 'date-fns';
-import { Eye, Edit, Trash2, CheckCircle, XCircle, Save, X } from 'lucide-react';
-import { DeleteConfirmationModal } from '@/components/ui/delete-confirmation-modal';
+import { CheckCircle, XCircle, Save, X } from 'lucide-react';
 import { WeatherSelectionModal } from './WeatherSelectionModal';
 import { InspectionItemsTable } from './InspectionItemsTable';
 import { InspectionPhotoGallery } from './InspectionPhotoGallery';
@@ -35,7 +34,6 @@ export function SpillKitInspectionDetailModal({
   const queryClient = useQueryClient();
   
   const [mode, setMode] = useState<'view' | 'edit'>('view');
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showWeatherModal, setShowWeatherModal] = useState(false);
   
   // Edit state
@@ -142,31 +140,6 @@ export function SpillKitInspectionDetailModal({
     },
   });
 
-  // Delete mutation (soft delete)
-  const deleteMutation = useMutation({
-    mutationFn: async () => {
-      if (!inspectionId) return;
-
-      const { error } = await supabase
-        .from('vehicle_spill_kit_checks')
-        .update({ deleted_at: new Date().toISOString() })
-        .eq('id', inspectionId);
-
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      toast.success('Inspection deleted successfully');
-      queryClient.invalidateQueries({ queryKey: ['spill-kit-inspection-history'] });
-      setShowDeleteModal(false);
-      onDeleted?.();
-      onClose();
-    },
-    onError: (error) => {
-      toast.error('Failed to delete inspection');
-      console.error('Delete error:', error);
-    },
-  });
-
   const handleItemChange = (itemId: string, field: string, value: any) => {
     setEditedData((prev: any) => ({
       ...prev,
@@ -182,10 +155,6 @@ export function SpillKitInspectionDetailModal({
 
   const handleSave = () => {
     saveMutation.mutate();
-  };
-
-  const handleDelete = () => {
-    deleteMutation.mutate();
   };
 
   if (!inspectionId || !isOpen) return null;
@@ -239,54 +208,29 @@ export function SpillKitInspectionDetailModal({
                   <p><strong>Inspector:</strong> {inspectorName}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                {mode === 'view' ? (
-                  <>
-                    {canEditInspection && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setMode('edit')}
-                      >
-                        <Edit className="h-4 w-4 mr-2" />
-                        Edit
-                      </Button>
-                    )}
-                    {hasAdminAccess && (
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => setShowDeleteModal(true)}
-                      >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Delete
-                      </Button>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setMode('view');
-                        setEditedData(null);
-                      }}
-                    >
-                      <X className="h-4 w-4 mr-2" />
-                      Cancel
-                    </Button>
-                    <Button
-                      size="sm"
-                      onClick={handleSave}
-                      disabled={saveMutation.isPending}
-                    >
-                      <Save className="h-4 w-4 mr-2" />
-                      {saveMutation.isPending ? 'Saving...' : 'Save Changes'}
-                    </Button>
-                  </>
-                )}
-              </div>
+              {mode === 'edit' && (
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setMode('view');
+                      setEditedData(null);
+                    }}
+                  >
+                    <X className="h-4 w-4 mr-2" />
+                    Cancel
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={handleSave}
+                    disabled={saveMutation.isPending}
+                  >
+                    <Save className="h-4 w-4 mr-2" />
+                    {saveMutation.isPending ? 'Saving...' : 'Save Changes'}
+                  </Button>
+                </div>
+              )}
             </div>
             {!hasAdminAccess && canEditInspection && mode === 'view' && (
               <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-md text-sm text-blue-800">
@@ -424,16 +368,6 @@ export function SpillKitInspectionDetailModal({
           currentValue={editedData?.weather_conditions?.split(',').map((c: string) => c.trim()) || []}
         />
       )}
-
-      {/* Delete Confirmation Modal */}
-      <DeleteConfirmationModal
-        isOpen={showDeleteModal}
-        onClose={() => setShowDeleteModal(false)}
-        onConfirm={handleDelete}
-        title="Delete Inspection"
-        description="Are you sure you want to delete this spill kit inspection? This action cannot be undone."
-        confirmText="Delete Inspection"
-      />
     </>
   );
 }

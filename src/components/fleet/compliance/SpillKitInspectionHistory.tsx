@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,13 +8,18 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { format, parseISO, differenceInDays, startOfDay, endOfDay } from "date-fns";
-import { CheckCircle, XCircle, Clock, AlertTriangle, CalendarIcon, Search, ChevronLeft, ChevronRight as ChevronRightIcon, Truck, Eye, Edit, Trash2 } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { format, parseISO, differenceInDays, startOfDay, endOfDay, isToday } from "date-fns";
+import { CheckCircle, XCircle, Clock, AlertTriangle, CalendarIcon, Search, ChevronLeft, ChevronRight as ChevronRightIcon, Truck, Eye, Edit, Trash2, MoreHorizontal } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MultiSelectVehicleFilter } from "../MultiSelectVehicleFilter";
 import { SpillKitInspectionDetailModal } from "./SpillKitInspectionDetailModal";
+import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
+import { useUserRole } from "@/hooks/useUserRole";
+import { useUser } from "@clerk/clerk-react";
+import { toast } from "sonner";
 
 type InspectionRecord = {
   id: string;
@@ -36,7 +41,74 @@ export function SpillKitInspectionHistory() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [selectedInspectionId, setSelectedInspectionId] = useState<string | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [inspectionToDelete, setInspectionToDelete] = useState<any>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [editMode, setEditMode] = useState(false);
   const rowsPerPage = 25;
+  
+  const { hasAdminAccess, userId } = useUserRole();
+  const { user } = useUser();
+  const queryClient = useQueryClient();
+
+  // Permission checks
+  const canEdit = (inspection: InspectionRecord) => {
+    if (hasAdminAccess) return true;
+    if (!userId) return false;
+    
+    const createdDate = startOfDay(parseISO(inspection.created_at));
+    const today = startOfDay(new Date());
+    const isSameDay = createdDate.getTime() === today.getTime();
+    const isOwnInspection = inspection.performed_by === userId; // This should check clerk_user_id
+    
+    return isOwnInspection && isSameDay;
+  };
+
+  const canDelete = () => hasAdminAccess;
+
+  // Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (inspectionId: string) => {
+      const { error } = await supabase
+        .from("vehicle_spill_kit_checks")
+        .update({ deleted_at: new Date().toISOString() })
+        .eq("id", inspectionId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Inspection deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ["spill-kit-inspection-history"] });
+      setShowDeleteModal(false);
+      setInspectionToDelete(null);
+    },
+    onError: (error: any) => {
+      toast.error("Failed to delete inspection");
+      console.error("Delete error:", error);
+    }
+  });
+
+  const handleViewInspection = (inspection: InspectionRecord) => {
+    setSelectedInspectionId(inspection.id);
+    setEditMode(false);
+    setIsDetailModalOpen(true);
+  };
+
+  const handleEditInspection = (inspection: InspectionRecord) => {
+    setSelectedInspectionId(inspection.id);
+    setEditMode(true);
+    setIsDetailModalOpen(true);
+  };
+
+  const handleDeleteClick = (inspection: InspectionRecord) => {
+    setInspectionToDelete(inspection);
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (inspectionToDelete) {
+      deleteMutation.mutate(inspectionToDelete.id);
+    }
+  };
 
   const { data: allInspections, isLoading } = useQuery({
     queryKey: ["spill-kit-inspection-history", selectedVehicles.map(v => v.id), startDate, endDate],
@@ -201,18 +273,38 @@ export function SpillKitInspectionHistory() {
           </TableCell>
           <TableCell className="text-sm text-muted-foreground">{inspection.performed_by}</TableCell>
           <TableCell>
-            <div className="flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setSelectedInspectionId(inspection.id);
-                  setIsDetailModalOpen(true);
-                }}
-              >
-                <Eye className="h-4 w-4" />
-              </Button>
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                  <span className="sr-only">Open menu</span>
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => handleViewInspection(inspection)}>
+                  <Eye className="mr-2 h-4 w-4" />
+                  View
+                </DropdownMenuItem>
+                {canEdit(inspection) && (
+                  <DropdownMenuItem onClick={() => handleEditInspection(inspection)}>
+                    <Edit className="mr-2 h-4 w-4" />
+                    Edit
+                  </DropdownMenuItem>
+                )}
+                {canDelete() && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                      onClick={() => handleDeleteClick(inspection)}
+                      className="text-red-600 focus:text-red-600"
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Delete
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </TableCell>
         </TableRow>
         {isOpen && itemsWithExpiration.length > 0 && (
@@ -460,6 +552,7 @@ export function SpillKitInspectionHistory() {
         onClose={() => {
           setIsDetailModalOpen(false);
           setSelectedInspectionId(null);
+          setEditMode(false);
         }}
         onDeleted={() => {
           // Refresh happens automatically via query invalidation
@@ -467,6 +560,19 @@ export function SpillKitInspectionHistory() {
         onSaved={() => {
           // Refresh happens automatically via query invalidation
         }}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false);
+          setInspectionToDelete(null);
+        }}
+        onConfirm={handleConfirmDelete}
+        title="Delete Inspection"
+        description="Are you sure you want to delete this spill kit inspection? This action cannot be undone."
+        confirmText="Delete Inspection"
       />
     </div>
   );
