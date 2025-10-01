@@ -38,6 +38,7 @@ type TemplateItem = {
   category: string;
   expiration_trackable: boolean;
   display_order: number;
+  unit_cost?: number;
 };
 
 export const SpillKitTemplateManager: React.FC = () => {
@@ -401,7 +402,8 @@ const TemplateForm: React.FC<{
       required_quantity: 1,
       critical_item: false,
       category: "",
-      expiration_trackable: false
+      expiration_trackable: false,
+      unit_cost: 0
     }, ...items]);
   };
 
@@ -459,7 +461,8 @@ const TemplateForm: React.FC<{
           required_quantity: 1,
           critical_item: false,
           category: type,
-          expiration_trackable: false
+          expiration_trackable: false,
+          unit_cost: 0
         }));
         
         // Insert additional items at the beginning (index 0)
@@ -623,7 +626,7 @@ const TemplateForm: React.FC<{
         <div className="space-y-4">
           {items.map((item, index) => (
             <Card key={index} className="p-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
                   <label className="text-sm font-medium mb-1 block">Item Name</label>
                   <Input
@@ -640,6 +643,18 @@ const TemplateForm: React.FC<{
                     value={item.required_quantity || 1}
                     onChange={(e) => updateItem(index, 'required_quantity', parseInt(e.target.value) || 1)}
                     min="1"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-1 block">Unit Cost ($)</label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={item.unit_cost || 0}
+                    onChange={(e) => updateItem(index, 'unit_cost', parseFloat(e.target.value) || 0)}
+                    min="0"
+                    placeholder="0.00"
                   />
                 </div>
 

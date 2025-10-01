@@ -293,7 +293,8 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
           const item = items.find((i: any) => i.id === itemId);
           return {
             name: item?.item_name || itemId,
-            quantity: item?.required_quantity || 1
+            quantity: item?.required_quantity || 1,
+            unit_cost: item?.unit_cost || 0
           };
         });
       

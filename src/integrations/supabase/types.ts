@@ -8295,6 +8295,7 @@ export type Database = {
           item_name: string
           required_quantity: number | null
           template_id: string
+          unit_cost: number | null
         }
         Insert: {
           category?: string | null
@@ -8306,6 +8307,7 @@ export type Database = {
           item_name: string
           required_quantity?: number | null
           template_id: string
+          unit_cost?: number | null
         }
         Update: {
           category?: string | null
@@ -8317,6 +8319,7 @@ export type Database = {
           item_name?: string
           required_quantity?: number | null
           template_id?: string
+          unit_cost?: number | null
         }
         Relationships: [
           {
