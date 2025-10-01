@@ -41,7 +41,7 @@ const weatherCategories: WeatherCategory[] = [
     label: "General",
     icon: <Sun className="h-5 w-5" />,
     options: [
-      { value: "clear", label: "Clear", icon: <Sun className="h-5 w-5" />, color: "text-yellow-500" },
+      { value: "clear", label: "Clear / Sunny", icon: <Sun className="h-5 w-5" />, color: "text-yellow-500" },
       { value: "cloudy", label: "Cloudy", icon: <Cloud className="h-5 w-5" />, color: "text-gray-500" },
     ]
   },
@@ -100,8 +100,28 @@ export const WeatherSelectionModal: React.FC<Props> = ({ isOpen, onClose, onSele
     setSelectedConditions(currentValue);
   }, [isOpen, currentValue]);
 
-  const toggleCondition = (value: string) => {
+  const toggleCondition = (value: string, categoryId: string) => {
     setSelectedConditions(prev => {
+      // For General and Temperature categories, only allow one selection
+      if (categoryId === 'general' || categoryId === 'temperature') {
+        // Get all values from this category
+        const categoryOptions = weatherCategories
+          .find(cat => cat.id === categoryId)
+          ?.options.map(opt => opt.value) || [];
+        
+        // Remove any existing selections from this category
+        const withoutCategory = prev.filter(v => !categoryOptions.includes(v));
+        
+        // If the clicked value was already selected, just remove it (toggle off)
+        if (prev.includes(value)) {
+          return withoutCategory;
+        }
+        
+        // Otherwise add the new selection
+        return [...withoutCategory, value];
+      }
+      
+      // For other categories, allow multiple selections
       if (prev.includes(value)) {
         return prev.filter(v => v !== value);
       } else {
@@ -180,10 +200,16 @@ export const WeatherSelectionModal: React.FC<Props> = ({ isOpen, onClose, onSele
                   <div className="flex items-center gap-2">
                     <div className="text-muted-foreground">{category.icon}</div>
                     <span className="font-semibold">{category.label}</span>
-                    <Badge variant="outline" className="ml-2">
-                      {category.options.filter(opt => selectedConditions.includes(opt.value)).length}/
-                      {category.options.length}
-                    </Badge>
+                    {(category.id === 'general' || category.id === 'temperature') ? (
+                      <Badge variant="outline" className="ml-2 text-xs">
+                        Single selection
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline" className="ml-2">
+                        {category.options.filter(opt => selectedConditions.includes(opt.value)).length}/
+                        {category.options.length}
+                      </Badge>
+                    )}
                   </div>
                 </AccordionTrigger>
                 <AccordionContent>
@@ -195,7 +221,7 @@ export const WeatherSelectionModal: React.FC<Props> = ({ isOpen, onClose, onSele
                       >
                         <Checkbox
                           checked={selectedConditions.includes(option.value)}
-                          onCheckedChange={() => toggleCondition(option.value)}
+                          onCheckedChange={() => toggleCondition(option.value, category.id)}
                         />
                         <div className={`${option.color} shrink-0`}>
                           {option.icon}
