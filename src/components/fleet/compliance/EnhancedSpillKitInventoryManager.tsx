@@ -388,10 +388,11 @@ export function EnhancedSpillKitInventoryManager() {
         </div>
         <Button 
           onClick={() => handleOpenDialog()}
+          variant="secondary"
           className="h-10"
         >
           <Plus className="h-4 w-4 mr-2" />
-          Add Inventory Item
+          Add Spill Kit Inventory
         </Button>
       </div>
 
@@ -421,7 +422,7 @@ export function EnhancedSpillKitInventoryManager() {
                   <TableCell className="font-medium">
                     {item.item_name}
                     {item.is_critical && (
-                      <Badge variant="outline" className="ml-2 text-xs bg-red-50 text-red-700 border-red-300">
+                      <Badge className="ml-2 text-xs bg-gradient-to-r from-red-500 to-red-700 text-white font-bold border-none">
                         Critical
                       </Badge>
                     )}
