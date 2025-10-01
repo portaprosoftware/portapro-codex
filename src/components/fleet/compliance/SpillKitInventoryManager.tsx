@@ -245,23 +245,27 @@ export function SpillKitInventoryManager() {
         </Card>
       </div>
 
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-semibold">Spill Kit Inventory</h2>
+          <p className="text-muted-foreground">
+            Manage stock levels, costs, and supplier information for spill kit components
+          </p>
+        </div>
+        <Button 
+          onClick={() => handleOpenDialog()}
+          variant="outline"
+          className="h-10 bg-gray-50 hover:bg-gray-100 border-gray-300"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Add Item
+        </Button>
+      </div>
+
       {/* Main Table */}
       <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Spill Kit Inventory</CardTitle>
-              <CardDescription>
-                Manage stock levels, costs, and supplier information for spill kit components
-              </CardDescription>
-            </div>
-            <Button onClick={() => handleOpenDialog()}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Item
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           <Table>
             <TableHeader>
               <TableRow>
