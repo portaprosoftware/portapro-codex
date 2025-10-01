@@ -324,7 +324,7 @@ export function SpillKitInspectionHistory() {
 
       {/* Clear Filters and Results Count Row */}
       {(searchText || selectedVehicles.length > 0 || startDate || endDate) && (
-        <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
           <button
             onClick={() => {
               setSearchText("");
