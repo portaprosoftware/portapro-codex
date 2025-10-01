@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 interface AddFuelLogModalProps {
   open: boolean;
@@ -64,6 +65,7 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { trackEvent } = useAnalytics();
 
   // Fetch vehicles
   const { data: vehicles } = useQuery({
@@ -158,6 +160,10 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
       toast({
         title: 'Success',
         description: 'Fuel log added successfully'
+      });
+      trackEvent('vehicle_fuel_log_created', {
+        vehicleId: vehicleContextId || formData.vehicle_id,
+        context: vehicleContextId ? 'vehicle_profile' : 'standalone',
       });
       queryClient.invalidateQueries({ queryKey: ['fuel-logs'] });
       queryClient.invalidateQueries({ queryKey: ['fuel-metrics'] });

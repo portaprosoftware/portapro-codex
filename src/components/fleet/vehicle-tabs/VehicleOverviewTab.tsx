@@ -85,18 +85,18 @@ export function VehicleOverviewTab({ vehicleId, licensePlate }: VehicleOverviewT
           return (
             <Card key={stat.label} className="border-2 hover:shadow-md transition-shadow">
               <CardContent className="p-4">
-                <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between">
                   <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">{stat.label}</p>
-                    <p className={cn("text-3xl font-bold", stat.textColor)}>
+                    <p className="text-xs sm:text-sm text-muted-foreground">{stat.label}</p>
+                    <p className={cn("text-2xl sm:text-3xl font-bold", stat.textColor)}>
                       {metricsLoading ? '...' : stat.value}
                     </p>
                   </div>
                   <div className={cn(
-                    "p-3 rounded-lg",
+                    "p-2 sm:p-3 rounded-lg",
                     stat.bgColor
                   )}>
-                    <Icon className={cn("w-6 h-6", stat.textColor)} />
+                    <Icon className={cn("w-5 h-5 sm:w-6 sm:h-6", stat.textColor)} />
                   </div>
                 </div>
               </CardContent>
@@ -161,16 +161,16 @@ export function VehicleOverviewTab({ vehicleId, licensePlate }: VehicleOverviewT
                 return (
                   <div
                     key={item.activity_id}
-                    className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg hover:bg-gray-50 transition-colors"
                   >
-                    <div className="p-2 rounded-lg bg-blue-50">
-                      <Icon className="w-4 h-4 text-blue-600" />
+                    <div className="p-1.5 sm:p-2 rounded-lg bg-blue-50 flex-shrink-0">
+                      <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">
+                      <p className="text-xs sm:text-sm font-medium text-gray-900 truncate">
                         {item.activity_summary}
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-[10px] sm:text-xs text-muted-foreground">
                         {format(new Date(item.activity_date), 'MMM d, yyyy h:mm a')}
                       </p>
                     </div>

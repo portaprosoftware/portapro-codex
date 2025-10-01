@@ -32,6 +32,8 @@ export function useVehicleAssignments({
       };
     },
     enabled: !!vehicleId,
-    staleTime: 30000,
+    staleTime: 3 * 60 * 1000, // 3 minutes
+    gcTime: 5 * 60 * 1000, // 5 minutes cache
+    refetchOnWindowFocus: true,
   });
 }

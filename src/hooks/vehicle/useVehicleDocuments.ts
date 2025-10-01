@@ -32,6 +32,8 @@ export function useVehicleDocuments({
       };
     },
     enabled: !!vehicleId,
-    staleTime: 30000,
+    staleTime: 10 * 60 * 1000, // 10 minutes - documents rarely change
+    gcTime: 30 * 60 * 1000, // 30 minutes cache
+    refetchOnWindowFocus: false,
   });
 }

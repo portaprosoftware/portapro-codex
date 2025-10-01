@@ -21,6 +21,7 @@ import { CalendarDays, Plus, X, AlertTriangle, Wrench, Package, Truck } from "lu
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 interface AddWorkOrderDrawerProps {
   open: boolean;
@@ -59,6 +60,7 @@ export const AddWorkOrderDrawer: React.FC<AddWorkOrderDrawerProps> = ({
 }) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { trackEvent } = useAnalytics();
   const isVehicleContextLocked = !!vehicleContextId;
   
   const [form, setForm] = useState<WorkOrderForm>({
@@ -145,6 +147,11 @@ export const AddWorkOrderDrawer: React.FC<AddWorkOrderDrawerProps> = ({
       toast({
         title: "Work order created",
         description: `${woNumber} has been created successfully`
+      });
+
+      trackEvent('vehicle_work_order_created', {
+        vehicleId: vehicleContextId || form.asset_id,
+        context: vehicleContextId ? 'vehicle_profile' : 'standalone',
       });
 
       onSuccess();

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, Suspense, lazy, useEffect } from "react";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -33,6 +33,16 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { VehicleTypeSelector } from "./VehicleTypeSelector";
 import { getVehicleTypeDisplayName } from "@/lib/vehicleTypeUtils";
+import { TabSkeleton } from "./vehicle-tabs/TabSkeleton";
+import { useAnalytics } from "@/hooks/useAnalytics";
+
+// Lazy load tab components for better performance
+const VehicleOverviewTab = lazy(() => import('./vehicle-tabs/VehicleOverviewTab').then(m => ({ default: m.VehicleOverviewTab })));
+const VehicleMaintenanceTab = lazy(() => import('./vehicle-tabs/VehicleMaintenanceTab').then(m => ({ default: m.VehicleMaintenanceTab })));
+const VehicleFuelTab = lazy(() => import('./vehicle-tabs/VehicleFuelTab').then(m => ({ default: m.VehicleFuelTab })));
+const VehicleAssignmentsTab = lazy(() => import('./vehicle-tabs/VehicleAssignmentsTab').then(m => ({ default: m.VehicleAssignmentsTab })));
+const VehicleSpillKitTab = lazy(() => import('./vehicle-tabs/VehicleSpillKitTab').then(m => ({ default: m.VehicleSpillKitTab })));
+const VehicleDocumentsTab = lazy(() => import('./vehicle-tabs/VehicleDocumentsTab').then(m => ({ default: m.VehicleDocumentsTab })));
 
 interface Vehicle {
   id: string;
@@ -58,6 +68,27 @@ interface VehicleDetailDrawerProps {
 export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicle, isOpen, onClose }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
+  const { trackEvent } = useAnalytics();
+  
+  // Track vehicle profile view
+  useEffect(() => {
+    if (isOpen) {
+      trackEvent('vehicle_profile_viewed', {
+        vehicleId: vehicle.id,
+        vehicleName: vehicle.license_plate,
+      });
+    }
+  }, [isOpen, vehicle.id, vehicle.license_plate, trackEvent]);
+  
+  // Track tab changes
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    trackEvent('vehicle_tab_changed', {
+      vehicleId: vehicle.id,
+      vehicleName: vehicle.license_plate,
+      tab,
+    });
+  };
   const [vehicleImage, setVehicleImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
@@ -399,22 +430,22 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto">
-          <div className="p-6">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <div className="p-4 sm:p-6">
+            <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4 sm:space-y-6">
               {/* Desktop Tabs */}
-              <TabsList className="hidden sm:grid w-full grid-cols-7">
-                <TabsTrigger value="overview">Overview</TabsTrigger>
-                <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
-                <TabsTrigger value="fuel">Fuel</TabsTrigger>
-                <TabsTrigger value="assignments">Assignments</TabsTrigger>
-                <TabsTrigger value="spillkit">Spill Kit</TabsTrigger>
-                <TabsTrigger value="damage">Damage Log</TabsTrigger>
-                <TabsTrigger value="documents">Documents</TabsTrigger>
+              <TabsList className="hidden sm:grid w-full grid-cols-7 h-auto">
+                <TabsTrigger value="overview" className="text-xs sm:text-sm">Overview</TabsTrigger>
+                <TabsTrigger value="maintenance" className="text-xs sm:text-sm">Maintenance</TabsTrigger>
+                <TabsTrigger value="fuel" className="text-xs sm:text-sm">Fuel</TabsTrigger>
+                <TabsTrigger value="assignments" className="text-xs sm:text-sm">Assignments</TabsTrigger>
+                <TabsTrigger value="spillkit" className="text-xs sm:text-sm">Spill Kit</TabsTrigger>
+                <TabsTrigger value="damage" className="text-xs sm:text-sm">Damage Log</TabsTrigger>
+                <TabsTrigger value="documents" className="text-xs sm:text-sm">Documents</TabsTrigger>
               </TabsList>
 
               {/* Mobile Dropdown */}
               <div className="block sm:hidden mb-4">
-                <Select value={activeTab} onValueChange={setActiveTab}>
+                <Select value={activeTab} onValueChange={handleTabChange}>
                   <SelectTrigger className="w-full bg-white border-gray-200 shadow-sm">
                     <SelectValue placeholder="Select a tab" />
                   </SelectTrigger>
@@ -430,7 +461,45 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
                 </Select>
               </div>
 
+              {/* New Tab Components with Lazy Loading */}
               <TabsContent value="overview" className="space-y-4">
+                <Suspense fallback={<TabSkeleton />}>
+                  <VehicleOverviewTab vehicleId={vehicle.id} licensePlate={vehicle.license_plate} />
+                </Suspense>
+              </TabsContent>
+
+              <TabsContent value="maintenance" className="space-y-4">
+                <Suspense fallback={<TabSkeleton />}>
+                  <VehicleMaintenanceTab vehicleId={vehicle.id} licensePlate={vehicle.license_plate} />
+                </Suspense>
+              </TabsContent>
+
+              <TabsContent value="fuel" className="space-y-4">
+                <Suspense fallback={<TabSkeleton />}>
+                  <VehicleFuelTab vehicleId={vehicle.id} licensePlate={vehicle.license_plate} />
+                </Suspense>
+              </TabsContent>
+
+              <TabsContent value="assignments" className="space-y-4">
+                <Suspense fallback={<TabSkeleton />}>
+                  <VehicleAssignmentsTab vehicleId={vehicle.id} licensePlate={vehicle.license_plate} />
+                </Suspense>
+              </TabsContent>
+
+              <TabsContent value="spillkit" className="space-y-4">
+                <Suspense fallback={<TabSkeleton />}>
+                  <VehicleSpillKitTab vehicleId={vehicle.id} licensePlate={vehicle.license_plate} />
+                </Suspense>
+              </TabsContent>
+
+              <TabsContent value="documents" className="space-y-4">
+                <Suspense fallback={<TabSkeleton />}>
+                  <VehicleDocumentsTab vehicleId={vehicle.id} licensePlate={vehicle.license_plate} />
+                </Suspense>
+              </TabsContent>
+
+              {/* Legacy Damage Log Tab - Keep as is */}
+              <TabsContent value="damage" className="space-y-4">
                 {isEditing ? (
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
@@ -714,79 +783,6 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
                     </CardContent>
                   </Card>
                 )}
-              </TabsContent>
-
-              <TabsContent value="maintenance">
-                <Card>
-                  <CardHeader className="flex items-center justify-between">
-                    <CardTitle className="flex items-center gap-2">
-                      <Wrench className="w-5 h-5" />
-                      Maintenance History
-                    </CardTitle>
-                    <Button
-                      onClick={() => setAddMaintenanceOpen(true)}
-                      size="sm"
-                      className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add Maintenance
-                    </Button>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-500 text-center py-8">No maintenance records found</p>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="fuel">
-                <Card>
-                  <CardHeader className="flex items-center justify-between">
-                    <CardTitle className="flex items-center gap-2">
-                      <Fuel className="w-5 h-5" />
-                      Fuel Logs
-                    </CardTitle>
-                    <Button
-                      onClick={() => setAddFuelLogOpen(true)}
-                      size="sm"
-                      className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add Fuel Log
-                    </Button>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-500 text-center py-8">No fuel logs found</p>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="assignments">
-                <Card>
-                  <CardHeader className="flex items-center justify-between">
-                    <CardTitle className="flex items-center gap-2">
-                      <Calendar className="w-5 h-5" />
-                      Daily Assignments
-                    </CardTitle>
-                    <Button
-                      onClick={() => setAddWorkOrderOpen(true)}
-                      size="sm"
-                      className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add Work Order
-                    </Button>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-500 text-center py-8">No assignments found</p>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="spillkit">
-                <VehicleSpillKitManager 
-                  vehicleId={vehicle.id}
-                  licensePlate={vehicle.license_plate}
-                />
               </TabsContent>
 
               <TabsContent value="damage">
