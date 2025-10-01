@@ -712,14 +712,12 @@ export function EnhancedSpillKitInventoryManager() {
                     <Input
                       id="supplier_portal_url"
                       type="url"
-                      placeholder="https://"
+                      placeholder="https://supplier.com/order/12345"
                       value={formData.supplier_portal_url}
                       onChange={(e) => setFormData({ ...formData, supplier_portal_url: e.target.value })}
                     />
                     <p className="text-xs text-muted-foreground">
                       Paste the full direct link to your ordering system, including https://
-                      <br />
-                      Example: https://supplier.com/order/12345
                     </p>
                   </div>
 
