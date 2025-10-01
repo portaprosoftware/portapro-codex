@@ -8085,7 +8085,7 @@ export type Database = {
             foreignKeyName: "spill_kit_location_stock_storage_location_id_fkey"
             columns: ["storage_location_id"]
             isOneToOne: false
-            referencedRelation: "spill_kit_storage_locations"
+            referencedRelation: "storage_locations"
             referencedColumns: ["id"]
           },
         ]
@@ -8231,92 +8231,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "spill_kit_stock_transfers_from_location_id_fkey"
-            columns: ["from_location_id"]
-            isOneToOne: false
-            referencedRelation: "spill_kit_storage_locations"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "spill_kit_stock_transfers_inventory_item_id_fkey"
             columns: ["inventory_item_id"]
             isOneToOne: false
             referencedRelation: "spill_kit_inventory"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "spill_kit_stock_transfers_to_location_id_fkey"
-            columns: ["to_location_id"]
-            isOneToOne: false
-            referencedRelation: "spill_kit_storage_locations"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      spill_kit_storage_locations: {
-        Row: {
-          address_company: boolean | null
-          address_custom: string | null
-          address_gps_lat: number | null
-          address_gps_lng: number | null
-          address_type: string
-          capacity_limit: number | null
-          contact_person: string | null
-          contact_phone: string | null
-          created_at: string | null
-          id: string
-          is_active: boolean | null
-          is_default: boolean | null
-          location_type: string
-          name: string
-          notes: string | null
-          updated_at: string | null
-          vehicle_id: string | null
-        }
-        Insert: {
-          address_company?: boolean | null
-          address_custom?: string | null
-          address_gps_lat?: number | null
-          address_gps_lng?: number | null
-          address_type?: string
-          capacity_limit?: number | null
-          contact_person?: string | null
-          contact_phone?: string | null
-          created_at?: string | null
-          id?: string
-          is_active?: boolean | null
-          is_default?: boolean | null
-          location_type: string
-          name: string
-          notes?: string | null
-          updated_at?: string | null
-          vehicle_id?: string | null
-        }
-        Update: {
-          address_company?: boolean | null
-          address_custom?: string | null
-          address_gps_lat?: number | null
-          address_gps_lng?: number | null
-          address_type?: string
-          capacity_limit?: number | null
-          contact_person?: string | null
-          contact_phone?: string | null
-          created_at?: string | null
-          id?: string
-          is_active?: boolean | null
-          is_default?: boolean | null
-          location_type?: string
-          name?: string
-          notes?: string | null
-          updated_at?: string | null
-          vehicle_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "spill_kit_storage_locations_vehicle_id_fkey"
-            columns: ["vehicle_id"]
-            isOneToOne: false
-            referencedRelation: "vehicles"
             referencedColumns: ["id"]
           },
         ]
@@ -8495,7 +8413,10 @@ export type Database = {
       storage_locations: {
         Row: {
           address_type: string
+          capacity_limit: number | null
           company_address_id: string | null
+          contact_person: string | null
+          contact_phone: string | null
           created_at: string
           custom_city: string | null
           custom_state: string | null
@@ -8507,12 +8428,18 @@ export type Database = {
           id: string
           is_active: boolean | null
           is_default: boolean | null
+          location_type: string | null
           name: string
+          notes: string | null
           updated_at: string
+          vehicle_id: string | null
         }
         Insert: {
           address_type?: string
+          capacity_limit?: number | null
           company_address_id?: string | null
+          contact_person?: string | null
+          contact_phone?: string | null
           created_at?: string
           custom_city?: string | null
           custom_state?: string | null
@@ -8524,12 +8451,18 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           is_default?: boolean | null
+          location_type?: string | null
           name: string
+          notes?: string | null
           updated_at?: string
+          vehicle_id?: string | null
         }
         Update: {
           address_type?: string
+          capacity_limit?: number | null
           company_address_id?: string | null
+          contact_person?: string | null
+          contact_phone?: string | null
           created_at?: string
           custom_city?: string | null
           custom_state?: string | null
@@ -8541,10 +8474,21 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           is_default?: boolean | null
+          location_type?: string | null
           name?: string
+          notes?: string | null
           updated_at?: string
+          vehicle_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "storage_locations_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       subscribers: {
         Row: {

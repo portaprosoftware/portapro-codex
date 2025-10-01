@@ -14,10 +14,10 @@ export const SpillKitLocationStockManager: React.FC = () => {
   const [selectedTransfer, setSelectedTransfer] = useState<{ itemId?: string; fromLocationId?: string }>({});
 
   const { data: locations, isLoading: locationsLoading } = useQuery({
-    queryKey: ['spill_kit_storage_locations_with_stock'],
+    queryKey: ['storage-locations-with-stock'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('spill_kit_storage_locations')
+        .from('storage_locations')
         .select('*')
         .eq('is_active', true)
         .order('name');

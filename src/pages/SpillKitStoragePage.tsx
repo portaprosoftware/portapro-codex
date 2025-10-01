@@ -30,10 +30,10 @@ export default function SpillKitStoragePage() {
   }, []);
 
   const { data: locations, isLoading } = useQuery({
-    queryKey: ['spill_kit_storage_locations'],
+    queryKey: ['storage-locations'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('spill_kit_storage_locations')
+        .from('storage_locations')
         .select('*, vehicles(license_plate)')
         .order('name');
       if (error) throw error;
@@ -44,13 +44,13 @@ export default function SpillKitStoragePage() {
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
-        .from('spill_kit_storage_locations')
+        .from('storage_locations')
         .delete()
         .eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['spill_kit_storage_locations'] });
+      queryClient.invalidateQueries({ queryKey: ['storage-locations'] });
       toast({
         title: "Success",
         description: "Location deleted successfully"
