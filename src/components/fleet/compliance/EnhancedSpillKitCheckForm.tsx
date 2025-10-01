@@ -20,6 +20,7 @@ import { useToast } from "@/hooks/use-toast";
 import { PhotoCapture } from "./PhotoCapture";
 import { StockVehicleSelectionModal } from "../StockVehicleSelectionModal";
 import { VehicleSelectedDisplay } from "../VehicleSelectedDisplay";
+import { WeatherSelectionModal } from "./WeatherSelectionModal";
 import { format, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useGeolocation } from "@/hooks/useGeolocation";
@@ -65,6 +66,7 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
   const [allMarkedPresent, setAllMarkedPresent] = useState(false);
   const [fetchingWeather, setFetchingWeather] = useState(false);
   const [weatherDetails, setWeatherDetails] = useState<string>("");
+  const [isWeatherModalOpen, setIsWeatherModalOpen] = useState(false);
   
   const { latitude, longitude, error: gpsError } = useGeolocation();
 
@@ -620,30 +622,25 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
               <label className="text-sm font-medium mb-2 block">Weather Conditions</label>
               <div className="space-y-2">
                 <div className="flex gap-2">
-                  <Select value={weather} onValueChange={setWeather}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select weather conditions..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="clear">Clear</SelectItem>
-                      <SelectItem value="cloudy">Cloudy</SelectItem>
-                      <SelectItem value="rainy">Rainy</SelectItem>
-                      <SelectItem value="snowy">Snowy</SelectItem>
-                      <SelectItem value="windy">Windy</SelectItem>
-                      <SelectItem value="foggy">Foggy</SelectItem>
-                      <SelectItem value="icy">Icy</SelectItem>
-                      <SelectItem value="hot">Hot</SelectItem>
-                      <SelectItem value="cold">Cold</SelectItem>
-                      <SelectItem value="storm">Storm / Severe Weather</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsWeatherModalOpen(true)}
+                    className="flex-1 justify-start"
+                  >
+                    {weather ? (
+                      <span className="capitalize">{weather}</span>
+                    ) : (
+                      <span className="text-muted-foreground">Select weather conditions...</span>
+                    )}
+                  </Button>
                   <Button 
                     type="button" 
                     variant="outline" 
                     onClick={fetchCurrentWeather}
                     disabled={fetchingWeather || !latitude}
                     className="shrink-0"
+                    title="Fetch current weather"
                   >
                     {fetchingWeather ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -660,6 +657,13 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
                 )}
               </div>
             </div>
+
+            <WeatherSelectionModal
+              isOpen={isWeatherModalOpen}
+              onClose={() => setIsWeatherModalOpen(false)}
+              onSelect={setWeather}
+              currentValue={weather}
+            />
 
             {/* General Notes */}
             <div>

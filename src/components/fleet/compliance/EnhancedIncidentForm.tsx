@@ -15,6 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import { X, Plus, Camera, AlertTriangle, Truck } from "lucide-react";
 import { StockVehicleSelectionModal } from "../StockVehicleSelectionModal";
 import { VehicleSelectedDisplay } from "../VehicleSelectedDisplay";
+import { WeatherSelectionModal } from "./WeatherSelectionModal";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { Cloud, Loader2 } from "lucide-react";
 
@@ -60,6 +61,7 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
   const [newWitnessContact, setNewWitnessContact] = useState<string>("");
   const [fetchingWeather, setFetchingWeather] = useState(false);
   const [weatherDetails, setWeatherDetails] = useState<string>("");
+  const [isWeatherModalOpen, setIsWeatherModalOpen] = useState(false);
   
   const { latitude, longitude, error: gpsError } = useGeolocation();
 
@@ -390,30 +392,25 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
               <Label>Weather Conditions</Label>
               <div className="space-y-2">
                 <div className="flex gap-2">
-                  <Select value={weatherConditions} onValueChange={setWeatherConditions}>
-                    <SelectTrigger className="bg-white">
-                      <SelectValue placeholder="Select weather..." />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
-                      <SelectItem value="clear">Clear</SelectItem>
-                      <SelectItem value="cloudy">Cloudy</SelectItem>
-                      <SelectItem value="rainy">Rainy</SelectItem>
-                      <SelectItem value="snowy">Snowy</SelectItem>
-                      <SelectItem value="windy">Windy</SelectItem>
-                      <SelectItem value="foggy">Foggy</SelectItem>
-                      <SelectItem value="icy">Icy</SelectItem>
-                      <SelectItem value="hot">Hot</SelectItem>
-                      <SelectItem value="cold">Cold</SelectItem>
-                      <SelectItem value="storm">Storm / Severe Weather</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsWeatherModalOpen(true)}
+                    className="flex-1 justify-start bg-white"
+                  >
+                    {weatherConditions ? (
+                      <span className="capitalize">{weatherConditions}</span>
+                    ) : (
+                      <span className="text-muted-foreground">Select weather conditions...</span>
+                    )}
+                  </Button>
                   <Button 
                     type="button" 
                     variant="outline" 
                     onClick={fetchCurrentWeather}
                     disabled={fetchingWeather || !latitude}
                     className="shrink-0"
+                    title="Fetch current weather"
                   >
                     {fetchingWeather ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -430,6 +427,13 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
                 )}
               </div>
             </div>
+
+            <WeatherSelectionModal
+              isOpen={isWeatherModalOpen}
+              onClose={() => setIsWeatherModalOpen(false)}
+              onSelect={setWeatherConditions}
+              currentValue={weatherConditions}
+            />
           </div>
 
           <div className="flex items-center space-x-2">
