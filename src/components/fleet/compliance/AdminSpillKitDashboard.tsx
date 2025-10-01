@@ -67,7 +67,6 @@ export function AdminSpillKitDashboard({
           </ProtectedComponent>
           <ProtectedComponent requiredPermission="canManageSpillKitRestock" fallback={null} showError={false}>
             <TabsTrigger value="restock">
-              <Package className="h-4 w-4 mr-2" />
               Restock
             </TabsTrigger>
           </ProtectedComponent>
