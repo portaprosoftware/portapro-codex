@@ -522,7 +522,7 @@ export function StorageLocationReporting() {
                                   {location.total_items} consumables • {location.total_quantity} units
                                 </div>
                                 <div className="text-lg font-bold text-primary">
-                                  ${location.total_value.toLocaleString()}
+                                  Cost of Goods: ${location.total_value.toLocaleString()}
                                 </div>
                               </div>
                             </div>
