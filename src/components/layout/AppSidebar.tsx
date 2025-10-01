@@ -96,6 +96,12 @@ const inventoryItems: NavigationItem[] = [
     url: '/consumables', 
     icon: Droplets,
     permission: 'staff'
+  },
+  { 
+    title: 'Storage Garages', 
+    url: '/storage-sites', 
+    icon: Warehouse,
+    permission: 'admin'
   }
 ];
 
@@ -121,12 +127,6 @@ const managementItems: NavigationItem[] = [
 ];
 
 const adminItems: NavigationItem[] = [
-  { 
-    title: 'Storage Garages', 
-    url: '/storage-sites', 
-    icon: Warehouse,
-    permission: 'admin'
-  },
   { 
     title: 'Marketing', 
     url: '/marketing', 
