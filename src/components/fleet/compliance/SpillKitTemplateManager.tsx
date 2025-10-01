@@ -561,29 +561,27 @@ const TemplateForm: React.FC<{
           />
         </div>
 
-        <div className="flex items-center justify-between p-3 border rounded-lg bg-muted/50">
-          <div className="flex items-center gap-2">
-            <Label htmlFor="form-default" className="text-sm font-medium cursor-pointer">
-              Set as default template
-            </Label>
-            {!canSetAsDefault && (
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button type="button" className="text-muted-foreground hover:text-foreground transition-colors">
-                    <Info className="h-4 w-4" />
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent className="w-80">
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium">Only one default template allowed</p>
-                    <p className="text-sm text-muted-foreground">
-                      Only one template can be set as default. To make this one the default, first unmark the current default template "{otherDefaultTemplate?.name}", then return here.
-                    </p>
-                  </div>
-                </PopoverContent>
-              </Popover>
-            )}
-          </div>
+        <div className="flex items-center gap-2">
+          <Label htmlFor="form-default" className="text-sm font-medium cursor-pointer">
+            Set as default template
+          </Label>
+          {!canSetAsDefault && (
+            <Popover>
+              <PopoverTrigger asChild>
+                <button type="button" className="text-muted-foreground hover:text-foreground transition-colors">
+                  <Info className="h-4 w-4" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80">
+                <div className="space-y-2">
+                  <p className="text-sm font-medium">Only one default template allowed</p>
+                  <p className="text-sm text-muted-foreground">
+                    Only one template can be set as default. To make this one the default, first unmark the current default template "{otherDefaultTemplate?.name}", then return here.
+                  </p>
+                </div>
+              </PopoverContent>
+            </Popover>
+          )}
           <Switch
             id="form-default"
             checked={formData.is_default}
