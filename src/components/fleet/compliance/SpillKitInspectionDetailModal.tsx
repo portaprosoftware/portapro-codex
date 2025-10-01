@@ -239,17 +239,16 @@ export function SpillKitInspectionDetailModal({
             )}
           </DialogHeader>
 
-          <Tabs defaultValue="overview" className="mt-6">
+          <Tabs defaultValue="items" className="mt-6">
             <TabsList className="w-full">
-              <TabsTrigger value="overview" className="flex-1">Overview</TabsTrigger>
               <TabsTrigger value="items" className="flex-1">Kit Items</TabsTrigger>
               <TabsTrigger value="weather" className="flex-1">Weather</TabsTrigger>
               <TabsTrigger value="photos" className="flex-1">Photos</TabsTrigger>
               <TabsTrigger value="notes" className="flex-1">Notes</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="overview" className="space-y-4 mt-4">
-              <div className="grid grid-cols-2 gap-4">
+            <TabsContent value="items" className="mt-4 space-y-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div className="p-4 border rounded-lg">
                   <Label className="text-sm text-muted-foreground">Kit Status</Label>
                   <div className="mt-2">
@@ -281,9 +280,7 @@ export function SpillKitInspectionDetailModal({
                   </div>
                 )}
               </div>
-            </TabsContent>
 
-            <TabsContent value="items" className="mt-4">
               <InspectionItemsTable
                 templateItems={templateItems}
                 itemConditions={mode === 'edit' ? editedData?.item_conditions || {} : inspection.item_conditions || {}}
