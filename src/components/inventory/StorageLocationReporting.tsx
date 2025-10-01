@@ -470,7 +470,7 @@ export function StorageLocationReporting() {
           {reportData.consumable_details.length > 0 && (
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-lg">
                   <span className="text-2xl">🧻</span>
                   Consumable Details by Location
                 </CardTitle>
@@ -515,7 +515,7 @@ export function StorageLocationReporting() {
                                     expandedLocations.has(location.location_id) ? 'rotate-180' : ''
                                   }`}
                                 />
-                                <h5 className="font-medium text-lg">{location.location_name}</h5>
+                                <h5 className="font-medium text-base">{location.location_name}</h5>
                               </div>
                               <div className="text-right">
                                 <div className="text-sm font-medium">
@@ -557,7 +557,7 @@ export function StorageLocationReporting() {
           {reportData.product_details.length > 0 && (
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-lg">
                   <Package className="h-5 w-5 text-blue-600" />
                   Product Types by Location
                 </CardTitle>
@@ -580,7 +580,7 @@ export function StorageLocationReporting() {
                                     expandedLocations.has(location.location_id + '_products') ? 'rotate-180' : ''
                                   }`}
                                 />
-                                <h5 className="font-medium text-lg">{location.location_name}</h5>
+                                <h5 className="font-medium text-base">{location.location_name}</h5>
                               </div>
                               <div className="text-right">
                                 <div className="text-sm font-medium">
@@ -616,7 +616,7 @@ export function StorageLocationReporting() {
           {reportData.spill_kit_details.length > 0 && (
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-lg">
                   <Shield className="h-5 w-5 text-orange-500" />
                   Spill Kits by Location
                 </CardTitle>
@@ -639,7 +639,7 @@ export function StorageLocationReporting() {
                                     expandedLocations.has(location.location_id + '_spill') ? 'rotate-180' : ''
                                   }`}
                                 />
-                                <h5 className="font-medium text-lg">{location.location_name}</h5>
+                                <h5 className="font-medium text-base">{location.location_name}</h5>
                               </div>
                               <div className="text-right">
                                 <div className="text-sm font-medium">
