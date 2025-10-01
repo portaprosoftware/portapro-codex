@@ -43,7 +43,7 @@ export const SpillKitComplianceReports: React.FC = () => {
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
 
   // Generate compliance report
-  const { data: report, isLoading: reportLoading, refetch: generateReport } = useQuery({
+  const { data: report, isLoading: reportLoading, refetch: generateReport, error: reportError } = useQuery({
     queryKey: ["spill-kit-compliance-report", startDate, endDate, selectedVehicles],
     queryFn: async () => {
       const vehicleIds = selectedVehicles.map(v => v.id);
@@ -54,7 +54,21 @@ export const SpillKitComplianceReports: React.FC = () => {
           p_vehicle_ids: vehicleIds.length > 0 ? vehicleIds : null
         });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Report generation error:', error);
+        toast({
+          title: "Report Generation Failed",
+          description: error.message || "Unable to generate compliance report. The database function may not be configured yet.",
+          variant: "destructive"
+        });
+        throw error;
+      }
+      
+      toast({
+        title: "Report Generated",
+        description: "Compliance report has been generated successfully.",
+      });
+      
       return data as any as ComplianceReport;
     },
     enabled: false // Don't auto-fetch, user must click generate
