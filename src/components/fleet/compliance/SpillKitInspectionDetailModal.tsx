@@ -24,7 +24,8 @@ import {
   ThermometerSun,
   ThermometerSnowflake,
   Droplets,
-  HelpCircle
+  HelpCircle,
+  CloudDrizzle
 } from 'lucide-react';
 import { WeatherSelectionModal } from './WeatherSelectionModal';
 import { InspectionItemsTable } from './InspectionItemsTable';
@@ -222,6 +223,7 @@ export function SpillKitInspectionDetailModal({
     const iconMap: Record<string, React.ReactNode> = {
       clear: <Sun className="h-4 w-4" />,
       sunny: <Sun className="h-4 w-4" />,
+      "partly-cloudy": <CloudDrizzle className="h-4 w-4" />,
       cloudy: <Cloud className="h-4 w-4" />,
       rainy: <CloudRain className="h-4 w-4" />,
       snowy: <Snowflake className="h-4 w-4" />,
@@ -238,6 +240,11 @@ export function SpillKitInspectionDetailModal({
     if (normalizedCondition.startsWith("other")) {
       return <HelpCircle className="h-4 w-4" />;
     }
+    // Check if it has intensity (e.g., "rainy - light")
+    if (normalizedCondition.includes(" - ")) {
+      const baseCondition = normalizedCondition.split(" - ")[0].trim();
+      return iconMap[baseCondition] || <HelpCircle className="h-4 w-4" />;
+    }
     return iconMap[normalizedCondition] || <HelpCircle className="h-4 w-4" />;
   };
 
@@ -248,6 +255,11 @@ export function SpillKitInspectionDetailModal({
     if (trimmed.toLowerCase().startsWith("other:")) {
       const description = trimmed.substring(6).trim();
       return `Other: ${description.charAt(0).toUpperCase() + description.slice(1)}`;
+    }
+    // If it has intensity (e.g., "rainy - light"), format it properly
+    if (trimmed.includes(" - ")) {
+      const [condition, intensity] = trimmed.split(" - ").map(s => s.trim());
+      return `${toTitleCase(condition)} - ${toTitleCase(intensity)}`;
     }
     return toTitleCase(trimmed);
   };

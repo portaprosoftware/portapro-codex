@@ -19,7 +19,8 @@ import {
   CloudLightning,
   HelpCircle,
   Search,
-  Check
+  Check,
+  CloudDrizzle
 } from "lucide-react";
 
 type WeatherOption = {
@@ -27,6 +28,7 @@ type WeatherOption = {
   label: string;
   icon: React.ReactNode;
   color: string;
+  requiresIntensity?: boolean;
 };
 
 type WeatherCategory = {
@@ -34,6 +36,7 @@ type WeatherCategory = {
   label: string;
   icon: React.ReactNode;
   options: WeatherOption[];
+  intensityOptions?: string[];
 };
 
 const weatherCategories: WeatherCategory[] = [
@@ -43,6 +46,7 @@ const weatherCategories: WeatherCategory[] = [
     icon: <Sun className="h-5 w-5" />,
     options: [
       { value: "clear", label: "Clear / Sunny", icon: <Sun className="h-5 w-5" />, color: "text-yellow-500" },
+      { value: "partly-cloudy", label: "Partly Cloudy", icon: <CloudDrizzle className="h-5 w-5" />, color: "text-gray-400" },
       { value: "cloudy", label: "Cloudy", icon: <Cloud className="h-5 w-5" />, color: "text-gray-500" },
     ]
   },
@@ -50,19 +54,21 @@ const weatherCategories: WeatherCategory[] = [
     id: "precipitation",
     label: "Precipitation",
     icon: <CloudRain className="h-5 w-5" />,
+    intensityOptions: ["light", "moderate", "heavy"],
     options: [
-      { value: "rainy", label: "Rainy", icon: <CloudRain className="h-5 w-5" />, color: "text-blue-500" },
-      { value: "snowy", label: "Snowy", icon: <Snowflake className="h-5 w-5" />, color: "text-blue-300" },
-      { value: "foggy", label: "Foggy", icon: <CloudFog className="h-5 w-5" />, color: "text-gray-400" },
+      { value: "rainy", label: "Rainy", icon: <CloudRain className="h-5 w-5" />, color: "text-blue-500", requiresIntensity: true },
+      { value: "snowy", label: "Snowy", icon: <Snowflake className="h-5 w-5" />, color: "text-blue-300", requiresIntensity: true },
+      { value: "foggy", label: "Foggy", icon: <CloudFog className="h-5 w-5" />, color: "text-gray-400", requiresIntensity: true },
     ]
   },
   {
     id: "wind-storm",
     label: "Wind & Storm",
     icon: <Wind className="h-5 w-5" />,
+    intensityOptions: ["light", "moderate", "heavy"],
     options: [
-      { value: "windy", label: "Windy", icon: <Wind className="h-5 w-5" />, color: "text-teal-500" },
-      { value: "storm", label: "Storm / Severe Weather", icon: <CloudLightning className="h-5 w-5" />, color: "text-purple-600" },
+      { value: "windy", label: "Windy", icon: <Wind className="h-5 w-5" />, color: "text-teal-500", requiresIntensity: true },
+      { value: "storm", label: "Storm / Severe Weather", icon: <CloudLightning className="h-5 w-5" />, color: "text-purple-600", requiresIntensity: true },
     ]
   },
   {
@@ -96,18 +102,30 @@ export const WeatherSelectionModal: React.FC<Props> = ({ isOpen, onClose, onSele
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedConditions, setSelectedConditions] = useState<string[]>(currentValue);
   const [otherDescription, setOtherDescription] = useState("");
+  const [intensitySelections, setIntensitySelections] = useState<Record<string, string>>({});
 
   // Update selected conditions when modal opens with new currentValue
   useEffect(() => {
-    // Parse the currentValue to extract "other" and its description
-    const parsedConditions = currentValue.map(v => {
+    // Parse the currentValue to extract conditions with intensity and "other"
+    const parsedConditions: string[] = [];
+    const intensities: Record<string, string> = {};
+    
+    currentValue.forEach(v => {
       if (v.startsWith("other:")) {
         setOtherDescription(v.substring(6).trim());
-        return "other";
+        parsedConditions.push("other");
+      } else if (v.includes(" - ")) {
+        // Format: "rainy - light"
+        const [condition, intensity] = v.split(" - ").map(s => s.trim());
+        parsedConditions.push(condition);
+        intensities[condition] = intensity;
+      } else {
+        parsedConditions.push(v);
       }
-      return v;
     });
+    
     setSelectedConditions(parsedConditions);
+    setIntensitySelections(intensities);
   }, [isOpen, currentValue]);
 
   const toggleCondition = (value: string, categoryId: string) => {
@@ -133,6 +151,12 @@ export const WeatherSelectionModal: React.FC<Props> = ({ isOpen, onClose, onSele
       
       // For other categories, allow multiple selections
       if (prev.includes(value)) {
+        // Remove intensity selection when unchecking
+        setIntensitySelections(prev => {
+          const updated = { ...prev };
+          delete updated[value];
+          return updated;
+        });
         return prev.filter(v => v !== value);
       } else {
         return [...prev, value];
@@ -140,27 +164,59 @@ export const WeatherSelectionModal: React.FC<Props> = ({ isOpen, onClose, onSele
     });
   };
 
+  const handleIntensityChange = (condition: string, intensity: string) => {
+    setIntensitySelections(prev => ({
+      ...prev,
+      [condition]: intensity
+    }));
+  };
+
   const handleApply = () => {
+    // Validate intensity selections for conditions that require it
+    const category = weatherCategories.find(cat => 
+      cat.options.some(opt => opt.requiresIntensity && selectedConditions.includes(opt.value))
+    );
+    
+    if (category?.intensityOptions) {
+      const conditionsNeedingIntensity = category.options
+        .filter(opt => opt.requiresIntensity && selectedConditions.includes(opt.value))
+        .map(opt => opt.value);
+      
+      for (const condition of conditionsNeedingIntensity) {
+        if (!intensitySelections[condition]) {
+          return; // Don't submit if intensity not selected
+        }
+      }
+    }
+
     // If "other" is selected, validate that description is provided
     if (selectedConditions.includes("other")) {
       if (!otherDescription.trim()) {
         return; // Don't submit if description is empty
       }
-      // Replace "other" with "other: description"
-      const updatedConditions = selectedConditions
-        .filter(c => c !== "other")
-        .concat([`other: ${otherDescription.trim()}`]);
-      onSelect(updatedConditions);
-    } else {
-      onSelect(selectedConditions);
     }
+
+    // Build final conditions array
+    const finalConditions = selectedConditions.map(condition => {
+      if (condition === "other") {
+        return `other: ${otherDescription.trim()}`;
+      }
+      if (intensitySelections[condition]) {
+        return `${condition} - ${intensitySelections[condition]}`;
+      }
+      return condition;
+    });
+
+    onSelect(finalConditions);
     onClose();
     setOtherDescription("");
+    setIntensitySelections({});
   };
 
   const handleClear = () => {
     setSelectedConditions([]);
     setOtherDescription("");
+    setIntensitySelections({});
   };
 
   // Filter categories based on search query
@@ -207,12 +263,18 @@ export const WeatherSelectionModal: React.FC<Props> = ({ isOpen, onClose, onSele
                 const option = weatherCategories
                   .flatMap(cat => cat.options)
                   .find(opt => opt.value === value);
-                return option ? (
+                
+                if (!option) return null;
+                
+                const displayText = option.label + 
+                  (intensitySelections[value] ? ` - ${intensitySelections[value].charAt(0).toUpperCase() + intensitySelections[value].slice(1)}` : '') +
+                  (value === "other" && otherDescription ? `: ${otherDescription}` : '');
+                
+                return (
                   <Badge key={value} variant="default" className="gap-1">
-                    {option.label}
-                    {value === "other" && otherDescription && `: ${otherDescription}`}
+                    {displayText}
                   </Badge>
-                ) : null;
+                );
               })}
             </div>
           )}
@@ -226,9 +288,9 @@ export const WeatherSelectionModal: React.FC<Props> = ({ isOpen, onClose, onSele
                     <div className="text-muted-foreground">{category.icon}</div>
                     <span className="font-semibold">{category.label}</span>
                     {(category.id === 'general' || category.id === 'temperature') ? (
-                      <Badge variant="outline" className="ml-2 text-xs">
+                      <span className="ml-2 text-xs text-muted-foreground">
                         Single selection
-                      </Badge>
+                      </span>
                     ) : (
                       <Badge variant="outline" className="ml-2">
                         {category.options.filter(opt => selectedConditions.includes(opt.value)).length}/
@@ -240,22 +302,49 @@ export const WeatherSelectionModal: React.FC<Props> = ({ isOpen, onClose, onSele
                 <AccordionContent>
                   <div className="space-y-2 pt-2">
                     {category.options.map((option) => (
-                      <label
-                        key={option.value}
-                        className="flex items-center gap-3 p-3 rounded-lg border hover:bg-accent cursor-pointer transition-colors"
-                      >
-                        <Checkbox
-                          checked={selectedConditions.includes(option.value)}
-                          onCheckedChange={() => toggleCondition(option.value, category.id)}
-                        />
-                        <div className={`${option.color} shrink-0`}>
-                          {option.icon}
-                        </div>
-                        <span className="font-medium">{option.label}</span>
-                        {selectedConditions.includes(option.value) && (
-                          <Check className="h-4 w-4 ml-auto text-primary" />
+                      <div key={option.value} className="space-y-2">
+                        <label
+                          className="flex items-center gap-3 p-3 rounded-lg border hover:bg-accent cursor-pointer transition-colors"
+                        >
+                          <Checkbox
+                            checked={selectedConditions.includes(option.value)}
+                            onCheckedChange={() => toggleCondition(option.value, category.id)}
+                          />
+                          <div className={`${option.color} shrink-0`}>
+                            {option.icon}
+                          </div>
+                          <span className="font-medium">{option.label}</span>
+                          {selectedConditions.includes(option.value) && (
+                            <Check className="h-4 w-4 ml-auto text-primary" />
+                          )}
+                        </label>
+                        
+                        {/* Intensity selection for precipitation and wind/storm */}
+                        {option.requiresIntensity && selectedConditions.includes(option.value) && category.intensityOptions && (
+                          <div className="ml-11 p-3 bg-muted/30 rounded-lg space-y-2">
+                            <Label className="text-sm font-semibold">
+                              Select Intensity <span className="text-red-500">*</span>
+                            </Label>
+                            <div className="flex gap-2">
+                              {category.intensityOptions.map(intensity => (
+                                <Button
+                                  key={intensity}
+                                  type="button"
+                                  variant={intensitySelections[option.value] === intensity ? "default" : "outline"}
+                                  size="sm"
+                                  onClick={() => handleIntensityChange(option.value, intensity)}
+                                  className="capitalize"
+                                >
+                                  {intensity}
+                                </Button>
+                              ))}
+                            </div>
+                            {selectedConditions.includes(option.value) && !intensitySelections[option.value] && (
+                              <p className="text-sm text-red-500">Intensity is required</p>
+                            )}
+                          </div>
                         )}
-                      </label>
+                      </div>
                     ))}
                   </div>
                 </AccordionContent>
@@ -301,7 +390,15 @@ export const WeatherSelectionModal: React.FC<Props> = ({ isOpen, onClose, onSele
             </Button>
             <Button 
               onClick={handleApply}
-              disabled={selectedConditions.includes("other") && !otherDescription.trim()}
+              disabled={
+                (selectedConditions.includes("other") && !otherDescription.trim()) ||
+                selectedConditions.some(condition => {
+                  const option = weatherCategories
+                    .flatMap(cat => cat.options)
+                    .find(opt => opt.value === condition);
+                  return option?.requiresIntensity && !intensitySelections[condition];
+                })
+              }
             >
               Apply ({selectedConditions.length})
             </Button>
