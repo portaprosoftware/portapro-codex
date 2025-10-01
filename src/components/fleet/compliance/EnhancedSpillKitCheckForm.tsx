@@ -228,7 +228,6 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
           template_id: selectedTemplate.template_id,
           has_kit: kitStatus !== 'failed',
           item_conditions: itemConditions,
-          missing_items: missingItems,
           photos,
           notes,
           weather_conditions: weather,
