@@ -18,13 +18,18 @@ interface LocationReportData {
     total_spill_kit_units: number;
     total_spill_kit_value: number;
   };
-  location_details: Array<{
+  consumable_details: Array<{
     location_id: string;
     location_name: string;
-    description?: string;
-    is_default: boolean;
-    consumable_types: number;
-    total_units: number;
+    items: Array<{
+      item_name: string;
+      category: string;
+      quantity: number;
+      unit_cost: number;
+      total_value: number;
+    }>;
+    total_items: number;
+    total_quantity: number;
     total_value: number;
   }>;
   spill_kit_details: Array<{
@@ -60,7 +65,7 @@ export function StorageLocationReporting() {
       // Get all consumables with their location_stock JSON data
       const { data: consumables, error: consumablesError } = await supabase
         .from('consumables')
-        .select('id, name, unit_cost, unit_price, location_stock')
+        .select('id, name, category, unit_cost, unit_price, location_stock')
         .eq('is_active', true);
       
       if (consumablesError) throw consumablesError;
@@ -120,11 +125,15 @@ export function StorageLocationReporting() {
         }
       });
 
-      // Calculate location details
-      const locationDetails = locations?.map(location => {
-        let consumableTypes = 0;
-        let totalUnits = 0;
-        let totalValue = 0;
+      // Calculate consumable details by location (similar to spill kit details)
+      const consumableDetails = locations?.map(location => {
+        const items: Array<{
+          item_name: string;
+          category: string;
+          quantity: number;
+          unit_cost: number;
+          total_value: number;
+        }> = [];
 
         consumables?.forEach(consumable => {
           if (consumable.location_stock) {
@@ -134,9 +143,13 @@ export function StorageLocationReporting() {
             
             const stockAtLocation = locationStock.find((stock: any) => stock.locationId === location.id);
             if (stockAtLocation && stockAtLocation.quantity > 0) {
-              consumableTypes++;
-              totalUnits += stockAtLocation.quantity;
-              totalValue += stockAtLocation.quantity * (consumable.unit_cost || 0);
+              items.push({
+                item_name: consumable.name,
+                category: consumable.category || 'Uncategorized',
+                quantity: stockAtLocation.quantity,
+                unit_cost: consumable.unit_cost || 0,
+                total_value: stockAtLocation.quantity * (consumable.unit_cost || 0)
+              });
             }
           }
         });
@@ -144,13 +157,12 @@ export function StorageLocationReporting() {
         return {
           location_id: location.id,
           location_name: location.name,
-          description: location.description,
-          is_default: location.is_default,
-          consumable_types: consumableTypes,
-          total_units: totalUnits,
-          total_value: totalValue
+          items: items.sort((a, b) => a.item_name.localeCompare(b.item_name)),
+          total_items: items.length,
+          total_quantity: items.reduce((sum, item) => sum + item.quantity, 0),
+          total_value: items.reduce((sum, item) => sum + item.total_value, 0)
         };
-      }) || [];
+      }).filter(loc => loc.total_items > 0) || [];
 
       // Calculate spill kit details by location
       const spillKitDetails = locations?.map(location => {
@@ -189,14 +201,9 @@ export function StorageLocationReporting() {
           total_spill_kit_units: totalSpillKitUnits,
           total_spill_kit_value: totalSpillKitValue
         },
-        location_details: locationDetails.sort((a, b) => {
-          // Default location always first
-          if (a.is_default && !b.is_default) return -1;
-          if (!a.is_default && b.is_default) return 1;
-          
-          // If both or neither are default, sort alphabetically
-          return a.location_name.localeCompare(b.location_name);
-        }),
+        consumable_details: consumableDetails.sort((a, b) => 
+          a.location_name.localeCompare(b.location_name)
+        ),
         spill_kit_details: spillKitDetails.sort((a, b) => 
           a.location_name.localeCompare(b.location_name)
         )
@@ -238,30 +245,38 @@ export function StorageLocationReporting() {
       pdf.text(`Total Stock Value: $${reportData.summary.total_stock_value.toLocaleString()}`, 20, yPosition);
       yPosition += 20;
 
-      // Garage Details
+      // Consumable Details
       pdf.setFontSize(16);
-      pdf.text('Garage Details', 20, yPosition);
+      pdf.text('Consumable Details by Location', 20, yPosition);
       yPosition += 10;
 
-      reportData.location_details.forEach((location) => {
+      reportData.consumable_details.forEach((location) => {
         if (yPosition > 250) {
           pdf.addPage();
           yPosition = 20;
         }
 
         pdf.setFontSize(14);
-        pdf.text(`${location.location_name}${location.is_default ? ' (Default)' : ''}`, 20, yPosition);
+        pdf.text(location.location_name, 20, yPosition);
         yPosition += 8;
 
         pdf.setFontSize(10);
-        if (location.description) {
-          pdf.text(location.description, 20, yPosition);
-          yPosition += 6;
-        }
-        pdf.text(`${location.consumable_types} types • ${location.total_units} units`, 20, yPosition);
+        pdf.text(`${location.total_items} items • ${location.total_quantity} units`, 20, yPosition);
         yPosition += 6;
         pdf.text(`Value: $${location.total_value.toLocaleString()}`, 20, yPosition);
-        yPosition += 15;
+        yPosition += 10;
+
+        location.items.forEach((item) => {
+          if (yPosition > 270) {
+            pdf.addPage();
+            yPosition = 20;
+          }
+          pdf.setFontSize(9);
+          pdf.text(`  ${item.item_name} (${item.category})`, 25, yPosition);
+          pdf.text(`${item.quantity} units - $${item.total_value.toLocaleString()}`, 120, yPosition);
+          yPosition += 6;
+        });
+        yPosition += 10;
       });
 
       pdf.save(`storage-garage-report-${new Date().toISOString().split('T')[0]}.pdf`);
@@ -283,15 +298,17 @@ export function StorageLocationReporting() {
       ['Product Types', reportData.summary.total_product_types.toString()],
       ['Total Stock Value', reportData.summary.total_stock_value.toString()],
       [],
-      ['Garage Name', 'Description', 'Is Default', 'Consumable Types', 'Total Units', 'Total Value'],
-      ...reportData.location_details.map(location => [
-        location.location_name,
-        location.description || '',
-        location.is_default ? 'Yes' : 'No',
-        location.consumable_types.toString(),
-        location.total_units.toString(),
-        location.total_value.toString()
-      ])
+      ['Location', 'Item Name', 'Category', 'Quantity', 'Unit Cost', 'Total Value'],
+      ...reportData.consumable_details.flatMap(location => 
+        location.items.map(item => [
+          location.location_name,
+          item.item_name,
+          item.category,
+          item.quantity.toString(),
+          item.unit_cost.toString(),
+          item.total_value.toString()
+        ])
+      )
     ];
 
     const csvContent = csvData.map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
@@ -389,63 +406,78 @@ export function StorageLocationReporting() {
             </Card>
           </div>
 
-          {/* Garage Details */}
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-              <CardTitle>Garage Details</CardTitle>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={exportToPDF}
-                  disabled={isExporting || !reportData}
-                  className="gap-2"
-                >
-                  <Download className="h-4 w-4" />
-                  Export PDF
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={exportToCSV}
-                  disabled={!reportData}
-                  className="gap-2"
-                >
-                  <Download className="h-4 w-4" />
-                  Export CSV
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {reportData.location_details.map((location) => (
-                <Card key={location.location_id} className="border-l-4 border-l-primary">
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-center">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <h5 className="font-medium">{location.location_name}</h5>
-                          {location.is_default && (
-                            <Badge variant="secondary">Default</Badge>
-                          )}
+          {/* Consumable Details by Location */}
+          {reportData.consumable_details.length > 0 && (
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+                <CardTitle className="flex items-center gap-2">
+                  <Package className="h-5 w-5 text-primary" />
+                  Consumable Details by Location
+                </CardTitle>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={exportToPDF}
+                    disabled={isExporting || !reportData}
+                    className="gap-2"
+                  >
+                    <Download className="h-4 w-4" />
+                    Export PDF
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={exportToCSV}
+                    disabled={!reportData}
+                    className="gap-2"
+                  >
+                    <Download className="h-4 w-4" />
+                    Export CSV
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {reportData.consumable_details.map((location) => (
+                  <Card key={location.location_id} className="border-l-4 border-l-primary">
+                    <CardContent className="p-4">
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <h5 className="font-medium text-lg">{location.location_name}</h5>
+                          <div className="text-right">
+                            <div className="text-sm font-medium">
+                              {location.total_items} items • {location.total_quantity} units
+                            </div>
+                            <div className="text-lg font-bold text-primary">
+                              ${location.total_value.toLocaleString()}
+                            </div>
+                          </div>
                         </div>
-                        {location.description && (
-                          <p className="text-sm text-muted-foreground">{location.description}</p>
-                        )}
+                        <div className="space-y-2">
+                          {location.items.map((item, idx) => (
+                            <div key={idx} className="flex justify-between items-center text-sm p-2 bg-muted/50 rounded">
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium">{item.item_name}</span>
+                                <Badge variant="outline" className="text-xs">
+                                  {item.category}
+                                </Badge>
+                              </div>
+                              <div className="flex items-center gap-3 text-muted-foreground">
+                                <span>{item.quantity} units</span>
+                                <span className="font-medium text-foreground">
+                                  ${(item.total_value).toLocaleString()}
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                      <div className="text-right space-y-1">
-                        <div className="text-sm font-medium">
-                          {location.consumable_types} types • {location.total_units} units
-                        </div>
-                        <div className="text-lg font-bold text-primary">
-                          ${location.total_value.toLocaleString()}
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </CardContent>
-          </Card>
+                    </CardContent>
+                  </Card>
+                ))}
+              </CardContent>
+            </Card>
+          )}
 
           {/* Spill Kits by Location */}
           {reportData.spill_kit_details.length > 0 && (
