@@ -8,18 +8,19 @@ export const ConsumablesShowcase: React.FC = () => {
   return (
     <section id="consumables" className="py-6 md:py-8 bg-white">
       <div className="container mx-auto max-w-6xl px-4 md:px-6">
-        <header className="mb-4 md:mb-8 space-y-2">
+        <header className="mb-4 md:mb-8">
           <h2 className="text-3xl lg:text-4xl font-bold text-foreground">🧻 Consumables — Flexible & Transparent</h2>
-          <p className="text-muted-foreground">
-            Bill for toilet paper, hand sanitizer, deodorizer, and more — your way.
-          </p>
         </header>
 
         {/* Content with mockup */}
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-6 lg:gap-12 items-start">
-            {/* Features list */}
-            <div className="space-y-3 md:space-y-4">
+            {/* Left column - Description and Features list */}
+            <div className="space-y-4 md:space-y-6">
+              <p className="text-muted-foreground">
+                Bill for toilet paper, hand sanitizer, deodorizer, and more — your way.
+              </p>
+              
               <ul className="space-y-3 md:space-y-4">
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
@@ -50,7 +51,7 @@ export const ConsumablesShowcase: React.FC = () => {
               </div>
             </div>
 
-            {/* Consumables mockup */}
+            {/* Right column - Consumables mockup */}
             <div className="bg-card rounded-lg shadow-md border overflow-hidden">
               <div className="bg-primary/5 px-4 py-3 border-b">
                 <h3 className="text-base font-semibold text-foreground">Consumables Inventory</h3>
