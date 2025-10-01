@@ -159,7 +159,7 @@ export function SpillKitInventoryDashboard() {
             <DollarSign className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${totalValue.toFixed(2)}</div>
+            <div className="text-2xl font-bold">${totalValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
             <p className="text-xs text-muted-foreground mt-1">Current stock</p>
           </CardContent>
         </Card>
@@ -170,7 +170,7 @@ export function SpillKitInventoryDashboard() {
             <ShoppingCart className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-500">${restockCost.toFixed(2)}</div>
+            <div className="text-2xl font-bold text-blue-500">${restockCost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
             <p className="text-xs text-muted-foreground mt-1">{lowStockItems.length} items</p>
           </CardContent>
         </Card>
@@ -190,7 +190,7 @@ export function SpillKitInventoryDashboard() {
                   <div className="flex items-center justify-between text-sm">
                     <span className="font-medium capitalize">{getCategoryLabel(type)}</span>
                     <span className="text-muted-foreground">
-                      {data.count} units • ${data.value.toFixed(2)} ({percentage.toFixed(1)}%)
+                      {data.count} units • ${data.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ({percentage.toFixed(1)}%)
                     </span>
                   </div>
                   <Progress value={percentage} className="h-2" />
@@ -268,7 +268,7 @@ export function SpillKitInventoryDashboard() {
                     </div>
                     <div className="text-right">
                       <div className="font-semibold">Order {qtyNeeded} units</div>
-                      <div className="text-sm text-muted-foreground">${itemCost.toFixed(2)}</div>
+                      <div className="text-sm text-muted-foreground">${itemCost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                     </div>
                   </div>
                 );
@@ -276,7 +276,7 @@ export function SpillKitInventoryDashboard() {
               <div className="pt-3 border-t">
                 <div className="flex justify-between items-center font-bold text-lg">
                   <span>Total Restock Cost:</span>
-                  <span className="text-primary">${restockCost.toFixed(2)}</span>
+                  <span className="text-primary">${restockCost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
               </div>
             </div>
