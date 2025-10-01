@@ -32,13 +32,13 @@ export function SpillKitExpirationDashboard() {
 
   const hasActiveFilters = searchTerm || filterVehicle !== "all" || filterCategory !== "all";
 
-  // Fetch inventory items for name lookup
-  const { data: inventoryItems } = useQuery({
-    queryKey: ['spill-kit-inventory'],
+  // Fetch template items for name lookup
+  const { data: templateItems } = useQuery({
+    queryKey: ['spill-kit-template-items'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('spill_kit_inventory')
-        .select('id, item_name, item_type')
+        .from('spill_kit_template_items')
+        .select('id, item_name, category')
         .order('item_name');
       
       if (error) throw error;
@@ -46,14 +46,14 @@ export function SpillKitExpirationDashboard() {
     }
   });
 
-  // Create inventory lookup map
-  const inventoryMap = useMemo(() => {
+  // Create template item lookup map
+  const templateItemsMap = useMemo(() => {
     const map: Record<string, { name: string; category: string }> = {};
-    inventoryItems?.forEach(item => {
-      map[item.id] = { name: item.item_name, category: item.item_type || 'Uncategorized' };
+    templateItems?.forEach(item => {
+      map[item.id] = { name: item.item_name, category: item.category || 'Uncategorized' };
     });
     return map;
-  }, [inventoryItems]);
+  }, [templateItems]);
   
   const clearAllFilters = () => {
     setSearchTerm("");
@@ -103,10 +103,10 @@ export function SpillKitExpirationDashboard() {
               ? `${check.vehicles.make} ${check.vehicles.model}${check.vehicles.nickname ? ` - ${check.vehicles.nickname}` : ''}`
               : check.vehicles?.vehicle_type || 'Unknown';
             
-            // Use inventory lookup to get item name and category, fall back to stored values or ID
-            const inventoryItem = inventoryMap[itemId];
-            const itemName = inventoryItem?.name || condition.item_name || itemId;
-            const itemCategory = inventoryItem?.category || condition.item_category || 'Uncategorized';
+            // Use template item lookup to get item name and category, with fallback to stored values or ID
+            const templateItem = templateItemsMap[itemId];
+            const itemName = condition.item_name || templateItem?.name || itemId.substring(0, 8) + '...';
+            const itemCategory = condition.item_category || templateItem?.category || 'Uncategorized';
             
             items.push({
               id: `${check.id}-${itemId}`,

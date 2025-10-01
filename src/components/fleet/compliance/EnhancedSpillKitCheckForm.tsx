@@ -286,14 +286,15 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
       const duration = Math.round((Date.now() - checkStartTime) / 1000 / 60); // minutes
       const nextCheckDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
       
-      // Enrich item conditions with item names and categories from inventory
+      // Enrich item conditions with item names and categories from template items
       const enrichedItemConditions: Record<string, ItemCondition & { item_name?: string; item_category?: string }> = {};
+      const templateItems = Array.isArray(selectedTemplate.items) ? selectedTemplate.items : [];
       Object.entries(itemConditions).forEach(([itemId, condition]) => {
-        const inventoryItem = inventoryMap[itemId];
+        const templateItem = templateItems.find((item: any) => item.id === itemId);
         enrichedItemConditions[itemId] = {
           ...condition,
-          item_name: inventoryItem?.name,
-          item_category: inventoryItem?.category
+          item_name: templateItem?.item_name,
+          item_category: templateItem?.category
         };
       });
       

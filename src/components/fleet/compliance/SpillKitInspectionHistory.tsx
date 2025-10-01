@@ -191,13 +191,13 @@ export function SpillKitInspectionHistory() {
     }
   });
 
-  // Fetch inventory items for name lookup
-  const { data: inventoryItems } = useQuery({
-    queryKey: ['spill-kit-inventory'],
+  // Fetch template items for name lookup
+  const { data: templateItems } = useQuery({
+    queryKey: ['spill-kit-template-items'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('spill_kit_inventory')
-        .select('id, item_name')
+        .from('spill_kit_template_items')
+        .select('id, item_name, category')
         .order('item_name');
       
       if (error) throw error;
@@ -205,14 +205,14 @@ export function SpillKitInspectionHistory() {
     }
   });
 
-  // Create inventory lookup map
-  const inventoryMap = React.useMemo(() => {
-    const map: Record<string, string> = {};
-    inventoryItems?.forEach(item => {
-      map[item.id] = item.item_name;
+  // Create template item lookup map
+  const templateItemsMap = React.useMemo(() => {
+    const map: Record<string, { name: string; category: string }> = {};
+    templateItems?.forEach(item => {
+      map[item.id] = { name: item.item_name, category: item.category || 'Uncategorized' };
     });
     return map;
-  }, [inventoryItems]);
+  }, [templateItems]);
 
   // Filter inspections by search text
   const filteredInspections = React.useMemo(() => {
@@ -364,13 +364,15 @@ export function SpillKitInspectionHistory() {
                 <div className="grid gap-2">
                   {itemsWithExpiration.map(([itemId, condition]: [string, any]) => {
                     const expirationStatus = getExpirationStatus(condition.expiration_date);
-                    const itemName = inventoryMap[itemId] || itemId;
+                    const templateItem = templateItemsMap[itemId];
+                    const itemName = condition.item_name || templateItem?.name || itemId.substring(0, 8) + '...';
+                    const itemCategory = condition.item_category || templateItem?.category;
                     return (
                       <div key={itemId} className="flex items-center justify-between p-2 bg-white rounded border">
                         <div className="flex-1">
                           <p className="font-medium text-sm">{itemName}</p>
-                          {condition.item_category && (
-                            <p className="text-xs text-muted-foreground">{condition.item_category}</p>
+                          {itemCategory && (
+                            <p className="text-xs text-muted-foreground">{itemCategory}</p>
                           )}
                         </div>
                         <div className="flex items-center gap-3">
