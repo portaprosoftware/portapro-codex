@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Download, Building, Package, DollarSign } from "lucide-react";
+import { Download, Warehouse, Package, DollarSign } from "lucide-react";
 import { toast } from "sonner";
 import jsPDF from 'jspdf';
 
@@ -240,7 +240,7 @@ export function StorageLocationReporting() {
                     <div className="text-2xl font-bold">{reportData.summary.total_locations}</div>
                     <div className="text-sm text-muted-foreground">Active Garages</div>
                   </div>
-                  <Building className="h-8 w-8 text-primary" />
+                  <Warehouse className="h-8 w-8 text-primary" />
                 </div>
               </CardContent>
             </Card>
