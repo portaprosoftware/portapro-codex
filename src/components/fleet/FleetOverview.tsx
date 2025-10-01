@@ -8,7 +8,8 @@ import { VehicleDetailDrawer } from "./VehicleDetailDrawer";
 import { VehicleManagement } from "./VehicleManagement";
 import { FuelManagement } from "./FuelManagement";
 import { AddVehicleModal } from "./AddVehicleModal";
-import { Grid, List, Search, Plus, Truck, Fuel, Settings, PackageCheck, AlertCircle, TruckIcon } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Grid, List, Search, Plus, Truck, Fuel, Settings, PackageCheck, AlertCircle, TruckIcon, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 
@@ -24,6 +25,7 @@ export const FleetOverview: React.FC = () => {
   const [pageMode, setPageMode] = useState("overview");
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
   const [isAddVehicleModalOpen, setIsAddVehicleModalOpen] = useState(false);
+  const [isSpillKitCollapsed, setIsSpillKitCollapsed] = useState(false);
   const navigate = useNavigate();
 
   // Invalidate and refetch vehicles query when component mounts or when returning to overview
@@ -165,59 +167,78 @@ export const FleetOverview: React.FC = () => {
         </div>
 
         {/* Spill Kit Compliance Widget */}
-        <div className="bg-white rounded-lg border shadow-sm p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="text-lg font-semibold flex items-center gap-2">
-                <PackageCheck className="h-5 w-5" />
-                Spill Kit Compliance
-              </h3>
-              <p className="text-sm text-muted-foreground">DOT/OSHA compliance monitoring</p>
+        <Collapsible
+          open={!isSpillKitCollapsed}
+          onOpenChange={(open) => setIsSpillKitCollapsed(!open)}
+          className="bg-white rounded-lg border shadow-sm"
+        >
+          <div className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <CollapsibleTrigger className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                <div className="flex items-center gap-2">
+                  <PackageCheck className="h-5 w-5" />
+                  <div>
+                    <h3 className="text-lg font-semibold text-left">Spill Kit Compliance</h3>
+                    <p className="text-sm text-muted-foreground">DOT/OSHA compliance monitoring</p>
+                  </div>
+                </div>
+                <ChevronDown 
+                  className={cn(
+                    "h-4 w-4 transition-transform ml-2",
+                    isSpillKitCollapsed && "rotate-180"
+                  )} 
+                />
+              </CollapsibleTrigger>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => navigate('/fleet/compliance')}
+              >
+                View Details
+              </Button>
             </div>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => navigate('/fleet/compliance')}
-            >
-              View Details
-            </Button>
+            
+            <CollapsibleContent>
+              <div className="grid grid-cols-4 gap-4 pt-2">
+                <div className="bg-card p-3 rounded-lg border shadow-sm">
+                  <div className="text-sm text-muted-foreground">Vehicles with Kits</div>
+                  <div className="text-2xl font-bold flex items-center gap-2">
+                    <TruckIcon className="h-5 w-5 text-blue-600" />
+                    {spillKitStats?.totalVehiclesWithKits || 0}
+                  </div>
+                </div>
+                
+                <div className="bg-card p-3 rounded-lg border shadow-sm">
+                  <div className="text-sm text-muted-foreground">Needing Inspection</div>
+                  <div className="text-2xl font-bold text-orange-600 flex items-center gap-2">
+                    <AlertCircle className="h-5 w-5" />
+                    {spillKitStats?.needingInspection || 0}
+                  </div>
+                </div>
+                
+                <div className="bg-card p-3 rounded-lg border shadow-sm">
+                  <div className="text-sm text-muted-foreground">Missing/Expired Items</div>
+                  <div className="text-2xl font-bold text-red-600 flex items-center gap-2">
+                    <AlertCircle className="h-5 w-5" />
+                    {spillKitStats?.vehiclesWithIssues || 0}
+                  </div>
+                </div>
+                
+                <div className="bg-card p-3 rounded-lg border shadow-sm">
+                  <div className="text-sm text-muted-foreground">Low Stock Items</div>
+                  <div className="text-2xl font-bold text-yellow-600 flex items-center gap-2">
+                    <AlertCircle className="h-5 w-5" />
+                    {spillKitStats?.lowStockItems || 0}
+                  </div>
+                </div>
+              </div>
+            </CollapsibleContent>
           </div>
-          
-          <div className="grid grid-cols-4 gap-4">
-            <div className="bg-card p-3 rounded-lg border shadow-sm">
-              <div className="text-sm text-muted-foreground">Vehicles with Kits</div>
-              <div className="text-2xl font-bold flex items-center gap-2">
-                <TruckIcon className="h-5 w-5 text-blue-600" />
-                {spillKitStats?.totalVehiclesWithKits || 0}
-              </div>
-            </div>
-            
-            <div className="bg-card p-3 rounded-lg border shadow-sm">
-              <div className="text-sm text-muted-foreground">Needing Inspection</div>
-              <div className="text-2xl font-bold text-orange-600 flex items-center gap-2">
-                <AlertCircle className="h-5 w-5" />
-                {spillKitStats?.needingInspection || 0}
-              </div>
-            </div>
-            
-            <div className="bg-card p-3 rounded-lg border shadow-sm">
-              <div className="text-sm text-muted-foreground">Missing/Expired Items</div>
-              <div className="text-2xl font-bold text-red-600 flex items-center gap-2">
-                <AlertCircle className="h-5 w-5" />
-                {spillKitStats?.vehiclesWithIssues || 0}
-              </div>
-            </div>
-            
-            <div className="bg-card p-3 rounded-lg border shadow-sm">
-              <div className="text-sm text-muted-foreground">Low Stock Items</div>
-              <div className="text-2xl font-bold text-yellow-600 flex items-center gap-2">
-                <AlertCircle className="h-5 w-5" />
-                {spillKitStats?.lowStockItems || 0}
-              </div>
-            </div>
-          </div>
-        </div>
+        </Collapsible>
+      </div>
 
+      {/* Vehicle Controls Section */}
+      <div className="bg-white rounded-lg border shadow-sm p-6">
         {/* Controls */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           {/* Search */}
