@@ -655,20 +655,15 @@ export function StorageLocationReporting() {
                         <CollapsibleContent className="mt-3">
                           <div className="space-y-2">
                             {location.items.map((item, idx) => (
-                              <div key={idx} className="space-y-1">
-                                <div className="flex justify-between items-center text-sm p-2 bg-muted/50 rounded">
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">{item.item_name}</span>
-                                  </div>
-                                  <div className="flex items-center gap-3 text-muted-foreground">
-                                    <span>{item.quantity} units</span>
-                                    <span className="font-medium text-foreground">
-                                      ${(item.total_value).toLocaleString()}
-                                    </span>
-                                  </div>
+                              <div key={idx} className="flex justify-between items-center text-sm p-2 bg-muted/50 rounded">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-medium">{item.item_name}</span>
                                 </div>
-                                <div className="text-xs text-muted-foreground pl-2">
-                                  {item.quantity} units × ${item.unit_cost.toLocaleString()} per item
+                                <div className="flex items-center gap-3 text-muted-foreground">
+                                  <span>{item.quantity} units × ${item.unit_cost.toLocaleString()} per item</span>
+                                  <span className="font-medium text-foreground">
+                                    ${(item.total_value).toLocaleString()}
+                                  </span>
                                 </div>
                               </div>
                             ))}
