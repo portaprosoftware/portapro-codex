@@ -214,10 +214,7 @@ export default function StorageSites() {
 
   return (
     <FleetLayout>
-      <div className="space-y-6">
-        <FleetNavigation />
-        
-        <Card className="rounded-2xl border-gray-200">
+      <Card className="rounded-2xl border-gray-200">
           <CardHeader>
             <div className="flex justify-between items-center">
               <div>
@@ -418,7 +415,6 @@ export default function StorageSites() {
           )}
           </CardContent>
         </Card>
-      </div>
 
       <AddStorageSiteModal
         open={showAddModal}
