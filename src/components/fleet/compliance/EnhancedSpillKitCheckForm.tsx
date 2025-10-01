@@ -259,6 +259,7 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
         description: "The inspection has been recorded successfully."
       });
       queryClient.invalidateQueries({ queryKey: ["spill-kits-status"] });
+      queryClient.invalidateQueries({ queryKey: ["spill-kit-inspection-history"] });
       onSaved?.();
     },
     onError: (error) => {
