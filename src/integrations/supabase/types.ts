@@ -1778,9 +1778,11 @@ export type Database = {
           company_id: string | null
           created_at: string
           decon_methods: string[] | null
+          follow_up_required: boolean | null
           id: string
           incident_id: string
           inspector_clerk_id: string | null
+          inspector_role: string | null
           inspector_signature: string | null
           location_type: string | null
           notes: string | null
@@ -1794,6 +1796,7 @@ export type Database = {
           vehicle_areas: string[] | null
           vehicle_id: string | null
           verification_by_clerk: string | null
+          verification_timestamp: string | null
           weather_conditions: string | null
           weather_details: string | null
         }
@@ -1801,9 +1804,11 @@ export type Database = {
           company_id?: string | null
           created_at?: string
           decon_methods?: string[] | null
+          follow_up_required?: boolean | null
           id?: string
           incident_id: string
           inspector_clerk_id?: string | null
+          inspector_role?: string | null
           inspector_signature?: string | null
           location_type?: string | null
           notes?: string | null
@@ -1817,6 +1822,7 @@ export type Database = {
           vehicle_areas?: string[] | null
           vehicle_id?: string | null
           verification_by_clerk?: string | null
+          verification_timestamp?: string | null
           weather_conditions?: string | null
           weather_details?: string | null
         }
@@ -1824,9 +1830,11 @@ export type Database = {
           company_id?: string | null
           created_at?: string
           decon_methods?: string[] | null
+          follow_up_required?: boolean | null
           id?: string
           incident_id?: string
           inspector_clerk_id?: string | null
+          inspector_role?: string | null
           inspector_signature?: string | null
           location_type?: string | null
           notes?: string | null
@@ -1840,6 +1848,7 @@ export type Database = {
           vehicle_areas?: string[] | null
           vehicle_id?: string | null
           verification_by_clerk?: string | null
+          verification_timestamp?: string | null
           weather_conditions?: string | null
           weather_details?: string | null
         }

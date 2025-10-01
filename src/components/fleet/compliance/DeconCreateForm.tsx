@@ -15,9 +15,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
-import { Truck, MapPin, Cloud, Shield, Sparkles, CheckCircle, Camera, X } from "lucide-react";
+import { Truck, MapPin, Cloud, Shield, Sparkles, CheckCircle, Camera, X, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { formatBadgeText } from "@/lib/textUtils";
+import { useUserRole } from "@/hooks/useUserRole";
+import { RoleBadge } from "./RoleBadge";
 
 type Props = {
   onSaved?: () => void;
@@ -28,6 +30,7 @@ type Incident = { id: string; created_at: string; spill_type: string; location_d
 
 export const DeconCreateForm: React.FC<Props> = ({ onSaved, onCancel }) => {
   const { toast } = useToast();
+  const { user, role, userId } = useUserRole();
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [incidentId, setIncidentId] = useState<string>("");
   const [vehicleId, setVehicleId] = useState<string>("");
@@ -60,9 +63,14 @@ export const DeconCreateForm: React.FC<Props> = ({ onSaved, onCancel }) => {
   const [postInspectionStatus, setPostInspectionStatus] = useState<string>("");
   const [inspectorSignature, setInspectorSignature] = useState<string>("");
   const [photos, setPhotos] = useState<string[]>([]);
+  const [followUpRequired, setFollowUpRequired] = useState<boolean>(false);
   
   // Notes
   const [notes, setNotes] = useState<string>("");
+  
+  // Inspector info
+  const inspectorName = user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : 'Unknown';
+  const inspectorRole = role || 'unknown';
 
   const handleVehicleSelect = (vehicle: any) => {
     setSelectedVehicle(vehicle);
@@ -87,8 +95,11 @@ export const DeconCreateForm: React.FC<Props> = ({ onSaved, onCancel }) => {
   }, []);
 
   const canSave = useMemo(() => {
-    return incidentId.trim().length > 0 && vehicleId.trim().length > 0 && vehicleAreas.length > 0;
-  }, [incidentId, vehicleId, vehicleAreas]);
+    const hasRequiredFields = incidentId.trim().length > 0 && vehicleId.trim().length > 0 && vehicleAreas.length > 0;
+    const hasSignature = inspectorSignature.trim().length > 0;
+    const hasRequiredPhotos = postInspectionStatus !== 'fail' || photos.length > 0;
+    return hasRequiredFields && hasSignature && hasRequiredPhotos;
+  }, [incidentId, vehicleId, vehicleAreas, inspectorSignature, postInspectionStatus, photos]);
   
   const handleAutoAddWeather = async () => {
     setIsAutoWeatherLoading(true);
@@ -135,6 +146,8 @@ export const DeconCreateForm: React.FC<Props> = ({ onSaved, onCancel }) => {
 
   const handleSave = async () => {
     try {
+      const verificationTimestamp = new Date().toISOString();
+      
       const { error } = await supabase
         .from("decon_logs")
         .insert({
@@ -149,9 +162,13 @@ export const DeconCreateForm: React.FC<Props> = ({ onSaved, onCancel }) => {
           decon_methods: deconMethods,
           post_inspection_status: postInspectionStatus || null,
           inspector_signature: inspectorSignature || null,
+          inspector_clerk_id: userId || null,
+          inspector_role: inspectorRole,
+          verification_timestamp: verificationTimestamp,
+          follow_up_required: followUpRequired,
           photos: photos,
           notes: notes || null,
-          performed_by_clerk: "dispatch",
+          performed_by_clerk: userId || "dispatch",
         });
 
       if (error) {
@@ -380,8 +397,20 @@ export const DeconCreateForm: React.FC<Props> = ({ onSaved, onCancel }) => {
           <CardTitle className="text-lg">Verification & Effectiveness</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          {/* Inspector Info Display */}
+          <div className="p-3 bg-muted/50 rounded-lg border">
+            <p className="text-sm font-medium mb-1">Inspector Information</p>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span>{inspectorName}</span>
+              <span>•</span>
+              <RoleBadge role={inspectorRole as any} />
+              <span>•</span>
+              <span>{new Date().toLocaleString()}</span>
+            </div>
+          </div>
+
           <div>
-            <Label className="mb-2 block">Post-Decon Inspection Status</Label>
+            <Label className="mb-2 block">Post-Decon Inspection Status *</Label>
             <Select value={postInspectionStatus} onValueChange={setPostInspectionStatus}>
               <SelectTrigger>
                 <SelectValue placeholder="Select status..." />
@@ -390,26 +419,64 @@ export const DeconCreateForm: React.FC<Props> = ({ onSaved, onCancel }) => {
                 <SelectItem value="pass">
                   <div className="flex items-center gap-2">
                     <CheckCircle className="h-4 w-4 text-green-600" />
-                    Pass
+                    Pass - Meets All Standards
                   </div>
                 </SelectItem>
-                <SelectItem value="fail">Fail</SelectItem>
-                <SelectItem value="conditional">Conditional</SelectItem>
+                <SelectItem value="fail">
+                  <div className="flex items-center gap-2">
+                    <X className="h-4 w-4 text-red-600" />
+                    Fail - Does Not Meet Standards
+                  </div>
+                </SelectItem>
+                <SelectItem value="conditional">
+                  <div className="flex items-center gap-2">
+                    <AlertCircle className="h-4 w-4 text-yellow-600" />
+                    Conditional - Requires Follow-Up
+                  </div>
+                </SelectItem>
+                <SelectItem value="not_applicable">
+                  <div className="flex items-center gap-2">
+                    Not Applicable
+                  </div>
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
 
+          {/* Follow-Up Required Toggle */}
+          {(postInspectionStatus === 'fail' || postInspectionStatus === 'conditional') && (
+            <div className="flex items-center justify-between p-4 border rounded-lg bg-yellow-50 dark:bg-yellow-950/10">
+              <div>
+                <Label htmlFor="follow-up" className="font-semibold">Follow-Up Required</Label>
+                <p className="text-sm text-muted-foreground">Corrective action needed</p>
+              </div>
+              <Switch
+                id="follow-up"
+                checked={followUpRequired}
+                onCheckedChange={setFollowUpRequired}
+              />
+            </div>
+          )}
+
           <div>
-            <Label className="mb-2 block">Inspector/Driver Signature</Label>
+            <Label className="mb-2 block">Inspector Signature *</Label>
             <Input
-              placeholder="Full name of inspector"
+              placeholder="Type your full name to sign"
               value={inspectorSignature}
               onChange={(e) => setInspectorSignature(e.target.value)}
             />
           </div>
 
           <div>
-            <Label className="mb-2 block">Photos ({photos.length}/10)</Label>
+            <div className="flex items-center justify-between mb-2">
+              <Label>Photos ({photos.length}/10)</Label>
+              {postInspectionStatus === 'fail' && photos.length === 0 && (
+                <Badge variant="destructive" className="text-xs">
+                  <AlertCircle className="h-3 w-3 mr-1" />
+                  At least 1 photo required for failures
+                </Badge>
+              )}
+            </div>
             <PhotoCapture
               onPhotosChange={setPhotos}
               maxPhotos={10}
