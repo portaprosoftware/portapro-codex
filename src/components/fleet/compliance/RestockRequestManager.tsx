@@ -27,6 +27,9 @@ interface RestockRequest {
   updated_at: string;
   vehicles: {
     license_plate: string;
+    make?: string;
+    model?: string;
+    nickname?: string;
   };
 }
 
@@ -43,7 +46,7 @@ export const RestockRequestManager: React.FC = () => {
         .from("spill_kit_restock_requests")
         .select(`
           *,
-          vehicles!inner(license_plate)
+          vehicles!inner(license_plate, make, model, nickname)
         `)
         .order("created_at", { ascending: false });
 
@@ -103,21 +106,18 @@ export const RestockRequestManager: React.FC = () => {
     });
   };
 
-  const getPriorityBadgeVariant = (priority: string) => {
-    switch (priority) {
-      case "high": return "destructive";
-      case "medium": return "secondary";
-      case "low": return "outline";
-      default: return "outline";
-    }
-  };
-
-  const getStatusBadgeVariant = (status: string) => {
+  const getStatusBadge = (status: string) => {
+    const statusLabel = status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' ');
+    
     switch (status) {
-      case "completed": return "default";
-      case "in_progress": return "secondary";
-      case "pending": return "outline";
-      default: return "outline";
+      case "completed":
+        return <Badge className="bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold border-none">{statusLabel}</Badge>;
+      case "in_progress":
+        return <Badge className="bg-gradient-to-r from-blue-500 to-blue-700 text-white font-bold border-none">{statusLabel}</Badge>;
+      case "pending":
+        return <Badge className="bg-gradient-to-r from-yellow-400 to-orange-400 text-white font-bold border-none">{statusLabel}</Badge>;
+      default:
+        return <Badge className="bg-gradient-to-r from-gray-400 to-gray-600 text-white font-bold border-none">{statusLabel}</Badge>;
     }
   };
 
@@ -234,13 +234,18 @@ export const RestockRequestManager: React.FC = () => {
                 <div className="space-y-2">
                   <div className="flex items-center gap-3">
                     {getStatusIcon(request.status)}
-                    <h3 className="font-semibold">{request.vehicles.license_plate}</h3>
-                    <Badge variant={getPriorityBadgeVariant(request.priority)}>
-                      {request.priority} priority
-                    </Badge>
-                    <Badge variant={getStatusBadgeVariant(request.status)}>
-                      {request.status}
-                    </Badge>
+                    <div className="flex flex-col">
+                      <h3 className="font-semibold">
+                        {request.vehicles.make && request.vehicles.model 
+                          ? `${request.vehicles.make} ${request.vehicles.model}${request.vehicles.nickname ? ` - ${request.vehicles.nickname}` : ''}`
+                          : request.vehicles.license_plate
+                        }
+                      </h3>
+                      <div className="text-sm text-muted-foreground flex items-center gap-2">
+                        {request.vehicles.license_plate}
+                      </div>
+                    </div>
+                    {getStatusBadge(request.status)}
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
