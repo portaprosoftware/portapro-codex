@@ -646,7 +646,7 @@ export function StorageLocationReporting() {
                                   {location.total_items} spill kit {location.total_items === 1 ? 'item' : 'items'} • {location.total_quantity} total units
                                 </div>
                                 <div className="text-lg font-bold text-orange-600">
-                                  ${location.total_value.toLocaleString()}
+                                  Total: ${location.total_value.toLocaleString()}
                                 </div>
                               </div>
                             </div>
@@ -655,15 +655,20 @@ export function StorageLocationReporting() {
                         <CollapsibleContent className="mt-3">
                           <div className="space-y-2">
                             {location.items.map((item, idx) => (
-                              <div key={idx} className="flex justify-between items-center text-sm p-2 bg-muted/50 rounded">
-                                <div className="flex items-center gap-2">
-                                  <span className="font-medium">{item.item_name}</span>
+                              <div key={idx} className="space-y-1">
+                                <div className="flex justify-between items-center text-sm p-2 bg-muted/50 rounded">
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-medium">{item.item_name}</span>
+                                  </div>
+                                  <div className="flex items-center gap-3 text-muted-foreground">
+                                    <span>{item.quantity} units</span>
+                                    <span className="font-medium text-foreground">
+                                      ${(item.total_value).toLocaleString()}
+                                    </span>
+                                  </div>
                                 </div>
-                                <div className="flex items-center gap-3 text-muted-foreground">
-                                  <span>{item.quantity} units</span>
-                                  <span className="font-medium text-foreground">
-                                    ${(item.total_value).toLocaleString()}
-                                  </span>
+                                <div className="text-xs text-muted-foreground pl-2">
+                                  {item.quantity} units × ${item.unit_cost.toLocaleString()} per item
                                 </div>
                               </div>
                             ))}
