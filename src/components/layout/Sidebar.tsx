@@ -70,7 +70,7 @@ const Sidebar = () => {
       items: [
         { icon: Megaphone, label: "Marketing", path: "/marketing" },
         { icon: BarChart3, label: "Analytics", path: "/analytics" },
-        { icon: Warehouse, label: "Storage Locations", path: "/admin/storage-locations" },
+        { icon: Warehouse, label: "Storage Garages", path: "/admin/storage-locations" },
         { icon: Settings, label: "Settings", path: "/settings" },
       ]
     }
