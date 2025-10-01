@@ -25,6 +25,7 @@ import { Plus, Pencil, Trash2, Package, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
+import { SpillKitTypeSelectionModal } from './SpillKitTypeSelectionModal';
 
 type SpillKitInventoryItem = {
   id: string;
@@ -46,6 +47,7 @@ export function SpillKitInventoryManager() {
   const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<SpillKitInventoryItem | null>(null);
+  const [typeModalOpen, setTypeModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     item_name: '',
     item_type: 'absorbent',
@@ -177,6 +179,27 @@ export function SpillKitInventoryManager() {
     if (confirm('Are you sure you want to delete this inventory item?')) {
       deleteMutation.mutate(id);
     }
+  };
+
+  const handleSelectType = (type: string) => {
+    setFormData({ ...formData, item_type: type });
+    setTypeModalOpen(false);
+  };
+
+  const getTypeLabel = (type: string) => {
+    const labels: Record<string, string> = {
+      'absorbent': 'Absorbents',
+      'containment': 'Containment & Control',
+      'ppe': 'PPE',
+      'decon': 'Decon & Cleaning',
+      'tools': 'Tools & Hardware',
+      'disposal': 'Disposal & Packaging',
+      'documentation': 'Documentation & Labels',
+      'pump_transfer': 'Pump / Transfer',
+      'signage': 'Signage & Safety',
+      'other': 'General / Other'
+    };
+    return labels[type] || type;
   };
 
   const getLowStockCount = () => {
@@ -329,20 +352,14 @@ export function SpillKitInventoryManager() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="item_type">Type *</Label>
-                  <select
-                    id="item_type"
-                    value={formData.item_type}
-                    onChange={(e) => setFormData({ ...formData, item_type: e.target.value })}
-                    className="flex h-12 w-full rounded-xl border border-input bg-background px-4 py-3 text-base ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary"
-                    required
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setTypeModalOpen(true)}
+                    className="w-full justify-start text-left font-normal h-12"
                   >
-                    <option value="absorbent">Absorbent</option>
-                    <option value="ppe">PPE</option>
-                    <option value="containment">Containment</option>
-                    <option value="disposal">Disposal</option>
-                    <option value="tools">Tools</option>
-                    <option value="other">Other</option>
-                  </select>
+                    {getTypeLabel(formData.item_type)}
+                  </Button>
                 </div>
               </div>
 
@@ -446,6 +463,14 @@ export function SpillKitInventoryManager() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Spill Kit Type Selection Modal */}
+      <SpillKitTypeSelectionModal
+        isOpen={typeModalOpen}
+        onClose={() => setTypeModalOpen(false)}
+        onSelect={handleSelectType}
+        currentValue={formData.item_type}
+      />
     </div>
   );
 }

@@ -17,6 +17,7 @@ import { Plus, Edit, Trash2, Package, Shield, Clock, Car, Info, MoreVertical } f
 import { useToast } from "@/hooks/use-toast";
 import { VehicleTypesMultiSelector } from "./VehicleTypesMultiSelector";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { SpillKitTypeSelectionModal } from "./SpillKitTypeSelectionModal";
 
 type SpillKitTemplate = {
   id: string;
@@ -297,10 +298,12 @@ const TemplateForm: React.FC<{
   });
   const [items, setItems] = useState<Partial<TemplateItem>[]>(
     template?.items || [
-      { item_name: "", required_quantity: 1, critical_item: false, category: "absorbents", expiration_trackable: false }
+      { item_name: "", required_quantity: 1, critical_item: false, category: "absorbent", expiration_trackable: false }
     ]
   );
   const [vehicleSelectorOpen, setVehicleSelectorOpen] = useState(false);
+  const [typeModalOpen, setTypeModalOpen] = useState(false);
+  const [editingItemIndex, setEditingItemIndex] = useState<number | null>(null);
 
   // Check if there's another template that's already set as default
   const otherDefaultTemplate = templates?.find(t => t.is_default && t.id !== template?.id);
@@ -395,7 +398,7 @@ const TemplateForm: React.FC<{
       item_name: "",
       required_quantity: 1,
       critical_item: false,
-      category: "absorbents",
+      category: "absorbent",
       expiration_trackable: false
     }]);
   };
@@ -410,8 +413,36 @@ const TemplateForm: React.FC<{
     setItems(newItems);
   };
 
+  const handleOpenTypeModal = (index: number) => {
+    setEditingItemIndex(index);
+    setTypeModalOpen(true);
+  };
+
+  const handleSelectType = (type: string) => {
+    if (editingItemIndex !== null) {
+      updateItem(editingItemIndex, 'category', type);
+    }
+    setTypeModalOpen(false);
+    setEditingItemIndex(null);
+  };
+
+  const getCategoryLabel = (category: string) => {
+    const labels: Record<string, string> = {
+      'absorbent': 'Absorbents',
+      'containment': 'Containment & Control',
+      'ppe': 'PPE',
+      'decon': 'Decon & Cleaning',
+      'tools': 'Tools & Hardware',
+      'disposal': 'Disposal & Packaging',
+      'documentation': 'Documentation & Labels',
+      'pump_transfer': 'Pump / Transfer',
+      'signage': 'Signage & Safety',
+      'other': 'General / Other'
+    };
+    return labels[category] || category;
+  };
+
   const vehicleTypeOptions = ['truck', 'van', 'trailer', 'pickup', 'suv', 'sedan'];
-  const categoryOptions = ['absorbents', 'ppe', 'disposal', 'documentation', 'tools', 'general'];
 
   return (
     <div className="space-y-6">
@@ -542,21 +573,14 @@ const TemplateForm: React.FC<{
 
                 <div>
                   <label className="text-sm font-medium mb-1 block">Category</label>
-                  <Select
-                    value={item.category || "absorbents"}
-                    onValueChange={(value) => updateItem(index, 'category', value)}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => handleOpenTypeModal(index)}
+                    className="w-full justify-start text-left font-normal"
                   >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categoryOptions.map(cat => (
-                        <SelectItem key={cat} value={cat}>
-                          {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    {getCategoryLabel(item.category || "absorbent")}
+                  </Button>
                 </div>
               </div>
 
@@ -612,6 +636,17 @@ const TemplateForm: React.FC<{
           )}
         </Button>
       </div>
+
+      {/* Spill Kit Type Selection Modal */}
+      <SpillKitTypeSelectionModal
+        isOpen={typeModalOpen}
+        onClose={() => {
+          setTypeModalOpen(false);
+          setEditingItemIndex(null);
+        }}
+        onSelect={handleSelectType}
+        currentValue={editingItemIndex !== null ? items[editingItemIndex]?.category : undefined}
+      />
     </div>
   );
 };
