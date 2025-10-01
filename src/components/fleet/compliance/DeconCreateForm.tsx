@@ -103,9 +103,9 @@ export const DeconCreateForm: React.FC<Props> = ({ onSaved, onCancel }) => {
             if (error) throw error;
 
             if (data) {
-              const weatherStr = `${data.condition} • ${data.temperature}°F • ${data.humidity}% Humidity • Wind ${data.windSpeed} MPH${data.city && data.state ? ` - ${data.city}, ${data.state}` : ""}`;
-              setWeatherDetails(weatherStr);
-              setWeatherConditions(data.condition || "");
+              const locationStr = data.city && data.state ? ` - ${data.city}, ${data.state}` : '';
+              setWeatherDetails(`${data.description} • ${data.temp}°F • ${data.humidity}% Humidity • Wind ${data.windSpeed} MPH${locationStr}`);
+              setWeatherConditions(data.description || "");
               toast({ title: "Weather Added", description: "Current weather conditions have been recorded" });
             }
             setIsAutoWeatherLoading(false);
