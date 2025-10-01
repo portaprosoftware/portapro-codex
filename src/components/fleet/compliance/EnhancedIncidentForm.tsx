@@ -593,11 +593,14 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
           <CardTitle>Cleanup Actions Taken</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-6">
-            {Object.entries(cleanupActionCategories).map(([category, actions]) => (
-              <div key={category}>
+          <div className="space-y-0">
+            {Object.entries(cleanupActionCategories).map(([category, actions], index) => (
+              <div 
+                key={category} 
+                className={`p-4 ${index % 2 === 0 ? 'bg-gray-50' : 'bg-gray-100'}`}
+              >
                 <h4 className="font-semibold text-sm text-gray-700 mb-3">{category}</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-2">
                   {actions.map((action) => (
                     <div key={action} className="flex items-center space-x-2">
                       <Checkbox
