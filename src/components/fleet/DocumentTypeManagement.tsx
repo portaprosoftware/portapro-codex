@@ -96,9 +96,20 @@ const predefinedCategories = [
   }
 ];
 
-export const DocumentTypeManagement: React.FC = () => {
+interface DocumentTypeManagementProps {
+  drawerOpen?: boolean;
+  setDrawerOpen?: (open: boolean) => void;
+}
+
+export const DocumentTypeManagement: React.FC<DocumentTypeManagementProps> = ({ 
+  drawerOpen: externalDrawerOpen, 
+  setDrawerOpen: externalSetDrawerOpen 
+}) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [internalDrawerOpen, setInternalDrawerOpen] = useState(false);
+  
+  const drawerOpen = externalDrawerOpen ?? internalDrawerOpen;
+  const setDrawerOpen = externalSetDrawerOpen ?? setInternalDrawerOpen;
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedTypeForDetails, setSelectedTypeForDetails] = useState<TypeDisplayItem | null>(null);
   const [editingType, setEditingType] = useState<DocumentType | null>(null);
@@ -261,15 +272,7 @@ export const DocumentTypeManagement: React.FC = () => {
             <h3 className="text-lg font-semibold text-gray-900">Document Types</h3>
             <p className="text-sm text-gray-600">Manage document types organized by predefined categories</p>
           </div>
-        
-        <Button 
-          onClick={() => setDrawerOpen(true)}
-          className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Add Document Type
-        </Button>
-      </div>
+        </div>
 
       {/* Document Type Create Drawer */}
       <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>

@@ -19,9 +19,20 @@ type DeconLog = {
   notes?: string | null;
 };
 
-export const DeconLogsTab: React.FC = () => {
+interface DeconLogsTabProps {
+  drawerOpen?: boolean;
+  setDrawerOpen?: (open: boolean) => void;
+}
+
+export const DeconLogsTab: React.FC<DeconLogsTabProps> = ({ 
+  drawerOpen: externalDrawerOpen, 
+  setDrawerOpen: externalSetDrawerOpen 
+}) => {
   const queryClient = useQueryClient();
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [internalDrawerOpen, setInternalDrawerOpen] = useState(false);
+  
+  const drawerOpen = externalDrawerOpen ?? internalDrawerOpen;
+  const setDrawerOpen = externalSetDrawerOpen ?? setInternalDrawerOpen;
 
   const { data, isLoading } = useQuery({
     queryKey: ["decon-logs"],
@@ -81,19 +92,12 @@ export const DeconLogsTab: React.FC = () => {
 
   return (
     <>
-      {/* Header with Record Decon Button */}
+      {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-base font-semibold">Decontamination Logs</h3>
           <p className="text-sm text-muted-foreground">Record decon activities after a spill or exposure</p>
         </div>
-        <Button 
-          onClick={() => setDrawerOpen(true)}
-          className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
-        >
-          <Plus className="w-4 h-4 mr-2" /> 
-          Record Decon
-        </Button>
       </div>
 
       <div className="space-y-3">

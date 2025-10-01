@@ -38,6 +38,71 @@ interface ComplianceDocument {
 }
 
 export const FleetCompliance: React.FC = () => {
+  const [activeTab, setActiveTab] = useState("documents");
+  const [documentDrawerOpen, setDocumentDrawerOpen] = useState(false);
+  const [documentTypeDrawerOpen, setDocumentTypeDrawerOpen] = useState(false);
+  const [inspectionDrawerOpen, setInspectionDrawerOpen] = useState(false);
+  const [incidentDrawerOpen, setIncidentDrawerOpen] = useState(false);
+  const [deconDrawerOpen, setDeconDrawerOpen] = useState(false);
+
+  // Dynamic header button based on active tab
+  const renderHeaderAction = () => {
+    switch (activeTab) {
+      case "documents":
+        return (
+          <Button 
+            onClick={() => setDocumentDrawerOpen(true)}
+            className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add Document
+          </Button>
+        );
+      case "types":
+        return (
+          <Button 
+            onClick={() => setDocumentTypeDrawerOpen(true)}
+            className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add Document Type
+          </Button>
+        );
+      case "spill-kits":
+        return (
+          <Button 
+            onClick={() => setInspectionDrawerOpen(true)}
+            className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            New Inspection
+          </Button>
+        );
+      case "incidents":
+        return (
+          <Button 
+            onClick={() => setIncidentDrawerOpen(true)}
+            className="bg-gradient-to-r from-red-500 to-red-600 text-white font-bold border-0"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Log New Incident
+          </Button>
+        );
+      case "decon":
+        return (
+          <Button 
+            onClick={() => setDeconDrawerOpen(true)}
+            className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Record Decon
+          </Button>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="bg-white border border-gray-200 rounded-2xl shadow-sm">
@@ -90,9 +155,10 @@ export const FleetCompliance: React.FC = () => {
               <p className="text-base text-gray-600 font-inter mt-1">DOT/FMCSA, state permits, spill readiness, and EPA/OSHA docs</p>
               <p className="text-sm text-gray-500 font-inter mt-1">Documents also accessible from each vehicle's details page</p>
             </div>
+            {renderHeaderAction()}
           </div>
 
-          <Tabs defaultValue="documents" className="space-y-6">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <TabsList className="bg-white rounded-full p-1 shadow-sm border w-fit overflow-x-auto">
               <TabsTrigger value="documents" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Documents</TabsTrigger>
               <TabsTrigger value="types" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Document Types</TabsTrigger>
@@ -108,15 +174,24 @@ export const FleetCompliance: React.FC = () => {
             </TabsContent>
 
             <TabsContent value="documents">
-              <FleetComplianceContent />
+              <FleetComplianceContent 
+                drawerOpen={documentDrawerOpen}
+                setDrawerOpen={setDocumentDrawerOpen}
+              />
             </TabsContent>
 
             <TabsContent value="types">
-              <DocumentTypeManagement />
+              <DocumentTypeManagement 
+                drawerOpen={documentTypeDrawerOpen}
+                setDrawerOpen={setDocumentTypeDrawerOpen}
+              />
             </TabsContent>
 
             <TabsContent value="spill-kits">
-              <SpillKitsTab />
+              <SpillKitsTab 
+                inspectionDrawerOpen={inspectionDrawerOpen}
+                setInspectionDrawerOpen={setInspectionDrawerOpen}
+              />
             </TabsContent>
 
             <TabsContent value="track-expiration">
@@ -124,11 +199,17 @@ export const FleetCompliance: React.FC = () => {
             </TabsContent>
 
             <TabsContent value="incidents">
-              <IncidentRoleGateway />
+              <IncidentRoleGateway 
+                drawerOpen={incidentDrawerOpen}
+                setDrawerOpen={setIncidentDrawerOpen}
+              />
             </TabsContent>
 
             <TabsContent value="decon">
-              <DeconLogsTab />
+              <DeconLogsTab 
+                drawerOpen={deconDrawerOpen}
+                setDrawerOpen={setDeconDrawerOpen}
+              />
             </TabsContent>
 
             <TabsContent value="reports">
@@ -141,9 +222,20 @@ export const FleetCompliance: React.FC = () => {
   );
 };
 
-const FleetComplianceContent: React.FC = () => {
+interface FleetComplianceContentProps {
+  drawerOpen?: boolean;
+  setDrawerOpen?: (open: boolean) => void;
+}
+
+const FleetComplianceContent: React.FC<FleetComplianceContentProps> = ({
+  drawerOpen: externalDrawerOpen,
+  setDrawerOpen: externalSetDrawerOpen
+}) => {
   const [isAddDocumentModalOpen, setIsAddDocumentModalOpen] = useState(false);
-  const [addDocumentDrawerOpen, setAddDocumentDrawerOpen] = useState(false);
+  const [internalDrawerOpen, setInternalDrawerOpen] = useState(false);
+  
+  const addDocumentDrawerOpen = externalDrawerOpen ?? internalDrawerOpen;
+  const setAddDocumentDrawerOpen = externalSetDrawerOpen ?? setInternalDrawerOpen;
   const [isUpdateDocumentModalOpen, setIsUpdateDocumentModalOpen] = useState(false);
   const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null);
   const { toast } = useToast();
@@ -271,19 +363,12 @@ const FleetComplianceContent: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header with Add Document Button - moved to top */}
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold text-gray-900">All Compliance Documents</h3>
           <p className="text-sm text-gray-600">Track permits, certifications, and required paperwork</p>
         </div>
-        <Button 
-          onClick={() => setAddDocumentDrawerOpen(true)}
-          className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Add Document
-        </Button>
       </div>
       
       {/* Summary Cards */}

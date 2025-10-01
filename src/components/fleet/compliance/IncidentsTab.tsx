@@ -14,10 +14,21 @@ import { Plus, Calendar, MapPin, Filter, TrendingUp, Download } from "lucide-rea
 import { format } from "date-fns";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-export const IncidentsTab: React.FC = () => {
+interface IncidentsTabProps {
+  drawerOpen?: boolean;
+  setDrawerOpen?: (open: boolean) => void;
+}
+
+export const IncidentsTab: React.FC<IncidentsTabProps> = ({ 
+  drawerOpen: externalDrawerOpen, 
+  setDrawerOpen: externalSetDrawerOpen 
+}) => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [internalDrawerOpen, setInternalDrawerOpen] = useState(false);
+  
+  const isDrawerOpen = externalDrawerOpen ?? internalDrawerOpen;
+  const setIsDrawerOpen = externalSetDrawerOpen ?? setInternalDrawerOpen;
   const [selectedIncident, setSelectedIncident] = useState<any>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [severityFilter, setSeverityFilter] = useState("all");
@@ -149,10 +160,6 @@ export const IncidentsTab: React.FC = () => {
           <Button onClick={handleExport} variant="outline">
             <Download className="mr-2 h-4 w-4" />
             Export CSV
-          </Button>
-          <Button onClick={() => setIsDrawerOpen(true)} className="bg-red-600 hover:bg-red-700 text-white">
-            <Plus className="mr-2 h-4 w-4" />
-            Log New Incident
           </Button>
         </div>
       </div>

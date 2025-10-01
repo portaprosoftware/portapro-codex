@@ -12,9 +12,20 @@ import { Button } from '@/components/ui/button';
 import { Plus, Settings, FileText, Package, History, Box } from 'lucide-react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 
-export function AdminSpillKitDashboard() {
-  const [drawerOpen, setDrawerOpen] = useState(false);
+interface AdminSpillKitDashboardProps {
+  inspectionDrawerOpen?: boolean;
+  setInspectionDrawerOpen?: (open: boolean) => void;
+}
+
+export function AdminSpillKitDashboard({ 
+  inspectionDrawerOpen: externalDrawerOpen, 
+  setInspectionDrawerOpen: externalSetDrawerOpen 
+}: AdminSpillKitDashboardProps) {
+  const [internalDrawerOpen, setInternalDrawerOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("history");
+  
+  const drawerOpen = externalDrawerOpen ?? internalDrawerOpen;
+  const setDrawerOpen = externalSetDrawerOpen ?? setInternalDrawerOpen;
 
   const handleSaved = () => {
     setDrawerOpen(false);
@@ -27,12 +38,6 @@ export function AdminSpillKitDashboard() {
           <h2 className="text-xl font-semibold">Spill Kit Compliance</h2>
           <p className="text-muted-foreground">Manage templates, reports, and compliance monitoring</p>
         </div>
-        <ProtectedComponent requiredPermission="canPerformSpillKitChecks">
-          <Button onClick={() => setDrawerOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            New Inspection
-          </Button>
-        </ProtectedComponent>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
