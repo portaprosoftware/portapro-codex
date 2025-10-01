@@ -7,7 +7,8 @@ import { useCountUp } from '@/hooks/useCountUp';
 interface StatCardProps {
   title: string;
   value: string | number | React.ReactNode;
-  icon: LucideIcon;
+  icon?: LucideIcon;
+  emoji?: string;
   gradientFrom: string;
   gradientTo: string;
   iconBg: string;
@@ -25,6 +26,7 @@ export const StatCard: React.FC<StatCardProps> = ({
   title,
   value,
   icon: Icon,
+  emoji,
   gradientFrom,
   gradientTo,
   iconBg,
@@ -103,7 +105,7 @@ export const StatCard: React.FC<StatCardProps> = ({
           )}
         </div>
         
-        {/* Right side - Icon */}
+        {/* Right side - Icon or Emoji */}
         <div 
           className="w-12 h-12 rounded-lg flex items-center justify-center shadow-md transition-all duration-200 flex-shrink-0 ml-3"
           style={{ 
@@ -112,7 +114,11 @@ export const StatCard: React.FC<StatCardProps> = ({
             boxShadow: `0 4px 12px -4px ${gradientFrom}40`
           }}
         >
-          <Icon className="w-6 h-6 text-white" strokeWidth={2} />
+          {emoji ? (
+            <span className="text-2xl">{emoji}</span>
+          ) : Icon ? (
+            <Icon className="w-6 h-6 text-white" strokeWidth={2} />
+          ) : null}
         </div>
       </div>
     </div>

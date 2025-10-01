@@ -20,7 +20,7 @@ import { Logo } from "@/components/ui/logo";
 import { useUserRole } from "@/hooks/useUserRole";
 
 interface MenuItem {
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<any> | string;
   label: string;
   path: string;
 }
@@ -45,7 +45,7 @@ const Sidebar = () => {
     { icon: Home, label: "Dashboard", path: "/" },
     { icon: Calendar, label: "Jobs", path: "/jobs" },
     { icon: Package, label: "Inventory", path: "/inventory" },
-    { icon: Droplets, label: "Consumables", path: "/consumables" },
+    { icon: "🧻", label: "Consumables", path: "/consumables" },
     { icon: FileText, label: "Purchase Orders", path: "/purchase-orders" },
     { icon: Users, label: "Customer Hub", path: "/customer-hub" },
     { icon: FileText, label: "Quotes & Invoices", path: "/quotes-invoices" },
@@ -139,12 +139,25 @@ const Sidebar = () => {
                     }
                   }}
                 >
-                  <item.icon style={{ 
-                    width: '20px', 
-                    height: '20px', 
-                    marginRight: '12px',
-                    flexShrink: 0 
-                  }} />
+                  {typeof item.icon === 'string' ? (
+                    <span style={{ 
+                      fontSize: '20px', 
+                      marginRight: '12px',
+                      flexShrink: 0,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
+                      {item.icon}
+                    </span>
+                  ) : (
+                    <item.icon style={{ 
+                      width: '20px', 
+                      height: '20px', 
+                      marginRight: '12px',
+                      flexShrink: 0 
+                    }} />
+                  )}
                   {item.label}
                 </NavLink>
               </li>
