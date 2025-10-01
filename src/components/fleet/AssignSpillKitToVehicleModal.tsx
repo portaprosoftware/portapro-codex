@@ -14,7 +14,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { AlertCircle, Package } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
@@ -204,8 +204,7 @@ export function AssignSpillKitToVehicleModal({
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-3xl max-h-[85vh]">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Package className="h-5 w-5" />
+          <DialogTitle>
             Assign Spill Kit to {licensePlate}
           </DialogTitle>
           <DialogDescription>
@@ -290,13 +289,14 @@ export function AssignSpillKitToVehicleModal({
             )}
           </ScrollArea>
 
-          <DialogFooter className="mt-6">
-            <Button type="button" variant="outline" onClick={handleClose}>
+          <DialogFooter className="mt-6 gap-2 sm:gap-0">
+            <Button type="button" variant="outline" onClick={handleClose} className="min-w-[100px]">
               Cancel
             </Button>
             <Button 
               type="submit" 
               disabled={selectedItems.size === 0 || assignMutation.isPending}
+              className="min-w-[140px]"
             >
               {assignMutation.isPending ? 'Assigning...' : 'Assign Spill Kit'}
             </Button>
