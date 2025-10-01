@@ -259,9 +259,9 @@ export function SpillKitInspectionHistory() {
           </TableCell>
           <TableCell>
             {inspection.has_kit ? (
-              <Badge variant="secondary" className="gap-1"><CheckCircle className="h-3 w-3" />Present</Badge>
+              <Badge className="gap-1 bg-gradient-to-r from-green-600 to-green-500 text-white font-bold"><CheckCircle className="h-3 w-3" />Present</Badge>
             ) : (
-              <Badge variant="destructive" className="gap-1"><XCircle className="h-3 w-3" />Missing</Badge>
+              <Badge className="gap-1 bg-gradient-to-r from-red-600 to-red-500 text-white font-bold"><XCircle className="h-3 w-3" />Missing</Badge>
             )}
           </TableCell>
           <TableCell>
