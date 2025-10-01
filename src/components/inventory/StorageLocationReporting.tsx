@@ -19,6 +19,16 @@ interface LocationReportData {
     total_spill_kit_units: number;
     total_spill_kit_value: number;
   };
+  product_details: Array<{
+    location_id: string;
+    location_name: string;
+    items: Array<{
+      item_name: string;
+      quantity: number;
+    }>;
+    total_items: number;
+    total_quantity: number;
+  }>;
   consumable_details: Array<{
     location_id: string;
     location_name: string;
@@ -92,6 +102,17 @@ export function StorageLocationReporting() {
         .gt('stock_total', 0);
       
       if (productsError) throw productsError;
+
+      // Get product location stock
+      const { data: productLocationStock, error: productLocationError } = await supabase
+        .from('product_location_stock')
+        .select(`
+          *,
+          storage_locations(id, name),
+          products(id, name)
+        `);
+      
+      if (productLocationError) throw productLocationError;
 
       // Get spill kit inventory data
       const { data: spillKits, error: spillKitsError } = await supabase
@@ -178,6 +199,28 @@ export function StorageLocationReporting() {
         };
       }).filter(loc => loc.total_items > 0) || [];
 
+      // Calculate product details by location
+      const productDetails = locations?.map(location => {
+        const locationStock = productLocationStock?.filter(
+          (stock: any) => stock.storage_location_id === location.id
+        ) || [];
+
+        const items = locationStock.map((stock: any) => {
+          return {
+            item_name: stock.products?.name || 'Unknown Product',
+            quantity: stock.quantity || 0
+          };
+        }).filter(item => item.quantity > 0);
+
+        return {
+          location_id: location.id,
+          location_name: location.name,
+          items: items.sort((a, b) => a.item_name.localeCompare(b.item_name)),
+          total_items: items.length,
+          total_quantity: items.reduce((sum, item) => sum + item.quantity, 0)
+        };
+      }).filter(loc => loc.total_items > 0) || [];
+
       // Calculate spill kit details by location
       const spillKitDetails = locations?.map(location => {
         const locationStock = spillKitLocationStock?.filter(
@@ -215,6 +258,9 @@ export function StorageLocationReporting() {
           total_spill_kit_units: totalSpillKitUnits,
           total_spill_kit_value: totalSpillKitValue
         },
+        product_details: productDetails.sort((a, b) => 
+          a.location_name.localeCompare(b.location_name)
+        ),
         consumable_details: consumableDetails.sort((a, b) => 
           a.location_name.localeCompare(b.location_name)
         ),
@@ -419,6 +465,65 @@ export function StorageLocationReporting() {
               </CardContent>
             </Card>
           </div>
+
+          {/* Product Details by Location */}
+          {reportData.product_details.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Package className="h-5 w-5 text-blue-600" />
+                  Product Types by Location
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {reportData.product_details.map((location) => (
+                  <Collapsible
+                    key={location.location_id}
+                    open={expandedLocations.has(location.location_id + '_products')}
+                    onOpenChange={() => toggleLocation(location.location_id + '_products')}
+                  >
+                    <Card className="border-l-4 border-l-blue-600">
+                      <CardContent className="p-4">
+                        <CollapsibleTrigger className="w-full">
+                          <div className="space-y-3">
+                            <div className="flex justify-between items-center">
+                              <div className="flex items-center gap-2">
+                                <ChevronDown 
+                                  className={`h-4 w-4 transition-transform ${
+                                    expandedLocations.has(location.location_id + '_products') ? 'rotate-180' : ''
+                                  }`}
+                                />
+                                <h5 className="font-medium text-lg">{location.location_name}</h5>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-sm font-medium">
+                                  {location.total_items} product {location.total_items === 1 ? 'type' : 'types'} • {location.total_quantity} total units
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="mt-3">
+                          <div className="space-y-2">
+                            {location.items.map((item, idx) => (
+                              <div key={idx} className="flex justify-between items-center text-sm p-2 bg-muted/50 rounded">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-medium">{item.item_name}</span>
+                                </div>
+                                <div className="flex items-center gap-3 text-muted-foreground">
+                                  <span className="font-medium text-foreground">{item.quantity} units</span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </CollapsibleContent>
+                      </CardContent>
+                    </Card>
+                  </Collapsible>
+                ))}
+              </CardContent>
+            </Card>
+          )}
 
           {/* Consumable Details by Location */}
           {reportData.consumable_details.length > 0 && (
