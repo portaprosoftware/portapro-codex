@@ -139,7 +139,12 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
     "Water sampling performed",
     "Environmental contractor called",
     "Customer notified",
-    "Spill kit deployed"
+    "Spill kit deployed",
+    "Hazardous waste disposal arranged",
+    "Photographs taken/documented",
+    "Ventilation provided",
+    "PPE used/documented",
+    "Containment booms/barriers used"
   ];
 
   const toggleCleanupAction = (action: string) => {
