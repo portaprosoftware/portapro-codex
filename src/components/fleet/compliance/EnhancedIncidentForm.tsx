@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { PhotoCapture } from "./PhotoCapture";
@@ -432,7 +433,7 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
           <CardTitle>Volume & Environmental Conditions</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label>Volume Estimate</Label>
               <Input
@@ -458,64 +459,75 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
               </Select>
             </div>
 
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <Label>Weather Conditions</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <button type="button" className="p-0.5 hover:bg-muted rounded-full transition-colors">
-                      <Info className="h-4 w-4 text-muted-foreground" />
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-80 bg-white z-50">
-                    <p className="text-sm text-muted-foreground">
-                      Weather conditions can be auto-filled based on device location, or manually selected if preferred. Both auto and manual weather details can be applied.
-                    </p>
-                  </PopoverContent>
-                </Popover>
+            <div className="flex items-center space-x-2 pt-6">
+              <Switch
+                id="regulatory"
+                checked={regulatoryNotificationRequired}
+                onCheckedChange={setRegulatoryNotificationRequired}
+              />
+              <Label htmlFor="regulatory" className="font-medium">
+                Reportable to EPA/State
+              </Label>
+            </div>
+          </div>
+
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <Label>Weather Conditions</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button type="button" className="p-0.5 hover:bg-muted rounded-full transition-colors">
+                    <Info className="h-4 w-4 text-muted-foreground" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80 bg-white z-50">
+                  <p className="text-sm text-muted-foreground">
+                    Weather conditions can be auto-filled based on device location, or manually selected if preferred. Both auto and manual weather details can be applied.
+                  </p>
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div className="space-y-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={fetchCurrentWeather}
+                  disabled={fetchingWeather || !latitude}
+                  className="justify-center gap-2"
+                >
+                  {fetchingWeather ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span className="hidden sm:inline">Loading...</span>
+                    </>
+                  ) : (
+                    <>
+                      <MapPin className="h-4 w-4" />
+                      <span className="hidden sm:inline">Auto-Add Weather</span>
+                    </>
+                  )}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsWeatherModalOpen(true)}
+                  className="justify-center gap-2 bg-white"
+                >
+                  <Cloud className="h-4 w-4" />
+                  {weatherConditions.length > 0 ? (
+                    <span className="capitalize truncate">{weatherConditions.join(", ")}</span>
+                  ) : (
+                    <span>Select Weather Manually</span>
+                  )}
+                </Button>
               </div>
-              <div className="space-y-2">
-                <div className="grid grid-cols-2 gap-2 max-w-4xl">
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={fetchCurrentWeather}
-                    disabled={fetchingWeather || !latitude}
-                    className="justify-center gap-2"
-                  >
-                    {fetchingWeather ? (
-                      <>
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        <span className="hidden sm:inline">Loading...</span>
-                      </>
-                    ) : (
-                      <>
-                        <MapPin className="h-4 w-4" />
-                        <span className="hidden sm:inline">Auto-Add Weather</span>
-                      </>
-                    )}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setIsWeatherModalOpen(true)}
-                    className="justify-center gap-2 bg-white"
-                  >
-                    <Cloud className="h-4 w-4" />
-                    {weatherConditions.length > 0 ? (
-                      <span className="capitalize truncate">{weatherConditions.join(", ")}</span>
-                    ) : (
-                      <span>Select Weather Manually</span>
-                    )}
-                  </Button>
-                </div>
-                {weatherDetails && (
-                  <p className="text-xs text-muted-foreground">{weatherDetails}</p>
-                )}
-                {gpsError && (
-                  <p className="text-xs text-destructive">{gpsError}</p>
-                )}
-              </div>
+              {weatherDetails && (
+                <p className="text-xs text-muted-foreground">{weatherDetails}</p>
+              )}
+              {gpsError && (
+                <p className="text-xs text-destructive">{gpsError}</p>
+              )}
             </div>
 
             <WeatherSelectionModal
@@ -531,17 +543,6 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
               onSelect={handleSpillTypeSelect}
               currentValue={spillTypeName}
             />
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="regulatory"
-              checked={regulatoryNotificationRequired}
-              onCheckedChange={(checked) => setRegulatoryNotificationRequired(checked === true)}
-            />
-            <Label htmlFor="regulatory" className="font-medium">
-              Reportable to EPA/State
-            </Label>
           </div>
         </CardContent>
       </Card>
