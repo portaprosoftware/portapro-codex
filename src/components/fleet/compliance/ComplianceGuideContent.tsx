@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { FileText, Settings, Wrench, AlertTriangle, Droplet, BarChart3 } from "lucide-react";
+import React from "react";
+import { FileText, Settings, Wrench, AlertTriangle, Droplet, BarChart3, Lightbulb } from "lucide-react";
 import { RoleBadge, RoleType } from "./RoleBadge";
 
 interface FeatureCardProps {
@@ -7,15 +7,15 @@ interface FeatureCardProps {
   title: string;
   description: string;
   roles: RoleType[];
-  iconGradient: string;
+  tips?: string[];
 }
 
-const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description, roles, iconGradient }) => {
+const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description, roles, tips }) => {
   return (
-    <div className="group relative p-4 rounded-lg border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-200 bg-white">
-      <div className={`absolute left-0 top-0 bottom-0 w-1 rounded-l-lg ${iconGradient}`} />
+    <div className="group relative p-4 rounded-lg border border-blue-200 hover:border-blue-300 hover:shadow-md transition-all duration-200 bg-white">
+      <div className="absolute left-0 top-0 bottom-0 w-1 rounded-l-lg bg-gradient-to-br from-blue-500 to-blue-600" />
       <div className="flex gap-3">
-        <div className={`flex-shrink-0 w-10 h-10 rounded-lg ${iconGradient} flex items-center justify-center text-white shadow-sm`}>
+        <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white shadow-sm">
           {icon}
         </div>
         <div className="flex-1 min-w-0">
@@ -26,32 +26,23 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description, rol
               <RoleBadge key={role} role={role} />
             ))}
           </div>
+          {tips && tips.length > 0 && (
+            <div className="mt-3 space-y-1.5">
+              {tips.map((tip, index) => (
+                <div key={index} className="flex items-start gap-2 text-xs text-gray-600">
+                  <Lightbulb className="h-3 w-3 text-blue-500 flex-shrink-0 mt-0.5" />
+                  <span>{tip}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 };
 
-const tips = [
-  "Drivers can log incidents on mobile in real time",
-  "Dispatch can track spill kit checks without waiting for DVIRs",
-  "Admins can auto-generate compliance reports anytime",
-  "Use the Track Expiration tab to see all spill kit due dates",
-  "Log decon records immediately after cleaning to maintain compliance",
-  "Document types can be customized to match your specific requirements"
-];
-
 export const ComplianceGuideContent: React.FC = () => {
-  const [currentTipIndex, setCurrentTipIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTipIndex((prev) => (prev + 1) % tips.length);
-    }, 4000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <div className="space-y-6">
       {/* Setup Phase */}
@@ -65,14 +56,15 @@ export const ComplianceGuideContent: React.FC = () => {
             title="Document Types"
             description="Manage which compliance documents are tracked"
             roles={['admin']}
-            iconGradient="bg-gradient-to-br from-green-500 to-green-600"
+            tips={[
+              "Document types can be customized to match your specific requirements"
+            ]}
           />
           <FeatureCard
             icon={<FileText className="w-5 h-5" />}
             title="Documents"
             description="Track permits, registrations, and compliance paperwork"
             roles={['admin', 'dispatcher']}
-            iconGradient="bg-gradient-to-br from-blue-500 to-blue-600"
           />
         </div>
       </div>
@@ -88,21 +80,28 @@ export const ComplianceGuideContent: React.FC = () => {
             title="Spill Kits"
             description="Drivers verify kits during DVIR; dispatch can log checks anytime"
             roles={['driver', 'dispatcher']}
-            iconGradient="bg-gradient-to-br from-orange-500 to-orange-600"
+            tips={[
+              "Dispatch can track spill kit checks without waiting for DVIRs",
+              "Use the Track Expiration tab to see all spill kit due dates"
+            ]}
           />
           <FeatureCard
             icon={<AlertTriangle className="w-5 h-5" />}
             title="Incidents"
             description="Log spills or exposures in the field or office"
             roles={['driver', 'dispatcher']}
-            iconGradient="bg-gradient-to-br from-red-500 to-red-600"
+            tips={[
+              "Drivers can log incidents on mobile in real time"
+            ]}
           />
           <FeatureCard
             icon={<Droplet className="w-5 h-5" />}
             title="Decon Logs"
             description="Record vehicle/site decontamination after incidents"
             roles={['dispatcher', 'admin', 'safety']}
-            iconGradient="bg-gradient-to-br from-cyan-500 to-cyan-600"
+            tips={[
+              "Log decon records immediately after cleaning to maintain compliance"
+            ]}
           />
         </div>
       </div>
@@ -118,37 +117,10 @@ export const ComplianceGuideContent: React.FC = () => {
             title="Reports"
             description="Generate compliance summaries when needed"
             roles={['admin']}
-            iconGradient="bg-gradient-to-br from-purple-500 to-purple-600"
+            tips={[
+              "Admins can auto-generate compliance reports anytime"
+            ]}
           />
-        </div>
-      </div>
-
-      {/* Quick Tips Section */}
-      <div className="mt-6 pt-6 border-t border-gray-200">
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-100">
-          <div className="flex items-start gap-3">
-            <div className="flex-shrink-0 text-2xl">💡</div>
-            <div className="flex-1 min-w-0">
-              <h4 className="text-sm font-bold text-gray-900 mb-1">Quick Tip</h4>
-              <p className="text-sm text-gray-700 transition-opacity duration-300">
-                {tips[currentTipIndex]}
-              </p>
-            </div>
-          </div>
-          <div className="flex justify-center gap-1.5 mt-3">
-            {tips.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentTipIndex(index)}
-                className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                  index === currentTipIndex 
-                    ? 'bg-blue-600 w-4' 
-                    : 'bg-blue-300 hover:bg-blue-400'
-                }`}
-                aria-label={`Go to tip ${index + 1}`}
-              />
-            ))}
-          </div>
         </div>
       </div>
     </div>
