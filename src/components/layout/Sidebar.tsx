@@ -13,7 +13,6 @@ import {
   LogOut,
   Droplets,
   ClipboardCheck,
-  Warehouse,
 } from "lucide-react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useClerk, useUser, UserButton } from "@clerk/clerk-react";
@@ -42,38 +41,19 @@ const Sidebar = () => {
     navigate("/sign-in");
   };
 
-  const menuSections = [
-    {
-      title: "DAY-TO-DAY",
-      items: [
-        { icon: Calendar, label: "Jobs", path: "/jobs" },
-        { icon: Users, label: "Customers", path: "/customer-hub" },
-        { icon: FileText, label: "Quotes & Invoices", path: "/quotes-invoices" },
-      ]
-    },
-    {
-      title: "INVENTORY",
-      items: [
-        { icon: Package, label: "Products", path: "/inventory" },
-        { icon: Droplets, label: "Consumables", path: "/consumables" },
-      ]
-    },
-    {
-      title: "MANAGEMENT",
-      items: [
-        { icon: Truck, label: "Fleet Management", path: "/fleet-management" },
-        { icon: ClipboardCheck, label: "Services Hub", path: "/maintenance-hub" },
-      ]
-    },
-    {
-      title: "ADMIN",
-      items: [
-        { icon: Megaphone, label: "Marketing", path: "/marketing" },
-        { icon: BarChart3, label: "Analytics", path: "/analytics" },
-        { icon: Warehouse, label: "Storage Garages", path: "/admin/storage-locations" },
-        { icon: Settings, label: "Settings", path: "/settings" },
-      ]
-    }
+  const menuItems = [
+    { icon: Home, label: "Dashboard", path: "/" },
+    { icon: Calendar, label: "Jobs", path: "/jobs" },
+    { icon: Package, label: "Inventory", path: "/inventory" },
+    { icon: Droplets, label: "Consumables", path: "/consumables" },
+    { icon: FileText, label: "Purchase Orders", path: "/purchase-orders" },
+    { icon: Users, label: "Customer Hub", path: "/customer-hub" },
+    { icon: FileText, label: "Quotes & Invoices", path: "/quotes-invoices" },
+    { icon: Truck, label: "Fleet Management", path: "/fleet-management" },
+    { icon: ClipboardCheck, label: "Services Hub", path: "/maintenance-hub" },
+    { icon: BarChart3, label: "Analytics", path: "/analytics" },
+    { icon: Megaphone, label: "Marketing", path: "/marketing" },
+    { icon: Settings, label: "Settings", path: "/settings" },
   ];
 
   const getRoleDisplayName = (role: string) => {
@@ -130,55 +110,46 @@ const Sidebar = () => {
 
       {/* Navigation Section */}
       <div style={{ flex: 1, overflowY: 'auto' as const, paddingTop: '16px' }}>
+        <div style={{ paddingLeft: '24px', paddingRight: '24px', marginBottom: '16px' }}>
+          <h3 style={{ 
+            fontSize: '14px', 
+            fontWeight: '600', 
+            fontFamily: 'Inter, sans-serif',
+            color: '#09090B' 
+          }}>
+            Navigation
+          </h3>
+        </div>
+        
         <nav style={{ paddingLeft: '12px', paddingRight: '12px' }}>
-          {menuSections.map((section, sectionIndex) => (
-            <div key={section.title} style={{ marginBottom: '24px' }}>
-              <div style={{ 
-                paddingLeft: '12px', 
-                paddingRight: '12px', 
-                marginBottom: '8px' 
-              }}>
-                <h3 style={{ 
-                  fontSize: '11px', 
-                  fontWeight: '600', 
-                  fontFamily: 'Inter, sans-serif',
-                  color: '#71717a',
-                  letterSpacing: '0.05em',
-                  textTransform: 'uppercase' as const
-                }}>
-                  {section.title}
-                </h3>
-              </div>
-              <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-                {section.items.map((item, index) => (
-                  <li key={index}>
-                    <NavLink
-                      to={item.path}
-                      style={({ isActive }) => navItemStyle(isActive)}
-                      onMouseEnter={(e) => {
-                        if (!e.currentTarget.style.background.includes('linear-gradient')) {
-                          Object.assign(e.currentTarget.style, navItemHoverStyle);
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!e.currentTarget.style.background.includes('linear-gradient')) {
-                          e.currentTarget.style.backgroundColor = 'transparent';
-                        }
-                      }}
-                    >
-                      <item.icon style={{ 
-                        width: '20px', 
-                        height: '20px', 
-                        marginRight: '12px',
-                        flexShrink: 0 
-                      }} />
-                      {item.label}
-                    </NavLink>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
+            {menuItems.map((item, index) => (
+              <li key={index}>
+                <NavLink
+                  to={item.path}
+                  style={({ isActive }) => navItemStyle(isActive)}
+                  onMouseEnter={(e) => {
+                    if (!e.currentTarget.style.background.includes('linear-gradient')) {
+                      Object.assign(e.currentTarget.style, navItemHoverStyle);
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!e.currentTarget.style.background.includes('linear-gradient')) {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                    }
+                  }}
+                >
+                  <item.icon style={{ 
+                    width: '20px', 
+                    height: '20px', 
+                    marginRight: '12px',
+                    flexShrink: 0 
+                  }} />
+                  {item.label}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
         </nav>
       </div>
 

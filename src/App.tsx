@@ -299,12 +299,6 @@ const App = () => {
               <SignedOut><Auth /></SignedOut>
             </>
           } />
-          <Route path="/fleet/storage-locations" element={
-            <>
-              <SignedIn><Layout><StorageSites /></Layout></SignedIn>
-              <SignedOut><Auth /></SignedOut>
-            </>
-          } />
           <Route path="/fleet/maintenance" element={
             <>
               <SignedIn><Layout><FleetMaintenancePage /></Layout></SignedIn>
@@ -377,14 +371,12 @@ const App = () => {
               <SignedOut><Auth /></SignedOut>
             </>
           } />
-          <Route path="/admin/storage-locations" element={
+          <Route path="/storage-sites" element={
             <>
               <SignedIn><Layout><StorageSites /></Layout></SignedIn>
               <SignedOut><Auth /></SignedOut>
             </>
           } />
-          {/* Redirect old route to new location */}
-          <Route path="/storage-sites" element={<Navigate to="/admin/storage-locations" replace />} />
           <Route path="/team-management" element={
             <>
               <SignedIn><Layout><TeamManagement /></Layout></SignedIn>

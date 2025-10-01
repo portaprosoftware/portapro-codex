@@ -99,10 +99,10 @@ export function EnhancedSpillKitInventoryManager() {
 
   // Fetch storage locations
   const { data: storageLocations } = useQuery({
-    queryKey: ['storage-locations'],
+    queryKey: ['spill_kit_storage_locations'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('storage_locations')
+        .from('spill_kit_storage_locations')
         .select('*')
         .eq('is_active', true)
         .order('name');

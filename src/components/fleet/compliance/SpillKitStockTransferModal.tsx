@@ -52,10 +52,10 @@ export const SpillKitStockTransferModal: React.FC<SpillKitStockTransferModalProp
   });
 
   const { data: locations } = useQuery({
-    queryKey: ['storage-locations-active'],
+    queryKey: ['spill_kit_storage_locations_active'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('storage_locations')
+        .from('spill_kit_storage_locations')
         .select('*')
         .eq('is_active', true)
         .order('name');

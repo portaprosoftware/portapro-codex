@@ -89,12 +89,12 @@ export const AddSpillKitStorageLocationModal: React.FC<AddSpillKitStorageLocatio
       let error;
       if (location?.id) {
         ({ error } = await supabase
-          .from('storage_locations')
+          .from('spill_kit_storage_locations')
           .update(payload)
           .eq('id', location.id));
       } else {
         ({ error } = await supabase
-          .from('storage_locations')
+          .from('spill_kit_storage_locations')
           .insert([payload]));
       }
 
