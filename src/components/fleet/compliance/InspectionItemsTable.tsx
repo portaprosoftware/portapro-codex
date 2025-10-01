@@ -53,18 +53,22 @@ export function InspectionItemsTable({
   };
 
   const getStatusBadge = (status: string) => {
+    const toTitleCase = (str: string) => {
+      return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+    };
+
     const variants: Record<string, any> = {
-      present: { variant: 'default', className: 'bg-green-600' },
-      missing: { variant: 'destructive' },
-      damaged: { variant: 'default', className: 'bg-orange-600' },
-      expired: { variant: 'destructive' },
+      present: { className: 'bg-gradient-to-r from-green-600 to-green-500 text-white font-bold' },
+      missing: { className: 'bg-gradient-to-r from-red-600 to-red-500 text-white font-bold' },
+      damaged: { className: 'bg-gradient-to-r from-orange-600 to-orange-500 text-white font-bold' },
+      expired: { className: 'bg-gradient-to-r from-red-600 to-red-500 text-white font-bold' },
     };
     
-    const config = variants[status] || { variant: 'secondary' };
+    const config = variants[status] || { className: 'bg-gradient-to-r from-gray-600 to-gray-500 text-white font-bold' };
     
     return (
       <Badge {...config}>
-        {status || 'Not Checked'}
+        {status ? toTitleCase(status) : 'Not Checked'}
       </Badge>
     );
   };
