@@ -23,7 +23,7 @@ export function AdminSpillKitDashboard({
   setInspectionDrawerOpen: externalSetDrawerOpen 
 }: AdminSpillKitDashboardProps) {
   const [internalDrawerOpen, setInternalDrawerOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("history");
+  const [activeTab, setActiveTab] = useState("dashboard");
   
   const drawerOpen = externalDrawerOpen ?? internalDrawerOpen;
   const setDrawerOpen = externalSetDrawerOpen ?? setInternalDrawerOpen;
@@ -41,16 +41,6 @@ export function AdminSpillKitDashboard({
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="history">
-            <History className="h-4 w-4 mr-2" />
-            History
-          </TabsTrigger>
-          <ProtectedComponent requiredPermission="canManageSpillKitTemplates" fallback={null} showError={false}>
-            <TabsTrigger value="templates">
-              <Settings className="h-4 w-4 mr-2" />
-              Templates
-            </TabsTrigger>
-          </ProtectedComponent>
           <ProtectedComponent requiredPermission="canManageSpillKitRestock" fallback={null} showError={false}>
             <TabsTrigger value="dashboard">
               <Box className="h-4 w-4 mr-2" />
@@ -61,6 +51,12 @@ export function AdminSpillKitDashboard({
             <TabsTrigger value="inventory">
               <Package className="h-4 w-4 mr-2" />
               Inventory
+            </TabsTrigger>
+          </ProtectedComponent>
+          <ProtectedComponent requiredPermission="canManageSpillKitTemplates" fallback={null} showError={false}>
+            <TabsTrigger value="templates">
+              <Settings className="h-4 w-4 mr-2" />
+              Templates
             </TabsTrigger>
           </ProtectedComponent>
           <ProtectedComponent requiredPermission="canViewSpillKitReports" fallback={null} showError={false}>
@@ -75,17 +71,11 @@ export function AdminSpillKitDashboard({
               Restock
             </TabsTrigger>
           </ProtectedComponent>
+          <TabsTrigger value="history">
+            <History className="h-4 w-4 mr-2" />
+            History
+          </TabsTrigger>
         </TabsList>
-
-        <TabsContent value="history">
-          <SpillKitInspectionHistory />
-        </TabsContent>
-
-        <TabsContent value="templates">
-          <ProtectedComponent requiredPermission="canManageSpillKitTemplates">
-            <SpillKitTemplateManager />
-          </ProtectedComponent>
-        </TabsContent>
 
         <TabsContent value="dashboard">
           <ProtectedComponent requiredPermission="canManageSpillKitRestock">
@@ -99,6 +89,12 @@ export function AdminSpillKitDashboard({
           </ProtectedComponent>
         </TabsContent>
 
+        <TabsContent value="templates">
+          <ProtectedComponent requiredPermission="canManageSpillKitTemplates">
+            <SpillKitTemplateManager />
+          </ProtectedComponent>
+        </TabsContent>
+
         <TabsContent value="reports">
           <ProtectedComponent requiredPermission="canViewSpillKitReports">
             <SpillKitComplianceReports />
@@ -109,6 +105,10 @@ export function AdminSpillKitDashboard({
           <ProtectedComponent requiredPermission="canManageSpillKitRestock">
             <RestockRequestManager />
           </ProtectedComponent>
+        </TabsContent>
+
+        <TabsContent value="history">
+          <SpillKitInspectionHistory />
         </TabsContent>
       </Tabs>
 
