@@ -15,7 +15,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { Camera, Clock, CheckCircle, AlertCircle, Package, Upload, Truck, CalendarIcon, MapPin } from "lucide-react";
+import { Camera, Clock, CheckCircle, AlertCircle, Package, Upload, Truck, CalendarIcon, MapPin, WifiOff, Wifi } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { PhotoCapture } from "./PhotoCapture";
 import { StockVehicleSelectionModal } from "../StockVehicleSelectionModal";
@@ -25,6 +25,7 @@ import { format, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { Cloud, Loader2, HelpCircle } from "lucide-react";
+import { useSpillKitOffline } from "@/hooks/useSpillKitOffline";
 
 type Props = {
   onSaved?: () => void;
@@ -51,6 +52,7 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { user } = useUser();
+  const { isOnline, saveToOfflineQueue, isSyncing } = useSpillKitOffline();
   
   const [vehicleId, setVehicleId] = useState<string>("");
   const [selectedVehicle, setSelectedVehicle] = useState<any>(null);
@@ -251,7 +253,7 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
     }));
   };
 
-  // Save mutation
+  // Save mutation with offline support
   const saveMutation = useMutation({
     mutationFn: async () => {
       if (!vehicleId || !selectedTemplate) {
@@ -261,7 +263,29 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
       const duration = Math.round((Date.now() - checkStartTime) / 1000 / 60); // minutes
       const nextCheckDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
       
-      // Calculate missing items
+      const checkData = {
+        vehicle_id: vehicleId,
+        template_id: selectedTemplate.template_id,
+        has_kit: kitStatus !== 'failed',
+        item_conditions: itemConditions,
+        photos,
+        notes,
+        weather_conditions: weather.length > 0 ? weather.join(", ") : null,
+        weather_details: weatherDetails || null,
+        inspection_duration_minutes: duration,
+        completion_status: kitStatus,
+        next_check_due: nextCheckDate.toISOString().split('T')[0],
+        checked_at: new Date().toISOString(),
+        checked_by_clerk: user?.id || null
+      };
+
+      // If offline, save to queue
+      if (!isOnline) {
+        await saveToOfflineQueue(checkData);
+        return null;
+      }
+
+      // Calculate missing items for restock
       const missingItems = Object.entries(itemConditions)
         .filter(([_, condition]) => condition.status === 'missing')
         .map(([itemId, _]) => {
@@ -275,21 +299,7 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
       
       const { data, error } = await supabase
         .from("vehicle_spill_kit_checks")
-        .insert([{
-          vehicle_id: vehicleId,
-          template_id: selectedTemplate.template_id,
-          has_kit: kitStatus !== 'failed',
-          item_conditions: itemConditions,
-          photos,
-          notes,
-          weather_conditions: weather.length > 0 ? weather.join(", ") : null,
-          weather_details: weatherDetails || null,
-          inspection_duration_minutes: duration,
-          completion_status: kitStatus,
-          next_check_due: nextCheckDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
-          checked_at: new Date().toISOString(),
-          checked_by_clerk: user?.id || null
-        }]);
+        .insert([checkData]);
 
       if (error) throw error;
 
@@ -320,12 +330,20 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
       return data;
     },
     onSuccess: () => {
+      const message = isOnline 
+        ? "The inspection has been recorded successfully."
+        : "Saved offline. Will sync when connection restored.";
+      
       toast({
         title: "Spill Kit Check Saved",
-        description: "The inspection has been recorded successfully."
+        description: message
       });
-      queryClient.invalidateQueries({ queryKey: ["spill-kits-status"] });
-      queryClient.invalidateQueries({ queryKey: ["spill-kit-inspection-history"] });
+      
+      if (isOnline) {
+        queryClient.invalidateQueries({ queryKey: ["spill-kits-status"] });
+        queryClient.invalidateQueries({ queryKey: ["spill-kit-inspection-history"] });
+      }
+      
       onSaved?.();
     },
     onError: (error) => {
@@ -370,11 +388,33 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
 
   return (
     <div className="space-y-6">
+      {/* Offline Status Indicator */}
+      {!isOnline && (
+        <Card className="border-orange-500 bg-orange-50 dark:bg-orange-950">
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-2">
+              <WifiOff className="h-5 w-5 text-orange-600" />
+              <div>
+                <p className="font-semibold text-orange-900 dark:text-orange-100">Offline Mode</p>
+                <p className="text-sm text-orange-700 dark:text-orange-200">
+                  Checks will be saved locally and synced automatically when connection is restored.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Header */}
       <Card>
         <CardHeader>
-          <CardTitle>
+          <CardTitle className="flex items-center gap-2">
             Select Vehicle and Template
+            {isOnline ? (
+              <Wifi className="h-4 w-4 text-green-600" />
+            ) : (
+              <WifiOff className="h-4 w-4 text-orange-600" />
+            )}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
