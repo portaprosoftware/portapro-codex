@@ -466,65 +466,6 @@ export function StorageLocationReporting() {
             </Card>
           </div>
 
-          {/* Product Details by Location */}
-          {reportData.product_details.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Package className="h-5 w-5 text-blue-600" />
-                  Product Types by Location
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {reportData.product_details.map((location) => (
-                  <Collapsible
-                    key={location.location_id}
-                    open={expandedLocations.has(location.location_id + '_products')}
-                    onOpenChange={() => toggleLocation(location.location_id + '_products')}
-                  >
-                    <Card className="border-l-4 border-l-blue-600">
-                      <CardContent className="p-4">
-                        <CollapsibleTrigger className="w-full">
-                          <div className="space-y-3">
-                            <div className="flex justify-between items-center">
-                              <div className="flex items-center gap-2">
-                                <ChevronDown 
-                                  className={`h-4 w-4 transition-transform ${
-                                    expandedLocations.has(location.location_id + '_products') ? 'rotate-180' : ''
-                                  }`}
-                                />
-                                <h5 className="font-medium text-lg">{location.location_name}</h5>
-                              </div>
-                              <div className="text-right">
-                                <div className="text-sm font-medium">
-                                  {location.total_items} product {location.total_items === 1 ? 'type' : 'types'} • {location.total_quantity} total units
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent className="mt-3">
-                          <div className="space-y-2">
-                            {location.items.map((item, idx) => (
-                              <div key={idx} className="flex justify-between items-center text-sm p-2 bg-muted/50 rounded">
-                                <div className="flex items-center gap-2">
-                                  <span className="font-medium">{item.item_name}</span>
-                                </div>
-                                <div className="flex items-center gap-3 text-muted-foreground">
-                                  <span className="font-medium text-foreground">{item.quantity} units</span>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </CollapsibleContent>
-                      </CardContent>
-                    </Card>
-                  </Collapsible>
-                ))}
-              </CardContent>
-            </Card>
-          )}
-
           {/* Consumable Details by Location */}
           {reportData.consumable_details.length > 0 && (
             <Card>
@@ -599,6 +540,65 @@ export function StorageLocationReporting() {
                                   <span className="font-medium text-foreground">
                                     ${(item.total_value).toLocaleString()}
                                   </span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </CollapsibleContent>
+                      </CardContent>
+                    </Card>
+                  </Collapsible>
+                ))}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Product Details by Location */}
+          {reportData.product_details.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Package className="h-5 w-5 text-blue-600" />
+                  Product Types by Location
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {reportData.product_details.map((location) => (
+                  <Collapsible
+                    key={location.location_id}
+                    open={expandedLocations.has(location.location_id + '_products')}
+                    onOpenChange={() => toggleLocation(location.location_id + '_products')}
+                  >
+                    <Card className="border-l-4 border-l-blue-600">
+                      <CardContent className="p-4">
+                        <CollapsibleTrigger className="w-full">
+                          <div className="space-y-3">
+                            <div className="flex justify-between items-center">
+                              <div className="flex items-center gap-2">
+                                <ChevronDown 
+                                  className={`h-4 w-4 transition-transform ${
+                                    expandedLocations.has(location.location_id + '_products') ? 'rotate-180' : ''
+                                  }`}
+                                />
+                                <h5 className="font-medium text-lg">{location.location_name}</h5>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-sm font-medium">
+                                  {location.total_items} product {location.total_items === 1 ? 'type' : 'types'} • {location.total_quantity} total units
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="mt-3">
+                          <div className="space-y-2">
+                            {location.items.map((item, idx) => (
+                              <div key={idx} className="flex justify-between items-center text-sm p-2 bg-muted/50 rounded">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-medium">{item.item_name}</span>
+                                </div>
+                                <div className="flex items-center gap-3 text-muted-foreground">
+                                  <span className="font-medium text-foreground">{item.quantity} units</span>
                                 </div>
                               </div>
                             ))}
