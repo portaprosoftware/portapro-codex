@@ -4,7 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Download, Warehouse, Package, DollarSign, Box, Shield, Droplet } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Download, Warehouse, Package, DollarSign, Box, Shield, Droplet, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import jsPDF from 'jspdf';
 
@@ -50,6 +51,19 @@ interface LocationReportData {
 
 export function StorageLocationReporting() {
   const [isExporting, setIsExporting] = useState(false);
+  const [expandedLocations, setExpandedLocations] = useState<Set<string>>(new Set());
+
+  const toggleLocation = (locationId: string) => {
+    setExpandedLocations(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(locationId)) {
+        newSet.delete(locationId);
+      } else {
+        newSet.add(locationId);
+      }
+      return newSet;
+    });
+  };
 
   const { data: reportData, isLoading } = useQuery({
     queryKey: ['storage-location-reporting'],
@@ -411,7 +425,7 @@ export function StorageLocationReporting() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
                 <CardTitle className="flex items-center gap-2">
-                  <Droplet className="h-5 w-5 text-primary" />
+                  <span className="text-2xl">🧻</span>
                   Consumable Details by Location
                 </CardTitle>
                 <div className="flex gap-2">
@@ -439,38 +453,55 @@ export function StorageLocationReporting() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {reportData.consumable_details.map((location) => (
-                  <Card key={location.location_id} className="border-l-4 border-l-primary">
-                    <CardContent className="p-4">
-                      <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                          <h5 className="font-medium text-lg">{location.location_name}</h5>
-                          <div className="text-right">
-                            <div className="text-sm font-medium">
-                              {location.total_items} items • {location.total_quantity} units
-                            </div>
-                            <div className="text-lg font-bold text-primary">
-                              ${location.total_value.toLocaleString()}
+                  <Collapsible
+                    key={location.location_id}
+                    open={expandedLocations.has(location.location_id)}
+                    onOpenChange={() => toggleLocation(location.location_id)}
+                  >
+                    <Card className="border-l-4 border-l-primary">
+                      <CardContent className="p-4">
+                        <CollapsibleTrigger className="w-full">
+                          <div className="space-y-3">
+                            <div className="flex justify-between items-center">
+                              <div className="flex items-center gap-2">
+                                <ChevronDown 
+                                  className={`h-4 w-4 transition-transform ${
+                                    expandedLocations.has(location.location_id) ? 'rotate-180' : ''
+                                  }`}
+                                />
+                                <h5 className="font-medium text-lg">{location.location_name}</h5>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-sm font-medium">
+                                  {location.total_items} items • {location.total_quantity} units
+                                </div>
+                                <div className="text-lg font-bold text-primary">
+                                  ${location.total_value.toLocaleString()}
+                                </div>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        <div className="space-y-2">
-                          {location.items.map((item, idx) => (
-                            <div key={idx} className="flex justify-between items-center text-sm p-2 bg-muted/50 rounded">
-                              <div className="flex items-center gap-2">
-                                <span className="font-medium">{item.item_name}</span>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="mt-3">
+                          <div className="space-y-2">
+                            {location.items.map((item, idx) => (
+                              <div key={idx} className="flex justify-between items-center text-sm p-2 bg-muted/50 rounded">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-medium">{item.item_name}</span>
+                                </div>
+                                <div className="flex items-center gap-3 text-muted-foreground">
+                                  <span>{item.quantity} units</span>
+                                  <span className="font-medium text-foreground">
+                                    ${(item.total_value).toLocaleString()}
+                                  </span>
+                                </div>
                               </div>
-                              <div className="flex items-center gap-3 text-muted-foreground">
-                                <span>{item.quantity} units</span>
-                                <span className="font-medium text-foreground">
-                                  ${(item.total_value).toLocaleString()}
-                                </span>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                            ))}
+                          </div>
+                        </CollapsibleContent>
+                      </CardContent>
+                    </Card>
+                  </Collapsible>
                 ))}
               </CardContent>
             </Card>
