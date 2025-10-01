@@ -436,7 +436,7 @@ export function StorageLocationReporting() {
                     <div className="text-2xl font-bold">{reportData.summary.total_product_types}</div>
                     <div className="text-sm text-muted-foreground">Product Types</div>
                   </div>
-                  <Box className="h-8 w-8 text-primary" />
+                  <Package className="h-8 w-8 text-primary" />
                 </div>
               </CardContent>
             </Card>
