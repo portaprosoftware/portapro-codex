@@ -205,10 +205,10 @@ export function SpillKitInventoryDashboard() {
       {(criticalLowStock.length > 0 || expiredItems.length > 0 || outOfStockItems.length > 0) && (
         <Card className="border-destructive">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-destructive">
+            <h3 className="text-lg font-semibold flex items-center gap-2 text-destructive">
               <AlertTriangle className="h-5 w-5" />
               Immediate Action Required
-            </CardTitle>
+            </h3>
           </CardHeader>
           <CardContent className="space-y-4">
             {criticalLowStock.length > 0 && (
@@ -248,10 +248,10 @@ export function SpillKitInventoryDashboard() {
       {lowStockItems.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <h3 className="text-lg font-semibold flex items-center gap-2">
               <ShoppingCart className="h-5 w-5" />
               Suggested Restock Order
-            </CardTitle>
+            </h3>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
