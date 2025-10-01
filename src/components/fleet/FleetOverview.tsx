@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,8 +8,9 @@ import { VehicleDetailDrawer } from "./VehicleDetailDrawer";
 import { VehicleManagement } from "./VehicleManagement";
 import { FuelManagement } from "./FuelManagement";
 import { AddVehicleModal } from "./AddVehicleModal";
-import { Grid, List, Search, Plus, Truck, Fuel, Settings } from "lucide-react";
+import { Grid, List, Search, Plus, Truck, Fuel, Settings, PackageCheck, AlertCircle, TruckIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 
 type ViewMode = "grid" | "list";
 type StatusFilter = "all" | "active" | "maintenance" | "retired";
@@ -24,6 +24,7 @@ export const FleetOverview: React.FC = () => {
   const [pageMode, setPageMode] = useState("overview");
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
   const [isAddVehicleModalOpen, setIsAddVehicleModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   // Invalidate and refetch vehicles query when component mounts or when returning to overview
   useEffect(() => {
@@ -61,6 +62,63 @@ export const FleetOverview: React.FC = () => {
     maintenance: vehicles?.filter(v => v.status === "maintenance").length || 0,
     retired: vehicles?.filter(v => v.status === "retired").length || 0,
   };
+
+  // Fetch spill kit stats for compliance widget
+  const { data: spillKitStats } = useQuery({
+    queryKey: ['fleet-spill-kit-stats'],
+    queryFn: async () => {
+      // Get all active vehicles with spill kits
+      const { data: vehiclesWithKits, error } = await supabase
+        .from('vehicle_spill_kits')
+        .select('id, vehicle_id, required_contents, updated_at')
+        .eq('active', true);
+      
+      if (error) throw error;
+      
+      // Get all inventory items
+      const { data: inventory } = await supabase
+        .from('spill_kit_inventory')
+        .select('id, current_stock, minimum_threshold, expiration_date');
+      
+      // Calculate stats
+      const totalVehiclesWithKits = vehiclesWithKits?.length || 0;
+      
+      // Count vehicles needing inspection (inspections older than 30 days)
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      const needingInspection = vehiclesWithKits?.filter(vsk => 
+        !vsk.updated_at || new Date(vsk.updated_at) < thirtyDaysAgo
+      ).length || 0;
+      
+      // Count vehicles with missing/expired items
+      let vehiclesWithIssues = 0;
+      const inventoryMap = new Map(inventory?.map(i => [i.id, i]) || []);
+      
+      vehiclesWithKits?.forEach(vsk => {
+        const contents = vsk.required_contents as Array<{inventory_item_id: string}>;
+        const hasIssues = contents?.some(item => {
+          const inv = inventoryMap.get(item.inventory_item_id);
+          if (!inv) return true;
+          if (inv.current_stock === 0) return true;
+          if (inv.expiration_date && new Date(inv.expiration_date) < new Date()) return true;
+          return false;
+        });
+        if (hasIssues) vehiclesWithIssues++;
+      });
+      
+      // Count low stock items affecting vehicles
+      const lowStockItems = inventory?.filter(i => 
+        i.current_stock <= i.minimum_threshold
+      ).length || 0;
+      
+      return {
+        totalVehiclesWithKits,
+        needingInspection,
+        vehiclesWithIssues,
+        lowStockItems
+      };
+    }
+  });
 
   if (isLoading) {
     return (
@@ -103,6 +161,60 @@ export const FleetOverview: React.FC = () => {
           <div className="bg-card p-3 rounded-lg border shadow-sm">
             <div className="text-sm text-muted-foreground">Retired</div>
             <div className="text-2xl font-bold text-gray-600">{statusCounts.retired}</div>
+          </div>
+        </div>
+
+        {/* Spill Kit Compliance Widget */}
+        <div className="bg-white rounded-lg border shadow-sm p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-lg font-semibold flex items-center gap-2">
+                <PackageCheck className="h-5 w-5" />
+                Spill Kit Compliance
+              </h3>
+              <p className="text-sm text-muted-foreground">DOT/OSHA compliance monitoring</p>
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => navigate('/fleet/compliance')}
+            >
+              View Details
+            </Button>
+          </div>
+          
+          <div className="grid grid-cols-4 gap-4">
+            <div className="bg-card p-3 rounded-lg border shadow-sm">
+              <div className="text-sm text-muted-foreground">Vehicles with Kits</div>
+              <div className="text-2xl font-bold flex items-center gap-2">
+                <TruckIcon className="h-5 w-5 text-blue-600" />
+                {spillKitStats?.totalVehiclesWithKits || 0}
+              </div>
+            </div>
+            
+            <div className="bg-card p-3 rounded-lg border shadow-sm">
+              <div className="text-sm text-muted-foreground">Needing Inspection</div>
+              <div className="text-2xl font-bold text-orange-600 flex items-center gap-2">
+                <AlertCircle className="h-5 w-5" />
+                {spillKitStats?.needingInspection || 0}
+              </div>
+            </div>
+            
+            <div className="bg-card p-3 rounded-lg border shadow-sm">
+              <div className="text-sm text-muted-foreground">Missing/Expired Items</div>
+              <div className="text-2xl font-bold text-red-600 flex items-center gap-2">
+                <AlertCircle className="h-5 w-5" />
+                {spillKitStats?.vehiclesWithIssues || 0}
+              </div>
+            </div>
+            
+            <div className="bg-card p-3 rounded-lg border shadow-sm">
+              <div className="text-sm text-muted-foreground">Low Stock Items</div>
+              <div className="text-2xl font-bold text-yellow-600 flex items-center gap-2">
+                <AlertCircle className="h-5 w-5" />
+                {spillKitStats?.lowStockItems || 0}
+              </div>
+            </div>
           </div>
         </div>
 

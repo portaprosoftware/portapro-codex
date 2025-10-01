@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Info } from 'lucide-react';
+import { Info, Truck, Eye } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -36,6 +36,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { StorageLocationAssignmentModal } from './StorageLocationAssignmentModal';
+import { ViewSpillKitInventoryModal } from './ViewSpillKitInventoryModal';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -108,6 +109,8 @@ export function EnhancedSpillKitInventoryManager() {
   const [locationAssignments, setLocationAssignments] = useState<Array<{ location_id: string; quantity: number }>>([]);
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [showLocationAssignmentModal, setShowLocationAssignmentModal] = useState(false);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [viewingItemId, setViewingItemId] = useState<string | null>(null);
 
   // Fetch inventory items
   const { data: inventoryItems, isLoading } = useQuery({
@@ -148,6 +151,36 @@ export function EnhancedSpillKitInventoryManager() {
         .order('name');
       if (error) throw error;
       return data;
+    },
+  });
+
+  // Fetch vehicle assignments
+  const { data: vehicleAssignments } = useQuery({
+    queryKey: ['spill-kit-vehicle-assignments'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('vehicle_spill_kits')
+        .select('id, vehicle_id, required_contents')
+        .eq('active', true);
+      
+      if (error) throw error;
+      
+      // Group by inventory item
+      const assignments = new Map<string, number>();
+      data?.forEach(vsk => {
+        const contents = vsk.required_contents as Array<{
+          inventory_item_id: string;
+          item_name: string;
+          quantity_required: number;
+        }>;
+        
+        contents?.forEach(item => {
+          const count = assignments.get(item.inventory_item_id) || 0;
+          assignments.set(item.inventory_item_id, count + 1);
+        });
+      });
+      
+      return assignments;
     },
   });
 
@@ -345,6 +378,11 @@ export function EnhancedSpillKitInventoryManager() {
     setUsageModalOpen(true);
   };
 
+  const handleViewDetails = (itemId: string) => {
+    setViewingItemId(itemId);
+    setViewModalOpen(true);
+  };
+
   const getTypeLabel = (type: string) => {
     if (!type) return 'Select Category Type';
     const labels: Record<string, string> = {
@@ -455,12 +493,17 @@ export function EnhancedSpillKitInventoryManager() {
                 <TableHead>Current Stock</TableHead>
                 <TableHead>Expiration</TableHead>
                 <TableHead>Usage</TableHead>
+                <TableHead>Vehicles</TableHead>
                 <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {inventoryItems?.map((item) => (
-                <TableRow key={item.id}>
+                <TableRow 
+                  key={item.id}
+                  className="cursor-pointer hover:bg-muted/50"
+                  onClick={() => handleViewDetails(item.id)}
+                >
                   <TableCell>
                     {getStatusBadge(item)}
                   </TableCell>
@@ -489,7 +532,17 @@ export function EnhancedSpillKitInventoryManager() {
                   <TableCell className="text-sm text-muted-foreground">
                     {item.usage_count || 0} times
                   </TableCell>
-                  <TableCell>
+                  <TableCell onClick={(e) => e.stopPropagation()}>
+                    {vehicleAssignments?.has(item.id) && vehicleAssignments.get(item.id)! > 0 ? (
+                      <Badge className="bg-gradient-to-r from-blue-500 to-blue-700 text-white font-bold border-none">
+                        <Truck className="h-3 w-3 mr-1" />
+                        {vehicleAssignments.get(item.id)}
+                      </Badge>
+                    ) : (
+                      <span className="text-muted-foreground">—</span>
+                    )}
+                  </TableCell>
+                  <TableCell onClick={(e) => e.stopPropagation()}>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
@@ -497,6 +550,10 @@ export function EnhancedSpillKitInventoryManager() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleViewDetails(item.id)}>
+                          <Eye className="h-4 w-4 mr-2" />
+                          View Details
+                        </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => handleMarkUsed(item)}
                           disabled={item.current_stock === 0}
@@ -522,7 +579,7 @@ export function EnhancedSpillKitInventoryManager() {
               ))}
               {(!inventoryItems || inventoryItems.length === 0) && (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
                     No inventory items found. Add your first item to get started.
                   </TableCell>
                 </TableRow>
@@ -884,6 +941,18 @@ export function EnhancedSpillKitInventoryManager() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* View Inventory Modal */}
+      {viewingItemId && (
+        <ViewSpillKitInventoryModal
+          isOpen={viewModalOpen}
+          onClose={() => {
+            setViewModalOpen(false);
+            setViewingItemId(null);
+          }}
+          itemId={viewingItemId}
+        />
+      )}
     </div>
   );
 }
