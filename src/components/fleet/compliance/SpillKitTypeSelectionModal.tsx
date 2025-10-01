@@ -144,11 +144,8 @@ export function SpillKitTypeSelectionModal({ isOpen, onClose, onSelect, currentV
                 )}
                 
                 <div className="flex-1 w-full pr-8">
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="mb-2">
                     <h3 className="font-semibold text-base">{type.label}</h3>
-                    <Badge variant="outline" className="text-xs">
-                      {type.value}
-                    </Badge>
                   </div>
                   
                   <p className="text-sm text-muted-foreground mb-3">
