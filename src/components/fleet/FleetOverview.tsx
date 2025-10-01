@@ -25,7 +25,7 @@ export const FleetOverview: React.FC = () => {
   const [pageMode, setPageMode] = useState("overview");
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
   const [isAddVehicleModalOpen, setIsAddVehicleModalOpen] = useState(false);
-  const [isSpillKitCollapsed, setIsSpillKitCollapsed] = useState(false);
+  const [isSpillKitCollapsed, setIsSpillKitCollapsed] = useState(true);
   const navigate = useNavigate();
 
   // Invalidate and refetch vehicles query when component mounts or when returning to overview
