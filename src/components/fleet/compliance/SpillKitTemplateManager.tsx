@@ -601,14 +601,21 @@ const TemplateForm: React.FC<{
 
                 <div>
                   <label className="text-sm font-medium mb-1 block">Category</label>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => handleOpenTypeModal(index)}
-                    className={`w-full justify-start text-left font-normal ${!item.category ? 'text-muted-foreground' : ''}`}
-                  >
-                    {getCategoryLabel(item.category || "")}
-                  </Button>
+                  <div className="space-y-1">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => handleOpenTypeModal(index)}
+                      className={`w-full justify-start text-left font-normal ${!item.category ? 'text-muted-foreground' : ''}`}
+                    >
+                      {getCategoryLabel(item.category || "")}
+                    </Button>
+                    {item.category && (
+                      <p className="text-xs text-muted-foreground ml-1">
+                        Select to update category
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
 
