@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -85,26 +86,65 @@ const SPILL_KIT_TYPES: SpillKitType[] = [
 type Props = {
   isOpen: boolean;
   onClose: () => void;
-  onSelect: (type: string) => void;
+  onSelect: (type: string, selectedExamples?: string[]) => void;
   currentValue?: string;
 };
 
 export function SpillKitTypeSelectionModal({ isOpen, onClose, onSelect, currentValue }: Props) {
   const [selectedType, setSelectedType] = useState<string>(currentValue || '');
+  const [selectedExamples, setSelectedExamples] = useState<Record<string, boolean>>({});
 
   const handleSelect = (typeValue: string) => {
     setSelectedType(typeValue);
+    // Pre-select all examples when selecting a category
+    const categoryType = SPILL_KIT_TYPES.find(t => t.value === typeValue);
+    if (categoryType) {
+      const newSelected: Record<string, boolean> = {};
+      categoryType.examples.forEach(example => {
+        newSelected[example] = true;
+      });
+      setSelectedExamples(newSelected);
+    }
   };
+
+  const toggleExample = (example: string) => {
+    setSelectedExamples(prev => ({
+      ...prev,
+      [example]: !prev[example]
+    }));
+  };
+
+  const toggleSelectAll = () => {
+    const categoryType = SPILL_KIT_TYPES.find(t => t.value === selectedType);
+    if (!categoryType) return;
+    
+    const allSelected = categoryType.examples.every(ex => selectedExamples[ex]);
+    const newSelected: Record<string, boolean> = {};
+    categoryType.examples.forEach(example => {
+      newSelected[example] = !allSelected;
+    });
+    setSelectedExamples(newSelected);
+  };
+
+  const getSelectedExamplesList = () => {
+    return Object.entries(selectedExamples)
+      .filter(([_, isSelected]) => isSelected)
+      .map(([example]) => example);
+  };
+
+  const selectedCount = getSelectedExamplesList().length;
 
   const handleConfirm = () => {
     if (selectedType) {
-      onSelect(selectedType);
+      const selectedList = getSelectedExamplesList();
+      onSelect(selectedType, selectedList.length > 0 ? selectedList : undefined);
       onClose();
     }
   };
 
   const handleClose = () => {
     setSelectedType(currentValue || '');
+    setSelectedExamples({});
     onClose();
   };
 
@@ -152,17 +192,52 @@ export function SpillKitTypeSelectionModal({ isOpen, onClose, onSelect, currentV
                     {type.description}
                   </p>
                   
-                  <div className="flex flex-wrap gap-1.5">
-                    {type.examples.map((example, idx) => (
-                      <Badge
-                        key={idx}
-                        variant="secondary"
-                        className="text-xs font-normal"
-                      >
-                        {example}
-                      </Badge>
-                    ))}
-                  </div>
+                  {selectedType === type.value ? (
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 pb-2 border-b">
+                        <Checkbox
+                          id={`select-all-${type.value}`}
+                          checked={type.examples.every(ex => selectedExamples[ex])}
+                          onCheckedChange={toggleSelectAll}
+                        />
+                        <label
+                          htmlFor={`select-all-${type.value}`}
+                          className="text-sm font-medium cursor-pointer"
+                        >
+                          Select All ({type.examples.length})
+                        </label>
+                      </div>
+                      <div className="grid grid-cols-1 gap-2">
+                        {type.examples.map((example, idx) => (
+                          <div key={idx} className="flex items-center gap-2">
+                            <Checkbox
+                              id={`${type.value}-${idx}`}
+                              checked={selectedExamples[example] || false}
+                              onCheckedChange={() => toggleExample(example)}
+                            />
+                            <label
+                              htmlFor={`${type.value}-${idx}`}
+                              className="text-sm cursor-pointer flex-1"
+                            >
+                              {example}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-wrap gap-1.5">
+                      {type.examples.map((example, idx) => (
+                        <Badge
+                          key={idx}
+                          variant="secondary"
+                          className="text-xs font-normal"
+                        >
+                          {example}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </button>
             ))}
@@ -173,8 +248,10 @@ export function SpillKitTypeSelectionModal({ isOpen, onClose, onSelect, currentV
           <Button variant="outline" onClick={handleClose}>
             Cancel
           </Button>
-          <Button onClick={handleConfirm} disabled={!selectedType}>
-            Select Type
+          <Button onClick={handleConfirm} disabled={!selectedType || selectedCount === 0}>
+            {selectedType && selectedCount > 0 
+              ? `Add ${selectedCount} Selected Item${selectedCount > 1 ? 's' : ''}`
+              : 'Select Items'}
           </Button>
         </div>
       </DialogContent>

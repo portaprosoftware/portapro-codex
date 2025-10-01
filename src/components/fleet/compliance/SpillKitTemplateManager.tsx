@@ -420,9 +420,34 @@ const TemplateForm: React.FC<{
     setTypeModalOpen(true);
   };
 
-  const handleSelectType = (type: string) => {
+  const handleSelectType = (type: string, selectedExamples?: string[]) => {
     if (editingItemIndex !== null) {
-      updateItem(editingItemIndex, 'category', type);
+      if (selectedExamples && selectedExamples.length > 0) {
+        // Auto-add multiple items based on selected examples
+        const newItems = [...items];
+        // Update the current item with the first example
+        newItems[editingItemIndex] = {
+          ...newItems[editingItemIndex],
+          category: type,
+          item_name: selectedExamples[0]
+        };
+        
+        // Add additional items for remaining examples
+        const additionalItems = selectedExamples.slice(1).map(example => ({
+          item_name: example,
+          required_quantity: 1,
+          critical_item: false,
+          category: type,
+          expiration_trackable: false
+        }));
+        
+        // Insert additional items after the current item
+        newItems.splice(editingItemIndex + 1, 0, ...additionalItems);
+        setItems(newItems);
+      } else {
+        // Just update category if no examples selected
+        updateItem(editingItemIndex, 'category', type);
+      }
     }
     setTypeModalOpen(false);
     setEditingItemIndex(null);
