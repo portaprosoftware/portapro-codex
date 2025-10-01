@@ -10830,6 +10830,17 @@ export type Database = {
         Args: { clerk_user_id: string }
         Returns: string
       }
+      get_vehicle_activity: {
+        Args: { p_limit?: number; p_vehicle_id: string }
+        Returns: {
+          activity_date: string
+          activity_id: string
+          activity_summary: string
+          activity_type: string
+          rn: number
+          vehicle_id: string
+        }[]
+      }
       get_vehicle_efficiency: {
         Args: { end_date: string; start_date: string }
         Returns: {
@@ -10839,6 +10850,20 @@ export type Database = {
           total_cost: number
           total_gallons: number
           total_miles: number
+          vehicle_id: string
+        }[]
+      }
+      get_vehicle_metrics: {
+        Args: { p_vehicle_id: string }
+        Returns: {
+          decon_last_30d: number
+          docs_expiring_30d: number
+          dvirs_last_30d: number
+          incidents_last_30d: number
+          last_dvir_date: string
+          last_dvir_status: string
+          license_plate: string
+          open_work_orders: number
           vehicle_id: string
         }[]
       }
