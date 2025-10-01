@@ -96,6 +96,7 @@ export function EnhancedSpillKitInventoryManager() {
     is_critical: false,
     expiration_date: '',
     lot_batch_number: '',
+    storage_location_id: '',
   });
 
   const [locationAssignments, setLocationAssignments] = useState<Array<{ location_id: string; quantity: number }>>([]);
@@ -112,6 +113,20 @@ export function EnhancedSpillKitInventoryManager() {
       
       if (error) throw error;
       return data as SpillKitInventoryItem[];
+    },
+  });
+
+  // Fetch storage locations from inventory garages
+  const { data: inventoryStorageLocations } = useQuery({
+    queryKey: ['inventory_storage_locations'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('storage_locations')
+        .select('id, name, description')
+        .eq('is_active', true)
+        .order('name');
+      if (error) throw error;
+      return data;
     },
   });
 
@@ -245,6 +260,7 @@ export function EnhancedSpillKitInventoryManager() {
         is_critical: item.is_critical || false,
         expiration_date: item.expiration_date || '',
         lot_batch_number: item.lot_batch_number || '',
+        storage_location_id: '', // TODO: Load from item if stored
       });
 
       // Fetch existing location assignments
@@ -276,6 +292,7 @@ export function EnhancedSpillKitInventoryManager() {
         is_critical: false,
         expiration_date: '',
         lot_batch_number: '',
+        storage_location_id: '',
       });
       setLocationAssignments([]);
     }
@@ -532,6 +549,29 @@ export function EnhancedSpillKitInventoryManager() {
                     />
                   </div>
                   <div className="space-y-2">
+                    <Label htmlFor="storage_location">Storage Garage Location</Label>
+                    <Select
+                      value={formData.storage_location_id}
+                      onValueChange={(value) => setFormData({ ...formData, storage_location_id: value })}
+                    >
+                      <SelectTrigger className="h-12">
+                        <SelectValue placeholder="Select storage garage" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {inventoryStorageLocations?.map((location) => (
+                          <SelectItem key={location.id} value={location.id}>
+                            {location.name}
+                            {location.description && (
+                              <span className="text-xs text-muted-foreground ml-2">
+                                ({location.description})
+                              </span>
+                            )}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
                     <Label htmlFor="item_type">Category Type *</Label>
                     <Button
                       type="button"
@@ -783,23 +823,23 @@ export function EnhancedSpillKitInventoryManager() {
               <div className="flex justify-between pt-4 border-t">
                 <div>
                   {currentStep > 1 && (
-                    <Button type="button" variant="outline" onClick={prevStep}>
-                      <ChevronLeft className="h-4 w-4 mr-2" />
+                    <Button type="button" variant="outline" onClick={prevStep} size="sm" className="gap-1.5 px-3">
+                      <ChevronLeft className="h-4 w-4" />
                       Previous
                     </Button>
                   )}
                 </div>
                 <div className="flex gap-2">
-                  <Button type="button" variant="outline" onClick={handleCloseDialog}>
+                  <Button type="button" variant="outline" onClick={handleCloseDialog} size="sm" className="px-4">
                     Cancel
                   </Button>
                   {currentStep < 4 ? (
-                    <Button type="button" onClick={nextStep}>
+                    <Button type="button" onClick={nextStep} size="sm" className="gap-1.5 px-3">
                       Next
-                      <ChevronRight className="h-4 w-4 ml-2" />
+                      <ChevronRight className="h-4 w-4" />
                     </Button>
                   ) : (
-                    <Button type="submit" disabled={saveMutation.isPending}>
+                    <Button type="submit" disabled={saveMutation.isPending} size="sm" className="px-4">
                       {saveMutation.isPending ? 'Saving...' : 'Save Item'}
                     </Button>
                   )}
