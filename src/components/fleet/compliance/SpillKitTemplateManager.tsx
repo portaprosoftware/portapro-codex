@@ -657,7 +657,7 @@ const TemplateForm: React.FC<{
                     </Button>
                     {isCategoryLocked(index) ? (
                       <p className="text-xs text-muted-foreground ml-1">
-                        Category locked - delete items to change or add new item with button above
+                        Category locked. Delete an item to remove or use the button above to add a new one.
                       </p>
                     ) : item.category ? (
                       <p className="text-xs text-muted-foreground ml-1">
