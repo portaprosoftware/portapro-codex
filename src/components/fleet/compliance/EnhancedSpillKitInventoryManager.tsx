@@ -19,7 +19,7 @@ import {
   DrawerTitle,
 } from '@/components/ui/drawer';
 import { Card, CardContent } from '@/components/ui/card';
-import { Plus, Pencil, Trash2, Minus, ChevronRight, ChevronLeft, MoreVertical } from 'lucide-react';
+import { Plus, Pencil, Trash2, Minus, ChevronRight, ChevronLeft, MoreVertical, CalendarIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
@@ -30,6 +30,9 @@ import { format } from 'date-fns';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { MapPin, X } from 'lucide-react';
 import { AddSpillKitStorageLocationModal } from './AddSpillKitStorageLocationModal';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -524,7 +527,7 @@ export function EnhancedSpillKitInventoryManager() {
 
       {/* Multi-Step Add/Edit Drawer */}
       <Drawer open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DrawerContent className="h-[85vh] max-sm:h-[100vh]">
+        <DrawerContent className="h-[85vh] max-sm:h-[100vh] flex flex-col">
           <DrawerHeader>
             <DrawerTitle>{editingItem ? 'Edit' : 'Add'} Inventory Item - Step {currentStep} of 4</DrawerTitle>
             <p className="text-sm text-muted-foreground">
@@ -534,8 +537,8 @@ export function EnhancedSpillKitInventoryManager() {
               {currentStep === 4 && 'Storage location assignment'}
             </p>
           </DrawerHeader>
-          <div className="overflow-y-auto px-6 pb-6">
-            <form onSubmit={handleSubmit}>
+          <div className="flex-1 overflow-y-auto px-6 pb-24">
+            <form onSubmit={handleSubmit} className="h-full flex flex-col">
               {/* Step 1: Basic Info */}
               {currentStep === 1 && (
                 <div className="grid gap-4 py-4">
@@ -716,12 +719,33 @@ export function EnhancedSpillKitInventoryManager() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="expiration_date">Expiration Date</Label>
-                      <Input
-                        id="expiration_date"
-                        type="date"
-                        value={formData.expiration_date}
-                        onChange={(e) => setFormData({ ...formData, expiration_date: e.target.value })}
-                      />
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full justify-start text-left font-normal",
+                              !formData.expiration_date && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {formData.expiration_date ? (
+                              format(new Date(formData.expiration_date), "MMM dd, yyyy")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={formData.expiration_date ? new Date(formData.expiration_date) : undefined}
+                            onSelect={(date) => setFormData({ ...formData, expiration_date: date ? format(date, 'yyyy-MM-dd') : '' })}
+                            initialFocus
+                            className="pointer-events-auto"
+                          />
+                        </PopoverContent>
+                      </Popover>
                     </div>
                   </div>
                 </div>
@@ -820,32 +844,36 @@ export function EnhancedSpillKitInventoryManager() {
                 </div>
               )}
 
-              <div className="flex justify-between pt-4 border-t">
-                <div>
-                  {currentStep > 1 && (
-                    <Button type="button" variant="outline" onClick={prevStep} size="sm" className="gap-1.5 px-3">
-                      <ChevronLeft className="h-4 w-4" />
-                      Previous
-                    </Button>
-                  )}
-                </div>
-                <div className="flex gap-2">
-                  <Button type="button" variant="outline" onClick={handleCloseDialog} size="sm" className="px-4">
-                    Cancel
-                  </Button>
-                  {currentStep < 4 ? (
-                    <Button type="button" onClick={nextStep} size="sm" className="gap-1.5 px-3">
-                      Next
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  ) : (
-                    <Button type="submit" disabled={saveMutation.isPending} size="sm" className="px-4">
-                      {saveMutation.isPending ? 'Saving...' : 'Save Item'}
-                    </Button>
-                  )}
-                </div>
-              </div>
             </form>
+          </div>
+          
+          {/* Fixed Footer */}
+          <div className="sticky bottom-0 left-0 right-0 bg-background border-t px-6 py-4">
+            <div className="flex justify-between">
+              <div>
+                {currentStep > 1 && (
+                  <Button type="button" variant="outline" onClick={prevStep}>
+                    <ChevronLeft className="h-4 w-4 mr-2" />
+                    Previous
+                  </Button>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <Button type="button" variant="outline" onClick={handleCloseDialog}>
+                  Cancel
+                </Button>
+                {currentStep < 4 ? (
+                  <Button type="button" onClick={nextStep}>
+                    Next
+                    <ChevronRight className="h-4 w-4 ml-2" />
+                  </Button>
+                ) : (
+                  <Button type="button" onClick={handleSubmit} disabled={saveMutation.isPending}>
+                    {saveMutation.isPending ? 'Saving...' : 'Save Item'}
+                  </Button>
+                )}
+              </div>
+            </div>
           </div>
         </DrawerContent>
       </Drawer>
