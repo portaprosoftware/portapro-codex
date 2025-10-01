@@ -27,6 +27,7 @@ import {
 import { AddMaintenanceRecordModal } from "./AddMaintenanceRecordModal";
 import { AddFuelLogModal } from "./fuel/AddFuelLogModal";
 import { AddWorkOrderDrawer } from "./work-orders/AddWorkOrderDrawer";
+import { VehicleSpillKitManager } from "./VehicleSpillKitManager";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -401,11 +402,12 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
           <div className="p-6">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
               {/* Desktop Tabs */}
-              <TabsList className="hidden sm:grid w-full grid-cols-6">
+              <TabsList className="hidden sm:grid w-full grid-cols-7">
                 <TabsTrigger value="overview">Overview</TabsTrigger>
                 <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
                 <TabsTrigger value="fuel">Fuel</TabsTrigger>
                 <TabsTrigger value="assignments">Assignments</TabsTrigger>
+                <TabsTrigger value="spillkit">Spill Kit</TabsTrigger>
                 <TabsTrigger value="damage">Damage Log</TabsTrigger>
                 <TabsTrigger value="documents">Documents</TabsTrigger>
               </TabsList>
@@ -421,6 +423,7 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
                     <SelectItem value="maintenance">Maintenance</SelectItem>
                     <SelectItem value="fuel">Fuel</SelectItem>
                     <SelectItem value="assignments">Assignments</SelectItem>
+                    <SelectItem value="spillkit">Spill Kit</SelectItem>
                     <SelectItem value="damage">Damage Log</SelectItem>
                     <SelectItem value="documents">Documents</SelectItem>
                   </SelectContent>
@@ -777,6 +780,13 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
                     <p className="text-gray-500 text-center py-8">No assignments found</p>
                   </CardContent>
                 </Card>
+              </TabsContent>
+
+              <TabsContent value="spillkit">
+                <VehicleSpillKitManager 
+                  vehicleId={vehicle.id}
+                  licensePlate={vehicle.license_plate}
+                />
               </TabsContent>
 
               <TabsContent value="damage">
