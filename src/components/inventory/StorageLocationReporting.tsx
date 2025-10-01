@@ -379,7 +379,7 @@ export function StorageLocationReporting() {
                     <div className="text-2xl font-bold">{reportData.summary.total_consumable_types}</div>
                     <div className="text-sm text-muted-foreground">Consumable Types</div>
                   </div>
-                  <Droplet className="h-8 w-8 text-primary" />
+                  <span className="text-4xl">🧻</span>
                 </div>
               </CardContent>
             </Card>

@@ -146,7 +146,8 @@ const Sidebar = () => {
                       flexShrink: 0,
                       display: 'inline-flex',
                       alignItems: 'center',
-                      justifyContent: 'center'
+                      justifyContent: 'center',
+                      lineHeight: '1'
                     }}>
                       {item.icon}
                     </span>
