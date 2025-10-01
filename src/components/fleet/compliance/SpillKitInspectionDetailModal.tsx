@@ -194,6 +194,13 @@ export function SpillKitInspectionDetailModal({
   const templateItems = inspection.spill_kit_templates?.spill_kit_template_items || [];
   const canEditInspection = canEdit();
 
+  // Helper function to convert text to Title Case
+  const toTitleCase = (str: string) => {
+    return str.replace(/\w\S*/g, (txt) => {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+  };
+
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
@@ -253,11 +260,11 @@ export function SpillKitInspectionDetailModal({
                   <Label className="text-sm text-muted-foreground">Kit Status</Label>
                   <div className="mt-2">
                     {inspection.has_kit ? (
-                      <Badge variant="default" className="gap-1 bg-green-600">
+                      <Badge variant="default" className="gap-1 bg-gradient-to-r from-green-600 to-green-500 text-white font-bold">
                         <CheckCircle className="h-3 w-3" /> Present
                       </Badge>
                     ) : (
-                      <Badge variant="destructive" className="gap-1">
+                      <Badge variant="destructive" className="gap-1 bg-gradient-to-r from-red-600 to-red-500 text-white font-bold">
                         <XCircle className="h-3 w-3" /> Missing
                       </Badge>
                     )}
@@ -301,8 +308,8 @@ export function SpillKitInspectionDetailModal({
                   {editedData?.weather_conditions && (
                     <div className="flex flex-wrap gap-2">
                       {editedData.weather_conditions.split(',').map((condition: string) => (
-                        <Badge key={condition} variant="secondary">
-                          {condition.trim()}
+                        <Badge key={condition} variant="secondary" className="font-bold">
+                          {toTitleCase(condition.trim())}
                         </Badge>
                       ))}
                     </div>
@@ -312,8 +319,8 @@ export function SpillKitInspectionDetailModal({
                 <div className="flex flex-wrap gap-2">
                   {inspection.weather_conditions ? (
                     inspection.weather_conditions.split(',').map((condition: string) => (
-                      <Badge key={condition} variant="secondary">
-                        {condition.trim()}
+                      <Badge key={condition} variant="secondary" className="font-bold">
+                        {toTitleCase(condition.trim())}
                       </Badge>
                     ))
                   ) : (
