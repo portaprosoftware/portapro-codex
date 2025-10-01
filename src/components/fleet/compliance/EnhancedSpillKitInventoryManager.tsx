@@ -529,7 +529,7 @@ export function EnhancedSpillKitInventoryManager() {
 
       {/* Multi-Step Add/Edit Drawer */}
       <Drawer open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DrawerContent className="h-[85vh] max-sm:h-[100vh] flex flex-col">
+        <DrawerContent className="h-[75vh] max-sm:h-[90vh] flex flex-col">
           <DrawerHeader>
             <DrawerTitle>{editingItem ? 'Edit' : 'Add'} Inventory Item - Step {currentStep} of 3</DrawerTitle>
             <p className="text-sm text-muted-foreground">
@@ -588,36 +588,6 @@ export function EnhancedSpillKitInventoryManager() {
               {/* Step 2: Stock & Costs */}
               {currentStep === 2 && (
                 <div className="grid gap-4 py-4">
-                  {/* Storage Location Assignment Button */}
-                  <div className="space-y-2 p-4 border rounded-lg bg-muted/30">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <Label className="text-base">Storage Locations</Label>
-                        <p className="text-sm text-muted-foreground">
-                          Assign quantities to storage garage locations
-                        </p>
-                      </div>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => setShowLocationAssignmentModal(true)}
-                      >
-                        <MapPin className="h-4 w-4 mr-2" />
-                        Manage Locations
-                        {locationAssignments.length > 0 && (
-                          <Badge variant="secondary" className="ml-2">
-                            {locationAssignments.length}
-                          </Badge>
-                        )}
-                      </Button>
-                    </div>
-                    {locationAssignments.length > 0 && (
-                      <p className="text-sm text-muted-foreground">
-                        Total assigned: {locationAssignments.reduce((sum, loc) => sum + loc.quantity, 0)} units across {locationAssignments.length} location(s)
-                      </p>
-                    )}
-                  </div>
-
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="unit_cost">Unit Cost ($) *</Label>
@@ -669,6 +639,36 @@ export function EnhancedSpillKitInventoryManager() {
                       />
                       <p className="text-xs text-muted-foreground">Suggested quantity to order</p>
                     </div>
+                  </div>
+
+                  {/* Storage Location Assignment Button */}
+                  <div className="space-y-2 p-4 border rounded-lg bg-muted/30">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Label className="text-base">Storage Locations</Label>
+                        <p className="text-sm text-muted-foreground">
+                          Assign quantities to storage garage locations
+                        </p>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setShowLocationAssignmentModal(true)}
+                      >
+                        <MapPin className="h-4 w-4 mr-2" />
+                        Manage Locations
+                        {locationAssignments.length > 0 && (
+                          <Badge variant="secondary" className="ml-2">
+                            {locationAssignments.length}
+                          </Badge>
+                        )}
+                      </Button>
+                    </div>
+                    {locationAssignments.length > 0 && (
+                      <p className="text-sm text-muted-foreground">
+                        Total assigned: {locationAssignments.reduce((sum, loc) => sum + loc.quantity, 0)} units across {locationAssignments.length} location(s)
+                      </p>
+                    )}
                   </div>
                 </div>
               )}
