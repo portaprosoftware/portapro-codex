@@ -4,6 +4,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Info } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -606,7 +608,19 @@ export function EnhancedSpillKitInventoryManager() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="minimum_threshold">Min Threshold *</Label>
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor="minimum_threshold">Min Threshold *</Label>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p className="max-w-xs">Stock level that triggers low stock alerts (e.g., 10 units)</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
                       <Input
                         id="minimum_threshold"
                         type="number"
@@ -617,7 +631,19 @@ export function EnhancedSpillKitInventoryManager() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="reorder_quantity">Reorder Qty *</Label>
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor="reorder_quantity">Reorder Qty *</Label>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p className="max-w-xs">Standard order quantity when restocking (e.g., 50 units per order)</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
                       <Input
                         id="reorder_quantity"
                         type="number"
