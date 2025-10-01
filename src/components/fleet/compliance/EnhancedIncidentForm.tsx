@@ -95,8 +95,7 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
         ).join(' ');
       };
 
-      // Set as single condition in array
-      setWeatherConditions([data.weather]);
+      // Only set weatherDetails for auto-weather, don't touch manual weatherConditions
       const formattedDescription = capitalizeWords(data.description);
       setWeatherDetails(`${formattedDescription} • ${data.temp}°F • ${data.humidity}% Humidity • Wind ${data.windSpeed} MPH`);
       
@@ -186,6 +185,14 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
 
   const handleSave = async () => {
     try {
+      // Combine weather data: use manual selection if available, otherwise use auto-weather details
+      let finalWeatherData = null;
+      if (weatherConditions.length > 0) {
+        finalWeatherData = weatherConditions.join(", ");
+      } else if (weatherDetails) {
+        finalWeatherData = weatherDetails;
+      }
+      
       const incidentData = {
         vehicle_id: vehicleId,
         spill_type: spillTypeName,
@@ -196,7 +203,7 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
         severity: severity as any,
         volume_estimate: volumeEstimate ? parseFloat(volumeEstimate) : null,
         volume_unit: volumeUnit,
-        weather_conditions: weatherConditions.length > 0 ? weatherConditions.join(", ") : null,
+        weather_conditions: finalWeatherData,
         responsible_party: responsibleParty,
         cleanup_actions: cleanupActions,
         witnesses_present: witnesses.length > 0,
@@ -464,7 +471,7 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
                     {weatherConditions.length > 0 ? (
                       <span className="capitalize truncate">{weatherConditions.join(", ")}</span>
                     ) : (
-                      <span className="hidden sm:inline">Select Weather Manually</span>
+                      <span>Select Weather Manually</span>
                     )}
                   </Button>
                 </div>
