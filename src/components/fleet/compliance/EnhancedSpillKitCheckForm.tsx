@@ -622,17 +622,18 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
             <div>
               <label className="text-sm font-medium mb-2 block">Weather Conditions</label>
               <div className="space-y-2">
-                <div className="flex gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   <Button
                     type="button"
                     variant="outline"
                     onClick={() => setIsWeatherModalOpen(true)}
-                    className="flex-1 justify-start"
+                    className="justify-start gap-2"
                   >
+                    <Cloud className="h-4 w-4" />
                     {weather.length > 0 ? (
-                      <span className="capitalize">{weather.join(", ")}</span>
+                      <span className="capitalize truncate">{weather.join(", ")}</span>
                     ) : (
-                      <span className="text-muted-foreground">Select weather conditions...</span>
+                      <span className="hidden sm:inline">Select Weather Conditions | Manual</span>
                     )}
                   </Button>
                   <Button 
@@ -640,8 +641,7 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
                     variant="outline" 
                     onClick={fetchCurrentWeather}
                     disabled={fetchingWeather || !latitude}
-                    className="shrink-0 gap-2"
-                    title="Auto-add weather from current location"
+                    className="justify-start gap-2"
                   >
                     {fetchingWeather ? (
                       <>
