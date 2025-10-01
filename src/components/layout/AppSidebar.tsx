@@ -13,6 +13,7 @@ import {
   BarChart4,
   Building2,
   Building,
+  Warehouse,
   Megaphone,
   MessageSquare,
   Droplets,
@@ -95,13 +96,7 @@ const inventoryItems: NavigationItem[] = [
     url: '/consumables', 
     icon: Droplets,
     permission: 'staff'
-  },
-  { 
-    title: 'Storage Sites', 
-    url: '/storage-sites', 
-    icon: Building,
-    permission: 'staff'
-  },
+  }
 ];
 
 const managementItems: NavigationItem[] = [
@@ -126,6 +121,12 @@ const managementItems: NavigationItem[] = [
 ];
 
 const adminItems: NavigationItem[] = [
+  { 
+    title: 'Storage Garages', 
+    url: '/storage-sites', 
+    icon: Warehouse,
+    permission: 'admin'
+  },
   { 
     title: 'Marketing', 
     url: '/marketing', 
