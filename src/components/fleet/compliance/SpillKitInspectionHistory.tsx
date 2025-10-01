@@ -10,7 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { format, parseISO, differenceInDays, startOfDay, endOfDay, isToday } from "date-fns";
-import { CheckCircle, XCircle, Clock, AlertTriangle, CalendarIcon, Search, ChevronLeft, ChevronRight as ChevronRightIcon, Truck, Eye, Edit, Trash2, MoreHorizontal } from "lucide-react";
+import { CheckCircle, XCircle, Clock, AlertTriangle, CalendarIcon, Search, ChevronLeft, ChevronRight as ChevronRightIcon, Truck, Eye, Trash2, MoreHorizontal } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -43,7 +43,6 @@ export function SpillKitInspectionHistory() {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [inspectionToDelete, setInspectionToDelete] = useState<any>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [editMode, setEditMode] = useState(false);
   const rowsPerPage = 25;
   
   const { hasAdminAccess, userId } = useUserRole();
@@ -51,18 +50,6 @@ export function SpillKitInspectionHistory() {
   const queryClient = useQueryClient();
 
   // Permission checks
-  const canEdit = (inspection: InspectionRecord) => {
-    if (hasAdminAccess) return true;
-    if (!userId) return false;
-    
-    const createdDate = startOfDay(parseISO(inspection.created_at));
-    const today = startOfDay(new Date());
-    const isSameDay = createdDate.getTime() === today.getTime();
-    const isOwnInspection = inspection.performed_by === userId; // This should check clerk_user_id
-    
-    return isOwnInspection && isSameDay;
-  };
-
   const canDelete = () => hasAdminAccess;
 
   // Delete mutation
@@ -89,13 +76,6 @@ export function SpillKitInspectionHistory() {
 
   const handleViewInspection = (inspection: InspectionRecord) => {
     setSelectedInspectionId(inspection.id);
-    setEditMode(false);
-    setIsDetailModalOpen(true);
-  };
-
-  const handleEditInspection = (inspection: InspectionRecord) => {
-    setSelectedInspectionId(inspection.id);
-    setEditMode(true);
     setIsDetailModalOpen(true);
   };
 
@@ -334,12 +314,6 @@ export function SpillKitInspectionHistory() {
                   <Eye className="mr-2 h-4 w-4" />
                   View
                 </DropdownMenuItem>
-                {canEdit(inspection) && (
-                  <DropdownMenuItem onClick={() => handleEditInspection(inspection)}>
-                    <Edit className="mr-2 h-4 w-4" />
-                    Edit
-                  </DropdownMenuItem>
-                )}
                 {canDelete() && (
                   <>
                     <DropdownMenuSeparator />
@@ -604,7 +578,6 @@ export function SpillKitInspectionHistory() {
         onClose={() => {
           setIsDetailModalOpen(false);
           setSelectedInspectionId(null);
-          setEditMode(false);
         }}
         onDeleted={() => {
           // Refresh happens automatically via query invalidation
