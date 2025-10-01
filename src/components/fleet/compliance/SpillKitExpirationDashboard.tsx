@@ -3,13 +3,15 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { AlertTriangle, CheckCircle, Clock, Search } from "lucide-react";
+import { AlertTriangle, CheckCircle, Clock, Search, Truck } from "lucide-react";
 import { format, differenceInDays, parseISO } from "date-fns";
 import { SpillKitExpirationReport } from "./SpillKitExpirationReport";
+import { MultiSelectVehicleFilter } from "../MultiSelectVehicleFilter";
 
 type ExpirationItem = {
   id: string;
@@ -29,8 +31,10 @@ export function SpillKitExpirationDashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterVehicle, setFilterVehicle] = useState<string>("all");
   const [filterCategory, setFilterCategory] = useState<string>("all");
+  const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
+  const [selectedVehicles, setSelectedVehicles] = useState<any[]>([]);
 
-  const hasActiveFilters = searchTerm || filterVehicle !== "all" || filterCategory !== "all";
+  const hasActiveFilters = searchTerm || filterVehicle !== "all" || filterCategory !== "all" || selectedVehicles.length > 0;
 
   const formatCategory = (category?: string) => {
     if (!category) return '';
@@ -68,6 +72,7 @@ export function SpillKitExpirationDashboard() {
     setSearchTerm("");
     setFilterVehicle("all");
     setFilterCategory("all");
+    setSelectedVehicles([]);
   };
 
   // Fetch all spill kit checks with expiration tracking
@@ -179,8 +184,11 @@ export function SpillKitExpirationDashboard() {
       );
     }
 
-    // Apply vehicle filter
-    if (filterVehicle !== "all") {
+    // Apply vehicle filter (from multiselect or old dropdown)
+    if (selectedVehicles.length > 0) {
+      const selectedVehicleIds = selectedVehicles.map(v => v.id);
+      filtered = filtered.filter(item => selectedVehicleIds.includes(item.vehicle_id));
+    } else if (filterVehicle !== "all") {
       filtered = filtered.filter(item => item.vehicle_id === filterVehicle);
     }
 
@@ -298,19 +306,16 @@ export function SpillKitExpirationDashboard() {
       {/* Filters */}
       <Card className="p-4">
         <div className="flex items-center gap-4">
-          <Select value={filterVehicle} onValueChange={setFilterVehicle}>
-            <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="All Vehicles" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Vehicles</SelectItem>
-              {vehicles.map((v) => (
-                <SelectItem key={v.id} value={v.id}>
-                  {v.name} - {v.plate}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Button
+            variant="outline"
+            onClick={() => setIsVehicleModalOpen(true)}
+            className="w-[200px] justify-start"
+          >
+            <Truck className="h-4 w-4 mr-2" />
+            {selectedVehicles.length === 0 
+              ? "All Vehicles" 
+              : `${selectedVehicles.length} Vehicle${selectedVehicles.length > 1 ? 's' : ''}`}
+          </Button>
           
           <Select value={filterCategory} onValueChange={setFilterCategory}>
             <SelectTrigger className="w-[200px]">
@@ -382,6 +387,14 @@ export function SpillKitExpirationDashboard() {
           <SpillKitExpirationReport />
         </TabsContent>
       </Tabs>
+
+      {/* Vehicle Multi-Select Modal */}
+      <MultiSelectVehicleFilter
+        open={isVehicleModalOpen}
+        onOpenChange={setIsVehicleModalOpen}
+        selectedVehicles={selectedVehicles}
+        onVehiclesChange={setSelectedVehicles}
+      />
     </div>
   );
 }
