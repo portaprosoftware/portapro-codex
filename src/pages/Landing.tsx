@@ -532,11 +532,11 @@ export const Landing: React.FC = () => {
             <StatCard title="Maintenance" value="3" icon={Wrench} gradientFrom="#F59E0B" gradientTo="#D97706" iconBg="bg-amber-600" />
           </div>
 
-          {/* Inventory & Location Management - Combined Section */}
+          {/* General Inventory Management - Combined Section */}
           <div className="mb-12">
             <div className="text-center mb-8">
-              <h3 className="text-2xl font-bold text-foreground">Inventory & Location Management</h3>
-              <p className="text-lg text-muted-foreground">Stay on top of every unit with real-time tracking and multi-location control.</p>
+              <h3 className="text-2xl font-bold text-foreground">General Inventory Management</h3>
+              <p className="text-lg text-muted-foreground">Every unit has a dedicated tracking system for comprehensive inventory control and management.</p>
             </div>
             
             <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
