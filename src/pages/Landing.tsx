@@ -563,13 +563,9 @@ export const Landing: React.FC = () => {
             </div>
           </div>
 
-          {/* General Inventory Management */}
+          {/* Feature List */}
           <div className="mb-8">
             <div className="space-y-6 max-w-4xl mx-auto text-center">
-              <div>
-                <h3 className="text-2xl font-bold text-foreground mb-4">General Inventory Management</h3>
-                <p className="text-lg text-muted-foreground mb-6">Every unit has a dedicated tracking system for comprehensive inventory control and management.</p>
-              </div>
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-3 text-left">
                   <div className="flex items-start gap-3">
