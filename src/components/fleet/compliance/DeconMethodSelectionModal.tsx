@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Check, Sparkles } from "lucide-react";
+import { Check } from "lucide-react";
 
 type DeconMethod = {
   value: string;
@@ -59,6 +59,15 @@ const methodCategories: MethodCategory[] = [
       { value: "containment_decon", label: "Containment Area Decon" },
       { value: "hazmat_disposal", label: "Hazmat Disposal" },
     ]
+  },
+  {
+    id: "advanced",
+    label: "Advanced Methods",
+    methods: [
+      { value: "uv_heat_treatment", label: "UV/Heat Treatment" },
+      { value: "ozone_oxidizing", label: "Ozone/Oxidizing Treatment" },
+      { value: "neutral_ph_rinse", label: "Neutral pH Rinse" },
+    ]
   }
 ];
 
@@ -103,8 +112,7 @@ export const DeconMethodSelectionModal: React.FC<Props> = ({
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5" />
+            <div>
               Select Decontamination Methods
             </div>
             {selectedMethods.length > 0 && (

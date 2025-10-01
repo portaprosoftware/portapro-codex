@@ -281,7 +281,7 @@ export const DeconCreateForm: React.FC<Props> = ({ onSaved, onCancel }) => {
                 disabled={isAutoWeatherLoading}
                 className="flex-1"
               >
-                <Cloud className="mr-2 h-4 w-4" />
+                <MapPin className="mr-2 h-4 w-4" />
                 {isAutoWeatherLoading ? "Fetching..." : "Auto-Add Weather"}
               </Button>
               <Button
@@ -291,7 +291,7 @@ export const DeconCreateForm: React.FC<Props> = ({ onSaved, onCancel }) => {
                 className="flex-1"
               >
                 <Cloud className="mr-2 h-4 w-4" />
-                Manual Selection
+                Select weather manually
               </Button>
             </div>
             {weatherDetails && (
