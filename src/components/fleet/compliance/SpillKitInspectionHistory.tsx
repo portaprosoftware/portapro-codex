@@ -10,6 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { format, parseISO, differenceInDays, startOfDay, endOfDay, isToday } from "date-fns";
+import { toZonedTime } from "date-fns-tz";
 import { CheckCircle, XCircle, Clock, AlertTriangle, CalendarIcon, Search, ChevronLeft, ChevronRight as ChevronRightIcon, Truck, Eye, Trash2, MoreHorizontal } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronDown, ChevronRight } from "lucide-react";
@@ -20,6 +21,7 @@ import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-mod
 import { useUserRole } from "@/hooks/useUserRole";
 import { useUser } from "@clerk/clerk-react";
 import { toast } from "sonner";
+import { useCompanySettings } from "@/hooks/useCompanySettings";
 
 type InspectionRecord = {
   id: string;
@@ -48,6 +50,7 @@ export function SpillKitInspectionHistory() {
   const { hasAdminAccess, userId } = useUserRole();
   const { user } = useUser();
   const queryClient = useQueryClient();
+  const { data: companySettings } = useCompanySettings();
 
   const formatCategory = (category?: string) => {
     if (!category) return '';
@@ -56,6 +59,13 @@ export function SpillKitInspectionHistory() {
       .split(' ')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(' ');
+  };
+
+  const formatDateTime = (utcDateString: string) => {
+    const timezone = companySettings?.company_timezone || 'America/New_York';
+    const utcDate = parseISO(utcDateString);
+    const zonedDate = toZonedTime(utcDate, timezone);
+    return format(zonedDate, 'MMM dd, yyyy hh:mm a');
   };
 
   // Permission checks
@@ -260,7 +270,7 @@ export function SpillKitInspectionHistory() {
                   {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                 </button>
               )}
-              {format(parseISO(inspection.created_at), 'MMM dd, yyyy HH:mm')}
+              {formatDateTime(inspection.created_at)}
             </div>
           </TableCell>
           <TableCell>

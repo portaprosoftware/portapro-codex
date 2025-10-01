@@ -11,6 +11,7 @@ export interface CompanySettings {
   id: string;
   item_code_categories: ItemCodeCategory;
   next_item_numbers: { [key: string]: number };
+  company_timezone?: string;
   // Dynamic consumable categories array lives here
   consumable_categories?: ConsumableCategory[];
   // ... other company settings fields
