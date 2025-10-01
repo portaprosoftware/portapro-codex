@@ -13,7 +13,7 @@ import { VehicleDocumentsCard } from "@/components/dashboard/VehicleDocumentsCar
 import { DriverComplianceCard } from "@/components/dashboard/DriverComplianceCard";
 import { StaffCertificationsCard } from "@/components/dashboard/StaffCertificationsCard";
 import { CompactConsumablesCard } from "@/components/dashboard/CompactConsumablesCard";
-import { SpillKitExpirationWidget } from "@/components/fleet/compliance/SpillKitExpirationWidget";
+import { SpillKitExpirationsCard } from "@/components/dashboard/SpillKitExpirationsCard";
 import {
   Package, 
   Users, 
@@ -401,7 +401,7 @@ const Dashboard = () => {
           
           <CompactConsumablesCard />
           
-          <SpillKitExpirationWidget />
+          <SpillKitExpirationsCard />
           
           {/* Document Cards */}
           <VehicleDocumentsCard />
