@@ -422,7 +422,7 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
                     {weatherConditions.length > 0 ? (
                       <span className="capitalize truncate">{weatherConditions.join(", ")}</span>
                     ) : (
-                      <span className="hidden sm:inline">Select Weather Condition | Manual Entry</span>
+                      <span className="hidden sm:inline">Select Weather Manually</span>
                     )}
                   </Button>
                 </div>

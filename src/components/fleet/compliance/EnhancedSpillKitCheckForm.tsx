@@ -652,7 +652,7 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
                     {weather.length > 0 ? (
                       <span className="capitalize truncate">{weather.join(", ")}</span>
                     ) : (
-                      <span className="hidden sm:inline">Select Weather Condition | Manual Entry</span>
+                      <span className="hidden sm:inline">Select Weather Manually</span>
                     )}
                   </Button>
                 </div>
