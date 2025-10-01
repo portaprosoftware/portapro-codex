@@ -603,8 +603,8 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
             {/* Automation Options */}
             <div className="space-y-3">
               <Label className="text-sm font-medium">Automation Options</Label>
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
+              <div className="flex items-start gap-3">
+                <div className="flex-1 space-y-1">
                   <Label htmlFor="auto-restock">Automatic Restock Requests</Label>
                   <p className="text-sm text-muted-foreground">
                     Automatically generate restock requests for missing items
@@ -614,6 +614,7 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
                   id="auto-restock"
                   checked={autoRestockRequests}
                   onCheckedChange={setAutoRestockRequests}
+                  className="mt-1"
                 />
               </div>
             </div>
