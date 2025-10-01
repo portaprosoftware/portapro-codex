@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { useNavigate } from 'react-router-dom';
 
 interface VehicleSpillKitTabProps {
   vehicleId: string;
@@ -25,6 +26,7 @@ function VehicleSpillKitTabContent({
   vehicleId, 
   licensePlate,
 }: VehicleSpillKitTabProps) {
+  const navigate = useNavigate();
   const [showIncidentModal, setShowIncidentModal] = React.useState(false);
   const [showDeconModal, setShowDeconModal] = React.useState(false);
 
@@ -66,7 +68,12 @@ function VehicleSpillKitTabContent({
               <Plus className="w-4 h-4 mr-1" />
               Log Incident
             </Button>
-            <Button variant="ghost" size="sm">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => navigate(`/fleet/compliance?tab=spill-kits&vehicle_id=${vehicleId}&vehicle_name=${encodeURIComponent(licensePlate)}`)}
+              title="View all incidents"
+            >
               <ExternalLink className="w-4 h-4" />
             </Button>
           </div>
@@ -131,7 +138,12 @@ function VehicleSpillKitTabContent({
               <Plus className="w-4 h-4 mr-1" />
               Record Decon
             </Button>
-            <Button variant="ghost" size="sm">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => navigate(`/fleet/compliance?tab=spill-kits&vehicle_id=${vehicleId}&vehicle_name=${encodeURIComponent(licensePlate)}`)}
+              title="View all decon logs"
+            >
               <ExternalLink className="w-4 h-4" />
             </Button>
           </div>

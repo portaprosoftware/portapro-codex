@@ -7,6 +7,7 @@ import { useVehicleDVIRs } from '@/hooks/vehicle/useVehicleDVIRs';
 import { Wrench, Plus, ExternalLink, FileText, Clock } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { useNavigate } from 'react-router-dom';
 
 interface VehicleMaintenanceTabProps {
   vehicleId: string;
@@ -21,6 +22,7 @@ export function VehicleMaintenanceTab({
   onAddWorkOrder,
   onAddDVIR 
 }: VehicleMaintenanceTabProps) {
+  const navigate = useNavigate();
   const { data: workOrders, isLoading: workOrdersLoading } = useVehicleWorkOrders({
     vehicleId,
     limit: 5,
@@ -59,7 +61,12 @@ export function VehicleMaintenanceTab({
               <Plus className="w-4 h-4 mr-1" />
               New Work Order
             </Button>
-            <Button variant="ghost" size="sm">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => navigate(`/fleet/maintenance?vehicle_id=${vehicleId}&vehicle_name=${encodeURIComponent(licensePlate)}`)}
+              title="View all work orders"
+            >
               <ExternalLink className="w-4 h-4" />
             </Button>
           </div>
@@ -121,7 +128,12 @@ export function VehicleMaintenanceTab({
               <Plus className="w-4 h-4 mr-1" />
               New DVIR
             </Button>
-            <Button variant="ghost" size="sm">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => navigate(`/fleet/compliance?tab=dvirs&vehicle_id=${vehicleId}&vehicle_name=${encodeURIComponent(licensePlate)}`)}
+              title="View all DVIRs"
+            >
               <ExternalLink className="w-4 h-4" />
             </Button>
           </div>

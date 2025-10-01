@@ -6,6 +6,7 @@ import { useVehicleAssignments } from '@/hooks/vehicle/useVehicleAssignments';
 import { Calendar, Plus, ExternalLink, User } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { useNavigate } from 'react-router-dom';
 
 interface VehicleAssignmentsTabProps {
   vehicleId: string;
@@ -18,6 +19,7 @@ export function VehicleAssignmentsTab({
   licensePlate,
   onAddAssignment 
 }: VehicleAssignmentsTabProps) {
+  const navigate = useNavigate();
   const { data: assignments, isLoading } = useVehicleAssignments({
     vehicleId,
     limit: 10,
@@ -49,7 +51,12 @@ export function VehicleAssignmentsTab({
               <Plus className="w-4 h-4 mr-1" />
               New Assignment
             </Button>
-            <Button variant="ghost" size="sm">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => navigate(`/fleet/assignments?vehicle_id=${vehicleId}&vehicle_name=${encodeURIComponent(licensePlate)}`)}
+              title="View all assignments"
+            >
               <ExternalLink className="w-4 h-4" />
             </Button>
           </div>

@@ -6,6 +6,7 @@ import { useVehicleDocuments } from '@/hooks/vehicle/useVehicleDocuments';
 import { FileText, Plus, ExternalLink, Download, AlertCircle } from 'lucide-react';
 import { format, differenceInDays } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { useNavigate } from 'react-router-dom';
 
 interface VehicleDocumentsTabProps {
   vehicleId: string;
@@ -18,6 +19,7 @@ export function VehicleDocumentsTab({
   licensePlate,
   onAddDocument 
 }: VehicleDocumentsTabProps) {
+  const navigate = useNavigate();
   const { data: documents, isLoading } = useVehicleDocuments({
     vehicleId,
     limit: 20,
@@ -62,7 +64,12 @@ export function VehicleDocumentsTab({
               <Plus className="w-4 h-4 mr-1" />
               Add Document
             </Button>
-            <Button variant="ghost" size="sm">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => navigate(`/fleet/compliance?tab=documents&vehicle_id=${vehicleId}&vehicle_name=${encodeURIComponent(licensePlate)}`)}
+              title="View all documents"
+            >
               <ExternalLink className="w-4 h-4" />
             </Button>
           </div>

@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { useNavigate } from 'react-router-dom';
 
 interface VehicleOverviewTabProps {
   vehicleId: string;
@@ -21,6 +22,7 @@ interface VehicleOverviewTabProps {
 }
 
 export function VehicleOverviewTab({ vehicleId, licensePlate }: VehicleOverviewTabProps) {
+  const navigate = useNavigate();
   const { data: metrics, isLoading: metricsLoading } = useVehicleMetrics(vehicleId);
   const { data: activity, isLoading: activityLoading } = useVehicleActivity(vehicleId, 10);
 
@@ -136,7 +138,12 @@ export function VehicleOverviewTab({ vehicleId, licensePlate }: VehicleOverviewT
       <Card className="border-2">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg">Recent Activity</CardTitle>
-          <Button variant="ghost" size="sm">
+          <Button 
+            variant="ghost" 
+            size="sm"
+            onClick={() => navigate(`/fleet?vehicle_id=${vehicleId}&vehicle_name=${encodeURIComponent(licensePlate)}`)}
+            title="View all activity"
+          >
             <ExternalLink className="w-4 h-4" />
           </Button>
         </CardHeader>

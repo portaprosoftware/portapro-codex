@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useVehicleFuelLogs } from '@/hooks/vehicle/useVehicleFuelLogs';
 import { Fuel, Plus, ExternalLink, TrendingUp, TrendingDown } from 'lucide-react';
 import { format } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
 
 interface VehicleFuelTabProps {
   vehicleId: string;
@@ -12,6 +13,7 @@ interface VehicleFuelTabProps {
 }
 
 export function VehicleFuelTab({ vehicleId, licensePlate, onAddFuelLog }: VehicleFuelTabProps) {
+  const navigate = useNavigate();
   const { data: fuelLogs, isLoading } = useVehicleFuelLogs({
     vehicleId,
     limit: 10,
@@ -86,7 +88,12 @@ export function VehicleFuelTab({ vehicleId, licensePlate, onAddFuelLog }: Vehicl
               <Plus className="w-4 h-4 mr-1" />
               Log Fuel
             </Button>
-            <Button variant="ghost" size="sm">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => navigate(`/fleet/fuel?vehicle_id=${vehicleId}&vehicle_name=${encodeURIComponent(licensePlate)}`)}
+              title="View all fuel logs"
+            >
               <ExternalLink className="w-4 h-4" />
             </Button>
           </div>
