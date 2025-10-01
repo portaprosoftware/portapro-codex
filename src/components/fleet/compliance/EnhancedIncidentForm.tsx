@@ -410,13 +410,19 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
                     variant="outline" 
                     onClick={fetchCurrentWeather}
                     disabled={fetchingWeather || !latitude}
-                    className="shrink-0"
-                    title="Fetch current weather"
+                    className="shrink-0 gap-2"
+                    title="Auto-add weather from current location"
                   >
                     {fetchingWeather ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <span className="hidden sm:inline">Loading...</span>
+                      </>
                     ) : (
-                      <Cloud className="h-4 w-4" />
+                      <>
+                        <Cloud className="h-4 w-4" />
+                        <span className="hidden sm:inline">Auto Add Weather | Current Location</span>
+                      </>
                     )}
                   </Button>
                 </div>
