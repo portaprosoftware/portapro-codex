@@ -88,20 +88,29 @@ type Props = {
   onClose: () => void;
   onSelect: (type: string, selectedExamples?: string[]) => void;
   currentValue?: string;
+  existingItems?: Array<{ item_name: string; category: string }>;
 };
 
-export function SpillKitTypeSelectionModal({ isOpen, onClose, onSelect, currentValue }: Props) {
+export function SpillKitTypeSelectionModal({ isOpen, onClose, onSelect, currentValue, existingItems = [] }: Props) {
   const [selectedType, setSelectedType] = useState<string>(currentValue || '');
   const [selectedExamples, setSelectedExamples] = useState<Record<string, boolean>>({});
 
+  // Helper to check if an item is already added to the template
+  const isItemAlreadyAdded = (example: string, category: string) => {
+    return existingItems.some(
+      item => item.item_name === example && item.category === category
+    );
+  };
+
   const handleSelect = (typeValue: string) => {
     setSelectedType(typeValue);
-    // Pre-select all examples when selecting a category
+    // Pre-select all examples when selecting a category (except already-added items)
     const categoryType = SPILL_KIT_TYPES.find(t => t.value === typeValue);
     if (categoryType) {
       const newSelected: Record<string, boolean> = {};
       categoryType.examples.forEach(example => {
-        newSelected[example] = true;
+        // Only pre-select if not already added
+        newSelected[example] = !isItemAlreadyAdded(example, typeValue);
       });
       setSelectedExamples(newSelected);
     }
@@ -118,10 +127,18 @@ export function SpillKitTypeSelectionModal({ isOpen, onClose, onSelect, currentV
     const categoryType = SPILL_KIT_TYPES.find(t => t.value === selectedType);
     if (!categoryType) return;
     
-    const allSelected = categoryType.examples.every(ex => selectedExamples[ex]);
+    // Check if all non-existing items are selected
+    const selectableExamples = categoryType.examples.filter(ex => !isItemAlreadyAdded(ex, selectedType));
+    const allSelectableSelected = selectableExamples.every(ex => selectedExamples[ex]);
+    
     const newSelected: Record<string, boolean> = {};
     categoryType.examples.forEach(example => {
-      newSelected[example] = !allSelected;
+      // Don't change already-added items, toggle only selectable items
+      if (isItemAlreadyAdded(example, selectedType)) {
+        newSelected[example] = false;
+      } else {
+        newSelected[example] = !allSelectableSelected;
+      }
     });
     setSelectedExamples(newSelected);
   };
@@ -197,32 +214,49 @@ export function SpillKitTypeSelectionModal({ isOpen, onClose, onSelect, currentV
                       <div className="flex items-center gap-2 pb-2 border-b" onClick={(e) => e.stopPropagation()}>
                         <Checkbox
                           id={`select-all-${type.value}`}
-                          checked={type.examples.every(ex => selectedExamples[ex])}
+                          checked={type.examples.filter(ex => !isItemAlreadyAdded(ex, type.value)).every(ex => selectedExamples[ex])}
                           onCheckedChange={toggleSelectAll}
                         />
                         <label
                           htmlFor={`select-all-${type.value}`}
                           className="text-sm font-medium cursor-pointer"
                         >
-                          Select All ({type.examples.length})
+                          Select All ({type.examples.filter(ex => !isItemAlreadyAdded(ex, type.value)).length})
                         </label>
                       </div>
                       <div className="grid grid-cols-1 gap-2">
-                        {type.examples.map((example, idx) => (
-                          <div key={idx} className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                            <Checkbox
-                              id={`${type.value}-${idx}`}
-                              checked={selectedExamples[example] || false}
-                              onCheckedChange={() => toggleExample(example)}
-                            />
-                            <label
-                              htmlFor={`${type.value}-${idx}`}
-                              className="text-sm cursor-pointer flex-1"
+                        {type.examples.map((example, idx) => {
+                          const alreadyAdded = isItemAlreadyAdded(example, type.value);
+                          return (
+                            <div 
+                              key={idx} 
+                              className={cn(
+                                "flex items-center gap-2",
+                                alreadyAdded && "opacity-50"
+                              )} 
+                              onClick={(e) => e.stopPropagation()}
                             >
-                              {example}
-                            </label>
-                          </div>
-                        ))}
+                              <Checkbox
+                                id={`${type.value}-${idx}`}
+                                checked={selectedExamples[example] || false}
+                                onCheckedChange={() => toggleExample(example)}
+                                disabled={alreadyAdded}
+                              />
+                              <label
+                                htmlFor={`${type.value}-${idx}`}
+                                className={cn(
+                                  "text-sm flex-1 flex items-center gap-2",
+                                  alreadyAdded ? "cursor-not-allowed" : "cursor-pointer"
+                                )}
+                              >
+                                {example}
+                                {alreadyAdded && (
+                                  <span className="text-xs text-muted-foreground">(Already added)</span>
+                                )}
+                              </label>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   ) : (

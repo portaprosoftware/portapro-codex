@@ -712,6 +712,10 @@ const TemplateForm: React.FC<{
         }}
         onSelect={handleSelectType}
         currentValue={editingItemIndex !== null ? items[editingItemIndex]?.category : undefined}
+        existingItems={items.filter(item => item.item_name).map(item => ({
+          item_name: item.item_name!,
+          category: item.category || ''
+        }))}
       />
     </div>
   );
