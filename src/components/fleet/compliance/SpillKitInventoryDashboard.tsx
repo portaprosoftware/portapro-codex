@@ -90,26 +90,26 @@ export function SpillKitInventoryDashboard() {
   const getStatusBadge = (item: InventoryItem) => {
     // Check expired first
     if (item.expiration_date && new Date(item.expiration_date) < new Date()) {
-      return <Badge variant="destructive" className="bg-gradient-to-r from-orange-500 to-red-600">⚠️ Expired</Badge>;
+      return <Badge variant="destructive" className="bg-gradient-to-r from-orange-500 to-red-600">Expired</Badge>;
     }
     
     // Check critical missing
     if (item.is_critical && item.current_stock === 0) {
-      return <Badge variant="destructive" className="bg-gradient-to-r from-red-500 to-red-700 animate-pulse">🚨 Critical Missing</Badge>;
+      return <Badge variant="destructive" className="bg-gradient-to-r from-red-500 to-red-700 animate-pulse">Critical Missing</Badge>;
     }
     
     // Check out of stock
     if (item.current_stock === 0) {
-      return <Badge variant="destructive" className="bg-gradient-to-r from-red-500 to-red-600">🔴 Out of Stock</Badge>;
+      return <Badge variant="destructive" className="bg-gradient-to-r from-red-500 to-red-600">Out of Stock</Badge>;
     }
     
     // Check low stock
     if (item.current_stock <= item.minimum_threshold) {
-      return <Badge variant="outline" className="bg-gradient-to-r from-yellow-400 to-orange-400 text-white font-bold border-yellow-600">🟡 Low Stock</Badge>;
+      return <Badge variant="outline" className="bg-gradient-to-r from-yellow-400 to-orange-400 text-white font-bold border-yellow-600">Low Stock</Badge>;
     }
     
     // In stock
-    return <Badge variant="outline" className="bg-gradient-to-r from-green-400 to-emerald-500 text-white border-green-600">🟢 In Stock</Badge>;
+    return <Badge variant="outline" className="bg-gradient-to-r from-green-400 to-emerald-500 text-white border-green-600">In Stock</Badge>;
   };
 
   return (
