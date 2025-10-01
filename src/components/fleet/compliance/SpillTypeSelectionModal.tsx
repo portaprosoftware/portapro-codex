@@ -134,36 +134,28 @@ export const SpillTypeSelectionModal: React.FC<Props> = ({ isOpen, onClose, onSe
     }
   }, [isOpen, currentValue]);
 
-  const selectType = (value: string) => {
-    setSelectedType(value);
-  };
-
-  const handleApply = () => {
-    // If "other" is selected, validate that description is provided
-    if (selectedType === "other") {
-      if (!otherDescription.trim()) {
-        return; // Don't submit if description is empty
-      }
-      const finalType = `other: ${otherDescription.trim()}`;
-      onSelect(finalType, "Other");
-    } else {
-      // Find the classification
-      const option = spillCategories
-        .flatMap(cat => cat.options)
-        .find(opt => opt.value === selectedType);
-      
-      if (option) {
-        onSelect(option.label, option.classification);
-      }
+  const handleSelectType = (value: string, classification: string, label: string) => {
+    // If "other" is selected, don't auto-close - wait for description
+    if (value === "other") {
+      setSelectedType(value);
+      return;
     }
     
+    // For all other types, immediately apply and close
+    onSelect(label, classification);
     onClose();
     setOtherDescription("");
+    setSelectedType("");
   };
 
-  const handleClear = () => {
-    setSelectedType("");
-    setOtherDescription("");
+  const handleApplyOther = () => {
+    if (selectedType === "other" && otherDescription.trim()) {
+      const finalType = `other: ${otherDescription.trim()}`;
+      onSelect(finalType, "Other");
+      onClose();
+      setOtherDescription("");
+      setSelectedType("");
+    }
   };
 
   // Filter categories based on search query
@@ -204,13 +196,11 @@ export const SpillTypeSelectionModal: React.FC<Props> = ({ isOpen, onClose, onSe
           </div>
 
           {/* Selected type preview */}
-          {selectedType && (
+          {selectedType && selectedType !== "other" && (
             <div className="flex flex-wrap gap-2 p-3 bg-muted/50 rounded-lg">
               <Badge variant="default" className="gap-2">
                 <span className="font-semibold">
-                  {selectedType === "other" && otherDescription
-                    ? `Other: ${otherDescription}`
-                    : selectedOption?.label || selectedType}
+                  {selectedOption?.label || selectedType}
                 </span>
                 {selectedOption && (
                   <span className="opacity-80">• {selectedOption.classification}</span>
@@ -220,43 +210,33 @@ export const SpillTypeSelectionModal: React.FC<Props> = ({ isOpen, onClose, onSe
           )}
 
           {/* Category accordion */}
-          <Accordion type="multiple" defaultValue={["fuel-lubricants", "sanitation-wastewater"]} className="w-full">
+          <Accordion type="single" collapsible className="w-full">
             {filteredCategories.map((category) => (
               <AccordionItem key={category.id} value={category.id}>
                 <AccordionTrigger className="hover:no-underline">
                   <div className="flex items-center gap-2">
                     <div className="text-muted-foreground">{category.icon}</div>
                     <span className="font-semibold">{category.label}</span>
-                    {category.options.some(opt => opt.value === selectedType) && (
-                      <Badge variant="default" className="ml-2">Selected</Badge>
-                    )}
                   </div>
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="space-y-2 pt-2">
                     {category.options.map((option) => (
-                      <label
+                      <button
                         key={option.value}
-                        className="flex items-center gap-3 p-3 rounded-lg border hover:bg-accent cursor-pointer transition-colors"
-                        onClick={() => selectType(option.value)}
+                        type="button"
+                        className="w-full flex items-center gap-3 p-3 rounded-lg border hover:bg-accent cursor-pointer transition-colors text-left"
+                        onClick={() => handleSelectType(option.value, option.classification, option.label)}
                       >
-                        <div className="flex items-center justify-center w-5 h-5 rounded-full border-2 border-primary">
-                          {selectedType === option.value && (
-                            <div className="w-3 h-3 rounded-full bg-primary" />
-                          )}
-                        </div>
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
                             <span className="font-medium">{option.label}</span>
-                            {selectedType === option.value && (
-                              <Check className="h-4 w-4 text-primary" />
-                            )}
                           </div>
                           <div className="text-sm text-muted-foreground mt-0.5">
                             Classification: <span className={`font-medium ${option.color}`}>{option.classification}</span>
                           </div>
                         </div>
-                      </label>
+                      </button>
                     ))}
                   </div>
                 </AccordionContent>
@@ -278,9 +258,13 @@ export const SpillTypeSelectionModal: React.FC<Props> = ({ isOpen, onClose, onSe
                 className="w-full"
                 required
               />
-              {selectedType === "other" && !otherDescription.trim() && (
-                <p className="text-sm text-muted-foreground">Description is required when "Other" is selected</p>
-              )}
+              <Button 
+                onClick={handleApplyOther}
+                disabled={!otherDescription.trim()}
+                className="w-full"
+              >
+                Apply Other Type
+              </Button>
             </div>
           )}
 
@@ -292,21 +276,10 @@ export const SpillTypeSelectionModal: React.FC<Props> = ({ isOpen, onClose, onSe
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-between mt-4 pt-4 border-t">
-          <Button variant="ghost" onClick={handleClear} disabled={!selectedType}>
-            Clear Selection
+        <div className="flex items-center justify-end mt-4 pt-4 border-t">
+          <Button variant="outline" onClick={onClose}>
+            Cancel
           </Button>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button 
-              onClick={handleApply}
-              disabled={!selectedType || (selectedType === "other" && !otherDescription.trim())}
-            >
-              Apply
-            </Button>
-          </div>
         </div>
       </DialogContent>
     </Dialog>
