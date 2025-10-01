@@ -190,7 +190,7 @@ export const FleetOverview: React.FC = () => {
               <Button 
                 variant="outline" 
                 size="sm"
-                onClick={() => navigate('/fleet/compliance')}
+                onClick={() => navigate('/fleet/compliance?tab=spill-kits')}
                 className="ml-4"
               >
                 View Details
