@@ -225,7 +225,7 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
       <canvas ref={canvasRef} className="hidden" />
 
       {/* Photo count indicator */}
-      <p className="text-sm text-muted-foreground text-center">
+      <p className="text-sm text-muted-foreground text-left">
         {photos.length} / {maxPhotos} photos
       </p>
     </div>
