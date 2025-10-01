@@ -65,7 +65,7 @@ const weatherCategories: WeatherCategory[] = [
     id: "wind-storm",
     label: "Wind & Storm",
     icon: <Wind className="h-5 w-5" />,
-    intensityOptions: ["light", "moderate", "heavy"],
+    intensityOptions: ["light", "moderate", "strong"],
     options: [
       { value: "windy", label: "Windy", icon: <Wind className="h-5 w-5" />, color: "text-teal-500", requiresIntensity: true },
       { value: "storm", label: "Storm / Severe Weather", icon: <CloudLightning className="h-5 w-5" />, color: "text-purple-600", requiresIntensity: true },
