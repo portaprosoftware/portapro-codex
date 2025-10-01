@@ -63,7 +63,7 @@ export function SpillKitExpirationDashboard() {
 
   // Fetch all spill kit checks with expiration tracking
   const { data: expirationData, isLoading } = useQuery({
-    queryKey: ["spill-kit-expirations"],
+    queryKey: ["spill-kit-expirations", templateItems],
     queryFn: async () => {
       const { data: checks, error } = await supabase
         .from("vehicle_spill_kit_checks")
