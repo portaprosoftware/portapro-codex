@@ -133,22 +133,32 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
     });
   }, []);
 
-  const cleanupActionOptions = [
-    "Absorbent material applied",
-    "Area vacuumed/pumped",
-    "Authorities notified",
-    "Area cordoned off",
-    "Soil sampling performed",
-    "Water sampling performed",
-    "Environmental contractor called",
-    "Customer notified",
-    "Spill kit deployed",
-    "Hazardous waste disposal arranged",
-    "Photographs taken/documented",
-    "Ventilation provided",
-    "PPE used/documented",
-    "Containment booms/barriers used"
-  ];
+  const cleanupActionCategories = {
+    "Containment & Control": [
+      "Absorbent material applied",
+      "Spill kit deployed",
+      "Area cordoned off",
+      "Containment booms/barriers used"
+    ],
+    "Sampling & Testing": [
+      "Soil sampling performed",
+      "Water sampling performed"
+    ],
+    "Notifications & Documentation": [
+      "Authorities notified",
+      "Environmental contractor called",
+      "Customer notified",
+      "Photographs taken/documented"
+    ],
+    "Protective Measures": [
+      "PPE used/documented",
+      "Ventilation provided"
+    ],
+    "Cleanup & Disposal": [
+      "Area vacuumed/pumped",
+      "Hazardous waste disposal arranged"
+    ]
+  };
 
   const toggleCleanupAction = (action: string) => {
     setCleanupActions(prev => 
@@ -553,15 +563,22 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
           <CardTitle>Cleanup Actions Taken</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-            {cleanupActionOptions.map((action) => (
-              <div key={action} className="flex items-center space-x-2">
-                <Checkbox
-                  id={action}
-                  checked={cleanupActions.includes(action)}
-                  onCheckedChange={() => toggleCleanupAction(action)}
-                />
-                <Label htmlFor={action} className="text-sm">{action}</Label>
+          <div className="space-y-6">
+            {Object.entries(cleanupActionCategories).map(([category, actions]) => (
+              <div key={category}>
+                <h4 className="font-semibold text-sm text-gray-700 mb-3">{category}</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  {actions.map((action) => (
+                    <div key={action} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={action}
+                        checked={cleanupActions.includes(action)}
+                        onCheckedChange={() => toggleCleanupAction(action)}
+                      />
+                      <Label htmlFor={action} className="text-sm">{action}</Label>
+                    </div>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
