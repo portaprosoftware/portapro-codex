@@ -350,11 +350,17 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
                   <SelectValue placeholder="Select weather..." />
                 </SelectTrigger>
                 <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
-                  <SelectItem value="dry">Dry</SelectItem>
-                  <SelectItem value="rain">Rain</SelectItem>
-                  <SelectItem value="snow">Snow</SelectItem>
+                  <SelectItem value="clear">Clear</SelectItem>
+                  <SelectItem value="cloudy">Cloudy</SelectItem>
+                  <SelectItem value="rainy">Rainy</SelectItem>
+                  <SelectItem value="snowy">Snowy</SelectItem>
                   <SelectItem value="windy">Windy</SelectItem>
-                  <SelectItem value="fog">Fog</SelectItem>
+                  <SelectItem value="foggy">Foggy</SelectItem>
+                  <SelectItem value="icy">Icy</SelectItem>
+                  <SelectItem value="hot">Hot</SelectItem>
+                  <SelectItem value="cold">Cold</SelectItem>
+                  <SelectItem value="storm">Storm / Severe Weather</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
                 </SelectContent>
               </Select>
             </div>

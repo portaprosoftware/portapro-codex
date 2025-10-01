@@ -585,6 +585,12 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
                   <SelectItem value="rainy">Rainy</SelectItem>
                   <SelectItem value="snowy">Snowy</SelectItem>
                   <SelectItem value="windy">Windy</SelectItem>
+                  <SelectItem value="foggy">Foggy</SelectItem>
+                  <SelectItem value="icy">Icy</SelectItem>
+                  <SelectItem value="hot">Hot</SelectItem>
+                  <SelectItem value="cold">Cold</SelectItem>
+                  <SelectItem value="storm">Storm / Severe Weather</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
                 </SelectContent>
               </Select>
             </div>
