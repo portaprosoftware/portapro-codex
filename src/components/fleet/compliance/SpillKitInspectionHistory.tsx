@@ -281,11 +281,27 @@ export function SpillKitInspectionHistory() {
             </div>
           </TableCell>
           <TableCell>
-            {inspection.has_kit ? (
-              <Badge className="gap-1 bg-gradient-to-r from-green-600 to-green-500 text-white font-bold"><CheckCircle className="h-3 w-3" />Present</Badge>
-            ) : (
-              <Badge className="gap-1 bg-gradient-to-r from-red-600 to-red-500 text-white font-bold"><XCircle className="h-3 w-3" />Missing</Badge>
-            )}
+            {(() => {
+              if (!inspection.has_kit) {
+                return <Badge className="gap-1 bg-gradient-to-r from-red-600 to-red-500 text-white font-bold"><XCircle className="h-3 w-3" />Missing</Badge>;
+              }
+              
+              // Calculate missing items from item_conditions
+              const conditions = inspection.item_conditions as any || {};
+              const missingItems = Object.entries(conditions).filter(([_, condition]: [string, any]) => 
+                condition.status === 'missing' || condition.status === 'expired'
+              );
+              
+              if (missingItems.length > 0) {
+                return <Badge className="gap-1 bg-gradient-to-r from-red-600 to-red-500 text-white font-bold">
+                  <XCircle className="h-3 w-3" />Missing {missingItems.length} Item{missingItems.length > 1 ? 's' : ''}
+                </Badge>;
+              }
+              
+              return <Badge className="gap-1 bg-gradient-to-r from-green-600 to-green-500 text-white font-bold">
+                <CheckCircle className="h-3 w-3" />Kit Complete
+              </Badge>;
+            })()}
           </TableCell>
           <TableCell>
             {itemsWithExpiration.length > 0 ? (
