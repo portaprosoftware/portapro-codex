@@ -18,9 +18,10 @@ interface TemplateItem {
 interface ItemCondition {
   item_name: string;
   item_category?: string;
-  status: 'present' | 'missing' | 'damaged' | 'expired';
-  quantity?: number;
+  status: 'present' | 'missing' | 'damaged' | 'expired' | 'low';
+  actual_quantity?: number;
   expiration_date?: string;
+  notes?: string;
 }
 
 interface InspectionItemsTableProps {
@@ -37,6 +38,11 @@ export function InspectionItemsTable({
   onItemChange 
 }: InspectionItemsTableProps) {
   
+  const isQuantityLow = (item: TemplateItem, condition?: ItemCondition) => {
+    if (!condition?.actual_quantity || !item.required_quantity) return false;
+    return condition.actual_quantity < item.required_quantity;
+  };
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'present':
@@ -92,11 +98,26 @@ export function InspectionItemsTable({
                   {item.category && (
                     <p className="text-sm text-muted-foreground">{item.category}</p>
                   )}
-                  {item.required_quantity && (
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Expected Qty: {item.required_quantity}
-                    </p>
-                  )}
+                  <div className="flex items-center gap-2 mt-1">
+                    {item.required_quantity && (
+                      <p className="text-xs text-muted-foreground">
+                        Expected: {item.required_quantity}
+                      </p>
+                    )}
+                    {condition?.actual_quantity !== undefined && (
+                      <>
+                        <span className="text-xs text-muted-foreground">•</span>
+                        <p className="text-xs text-muted-foreground">
+                          Actual: {condition.actual_quantity}
+                        </p>
+                        {isQuantityLow(item, condition) && (
+                          <Badge className="bg-gradient-to-r from-orange-600 to-orange-500 text-white font-bold">
+                            Low Quantity
+                          </Badge>
+                        )}
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
               <div>
@@ -123,33 +144,53 @@ export function InspectionItemsTable({
 
             {/* Additional fields for edit mode */}
             {isEditMode && condition && (
-              <div className="grid grid-cols-2 gap-3 pt-3 border-t">
-                <div>
-                  <Label className="text-xs">Quantity</Label>
-                  <Input
-                    type="number"
-                    min="0"
-                    value={condition.quantity || ''}
-                    onChange={(e) => onItemChange?.(item.id, 'quantity', parseInt(e.target.value) || 0)}
-                    placeholder="Enter quantity"
-                  />
+              <div className="space-y-3 pt-3 border-t">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-xs">Actual Quantity</Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      value={condition.actual_quantity || ''}
+                      onChange={(e) => onItemChange?.(item.id, 'actual_quantity', parseInt(e.target.value) || 0)}
+                      placeholder="Enter quantity"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Expiration Date</Label>
+                    <Input
+                      type="date"
+                      value={condition.expiration_date || ''}
+                      onChange={(e) => onItemChange?.(item.id, 'expiration_date', e.target.value)}
+                    />
+                  </div>
                 </div>
                 <div>
-                  <Label className="text-xs">Expiration Date</Label>
+                  <Label className="text-xs">Notes</Label>
                   <Input
-                    type="date"
-                    value={condition.expiration_date || ''}
-                    onChange={(e) => onItemChange?.(item.id, 'expiration_date', e.target.value)}
+                    type="text"
+                    value={condition.notes || ''}
+                    onChange={(e) => onItemChange?.(item.id, 'notes', e.target.value)}
+                    placeholder="Add notes about this item..."
                   />
                 </div>
               </div>
             )}
 
-            {/* Display expiration in view mode */}
-            {!isEditMode && condition?.expiration_date && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground pt-2 border-t">
-                <Calendar className="h-4 w-4" />
-                <span>Expires: {format(parseISO(condition.expiration_date), 'MMM dd, yyyy')}</span>
+            {/* Display expiration and notes in view mode */}
+            {!isEditMode && (condition?.expiration_date || condition?.notes) && (
+              <div className="space-y-2 pt-2 border-t">
+                {condition.expiration_date && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Calendar className="h-4 w-4" />
+                    <span>Expires: {format(parseISO(condition.expiration_date), 'MMM dd, yyyy')}</span>
+                  </div>
+                )}
+                {condition.notes && (
+                  <div className="text-sm text-muted-foreground">
+                    <span className="font-medium">Notes:</span> {condition.notes}
+                  </div>
+                )}
               </div>
             )}
           </div>
