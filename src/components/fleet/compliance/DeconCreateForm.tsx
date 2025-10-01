@@ -358,7 +358,6 @@ export const DeconCreateForm: React.FC<Props> = ({ onSaved, onCancel }) => {
               className="w-full justify-start"
               onClick={() => setIsMethodsModalOpen(true)}
             >
-              <Sparkles className="mr-2 h-4 w-4" />
               {deconMethods.length === 0 ? "Select decon methods" : `${deconMethods.length} method${deconMethods.length > 1 ? 's' : ''} selected`}
             </Button>
             {deconMethods.length > 0 && (
