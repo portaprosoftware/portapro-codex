@@ -503,6 +503,19 @@ const TemplateForm: React.FC<{
 
   const vehicleTypeOptions = ['truck', 'van', 'trailer', 'pickup', 'suv', 'sedan'];
 
+  // Helper to check if category is locked (has other items with same category)
+  const isCategoryLocked = (itemIndex: number): boolean => {
+    const currentItem = items[itemIndex];
+    if (!currentItem?.category) return false;
+    
+    // Check if there are other items with the same category
+    return items.some((item, idx) => 
+      idx !== itemIndex && 
+      item.category === currentItem.category &&
+      item.item_name // Only count items with names
+    );
+  };
+
   return (
     <div className="space-y-6">
       {/* Template Details */}
@@ -635,15 +648,20 @@ const TemplateForm: React.FC<{
                       type="button"
                       variant="outline"
                       onClick={() => handleOpenTypeModal(index)}
-                      className={`w-full justify-start text-left font-normal ${!item.category ? 'text-muted-foreground' : ''}`}
+                      disabled={isCategoryLocked(index)}
+                      className={`w-full justify-start text-left font-normal ${!item.category ? 'text-muted-foreground' : ''} ${isCategoryLocked(index) ? 'opacity-60 cursor-not-allowed' : ''}`}
                     >
                       {getCategoryLabel(item.category || "")}
                     </Button>
-                    {item.category && (
+                    {isCategoryLocked(index) ? (
+                      <p className="text-xs text-muted-foreground ml-1">
+                        Category locked - delete items to change
+                      </p>
+                    ) : item.category ? (
                       <p className="text-xs text-muted-foreground ml-1">
                         Select to update category
                       </p>
-                    )}
+                    ) : null}
                   </div>
                 </div>
               </div>
