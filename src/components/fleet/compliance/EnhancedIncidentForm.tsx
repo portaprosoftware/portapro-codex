@@ -771,9 +771,9 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
                 <p className="text-xs text-muted-foreground mt-1">Maximum of 5 documents reached</p>
               )}
             </div>
-            {documentFiles.length > 0 && (
-              <div className="space-y-2">
-                <p className="text-sm font-medium">{documentFiles.length} / 5 document(s) selected:</p>
+            <div className="space-y-2">
+              <p className="text-sm font-medium">{documentFiles.length} / 5 document(s) selected:</p>
+              {documentFiles.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                   {Array.from(documentFiles).map((file, idx) => (
                     <Badge key={idx} variant="secondary" className="flex items-center gap-1 pr-1">
@@ -790,8 +790,8 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
                     </Badge>
                   ))}
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>
