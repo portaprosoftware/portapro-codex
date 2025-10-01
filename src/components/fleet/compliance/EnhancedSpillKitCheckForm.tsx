@@ -96,7 +96,8 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
         .split(' ')
         .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
         .join(' ');
-      setWeatherDetails(`${titleCaseDescription} • ${data.temp}°F • ${data.humidity}% humidity • Wind: ${data.windSpeed} mph`);
+      const locationStr = data.city && data.state ? ` - ${data.city}, ${data.state}` : '';
+      setWeatherDetails(`${titleCaseDescription} • ${data.temp}°F • ${data.humidity}% Humidity • Wind ${data.windSpeed} MPH${locationStr}`);
       
       toast({
         title: "Weather Updated",
