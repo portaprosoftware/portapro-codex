@@ -396,13 +396,13 @@ const TemplateForm: React.FC<{
   });
 
   const addItem = () => {
-    setItems([...items, {
+    setItems([{
       item_name: "",
       required_quantity: 1,
       critical_item: false,
       category: "",
       expiration_trackable: false
-    }]);
+    }, ...items]);
   };
 
   const removeItem = (index: number) => {
@@ -453,7 +453,7 @@ const TemplateForm: React.FC<{
           item_name: uniqueExamples[0]
         };
         
-        // Add additional items for remaining unique examples
+        // Add additional items at the top of the list
         const additionalItems = uniqueExamples.slice(1).map(example => ({
           item_name: example,
           required_quantity: 1,
@@ -462,8 +462,10 @@ const TemplateForm: React.FC<{
           expiration_trackable: false
         }));
         
-        // Insert additional items after the current item
-        newItems.splice(editingItemIndex + 1, 0, ...additionalItems);
+        // Insert additional items at the beginning (index 0)
+        if (additionalItems.length > 0) {
+          newItems.unshift(...additionalItems);
+        }
         setItems(newItems);
         
         // Show toast if some items were skipped
