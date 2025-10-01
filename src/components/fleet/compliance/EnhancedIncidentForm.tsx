@@ -473,8 +473,8 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
           <CardTitle className="text-base">Volume & Environmental Conditions</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
+          <div className="flex flex-col md:flex-row gap-4 items-end">
+            <div className="w-full md:w-48">
               <Label>Volume Estimate</Label>
               <Input
                 type="number"
@@ -485,7 +485,7 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
               />
             </div>
 
-            <div>
+            <div className="w-full md:w-48">
               <Label>Volume Unit</Label>
               <Select value={volumeUnit} onValueChange={setVolumeUnit}>
                 <SelectTrigger className="bg-white">
@@ -499,13 +499,13 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
               </Select>
             </div>
 
-            <div className="flex items-center space-x-2 pt-6">
+            <div className="flex items-center space-x-2 h-10">
               <Switch
                 id="regulatory"
                 checked={regulatoryNotificationRequired}
                 onCheckedChange={setRegulatoryNotificationRequired}
               />
-              <Label htmlFor="regulatory" className="font-medium">
+              <Label htmlFor="regulatory" className="font-medium whitespace-nowrap">
                 Reportable to EPA/State
               </Label>
             </div>
