@@ -377,7 +377,7 @@ const App = () => {
               <SignedOut><Auth /></SignedOut>
             </>
           } />
-          <Route path="/storage-sites" element={
+          <Route path="/admin/storage-locations" element={
             <>
               <SignedIn><Layout><StorageSites /></Layout></SignedIn>
               <SignedOut><Auth /></SignedOut>

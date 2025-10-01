@@ -12,6 +12,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { AddStorageSiteModal } from "@/components/inventory/AddStorageSiteModal";
 import { EditStorageSiteModal } from "@/components/inventory/EditStorageSiteModal";
 import { StorageLocationReporting } from "@/components/inventory/StorageLocationReporting";
+import { StorageSitesNavigation } from "@/components/inventory/StorageSitesNavigation";
 import { Plus, MapPin, Edit, Trash2, Building, BarChart3, MoreHorizontal, Package, Droplet, Truck } from "lucide-react";
 import { toast } from "sonner";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -212,8 +213,18 @@ export default function StorageSites() {
     deleteMutation.mutate(site.id);
   };
 
-  return (
-    <FleetLayout>
+  const handleAddStorage = () => {
+    setShowAddModal(true);
+  };
+
+  const isFleetRoute = location.pathname.startsWith('/fleet');
+
+  const content = (
+    <>
+      {!isFleetRoute && (
+        <StorageSitesNavigation onAddStorage={handleAddStorage} />
+      )}
+      
       <Card className="rounded-2xl border-gray-200">
           <CardHeader>
             <div className="flex justify-between items-center">
@@ -430,6 +441,8 @@ export default function StorageSites() {
           onClose={() => setEditingSite(null)}
         />
       )}
-    </FleetLayout>
+    </>
   );
+
+  return isFleetRoute ? <FleetLayout>{content}</FleetLayout> : <div className="space-y-6">{content}</div>;
 }

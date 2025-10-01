@@ -13,6 +13,7 @@ import {
   LogOut,
   Droplets,
   ClipboardCheck,
+  Warehouse,
 } from "lucide-react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useClerk, useUser, UserButton } from "@clerk/clerk-react";
@@ -53,6 +54,7 @@ const Sidebar = () => {
     { icon: ClipboardCheck, label: "Services Hub", path: "/maintenance-hub" },
     { icon: BarChart3, label: "Analytics", path: "/analytics" },
     { icon: Megaphone, label: "Marketing", path: "/marketing" },
+    { icon: Warehouse, label: "Storage Locations", path: "/admin/storage-locations" },
     { icon: Settings, label: "Settings", path: "/settings" },
   ];
 
