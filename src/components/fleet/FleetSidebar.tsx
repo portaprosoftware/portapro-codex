@@ -13,7 +13,8 @@ import {
   Settings,
   Package,
   BarChart3,
-  Shield
+  Shield,
+  Warehouse
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -52,6 +53,12 @@ export const FleetSidebar: React.FC = () => {
       href: "/fleet/truck-stock",
       icon: Package,
       description: "Per-vehicle consumables"
+    },
+    {
+      title: "Storage Locations",
+      href: "/fleet/storage-locations",
+      icon: Warehouse,
+      description: "Inventory & spill kit storage"
     },
     {
       title: "Transport & Spill Compliance",

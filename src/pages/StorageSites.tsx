@@ -12,7 +12,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { AddStorageSiteModal } from "@/components/inventory/AddStorageSiteModal";
 import { EditStorageSiteModal } from "@/components/inventory/EditStorageSiteModal";
 import { StorageLocationReporting } from "@/components/inventory/StorageLocationReporting";
-import { Plus, MapPin, Edit, Trash2, Building, BarChart3, MoreHorizontal } from "lucide-react";
+import { Plus, MapPin, Edit, Trash2, Building, BarChart3, MoreHorizontal, Package, Droplet, Truck } from "lucide-react";
 import { toast } from "sonner";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Navigate, useLocation } from "react-router-dom";
@@ -28,9 +28,18 @@ interface StorageLocation {
   custom_state?: string;
   custom_zip?: string;
   gps_coordinates?: { x: number; y: number };
+  location_type?: string;
+  vehicle_id?: string;
   is_default: boolean;
   is_active: boolean;
   created_at: string;
+}
+
+interface LocationUsage {
+  location_id: string;
+  inventory_count: number;
+  spill_kit_count: number;
+  vehicle_assigned: boolean;
 }
 
 export default function StorageSites() {
@@ -84,6 +93,58 @@ export default function StorageSites() {
       
       if (error) throw error;
       return data;
+    }
+  });
+
+  // Fetch usage statistics for each storage location
+  const { data: locationUsage } = useQuery({
+    queryKey: ['storage-location-usage'],
+    queryFn: async () => {
+      // Get inventory item counts per location
+      const { data: inventoryData, error: invError } = await supabase
+        .from('product_items')
+        .select('current_storage_location_id');
+      
+      // Get spill kit stock counts per location
+      const { data: spillKitData, error: spillError } = await supabase
+        .from('spill_kit_location_stock')
+        .select('storage_location_id, quantity');
+
+      if (invError || spillError) {
+        console.error('Error fetching usage:', invError || spillError);
+        return [];
+      }
+
+      // Calculate counts per location
+      const usageMap = new Map<string, LocationUsage>();
+      
+      // Count inventory items
+      inventoryData?.forEach(item => {
+        if (item.current_storage_location_id) {
+          const existing = usageMap.get(item.current_storage_location_id) || {
+            location_id: item.current_storage_location_id,
+            inventory_count: 0,
+            spill_kit_count: 0,
+            vehicle_assigned: false
+          };
+          existing.inventory_count++;
+          usageMap.set(item.current_storage_location_id, existing);
+        }
+      });
+
+      // Count spill kits
+      spillKitData?.forEach(stock => {
+        const existing = usageMap.get(stock.storage_location_id) || {
+          location_id: stock.storage_location_id,
+          inventory_count: 0,
+          spill_kit_count: 0,
+          vehicle_assigned: false
+        };
+        existing.spill_kit_count += stock.quantity;
+        usageMap.set(stock.storage_location_id, existing);
+      });
+
+      return Array.from(usageMap.values());
     }
   });
 
@@ -177,6 +238,7 @@ export default function StorageSites() {
                     <TableRow>
                       <TableHead>Name</TableHead>
                       <TableHead>Address</TableHead>
+                      <TableHead>Contents</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead className="w-32">Actions</TableHead>
                     </TableRow>
@@ -184,6 +246,7 @@ export default function StorageSites() {
                   <TableBody>
                     {storageLocations?.map((site) => {
                       const addressInfo = formatAddress(site);
+                      const usage = locationUsage?.find(u => u.location_id === site.id);
                       
                       return (
                         <TableRow key={site.id}>
@@ -196,6 +259,11 @@ export default function StorageSites() {
                                   <div className="text-sm text-muted-foreground">
                                     {site.description}
                                   </div>
+                                )}
+                                {site.location_type && site.location_type !== 'warehouse' && (
+                                  <Badge variant="outline" className="mt-1 text-xs capitalize">
+                                    {site.location_type}
+                                  </Badge>
                                 )}
                               </div>
                             </div>
@@ -211,6 +279,40 @@ export default function StorageSites() {
                                   {addressInfo.address}
                                 </div>
                               </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex flex-wrap gap-1">
+                              {usage?.inventory_count > 0 && (
+                                <Badge 
+                                  variant="secondary" 
+                                  className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold"
+                                >
+                                  <Package className="h-3 w-3 mr-1" />
+                                  {usage.inventory_count} Items
+                                </Badge>
+                              )}
+                              {usage?.spill_kit_count > 0 && (
+                                <Badge 
+                                  variant="secondary" 
+                                  className="bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold"
+                                >
+                                  <Droplet className="h-3 w-3 mr-1" />
+                                  {usage.spill_kit_count} Spill Kits
+                                </Badge>
+                              )}
+                              {site.location_type === 'vehicle' && (
+                                <Badge 
+                                  variant="secondary" 
+                                  className="bg-gradient-to-r from-purple-500 to-purple-600 text-white font-bold"
+                                >
+                                  <Truck className="h-3 w-3 mr-1" />
+                                  Vehicle Storage
+                                </Badge>
+                              )}
+                              {!usage?.inventory_count && !usage?.spill_kit_count && site.location_type !== 'vehicle' && (
+                                <span className="text-sm text-muted-foreground">Empty</span>
+                              )}
                             </div>
                           </TableCell>
                           <TableCell>

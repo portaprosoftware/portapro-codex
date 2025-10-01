@@ -44,7 +44,7 @@ export function AdminSpillKitDashboard({
         </div>
         <Button 
           variant="outline" 
-          onClick={() => navigate('/fleet/spill-kit-storage')}
+          onClick={() => navigate('/fleet/storage-locations')}
           className="gap-2"
         >
           <MapPin className="h-4 w-4" />

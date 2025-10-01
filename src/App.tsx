@@ -299,6 +299,12 @@ const App = () => {
               <SignedOut><Auth /></SignedOut>
             </>
           } />
+          <Route path="/fleet/storage-locations" element={
+            <>
+              <SignedIn><Layout><StorageSites /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
           <Route path="/fleet/maintenance" element={
             <>
               <SignedIn><Layout><FleetMaintenancePage /></Layout></SignedIn>

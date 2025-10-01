@@ -9,7 +9,8 @@ import {
   Wrench, 
   Fuel, 
   FolderOpen,
-  Package
+  Package,
+  Warehouse
 } from "lucide-react";
 import { TabNav } from "@/components/ui/TabNav";
 import { Badge } from "@/components/ui/badge";
@@ -46,6 +47,11 @@ export const FleetNavigation: React.FC = () => {
       title: "Stock",
       href: "/fleet/truck-stock",
       icon: Package
+    },
+    {
+      title: "Storage Locations",
+      href: "/fleet/storage-locations",
+      icon: Warehouse
     },
     {
       title: "Compliance",
