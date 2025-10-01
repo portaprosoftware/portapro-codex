@@ -37,6 +37,8 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { StorageLocationAssignmentModal } from './StorageLocationAssignmentModal';
 import { ViewSpillKitInventoryModal } from './ViewSpillKitInventoryModal';
+import { BarcodeScannerModal } from '@/components/ui/barcode-scanner';
+import { DesktopBarcodeInput } from '@/components/ui/desktop-barcode-input';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -87,6 +89,7 @@ export function EnhancedSpillKitInventoryManager() {
   const [currentStep, setCurrentStep] = useState(1);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
+  const [showScannerModal, setShowScannerModal] = useState(false);
   
   const [formData, setFormData] = useState({
     item_name: '',
@@ -782,10 +785,14 @@ export function EnhancedSpillKitInventoryManager() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="supplier_sku">Supplier SKU</Label>
-                      <Input
+                      <DesktopBarcodeInput
                         id="supplier_sku"
                         value={formData.supplier_sku}
                         onChange={(e) => setFormData({ ...formData, supplier_sku: e.target.value })}
+                        onScanResult={(barcode) => setFormData({ ...formData, supplier_sku: barcode })}
+                        onCameraScan={() => setShowScannerModal(true)}
+                        placeholder="Scan or enter SKU"
+                        scannerEnabled={true}
                       />
                     </div>
                   </div>
@@ -953,6 +960,17 @@ export function EnhancedSpillKitInventoryManager() {
           itemId={viewingItemId}
         />
       )}
+
+      {/* Barcode Scanner Modal */}
+      <BarcodeScannerModal
+        isOpen={showScannerModal}
+        onClose={() => setShowScannerModal(false)}
+        onScanResult={(barcode) => {
+          setFormData({ ...formData, supplier_sku: barcode });
+          setShowScannerModal(false);
+          toast.success('Barcode scanned successfully');
+        }}
+      />
     </div>
   );
 }
