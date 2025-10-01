@@ -191,6 +191,29 @@ export function SpillKitInspectionHistory() {
     }
   });
 
+  // Fetch inventory items for name lookup
+  const { data: inventoryItems } = useQuery({
+    queryKey: ['spill-kit-inventory'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('spill_kit_inventory')
+        .select('id, item_name')
+        .order('item_name');
+      
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  // Create inventory lookup map
+  const inventoryMap = React.useMemo(() => {
+    const map: Record<string, string> = {};
+    inventoryItems?.forEach(item => {
+      map[item.id] = item.item_name;
+    });
+    return map;
+  }, [inventoryItems]);
+
   // Filter inspections by search text
   const filteredInspections = React.useMemo(() => {
     if (!allInspections) return [];
@@ -315,10 +338,11 @@ export function SpillKitInspectionHistory() {
                 <div className="grid gap-2">
                   {itemsWithExpiration.map(([itemId, condition]: [string, any]) => {
                     const expirationStatus = getExpirationStatus(condition.expiration_date);
+                    const itemName = inventoryMap[itemId] || itemId;
                     return (
                       <div key={itemId} className="flex items-center justify-between p-2 bg-white rounded border">
                         <div className="flex-1">
-                          <p className="font-medium text-sm">{condition.item_name || itemId}</p>
+                          <p className="font-medium text-sm">{itemName}</p>
                           {condition.item_category && (
                             <p className="text-xs text-muted-foreground">{condition.item_category}</p>
                           )}
