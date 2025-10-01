@@ -424,12 +424,12 @@ export function EnhancedSpillKitInventoryManager() {
                       {item.item_type}
                     </Badge>
                   </TableCell>
-                  <TableCell>${item.unit_cost.toFixed(2)}</TableCell>
+                  <TableCell>${item.unit_cost !== null ? item.unit_cost.toFixed(2) : 'N/A'}</TableCell>
                   <TableCell>
-                    <span className={item.current_stock <= item.minimum_threshold ? 'font-bold text-destructive' : ''}>
-                      {item.current_stock}
+                    <span className={item.current_stock !== null && item.minimum_threshold !== null && item.current_stock <= item.minimum_threshold ? 'font-bold text-destructive' : ''}>
+                      {item.current_stock !== null ? item.current_stock : '—'}
                     </span>
-                    <span className="text-muted-foreground text-xs"> / {item.minimum_threshold}</span>
+                    <span className="text-muted-foreground text-xs"> / {item.minimum_threshold !== null ? item.minimum_threshold : '—'}</span>
                   </TableCell>
                   <TableCell className={getExpirationColor(item.expiration_date)}>
                     {item.expiration_date ? format(new Date(item.expiration_date), 'MMM dd, yyyy') : '—'}
