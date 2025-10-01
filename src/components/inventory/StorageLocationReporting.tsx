@@ -473,7 +473,7 @@ export function StorageLocationReporting() {
                               </div>
                               <div className="text-right">
                                 <div className="text-sm font-medium">
-                                  {location.total_items} items • {location.total_quantity} units
+                                  {location.total_items} consumables • {location.total_quantity} units
                                 </div>
                                 <div className="text-lg font-bold text-primary">
                                   ${location.total_value.toLocaleString()}
