@@ -28,6 +28,9 @@ interface ComplianceReport {
   vehicle_details: Array<{
     vehicle_id: string;
     license_plate: string;
+    make?: string;
+    model?: string;
+    nickname?: string;
     last_check_date: string | null;
     has_kit: boolean;
     compliance_status: string;
@@ -146,11 +149,18 @@ SUMMARY:
 - Compliance Rate: ${report.summary.compliance_rate}%
 
 VEHICLE DETAILS:
-${report.vehicle_details.map(v => `
-${v.license_plate} - Status: ${v.compliance_status}
+${report.vehicle_details.map(v => {
+  const vehicleName = v.make && v.model 
+    ? `${v.make} ${v.model}${v.nickname ? ` - ${v.nickname}` : ''}`
+    : v.license_plate;
+  return `
+${vehicleName}
+License Plate: ${v.license_plate}
+Status: ${v.compliance_status}
 Last Check: ${v.last_check_date || 'Never'}
 Has Kit: ${v.has_kit ? 'Yes' : 'No'}
-`).join('\n')}
+`;
+}).join('\n')}
       `;
 
       const blob = new Blob([textContent], { type: "text/plain" });
@@ -334,7 +344,7 @@ Has Kit: ${v.has_kit ? 'Yes' : 'No'}
           {/* Vehicle Details Table */}
           <Card>
             <CardHeader>
-              <CardTitle>Vehicle Details</CardTitle>
+              <h3 className="text-base font-semibold">Vehicle Details</h3>
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
@@ -351,7 +361,18 @@ Has Kit: ${v.has_kit ? 'Yes' : 'No'}
                   <tbody>
                     {report.vehicle_details.map((vehicle) => (
                       <tr key={vehicle.vehicle_id} className="border-b">
-                        <td className="p-2 font-medium">{vehicle.license_plate}</td>
+                        <td className="p-2 font-medium">
+                          <div className="flex flex-col">
+                            {vehicle.make && vehicle.model ? (
+                              <>
+                                <span>{vehicle.make} {vehicle.model}{vehicle.nickname ? ` - ${vehicle.nickname}` : ''}</span>
+                                <span className="text-sm text-muted-foreground">{vehicle.license_plate}</span>
+                              </>
+                            ) : (
+                              <span>{vehicle.license_plate}</span>
+                            )}
+                          </div>
+                        </td>
                         <td className="p-2">
                           <Badge variant={getStatusBadgeVariant(vehicle.compliance_status)}>
                             {getStatusBadgeText(vehicle.compliance_status)}
