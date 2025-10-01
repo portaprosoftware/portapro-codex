@@ -158,6 +158,8 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
       // Initialize item conditions - don't pre-select any status
       const initialConditions: Record<string, ItemCondition> = {};
       setItemConditions(initialConditions);
+      // Reset the "Mark All as Present" button state
+      setAllMarkedPresent(false);
     }
   }, [autoTemplateData, manuallySelectedTemplateId, allTemplates]);
 
