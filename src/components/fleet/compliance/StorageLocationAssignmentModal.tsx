@@ -9,8 +9,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { MapPin, Plus, X } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
 
 interface StorageLocation {
   id: string;
@@ -38,14 +39,14 @@ export function StorageLocationAssignmentModal({
   locationAssignments,
   onUpdateAssignments,
 }: StorageLocationAssignmentModalProps) {
-  const handleAddLocation = (locationId: string) => {
-    if (!locationAssignments.find(a => a.location_id === locationId)) {
+  const handleToggleLocation = (locationId: string, enabled: boolean) => {
+    if (enabled) {
+      // Add location with 0 quantity
       onUpdateAssignments([...locationAssignments, { location_id: locationId, quantity: 0 }]);
+    } else {
+      // Remove location
+      onUpdateAssignments(locationAssignments.filter(a => a.location_id !== locationId));
     }
-  };
-
-  const handleRemoveLocation = (locationId: string) => {
-    onUpdateAssignments(locationAssignments.filter(a => a.location_id !== locationId));
   };
 
   const handleUpdateQuantity = (locationId: string, quantity: number) => {
@@ -56,10 +57,16 @@ export function StorageLocationAssignmentModal({
     );
   };
 
+  const isLocationEnabled = (locationId: string) => {
+    return locationAssignments.some(a => a.location_id === locationId);
+  };
+
+  const getLocationQuantity = (locationId: string) => {
+    const assignment = locationAssignments.find(a => a.location_id === locationId);
+    return assignment?.quantity || 0;
+  };
+
   const totalQuantity = locationAssignments.reduce((sum, loc) => sum + loc.quantity, 0);
-  const availableLocations = storageLocations.filter(
-    loc => !locationAssignments.find(a => a.location_id === loc.id)
-  );
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -72,73 +79,46 @@ export function StorageLocationAssignmentModal({
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          {/* Available Locations */}
-          {availableLocations.length > 0 && (
-            <div className="space-y-2">
-              <Label>Available Storage Garages</Label>
-              <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto p-2 border rounded-lg">
-                {availableLocations.map(location => (
-                  <Button
-                    key={location.id}
-                    type="button"
-                    variant="outline"
-                    className="justify-between h-auto py-3"
-                    onClick={() => handleAddLocation(location.id)}
-                  >
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-muted-foreground" />
-                      <div className="text-left">
-                        <p className="font-medium">{location.name}</p>
+          {/* All Storage Locations with Toggles */}
+          <div className="space-y-2">
+            <Label>Storage Garage Locations</Label>
+            {storageLocations && storageLocations.length > 0 ? (
+              <div className="space-y-2">
+                {storageLocations.map(location => {
+                  const enabled = isLocationEnabled(location.id);
+                  const quantity = getLocationQuantity(location.id);
+                  
+                  return (
+                    <div
+                      key={location.id}
+                      className={`flex items-center gap-3 p-3 border rounded-lg transition-colors ${
+                        enabled ? 'bg-muted/30 border-primary/30' : 'bg-background'
+                      }`}
+                    >
+                      <Switch
+                        checked={enabled}
+                        onCheckedChange={(checked) => handleToggleLocation(location.id, checked)}
+                      />
+                      <MapPin className={`h-4 w-4 flex-shrink-0 ${enabled ? 'text-primary' : 'text-muted-foreground'}`} />
+                      <div className="flex-1">
+                        <p className={`font-medium ${enabled ? 'text-foreground' : 'text-muted-foreground'}`}>
+                          {location.name}
+                        </p>
                         {location.description && (
                           <p className="text-xs text-muted-foreground">{location.description}</p>
                         )}
                       </div>
-                    </div>
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Assigned Locations */}
-          <div className="space-y-2">
-            <Label>Assigned Locations</Label>
-            {locationAssignments.length > 0 ? (
-              <div className="space-y-2">
-                {locationAssignments.map(assignment => {
-                  const location = storageLocations.find(l => l.id === assignment.location_id);
-                  return (
-                    <div
-                      key={assignment.location_id}
-                      className="flex items-center gap-3 p-3 border rounded-lg bg-muted/30"
-                    >
-                      <MapPin className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                      <div className="flex-1">
-                        <p className="font-medium">{location?.name}</p>
-                        {location?.description && (
-                          <p className="text-xs text-muted-foreground">{location.description}</p>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2">
+                      <div className="w-24">
                         <Input
                           type="number"
                           min="0"
                           placeholder="Qty"
-                          className="w-24"
-                          value={assignment.quantity || ''}
+                          disabled={!enabled}
+                          value={enabled ? quantity : ''}
                           onChange={(e) =>
-                            handleUpdateQuantity(assignment.location_id, parseInt(e.target.value) || 0)
+                            handleUpdateQuantity(location.id, parseInt(e.target.value) || 0)
                           }
                         />
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleRemoveLocation(assignment.location_id)}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
                       </div>
                     </div>
                   );
@@ -148,7 +128,7 @@ export function StorageLocationAssignmentModal({
               <div className="text-center py-8 border-2 border-dashed rounded-lg">
                 <MapPin className="h-12 w-12 mx-auto mb-2 text-muted-foreground opacity-50" />
                 <p className="text-sm text-muted-foreground">
-                  No locations assigned yet. Select locations above to begin.
+                  No storage garage locations found. Add locations in Inventory → Storage Garages first.
                 </p>
               </div>
             )}

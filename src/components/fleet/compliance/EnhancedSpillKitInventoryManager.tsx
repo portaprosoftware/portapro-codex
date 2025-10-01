@@ -828,7 +828,7 @@ export function EnhancedSpillKitInventoryManager() {
       <StorageLocationAssignmentModal
         isOpen={showLocationAssignmentModal}
         onClose={() => setShowLocationAssignmentModal(false)}
-        storageLocations={storageLocations || []}
+        storageLocations={inventoryStorageLocations || []}
         locationAssignments={locationAssignments}
         onUpdateAssignments={setLocationAssignments}
       />
