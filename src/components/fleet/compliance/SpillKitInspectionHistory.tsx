@@ -9,11 +9,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format, parseISO, differenceInDays, startOfDay, endOfDay } from "date-fns";
-import { CheckCircle, XCircle, Clock, AlertTriangle, CalendarIcon, Search, ChevronLeft, ChevronRight as ChevronRightIcon, Truck, Filter as FilterIcon } from "lucide-react";
+import { CheckCircle, XCircle, Clock, AlertTriangle, CalendarIcon, Search, ChevronLeft, ChevronRight as ChevronRightIcon, Truck, Eye, Edit, Trash2 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MultiSelectVehicleFilter } from "../MultiSelectVehicleFilter";
+import { SpillKitInspectionDetailModal } from "./SpillKitInspectionDetailModal";
 
 type InspectionRecord = {
   id: string;
@@ -33,6 +34,8 @@ export function SpillKitInspectionHistory() {
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [endDate, setEndDate] = useState<Date | undefined>();
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [selectedInspectionId, setSelectedInspectionId] = useState<string | null>(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const rowsPerPage = 25;
 
   const { data: allInspections, isLoading } = useQuery({
@@ -50,6 +53,7 @@ export function SpillKitInspectionHistory() {
           checked_by_clerk,
           vehicles(id, license_plate, vehicle_type, make, model, nickname)
         `)
+        .is('deleted_at', null)
         .order("created_at", { ascending: false });
 
       // Filter by selected vehicles
@@ -164,11 +168,13 @@ export function SpillKitInspectionHistory() {
 
     return (
       <>
-        <TableRow className="cursor-pointer hover:bg-muted/50" onClick={() => setIsOpen(!isOpen)}>
+        <TableRow className="hover:bg-muted/50">
           <TableCell>
             <div className="flex items-center gap-2">
               {itemsWithExpiration.length > 0 && (
-                isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />
+                <button onClick={() => setIsOpen(!isOpen)} className="p-0">
+                  {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                </button>
               )}
               {format(parseISO(inspection.created_at), 'MMM dd, yyyy HH:mm')}
             </div>
@@ -194,6 +200,20 @@ export function SpillKitInspectionHistory() {
             )}
           </TableCell>
           <TableCell className="text-sm text-muted-foreground">{inspection.performed_by}</TableCell>
+          <TableCell>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setSelectedInspectionId(inspection.id);
+                  setIsDetailModalOpen(true);
+                }}
+              >
+                <Eye className="h-4 w-4" />
+              </Button>
+            </div>
+          </TableCell>
         </TableRow>
         {isOpen && itemsWithExpiration.length > 0 && (
           <TableRow>
@@ -359,6 +379,7 @@ export function SpillKitInspectionHistory() {
               <TableHead>Kit Status</TableHead>
               <TableHead>Tracked Items</TableHead>
               <TableHead>Performed By</TableHead>
+              <TableHead className="w-[100px]">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -368,7 +389,7 @@ export function SpillKitInspectionHistory() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
+                <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
                   {isLoading ? "Loading..." : "No inspection records found"}
                 </TableCell>
               </TableRow>
@@ -431,6 +452,22 @@ export function SpillKitInspectionHistory() {
           </div>
         )}
       </Card>
+
+      {/* Detail Modal */}
+      <SpillKitInspectionDetailModal
+        inspectionId={selectedInspectionId}
+        isOpen={isDetailModalOpen}
+        onClose={() => {
+          setIsDetailModalOpen(false);
+          setSelectedInspectionId(null);
+        }}
+        onDeleted={() => {
+          // Refresh happens automatically via query invalidation
+        }}
+        onSaved={() => {
+          // Refresh happens automatically via query invalidation
+        }}
+      />
     </div>
   );
 }

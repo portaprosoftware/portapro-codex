@@ -9336,6 +9336,7 @@ export type Database = {
           completion_status: string | null
           contents: Json
           created_at: string
+          deleted_at: string | null
           has_kit: boolean
           id: string
           inspection_duration_minutes: number | null
@@ -9354,6 +9355,7 @@ export type Database = {
           completion_status?: string | null
           contents?: Json
           created_at?: string
+          deleted_at?: string | null
           has_kit: boolean
           id?: string
           inspection_duration_minutes?: number | null
@@ -9372,6 +9374,7 @@ export type Database = {
           completion_status?: string | null
           contents?: Json
           created_at?: string
+          deleted_at?: string | null
           has_kit?: boolean
           id?: string
           inspection_duration_minutes?: number | null
