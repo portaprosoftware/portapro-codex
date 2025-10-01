@@ -530,7 +530,7 @@ export function StorageLocationReporting() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
                 <CardTitle className="flex items-center gap-2">
-                  <Droplet className="h-5 w-5 text-primary" />
+                  <span className="text-2xl">🧻</span>
                   Consumable Details by Location
                 </CardTitle>
                 <div className="flex gap-2">
