@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { StatCard } from '@/components/ui/StatCard';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useNavigate } from 'react-router-dom';
+import { Droplets } from 'lucide-react';
 
 
 export const CompactConsumablesCard: React.FC = () => {
@@ -75,7 +76,7 @@ export const CompactConsumablesCard: React.FC = () => {
     <StatCard
       title="Consumables Alert"
       value={totalStats?.lowStockCount || 0}
-      emoji="🧻"
+      icon={Droplets}
       gradientFrom="#ea580c"
       gradientTo="#c2410c"
       iconBg="#ea580c"

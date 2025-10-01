@@ -379,7 +379,7 @@ export function StorageLocationReporting() {
                     <div className="text-2xl font-bold">{reportData.summary.total_consumable_types}</div>
                     <div className="text-sm text-muted-foreground">Consumable Types</div>
                   </div>
-                  <span className="text-4xl">🧻</span>
+                  <Droplet className="h-8 w-8 text-primary" />
                 </div>
               </CardContent>
             </Card>
@@ -425,7 +425,7 @@ export function StorageLocationReporting() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
                 <CardTitle className="flex items-center gap-2">
-                  <span className="text-2xl">🧻</span>
+                  <Droplet className="h-5 w-5 text-primary" />
                   Consumable Details by Location
                 </CardTitle>
                 <div className="flex gap-2">
