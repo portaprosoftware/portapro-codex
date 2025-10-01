@@ -375,7 +375,7 @@ export function EnhancedSpillKitInventoryManager() {
     
     // Check low stock
     if (item.current_stock <= item.minimum_threshold) {
-      return <Badge className="bg-gradient-to-r from-yellow-400 to-orange-400 text-black font-bold border-none">Low Stock</Badge>;
+      return <Badge className="bg-gradient-to-r from-yellow-400 to-orange-400 text-white font-bold border-none">Low Stock</Badge>;
     }
     
     // In stock

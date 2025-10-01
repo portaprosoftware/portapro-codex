@@ -105,7 +105,7 @@ export function SpillKitInventoryDashboard() {
     
     // Check low stock
     if (item.current_stock <= item.minimum_threshold) {
-      return <Badge variant="outline" className="bg-gradient-to-r from-yellow-400 to-orange-400 text-black border-yellow-600">🟡 Low Stock</Badge>;
+      return <Badge variant="outline" className="bg-gradient-to-r from-yellow-400 to-orange-400 text-white font-bold border-yellow-600">🟡 Low Stock</Badge>;
     }
     
     // In stock
