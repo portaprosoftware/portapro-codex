@@ -20,6 +20,8 @@ import { useToast } from "@/hooks/use-toast";
 import { formatBadgeText } from "@/lib/textUtils";
 import { useUserRole } from "@/hooks/useUserRole";
 import { RoleBadge } from "./RoleBadge";
+import { SignatureCapture } from "./SignatureCapture";
+import { VideoCapture } from "./VideoCapture";
 
 type Props = {
   onSaved?: () => void;
@@ -61,9 +63,12 @@ export const DeconCreateForm: React.FC<Props> = ({ onSaved, onCancel }) => {
   
   // Verification
   const [postInspectionStatus, setPostInspectionStatus] = useState<string>("");
-  const [inspectorSignature, setInspectorSignature] = useState<string>("");
+  const [inspectorSignature, setInspectorSignature] = useState<string | null>(null);
+  const [secondarySignature, setSecondarySignature] = useState<string | null>(null);
   const [photos, setPhotos] = useState<string[]>([]);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [followUpRequired, setFollowUpRequired] = useState<boolean>(false);
+  const [enableDualSignOff, setEnableDualSignOff] = useState<boolean>(false);
   
   // Notes
   const [notes, setNotes] = useState<string>("");
@@ -96,10 +101,11 @@ export const DeconCreateForm: React.FC<Props> = ({ onSaved, onCancel }) => {
 
   const canSave = useMemo(() => {
     const hasRequiredFields = incidentId.trim().length > 0 && vehicleId.trim().length > 0 && vehicleAreas.length > 0;
-    const hasSignature = inspectorSignature.trim().length > 0;
+    const hasSignature = inspectorSignature !== null;
     const hasRequiredPhotos = postInspectionStatus !== 'fail' || photos.length > 0;
-    return hasRequiredFields && hasSignature && hasRequiredPhotos;
-  }, [incidentId, vehicleId, vehicleAreas, inspectorSignature, postInspectionStatus, photos]);
+    const hasSecondaryIfNeeded = !enableDualSignOff || secondarySignature !== null;
+    return hasRequiredFields && hasSignature && hasRequiredPhotos && hasSecondaryIfNeeded;
+  }, [incidentId, vehicleId, vehicleAreas, inspectorSignature, postInspectionStatus, photos, enableDualSignOff, secondarySignature]);
   
   const handleAutoAddWeather = async () => {
     setIsAutoWeatherLoading(true);
@@ -148,6 +154,11 @@ export const DeconCreateForm: React.FC<Props> = ({ onSaved, onCancel }) => {
     try {
       const verificationTimestamp = new Date().toISOString();
       
+      // Combine signatures if dual sign-off is enabled
+      const combinedNotes = enableDualSignOff && secondarySignature
+        ? `${notes}\n\n[Secondary Signature Captured]`
+        : notes;
+      
       const { error } = await supabase
         .from("decon_logs")
         .insert({
@@ -166,8 +177,8 @@ export const DeconCreateForm: React.FC<Props> = ({ onSaved, onCancel }) => {
           inspector_role: inspectorRole,
           verification_timestamp: verificationTimestamp,
           follow_up_required: followUpRequired,
-          photos: photos,
-          notes: notes || null,
+          photos: videoUrl ? [...photos, `VIDEO:${videoUrl}`] : photos,
+          notes: combinedNotes || null,
           performed_by_clerk: userId || "dispatch",
         });
 
@@ -458,14 +469,37 @@ export const DeconCreateForm: React.FC<Props> = ({ onSaved, onCancel }) => {
             </div>
           )}
 
-          <div>
-            <Label className="mb-2 block">Inspector Signature *</Label>
-            <Input
-              placeholder="Type your full name to sign"
-              value={inspectorSignature}
-              onChange={(e) => setInspectorSignature(e.target.value)}
+          {/* Dual Sign-Off Toggle */}
+          <div className="flex items-center justify-between p-4 border rounded-lg bg-blue-50 dark:bg-blue-950/10">
+            <div>
+              <Label htmlFor="dual-signoff" className="font-semibold">Enable Dual Sign-Off</Label>
+              <p className="text-sm text-muted-foreground">Require both driver and inspector signatures</p>
+            </div>
+            <Switch
+              id="dual-signoff"
+              checked={enableDualSignOff}
+              onCheckedChange={setEnableDualSignOff}
             />
           </div>
+
+          <div>
+            <SignatureCapture
+              onSignatureChange={setInspectorSignature}
+              label="Inspector Signature"
+              required={true}
+            />
+          </div>
+
+          {/* Secondary Signature (conditional) */}
+          {enableDualSignOff && (
+            <div className="border-t pt-4">
+              <SignatureCapture
+                onSignatureChange={setSecondarySignature}
+                label="Driver/Secondary Signature"
+                required={true}
+              />
+            </div>
+          )}
 
           <div>
             <div className="flex items-center justify-between mb-2">
@@ -481,6 +515,15 @@ export const DeconCreateForm: React.FC<Props> = ({ onSaved, onCancel }) => {
               onPhotosChange={setPhotos}
               maxPhotos={10}
               initialPhotos={photos}
+            />
+          </div>
+
+          {/* Video Upload (Optional) */}
+          <div>
+            <Label className="mb-2 block">Video Evidence (Optional)</Label>
+            <VideoCapture
+              onVideoChange={setVideoUrl}
+              maxSizeMB={50}
             />
           </div>
         </CardContent>
