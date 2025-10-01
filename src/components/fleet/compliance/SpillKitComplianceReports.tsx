@@ -198,7 +198,7 @@ Has Kit: ${v.has_kit ? 'Yes' : 'No'}
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold">Compliance Reports</h2>
+          <h2 className="text-lg font-semibold">Vehicle Spill Kit Reports</h2>
           <p className="text-muted-foreground">Generate and export DOT/OSHA compliance reports</p>
         </div>
       </div>

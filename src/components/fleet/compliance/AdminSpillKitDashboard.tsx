@@ -62,7 +62,7 @@ export function AdminSpillKitDashboard({
           <ProtectedComponent requiredPermission="canViewSpillKitReports" fallback={null} showError={false}>
             <TabsTrigger value="reports">
               <FileText className="h-4 w-4 mr-2" />
-              Reports
+              Vehicles
             </TabsTrigger>
           </ProtectedComponent>
           <ProtectedComponent requiredPermission="canManageSpillKitRestock" fallback={null} showError={false}>
