@@ -189,12 +189,12 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
 
       {/* Action Buttons */}
       {canAddMorePhotos && !isCapturing && (
-        <div className="flex gap-2">
+        <div className="grid grid-cols-2 gap-2 max-w-4xl">
           <Button
             type="button"
             variant="outline"
             onClick={startCamera}
-            className="flex-1"
+            className="justify-center"
           >
             <Camera className="h-4 w-4 mr-2" />
             Take Photo
@@ -203,7 +203,7 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
             type="button"
             variant="outline"
             onClick={() => fileInputRef.current?.click()}
-            className="flex-1"
+            className="justify-center"
           >
             <Upload className="h-4 w-4 mr-2" />
             Upload Photo

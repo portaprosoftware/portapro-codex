@@ -392,12 +392,12 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
             <div>
               <Label>Weather Conditions</Label>
               <div className="space-y-2">
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2 max-w-4xl">
                   <Button
                     type="button"
                     variant="outline"
                     onClick={() => setIsWeatherModalOpen(true)}
-                    className="justify-start gap-2 bg-white"
+                    className="justify-center gap-2 bg-white"
                   >
                     <Cloud className="h-4 w-4" />
                     {weatherConditions.length > 0 ? (
@@ -411,7 +411,7 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
                     variant="outline" 
                     onClick={fetchCurrentWeather}
                     disabled={fetchingWeather || !latitude}
-                    className="justify-start gap-2"
+                    className="justify-center gap-2"
                   >
                     {fetchingWeather ? (
                       <>

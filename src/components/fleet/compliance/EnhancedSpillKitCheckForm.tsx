@@ -603,8 +603,8 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
             {/* Automation Options */}
             <div className="space-y-3">
               <Label className="text-sm font-medium">Automation Options</Label>
-              <div className="flex items-start gap-3">
-                <div className="flex-1 space-y-1">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
                   <Label htmlFor="auto-restock">Automatic Restock Requests</Label>
                   <p className="text-sm text-muted-foreground">
                     Automatically generate restock requests for missing items
@@ -614,7 +614,6 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
                   id="auto-restock"
                   checked={autoRestockRequests}
                   onCheckedChange={setAutoRestockRequests}
-                  className="mt-1"
                 />
               </div>
             </div>
@@ -623,12 +622,12 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
             <div>
               <label className="text-sm font-medium mb-2 block">Weather Conditions</label>
               <div className="space-y-2">
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2 max-w-4xl">
                   <Button
                     type="button"
                     variant="outline"
                     onClick={() => setIsWeatherModalOpen(true)}
-                    className="justify-start gap-2"
+                    className="justify-center gap-2"
                   >
                     <Cloud className="h-4 w-4" />
                     {weather.length > 0 ? (
@@ -642,7 +641,7 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
                     variant="outline" 
                     onClick={fetchCurrentWeather}
                     disabled={fetchingWeather || !latitude}
-                    className="justify-start gap-2"
+                    className="justify-center gap-2"
                   >
                     {fetchingWeather ? (
                       <>
