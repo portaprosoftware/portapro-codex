@@ -57,6 +57,14 @@ const ppeCategories: PPECategory[] = [
     ]
   },
   {
+    id: "general_field",
+    label: "General Field Safety",
+    items: [
+      { value: "hearing_protection", label: "Hearing Protection (Earplugs/Earmuffs)" },
+      { value: "hi_vis_vest", label: "High-Visibility Vest (Hi-Vis)" },
+    ]
+  },
+  {
     id: "other",
     label: "Other",
     items: [
