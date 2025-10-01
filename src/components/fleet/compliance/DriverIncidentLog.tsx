@@ -7,11 +7,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Truck, MapPin, Camera, Loader2, AlertTriangle, X, Upload } from "lucide-react";
+import { Truck, MapPin, Camera, Loader2, AlertTriangle, X, Upload, WifiOff } from "lucide-react";
 import { VehicleSelectedDisplay } from "../VehicleSelectedDisplay";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Input } from "@/components/ui/input";
+import { useOfflineSync } from "@/hooks/useOfflineSync";
+import { Badge } from "@/components/ui/badge";
 
 type Props = {
   onSaved?: () => void;
@@ -25,6 +27,7 @@ export const DriverIncidentLog: React.FC<Props> = ({ onSaved, onCancel }) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { userId } = useUserRole();
+  const { isOnline, addToQueue, queueCount } = useOfflineSync();
   
   // Basic incident data
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -74,22 +77,74 @@ export const DriverIncidentLog: React.FC<Props> = ({ onSaved, onCancel }) => {
     setIsVehicleModalOpen(false);
   };
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  // Compress image to max 1MB
+  const compressImage = async (file: File): Promise<File> => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          
+          // Max dimensions
+          const MAX_WIDTH = 1920;
+          const MAX_HEIGHT = 1920;
+          
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d')!;
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          canvas.toBlob((blob) => {
+            if (blob) {
+              const compressedFile = new File([blob], file.name, {
+                type: 'image/jpeg',
+                lastModified: Date.now(),
+              });
+              resolve(compressedFile);
+            } else {
+              resolve(file);
+            }
+          }, 'image/jpeg', 0.8);
+        };
+        img.src = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
     if (files.length === 0) return;
 
-    files.forEach((file) => {
+    for (const file of files) {
       if (file.type.startsWith("image/")) {
-        setPhotoFiles((prev) => [...prev, file]);
+        // Compress image
+        const compressedFile = await compressImage(file);
+        setPhotoFiles((prev) => [...prev, compressedFile]);
         
         // Create preview
         const reader = new FileReader();
         reader.onload = (e) => {
           setPhotoPreviews((prev) => [...prev, e.target?.result as string]);
         };
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(compressedFile);
       }
-    });
+    }
   };
 
   const removePhoto = (index: number) => {
@@ -115,7 +170,6 @@ export const DriverIncidentLog: React.FC<Props> = ({ onSaved, onCancel }) => {
         cause_description: cause,
         immediate_action_taken: action || null,
         incident_date: new Date().toISOString(),
-        // Auto-filled backend values (hidden from driver)
         severity: 'minor' as const,
         status: 'pending_review',
         responsible_party: 'unknown',
@@ -127,6 +181,33 @@ export const DriverIncidentLog: React.FC<Props> = ({ onSaved, onCancel }) => {
         cleanup_actions: [],
       };
 
+      // If offline, queue the data
+      if (!isOnline) {
+        // Convert photos to base64 for offline storage
+        const photosData = await Promise.all(
+          photoFiles.map(async (file) => {
+            const base64 = await new Promise<string>((resolve) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result as string);
+              reader.readAsDataURL(file);
+            });
+            return { name: file.name, data: base64 };
+          })
+        );
+
+        addToQueue({
+          type: 'job_creation',
+          jobId: crypto.randomUUID(),
+          data: {
+            ...incidentData,
+            photos: photosData,
+          },
+        });
+
+        return { id: 'offline-queued' };
+      }
+
+      // Online: normal flow
       const { data: incident, error: incidentError } = await supabase
         .from("spill_incident_reports")
         .insert([incidentData])
@@ -166,12 +247,21 @@ export const DriverIncidentLog: React.FC<Props> = ({ onSaved, onCancel }) => {
 
       return incident;
     },
-    onSuccess: () => {
+    onSuccess: (incident) => {
       queryClient.invalidateQueries({ queryKey: ["driver-incidents"] });
-      toast({
-        title: "Incident Logged",
-        description: "Your incident has been logged. Management will review soon.",
-      });
+      
+      if (incident.id === 'offline-queued') {
+        toast({
+          title: "Queued for Sync",
+          description: "No internet. Incident will sync when connection is restored.",
+        });
+      } else {
+        toast({
+          title: "Incident Logged",
+          description: "Your incident has been logged. Management will review soon.",
+        });
+      }
+      
       onSaved?.();
     },
     onError: (error: any) => {
@@ -191,6 +281,24 @@ export const DriverIncidentLog: React.FC<Props> = ({ onSaved, onCancel }) => {
 
   return (
     <div className="space-y-4 max-h-[80vh] overflow-y-auto">
+      {/* Offline Status Banner */}
+      {!isOnline && (
+        <Card className="bg-gradient-to-r from-yellow-50 to-yellow-100 border-yellow-300">
+          <CardContent className="pt-4">
+            <div className="flex items-start gap-3">
+              <WifiOff className="h-5 w-5 text-yellow-700 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-yellow-900">Offline Mode</p>
+                <p className="text-xs text-yellow-700 mt-1">
+                  You're offline. Incidents will be saved locally and synced when connection is restored.
+                  {queueCount > 0 && ` (${queueCount} pending)`}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Mobile-First Alert */}
       <Card className="bg-gradient-to-r from-orange-50 to-orange-100 border-orange-200">
         <CardContent className="pt-4">

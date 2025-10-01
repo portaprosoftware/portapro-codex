@@ -34,6 +34,7 @@ export const IncidentsTab: React.FC = () => {
           incident_photos(*),
           incident_witnesses(*)
         `)
+        .is('deleted_at', null)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
