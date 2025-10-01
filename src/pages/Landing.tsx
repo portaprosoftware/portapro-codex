@@ -527,10 +527,40 @@ export const Landing: React.FC = () => {
           </div>
 
           {/* Inventory KPIs */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
-            <StatCard title="Total Units" value="247" icon={Package} gradientFrom="#3B82F6" gradientTo="#1E40AF" iconBg="bg-blue-600" />
+          <div className="grid sm:grid-cols-2 gap-4 mb-12">
             <StatCard title="Available Today" value="89" icon={CheckCircle} gradientFrom="#10B981" gradientTo="#047857" iconBg="bg-emerald-600" />
             <StatCard title="Maintenance" value="3" icon={Wrench} gradientFrom="#F59E0B" gradientTo="#D97706" iconBg="bg-amber-600" />
+          </div>
+
+          {/* Inventory & Location Management - Combined Section */}
+          <div className="mb-12">
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-bold text-foreground">Inventory & Location Management</h3>
+              <p className="text-lg text-muted-foreground">Stay on top of every unit with real-time tracking and multi-location control.</p>
+            </div>
+            
+            <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+              <div className="text-center space-y-3">
+                <div className="w-12 h-12 mx-auto bg-gradient-to-r from-blue-600 to-blue-700 text-white flex items-center justify-center">
+                  <BellRing className="w-6 h-6" />
+                </div>
+                <h4 className="font-semibold text-foreground">Real-time tracking with automated alerts</h4>
+              </div>
+              
+              <div className="text-center space-y-3">
+                <div className="w-12 h-12 mx-auto bg-gradient-to-r from-blue-600 to-blue-700 text-white flex items-center justify-center">
+                  <Route className="w-6 h-6" />
+                </div>
+                <h4 className="font-semibold text-foreground">Manage stock across multiple sites with transfer tracking</h4>
+              </div>
+              
+              <div className="text-center space-y-3">
+                <div className="w-12 h-12 mx-auto bg-gradient-to-r from-blue-600 to-blue-700 text-white flex items-center justify-center">
+                  <Package className="w-6 h-6" />
+                </div>
+                <h4 className="font-semibold text-foreground">Bulk (auto-assign) or individual unit tracking simultaneously</h4>
+              </div>
+            </div>
           </div>
 
           {/* General Inventory Management */}
@@ -568,36 +598,6 @@ export const Landing: React.FC = () => {
           {/* Interactive Inventory Demo */}
           <div className="mb-12">
             <InventoryManagementShowcase />
-          </div>
-          {/* Inventory & Location Management - Combined Section */}
-          <div className="mb-12">
-            <div className="text-center mb-8">
-              <h3 className="text-2xl font-bold text-foreground">Inventory & Location Management</h3>
-              <p className="text-lg text-muted-foreground">Stay on top of every unit with real-time tracking and multi-location control.</p>
-            </div>
-            
-            <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-              <div className="text-center space-y-3">
-                <div className="w-12 h-12 mx-auto bg-gradient-to-r from-blue-600 to-blue-700 text-white flex items-center justify-center">
-                  <BellRing className="w-6 h-6" />
-                </div>
-                <h4 className="font-semibold text-foreground">Real-time tracking with automated alerts</h4>
-              </div>
-              
-              <div className="text-center space-y-3">
-                <div className="w-12 h-12 mx-auto bg-gradient-to-r from-blue-600 to-blue-700 text-white flex items-center justify-center">
-                  <Route className="w-6 h-6" />
-                </div>
-                <h4 className="font-semibold text-foreground">Manage stock across multiple sites with transfer tracking</h4>
-              </div>
-              
-              <div className="text-center space-y-3">
-                <div className="w-12 h-12 mx-auto bg-gradient-to-r from-blue-600 to-blue-700 text-white flex items-center justify-center">
-                  <Package className="w-6 h-6" />
-                </div>
-                <h4 className="font-semibold text-foreground">Bulk (auto-assign) or individual unit tracking simultaneously</h4>
-              </div>
-            </div>
           </div>
 
           {/* QR & Photo Scanning - Full Width Section */}
