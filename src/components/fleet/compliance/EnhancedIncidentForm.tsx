@@ -14,7 +14,7 @@ import { PhotoCapture } from "./PhotoCapture";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { X, Plus, Camera, AlertTriangle, Truck, MapPin, Info } from "lucide-react";
+import { X, Plus, Camera, AlertTriangle, Truck, MapPin, Info, FileText } from "lucide-react";
 import { StockVehicleSelectionModal } from "../StockVehicleSelectionModal";
 import { VehicleSelectedDisplay } from "../VehicleSelectedDisplay";
 import { WeatherSelectionModal } from "./WeatherSelectionModal";
@@ -60,6 +60,7 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
   const [witnesses, setWitnesses] = useState<Witness[]>([]);
   const [photos, setPhotos] = useState<string[]>([]);
   const [photoFiles, setPhotoFiles] = useState<File[]>([]);
+  const [documentFiles, setDocumentFiles] = useState<File[]>([]);
   
   // New witness form
   const [newWitnessFirstName, setNewWitnessFirstName] = useState<string>("");
@@ -307,6 +308,35 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
               incident_id: incident.id,
               photo_url: publicUrl,
               photo_type: "incident_photo",
+            });
+        }
+      }
+
+      // Upload and add documents
+      if (documentFiles.length > 0) {
+        for (const file of documentFiles) {
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${incident.id}/docs/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+          
+          const { error: uploadError } = await supabase.storage
+            .from('incident-photos')
+            .upload(fileName, file);
+
+          if (uploadError) {
+            console.error("Error uploading document:", uploadError);
+            continue;
+          }
+
+          const { data: { publicUrl } } = supabase.storage
+            .from('incident-photos')
+            .getPublicUrl(fileName);
+
+          await supabase
+            .from("incident_photos")
+            .insert({
+              incident_id: incident.id,
+              photo_url: publicUrl,
+              photo_type: "incident_document",
             });
         }
       }
@@ -678,7 +708,7 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Camera className="h-5 w-5" />
-            Photos & Documentation
+            Photos
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -696,7 +726,7 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
             />
             {photoFiles.length > 0 && (
               <div className="space-y-2">
-                <p className="text-sm font-medium">{photoFiles.length} file(s) selected:</p>
+                <p className="text-sm font-medium">{photoFiles.length} photo(s) selected:</p>
                 <div className="flex flex-wrap gap-2">
                   {Array.from(photoFiles).map((file, idx) => (
                     <Badge key={idx} variant="secondary">
@@ -711,6 +741,43 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
               maxPhotos={10}
               initialPhotos={photos}
             />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Documentation */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <FileText className="h-5 w-5" />
+            Documentation
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <input
+              type="file"
+              accept=".pdf,.doc,.docx,.txt,.xls,.xlsx"
+              multiple
+              onChange={(e) => {
+                if (e.target.files) {
+                  setDocumentFiles(Array.from(e.target.files));
+                }
+              }}
+              className="block w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
+            />
+            {documentFiles.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-sm font-medium">{documentFiles.length} document(s) selected:</p>
+                <div className="flex flex-wrap gap-2">
+                  {Array.from(documentFiles).map((file, idx) => (
+                    <Badge key={idx} variant="secondary">
+                      {file.name}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
