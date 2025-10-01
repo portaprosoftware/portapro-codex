@@ -24,7 +24,7 @@ import { WeatherSelectionModal } from "./WeatherSelectionModal";
 import { format, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useGeolocation } from "@/hooks/useGeolocation";
-import { Cloud, Loader2 } from "lucide-react";
+import { Cloud, Loader2, HelpCircle } from "lucide-react";
 
 type Props = {
   onSaved?: () => void;
@@ -625,7 +625,21 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
 
             {/* Weather Conditions */}
             <div>
-              <label className="text-sm font-medium mb-2 block">Weather Conditions</label>
+              <div className="flex items-center gap-2 mb-2">
+                <label className="text-sm font-medium">Weather Conditions</label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button type="button" className="text-muted-foreground hover:text-foreground transition-colors">
+                      <HelpCircle className="h-4 w-4" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-80">
+                    <p className="text-sm">
+                      Weather conditions can be auto-filled based on device location, or manually selected if preferred. Both auto and manual weather details can be applied.
+                    </p>
+                  </PopoverContent>
+                </Popover>
+              </div>
               <div className="space-y-2">
                 <div className="grid grid-cols-2 gap-2 max-w-4xl">
                   <Button 
