@@ -12,7 +12,8 @@ import { useToast } from "@/hooks/use-toast";
 import { PhotoCapture } from "./PhotoCapture";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { X, Plus, Camera, AlertTriangle, Truck, MapPin } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { X, Plus, Camera, AlertTriangle, Truck, MapPin, Info } from "lucide-react";
 import { StockVehicleSelectionModal } from "../StockVehicleSelectionModal";
 import { VehicleSelectedDisplay } from "../VehicleSelectedDisplay";
 import { WeatherSelectionModal } from "./WeatherSelectionModal";
@@ -406,7 +407,21 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
             </div>
 
             <div>
-              <Label>Weather Conditions</Label>
+              <div className="flex items-center gap-2 mb-2">
+                <Label>Weather Conditions</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button type="button" className="p-0.5 hover:bg-muted rounded-full transition-colors">
+                      <Info className="h-4 w-4 text-muted-foreground" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-80 bg-white z-50">
+                    <p className="text-sm text-muted-foreground">
+                      Weather conditions can be auto-filled based on device location, or manually selected if preferred. Both auto and manual weather details can be applied.
+                    </p>
+                  </PopoverContent>
+                </Popover>
+              </div>
               <div className="space-y-2">
                 <div className="grid grid-cols-2 gap-2 max-w-4xl">
                   <Button 
