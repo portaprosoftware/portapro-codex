@@ -425,9 +425,8 @@ export function EnhancedSpillKitInventoryManager() {
                 <TableHead>Item Name</TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead>Unit Cost</TableHead>
-                <TableHead>Expiration</TableHead>
                 <TableHead>Current Stock</TableHead>
-                <TableHead>Minimum Threshold</TableHead>
+                <TableHead>Expiration</TableHead>
                 <TableHead>Usage</TableHead>
                 <TableHead className="w-[50px]"></TableHead>
               </TableRow>
@@ -452,18 +451,13 @@ export function EnhancedSpillKitInventoryManager() {
                     </Badge>
                   </TableCell>
                   <TableCell>${item.unit_cost !== null ? item.unit_cost.toFixed(2) : 'N/A'}</TableCell>
-                  <TableCell className={getExpirationColor(item.expiration_date)}>
-                    {item.expiration_date ? format(new Date(item.expiration_date), 'MMM dd, yyyy') : '—'}
-                  </TableCell>
                   <TableCell>
                     <span className={item.current_stock !== null && item.minimum_threshold !== null && item.current_stock <= item.minimum_threshold ? 'font-bold text-destructive' : ''}>
                       {item.current_stock !== null ? item.current_stock : '—'}
                     </span>
                   </TableCell>
-                  <TableCell>
-                    <span className="text-muted-foreground">
-                      {item.minimum_threshold !== null ? item.minimum_threshold : '—'}
-                    </span>
+                  <TableCell className={getExpirationColor(item.expiration_date)}>
+                    {item.expiration_date ? format(new Date(item.expiration_date), 'MMM dd, yyyy') : '—'}
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {item.usage_count || 0} times
