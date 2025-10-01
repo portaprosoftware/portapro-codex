@@ -704,7 +704,18 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
               <div className="flex items-center gap-2">
                 {getStatusIcon(kitStatus)}
                 <Badge className={getStatusColor(kitStatus)}>
-                  {kitStatus.charAt(0).toUpperCase() + kitStatus.slice(1)}
+                  {(() => {
+                    // Count missing items
+                    const missingCount = Object.values(itemConditions).filter(c => c.status === 'missing').length;
+                    
+                    if (kitStatus === 'compliant') {
+                      return 'Kit Complete';
+                    } else if (missingCount > 0) {
+                      return `Missing ${missingCount} Item${missingCount > 1 ? 's' : ''}`;
+                    } else {
+                      return kitStatus.charAt(0).toUpperCase() + kitStatus.slice(1);
+                    }
+                  })()}
                 </Badge>
               </div>
             </div>
