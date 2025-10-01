@@ -36,6 +36,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 type SpillKitInventoryItem = {
   id: string;
@@ -68,6 +78,8 @@ export function EnhancedSpillKitInventoryManager() {
   const [usageModalOpen, setUsageModalOpen] = useState(false);
   const [selectedItemForUsage, setSelectedItemForUsage] = useState<SpillKitInventoryItem | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<string | null>(null);
   
   const [formData, setFormData] = useState({
     item_name: '',
@@ -284,9 +296,16 @@ export function EnhancedSpillKitInventoryManager() {
   };
 
   const handleDelete = (id: string) => {
-    if (confirm('Are you sure you want to delete this inventory item?')) {
-      deleteMutation.mutate(id);
+    setItemToDelete(id);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (itemToDelete) {
+      deleteMutation.mutate(itemToDelete);
     }
+    setDeleteDialogOpen(false);
+    setItemToDelete(null);
   };
 
   const handleSelectType = (type: string) => {
@@ -827,6 +846,27 @@ export function EnhancedSpillKitInventoryManager() {
           toast.success('Storage location added successfully');
         }}
       />
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Inventory Item</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this inventory item? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
