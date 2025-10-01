@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useVehicleIncidents } from '@/hooks/vehicle/useVehicleIncidents';
 import { useVehicleDeconLogs } from '@/hooks/vehicle/useVehicleDeconLogs';
+import { AddIncidentModal } from '@/components/fleet/spill-kit/AddIncidentModal';
+import { AddDeconModal } from '@/components/fleet/spill-kit/AddDeconModal';
 import { 
   AlertTriangle, 
   Plus, 
@@ -17,16 +19,15 @@ import { cn } from '@/lib/utils';
 interface VehicleSpillKitTabProps {
   vehicleId: string;
   licensePlate: string;
-  onAddIncident?: () => void;
-  onAddDecon?: () => void;
 }
 
-export function VehicleSpillKitTab({ 
+function VehicleSpillKitTabContent({ 
   vehicleId, 
   licensePlate,
-  onAddIncident,
-  onAddDecon 
 }: VehicleSpillKitTabProps) {
+  const [showIncidentModal, setShowIncidentModal] = React.useState(false);
+  const [showDeconModal, setShowDeconModal] = React.useState(false);
+
   const { data: incidents, isLoading: incidentsLoading } = useVehicleIncidents({
     vehicleId,
     limit: 5,
@@ -61,7 +62,7 @@ export function VehicleSpillKitTab({
             Spill Incidents ({incidents?.total || 0})
           </CardTitle>
           <div className="flex gap-2">
-            <Button size="sm" onClick={onAddIncident}>
+            <Button size="sm" onClick={() => setShowIncidentModal(true)}>
               <Plus className="w-4 h-4 mr-1" />
               Log Incident
             </Button>
@@ -109,7 +110,7 @@ export function VehicleSpillKitTab({
             <div className="text-center py-8">
               <AlertTriangle className="w-12 h-12 text-gray-400 mx-auto mb-3" />
               <p className="text-sm text-muted-foreground mb-3">No incidents recorded</p>
-              <Button size="sm" onClick={onAddIncident}>
+              <Button size="sm" onClick={() => setShowIncidentModal(true)}>
                 <Plus className="w-4 h-4 mr-1" />
                 Log First Incident
               </Button>
@@ -126,7 +127,7 @@ export function VehicleSpillKitTab({
             Decontamination Logs ({deconLogs?.total || 0})
           </CardTitle>
           <div className="flex gap-2">
-            <Button size="sm" onClick={onAddDecon}>
+            <Button size="sm" onClick={() => setShowDeconModal(true)}>
               <Plus className="w-4 h-4 mr-1" />
               Record Decon
             </Button>
@@ -178,7 +179,7 @@ export function VehicleSpillKitTab({
             <div className="text-center py-8">
               <Droplet className="w-12 h-12 text-gray-400 mx-auto mb-3" />
               <p className="text-sm text-muted-foreground mb-3">No decon logs yet</p>
-              <Button size="sm" onClick={onAddDecon}>
+              <Button size="sm" onClick={() => setShowDeconModal(true)}>
                 <Plus className="w-4 h-4 mr-1" />
                 Record First Decon
               </Button>
@@ -186,6 +187,24 @@ export function VehicleSpillKitTab({
           )}
         </CardContent>
       </Card>
+
+      {/* Modals */}
+      <AddIncidentModal 
+        open={showIncidentModal}
+        onOpenChange={setShowIncidentModal}
+        vehicleContextId={vehicleId}
+        vehicleContextName={licensePlate}
+      />
+      <AddDeconModal
+        open={showDeconModal}
+        onOpenChange={setShowDeconModal}
+        vehicleContextId={vehicleId}
+        vehicleContextName={licensePlate}
+      />
     </div>
   );
+}
+
+export function VehicleSpillKitTab(props: VehicleSpillKitTabProps) {
+  return <VehicleSpillKitTabContent {...props} />;
 }

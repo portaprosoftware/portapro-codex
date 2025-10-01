@@ -29,6 +29,8 @@ interface AssignmentCreationWizardProps {
   onOpenChange: (open: boolean) => void;
   initialDate?: Date;
   editingAssignment?: any;
+  vehicleContextId?: string | null;
+  vehicleContextName?: string | null;
 }
 
 type Step = "basics" | "details" | "review";
@@ -37,11 +39,16 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
   open,
   onOpenChange,
   initialDate = new Date(),
-  editingAssignment
+  editingAssignment,
+  vehicleContextId = null,
+  vehicleContextName = null
 }) => {
+  const isVehicleContextLocked = !!vehicleContextId;
   const [currentStep, setCurrentStep] = useState<Step>("basics");
   const [selectedDate, setSelectedDate] = useState<Date>(initialDate);
-  const [selectedVehicle, setSelectedVehicle] = useState<any>(null);
+  const [selectedVehicle, setSelectedVehicle] = useState<any>(
+    vehicleContextId ? { id: vehicleContextId, license_plate: vehicleContextName } : null
+  );
   const [selectedDriver, setSelectedDriver] = useState<any>(null);
   const [startMileage, setStartMileage] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
@@ -85,6 +92,7 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
         driver_id: selectedDriver.id,
         start_mileage: startMileage ? parseInt(startMileage) : null,
         notes: notes || null,
+        source_context: isVehicleContextLocked ? 'vehicle_profile' : null,
       };
 
       if (isEditMode) {
@@ -104,6 +112,8 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["daily-vehicle-assignments"] });
+      queryClient.invalidateQueries({ queryKey: ["vehicle-assignments", vehicleContextId] });
+      queryClient.invalidateQueries({ queryKey: ["vehicle-activity", vehicleContextId] });
       toast({
         title: "Success",
         description: isEditMode ? "Assignment updated successfully" : "Assignment created successfully",

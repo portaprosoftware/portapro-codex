@@ -17,9 +17,10 @@ import {
   DrawerHeader, 
   DrawerTitle 
 } from "@/components/ui/drawer";
-import { CalendarDays, Plus, X, AlertTriangle, Wrench, Package } from "lucide-react";
+import { CalendarDays, Plus, X, AlertTriangle, Wrench, Package, Truck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface AddWorkOrderDrawerProps {
   open: boolean;
@@ -27,6 +28,8 @@ interface AddWorkOrderDrawerProps {
   onSuccess: () => void;
   defaultDueDate?: string;
   preselectedAssetId?: string;
+  vehicleContextId?: string | null;
+  vehicleContextName?: string | null;
 }
 
 interface WorkOrderForm {
@@ -50,13 +53,17 @@ export const AddWorkOrderDrawer: React.FC<AddWorkOrderDrawerProps> = ({
   onOpenChange,
   onSuccess,
   defaultDueDate,
-  preselectedAssetId = ""
+  preselectedAssetId = "",
+  vehicleContextId = null,
+  vehicleContextName = null
 }) => {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const isVehicleContextLocked = !!vehicleContextId;
   
   const [form, setForm] = useState<WorkOrderForm>({
     source: 'breakdown',
-    asset_id: preselectedAssetId,
+    asset_id: vehicleContextId || preselectedAssetId,
     asset_type: 'vehicle',
     priority: 'normal',
     assignee_id: '',
@@ -119,7 +126,8 @@ export const AddWorkOrderDrawer: React.FC<AddWorkOrderDrawerProps> = ({
         out_of_service: form.out_of_service,
         driver_verification_required: form.driver_verification_required,
         status: 'open' as const,
-        opened_at: new Date().toISOString()
+        opened_at: new Date().toISOString(),
+        source_context: isVehicleContextLocked ? 'vehicle_profile' : null,
       };
 
       const { error } = await supabase
@@ -127,6 +135,12 @@ export const AddWorkOrderDrawer: React.FC<AddWorkOrderDrawerProps> = ({
         .insert(payload);
 
       if (error) throw error;
+
+      // Invalidate relevant queries
+      queryClient.invalidateQueries({ queryKey: ['work-orders'] });
+      queryClient.invalidateQueries({ queryKey: ['vehicle-work-orders', vehicleContextId] });
+      queryClient.invalidateQueries({ queryKey: ['vehicle-metrics', vehicleContextId] });
+      queryClient.invalidateQueries({ queryKey: ['vehicle-activity', vehicleContextId] });
 
       toast({
         title: "Work order created",
@@ -139,7 +153,7 @@ export const AddWorkOrderDrawer: React.FC<AddWorkOrderDrawerProps> = ({
       // Reset form
       setForm({
         source: 'breakdown',
-        asset_id: preselectedAssetId,
+        asset_id: vehicleContextId || preselectedAssetId,
         asset_type: 'vehicle',
         priority: 'normal',
         assignee_id: '',
@@ -204,21 +218,31 @@ export const AddWorkOrderDrawer: React.FC<AddWorkOrderDrawerProps> = ({
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Asset *</Label>
-                  <Select value={form.asset_type} onValueChange={(value) => setForm(prev => ({ ...prev, asset_type: value }))}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="vehicle">Vehicle</SelectItem>
-                      <SelectItem value="trailer">Trailer</SelectItem>
-                      <SelectItem value="equipment">Equipment</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Input
-                    placeholder="Asset ID or select from list"
-                    value={form.asset_id}
-                    onChange={(e) => setForm(prev => ({ ...prev, asset_id: e.target.value }))}
-                  />
+                  {isVehicleContextLocked ? (
+                    <div className="flex items-center gap-2 p-2 border rounded-md bg-muted">
+                      <Truck className="w-4 h-4" />
+                      <span className="font-medium">{vehicleContextName || 'Selected Vehicle'}</span>
+                      <Badge variant="secondary" className="ml-auto">Locked</Badge>
+                    </div>
+                  ) : (
+                    <>
+                      <Select value={form.asset_type} onValueChange={(value) => setForm(prev => ({ ...prev, asset_type: value }))}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="vehicle">Vehicle</SelectItem>
+                          <SelectItem value="trailer">Trailer</SelectItem>
+                          <SelectItem value="equipment">Equipment</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Input
+                        placeholder="Asset ID or select from list"
+                        value={form.asset_id}
+                        onChange={(e) => setForm(prev => ({ ...prev, asset_id: e.target.value }))}
+                      />
+                    </>
+                  )}
                 </div>
 
                 <div className="space-y-2">

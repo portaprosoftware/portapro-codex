@@ -22,6 +22,8 @@ import { Card } from "@/components/ui/card";
 interface AddDocumentModalProps {
   isOpen: boolean;
   onClose: () => void;
+  vehicleContextId?: string | null;
+  vehicleContextName?: string | null;
 }
 
 interface FormData {
@@ -36,10 +38,14 @@ interface FormData {
 
 export const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
   isOpen,
-  onClose
+  onClose,
+  vehicleContextId = null,
+  vehicleContextName = null
 }) => {
+  const isVehicleContextLocked = !!vehicleContextId;
+  
   const [formData, setFormData] = useState<FormData>({
-    vehicle_id: "",
+    vehicle_id: vehicleContextId || "",
     document_type_id: "",
     document_type_name: "",
     document_name: "",
@@ -86,7 +92,8 @@ export const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
           notes: data.notes || null,
           file_name: fileName,
           file_path: filePath,
-          file_size: fileSize
+          file_size: fileSize,
+          source_context: isVehicleContextLocked ? 'vehicle_profile' : null,
         }]);
 
       if (insertError) throw insertError;
@@ -94,6 +101,9 @@ export const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["vehicle-compliance"] });
       queryClient.invalidateQueries({ queryKey: ["compliance-notification-counts"] });
+      queryClient.invalidateQueries({ queryKey: ["vehicle-documents", vehicleContextId] });
+      queryClient.invalidateQueries({ queryKey: ["vehicle-metrics", vehicleContextId] });
+      queryClient.invalidateQueries({ queryKey: ["vehicle-activity", vehicleContextId] });
       onClose();
       resetForm();
       toast({
@@ -153,7 +163,13 @@ export const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
           <div>
             <Label htmlFor="vehicle">Vehicle *</Label>
             <div className="space-y-2">
-              {formData.vehicle_id ? (
+              {isVehicleContextLocked ? (
+                <div className="flex items-center gap-2 p-3 border rounded-md bg-muted">
+                  <Truck className="w-4 h-4" />
+                  <span className="font-medium">{vehicleContextName || 'Selected Vehicle'}</span>
+                  <Badge variant="secondary" className="ml-auto">Locked</Badge>
+                </div>
+              ) : formData.vehicle_id ? (
                 <VehicleSelectedDisplay 
                   vehicleId={formData.vehicle_id}
                   onChangeClick={() => setIsVehicleSelectorOpen(true)}

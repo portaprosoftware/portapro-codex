@@ -8,8 +8,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, Truck } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -18,6 +19,8 @@ interface AddFuelLogModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   preselectedVehicleId?: string;
+  vehicleContextId?: string | null; // From VehicleContext - locks selector
+  vehicleContextName?: string | null;
 }
 
 interface Vehicle {
@@ -41,10 +44,14 @@ interface FuelStation {
 export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
   open,
   onOpenChange,
-  preselectedVehicleId = ""
+  preselectedVehicleId = "",
+  vehicleContextId = null,
+  vehicleContextName = null
 }) => {
+  const isVehicleContextLocked = !!vehicleContextId;
+  // Initialize with vehicle context if provided
   const [formData, setFormData] = useState({
-    vehicle_id: preselectedVehicleId,
+    vehicle_id: vehicleContextId || preselectedVehicleId,
     driver_id: '',
     log_date: new Date(),
     odometer_reading: '',
@@ -121,7 +128,8 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
               total_cost: totalCost,
               fuel_station: data.fuel_station,
               receipt_image: data.receipt_image,
-              notes: data.notes
+              notes: data.notes,
+              source_context: isVehicleContextLocked ? 'vehicle_profile' : null,
             }
           }
         });
@@ -140,7 +148,8 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
             total_cost: totalCost,
             fuel_station: data.fuel_station,
             receipt_image: data.receipt_image,
-            notes: data.notes
+            notes: data.notes,
+            source_context: isVehicleContextLocked ? 'vehicle_profile' : null,
           });
         if (error) throw error;
       }
@@ -153,9 +162,11 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
       queryClient.invalidateQueries({ queryKey: ['fuel-logs'] });
       queryClient.invalidateQueries({ queryKey: ['fuel-metrics'] });
       queryClient.invalidateQueries({ queryKey: ['recent-fuel-logs'] });
+      queryClient.invalidateQueries({ queryKey: ['vehicle-fuel-logs', vehicleContextId] });
+      queryClient.invalidateQueries({ queryKey: ['vehicle-activity', vehicleContextId] });
       onOpenChange(false);
       setFormData({
-        vehicle_id: preselectedVehicleId,
+        vehicle_id: vehicleContextId || preselectedVehicleId,
         driver_id: '',
         log_date: new Date(),
         odometer_reading: '',
@@ -207,20 +218,28 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="vehicle">Vehicle *</Label>
-              <Select value={formData.vehicle_id} onValueChange={(value) => 
-                setFormData(prev => ({ ...prev, vehicle_id: value }))
-              }>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select vehicle" />
-                </SelectTrigger>
-                <SelectContent>
-                  {vehicles?.map((vehicle) => (
-                    <SelectItem key={vehicle.id} value={vehicle.id}>
-                      {vehicle.license_plate} - {vehicle.vehicle_type}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {isVehicleContextLocked ? (
+                <div className="flex items-center gap-2 p-2 border rounded-md bg-muted">
+                  <Truck className="w-4 h-4" />
+                  <span className="font-medium text-sm">{vehicleContextName || 'Vehicle'}</span>
+                  <Badge variant="secondary" className="ml-auto text-xs">Locked</Badge>
+                </div>
+              ) : (
+                <Select value={formData.vehicle_id} onValueChange={(value) => 
+                  setFormData(prev => ({ ...prev, vehicle_id: value }))
+                }>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select vehicle" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {vehicles?.map((vehicle) => (
+                      <SelectItem key={vehicle.id} value={vehicle.id}>
+                        {vehicle.license_plate} - {vehicle.vehicle_type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
 
             <div>
