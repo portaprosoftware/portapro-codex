@@ -46,7 +46,7 @@ interface IncidentData {
   location_description: string;
   cause_description: string;
   immediate_action_taken?: string;
-  severity: 'minor' | 'moderate' | 'major' | 'reportable';
+  severity: 'near_miss' | 'minor' | 'moderate' | 'major' | 'reportable';
   volume_estimate?: number;
   volume_unit?: string;
   weather_conditions?: string;
@@ -70,6 +70,8 @@ interface Props {
 
 const getSeverityColor = (severity: string) => {
   switch (severity) {
+    case 'near_miss':
+      return 'bg-blue-100 text-blue-800 border-blue-200';
     case 'minor':
       return 'bg-green-100 text-green-800 border-green-200';
     case 'moderate':
@@ -81,6 +83,18 @@ const getSeverityColor = (severity: string) => {
     default:
       return 'bg-gray-100 text-gray-800 border-gray-200';
   }
+};
+
+const formatResponsibleParty = (party: string) => {
+  const formatted = party.replace(/_/g, ' ');
+  return formatted.split(' ').map(word => 
+    word.charAt(0).toUpperCase() + word.slice(1)
+  ).join(' ');
+};
+
+const formatSeverity = (severity: string) => {
+  if (severity === 'near_miss') return 'Near Miss';
+  return severity.charAt(0).toUpperCase() + severity.slice(1);
 };
 
 export const IncidentDetailsModal: React.FC<Props> = ({ 
@@ -129,7 +143,7 @@ export const IncidentDetailsModal: React.FC<Props> = ({
             <div className="flex gap-3">
               <Badge className={getSeverityColor(incident.severity)}>
                 <AlertTriangle className="h-3 w-3 mr-1" />
-                {incident.severity.charAt(0).toUpperCase() + incident.severity.slice(1)} Severity
+                {formatSeverity(incident.severity)} Severity
               </Badge>
               <Badge variant="outline">
                 <Clock className="h-3 w-3 mr-1" />
@@ -165,7 +179,7 @@ export const IncidentDetailsModal: React.FC<Props> = ({
                       <strong>Vehicle:</strong> {incident.vehicles?.license_plate || 'N/A'}
                     </div>
                     <div className="text-sm">
-                      <strong>Responsible:</strong> {incident.responsible_party.replace('_', ' ')}
+                      <strong>Responsible:</strong> {formatResponsibleParty(incident.responsible_party)}
                     </div>
                   </div>
                 </div>

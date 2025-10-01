@@ -26,7 +26,7 @@ interface EnhancedIncidentData {
   location_description: string;
   cause_description: string;
   immediate_action_taken?: string;
-  severity: 'minor' | 'moderate' | 'major' | 'reportable';
+  severity: 'near_miss' | 'minor' | 'moderate' | 'major' | 'reportable';
   volume_estimate?: number;
   volume_unit?: string;
   weather_conditions?: string;
@@ -48,6 +48,8 @@ interface Props {
 
 const getSeverityColor = (severity: string) => {
   switch (severity) {
+    case 'near_miss':
+      return 'bg-blue-100 text-blue-800 border-blue-200';
     case 'minor':
       return 'bg-green-100 text-green-800 border-green-200';
     case 'moderate':
@@ -59,6 +61,13 @@ const getSeverityColor = (severity: string) => {
     default:
       return 'bg-gray-100 text-gray-800 border-gray-200';
   }
+};
+
+const formatResponsibleParty = (party: string) => {
+  const formatted = party.replace(/_/g, ' ');
+  return formatted.split(' ').map(word => 
+    word.charAt(0).toUpperCase() + word.slice(1)
+  ).join(' ');
 };
 
 const getStatusColor = (status: string) => {
@@ -99,7 +108,7 @@ export const EnhancedIncidentCard: React.FC<Props> = ({ incident, onViewDetails 
           </div>
           <div className="flex gap-2">
             <Badge className={getSeverityColor(incident.severity)}>
-              {incident.severity.charAt(0).toUpperCase() + incident.severity.slice(1)}
+              {incident.severity === 'near_miss' ? 'Near Miss' : incident.severity.charAt(0).toUpperCase() + incident.severity.slice(1)}
             </Badge>
             <Badge className={getStatusColor(incident.status)}>
               {incident.status.replace('_', ' ').charAt(0).toUpperCase() + incident.status.replace('_', ' ').slice(1)}
@@ -128,7 +137,7 @@ export const EnhancedIncidentCard: React.FC<Props> = ({ incident, onViewDetails 
 
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-sm">
-              <strong>Responsible:</strong> {incident.responsible_party.replace('_', ' ')}
+              <strong>Responsible:</strong> {formatResponsibleParty(incident.responsible_party)}
             </div>
             {incident.weather_conditions && (
               <div className="flex items-center gap-2 text-sm">

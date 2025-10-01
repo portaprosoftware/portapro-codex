@@ -336,10 +336,10 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
+                  <SelectItem value="near_miss">Near Miss</SelectItem>
                   <SelectItem value="minor">Minor</SelectItem>
                   <SelectItem value="moderate">Moderate</SelectItem>
                   <SelectItem value="major">Major</SelectItem>
-                  <SelectItem value="reportable">Reportable to EPA/State</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -354,6 +354,9 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
                   <SelectItem value="driver">Driver</SelectItem>
                   <SelectItem value="customer">Customer</SelectItem>
                   <SelectItem value="contractor">Contractor</SelectItem>
+                  <SelectItem value="company_internal">Company (Internal Ops)</SelectItem>
+                  <SelectItem value="third_party_transporter">Third-Party Transporter</SelectItem>
+                  <SelectItem value="environmental_external">Environmental/External Cause</SelectItem>
                   <SelectItem value="unknown">Unknown</SelectItem>
                 </SelectContent>
               </Select>
@@ -495,7 +498,9 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
               checked={regulatoryNotificationRequired}
               onCheckedChange={(checked) => setRegulatoryNotificationRequired(checked === true)}
             />
-            <Label htmlFor="regulatory">Regulatory notification required (EPA/State)</Label>
+            <Label htmlFor="regulatory" className="font-medium">
+              Reportable to EPA/State
+            </Label>
           </div>
         </CardContent>
       </Card>

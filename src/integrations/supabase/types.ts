@@ -11053,7 +11053,12 @@ export type Database = {
         | "defects_found"
         | "verified"
         | "rejected"
-      incident_severity: "minor" | "moderate" | "major" | "reportable"
+      incident_severity:
+        | "minor"
+        | "moderate"
+        | "major"
+        | "reportable"
+        | "near_miss"
       pm_target_type: "vehicle" | "trailer" | "group"
       product_type:
         | "standard_toilet"
@@ -11248,7 +11253,13 @@ export const Constants = {
         "verified",
         "rejected",
       ],
-      incident_severity: ["minor", "moderate", "major", "reportable"],
+      incident_severity: [
+        "minor",
+        "moderate",
+        "major",
+        "reportable",
+        "near_miss",
+      ],
       pm_target_type: ["vehicle", "trailer", "group"],
       product_type: [
         "standard_toilet",

@@ -180,7 +180,7 @@ export const IncidentDetailsModal: React.FC<Props> = ({ incident, isOpen, onClos
                     <User className="h-4 w-4" />
                     Responsible Party
                   </div>
-                  <p className="text-sm font-medium capitalize">{incident.responsible_party}</p>
+                  <p className="text-sm font-medium">{incident.responsible_party.replace(/_/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}</p>
                 </div>
               </div>
             </div>
