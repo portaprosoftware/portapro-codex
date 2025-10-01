@@ -13,3 +13,6 @@ verify_jwt = false
 [functions.notify-incident]
 verify_jwt = false
 
+[functions.get-current-weather]
+verify_jwt = false
+

@@ -22,6 +22,8 @@ import { StockVehicleSelectionModal } from "../StockVehicleSelectionModal";
 import { VehicleSelectedDisplay } from "../VehicleSelectedDisplay";
 import { format, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
+import { useGeolocation } from "@/hooks/useGeolocation";
+import { Cloud, Loader2 } from "lucide-react";
 
 type Props = {
   onSaved?: () => void;
@@ -61,6 +63,47 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
   const [checkStartTime] = useState(Date.now());
   const [autoRestockRequests, setAutoRestockRequests] = useState<boolean>(true);
   const [allMarkedPresent, setAllMarkedPresent] = useState(false);
+  const [fetchingWeather, setFetchingWeather] = useState(false);
+  const [weatherDetails, setWeatherDetails] = useState<string>("");
+  
+  const { latitude, longitude, error: gpsError } = useGeolocation();
+
+  const fetchCurrentWeather = async () => {
+    if (!latitude || !longitude) {
+      toast({
+        title: "Location Required",
+        description: "Please enable location services to fetch weather",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setFetchingWeather(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('get-current-weather', {
+        body: { latitude, longitude }
+      });
+
+      if (error) throw error;
+
+      setWeather(data.weather);
+      setWeatherDetails(`${data.description} • ${data.temp}°F • ${data.humidity}% humidity • Wind: ${data.windSpeed} mph`);
+      
+      toast({
+        title: "Weather Updated",
+        description: `Current conditions: ${data.description}`,
+      });
+    } catch (error) {
+      console.error('Weather fetch error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch weather data",
+        variant: "destructive"
+      });
+    } finally {
+      setFetchingWeather(false);
+    }
+  };
 
   const handleVehicleSelect = (vehicle: any) => {
     setSelectedVehicle(vehicle);
@@ -575,24 +618,47 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
             {/* Weather Conditions */}
             <div>
               <label className="text-sm font-medium mb-2 block">Weather Conditions</label>
-              <Select value={weather} onValueChange={setWeather}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select weather conditions..." />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="clear">Clear</SelectItem>
-                  <SelectItem value="cloudy">Cloudy</SelectItem>
-                  <SelectItem value="rainy">Rainy</SelectItem>
-                  <SelectItem value="snowy">Snowy</SelectItem>
-                  <SelectItem value="windy">Windy</SelectItem>
-                  <SelectItem value="foggy">Foggy</SelectItem>
-                  <SelectItem value="icy">Icy</SelectItem>
-                  <SelectItem value="hot">Hot</SelectItem>
-                  <SelectItem value="cold">Cold</SelectItem>
-                  <SelectItem value="storm">Storm / Severe Weather</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="space-y-2">
+                <div className="flex gap-2">
+                  <Select value={weather} onValueChange={setWeather}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select weather conditions..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="clear">Clear</SelectItem>
+                      <SelectItem value="cloudy">Cloudy</SelectItem>
+                      <SelectItem value="rainy">Rainy</SelectItem>
+                      <SelectItem value="snowy">Snowy</SelectItem>
+                      <SelectItem value="windy">Windy</SelectItem>
+                      <SelectItem value="foggy">Foggy</SelectItem>
+                      <SelectItem value="icy">Icy</SelectItem>
+                      <SelectItem value="hot">Hot</SelectItem>
+                      <SelectItem value="cold">Cold</SelectItem>
+                      <SelectItem value="storm">Storm / Severe Weather</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={fetchCurrentWeather}
+                    disabled={fetchingWeather || !latitude}
+                    className="shrink-0"
+                  >
+                    {fetchingWeather ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Cloud className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+                {weatherDetails && (
+                  <p className="text-xs text-muted-foreground">{weatherDetails}</p>
+                )}
+                {gpsError && (
+                  <p className="text-xs text-destructive">{gpsError}</p>
+                )}
+              </div>
             </div>
 
             {/* General Notes */}
