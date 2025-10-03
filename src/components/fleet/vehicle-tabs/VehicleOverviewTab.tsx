@@ -230,6 +230,33 @@ export function VehicleOverviewTab({ vehicleId, licensePlate, vehicleData, isAct
 
   return (
     <div className="space-y-6">
+      {/* Quick Metrics - Moved to top */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {quickStats.map((stat) => {
+          const Icon = stat.icon;
+          return (
+            <Card key={stat.label} className="border-2 hover:shadow-md transition-shadow">
+              <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <p className="text-xs sm:text-sm text-muted-foreground">{stat.label}</p>
+                    <p className={cn("text-2xl sm:text-3xl font-bold", stat.textColor)}>
+                      {metricsLoading ? '...' : stat.value}
+                    </p>
+                  </div>
+                  <div className={cn(
+                    "p-2 sm:p-3 rounded-lg",
+                    stat.bgColor
+                  )}>
+                    <Icon className={cn("w-5 h-5 sm:w-6 sm:h-6", stat.textColor)} />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+
       {/* Vehicle Information and Photo */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
@@ -364,33 +391,6 @@ export function VehicleOverviewTab({ vehicleId, licensePlate, vehicleData, isAct
           </CardContent>
         </Card>
       )}
-
-      {/* Quick Metrics */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {quickStats.map((stat) => {
-          const Icon = stat.icon;
-          return (
-            <Card key={stat.label} className="border-2 hover:shadow-md transition-shadow">
-              <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                  <div className="space-y-1">
-                    <p className="text-xs sm:text-sm text-muted-foreground">{stat.label}</p>
-                    <p className={cn("text-2xl sm:text-3xl font-bold", stat.textColor)}>
-                      {metricsLoading ? '...' : stat.value}
-                    </p>
-                  </div>
-                  <div className={cn(
-                    "p-2 sm:p-3 rounded-lg",
-                    stat.bgColor
-                  )}>
-                    <Icon className={cn("w-5 h-5 sm:w-6 sm:h-6", stat.textColor)} />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
 
       {/* Last DVIR Status */}
       {metrics?.last_dvir_date && (
