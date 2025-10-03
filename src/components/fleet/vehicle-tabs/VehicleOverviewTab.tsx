@@ -183,32 +183,28 @@ export function VehicleOverviewTab({ vehicleId, licensePlate, vehicleData, isAct
       label: 'Open Work Orders',
       value: metrics?.open_work_orders || 0,
       icon: Wrench,
-      color: 'from-orange-500 to-orange-600',
-      bgColor: 'bg-orange-50',
+      gradient: 'from-orange-500 to-orange-600',
       textColor: 'text-orange-700',
     },
     {
       label: 'DVIRs (30d)',
       value: metrics?.dvirs_last_30d || 0,
       icon: FileText,
-      color: 'from-blue-500 to-blue-600',
-      bgColor: 'bg-blue-50',
+      gradient: 'from-blue-500 to-blue-600',
       textColor: 'text-blue-700',
     },
     {
       label: 'Incidents (30d)',
       value: metrics?.incidents_last_30d || 0,
       icon: AlertTriangle,
-      color: 'from-red-500 to-red-600',
-      bgColor: 'bg-red-50',
+      gradient: 'from-red-500 to-red-600',
       textColor: 'text-red-700',
     },
     {
       label: 'Docs Expiring',
       value: metrics?.docs_expiring_30d || 0,
       icon: Calendar,
-      color: 'from-yellow-500 to-yellow-600',
-      bgColor: 'bg-yellow-50',
+      gradient: 'from-yellow-500 to-yellow-600',
       textColor: 'text-yellow-700',
     },
   ];
@@ -245,10 +241,10 @@ export function VehicleOverviewTab({ vehicleId, licensePlate, vehicleData, isAct
                     </p>
                   </div>
                   <div className={cn(
-                    "p-2 sm:p-3 rounded-lg",
-                    stat.bgColor
+                    "p-2 sm:p-3 rounded-lg bg-gradient-to-r",
+                    stat.gradient
                   )}>
-                    <Icon className={cn("w-5 h-5 sm:w-6 sm:h-6", stat.textColor)} />
+                    <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" strokeWidth={2.5} />
                   </div>
                 </div>
               </CardContent>
