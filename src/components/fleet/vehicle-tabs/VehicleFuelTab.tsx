@@ -10,13 +10,15 @@ interface VehicleFuelTabProps {
   vehicleId: string;
   licensePlate: string;
   onAddFuelLog?: () => void;
+  isActive?: boolean;
 }
 
-export function VehicleFuelTab({ vehicleId, licensePlate, onAddFuelLog }: VehicleFuelTabProps) {
+export function VehicleFuelTab({ vehicleId, licensePlate, onAddFuelLog, isActive = true }: VehicleFuelTabProps) {
   const navigate = useNavigate();
   const { data: fuelLogs, isLoading } = useVehicleFuelLogs({
     vehicleId,
     limit: 10,
+    enabled: isActive,
   });
 
   const calculateStats = () => {

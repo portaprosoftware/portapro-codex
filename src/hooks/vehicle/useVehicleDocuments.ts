@@ -5,12 +5,14 @@ interface UseVehicleDocumentsOptions {
   vehicleId: string | null;
   limit?: number;
   offset?: number;
+  enabled?: boolean;
 }
 
 export function useVehicleDocuments({
   vehicleId,
   limit = 25,
   offset = 0,
+  enabled = true,
 }: UseVehicleDocumentsOptions) {
   return useQuery({
     queryKey: ['vehicle-documents', vehicleId, limit, offset],
@@ -31,7 +33,7 @@ export function useVehicleDocuments({
         total: count || 0,
       };
     },
-    enabled: !!vehicleId,
+    enabled: !!vehicleId && enabled,
     staleTime: 10 * 60 * 1000, // 10 minutes - documents rarely change
     gcTime: 30 * 60 * 1000, // 30 minutes cache
     refetchOnWindowFocus: false,

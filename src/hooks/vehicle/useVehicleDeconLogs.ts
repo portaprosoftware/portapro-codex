@@ -5,12 +5,14 @@ interface UseVehicleDeconLogsOptions {
   vehicleId: string | null;
   limit?: number;
   offset?: number;
+  enabled?: boolean;
 }
 
 export function useVehicleDeconLogs({
   vehicleId,
   limit = 25,
   offset = 0,
+  enabled = true,
 }: UseVehicleDeconLogsOptions) {
   return useQuery({
     queryKey: ['vehicle-decon-logs', vehicleId, limit, offset],
@@ -31,7 +33,7 @@ export function useVehicleDeconLogs({
         total: count || 0,
       };
     },
-    enabled: !!vehicleId,
+    enabled: !!vehicleId && enabled,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes cache
     refetchOnWindowFocus: false,

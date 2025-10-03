@@ -485,25 +485,41 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
 
               <TabsContent value="fuel" className="space-y-4">
                 <Suspense fallback={<TabSkeleton />}>
-                  <VehicleFuelTab vehicleId={vehicle.id} licensePlate={vehicle.license_plate} />
+                  <VehicleFuelTab 
+                    vehicleId={vehicle.id} 
+                    licensePlate={vehicle.license_plate} 
+                    isActive={activeTab === 'fuel'}
+                  />
                 </Suspense>
               </TabsContent>
 
               <TabsContent value="assignments" className="space-y-4">
                 <Suspense fallback={<TabSkeleton />}>
-                  <VehicleAssignmentsTab vehicleId={vehicle.id} licensePlate={vehicle.license_plate} />
+                  <VehicleAssignmentsTab 
+                    vehicleId={vehicle.id} 
+                    licensePlate={vehicle.license_plate}
+                    isActive={activeTab === 'assignments'}
+                  />
                 </Suspense>
               </TabsContent>
 
               <TabsContent value="spillkit" className="space-y-4">
                 <Suspense fallback={<TabSkeleton />}>
-                  <VehicleSpillKitTab vehicleId={vehicle.id} licensePlate={vehicle.license_plate} />
+                  <VehicleSpillKitTab 
+                    vehicleId={vehicle.id} 
+                    licensePlate={vehicle.license_plate}
+                    isActive={activeTab === 'spillkit'}
+                  />
                 </Suspense>
               </TabsContent>
 
               <TabsContent value="documents" className="space-y-4">
                 <Suspense fallback={<TabSkeleton />}>
-                  <VehicleDocumentsTab vehicleId={vehicle.id} licensePlate={vehicle.license_plate} />
+                  <VehicleDocumentsTab 
+                    vehicleId={vehicle.id} 
+                    licensePlate={vehicle.license_plate}
+                    isActive={activeTab === 'documents'}
+                  />
                 </Suspense>
               </TabsContent>
 

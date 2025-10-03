@@ -5,12 +5,14 @@ interface UseVehicleAssignmentsOptions {
   vehicleId: string | null;
   limit?: number;
   offset?: number;
+  enabled?: boolean;
 }
 
 export function useVehicleAssignments({
   vehicleId,
   limit = 25,
   offset = 0,
+  enabled = true,
 }: UseVehicleAssignmentsOptions) {
   return useQuery({
     queryKey: ['vehicle-assignments', vehicleId, limit, offset],
@@ -31,9 +33,9 @@ export function useVehicleAssignments({
         total: count || 0,
       };
     },
-    enabled: !!vehicleId,
+    enabled: !!vehicleId && enabled,
     staleTime: 3 * 60 * 1000, // 3 minutes
     gcTime: 5 * 60 * 1000, // 5 minutes cache
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
   });
 }

@@ -12,17 +12,20 @@ interface VehicleAssignmentsTabProps {
   vehicleId: string;
   licensePlate: string;
   onAddAssignment?: () => void;
+  isActive?: boolean;
 }
 
 export function VehicleAssignmentsTab({ 
   vehicleId, 
   licensePlate,
-  onAddAssignment 
+  onAddAssignment,
+  isActive = true
 }: VehicleAssignmentsTabProps) {
   const navigate = useNavigate();
   const { data: assignments, isLoading } = useVehicleAssignments({
     vehicleId,
     limit: 10,
+    enabled: isActive,
   });
 
   const getStatusColor = (status: string) => {

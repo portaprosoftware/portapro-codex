@@ -20,11 +20,13 @@ import { useNavigate } from 'react-router-dom';
 interface VehicleSpillKitTabProps {
   vehicleId: string;
   licensePlate: string;
+  isActive?: boolean;
 }
 
 function VehicleSpillKitTabContent({ 
   vehicleId, 
   licensePlate,
+  isActive = true
 }: VehicleSpillKitTabProps) {
   const navigate = useNavigate();
   const [showIncidentModal, setShowIncidentModal] = React.useState(false);
@@ -33,11 +35,13 @@ function VehicleSpillKitTabContent({
   const { data: incidents, isLoading: incidentsLoading } = useVehicleIncidents({
     vehicleId,
     limit: 5,
+    enabled: isActive,
   });
 
   const { data: deconLogs, isLoading: deconLoading } = useVehicleDeconLogs({
     vehicleId,
     limit: 5,
+    enabled: isActive,
   });
 
   const getSeverityColor = (severity: string) => {

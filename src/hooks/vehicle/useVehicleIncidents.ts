@@ -5,12 +5,14 @@ interface UseVehicleIncidentsOptions {
   vehicleId: string | null;
   limit?: number;
   offset?: number;
+  enabled?: boolean;
 }
 
 export function useVehicleIncidents({
   vehicleId,
   limit = 25,
   offset = 0,
+  enabled = true,
 }: UseVehicleIncidentsOptions) {
   return useQuery({
     queryKey: ['vehicle-incidents', vehicleId, limit, offset],
@@ -31,7 +33,7 @@ export function useVehicleIncidents({
         total: count || 0,
       };
     },
-    enabled: !!vehicleId,
+    enabled: !!vehicleId && enabled,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes cache
     refetchOnWindowFocus: false,

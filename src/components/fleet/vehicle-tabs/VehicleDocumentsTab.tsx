@@ -12,17 +12,20 @@ interface VehicleDocumentsTabProps {
   vehicleId: string;
   licensePlate: string;
   onAddDocument?: () => void;
+  isActive?: boolean;
 }
 
 export function VehicleDocumentsTab({ 
   vehicleId, 
   licensePlate,
-  onAddDocument 
+  onAddDocument,
+  isActive = true
 }: VehicleDocumentsTabProps) {
   const navigate = useNavigate();
   const { data: documents, isLoading } = useVehicleDocuments({
     vehicleId,
     limit: 20,
+    enabled: isActive,
   });
 
   const getExpirationBadge = (expirationDate: string | null) => {
