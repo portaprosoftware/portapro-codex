@@ -7,6 +7,7 @@ interface UseVehicleWorkOrdersOptions {
   limit?: number;
   offset?: number;
   status?: string;
+  enabled?: boolean;
 }
 
 export function useVehicleWorkOrders({
@@ -14,6 +15,7 @@ export function useVehicleWorkOrders({
   limit = 25,
   offset = 0,
   status,
+  enabled = true,
 }: UseVehicleWorkOrdersOptions) {
   return useQuery({
     queryKey: ['vehicle-work-orders', vehicleId, limit, offset, status],
@@ -41,9 +43,9 @@ export function useVehicleWorkOrders({
         total: count || 0,
       };
     },
-    enabled: !!vehicleId,
+    enabled: !!vehicleId && enabled,
     staleTime: 3 * 60 * 1000, // 3 minutes - work orders change frequently
     gcTime: 5 * 60 * 1000, // 5 minutes cache
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
   });
 }

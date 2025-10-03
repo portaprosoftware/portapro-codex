@@ -32,9 +32,10 @@ interface VehicleOverviewTabProps {
   vehicleId: string;
   licensePlate: string;
   vehicleData?: any;
+  isActive?: boolean;
 }
 
-export function VehicleOverviewTab({ vehicleId, licensePlate, vehicleData }: VehicleOverviewTabProps) {
+export function VehicleOverviewTab({ vehicleId, licensePlate, vehicleData, isActive = true }: VehicleOverviewTabProps) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { data: metrics, isLoading: metricsLoading } = useVehicleMetrics(vehicleId);

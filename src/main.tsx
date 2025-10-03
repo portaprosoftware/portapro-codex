@@ -30,8 +30,8 @@ const isDevelopment = import.meta.env.DEV;
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: isDevelopment ? 30 * 1000 : 5 * 60 * 1000, // 30s dev, 5min prod
-      gcTime: isDevelopment ? 60 * 1000 : 10 * 60 * 1000, // 1min dev, 10min prod
+      staleTime: 5 * 60 * 1000, // 5 minutes for all environments
+      gcTime: 10 * 60 * 1000, // 10 minutes cache
       retry: (failureCount, error) => {
         // Don't retry DataCloneError or network request errors
         if (error?.name === 'DataCloneError' || 
@@ -48,7 +48,7 @@ const queryClient = new QueryClient({
         }
         return failureCount < (isDevelopment ? 1 : 3); // Less retry in dev
       },
-      refetchOnWindowFocus: isDevelopment ? true : false, // Enable in dev for debugging
+      refetchOnWindowFocus: false, // Disable to prevent excessive refetching
       refetchOnMount: true,
     },
     mutations: {

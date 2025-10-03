@@ -13,7 +13,7 @@ export interface VehicleMetrics {
   last_dvir_status: string | null;
 }
 
-export function useVehicleMetrics(vehicleId: string | null) {
+export function useVehicleMetrics(vehicleId: string | null, enabled: boolean = true) {
   return useQuery({
     queryKey: ['vehicle-metrics', vehicleId],
     queryFn: async () => {
@@ -28,7 +28,7 @@ export function useVehicleMetrics(vehicleId: string | null) {
       const result = Array.isArray(data) && data.length > 0 ? data[0] : null;
       return result as VehicleMetrics | null;
     },
-    enabled: !!vehicleId,
+    enabled: !!vehicleId && enabled,
     staleTime: 5 * 60 * 1000, // 5 minutes - metrics don't change frequently
     gcTime: 10 * 60 * 1000, // 10 minutes cache
     refetchOnWindowFocus: false,

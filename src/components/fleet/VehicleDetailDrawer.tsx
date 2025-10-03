@@ -464,13 +464,22 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
               {/* New Tab Components with Lazy Loading */}
               <TabsContent value="overview" className="space-y-4">
                 <Suspense fallback={<TabSkeleton />}>
-                  <VehicleOverviewTab vehicleId={vehicle.id} licensePlate={vehicle.license_plate} vehicleData={vehicle} />
+                  <VehicleOverviewTab 
+                    vehicleId={vehicle.id} 
+                    licensePlate={vehicle.license_plate} 
+                    vehicleData={vehicle} 
+                    isActive={activeTab === 'overview'} 
+                  />
                 </Suspense>
               </TabsContent>
 
               <TabsContent value="maintenance" className="space-y-4">
                 <Suspense fallback={<TabSkeleton />}>
-                  <VehicleMaintenanceTab vehicleId={vehicle.id} licensePlate={vehicle.license_plate} />
+                  <VehicleMaintenanceTab 
+                    vehicleId={vehicle.id} 
+                    licensePlate={vehicle.license_plate} 
+                    isActive={activeTab === 'maintenance'}
+                  />
                 </Suspense>
               </TabsContent>
 

@@ -14,23 +14,27 @@ interface VehicleMaintenanceTabProps {
   licensePlate: string;
   onAddWorkOrder?: () => void;
   onAddDVIR?: () => void;
+  isActive?: boolean;
 }
 
 export function VehicleMaintenanceTab({ 
   vehicleId, 
   licensePlate,
   onAddWorkOrder,
-  onAddDVIR 
+  onAddDVIR,
+  isActive = true
 }: VehicleMaintenanceTabProps) {
   const navigate = useNavigate();
   const { data: workOrders, isLoading: workOrdersLoading } = useVehicleWorkOrders({
     vehicleId,
     limit: 5,
+    enabled: isActive,
   });
 
   const { data: dvirs, isLoading: dvirsLoading } = useVehicleDVIRs({
     vehicleId,
     limit: 5,
+    enabled: isActive,
   });
 
   const getStatusColor = (status: string) => {

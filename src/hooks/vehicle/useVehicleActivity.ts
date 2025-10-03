@@ -10,7 +10,7 @@ export interface VehicleActivity {
   rn: number;
 }
 
-export function useVehicleActivity(vehicleId: string | null, limit: number = 10) {
+export function useVehicleActivity(vehicleId: string | null, limit: number = 10, enabled: boolean = true) {
   return useQuery({
     queryKey: ['vehicle-activity', vehicleId, limit],
     queryFn: async () => {
@@ -25,9 +25,9 @@ export function useVehicleActivity(vehicleId: string | null, limit: number = 10)
       if (error) throw error;
       return (data || []) as VehicleActivity[];
     },
-    enabled: !!vehicleId,
+    enabled: !!vehicleId && enabled,
     staleTime: 2 * 60 * 1000, // 2 minutes - activity is more dynamic
     gcTime: 5 * 60 * 1000, // 5 minutes cache
-    refetchOnWindowFocus: true, // Refresh activity on focus
+    refetchOnWindowFocus: false,
   });
 }
