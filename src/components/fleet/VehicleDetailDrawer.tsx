@@ -408,23 +408,25 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
               <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
                 <Truck className="w-6 h-6 text-white" />
               </div>
-              <div>
+              <div className="flex items-center gap-2">
                 <h1 className="text-2xl font-bold text-gray-900">{vehicle.license_plate}</h1>
-                <p className="text-gray-600">{vehicle.year} {vehicle.make} {vehicle.model}</p>
+                <Badge className={cn("badge-gradient", getStatusColor(vehicle.status))}>
+                  {vehicle.status.charAt(0).toUpperCase() + vehicle.status.slice(1)}
+                </Badge>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Badge className={cn("badge-gradient", getStatusColor(vehicle.status))}>
-                {vehicle.status.charAt(0).toUpperCase() + vehicle.status.slice(1)}
-              </Badge>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={onClose}
-              >
-                <X className="w-4 h-4" />
-              </Button>
-            </div>
+            <Button 
+              variant="outline" 
+              size="default"
+              onClick={onClose}
+              className="gap-2"
+            >
+              <X className="w-4 h-4" />
+              Close Vehicle Profile
+            </Button>
+          </div>
+          <div className="mt-2 ml-16">
+            <p className="text-gray-600">{vehicle.year} {vehicle.make} {vehicle.model}</p>
           </div>
         </div>
 
