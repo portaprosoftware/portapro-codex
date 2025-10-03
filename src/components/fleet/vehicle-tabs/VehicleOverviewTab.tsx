@@ -350,9 +350,8 @@ export function VehicleOverviewTab({ vehicleId, licensePlate, vehicleData, isAct
               <label htmlFor="vehicle-image-upload" className="block">
                 <Button
                   type="button"
-                  variant="outline"
                   size="sm"
-                  className="w-full border-2 border-dashed border-blue-500 text-blue-600 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-600"
+                  className="w-full"
                   asChild
                 >
                   <span className="flex items-center justify-center gap-2 cursor-pointer">
