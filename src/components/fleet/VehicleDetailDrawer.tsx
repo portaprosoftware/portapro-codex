@@ -464,7 +464,7 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
               {/* New Tab Components with Lazy Loading */}
               <TabsContent value="overview" className="space-y-4">
                 <Suspense fallback={<TabSkeleton />}>
-                  <VehicleOverviewTab vehicleId={vehicle.id} licensePlate={vehicle.license_plate} />
+                  <VehicleOverviewTab vehicleId={vehicle.id} licensePlate={vehicle.license_plate} vehicleData={vehicle} />
                 </Suspense>
               </TabsContent>
 
@@ -498,421 +498,133 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
                 </Suspense>
               </TabsContent>
 
-              {/* Legacy Damage Log Tab - Keep as is */}
+              {/* Damage Log Tab */}
               <TabsContent value="damage" className="space-y-4">
-                {isEditing ? (
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="license_plate">License Plate</Label>
-                        <Input
-                          id="license_plate"
-                          value={formData.license_plate}
-                          onChange={(e) => setFormData({ ...formData, license_plate: e.target.value })}
-                          required
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="vehicle_type">Vehicle Type</Label>
-                        {selectedVehicleTypeName || formData.vehicle_type ? (
-                          <div className="flex items-center justify-between p-3 border rounded-md bg-gray-50">
-                            <div className="flex items-center gap-2">
-                              <span className="font-medium text-gray-900">
-                                {selectedVehicleTypeName || getVehicleTypeDisplayName(formData.vehicle_type)}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setShowVehicleTypeSelector(true)}
-                              >
-                                Change
-                              </Button>
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => {
-                                  setSelectedVehicleType("");
-                                  setSelectedVehicleTypeName("");
-                                  setFormData({ ...formData, vehicle_type: "" });
-                                }}
-                              >
-                                Clear
-                              </Button>
-                            </div>
-                          </div>
-                        ) : (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            className="w-full justify-start text-muted-foreground"
-                            onClick={() => setShowVehicleTypeSelector(true)}
-                          >
-                            Select Vehicle Type
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-4">
-                      <div>
-                        <Label htmlFor="make">Make</Label>
-                        <Input
-                          id="make"
-                          value={formData.make}
-                          onChange={(e) => setFormData({ ...formData, make: e.target.value })}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="model">Model</Label>
-                        <Input
-                          id="model"
-                          value={formData.model}
-                          onChange={(e) => setFormData({ ...formData, model: e.target.value })}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="year">Year</Label>
-                        <Input
-                          id="year"
-                          type="number"
-                          value={formData.year}
-                          onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value) })}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="vin">VIN</Label>
-                        <Input
-                          id="vin"
-                          value={formData.vin}
-                          onChange={(e) => setFormData({ ...formData, vin: e.target.value })}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="status">Status</Label>
-                        <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="active">Active</SelectItem>
-                            <SelectItem value="maintenance">Maintenance</SelectItem>
-                            <SelectItem value="retired">Retired</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
+                {/* Add New Damage Log */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <AlertTriangle className="w-5 h-5" />
+                      Report New Damage
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
                     <div>
-                      <Label htmlFor="current_mileage">Current Mileage</Label>
-                      <Input
-                        id="current_mileage"
-                        type="number"
-                        value={formData.current_mileage}
-                        onChange={(e) => setFormData({ ...formData, current_mileage: parseInt(e.target.value) || 0 })}
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="notes">Notes</Label>
+                      <Label htmlFor="damage-description">Description</Label>
                       <Textarea
-                        id="notes"
-                        value={formData.notes}
-                        onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                        id="damage-description"
+                        placeholder="Describe the damage or issue..."
+                        value={damageDescription}
+                        onChange={(e) => setDamageDescription(e.target.value)}
                         rows={3}
                       />
                     </div>
-
-                    <div className="flex gap-2">
-                      <Button type="submit" disabled={updateVehicleMutation.isPending}>
-                        {updateVehicleMutation.isPending ? "Saving..." : "Save Changes"}
-                      </Button>
-                      <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>
-                        Cancel
-                      </Button>
+                    
+                    <div>
+                      <Label htmlFor="damage-severity">Severity</Label>
+                      <Select value={damageSeverity} onValueChange={setDamageSeverity}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="minor">Minor</SelectItem>
+                          <SelectItem value="moderate">Moderate</SelectItem>
+                          <SelectItem value="major">Major</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
-                  </form>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Card>
-                      <CardHeader>
-                        <CardTitle className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Truck className="w-5 h-5" />
-                            Vehicle Information
-                          </div>
-                          <Button 
-                            variant="outline" 
+
+                    {/* Damage Photo Section */}
+                    <div className="space-y-2">
+                      <Label>Photo (Optional)</Label>
+                      {damageImagePreview && (
+                        <div className="relative w-32 h-32 border rounded-lg overflow-hidden">
+                          <img
+                            src={damageImagePreview}
+                            alt="Damage preview"
+                            className="w-full h-full object-cover"
+                          />
+                          <Button
+                            type="button"
+                            variant="destructive"
                             size="sm"
-                            onClick={() => setIsEditing(!isEditing)}
+                            className="absolute top-1 right-1"
+                            onClick={removeDamageImage}
                           >
-                            <Edit className="w-4 h-4 mr-2" />
-                            {isEditing ? "Cancel" : "Edit"}
+                            <X className="w-3 h-3" />
                           </Button>
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-2">
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">License Plate:</span>
-                          <span className="font-medium">{vehicle.license_plate}</span>
-                        </div>
-                         <div className="flex justify-between">
-                           <span className="text-gray-600">Type:</span>
-                           <Badge variant="outline" className="bg-transparent border-blue-500 text-blue-600 text-xs">
-                             {getVehicleTypeDisplayName(vehicle.vehicle_type)}
-                           </Badge>
-                         </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Make:</span>
-                          <span className="font-medium">{vehicle.make || "N/A"}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Model:</span>
-                          <span className="font-medium">{vehicle.model || "N/A"}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Year:</span>
-                          <span className="font-medium">{vehicle.year || "N/A"}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">VIN:</span>
-                          <span className="font-medium">{vehicle.vin || "N/A"}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Status:</span>
-                          <Badge className={cn(getStatusColor(vehicle.status))}>
-                            {vehicle.status.charAt(0).toUpperCase() + vehicle.status.slice(1)}
-                          </Badge>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Current Mileage:</span>
-                          <span className="font-medium">{vehicle.current_mileage?.toLocaleString() || "N/A"} miles</span>
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    {/* Vehicle Photo Section */}
-                    <Card>
-                      <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                          <Camera className="w-5 h-5" />
-                          Vehicle Photo
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        {currentVehicleImage ? (
-                          <div className="space-y-3">
-                            <img 
-                              src={getVehicleImageUrl(currentVehicleImage)} 
-                              alt={`${vehicle.license_plate} vehicle`}
-                              className="w-full h-48 object-cover rounded-lg"
-                            />
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              onClick={() => deleteImageMutation.mutate()}
-                              disabled={deleteImageMutation.isPending}
-                              className="w-full"
-                            >
-                              <Trash2 className="w-4 h-4 mr-2" />
-                              Delete Photo
-                            </Button>
-                          </div>
-                        ) : (
-                          <div className="text-center py-8">
-                            <Camera className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                            <p className="text-gray-600 mb-4">No photo available</p>
-                          </div>
-                        )}
-
-                        {/* Upload new photo */}
-                        <div className="mt-4 space-y-3">
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleImageChange}
-                            className="hidden"
-                            id="vehicle-image-upload"
-                          />
-                          <label
-                            htmlFor="vehicle-image-upload"
-                            className="cursor-pointer block w-full p-2 border-2 border-dashed border-gray-300 rounded-lg text-center hover:border-blue-500 transition-colors"
-                          >
-                            <Upload className="w-6 h-6 mx-auto mb-2 text-gray-400" />
-                            <span className="text-sm text-gray-600">Click to upload new photo</span>
-                          </label>
-
-                          {imagePreview && (
-                            <div className="space-y-3">
-                              <img src={imagePreview} alt="Preview" className="w-full h-32 object-cover rounded-lg" />
-                              <div className="flex gap-2">
-                                <Button 
-                                  size="sm" 
-                                  onClick={handleUploadPhoto}
-                                  disabled={isUploadingImage}
-                                  className="flex-1"
-                                >
-                                  {isUploadingImage ? "Uploading..." : "Upload Photo"}
-                                </Button>
-                                <Button variant="outline" size="sm" onClick={removeImage}>
-                                  Cancel
-                                </Button>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                )}
-
-                {/* Notes section */}
-                {!isEditing && vehicle.notes && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Notes</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-gray-700">{vehicle.notes}</p>
-                    </CardContent>
-                  </Card>
-                )}
-              </TabsContent>
-
-              <TabsContent value="damage">
-                <div className="space-y-4">
-                  {/* Add New Damage Log */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <AlertTriangle className="w-5 h-5" />
-                        Report New Damage
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div>
-                        <Label htmlFor="damage-description">Description</Label>
-                        <Textarea
-                          id="damage-description"
-                          placeholder="Describe the damage or issue..."
-                          value={damageDescription}
-                          onChange={(e) => setDamageDescription(e.target.value)}
-                          rows={3}
-                        />
-                      </div>
-                      
-                      <div>
-                        <Label htmlFor="damage-severity">Severity</Label>
-                        <Select value={damageSeverity} onValueChange={setDamageSeverity}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="minor">Minor</SelectItem>
-                            <SelectItem value="moderate">Moderate</SelectItem>
-                            <SelectItem value="major">Major</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      {/* Damage Photo Section */}
-                      <div className="space-y-2">
-                        <Label>Photo (Optional)</Label>
-                        {damageImagePreview && (
-                          <div className="relative w-32 h-32 border rounded-lg overflow-hidden">
-                            <img
-                              src={damageImagePreview}
-                              alt="Damage preview"
-                              className="w-full h-full object-cover"
-                            />
-                            <Button
-                              type="button"
-                              variant="destructive"
-                              size="sm"
-                              className="absolute top-1 right-1"
-                              onClick={removeDamageImage}
-                            >
-                              <X className="w-3 h-3" />
-                            </Button>
-                          </div>
-                        )}
-                        <div className="flex gap-2">
-                          <input
-                            type="file"
-                            accept=".png,.jpg,.jpeg,.webp"
-                            onChange={handleDamageImageChange}
-                            className="hidden"
-                            id="damage-image-input"
-                          />
-                          <label
-                            htmlFor="damage-image-input"
-                            className="inline-flex items-center gap-2 px-3 py-2 rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground cursor-pointer text-sm font-medium"
-                          >
-                            <Camera className="w-4 h-4" />
-                            Add Photo
-                          </label>
-                        </div>
-                      </div>
-
-                      <Button
-                        onClick={() => uploadDamageMutation.mutate()}
-                        disabled={!damageDescription.trim() || isUploadingDamage}
-                        className="w-full"
-                      >
-                        {isUploadingDamage ? "Adding..." : "Add Damage Log"}
-                      </Button>
-                    </CardContent>
-                  </Card>
-
-                  {/* Existing Damage Logs */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <FileText className="w-5 h-5" />
-                        Damage History
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      {damageLogs.length === 0 ? (
-                        <p className="text-gray-500 text-center py-8">No damage logs found</p>
-                      ) : (
-                        <div className="space-y-4">
-                          {damageLogs.map((log: any) => (
-                            <div key={log.id} className="border rounded-lg p-4 space-y-3">
-                              <div className="flex items-start justify-between">
-                                <div className="flex-1">
-                                  <p className="font-medium">{log.description}</p>
-                                  <p className="text-sm text-gray-500">
-                                    {format(new Date(log.created_at), "MMM dd, yyyy 'at' h:mm a")}
-                                  </p>
-                                </div>
-                                <Badge className={cn("text-xs", getSeverityColor(log.severity))}>
-                                  {log.severity}
-                                </Badge>
-                              </div>
-                              
-                              {log.image_path && (
-                                <div className="w-32 h-32 border rounded-lg overflow-hidden">
-                                  <img
-                                    src={getDamageImageUrl(log.image_path)}
-                                    alt="Damage photo"
-                                    className="w-full h-full object-cover"
-                                  />
-                                </div>
-                              )}
-                            </div>
-                          ))}
                         </div>
                       )}
-                    </CardContent>
-                  </Card>
-                </div>
+                      <div className="flex gap-2">
+                        <input
+                          type="file"
+                          accept=".png,.jpg,.jpeg,.webp"
+                          onChange={handleDamageImageChange}
+                          className="hidden"
+                          id="damage-image-input"
+                        />
+                        <label
+                          htmlFor="damage-image-input"
+                          className="inline-flex items-center gap-2 px-3 py-2 rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground cursor-pointer text-sm font-medium"
+                        >
+                          <Camera className="w-4 h-4" />
+                          Add Photo
+                        </label>
+                      </div>
+                    </div>
+
+                    <Button
+                      onClick={() => uploadDamageMutation.mutate()}
+                      disabled={!damageDescription.trim() || isUploadingDamage}
+                      className="w-full"
+                    >
+                      {isUploadingDamage ? "Adding..." : "Add Damage Log"}
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Existing Damage Logs */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <FileText className="w-5 h-5" />
+                      Damage History
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {damageLogs.length === 0 ? (
+                      <p className="text-gray-500 text-center py-8">No damage logs found</p>
+                    ) : (
+                      <div className="space-y-4">
+                        {damageLogs.map((log: any) => (
+                          <div key={log.id} className="border rounded-lg p-4 space-y-3">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <p className="font-medium">{log.description}</p>
+                                <p className="text-sm text-gray-500">
+                                  {format(new Date(log.created_at), "MMM dd, yyyy 'at' h:mm a")}
+                                </p>
+                              </div>
+                              <Badge className={cn("text-xs", getSeverityColor(log.severity))}>
+                                {log.severity}
+                              </Badge>
+                            </div>
+                            
+                            {log.image_path && (
+                              <div className="w-32 h-32 border rounded-lg overflow-hidden">
+                                <img
+                                  src={getDamageImageUrl(log.image_path)}
+                                  alt="Damage photo"
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
               </TabsContent>
 
               <TabsContent value="documents">
