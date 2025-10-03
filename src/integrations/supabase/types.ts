@@ -817,6 +817,13 @@ export type Database = {
             foreignKeyName: "consumable_stock_ledger_vehicle_id_fkey"
             columns: ["vehicle_id"]
             isOneToOne: false
+            referencedRelation: "vehicle_quick_metrics"
+            referencedColumns: ["vehicle_id"]
+          },
+          {
+            foreignKeyName: "consumable_stock_ledger_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
             referencedRelation: "vehicles"
             referencedColumns: ["id"]
           },
@@ -1699,6 +1706,13 @@ export type Database = {
             foreignKeyName: "daily_vehicle_assignments_vehicle_id_fkey"
             columns: ["vehicle_id"]
             isOneToOne: false
+            referencedRelation: "vehicle_quick_metrics"
+            referencedColumns: ["vehicle_id"]
+          },
+          {
+            foreignKeyName: "daily_vehicle_assignments_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
             referencedRelation: "vehicles"
             referencedColumns: ["id"]
           },
@@ -1864,6 +1878,13 @@ export type Database = {
             foreignKeyName: "decon_logs_vehicle_id_fkey"
             columns: ["vehicle_id"]
             isOneToOne: false
+            referencedRelation: "vehicle_quick_metrics"
+            referencedColumns: ["vehicle_id"]
+          },
+          {
+            foreignKeyName: "decon_logs_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
             referencedRelation: "vehicles"
             referencedColumns: ["id"]
           },
@@ -1943,6 +1964,13 @@ export type Database = {
           waste_type?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "disposal_manifests_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicle_quick_metrics"
+            referencedColumns: ["vehicle_id"]
+          },
           {
             foreignKeyName: "disposal_manifests_vehicle_id_fkey"
             columns: ["vehicle_id"]
@@ -3021,6 +3049,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fuel_logs_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicle_quick_metrics"
+            referencedColumns: ["vehicle_id"]
           },
           {
             foreignKeyName: "fuel_logs_vehicle_id_fkey"
@@ -4105,6 +4140,13 @@ export type Database = {
             foreignKeyName: "jobs_vehicle_id_fkey"
             columns: ["vehicle_id"]
             isOneToOne: false
+            referencedRelation: "vehicle_quick_metrics"
+            referencedColumns: ["vehicle_id"]
+          },
+          {
+            foreignKeyName: "jobs_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
             referencedRelation: "vehicles"
             referencedColumns: ["id"]
           },
@@ -4493,6 +4535,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "maintenance_task_types"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maintenance_records_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicle_quick_metrics"
+            referencedColumns: ["vehicle_id"]
           },
           {
             foreignKeyName: "maintenance_records_vehicle_id_fkey"
@@ -5671,6 +5720,13 @@ export type Database = {
           vehicle_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "ppe_compliance_records_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicle_quick_metrics"
+            referencedColumns: ["vehicle_id"]
+          },
           {
             foreignKeyName: "ppe_compliance_records_vehicle_id_fkey"
             columns: ["vehicle_id"]
@@ -7826,6 +7882,13 @@ export type Database = {
             foreignKeyName: "spill_incident_reports_vehicle_id_fkey"
             columns: ["vehicle_id"]
             isOneToOne: false
+            referencedRelation: "vehicle_quick_metrics"
+            referencedColumns: ["vehicle_id"]
+          },
+          {
+            foreignKeyName: "spill_incident_reports_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
             referencedRelation: "vehicles"
             referencedColumns: ["id"]
           },
@@ -7953,6 +8016,13 @@ export type Database = {
           vehicle_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "spill_kit_compliance_alerts_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicle_quick_metrics"
+            referencedColumns: ["vehicle_id"]
+          },
           {
             foreignKeyName: "spill_kit_compliance_alerts_vehicle_id_fkey"
             columns: ["vehicle_id"]
@@ -8227,6 +8297,13 @@ export type Database = {
             foreignKeyName: "spill_kit_restock_requests_vehicle_id_fkey"
             columns: ["vehicle_id"]
             isOneToOne: false
+            referencedRelation: "vehicle_quick_metrics"
+            referencedColumns: ["vehicle_id"]
+          },
+          {
+            foreignKeyName: "spill_kit_restock_requests_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
             referencedRelation: "vehicles"
             referencedColumns: ["id"]
           },
@@ -8460,6 +8537,13 @@ export type Database = {
             foreignKeyName: "spill_kit_usage_log_vehicle_id_fkey"
             columns: ["vehicle_id"]
             isOneToOne: false
+            referencedRelation: "vehicle_quick_metrics"
+            referencedColumns: ["vehicle_id"]
+          },
+          {
+            foreignKeyName: "spill_kit_usage_log_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
             referencedRelation: "vehicles"
             referencedColumns: ["id"]
           },
@@ -8569,6 +8653,13 @@ export type Database = {
           vehicle_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "storage_locations_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicle_quick_metrics"
+            referencedColumns: ["vehicle_id"]
+          },
           {
             foreignKeyName: "storage_locations_vehicle_id_fkey"
             columns: ["vehicle_id"]
@@ -8685,6 +8776,13 @@ export type Database = {
           vehicle_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "tank_hose_inspections_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicle_quick_metrics"
+            referencedColumns: ["vehicle_id"]
+          },
           {
             foreignKeyName: "tank_hose_inspections_vehicle_id_fkey"
             columns: ["vehicle_id"]
@@ -9275,6 +9373,13 @@ export type Database = {
             foreignKeyName: "vehicle_compliance_documents_vehicle_id_fkey"
             columns: ["vehicle_id"]
             isOneToOne: false
+            referencedRelation: "vehicle_quick_metrics"
+            referencedColumns: ["vehicle_id"]
+          },
+          {
+            foreignKeyName: "vehicle_compliance_documents_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
             referencedRelation: "vehicles"
             referencedColumns: ["id"]
           },
@@ -9453,6 +9558,13 @@ export type Database = {
           vehicle_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "vehicle_dvir_logs_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicle_quick_metrics"
+            referencedColumns: ["vehicle_id"]
+          },
           {
             foreignKeyName: "vehicle_dvir_logs_vehicle_id_fkey"
             columns: ["vehicle_id"]
@@ -9642,6 +9754,13 @@ export type Database = {
             foreignKeyName: "vehicle_sds_tracking_vehicle_id_fkey"
             columns: ["vehicle_id"]
             isOneToOne: false
+            referencedRelation: "vehicle_quick_metrics"
+            referencedColumns: ["vehicle_id"]
+          },
+          {
+            foreignKeyName: "vehicle_sds_tracking_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
             referencedRelation: "vehicles"
             referencedColumns: ["id"]
           },
@@ -9715,6 +9834,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "spill_kit_templates"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vehicle_spill_kit_checks_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicle_quick_metrics"
+            referencedColumns: ["vehicle_id"]
           },
           {
             foreignKeyName: "vehicle_spill_kit_checks_vehicle_id_fkey"
@@ -10198,10 +10324,39 @@ export type Database = {
             foreignKeyName: "consumable_stock_ledger_vehicle_id_fkey"
             columns: ["vehicle_id"]
             isOneToOne: false
+            referencedRelation: "vehicle_quick_metrics"
+            referencedColumns: ["vehicle_id"]
+          },
+          {
+            foreignKeyName: "consumable_stock_ledger_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
             referencedRelation: "vehicles"
             referencedColumns: ["id"]
           },
         ]
+      }
+      vehicle_quick_metrics: {
+        Row: {
+          docs_expiring_30d: number | null
+          dvirs_last_30d: number | null
+          incidents_last_30d: number | null
+          last_dvir_date: string | null
+          last_dvir_status: Database["public"]["Enums"]["dvir_status"] | null
+          open_work_orders: number | null
+          vehicle_id: string | null
+        }
+        Relationships: []
+      }
+      vehicle_recent_activity: {
+        Row: {
+          activity_date: string | null
+          activity_id: string | null
+          activity_summary: string | null
+          activity_type: string | null
+          vehicle_id: string | null
+        }
+        Relationships: []
       }
     }
     Functions: {
@@ -10837,8 +10992,6 @@ export type Database = {
           activity_id: string
           activity_summary: string
           activity_type: string
-          rn: number
-          vehicle_id: string
         }[]
       }
       get_vehicle_efficiency: {
@@ -10856,15 +11009,12 @@ export type Database = {
       get_vehicle_metrics: {
         Args: { p_vehicle_id: string }
         Returns: {
-          decon_last_30d: number
           docs_expiring_30d: number
           dvirs_last_30d: number
           incidents_last_30d: number
           last_dvir_date: string
           last_dvir_status: string
-          license_plate: string
           open_work_orders: number
-          vehicle_id: string
         }[]
       }
       handle_padlock_operation: {
