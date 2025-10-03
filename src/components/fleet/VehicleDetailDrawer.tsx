@@ -396,7 +396,7 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
         "fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-2xl z-50",
         "transform transition-transform duration-300 ease-out",
         isOpen ? "translate-y-0" : "translate-y-full",
-        "h-[85vh] overflow-hidden flex flex-col"
+        "h-[100vh] overflow-hidden flex flex-col"
       )}>
         {/* Header */}
         <div className="flex-shrink-0 p-6 border-b bg-white rounded-t-2xl">
