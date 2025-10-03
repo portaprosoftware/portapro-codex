@@ -187,14 +187,14 @@ export function VehicleOverviewTab({ vehicleId, licensePlate, vehicleData, isAct
       textColor: 'text-orange-700',
     },
     {
-      label: 'DVIRs (30d)',
+      label: 'DVIRs (30 days)',
       value: metrics?.dvirs_last_30d || 0,
       icon: FileText,
       gradient: 'from-blue-500 to-blue-600',
       textColor: 'text-blue-700',
     },
     {
-      label: 'Incidents (30d)',
+      label: 'Incidents (30 days)',
       value: metrics?.incidents_last_30d || 0,
       icon: AlertTriangle,
       gradient: 'from-red-500 to-red-600',
@@ -235,7 +235,7 @@ export function VehicleOverviewTab({ vehicleId, licensePlate, vehicleData, isAct
               <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                   <div className="space-y-1">
-                    <p className="text-xs sm:text-sm text-muted-foreground">{stat.label}</p>
+                    <p className="text-xs sm:text-sm font-bold text-muted-foreground">{stat.label}</p>
                     <p className={cn("text-2xl sm:text-3xl font-bold", stat.textColor)}>
                       {metricsLoading ? '...' : stat.value}
                     </p>
