@@ -33,9 +33,10 @@ interface VehicleOverviewTabProps {
   licensePlate: string;
   vehicleData?: any;
   isActive?: boolean;
+  onEditClick?: () => void;
 }
 
-export function VehicleOverviewTab({ vehicleId, licensePlate, vehicleData, isActive = true }: VehicleOverviewTabProps) {
+export function VehicleOverviewTab({ vehicleId, licensePlate, vehicleData, isActive = true, onEditClick }: VehicleOverviewTabProps) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { data: metrics, isLoading: metricsLoading } = useVehicleMetrics(vehicleId);
@@ -256,11 +257,17 @@ export function VehicleOverviewTab({ vehicleId, licensePlate, vehicleData, isAct
       {/* Vehicle Information and Photo */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
             <CardTitle className="flex items-center gap-2">
               <Truck className="w-5 h-5" />
               Vehicle Information
             </CardTitle>
+            {onEditClick && (
+              <Button variant="outline" size="sm" onClick={onEditClick}>
+                <Edit className="w-4 h-4 mr-2" />
+                Edit
+              </Button>
+            )}
           </CardHeader>
           <CardContent className="space-y-2">
             <div className="flex justify-between">

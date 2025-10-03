@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { 
   Truck, 
   Edit, 
@@ -470,7 +471,8 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
                     vehicleId={vehicle.id} 
                     licensePlate={vehicle.license_plate} 
                     vehicleData={vehicle} 
-                    isActive={activeTab === 'overview'} 
+                    isActive={activeTab === 'overview'}
+                    onEditClick={() => setIsEditing(true)}
                   />
                 </Suspense>
               </TabsContent>
@@ -716,6 +718,120 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
           </div>
         </div>
       )}
+
+      {/* Edit Vehicle Modal */}
+      <Dialog open={isEditing} onOpenChange={setIsEditing}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Vehicle: {vehicle.license_plate}</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="license_plate">License Plate *</Label>
+                <Input
+                  id="license_plate"
+                  value={formData.license_plate}
+                  onChange={(e) => setFormData({ ...formData, license_plate: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="status">Status *</Label>
+                <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="maintenance">Maintenance</SelectItem>
+                    <SelectItem value="retired">Retired</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2 col-span-2">
+                <Label>Vehicle Type</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowVehicleTypeSelector(true)}
+                  className="w-full justify-start"
+                >
+                  {formData.vehicle_type ? getVehicleTypeDisplayName(formData.vehicle_type) : "Select vehicle type"}
+                </Button>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="make">Make</Label>
+                <Input
+                  id="make"
+                  value={formData.make}
+                  onChange={(e) => setFormData({ ...formData, make: e.target.value })}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="model">Model</Label>
+                <Input
+                  id="model"
+                  value={formData.model}
+                  onChange={(e) => setFormData({ ...formData, model: e.target.value })}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="year">Year</Label>
+                <Input
+                  id="year"
+                  type="number"
+                  value={formData.year}
+                  onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value) || new Date().getFullYear() })}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="vin">VIN</Label>
+                <Input
+                  id="vin"
+                  value={formData.vin}
+                  onChange={(e) => setFormData({ ...formData, vin: e.target.value })}
+                />
+              </div>
+
+              <div className="space-y-2 col-span-2">
+                <Label htmlFor="current_mileage">Current Mileage</Label>
+                <Input
+                  id="current_mileage"
+                  type="number"
+                  value={formData.current_mileage}
+                  onChange={(e) => setFormData({ ...formData, current_mileage: parseInt(e.target.value) || 0 })}
+                />
+              </div>
+
+              <div className="space-y-2 col-span-2">
+                <Label htmlFor="notes">Notes</Label>
+                <Textarea
+                  id="notes"
+                  value={formData.notes}
+                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  rows={3}
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-4">
+              <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={updateVehicleMutation.isPending}>
+                {updateVehicleMutation.isPending ? "Saving..." : "Save Changes"}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       {/* Vehicle Type Selector Modal */}
       <VehicleTypeSelector
