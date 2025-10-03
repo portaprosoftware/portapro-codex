@@ -316,7 +316,7 @@ export function VehicleOverviewTab({ vehicleId, licensePlate, vehicleData, isAct
                 <img 
                   src={getVehicleImageUrl(currentVehicleImage)} 
                   alt={`${licensePlate} vehicle`}
-                  className="w-full h-48 object-cover rounded-lg"
+                  className="w-full h-64 object-cover rounded-lg"
                 />
                 <Button 
                   variant="outline" 
@@ -330,9 +330,11 @@ export function VehicleOverviewTab({ vehicleId, licensePlate, vehicleData, isAct
                 </Button>
               </div>
             ) : (
-              <div className="text-center py-8">
-                <Camera className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600 mb-4">No photo available</p>
+              <div className="flex items-center justify-center h-64 bg-gray-50 rounded-lg">
+                <div className="text-center">
+                  <Camera className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                  <p className="text-gray-600 text-sm">No photo available</p>
+                </div>
               </div>
             )}
 
@@ -345,12 +347,19 @@ export function VehicleOverviewTab({ vehicleId, licensePlate, vehicleData, isAct
                 className="hidden"
                 id="vehicle-image-upload"
               />
-              <label
-                htmlFor="vehicle-image-upload"
-                className="cursor-pointer block w-full p-2 border-2 border-dashed border-gray-300 rounded-lg text-center hover:border-blue-500 transition-colors"
-              >
-                <Upload className="w-6 h-6 mx-auto mb-2 text-gray-400" />
-                <span className="text-sm text-gray-600">Click to upload new photo</span>
+              <label htmlFor="vehicle-image-upload" className="block">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="w-full border-2 border-dashed border-blue-500 text-blue-600 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-600"
+                  asChild
+                >
+                  <span className="flex items-center justify-center gap-2 cursor-pointer">
+                    <Upload className="w-4 h-4" />
+                    Click to upload new photo
+                  </span>
+                </Button>
               </label>
 
               {imagePreview && (
