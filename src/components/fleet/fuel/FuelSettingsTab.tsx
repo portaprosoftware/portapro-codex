@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,6 +13,9 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { StateScroller } from '@/components/ui/state-scroller';
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
+import { geocodeAddress } from '@/services/geocoding';
 
 interface FuelSettings {
   id: string;
@@ -37,8 +40,13 @@ export const FuelSettingsTab: React.FC = () => {
     state: '',
     zip: ''
   });
+  const [mapCoordinates, setMapCoordinates] = useState<[number, number] | null>(null);
+  const mapContainer = useRef<HTMLDivElement>(null);
+  const map = useRef<mapboxgl.Map | null>(null);
+  const marker = useRef<mapboxgl.Marker | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const mapboxToken = 'pk.eyJ1IjoicG9ydGFwcm9zb2Z0d2FyZSIsImEiOiJjbWJybnBnMnIwY2x2Mm1wd3p2MWdqY2FnIn0.7ZIJ7ufeGtn-ufiOGJpq1Q';
 
   // Fetch fuel settings
   const { data: settings, isLoading: settingsLoading } = useQuery({
@@ -134,6 +142,74 @@ export const FuelSettingsTab: React.FC = () => {
     }
   });
 
+  // Geocode address whenever form data changes
+  useEffect(() => {
+    const geocodeStationAddress = async () => {
+      const { address, city, state, zip } = stationFormData;
+      const fullAddress = address && city && state ? 
+        `${address}, ${city}, ${state} ${zip}` : 
+        city && state ? `${city}, ${state} ${zip}` : '';
+      
+      if (fullAddress) {
+        const coordinates = await geocodeAddress(fullAddress, mapboxToken);
+        if (coordinates) {
+          setMapCoordinates(coordinates);
+        }
+      } else {
+        setMapCoordinates(null);
+      }
+    };
+
+    if (showStationModal) {
+      geocodeStationAddress();
+    }
+  }, [stationFormData.address, stationFormData.city, stationFormData.state, stationFormData.zip, showStationModal]);
+
+  // Initialize map when modal opens and coordinates are available
+  useEffect(() => {
+    if (!showStationModal || !mapContainer.current || !mapCoordinates) {
+      return;
+    }
+
+    // Clean up existing map
+    if (map.current) {
+      map.current.remove();
+      map.current = null;
+    }
+
+    // Initialize new map
+    mapboxgl.accessToken = mapboxToken;
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: 'mapbox://styles/mapbox/streets-v12',
+      center: mapCoordinates,
+      zoom: 14
+    });
+
+    // Add navigation controls
+    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+    // Add marker
+    marker.current = new mapboxgl.Marker({ color: '#3b82f6' })
+      .setLngLat(mapCoordinates)
+      .addTo(map.current);
+
+    return () => {
+      marker.current?.remove();
+      map.current?.remove();
+      map.current = null;
+      marker.current = null;
+    };
+  }, [mapCoordinates, showStationModal]);
+
+  // Update marker position when coordinates change
+  useEffect(() => {
+    if (marker.current && mapCoordinates && map.current) {
+      marker.current.setLngLat(mapCoordinates);
+      map.current.flyTo({ center: mapCoordinates, zoom: 14 });
+    }
+  }, [mapCoordinates]);
+
   const handleEditStation = (station: any) => {
     setEditingStation(station);
     setStationFormData({
@@ -149,6 +225,7 @@ export const FuelSettingsTab: React.FC = () => {
   const handleAddStation = () => {
     setEditingStation(null);
     setStationFormData({ name: '', address: '', city: '', state: '', zip: '' });
+    setMapCoordinates(null);
     setShowStationModal(true);
   };
 
@@ -414,7 +491,7 @@ export const FuelSettingsTab: React.FC = () => {
 
       {/* Add/Edit Station Modal */}
       <Dialog open={showStationModal} onOpenChange={setShowStationModal}>
-        <DialogContent>
+        <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>{editingStation ? 'Edit Fuel Station' : 'Add Fuel Station'}</DialogTitle>
           </DialogHeader>
@@ -465,6 +542,23 @@ export const FuelSettingsTab: React.FC = () => {
                 placeholder="Zip code"
               />
             </div>
+
+            {/* Map View */}
+            {mapCoordinates ? (
+              <div className="space-y-2">
+                <Label>Location Preview</Label>
+                <div 
+                  ref={mapContainer} 
+                  className="w-full h-64 rounded-lg border border-border"
+                />
+              </div>
+            ) : (
+              stationFormData.city && stationFormData.state && (
+                <div className="p-4 bg-muted rounded-lg text-sm text-muted-foreground text-center">
+                  Enter address details to see location preview
+                </div>
+              )
+            )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowStationModal(false)}>
