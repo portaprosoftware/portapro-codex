@@ -232,14 +232,6 @@ export function EditNotesModal({
 
             <Input
               id="tags"
-              value=""
-              onChange={(e) => {
-                const newTag = e.target.value.trim();
-                if (newTag && e.nativeEvent instanceof InputEvent && e.nativeEvent.inputType === 'insertText' && newTag.endsWith(',')) {
-                  handleQuickTagClick(newTag.slice(0, -1).trim());
-                  e.target.value = '';
-                }
-              }}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ',') {
                   e.preventDefault();
