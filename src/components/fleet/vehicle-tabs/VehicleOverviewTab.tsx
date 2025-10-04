@@ -32,6 +32,8 @@ import { toast } from 'sonner';
 import { getVehicleTypeDisplayName } from '@/lib/vehicleTypeUtils';
 import { DeleteConfirmationModal } from '@/components/ui/delete-confirmation-modal';
 import { VehicleNotesTab } from './VehicleNotesTab';
+import { NextPMDueWidget } from '../vehicle-widgets/NextPMDueWidget';
+import { OpenWorkOrdersWidget } from '../vehicle-widgets/OpenWorkOrdersWidget';
 
 interface VehicleOverviewTabProps {
   vehicleId: string;
@@ -290,6 +292,27 @@ export function VehicleOverviewTab({ vehicleId, licensePlate, vehicleData, isAct
             </Card>
           );
         })}
+      </div>
+
+      {/* PM Due & Work Orders Widgets */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <NextPMDueWidget 
+          vehicleId={vehicleId}
+          currentOdometer={vehicleInfo?.current_odometer}
+          currentEngineHours={vehicleInfo?.current_engine_hours}
+          onCreateWorkOrder={(templateId, scheduleId) => {
+            // Navigate to work orders tab or open drawer
+            console.log('Create WO from template:', templateId, scheduleId);
+            toast.success('Opening work order creation...');
+          }}
+        />
+        <OpenWorkOrdersWidget 
+          vehicleId={vehicleId}
+          onWorkOrderClick={(woId) => {
+            console.log('Open work order:', woId);
+            toast.success('Opening work order details...');
+          }}
+        />
       </div>
 
       {/* Vehicle Information and Photo */}

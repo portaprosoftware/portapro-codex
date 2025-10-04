@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DVIRForm } from "./DVIRForm";
+import { DVIRDefectBadge } from "./dvir/DVIRDefectBadge";
+import { AlertCircle } from "lucide-react";
 
 interface DVIRListProps {
   vehicleId?: string;
@@ -13,6 +15,7 @@ interface DVIRListProps {
 
 export const DVIRList: React.FC<DVIRListProps> = ({ vehicleId, licensePlate }) => {
   const [open, setOpen] = useState(false);
+  const [selectedWorkOrderId, setSelectedWorkOrderId] = useState<string | null>(null);
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["dvir-reports", vehicleId],
@@ -94,9 +97,35 @@ export const DVIRList: React.FC<DVIRListProps> = ({ vehicleId, licensePlate }) =
                       <td className="py-2">
                         <Badge>{r.status}</Badge>
                       </td>
-                      <td className="py-2">{r.defects_count}</td>
+                      <td className="py-2">
+                        {r.defects_count > 0 ? (
+                          <div className="flex items-center gap-2">
+                            <span>{r.defects_count}</span>
+                            <DVIRDefectBadge 
+                              dvirId={r.id}
+                              onWorkOrderClick={(woId) => {
+                                // Could open work order drawer here
+                                console.log('Open WO:', woId);
+                              }}
+                            />
+                          </div>
+                        ) : (
+                          <span>0</span>
+                        )}
+                      </td>
                       <td className="py-2">{r.odometer_miles ?? "-"}</td>
-                      <td className="py-2">{r.out_of_service_flag ? <Badge variant="destructive">Yes</Badge> : "No"}</td>
+                      <td className="py-2">
+                        {r.out_of_service_flag ? (
+                          <div className="flex items-center gap-1">
+                            <Badge variant="destructive" className="flex items-center gap-1">
+                              <AlertCircle className="h-3 w-3" />
+                              Yes
+                            </Badge>
+                          </div>
+                        ) : (
+                          "No"
+                        )}
+                      </td>
                       <td className="py-2 space-x-2">
                         {r.major_defect_present && (
                           <Button size="sm" variant="outline" onClick={()=>openWOForFirstDefect(r.id)}>Open WO</Button>
