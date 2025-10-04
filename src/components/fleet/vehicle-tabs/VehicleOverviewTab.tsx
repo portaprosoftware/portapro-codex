@@ -497,16 +497,8 @@ export function VehicleOverviewTab({ vehicleId, licensePlate, vehicleData, isAct
 
       {/* Recent Activity */}
       <Card className="border-2">
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader>
           <CardTitle className="text-lg">Recent Activity</CardTitle>
-          <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={() => navigate(`/fleet?vehicle_id=${vehicleId}&vehicle_name=${encodeURIComponent(licensePlate)}`)}
-            title="View all activity"
-          >
-            <ExternalLink className="w-4 h-4" />
-          </Button>
         </CardHeader>
         <CardContent>
           {activityLoading ? (
