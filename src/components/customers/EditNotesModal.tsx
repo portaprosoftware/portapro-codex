@@ -39,6 +39,7 @@ export function EditNotesModal({
   const [title, setTitle] = useState('');
   const [noteText, setNoteText] = useState('');
   const [tags, setTags] = useState('');
+  const [customTagInput, setCustomTagInput] = useState('');
   const [isImportant, setIsImportant] = useState(false);
 
   // Sync state with existingNote changes
@@ -55,6 +56,7 @@ export function EditNotesModal({
       setTags('');
       setIsImportant(false);
     }
+    setCustomTagInput('');
   }, [existingNote]);
 
   // Communication-focused tags
@@ -114,6 +116,7 @@ export function EditNotesModal({
     setTitle('');
     setNoteText('');
     setTags('');
+    setCustomTagInput('');
     setIsImportant(false);
     onClose();
   };
@@ -131,6 +134,7 @@ export function EditNotesModal({
       setTags('');
       setIsImportant(false);
     }
+    setCustomTagInput('');
     onClose();
   };
 
@@ -232,14 +236,15 @@ export function EditNotesModal({
 
             <Input
               id="tags"
+              value={customTagInput}
+              onChange={(e) => setCustomTagInput(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ',') {
                   e.preventDefault();
-                  const input = e.currentTarget;
-                  const newTag = input.value.trim();
+                  const newTag = customTagInput.trim();
                   if (newTag) {
                     handleQuickTagClick(newTag);
-                    input.value = '';
+                    setCustomTagInput('');
                   }
                 }
               }}
