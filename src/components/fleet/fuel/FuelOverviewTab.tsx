@@ -194,16 +194,16 @@ export const FuelOverviewTab: React.FC = () => {
               {recentLogs.map((log) => (
                 <div key={log.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
                   <div className="flex-1">
-                    <div className="flex items-center gap-3">
-                      <Badge variant="outline">{log.vehicle_license}</Badge>
-                      <span className="font-medium">{log.driver_name}</span>
-                      <span className="text-sm text-muted-foreground">
+                    <div className="space-y-1">
+                      <div className="font-medium">
                         {log.vehicle_make && log.vehicle_model 
                           ? `${log.vehicle_make} ${log.vehicle_model}${log.vehicle_nickname ? ` - ${log.vehicle_nickname}` : ''}`
-                          : 'Unknown'}
-                      </span>
+                          : 'Unknown Vehicle'}
+                      </div>
+                      <div className="text-sm text-muted-foreground">{log.vehicle_license}</div>
                     </div>
-                    <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
+                      <span>{log.driver_name}</span>
                       <span>{new Date(log.log_date).toLocaleDateString()}</span>
                       <span>{log.gallons_purchased} gal</span>
                       <span>${log.cost_per_gallon}/gal</span>
