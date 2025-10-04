@@ -180,7 +180,7 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
 
             {/* Important Toggle */}
             <div className="space-y-2">
-              <Label htmlFor="important-toggle">Important Only</Label>
+              <Label htmlFor="important-toggle">Important / Urgent Only</Label>
               <div className="flex items-center space-x-2">
                 <Switch
                   id="important-toggle"

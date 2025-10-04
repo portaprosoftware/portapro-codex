@@ -258,7 +258,7 @@ export function EditNotesModal({
 
           <div className="flex items-center justify-between space-x-2">
             <Label htmlFor="is-important" className="cursor-pointer">
-              Mark note as important
+              Mark Important / Urgent
             </Label>
             <Switch
               id="is-important"
