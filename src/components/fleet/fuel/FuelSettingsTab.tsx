@@ -152,21 +152,21 @@ export const FuelSettingsTab: React.FC = () => {
     }
   });
 
-  // Geocode address whenever form data changes
+  // Geocode address only when all fields are complete
   useEffect(() => {
     const geocodeStationAddress = async () => {
       const { address, city, state, zip } = stationFormData;
-      const fullAddress = address && city && state ? 
-        `${address}, ${city}, ${state} ${zip}` : 
-        city && state ? `${city}, ${state} ${zip}` : '';
       
-      if (fullAddress) {
-        const coordinates = await geocodeAddress(fullAddress, mapboxToken);
-        if (coordinates) {
-          setMapCoordinates(coordinates);
-        }
-      } else {
+      // Only geocode if ALL required fields are filled
+      if (!address || !city || !state || !zip) {
         setMapCoordinates(null);
+        return;
+      }
+      
+      const fullAddress = `${address}, ${city}, ${state} ${zip}`;
+      const coordinates = await geocodeAddress(fullAddress, mapboxToken);
+      if (coordinates) {
+        setMapCoordinates(coordinates);
       }
     };
 
@@ -555,7 +555,7 @@ export const FuelSettingsTab: React.FC = () => {
             </div>
 
             {/* Map View */}
-            {mapCoordinates ? (
+            {mapCoordinates && stationFormData.address && stationFormData.city && stationFormData.state && stationFormData.zip ? (
               <div className="space-y-2">
                 <Label>Location Preview</Label>
                 <div 
@@ -563,13 +563,7 @@ export const FuelSettingsTab: React.FC = () => {
                   className="w-full h-64 rounded-lg border border-border"
                 />
               </div>
-            ) : (
-              stationFormData.city && stationFormData.state && (
-                <div className="p-4 bg-muted rounded-lg text-sm text-muted-foreground text-center">
-                  Enter address details to see location preview
-                </div>
-              )
-            )}
+            ) : null}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowStationModal(false)}>
