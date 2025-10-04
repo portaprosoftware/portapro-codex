@@ -2963,6 +2963,66 @@ export type Database = {
         }
         Relationships: []
       }
+      fleet_costs: {
+        Row: {
+          amount: number
+          asset_id: string
+          asset_type: string
+          cost_category: string | null
+          cost_type: string
+          created_at: string | null
+          created_by: string | null
+          date: string
+          description: string | null
+          engine_hours: number | null
+          id: string
+          odometer: number | null
+          receipt_url: string | null
+          reference_id: string | null
+          reference_type: string | null
+          updated_at: string | null
+          vendor: string | null
+        }
+        Insert: {
+          amount: number
+          asset_id: string
+          asset_type: string
+          cost_category?: string | null
+          cost_type: string
+          created_at?: string | null
+          created_by?: string | null
+          date: string
+          description?: string | null
+          engine_hours?: number | null
+          id?: string
+          odometer?: number | null
+          receipt_url?: string | null
+          reference_id?: string | null
+          reference_type?: string | null
+          updated_at?: string | null
+          vendor?: string | null
+        }
+        Update: {
+          amount?: number
+          asset_id?: string
+          asset_type?: string
+          cost_category?: string | null
+          cost_type?: string
+          created_at?: string | null
+          created_by?: string | null
+          date?: string
+          description?: string | null
+          engine_hours?: number | null
+          id?: string
+          odometer?: number | null
+          receipt_url?: string | null
+          reference_id?: string | null
+          reference_type?: string | null
+          updated_at?: string | null
+          vendor?: string | null
+        }
+        Relationships: []
+      }
       fleet_utilization_analytics: {
         Row: {
           created_at: string
@@ -5660,6 +5720,57 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      pm_templates: {
+        Row: {
+          asset_type: string
+          checklist_items: Json | null
+          created_at: string | null
+          description: string | null
+          estimated_cost: number | null
+          estimated_labor_hours: number | null
+          id: string
+          is_active: boolean | null
+          name: string
+          parts_list: Json | null
+          trigger_config: Json | null
+          trigger_interval: number | null
+          trigger_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          asset_type: string
+          checklist_items?: Json | null
+          created_at?: string | null
+          description?: string | null
+          estimated_cost?: number | null
+          estimated_labor_hours?: number | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          parts_list?: Json | null
+          trigger_config?: Json | null
+          trigger_interval?: number | null
+          trigger_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          asset_type?: string
+          checklist_items?: Json | null
+          created_at?: string | null
+          description?: string | null
+          estimated_cost?: number | null
+          estimated_labor_hours?: number | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          parts_list?: Json | null
+          trigger_config?: Json | null
+          trigger_interval?: number | null
+          trigger_type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       ppe_compliance_records: {
         Row: {
@@ -10046,6 +10157,103 @@ export type Database = {
         }
         Relationships: []
       }
+      work_order_items: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          id: string
+          item_name: string
+          notes: string | null
+          photos: string[] | null
+          severity: string | null
+          status: string | null
+          updated_at: string | null
+          work_order_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          id?: string
+          item_name: string
+          notes?: string | null
+          photos?: string[] | null
+          severity?: string | null
+          status?: string | null
+          updated_at?: string | null
+          work_order_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          id?: string
+          item_name?: string
+          notes?: string | null
+          photos?: string[] | null
+          severity?: string | null
+          status?: string | null
+          updated_at?: string | null
+          work_order_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_order_items_work_order_id_fkey"
+            columns: ["work_order_id"]
+            isOneToOne: false
+            referencedRelation: "work_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      work_order_labor: {
+        Row: {
+          created_at: string | null
+          end_time: string | null
+          hourly_rate: number | null
+          hours: number
+          id: string
+          is_active: boolean | null
+          notes: string | null
+          start_time: string | null
+          technician_name: string
+          updated_at: string | null
+          work_order_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          end_time?: string | null
+          hourly_rate?: number | null
+          hours?: number
+          id?: string
+          is_active?: boolean | null
+          notes?: string | null
+          start_time?: string | null
+          technician_name: string
+          updated_at?: string | null
+          work_order_id: string
+        }
+        Update: {
+          created_at?: string | null
+          end_time?: string | null
+          hourly_rate?: number | null
+          hours?: number
+          id?: string
+          is_active?: boolean | null
+          notes?: string | null
+          start_time?: string | null
+          technician_name?: string
+          updated_at?: string | null
+          work_order_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_order_labor_work_order_id_fkey"
+            columns: ["work_order_id"]
+            isOneToOne: false
+            referencedRelation: "work_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       work_order_lines: {
         Row: {
           description: string
@@ -10115,6 +10323,74 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "work_order_notes_work_order_id_fkey"
+            columns: ["work_order_id"]
+            isOneToOne: false
+            referencedRelation: "work_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      work_order_parts: {
+        Row: {
+          consumable_id: string | null
+          created_at: string | null
+          id: string
+          notes: string | null
+          part_name: string
+          quantity: number
+          source: string | null
+          unit_cost: number | null
+          updated_at: string | null
+          work_order_id: string
+        }
+        Insert: {
+          consumable_id?: string | null
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          part_name: string
+          quantity?: number
+          source?: string | null
+          unit_cost?: number | null
+          updated_at?: string | null
+          work_order_id: string
+        }
+        Update: {
+          consumable_id?: string | null
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          part_name?: string
+          quantity?: number
+          source?: string | null
+          unit_cost?: number | null
+          updated_at?: string | null
+          work_order_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_order_parts_consumable_id_fkey"
+            columns: ["consumable_id"]
+            isOneToOne: false
+            referencedRelation: "consumable_daily_usage_90"
+            referencedColumns: ["consumable_id"]
+          },
+          {
+            foreignKeyName: "work_order_parts_consumable_id_fkey"
+            columns: ["consumable_id"]
+            isOneToOne: false
+            referencedRelation: "consumable_velocity_stats"
+            referencedColumns: ["consumable_id"]
+          },
+          {
+            foreignKeyName: "work_order_parts_consumable_id_fkey"
+            columns: ["consumable_id"]
+            isOneToOne: false
+            referencedRelation: "consumables"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_order_parts_work_order_id_fkey"
             columns: ["work_order_id"]
             isOneToOne: false
             referencedRelation: "work_orders"
