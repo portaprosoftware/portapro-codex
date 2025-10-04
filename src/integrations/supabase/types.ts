@@ -9859,6 +9859,66 @@ export type Database = {
         }
         Relationships: []
       }
+      vehicle_pm_schedules: {
+        Row: {
+          active: boolean
+          baseline_date: string | null
+          baseline_engine_hours: number | null
+          baseline_mileage: number | null
+          created_at: string
+          created_by: string | null
+          id: string
+          last_completed_at: string | null
+          last_work_order_id: string | null
+          next_due_date: string | null
+          next_due_engine_hours: number | null
+          next_due_mileage: number | null
+          notes: string | null
+          status: string
+          template_id: string
+          updated_at: string
+          vehicle_id: string
+        }
+        Insert: {
+          active?: boolean
+          baseline_date?: string | null
+          baseline_engine_hours?: number | null
+          baseline_mileage?: number | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          last_completed_at?: string | null
+          last_work_order_id?: string | null
+          next_due_date?: string | null
+          next_due_engine_hours?: number | null
+          next_due_mileage?: number | null
+          notes?: string | null
+          status?: string
+          template_id: string
+          updated_at?: string
+          vehicle_id: string
+        }
+        Update: {
+          active?: boolean
+          baseline_date?: string | null
+          baseline_engine_hours?: number | null
+          baseline_mileage?: number | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          last_completed_at?: string | null
+          last_work_order_id?: string | null
+          next_due_date?: string | null
+          next_due_engine_hours?: number | null
+          next_due_mileage?: number | null
+          notes?: string | null
+          status?: string
+          template_id?: string
+          updated_at?: string
+          vehicle_id?: string
+        }
+        Relationships: []
+      }
       vehicle_sds_tracking: {
         Row: {
           chemical_name: string
