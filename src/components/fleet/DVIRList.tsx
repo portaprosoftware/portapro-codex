@@ -117,6 +117,7 @@ export const DVIRList: React.FC<DVIRListProps> = ({ vehicleId, licensePlate }) =
         open={open} 
         onOpenChange={(v)=>{ setOpen(v); if(!v) refetch(); }} 
         preSelectedVehicleId={vehicleId}
+        useModal={!!vehicleId}
       />
     </div>
   );

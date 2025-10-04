@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { StockVehicleSelectionModal } from "@/components/fleet/StockVehicleSelectionModal";
 import { DriverSelectionModal } from "@/components/fleet/DriverSelectionModal";
@@ -18,6 +19,7 @@ interface DVIRFormProps {
   preSelectedVehicleId?: string;
   preSelectedDriverId?: string;
   preSelectedType?: "pre_trip" | "post_trip";
+  useModal?: boolean;
 }
 
 const VEHICLE_ITEMS = [
@@ -57,7 +59,8 @@ export const DVIRForm: React.FC<DVIRFormProps> = ({
   onOpenChange, 
   preSelectedVehicleId,
   preSelectedDriverId,
-  preSelectedType 
+  preSelectedType,
+  useModal = false
 }) => {
   const qc = useQueryClient();
   const [assetType, setAssetType] = useState<"vehicle"|"trailer">("vehicle");
@@ -327,271 +330,117 @@ export const DVIRForm: React.FC<DVIRFormProps> = ({
     );
   };
 
+  const formContent = (
+    <div className="space-y-6">
+      {/* Header Information */}
+      <div className="bg-muted/20 p-4 rounded-lg">
+        <h2 className="font-semibold text-lg mb-4">Header Information</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+...
+        </div>
+      </div>
+
+      {/* Inspection Sections */}
+      <div className="space-y-4">
+        <h2 className="font-semibold text-lg">Inspection Items</h2>
+        {Object.entries(INSPECTION_CATEGORIES).map(([key, category]) => 
+          renderInspectionSection(key, category)
+        )}
+      </div>
+
+      {/* Driver Certification */}
+      <div className="bg-muted/20 p-4 rounded-lg space-y-4">
+        <h2 className="font-semibold text-lg mb-4">Driver Certification</h2>
+        
+        <div className="space-y-3">
+          <label className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              checked={conditionSatisfactory}
+              onChange={(e) => setConditionSatisfactory(e.target.checked)}
+              className="w-4 h-4 rounded border-gray-300"
+            />
+            <span className="text-sm">I certify the above vehicle is in satisfactory condition</span>
+          </label>
+          
+          <label className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              checked={defectsCorrected}
+              onChange={(e) => setDefectsCorrected(e.target.checked)}
+              className="w-4 h-4 rounded border-gray-300"
+            />
+            <span className="text-sm">Defects have been corrected</span>
+          </label>
+          
+          <label className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              checked={defectsNotRequiredForSafety}
+              onChange={(e) => setDefectsNotRequiredForSafety(e.target.checked)}
+              className="w-4 h-4 rounded border-gray-300"
+            />
+            <span className="text-sm">Defects listed are not required for safe operation</span>
+          </label>
+
+          {majorDefectPresent && (
+            <label className="flex items-center gap-3 p-3 bg-yellow-50 border border-yellow-200 rounded">
+              <input
+                type="checkbox"
+                checked={verifyFix}
+                onChange={(e) => setVerifyFix(e.target.checked)}
+                className="w-4 h-4 rounded border-gray-300"
+              />
+              <span className="text-sm font-medium text-yellow-800">Verify all prior defects have been fixed</span>
+            </label>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Additional Remarks</label>
+          <Textarea
+            value={remarks}
+            onChange={(e) => setRemarks(e.target.value)}
+            placeholder="Any additional notes or comments..."
+            rows={3}
+          />
+        </div>
+      </div>
+
+      <div className="flex justify-end gap-3 pt-4">
+        <Button variant="outline" onClick={() => onOpenChange(false)}>
+          Cancel
+        </Button>
+        <Button 
+          onClick={handleSubmit} 
+          disabled={submitting || !assetId || (!odometer && !engineHours)}
+        >
+          {submitting ? "Submitting..." : "Submit DVIR"}
+        </Button>
+      </div>
+    </div>
+  );
+
+  if (useModal) {
+    return (
+      <Dialog open={open} onOpenChange={(v) => { if (!v) reset(); onOpenChange(v); }}>
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold">Driver Vehicle Inspection Report (DVIR)</DialogTitle>
+          </DialogHeader>
+          {formContent}
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
   return (
     <Sheet open={open} onOpenChange={(v) => { if (!v) reset(); onOpenChange(v); }}>
       <SheetContent side="bottom" className="h-[95vh] max-h-none overflow-y-auto">
         <SheetHeader className="pb-6">
           <SheetTitle className="text-xl font-bold">Driver Vehicle Inspection Report (DVIR)</SheetTitle>
         </SheetHeader>
-
-        <div className="space-y-6">
-          {/* Header Information */}
-          <div className="bg-muted/20 p-4 rounded-lg">
-            <h2 className="font-semibold text-lg mb-4">Header Information</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">Date</label>
-                <input 
-                  type="date" 
-                  className="w-full border rounded-md p-2 bg-background" 
-                  defaultValue={new Date().toISOString().split('T')[0]}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Asset Type</label>
-                <select 
-                  className="w-full border rounded-md p-2 bg-background" 
-                  value={assetType} 
-                  onChange={e => setAssetType(e.target.value as any)}
-                >
-                  <option value="vehicle">Vehicle</option>
-                  <option value="trailer">Trailer</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  {assetType === "vehicle" ? "Vehicle" : "Trailer Number"}
-                </label>
-                {assetType === "vehicle" ? (
-                  <div className="space-y-2">
-                    {!selectedVehicle ? (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="w-full h-12 justify-start"
-                        onClick={() => setShowVehicleModal(true)}
-                      >
-                        <Truck className="h-4 w-4 mr-2" />
-                        Select Vehicle...
-                      </Button>
-                    ) : (
-                      <Card className="cursor-pointer hover:bg-muted/50" onClick={() => setShowVehicleModal(true)}>
-                        <CardContent className="p-3">
-                          <div className="flex items-center space-x-3">
-                            <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex items-center justify-center">
-                              <Truck className="h-6 w-6 text-blue-600" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <h4 className="font-semibold text-sm truncate">
-                                {selectedVehicle.license_plate || `Vehicle ${selectedVehicle.id?.slice(0, 8)}`}
-                              </h4>
-                              <p className="text-xs text-muted-foreground truncate">
-                                {[selectedVehicle.make, selectedVehicle.model, selectedVehicle.year].filter(Boolean).join(' ')}
-                              </p>
-                              {selectedVehicle.vehicle_type && (
-                                <Badge variant="outline" className="text-xs mt-1">
-                                  {selectedVehicle.vehicle_type}
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    )}
-                  </div>
-                ) : (
-                  <input 
-                    className="w-full border rounded-md p-2 bg-background" 
-                    placeholder="Trailer Number" 
-                    value={assetId} 
-                    onChange={e => setAssetId(e.target.value)} 
-                  />
-                )}
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Inspection Type</label>
-                <select 
-                  className="w-full border rounded-md p-2 bg-background" 
-                  value={reportType} 
-                  onChange={e => setReportType(e.target.value as any)}
-                >
-                  <option value="pre_trip">Pre-trip</option>
-                  <option value="post_trip">Post-trip</option>
-                </select>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Odometer (miles)</label>
-                  <input 
-                    type="number" 
-                    className="w-full border rounded-md p-2 bg-background" 
-                    value={odometer} 
-                    onChange={e => setOdometer(e.target.value)} 
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Engine Hours</label>
-                  <input 
-                    type="number" 
-                    className="w-full border rounded-md p-2 bg-background" 
-                    value={engineHours} 
-                    onChange={e => setEngineHours(e.target.value)} 
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Driver</label>
-                <div className="space-y-2">
-                  {!selectedDriver ? (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full h-12 justify-start"
-                      onClick={() => setShowDriverModal(true)}
-                    >
-                      <User className="h-4 w-4 mr-2" />
-                      Select Driver (Optional)...
-                    </Button>
-                  ) : (
-                    <Card className="cursor-pointer hover:bg-muted/50" onClick={() => setShowDriverModal(true)}>
-                      <CardContent className="p-3">
-                        <div className="flex items-center space-x-3">
-                          <Avatar className="w-12 h-12">
-                            <AvatarFallback className="bg-primary text-white font-semibold">
-                              {`${selectedDriver.first_name?.[0] || ''}${selectedDriver.last_name?.[0] || ''}`.toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1 min-w-0">
-                            <h4 className="font-semibold text-sm truncate">
-                              {selectedDriver.first_name} {selectedDriver.last_name}
-                            </h4>
-                            <p className="text-xs text-muted-foreground">
-                              {selectedDriver.status === "available" ? "Available" : 
-                               selectedDriver.status === "assigned" ? "Assigned" : "Off-Duty"}
-                            </p>
-                            {selectedDriver.working_hours && (
-                              <p className="text-xs text-muted-foreground">
-                                {selectedDriver.working_hours.start_time?.slice(0, 5)} - {selectedDriver.working_hours.end_time?.slice(0, 5)}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Inspection Sections */}
-          <div className="space-y-4">
-            <h2 className="font-semibold text-lg">Inspection Items</h2>
-            {Object.entries(INSPECTION_CATEGORIES).map(([key, category]) => 
-              renderInspectionSection(key, category)
-            )}
-          </div>
-
-          {/* Remarks Section */}
-          <div className="bg-muted/20 p-4 rounded-lg">
-            <h2 className="font-semibold text-lg mb-4">Remarks</h2>
-            <Textarea
-              placeholder="Enter any additional remarks, defects noted, or other observations..."
-              value={remarks}
-              onChange={(e) => setRemarks(e.target.value)}
-              className="w-full min-h-[100px]"
-            />
-          </div>
-
-          {/* Certification Section */}
-          <div className="bg-muted/20 p-4 rounded-lg">
-            <h2 className="font-semibold text-lg mb-4">Certification & Signatures</h2>
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <input
-                  id="conditionSatisfactory"
-                  type="checkbox"
-                  checked={conditionSatisfactory}
-                  onChange={e => setConditionSatisfactory(e.target.checked)}
-                />
-                <label htmlFor="conditionSatisfactory" className="text-sm">
-                  Vehicle condition is satisfactory
-                </label>
-              </div>
-              
-              <div className="flex items-center gap-2">
-                <input
-                  id="defectsCorrected"
-                  type="checkbox"
-                  checked={defectsCorrected}
-                  onChange={e => setDefectsCorrected(e.target.checked)}
-                />
-                <label htmlFor="defectsCorrected" className="text-sm">
-                  Above defects have been corrected
-                </label>
-              </div>
-              
-              <div className="flex items-center gap-2">
-                <input
-                  id="defectsNotRequired"
-                  type="checkbox"
-                  checked={defectsNotRequiredForSafety}
-                  onChange={e => setDefectsNotRequiredForSafety(e.target.checked)}
-                />
-                <label htmlFor="defectsNotRequired" className="text-sm">
-                  Above defects need not be corrected for safe operation
-                </label>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <input
-                  id="verifyFix"
-                  type="checkbox"
-                  checked={verifyFix}
-                  onChange={e => setVerifyFix(e.target.checked)}
-                  disabled={majorDefectPresent}
-                />
-                <label htmlFor="verifyFix" className="text-sm">
-                  Driver verifies prior defects for this asset are fixed
-                </label>
-              </div>
-              
-              {majorDefectPresent && (
-                <p className="text-sm text-destructive">
-                  {defectsCount} defect(s) found. Vehicle may be out of service.
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <StockVehicleSelectionModal
-          open={showVehicleModal}
-          onOpenChange={setShowVehicleModal}
-          selectedDate={new Date()}
-          selectedVehicle={selectedVehicle}
-          onVehicleSelect={handleVehicleSelect}
-        />
-
-        <DriverSelectionModal
-          open={showDriverModal}
-          onOpenChange={setShowDriverModal}
-          selectedDate={new Date()}
-          selectedDriver={selectedDriver}
-          onDriverSelect={handleDriverSelect}
-        />
-
-        <SheetFooter className="mt-6 flex gap-2">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-          <Button 
-            onClick={handleSubmit} 
-            disabled={submitting || !assetId || (!odometer && !engineHours)}
-          >
-            {submitting ? "Submitting..." : "Submit DVIR"}
-          </Button>
-        </SheetFooter>
+        {formContent}
       </SheetContent>
     </Sheet>
   );
