@@ -202,7 +202,8 @@ export function VehicleMaintenanceTab({
       <DVIRFormModal
         open={isDVIRModalOpen}
         onOpenChange={setIsDVIRModalOpen}
-        preSelectedVehicleId={vehicleId}
+        vehicleContextId={vehicleId}
+        vehicleContextName={licensePlate}
       />
     </div>
   );

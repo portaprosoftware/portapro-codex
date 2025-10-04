@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ChevronDown, ChevronRight, Truck, Calendar, User, X } from "lucide-react";
+import { ChevronDown, ChevronRight, Truck, Calendar, User, X, Lock } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface DVIRFormModalProps {
@@ -19,6 +19,8 @@ interface DVIRFormModalProps {
   preSelectedVehicleId?: string;
   preSelectedDriverId?: string;
   preSelectedType?: "pre_trip" | "post_trip";
+  vehicleContextId?: string;
+  vehicleContextName?: string;
 }
 
 const VEHICLE_ITEMS = [
@@ -58,7 +60,9 @@ export const DVIRFormModal: React.FC<DVIRFormModalProps> = ({
   onOpenChange, 
   preSelectedVehicleId,
   preSelectedDriverId,
-  preSelectedType 
+  preSelectedType,
+  vehicleContextId,
+  vehicleContextName
 }) => {
   const qc = useQueryClient();
   const [assetType, setAssetType] = useState<"vehicle"|"trailer">("vehicle");
@@ -88,9 +92,18 @@ export const DVIRFormModal: React.FC<DVIRFormModalProps> = ({
     notes: string 
   }>>({});
 
+  // Check if vehicle is locked from context
+  const isVehicleContextLocked = !!vehicleContextId;
+
   // Initialize with pre-selected values
   React.useEffect(() => {
-    if (preSelectedVehicleId && !selectedVehicle) {
+    if (vehicleContextId) {
+      setAssetId(vehicleContextId);
+      setSelectedVehicle({
+        id: vehicleContextId,
+        license_plate: vehicleContextName || 'Vehicle',
+      });
+    } else if (preSelectedVehicleId && !selectedVehicle) {
       setAssetId(preSelectedVehicleId);
     }
     if (preSelectedDriverId && !selectedDriver) {
@@ -99,7 +112,7 @@ export const DVIRFormModal: React.FC<DVIRFormModalProps> = ({
     if (preSelectedType) {
       setReportType(preSelectedType);
     }
-  }, [preSelectedVehicleId, preSelectedDriverId, preSelectedType, selectedVehicle, selectedDriver]);
+  }, [vehicleContextId, vehicleContextName, preSelectedVehicleId, preSelectedDriverId, preSelectedType, selectedVehicle, selectedDriver]);
 
   // Initialize inspection items for all categories
   React.useEffect(() => {
@@ -362,7 +375,28 @@ export const DVIRFormModal: React.FC<DVIRFormModalProps> = ({
                     </label>
                     {assetType === "vehicle" ? (
                       <div className="space-y-2">
-                        {!selectedVehicle ? (
+                        {isVehicleContextLocked ? (
+                          <Card className="border-2 border-blue-200 bg-blue-50/50">
+                            <CardContent className="p-3">
+                              <div className="flex items-center space-x-3">
+                                <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex items-center justify-center">
+                                  <Truck className="h-6 w-6 text-blue-600" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <h4 className="font-semibold text-sm truncate">
+                                      {vehicleContextName || 'Vehicle'}
+                                    </h4>
+                                    <Lock className="h-3 w-3 text-muted-foreground" />
+                                  </div>
+                                  <p className="text-xs text-muted-foreground">
+                                    Vehicle locked from profile
+                                  </p>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ) : !selectedVehicle ? (
                           <Button
                             type="button"
                             variant="outline"
