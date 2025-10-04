@@ -9,7 +9,7 @@ import { format } from "date-fns";
 import { getCurrentDateInTimezone } from "@/lib/timezoneUtils";
 import { MaintenanceRecordCard } from "../maintenance/MaintenanceRecordCard";
 import { AddMaintenanceRecordModal } from "../AddMaintenanceRecordModal";
-import { AddRecurringServiceSlider } from "../AddRecurringServiceSlider";
+import { AddRecurringServiceModal } from "../AddRecurringServiceModal";
 
 interface VehicleMaintenanceOverviewTabProps {
   vehicleId: string;
@@ -320,8 +320,8 @@ export const VehicleMaintenanceOverviewTab: React.FC<VehicleMaintenanceOverviewT
         preselectedVehicleId={vehicleId}
       />
 
-      {/* Schedule Recurring Service Slider */}
-      <AddRecurringServiceSlider
+      {/* Schedule Recurring Service Modal */}
+      <AddRecurringServiceModal
         open={scheduleRecurringOpen}
         onOpenChange={setScheduleRecurringOpen}
         preselectedVehicleId={vehicleId}
