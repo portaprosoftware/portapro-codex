@@ -74,21 +74,19 @@ export const MultiSelectDriverFilter: React.FC<MultiSelectDriverFilterProps> = (
         </DialogHeader>
 
         {/* Selected Drivers Summary */}
-        {selectedDrivers.length > 0 && (
-          <div className="flex flex-wrap gap-2 p-4 bg-muted rounded-lg">
-            {selectedDrivers.map((driver) => (
-              <Badge key={driver.id} variant="secondary" className="px-3 py-1">
-                {getDriverDisplayName(driver)}
-                <button
-                  onClick={() => removeDriver(driver.id)}
-                  className="ml-2 hover:text-destructive"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              </Badge>
-            ))}
-          </div>
-        )}
+        <div className={`transition-all ${selectedDrivers.length > 0 ? 'flex flex-wrap gap-2 p-4 bg-muted rounded-lg' : 'h-0 overflow-hidden'}`}>
+          {selectedDrivers.map((driver) => (
+            <Badge key={driver.id} variant="secondary" className="px-3 py-1">
+              {getDriverDisplayName(driver)}
+              <button
+                onClick={() => removeDriver(driver.id)}
+                className="ml-2 hover:text-destructive"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </Badge>
+          ))}
+        </div>
 
         {/* Search and Actions */}
         <div className="flex gap-2">
@@ -110,7 +108,7 @@ export const MultiSelectDriverFilter: React.FC<MultiSelectDriverFilterProps> = (
         </div>
 
         {/* Driver Grid */}
-        <div className="flex-1 overflow-y-auto px-1">
+        <div className="flex-1 overflow-y-auto px-1 min-h-[300px]">
           {isLoading ? (
             <div className="text-center py-8 text-muted-foreground">Loading drivers...</div>
           ) : filteredDrivers.length === 0 ? (
