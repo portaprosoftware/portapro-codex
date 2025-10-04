@@ -7,6 +7,7 @@ import { Clock, Calendar, Gauge, AlertCircle, Plus } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
 interface NextPMDueWidgetProps {
   vehicleId: string;
@@ -21,38 +22,19 @@ export const NextPMDueWidget: React.FC<NextPMDueWidgetProps> = ({
   currentEngineHours = 0,
   onCreateWorkOrder
 }) => {
+  const navigate = useNavigate();
   // Fetch active PM schedules for this vehicle
   const { data: schedules, isLoading } = useQuery({
     queryKey: ['vehicle-pm-schedules', vehicleId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('vehicle_pm_schedules' as any)
+        .from('vehicle_pm_schedules')
         .select('*')
         .eq('vehicle_id', vehicleId)
         .eq('active', true)
         .order('next_due_date', { ascending: true });
       
       if (error) throw error;
-      
-      // Fetch templates separately
-      if (data && data.length > 0) {
-        const templateIds = data.map((s: any) => s.template_id).filter(Boolean);
-        if (templateIds.length > 0) {
-          const { data: templates, error: templatesError } = await supabase
-            .from('pm_templates' as any)
-            .select('id, name, asset_type')
-            .in('id', templateIds);
-          
-          if (!templatesError && templates) {
-            // Merge templates into schedules
-            return data.map((schedule: any) => ({
-              ...schedule,
-              pm_template: templates.find((t: any) => t.id === schedule.template_id)
-            }));
-          }
-        }
-      }
-      
       return data || [];
     }
   });
@@ -136,8 +118,13 @@ export const NextPMDueWidget: React.FC<NextPMDueWidgetProps> = ({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">No PM schedules configured</p>
-          <Button variant="outline" size="sm" className="mt-2 w-full text-xs">
+          <p className="text-sm text-muted-foreground mb-3">No PM schedules configured</p>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="w-full text-xs"
+            onClick={() => navigate(`/fleet/maintenance?vehicle=${vehicleId}&returnTo=/fleet-management&tab=pm-schedules`)}
+          >
             <Plus className="h-3 w-3 mr-1" />
             Add PM Schedule
           </Button>
@@ -167,8 +154,8 @@ export const NextPMDueWidget: React.FC<NextPMDueWidgetProps> = ({
       <CardContent className="space-y-3">
         {/* PM Template name */}
         <div>
-          <div className="font-medium text-sm">{nextPM.pm_template?.name || 'PM Service'}</div>
-          <div className="text-xs text-muted-foreground">{nextPM.pm_template?.asset_type || ''}</div>
+          <div className="font-medium text-sm">PM Service</div>
+          <div className="text-xs text-muted-foreground">Schedule #{nextPM.id?.slice(0, 8)}</div>
         </div>
 
         {/* Progress bar */}
