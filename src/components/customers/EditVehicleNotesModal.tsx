@@ -149,7 +149,7 @@ export function EditVehicleNotesModal({
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select a vehicle tag..." />
                 </SelectTrigger>
-                <SelectContent className="bg-background z-[100] pointer-events-auto max-h-[300px]">
+                <SelectContent position="popper" className="bg-background z-[1000] pointer-events-auto max-h-[300px]">
                   {vehicleTags.map((tag) => (
                     <SelectItem key={tag} value={tag}>
                       {tag}
@@ -166,7 +166,7 @@ export function EditVehicleNotesModal({
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select a business tag..." />
                 </SelectTrigger>
-                <SelectContent className="bg-background z-[100] pointer-events-auto max-h-[300px]">
+                <SelectContent position="popper" className="bg-background z-[1000] pointer-events-auto max-h-[300px]">
                   {generalTags.map((tag) => (
                     <SelectItem key={tag} value={tag}>
                       {tag}
