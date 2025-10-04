@@ -98,7 +98,7 @@ const inventoryItems: NavigationItem[] = [
     permission: 'staff'
   },
   { 
-    title: 'Storage Garages', 
+    title: 'Storage', 
     url: '/storage-sites', 
     icon: Warehouse,
     permission: 'admin'
