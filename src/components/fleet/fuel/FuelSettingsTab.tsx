@@ -494,6 +494,7 @@ export const FuelSettingsTab: React.FC = () => {
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>{editingStation ? 'Edit Fuel Station' : 'Add Fuel Station'}</DialogTitle>
+            <p className="text-sm text-muted-foreground">Add or edit fuel station details for your fleet</p>
           </DialogHeader>
           <div className="space-y-4">
             <div>
