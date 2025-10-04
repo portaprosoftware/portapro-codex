@@ -49,7 +49,7 @@ export function VehicleStockSummary({
             variant="outline"
             size="sm"
             className="flex-1"
-            onClick={() => navigate(`/inventory/vehicle-loads?vehicle=${vehicleId}`)}
+            onClick={() => navigate(`/inventory/vehicle-loads?vehicle=${vehicleId}&returnTo=/fleet-management`)}
           >
             Manage Stock <ExternalLink className="w-3 h-3 ml-1" />
           </Button>

@@ -72,14 +72,14 @@ export function VehicleMaintenanceSummary({
             variant="outline"
             size="sm"
             className="flex-1"
-            onClick={() => navigate(`/fleet/maintenance?vehicle=${vehicleId}`)}
+            onClick={() => navigate(`/fleet/maintenance?vehicle=${vehicleId}&returnTo=/fleet-management`)}
           >
             View All <ExternalLink className="w-3 h-3 ml-1" />
           </Button>
           <Button
             size="sm"
             className="flex-1"
-            onClick={() => navigate(`/fleet/maintenance/work-orders/new?vehicle=${vehicleId}`)}
+            onClick={() => navigate(`/fleet/maintenance/work-orders/new?vehicle=${vehicleId}&returnTo=/fleet-management`)}
           >
             <Plus className="w-3 h-3 mr-1" /> New Work Order
           </Button>

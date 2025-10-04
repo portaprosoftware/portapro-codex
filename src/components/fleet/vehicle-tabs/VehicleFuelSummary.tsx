@@ -66,14 +66,14 @@ export function VehicleFuelSummary({
             variant="outline"
             size="sm"
             className="flex-1"
-            onClick={() => navigate(`/fleet/fuel?vehicle=${vehicleId}`)}
+            onClick={() => navigate(`/fleet/fuel?vehicle=${vehicleId}&returnTo=/fleet-management`)}
           >
             View History <ExternalLink className="w-3 h-3 ml-1" />
           </Button>
           <Button
             size="sm"
             className="flex-1"
-            onClick={() => navigate(`/fleet/fuel?action=log&vehicle=${vehicleId}`)}
+            onClick={() => navigate(`/fleet/fuel?action=log&vehicle=${vehicleId}&returnTo=/fleet-management`)}
           >
             <Plus className="w-3 h-3 mr-1" /> Log Fuel
           </Button>

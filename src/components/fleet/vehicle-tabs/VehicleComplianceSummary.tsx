@@ -78,14 +78,14 @@ export function VehicleComplianceSummary({
             variant="outline"
             size="sm"
             className="flex-1"
-            onClick={() => navigate(`/fleet/compliance?vehicle=${vehicleId}`)}
+            onClick={() => navigate(`/fleet/compliance?vehicle=${vehicleId}&returnTo=/fleet-management`)}
           >
             View All <ExternalLink className="w-3 h-3 ml-1" />
           </Button>
           <Button
             size="sm"
             className="flex-1"
-            onClick={() => navigate(`/fleet/compliance?action=new-incident&vehicle=${vehicleId}`)}
+            onClick={() => navigate(`/fleet/compliance?action=new-incident&vehicle=${vehicleId}&returnTo=/fleet-management`)}
           >
             <Plus className="w-3 h-3 mr-1" /> Log Incident
           </Button>
