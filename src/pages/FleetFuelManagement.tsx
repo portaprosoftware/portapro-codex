@@ -6,17 +6,52 @@ import { FuelOverviewTab } from '@/components/fleet/fuel/FuelOverviewTab';
 import { FuelAllLogsTab } from '@/components/fleet/fuel/FuelAllLogsTab';
 import { FuelReportsTab } from '@/components/fleet/fuel/FuelReportsTab';
 import { FuelSettingsTab } from '@/components/fleet/fuel/FuelSettingsTab';
+import { VehicleContextChip } from '@/components/fleet/VehicleContextChip';
+import { useSearchParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 export const FleetFuelManagement: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
+  const [searchParams] = useSearchParams();
+  const vehicleId = searchParams.get('vehicle');
+  const returnTo = searchParams.get('returnTo');
+  
   useEffect(() => {
     document.title = 'Fuel Management | PortaPro';
   }, []);
+
+  // Fetch vehicle details if vehicleId is present
+  const { data: vehicle } = useQuery({
+    queryKey: ['vehicle', vehicleId],
+    queryFn: async () => {
+      if (!vehicleId) return null;
+      const { data, error } = await supabase
+        .from('vehicles')
+        .select('*')
+        .eq('id', vehicleId)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!vehicleId,
+  });
 
   return (
     <FleetLayout>
       <div className="space-y-6">
         <div className="bg-white rounded-lg border shadow-sm p-6">
+          {/* Vehicle Context Chip */}
+          {vehicle && (
+            <div className="mb-4">
+              <VehicleContextChip
+                vehicleId={vehicle.id}
+                vehicleName={vehicle.license_plate}
+                returnTo={returnTo || undefined}
+              />
+            </div>
+          )}
+          
           <PageHeader 
             title="Fuel Management" 
             subtitle="Track fuel usage, costs, and efficiency across your fleet"
