@@ -104,7 +104,7 @@ export function EditVehicleNotesModal({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose} modal={false}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>
