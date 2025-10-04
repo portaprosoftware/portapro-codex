@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { CalendarIcon, Truck } from 'lucide-react';
+import { CalendarIcon, Truck, User } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -16,6 +16,7 @@ import { format } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { StockVehicleSelectionModal } from '@/components/fleet/StockVehicleSelectionModal';
+import { DriverSelectionModal } from '@/components/fleet/DriverSelectionModal';
 
 interface AddFuelLogModalProps {
   open: boolean;
@@ -52,7 +53,9 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
 }) => {
   const isVehicleContextLocked = !!vehicleContextId;
   const [showVehicleModal, setShowVehicleModal] = useState(false);
+  const [showDriverModal, setShowDriverModal] = useState(false);
   const [selectedVehicleData, setSelectedVehicleData] = useState<any>(null);
+  const [selectedDriverData, setSelectedDriverData] = useState<any>(null);
   
   // Initialize with vehicle context if provided
   const [formData, setFormData] = useState({
@@ -252,20 +255,18 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
 
             <div>
               <Label htmlFor="driver">Driver *</Label>
-              <Select value={formData.driver_id} onValueChange={(value) => 
-                setFormData(prev => ({ ...prev, driver_id: value }))
-              }>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select driver" />
-                </SelectTrigger>
-                <SelectContent>
-                  {drivers?.map((driver) => (
-                    <SelectItem key={driver.id} value={driver.id}>
-                      {driver.first_name} {driver.last_name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full justify-start"
+                onClick={() => setShowDriverModal(true)}
+              >
+                <User className="mr-2 h-4 w-4" />
+                {selectedDriverData 
+                  ? `${selectedDriverData.first_name} ${selectedDriverData.last_name}`
+                  : 'Select driver'
+                }
+              </Button>
             </div>
           </div>
 
@@ -393,6 +394,18 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
           setSelectedVehicleData(vehicle);
           setFormData(prev => ({ ...prev, vehicle_id: vehicle.id }));
           setShowVehicleModal(false);
+        }}
+      />
+
+      <DriverSelectionModal
+        open={showDriverModal}
+        onOpenChange={setShowDriverModal}
+        selectedDate={formData.log_date}
+        selectedDriver={selectedDriverData}
+        onDriverSelect={(driver) => {
+          setSelectedDriverData(driver);
+          setFormData(prev => ({ ...prev, driver_id: driver.id }));
+          setShowDriverModal(false);
         }}
       />
     </Drawer>
