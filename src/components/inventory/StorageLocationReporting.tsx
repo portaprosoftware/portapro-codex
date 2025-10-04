@@ -412,7 +412,7 @@ export function StorageLocationReporting() {
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-2xl font-bold">{reportData.summary.total_locations}</div>
-                    <div className="text-sm text-muted-foreground">Active Garage Site Locations</div>
+                    <div className="text-sm text-muted-foreground font-bold">Active Garage Site Locations</div>
                   </div>
                   <Warehouse className="h-8 w-8 text-primary" />
                 </div>
@@ -423,7 +423,7 @@ export function StorageLocationReporting() {
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-2xl font-bold">{reportData.summary.total_consumable_types}</div>
-                    <div className="text-sm text-muted-foreground">Consumable Types</div>
+                    <div className="text-sm text-muted-foreground font-bold">Consumable Types</div>
                   </div>
                   <Droplet className="h-8 w-8 text-primary" />
                 </div>
@@ -434,7 +434,7 @@ export function StorageLocationReporting() {
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-2xl font-bold">{reportData.summary.total_product_types}</div>
-                    <div className="text-sm text-muted-foreground">Product Types</div>
+                    <div className="text-sm text-muted-foreground font-bold">Product Types</div>
                   </div>
                   <Package className="h-8 w-8 text-primary" />
                 </div>
@@ -445,7 +445,7 @@ export function StorageLocationReporting() {
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-2xl font-bold">{reportData.summary.total_spill_kit_types}</div>
-                    <div className="text-sm text-muted-foreground">Spill Kit Types</div>
+                    <div className="text-sm text-muted-foreground font-bold">Spill Kit Types</div>
                   </div>
                   <Shield className="h-8 w-8 text-orange-500" />
                 </div>
@@ -458,7 +458,7 @@ export function StorageLocationReporting() {
                     <div className="text-2xl font-bold">
                       ${reportData.summary.total_stock_value.toLocaleString()}
                     </div>
-                    <div className="text-sm text-muted-foreground">Total Stock Value</div>
+                    <div className="text-sm text-muted-foreground font-bold">Total Stock Value</div>
                   </div>
                   <DollarSign className="h-8 w-8 text-primary" />
                 </div>
