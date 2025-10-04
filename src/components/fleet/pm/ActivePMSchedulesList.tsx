@@ -137,6 +137,14 @@ export const ActivePMSchedulesList: React.FC<ActivePMSchedulesListProps> = ({ ve
     setIsWorkOrderDrawerOpen(true);
   };
 
+  const handleAssignClick = () => {
+    if (templates && templates.length > 0) {
+      setShowAssignDialog(true);
+    } else {
+      toast.info('Create PM templates first in the "PM Templates" tab');
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -171,19 +179,16 @@ export const ActivePMSchedulesList: React.FC<ActivePMSchedulesListProps> = ({ ve
             <p className="text-gray-600 mb-6 max-w-md mx-auto">
               Assign PM templates to vehicles to start tracking maintenance schedules
             </p>
-            {templates && templates.length > 0 ? (
               <Button 
-                onClick={() => setShowAssignDialog(true)}
+                onClick={handleAssignClick}
                 className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Assign PM Schedule
               </Button>
-            ) : (
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground mt-2">
                 Create PM templates first in the "PM Templates" tab
               </p>
-            )}
           </CardContent>
         </Card>
         
@@ -206,15 +211,13 @@ export const ActivePMSchedulesList: React.FC<ActivePMSchedulesListProps> = ({ ve
             {schedules.length} schedule{schedules.length !== 1 ? 's' : ''} active
           </p>
         </div>
-        {templates && templates.length > 0 && (
           <Button 
-            onClick={() => setShowAssignDialog(true)}
+            onClick={handleAssignClick}
             className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold"
           >
             <Plus className="w-4 h-4 mr-2" />
             Assign PM Schedule
           </Button>
-        )}
       </div>
 
       <div className="space-y-4">
