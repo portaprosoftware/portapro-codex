@@ -22,7 +22,8 @@ import {
   Upload,
   Trash2,
   ClipboardCheck,
-  CalendarClock
+  CalendarClock,
+  User
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -30,6 +31,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { getVehicleTypeDisplayName } from '@/lib/vehicleTypeUtils';
 import { DeleteConfirmationModal } from '@/components/ui/delete-confirmation-modal';
+import { VehicleNotesTab } from './VehicleNotesTab';
 
 interface VehicleOverviewTabProps {
   vehicleId: string;
@@ -45,6 +47,7 @@ export function VehicleOverviewTab({ vehicleId, licensePlate, vehicleData, isAct
   const { data: metrics, isLoading: metricsLoading } = useVehicleMetrics(vehicleId);
   const { data: activity, isLoading: activityLoading } = useVehicleActivity(vehicleId, 10);
   
+  const [activeSubTab, setActiveSubTab] = useState<'details' | 'notes'>('details');
   const [vehicleImage, setVehicleImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
@@ -231,8 +234,45 @@ export function VehicleOverviewTab({ vehicleId, licensePlate, vehicleData, isAct
 
   return (
     <div className="space-y-6">
-      {/* Quick Metrics - Moved to top */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Details/Notes Toggle */}
+      <div className="flex gap-2 border-b">
+        <button
+          onClick={() => setActiveSubTab('details')}
+          className={cn(
+            "flex items-center gap-2 px-4 py-2 font-medium transition-all relative",
+            activeSubTab === 'details'
+              ? "text-primary"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          <User className="h-4 w-4" />
+          Details
+          {activeSubTab === 'details' && (
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-600" />
+          )}
+        </button>
+        <button
+          onClick={() => setActiveSubTab('notes')}
+          className={cn(
+            "flex items-center gap-2 px-4 py-2 font-medium transition-all relative",
+            activeSubTab === 'notes'
+              ? "text-primary"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          <FileText className="h-4 w-4" />
+          Notes
+          {activeSubTab === 'notes' && (
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-600" />
+          )}
+        </button>
+      </div>
+
+      {/* Conditional Content */}
+      {activeSubTab === 'details' ? (
+        <>
+          {/* Quick Metrics - Moved to top */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {quickStats.map((stat) => {
           const Icon = stat.icon;
           return (
@@ -478,16 +518,20 @@ export function VehicleOverviewTab({ vehicleId, licensePlate, vehicleData, isAct
         </CardContent>
       </Card>
 
-      <DeleteConfirmationModal
-        isOpen={showDeletePhotoDialog}
-        onClose={() => setShowDeletePhotoDialog(false)}
-        onConfirm={() => {
-          deleteImageMutation.mutate();
-          setShowDeletePhotoDialog(false);
-        }}
-        title="Delete Vehicle Photo"
-        description="Are you sure you want to delete this vehicle photo? This action cannot be undone."
-      />
+          <DeleteConfirmationModal
+            isOpen={showDeletePhotoDialog}
+            onClose={() => setShowDeletePhotoDialog(false)}
+            onConfirm={() => {
+              deleteImageMutation.mutate();
+              setShowDeletePhotoDialog(false);
+            }}
+            title="Delete Vehicle Photo"
+            description="Are you sure you want to delete this vehicle photo? This action cannot be undone."
+          />
+        </>
+      ) : (
+        <VehicleNotesTab vehicleId={vehicleId} />
+      )}
     </div>
   );
 }

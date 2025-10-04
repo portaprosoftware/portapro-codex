@@ -9646,6 +9646,60 @@ export type Database = {
         }
         Relationships: []
       }
+      vehicle_notes: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          is_important: boolean | null
+          note_text: string
+          tags: string[] | null
+          title: string | null
+          updated_at: string
+          user_id: string | null
+          vehicle_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_important?: boolean | null
+          note_text: string
+          tags?: string[] | null
+          title?: string | null
+          updated_at?: string
+          user_id?: string | null
+          vehicle_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_important?: boolean | null
+          note_text?: string
+          tags?: string[] | null
+          title?: string | null
+          updated_at?: string
+          user_id?: string | null
+          vehicle_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicle_notes_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicle_quick_metrics"
+            referencedColumns: ["vehicle_id"]
+          },
+          {
+            foreignKeyName: "vehicle_notes_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       vehicle_permits: {
         Row: {
           authority_name: string | null
