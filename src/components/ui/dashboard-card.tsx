@@ -14,7 +14,7 @@ const dashboardCardVariants = cva(
         outlined: "border-2",
       },
       size: {
-        default: "p-4.5",
+        default: "p-5",
         sm: "p-3", 
         lg: "p-6",
       },
@@ -67,7 +67,7 @@ const DashboardCard = React.forwardRef<HTMLDivElement, DashboardCardProps>(
         {...props}
       >
         {/* Icon container */}
-        <div className="flex justify-end mb-2">
+        <div className="flex justify-end mb-3">
           <div 
             className="w-9 h-9 rounded-lg flex items-center justify-center shadow-md transition-all duration-200 animate-fade-in animate-scale-in"
             style={{ 
@@ -81,7 +81,7 @@ const DashboardCard = React.forwardRef<HTMLDivElement, DashboardCardProps>(
         </div>
         
         {/* Value */}
-        <div className="mb-1.5">
+        <div className="mb-2.5">
           <h3 className="text-2xl font-bold text-gray-900 animate-fade-in"
               style={{ animationDelay: `${delay + 100}ms` }}>
             {value}
@@ -103,7 +103,7 @@ const DashboardCard = React.forwardRef<HTMLDivElement, DashboardCardProps>(
 
         {/* Title and subtitle */}
         <div className="animate-fade-in" style={{ animationDelay: `${delay + 200}ms` }}>
-          <h4 className="font-medium text-sm text-gray-900 mb-0.5">{title}</h4>
+          <h4 className="font-medium text-base text-gray-900 mb-1">{title}</h4>
           {subtitle && (
             <p className="text-xs text-gray-600">{subtitle}</p>
           )}
