@@ -8,6 +8,7 @@ import { Wrench, Plus, ExternalLink, FileText, Clock } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
+import { DVIRFormModal } from '@/components/fleet/DVIRFormModal';
 
 interface VehicleMaintenanceTabProps {
   vehicleId: string;
@@ -25,6 +26,8 @@ export function VehicleMaintenanceTab({
   isActive = true
 }: VehicleMaintenanceTabProps) {
   const navigate = useNavigate();
+  const [isDVIRModalOpen, setIsDVIRModalOpen] = useState(false);
+  
   const { data: workOrders, isLoading: workOrdersLoading } = useVehicleWorkOrders({
     vehicleId,
     limit: 5,
@@ -36,6 +39,10 @@ export function VehicleMaintenanceTab({
     limit: 5,
     enabled: isActive,
   });
+
+  const handleAddDVIR = () => {
+    setIsDVIRModalOpen(true);
+  };
 
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
@@ -128,7 +135,7 @@ export function VehicleMaintenanceTab({
             Recent DVIRs ({dvirs?.total || 0})
           </CardTitle>
           <div className="flex gap-2">
-            <Button size="sm" onClick={onAddDVIR}>
+            <Button size="sm" onClick={handleAddDVIR}>
               <Plus className="w-4 h-4 mr-1" />
               New DVIR
             </Button>
@@ -183,7 +190,7 @@ export function VehicleMaintenanceTab({
             <div className="text-center py-8">
               <FileText className="w-12 h-12 text-gray-400 mx-auto mb-3" />
               <p className="text-sm text-muted-foreground mb-3">No DVIRs yet</p>
-              <Button size="sm" onClick={onAddDVIR}>
+              <Button size="sm" onClick={handleAddDVIR}>
                 <Plus className="w-4 h-4 mr-1" />
                 Create First DVIR
               </Button>
@@ -191,6 +198,12 @@ export function VehicleMaintenanceTab({
           )}
         </CardContent>
       </Card>
+
+      <DVIRFormModal
+        open={isDVIRModalOpen}
+        onOpenChange={setIsDVIRModalOpen}
+        preSelectedVehicleId={vehicleId}
+      />
     </div>
   );
 }
