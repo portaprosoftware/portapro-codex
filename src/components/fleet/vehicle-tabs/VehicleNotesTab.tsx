@@ -41,7 +41,7 @@ const VEHICLE_TAGS = [
 
 // General tags
 const GENERAL_TAGS = [
-  'Urgent',
+  'Important / Urgent',
   'Completed',
   'In progress',
   'Follow-up required',
@@ -116,8 +116,8 @@ export function VehicleNotesTab({ vehicleId }: VehicleNotesTabProps) {
         if (!note.tags?.includes(selectedGeneralTag)) return false;
       }
 
-      // Filter by importance
-      if (showImportantOnly && !note.is_important) return false;
+      // Filter by "Important / Urgent" tag
+      if (showImportantOnly && !note.tags?.includes('Important / Urgent')) return false;
 
       return true;
     });
