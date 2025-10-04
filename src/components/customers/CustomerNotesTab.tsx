@@ -38,7 +38,7 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
   ];
   
   const generalTags = [
-    'Follow-up', 'Urgent', 'Important', 'Completed', 'In progress', 
+    'Follow-up', 'Completed', 'In progress', 
     'Needs attention', 'Customer request', 'Internal note'
   ];
 
