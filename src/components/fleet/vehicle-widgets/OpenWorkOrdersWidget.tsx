@@ -91,7 +91,7 @@ export const OpenWorkOrdersWidget: React.FC<OpenWorkOrdersWidgetProps> = ({
               variant="outline" 
               size="sm" 
               className="w-full text-xs"
-              onClick={() => navigate(`/fleet/maintenance?vehicle=${vehicleId}&returnTo=/fleet-management&tab=work-orders`)}
+              onClick={() => navigate('/fleet/maintenance?tab=work-orders')}
             >
               <Plus className="h-3 w-3 mr-1" />
               Create Work Order
@@ -157,7 +157,7 @@ export const OpenWorkOrdersWidget: React.FC<OpenWorkOrdersWidgetProps> = ({
               variant="outline" 
               size="sm" 
               className="w-full mt-3 text-xs"
-              onClick={() => navigate(`/fleet/maintenance?vehicle=${vehicleId}&returnTo=/fleet-management&tab=work-orders`)}
+              onClick={() => navigate('/fleet/maintenance?tab=work-orders')}
             >
               View All Work Orders <ExternalLink className="h-3 w-3 ml-1" />
             </Button>
