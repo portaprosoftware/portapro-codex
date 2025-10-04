@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,6 @@ import { Truck, User, Clock, Calendar, Plus, TrendingUp, BarChart3, Activity } f
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { getVehicleTypeDisplayName } from "@/lib/vehicleTypeUtils";
-import { useSearchParams } from "react-router-dom";
 
 export function VehicleAssignments() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -21,28 +20,8 @@ export function VehicleAssignments() {
   const [editingAssignment, setEditingAssignment] = useState<any>(null);
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [viewingAssignment, setViewingAssignment] = useState<any>(null);
-  const [vehicleContextId, setVehicleContextId] = useState<string | null>(null);
-  const [vehicleContextName, setVehicleContextName] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  // Auto-open wizard with pre-selected vehicle from URL params
-  useEffect(() => {
-    const vehicleId = searchParams.get('vehicle_id');
-    const vehicleName = searchParams.get('vehicle_name');
-    
-    if (vehicleId && vehicleName) {
-      setVehicleContextId(vehicleId);
-      setVehicleContextName(vehicleName);
-      setWizardOpen(true);
-      
-      // Clear URL params after opening wizard
-      searchParams.delete('vehicle_id');
-      searchParams.delete('vehicle_name');
-      setSearchParams(searchParams, { replace: true });
-    }
-  }, [searchParams, setSearchParams]);
 
   const handleEditAssignment = (assignment: any) => {
     console.log('Edit assignment clicked:', assignment);
@@ -90,8 +69,6 @@ export function VehicleAssignments() {
   const handleCloseWizard = () => {
     setWizardOpen(false);
     setEditingAssignment(null);
-    setVehicleContextId(null);
-    setVehicleContextName(null);
   };
 
   return (
@@ -150,8 +127,6 @@ export function VehicleAssignments() {
         onOpenChange={handleCloseWizard}
         initialDate={selectedDate}
         editingAssignment={editingAssignment}
-        vehicleContextId={vehicleContextId}
-        vehicleContextName={vehicleContextName}
       />
 
       {/* Assignment View Modal */}
