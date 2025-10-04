@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Eye, Edit, Trash2, AlertCircle, MoreVertical } from 'lucide-react';
+import { Plus, Eye, Edit, Trash2, AlertCircle, MoreVertical, Search } from 'lucide-react';
 import { useVehicleNotes } from '@/hooks/useVehicleNotes';
 import { format } from 'date-fns';
 import { Loader2 } from 'lucide-react';
@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -71,6 +72,7 @@ export function VehicleNotesTab({ vehicleId }: VehicleNotesTabProps) {
   const [selectedVehicleTag, setSelectedVehicleTag] = useState<string>('all');
   const [selectedGeneralTag, setSelectedGeneralTag] = useState<string>('all');
   const [showImportantOnly, setShowImportantOnly] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Handlers
   const handleAddNote = () => {
@@ -124,9 +126,21 @@ export function VehicleNotesTab({ vehicleId }: VehicleNotesTabProps) {
       // Filter by important flag
       if (showImportantOnly && !note.is_important) return false;
 
+      // Filter by search term
+      if (searchTerm.trim()) {
+        const search = searchTerm.toLowerCase();
+        const titleMatch = note.title?.toLowerCase().includes(search);
+        const contentMatch = note.note_text.toLowerCase().includes(search);
+        const tagMatch = note.tags?.some(tag => tag.toLowerCase().includes(search));
+        
+        if (!titleMatch && !contentMatch && !tagMatch) {
+          return false;
+        }
+      }
+
       return true;
     });
-  }, [notes, selectedVehicleTag, selectedGeneralTag, showImportantOnly]);
+  }, [notes, selectedVehicleTag, selectedGeneralTag, showImportantOnly, searchTerm]);
 
   if (isLoading) {
     return (
@@ -152,9 +166,24 @@ export function VehicleNotesTab({ vehicleId }: VehicleNotesTabProps) {
         </Button>
       </div>
 
-      {/* Filters */}
+      {/* Search and Filters */}
       <Card>
         <CardContent className="pt-6">
+          {/* Search Bar */}
+          <div className="mb-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Search notes by title, content, or tags..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+          </div>
+
+          {/* Filters */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label>Vehicle Tag</Label>
