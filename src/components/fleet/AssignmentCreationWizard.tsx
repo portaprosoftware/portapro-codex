@@ -78,11 +78,24 @@ export const AssignmentCreationWizard: React.FC<AssignmentCreationWizardProps> =
       setTimeout(() => {
         resetForm();
       }, 300);
-    } else if (open && !editingAssignment) {
+    } else if (open && !editingAssignment && !vehicleContextId) {
+      // Only reset if not in vehicle context mode
       resetForm();
       setSelectedDate(initialDate);
+    } else if (open && vehicleContextId && !editingAssignment) {
+      // Set vehicle context when opening in vehicle mode
+      setSelectedDate(initialDate);
+      setSelectedVehicle({ 
+        id: vehicleContextId, 
+        license_plate: vehicleContextName,
+        // Add minimal required fields for display
+        vehicle_type: 'Vehicle',
+        make: '',
+        model: '',
+        year: new Date().getFullYear()
+      });
     }
-  }, [open, editingAssignment, initialDate]);
+  }, [open, editingAssignment, initialDate, vehicleContextId, vehicleContextName]);
 
   const createAssignmentMutation = useMutation({
     mutationFn: async () => {
