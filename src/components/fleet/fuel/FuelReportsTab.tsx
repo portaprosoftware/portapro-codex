@@ -226,7 +226,7 @@ export const FuelReportsTab: React.FC = () => {
         <CardContent>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={trendData}>
+              <BarChart data={trendData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
                 <YAxis />
@@ -236,14 +236,12 @@ export const FuelReportsTab: React.FC = () => {
                     name === 'gallons' ? 'Gallons' : 'Cost'
                   ]}
                 />
-                <Area 
-                  type="monotone" 
+                <Bar 
                   dataKey="gallons" 
-                  stroke="#3366FF" 
                   fill="#3366FF" 
-                  fillOpacity={0.3}
+                  radius={[8, 8, 0, 0]}
                 />
-              </AreaChart>
+              </BarChart>
             </ResponsiveContainer>
           </div>
         </CardContent>
@@ -260,7 +258,7 @@ export const FuelReportsTab: React.FC = () => {
         <CardContent>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={trendData}>
+              <BarChart data={trendData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
                 <YAxis />
@@ -270,21 +268,17 @@ export const FuelReportsTab: React.FC = () => {
                     name === 'cost' ? 'Total Cost' : 'Avg Cost/Gallon'
                   ]}
                 />
-                <Line 
-                  type="monotone" 
+                <Bar 
                   dataKey="cost" 
-                  stroke="#22C55E" 
-                  strokeWidth={2}
-                  dot={{ fill: '#22C55E' }}
+                  fill="#22C55E" 
+                  radius={[8, 8, 0, 0]}
                 />
-                <Line 
-                  type="monotone" 
+                <Bar 
                   dataKey="avg_cost_per_gallon" 
-                  stroke="#F59E0B" 
-                  strokeWidth={2}
-                  dot={{ fill: '#F59E0B' }}
+                  fill="#F59E0B" 
+                  radius={[8, 8, 0, 0]}
                 />
-              </LineChart>
+              </BarChart>
             </ResponsiveContainer>
           </div>
         </CardContent>
