@@ -234,23 +234,28 @@ export function EditNotesModal({
               </div>
             )}
 
-            <Input
-              id="tags"
-              value={customTagInput}
-              onChange={(e) => setCustomTagInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ',') {
-                  e.preventDefault();
-                  const newTag = customTagInput.trim();
-                  if (newTag) {
-                    handleQuickTagClick(newTag);
-                    setCustomTagInput('');
+            <div>
+              <Input
+                id="tags"
+                value={customTagInput}
+                onChange={(e) => setCustomTagInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ',') {
+                    e.preventDefault();
+                    const newTag = customTagInput.trim();
+                    if (newTag) {
+                      handleQuickTagClick(newTag);
+                      setCustomTagInput('');
+                    }
                   }
-                }
-              }}
-              placeholder="Type custom tag and press Enter or comma..."
-              className="mt-1"
-            />
+                }}
+                placeholder="Type custom tag and press Enter or comma..."
+                className="mt-1"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Press <kbd className="px-1 py-0.5 bg-muted rounded text-xs">Enter</kbd> or add a <kbd className="px-1 py-0.5 bg-muted rounded text-xs">,</kbd> to add tag
+              </p>
+            </div>
           </div>
 
           <div className="flex items-center justify-between space-x-2">
