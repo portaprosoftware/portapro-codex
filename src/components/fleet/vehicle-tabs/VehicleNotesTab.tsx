@@ -186,7 +186,7 @@ export function VehicleNotesTab({ vehicleId }: VehicleNotesTabProps) {
 
             <div className="flex items-center justify-between space-x-2 pt-7">
               <Label htmlFor="important-only" className="cursor-pointer">
-                Important Only
+                Show Important / Urgent Notes Only
               </Label>
               <Switch
                 id="important-only"
