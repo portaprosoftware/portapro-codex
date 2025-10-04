@@ -27,6 +27,7 @@ import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { getVehicleTypeDisplayName } from '@/lib/vehicleTypeUtils';
+import { DeleteConfirmationModal } from '@/components/ui/delete-confirmation-modal';
 
 interface VehicleOverviewTabProps {
   vehicleId: string;
@@ -46,6 +47,7 @@ export function VehicleOverviewTab({ vehicleId, licensePlate, vehicleData, isAct
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [currentVehicleImage, setCurrentVehicleImage] = useState(vehicleData?.vehicle_image);
+  const [showDeletePhotoDialog, setShowDeletePhotoDialog] = useState(false);
 
   // Fetch full vehicle data if not provided
   const { data: vehicle } = useQuery({
@@ -328,7 +330,7 @@ export function VehicleOverviewTab({ vehicleId, licensePlate, vehicleData, isAct
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  onClick={() => deleteImageMutation.mutate()}
+                  onClick={() => setShowDeletePhotoDialog(true)}
                   disabled={deleteImageMutation.isPending}
                   className="w-full"
                 >
@@ -484,6 +486,17 @@ export function VehicleOverviewTab({ vehicleId, licensePlate, vehicleData, isAct
           )}
         </CardContent>
       </Card>
+
+      <DeleteConfirmationModal
+        isOpen={showDeletePhotoDialog}
+        onClose={() => setShowDeletePhotoDialog(false)}
+        onConfirm={() => {
+          deleteImageMutation.mutate();
+          setShowDeletePhotoDialog(false);
+        }}
+        title="Delete Vehicle Photo"
+        description="Are you sure you want to delete this vehicle photo? This action cannot be undone."
+      />
     </div>
   );
 }

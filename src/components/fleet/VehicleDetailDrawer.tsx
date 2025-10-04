@@ -71,6 +71,7 @@ interface VehicleDetailDrawerProps {
 export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicle, isOpen, onClose }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showDeletePhotoDialog, setShowDeletePhotoDialog] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   const { trackEvent } = useAnalytics();
   const navigate = useNavigate();
