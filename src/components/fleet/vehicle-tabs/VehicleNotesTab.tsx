@@ -190,15 +190,18 @@ export function VehicleNotesTab({ vehicleId }: VehicleNotesTabProps) {
               </Select>
             </div>
 
-            <div className="flex items-center justify-between space-x-2 pt-7">
-              <Label htmlFor="important-only" className="cursor-pointer">
-                Important / Urgent Only
-              </Label>
-              <Switch
-                id="important-only"
-                checked={showImportantOnly}
-                onCheckedChange={setShowImportantOnly}
-              />
+            <div className="space-y-2">
+              <Label htmlFor="important-only">Important / Urgent Only</Label>
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="important-only"
+                  checked={showImportantOnly}
+                  onCheckedChange={setShowImportantOnly}
+                />
+                <span className="text-sm text-muted-foreground">
+                  {showImportantOnly ? 'Showing important notes only' : 'Showing all notes'}
+                </span>
+              </div>
             </div>
           </div>
         </CardContent>
