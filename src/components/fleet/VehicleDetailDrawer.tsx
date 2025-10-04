@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TabNav } from "@/components/ui/TabNav";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { 
@@ -23,7 +24,9 @@ import {
   AlertTriangle,
   Camera,
   Trash2,
-  Plus
+  Plus,
+  Package,
+  Shield
 } from "lucide-react";
 import { AddMaintenanceRecordModal } from "./AddMaintenanceRecordModal";
 import { AddFuelLogModal } from "./fuel/AddFuelLogModal";
@@ -46,6 +49,7 @@ const VehicleFuelTab = lazy(() => import('./vehicle-tabs/VehicleFuelTab').then(m
 const VehicleAssignmentsTab = lazy(() => import('./vehicle-tabs/VehicleAssignmentsTab').then(m => ({ default: m.VehicleAssignmentsTab })));
 const VehicleSpillKitTab = lazy(() => import('./vehicle-tabs/VehicleSpillKitTab').then(m => ({ default: m.VehicleSpillKitTab })));
 const VehicleDocumentsTab = lazy(() => import('./vehicle-tabs/VehicleDocumentsTab').then(m => ({ default: m.VehicleDocumentsTab })));
+const VehicleStockTab = lazy(() => import('./vehicle-tabs/VehicleStockTab').then(m => ({ default: m.VehicleStockTab })));
 
 interface Vehicle {
   id: string;
@@ -463,16 +467,67 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
         <div className="flex-1 overflow-y-auto">
           <div className="p-4 sm:p-6">
             <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4 sm:space-y-6">
-              {/* Desktop Tabs */}
-              <TabsList className="hidden sm:grid w-full grid-cols-7 h-auto">
-                <TabsTrigger value="overview" className="text-xs sm:text-sm">Overview</TabsTrigger>
-                <TabsTrigger value="maintenance" className="text-xs sm:text-sm">Maintenance</TabsTrigger>
-                <TabsTrigger value="fuel" className="text-xs sm:text-sm">Fuel</TabsTrigger>
-                <TabsTrigger value="assignments" className="text-xs sm:text-sm">Assignments</TabsTrigger>
-                <TabsTrigger value="spillkit" className="text-xs sm:text-sm">Spill Kit</TabsTrigger>
-                <TabsTrigger value="damage" className="text-xs sm:text-sm">Damage Log</TabsTrigger>
-                <TabsTrigger value="documents" className="text-xs sm:text-sm">Documents</TabsTrigger>
-              </TabsList>
+              {/* Desktop Pills Navigation */}
+              <div className="hidden sm:block">
+                <TabNav ariaLabel="Vehicle Details Navigation">
+                  <TabNav.Item
+                    to="#overview"
+                    isActive={activeTab === "overview"}
+                    onClick={() => handleTabChange("overview")}
+                  >
+                    <Truck className="h-4 w-4" />
+                    <span>Overview</span>
+                  </TabNav.Item>
+                  <TabNav.Item
+                    to="#stock"
+                    isActive={activeTab === "stock"}
+                    onClick={() => handleTabChange("stock")}
+                  >
+                    <Package className="h-4 w-4" />
+                    <span>Stock</span>
+                  </TabNav.Item>
+                  <TabNav.Item
+                    to="#compliance"
+                    isActive={activeTab === "compliance"}
+                    onClick={() => handleTabChange("compliance")}
+                  >
+                    <Shield className="h-4 w-4" />
+                    <span>Compliance</span>
+                  </TabNav.Item>
+                  <TabNav.Item
+                    to="#assignments"
+                    isActive={activeTab === "assignments"}
+                    onClick={() => handleTabChange("assignments")}
+                  >
+                    <Calendar className="h-4 w-4" />
+                    <span>Assignments</span>
+                  </TabNav.Item>
+                  <TabNav.Item
+                    to="#maintenance"
+                    isActive={activeTab === "maintenance"}
+                    onClick={() => handleTabChange("maintenance")}
+                  >
+                    <Wrench className="h-4 w-4" />
+                    <span>Maintenance</span>
+                  </TabNav.Item>
+                  <TabNav.Item
+                    to="#fuel"
+                    isActive={activeTab === "fuel"}
+                    onClick={() => handleTabChange("fuel")}
+                  >
+                    <Fuel className="h-4 w-4" />
+                    <span>Fuel</span>
+                  </TabNav.Item>
+                  <TabNav.Item
+                    to="#documents"
+                    isActive={activeTab === "documents"}
+                    onClick={() => handleTabChange("documents")}
+                  >
+                    <FileText className="h-4 w-4" />
+                    <span>Documents</span>
+                  </TabNav.Item>
+                </TabNav>
+              </div>
 
               {/* Mobile Dropdown */}
               <div className="block sm:hidden mb-4">
@@ -482,11 +537,11 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
                   </SelectTrigger>
                   <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
                     <SelectItem value="overview">Overview</SelectItem>
+                    <SelectItem value="stock">Stock</SelectItem>
+                    <SelectItem value="compliance">Compliance</SelectItem>
+                    <SelectItem value="assignments">Assignments</SelectItem>
                     <SelectItem value="maintenance">Maintenance</SelectItem>
                     <SelectItem value="fuel">Fuel</SelectItem>
-                    <SelectItem value="assignments">Assignments</SelectItem>
-                    <SelectItem value="spillkit">Spill Kit</SelectItem>
-                    <SelectItem value="damage">Damage Log</SelectItem>
                     <SelectItem value="documents">Documents</SelectItem>
                   </SelectContent>
                 </Select>
@@ -501,6 +556,35 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
                     vehicleData={vehicle} 
                     isActive={activeTab === 'overview'}
                     onEditClick={() => setIsEditing(true)}
+                  />
+                </Suspense>
+              </TabsContent>
+
+              <TabsContent value="stock" className="space-y-4">
+                <Suspense fallback={<TabSkeleton />}>
+                  <VehicleStockTab 
+                    vehicleId={vehicle.id} 
+                    licensePlate={vehicle.license_plate}
+                  />
+                </Suspense>
+              </TabsContent>
+
+              <TabsContent value="compliance" className="space-y-4">
+                <Suspense fallback={<TabSkeleton />}>
+                  <VehicleSpillKitTab 
+                    vehicleId={vehicle.id} 
+                    licensePlate={vehicle.license_plate}
+                    isActive={activeTab === 'compliance'}
+                  />
+                </Suspense>
+              </TabsContent>
+
+              <TabsContent value="assignments" className="space-y-4">
+                <Suspense fallback={<TabSkeleton />}>
+                  <VehicleAssignmentsTab 
+                    vehicleId={vehicle.id} 
+                    licensePlate={vehicle.license_plate}
+                    isActive={activeTab === 'assignments'}
                   />
                 </Suspense>
               </TabsContent>
@@ -524,26 +608,6 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
                 </Suspense>
               </TabsContent>
 
-              <TabsContent value="assignments" className="space-y-4">
-                <Suspense fallback={<TabSkeleton />}>
-                  <VehicleAssignmentsTab 
-                    vehicleId={vehicle.id} 
-                    licensePlate={vehicle.license_plate}
-                    isActive={activeTab === 'assignments'}
-                  />
-                </Suspense>
-              </TabsContent>
-
-              <TabsContent value="spillkit" className="space-y-4">
-                <Suspense fallback={<TabSkeleton />}>
-                  <VehicleSpillKitTab 
-                    vehicleId={vehicle.id} 
-                    licensePlate={vehicle.license_plate}
-                    isActive={activeTab === 'spillkit'}
-                  />
-                </Suspense>
-              </TabsContent>
-
               <TabsContent value="documents" className="space-y-4">
                 <Suspense fallback={<TabSkeleton />}>
                   <VehicleDocumentsTab 
@@ -552,157 +616,6 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
                     isActive={activeTab === 'documents'}
                   />
                 </Suspense>
-              </TabsContent>
-
-              {/* Damage Log Tab */}
-              <TabsContent value="damage" className="space-y-4">
-                {/* Add New Damage Log */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <AlertTriangle className="w-5 h-5" />
-                      Report New Damage
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div>
-                      <Label htmlFor="damage-description">Description</Label>
-                      <Textarea
-                        id="damage-description"
-                        placeholder="Describe the damage or issue..."
-                        value={damageDescription}
-                        onChange={(e) => setDamageDescription(e.target.value)}
-                        rows={3}
-                      />
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="damage-severity">Severity</Label>
-                      <Select value={damageSeverity} onValueChange={setDamageSeverity}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="minor">Minor</SelectItem>
-                          <SelectItem value="moderate">Moderate</SelectItem>
-                          <SelectItem value="major">Major</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {/* Damage Photo Section */}
-                    <div className="space-y-2">
-                      <Label>Photo (Optional)</Label>
-                      {damageImagePreview && (
-                        <div className="relative w-32 h-32 border rounded-lg overflow-hidden">
-                          <img
-                            src={damageImagePreview}
-                            alt="Damage preview"
-                            className="w-full h-full object-cover"
-                          />
-                          <Button
-                            type="button"
-                            variant="destructive"
-                            size="sm"
-                            className="absolute top-1 right-1"
-                            onClick={removeDamageImage}
-                          >
-                            <X className="w-3 h-3" />
-                          </Button>
-                        </div>
-                      )}
-                      <div className="flex gap-2">
-                        <input
-                          type="file"
-                          accept=".png,.jpg,.jpeg,.webp"
-                          onChange={handleDamageImageChange}
-                          className="hidden"
-                          id="damage-image-input"
-                        />
-                        <label
-                          htmlFor="damage-image-input"
-                          className="inline-flex items-center gap-2 px-3 py-2 rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground cursor-pointer text-sm font-medium"
-                        >
-                          <Camera className="w-4 h-4" />
-                          Add Photo
-                        </label>
-                      </div>
-                    </div>
-
-                    <Button
-                      onClick={() => uploadDamageMutation.mutate()}
-                      disabled={!damageDescription.trim() || isUploadingDamage}
-                      className="w-full"
-                    >
-                      {isUploadingDamage ? "Adding..." : "Add Damage Log"}
-                    </Button>
-                  </CardContent>
-                </Card>
-
-                {/* Existing Damage Logs */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <FileText className="w-5 h-5" />
-                      Damage History
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {damageLogs.length === 0 ? (
-                      <p className="text-gray-500 text-center py-8">No damage logs found</p>
-                    ) : (
-                      <div className="space-y-4">
-                        {damageLogs.map((log: any) => (
-                          <div key={log.id} className="border rounded-lg p-4 space-y-3">
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <p className="font-medium">{log.description}</p>
-                                <p className="text-sm text-gray-500">
-                                  {format(new Date(log.created_at), "MMM dd, yyyy 'at' h:mm a")}
-                                </p>
-                              </div>
-                              <Badge className={cn("text-xs", getSeverityColor(log.severity))}>
-                                {log.severity}
-                              </Badge>
-                            </div>
-                            
-                            {log.image_path && (
-                              <div className="w-32 h-32 border rounded-lg overflow-hidden">
-                                <img
-                                  src={getDamageImageUrl(log.image_path)}
-                                  alt="Damage photo"
-                                  className="w-full h-full object-cover"
-                                />
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="documents">
-                <Card>
-                  <CardHeader className="flex items-center justify-between">
-                    <CardTitle className="flex items-center gap-2">
-                      <FileText className="w-5 h-5" />
-                      Compliance Documents
-                    </CardTitle>
-                    <Button
-                      onClick={() => setAddDocumentOpen(true)}
-                      size="sm"
-                      className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Upload Documents
-                    </Button>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-500 text-center py-8">No documents found</p>
-                  </CardContent>
-                </Card>
               </TabsContent>
 
             </Tabs>
