@@ -61,7 +61,7 @@ export function EditNotesModal({
 
   // Communication-focused tags
   const communicationTags = [
-    'Call today',
+    'Called today - contact made',
     'Text message', 
     'Follow-up required',
     'Email sent',

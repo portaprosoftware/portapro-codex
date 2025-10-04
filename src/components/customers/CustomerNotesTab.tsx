@@ -34,7 +34,7 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
 
   // Tag options
   const communicationTags = [
-    'Call today', 'Text message', 'Follow-up required', 'Email sent', 
+    'Called today - contact made', 'Text message', 'Follow-up required', 'Email sent', 
     'Urgent', 'Important', 'Scheduled callback', 'No answer'
   ];
   
