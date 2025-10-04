@@ -222,7 +222,7 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="h-[50vh] overflow-y-auto">
+      <DrawerContent className="h-[100vh] md:h-[75vh] overflow-y-auto">
         <DrawerHeader>
           <DrawerTitle>Add Fuel Log</DrawerTitle>
         </DrawerHeader>
