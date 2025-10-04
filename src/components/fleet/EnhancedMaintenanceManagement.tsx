@@ -262,7 +262,15 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
                 Track scheduled maintenance, manage vendors, and monitor vehicle health
               </p>
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-col items-end gap-2">
+              <Button
+                onClick={() => setAddRecordOpen(true)}
+                className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0 px-4 py-2 h-10"
+                size="sm"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Create Maintenance Record
+              </Button>
               <Button
                 variant="outline"
                 onClick={() => setScheduleRecurringOpen(true)}
@@ -271,14 +279,6 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
               >
                 <Calendar className="w-4 h-4 mr-2" />
                 Schedule Recurring Service
-              </Button>
-              <Button
-                onClick={() => setAddRecordOpen(true)}
-                className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0 px-4 py-2 h-10"
-                size="sm"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Create Maintenance Record
               </Button>
             </div>
           </div>
