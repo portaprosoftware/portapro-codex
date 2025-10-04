@@ -223,6 +223,7 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
                 <span className="text-sm text-muted-foreground">
                   {showImportantOnly ? 'Showing important notes only' : 'Showing all notes'}
                 </span>
+              </div>
             </div>
           </div>
 
@@ -313,7 +314,6 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
                 className="pl-9"
               />
             </div>
-          </div>
           </div>
         </CardContent>
       </Card>
