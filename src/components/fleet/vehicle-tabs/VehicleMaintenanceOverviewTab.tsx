@@ -191,7 +191,7 @@ export const VehicleMaintenanceOverviewTab: React.FC<VehicleMaintenanceOverviewT
             className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Create Maintenance Record
+            Schedule Maintenance Service
           </Button>
         </div>
 

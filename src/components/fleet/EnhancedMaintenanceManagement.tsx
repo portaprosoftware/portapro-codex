@@ -270,7 +270,7 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
                 size="sm"
               >
                 <Plus className="w-4 h-4 mr-2" />
-                Create Maintenance Record
+                Schedule Maintenance Service
               </Button>
               <Button
                 variant="outline"
