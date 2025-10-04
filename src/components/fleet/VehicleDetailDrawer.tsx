@@ -471,66 +471,59 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
         <div className="flex-1 overflow-y-auto">
           <div className="p-4 sm:p-6">
             <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4 sm:space-y-6">
-              {/* Desktop Pills Navigation */}
+              {/* Desktop Solid Tab Navigation */}
               <div className="hidden sm:block">
-                <TabNav ariaLabel="Vehicle Details Navigation">
-                  <TabNav.Item
-                    to="#overview"
-                    isActive={activeTab === "overview"}
-                    onClick={() => handleTabChange("overview")}
+                <TabsList className="grid w-full grid-cols-7 bg-muted/50 p-1 rounded-lg">
+                  <TabsTrigger 
+                    value="overview" 
+                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                   >
-                    <Truck className="h-4 w-4" />
-                    <span>Overview</span>
-                  </TabNav.Item>
-                  <TabNav.Item
-                    to="#stock"
-                    isActive={activeTab === "stock"}
-                    onClick={() => handleTabChange("stock")}
+                    <Truck className="h-4 w-4 mr-2" />
+                    Overview
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="stock"
+                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                   >
-                    <Package className="h-4 w-4" />
-                    <span>Stock</span>
-                  </TabNav.Item>
-                  <TabNav.Item
-                    to="#compliance"
-                    isActive={activeTab === "compliance"}
-                    onClick={() => handleTabChange("compliance")}
+                    <Package className="h-4 w-4 mr-2" />
+                    Stock
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="compliance"
+                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                   >
-                    <Shield className="h-4 w-4" />
-                    <span>Compliance</span>
-                  </TabNav.Item>
-                  <TabNav.Item
-                    to="#assignments"
-                    isActive={activeTab === "assignments"}
-                    onClick={() => handleTabChange("assignments")}
+                    <Shield className="h-4 w-4 mr-2" />
+                    Compliance
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="assignments"
+                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                   >
-                    <Calendar className="h-4 w-4" />
-                    <span>Assignments</span>
-                  </TabNav.Item>
-                  <TabNav.Item
-                    to="#maintenance"
-                    isActive={activeTab === "maintenance"}
-                    onClick={() => handleTabChange("maintenance")}
+                    <Calendar className="h-4 w-4 mr-2" />
+                    Assignments
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="maintenance"
+                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                   >
-                    <Wrench className="h-4 w-4" />
-                    <span>Maintenance</span>
-                  </TabNav.Item>
-                  <TabNav.Item
-                    to="#fuel"
-                    isActive={activeTab === "fuel"}
-                    onClick={() => handleTabChange("fuel")}
+                    <Wrench className="h-4 w-4 mr-2" />
+                    Maintenance
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="fuel"
+                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                   >
-                    <Fuel className="h-4 w-4" />
-                    <span>Fuel</span>
-                  </TabNav.Item>
-                  <TabNav.Item
-                    to="#documents"
-                    isActive={activeTab === "documents"}
-                    onClick={() => handleTabChange("documents")}
+                    <Fuel className="h-4 w-4 mr-2" />
+                    Fuel
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="documents"
+                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                   >
-                    <FileText className="h-4 w-4" />
-                    <span>Documents</span>
-                  </TabNav.Item>
-                </TabNav>
+                    <FileText className="h-4 w-4 mr-2" />
+                    Documents
+                  </TabsTrigger>
+                </TabsList>
               </div>
 
               {/* Mobile Dropdown */}
