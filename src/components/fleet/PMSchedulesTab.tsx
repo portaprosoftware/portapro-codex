@@ -27,6 +27,7 @@ import {
 import { AddWorkOrderDrawer } from "./work-orders/AddWorkOrderDrawer";
 import { AssignPMTemplateDialog } from "./pm/AssignPMTemplateDialog";
 import { ActivePMSchedulesList } from "./pm/ActivePMSchedulesList";
+import { PMTemplateBuilder } from "./pm/PMTemplateBuilder";
 
 interface PMSchedulesTabProps {
   vehicleId?: string;
@@ -34,25 +35,11 @@ interface PMSchedulesTabProps {
 }
 
 export const PMSchedulesTab: React.FC<PMSchedulesTabProps> = ({ vehicleId, licensePlate }) => {
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isBuilderOpen, setIsBuilderOpen] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<any>(null);
   const [selectedTemplateForWO, setSelectedTemplateForWO] = useState<any>(null);
   const [isWorkOrderDrawerOpen, setIsWorkOrderDrawerOpen] = useState(false);
   const queryClient = useQueryClient();
-
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    asset_type: "vehicle",
-    trigger_type: "mileage",
-    trigger_interval: "",
-    trigger_config: {},
-    estimated_labor_hours: "",
-    estimated_cost: "",
-    checklist_items: [] as any[],
-    parts_list: [] as any[],
-    is_active: true
-  });
 
   const { data: templates, isLoading } = useQuery({
     queryKey: ["pm-templates"],
@@ -66,39 +53,6 @@ export const PMSchedulesTab: React.FC<PMSchedulesTabProps> = ({ vehicleId, licen
     }
   });
 
-  const createTemplateMutation = useMutation({
-    mutationFn: async (templateData: any) => {
-      const { error } = await supabase.from("pm_templates").insert(templateData);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["pm-templates"] });
-      toast.success("PM Template created successfully");
-      resetForm();
-      setIsCreateDialogOpen(false);
-    },
-    onError: (error) => {
-      toast.error("Failed to create PM template");
-      console.error(error);
-    }
-  });
-
-  const updateTemplateMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: any }) => {
-      const { error } = await supabase.from("pm_templates").update(data).eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["pm-templates"] });
-      toast.success("PM Template updated successfully");
-      setEditingTemplate(null);
-      resetForm();
-    },
-    onError: (error) => {
-      toast.error("Failed to update PM template");
-      console.error(error);
-    }
-  });
 
   const deleteTemplateMutation = useMutation({
     mutationFn: async (id: string) => {
@@ -115,65 +69,9 @@ export const PMSchedulesTab: React.FC<PMSchedulesTabProps> = ({ vehicleId, licen
     }
   });
 
-  const resetForm = () => {
-    setFormData({
-      name: "",
-      description: "",
-      asset_type: "vehicle",
-      trigger_type: "mileage",
-      trigger_interval: "",
-      trigger_config: {},
-      estimated_labor_hours: "",
-      estimated_cost: "",
-      checklist_items: [],
-      parts_list: [],
-      is_active: true
-    });
-  };
-
-  const handleSubmit = () => {
-    if (!formData.name.trim()) {
-      toast.error("Template name is required");
-      return;
-    }
-
-    const templateData = {
-      name: formData.name.trim(),
-      description: formData.description.trim() || null,
-      asset_type: formData.asset_type,
-      trigger_type: formData.trigger_type,
-      trigger_interval: formData.trigger_interval ? Number(formData.trigger_interval) : null,
-      trigger_config: formData.trigger_config,
-      estimated_labor_hours: formData.estimated_labor_hours ? Number(formData.estimated_labor_hours) : null,
-      estimated_cost: formData.estimated_cost ? Number(formData.estimated_cost) : null,
-      checklist_items: formData.checklist_items,
-      parts_list: formData.parts_list,
-      is_active: formData.is_active
-    };
-
-    if (editingTemplate) {
-      updateTemplateMutation.mutate({ id: editingTemplate.id, data: templateData });
-    } else {
-      createTemplateMutation.mutate(templateData);
-    }
-  };
-
   const handleEdit = (template: any) => {
-    setFormData({
-      name: template.name,
-      description: template.description || "",
-      asset_type: template.asset_type,
-      trigger_type: template.trigger_type,
-      trigger_interval: template.trigger_interval?.toString() || "",
-      trigger_config: template.trigger_config || {},
-      estimated_labor_hours: template.estimated_labor_hours?.toString() || "",
-      estimated_cost: template.estimated_cost?.toString() || "",
-      checklist_items: template.checklist_items || [],
-      parts_list: template.parts_list || [],
-      is_active: template.is_active
-    });
     setEditingTemplate(template);
-    setIsCreateDialogOpen(true);
+    setIsBuilderOpen(true);
   };
 
   const handleDelete = (id: string) => {
@@ -222,142 +120,13 @@ export const PMSchedulesTab: React.FC<PMSchedulesTabProps> = ({ vehicleId, licen
               <h2 className="text-2xl font-bold">PM Templates</h2>
               <p className="text-gray-600">Reusable maintenance templates for your fleet</p>
             </div>
-            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-              <DialogTrigger asChild>
-                <Button 
-                  onClick={() => { resetForm(); setEditingTemplate(null); }}
-                  className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  New PM Template
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle>
-                    {editingTemplate ? "Edit PM Template" : "Create PM Template"}
-                  </DialogTitle>
-                  <DialogDescription>
-                    Create a reusable maintenance template for your fleet
-                  </DialogDescription>
-                </DialogHeader>
-                
-                <div className="space-y-6">
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold border-b pb-2">Basic Information</h3>
-                    <div className="grid grid-cols-1 gap-4">
-                      <div>
-                        <Label htmlFor="name">Template Name *</Label>
-                        <Input
-                          id="name"
-                          value={formData.name}
-                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                          placeholder="e.g., Oil Change, Brake Inspection"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="description">Description</Label>
-                        <Textarea
-                          id="description"
-                          value={formData.description}
-                          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                          placeholder="Brief description of this maintenance type..."
-                          rows={2}
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="asset_type">Asset Type</Label>
-                          <Select value={formData.asset_type} onValueChange={(value) => setFormData({ ...formData, asset_type: value })}>
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="vehicle">Vehicle</SelectItem>
-                              <SelectItem value="trailer">Trailer</SelectItem>
-                              <SelectItem value="equipment">Equipment</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div>
-                          <Label htmlFor="trigger_type">Trigger Type</Label>
-                          <Select value={formData.trigger_type} onValueChange={(value) => setFormData({ ...formData, trigger_type: value })}>
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="mileage">Mileage Based</SelectItem>
-                              <SelectItem value="hours">Engine Hours</SelectItem>
-                              <SelectItem value="days">Time Based (Days)</SelectItem>
-                              <SelectItem value="multi">Multi-Trigger</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-                      
-                      {formData.trigger_type !== 'multi' && (
-                        <div>
-                          <Label htmlFor="trigger_interval">Trigger Interval</Label>
-                          <Input
-                            id="trigger_interval"
-                            type="number"
-                            value={formData.trigger_interval}
-                            onChange={(e) => setFormData({ ...formData, trigger_interval: e.target.value })}
-                            placeholder={formData.trigger_type === 'mileage' ? '5000' : formData.trigger_type === 'hours' ? '250' : '90'}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold border-b pb-2">Cost & Labor Estimates</h3>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="estimated_cost">Estimated Cost ($)</Label>
-                        <Input
-                          id="estimated_cost"
-                          type="number"
-                          step="0.01"
-                          value={formData.estimated_cost}
-                          onChange={(e) => setFormData({ ...formData, estimated_cost: e.target.value })}
-                          placeholder="150.00"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="estimated_labor_hours">Estimated Labor (hours)</Label>
-                        <Input
-                          id="estimated_labor_hours"
-                          type="number"
-                          step="0.5"
-                          value={formData.estimated_labor_hours}
-                          onChange={(e) => setFormData({ ...formData, estimated_labor_hours: e.target.value })}
-                          placeholder="2.0"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      id="is_active"
-                      checked={formData.is_active}
-                      onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
-                    />
-                    <Label htmlFor="is_active">Template Active</Label>
-                  </div>
-
-                  <div className="flex justify-end space-x-2 pt-4 border-t">
-                    <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-                      Cancel
-                    </Button>
-                    <Button onClick={handleSubmit} className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
-                      {editingTemplate ? "Update Template" : "Create Template"}
-                    </Button>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
+            <Button 
+              onClick={() => { setEditingTemplate(null); setIsBuilderOpen(true); }}
+              className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              New PM Template
+            </Button>
           </div>
 
           <div className="grid gap-4">
@@ -376,7 +145,7 @@ export const PMSchedulesTab: React.FC<PMSchedulesTabProps> = ({ vehicleId, licen
                     Create reusable maintenance templates to streamline work order creation
                   </p>
                   <Button 
-                    onClick={() => setIsCreateDialogOpen(true)}
+                    onClick={() => { setEditingTemplate(null); setIsBuilderOpen(true); }}
                     className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold"
                   >
                     <Plus className="w-4 h-4 mr-2" />
@@ -477,6 +246,12 @@ export const PMSchedulesTab: React.FC<PMSchedulesTabProps> = ({ vehicleId, licen
           pmTemplate={selectedTemplateForWO}
         />
       )}
+
+      <PMTemplateBuilder
+        open={isBuilderOpen}
+        onOpenChange={setIsBuilderOpen}
+        template={editingTemplate}
+      />
     </div>
   );
 };
