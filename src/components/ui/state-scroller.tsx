@@ -1,61 +1,57 @@
-import React, { useState } from "react";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Check, ChevronDown } from "lucide-react";
-import { cn } from "@/lib/utils";
+import React from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const US_STATES = [
-  { value: "AL", label: "AL - Alabama" },
-  { value: "AK", label: "AK - Alaska" },
-  { value: "AZ", label: "AZ - Arizona" },
-  { value: "AR", label: "AR - Arkansas" },
-  { value: "CA", label: "CA - California" },
-  { value: "CO", label: "CO - Colorado" },
-  { value: "CT", label: "CT - Connecticut" },
-  { value: "DE", label: "DE - Delaware" },
-  { value: "FL", label: "FL - Florida" },
-  { value: "GA", label: "GA - Georgia" },
-  { value: "HI", label: "HI - Hawaii" },
-  { value: "ID", label: "ID - Idaho" },
-  { value: "IL", label: "IL - Illinois" },
-  { value: "IN", label: "IN - Indiana" },
-  { value: "IA", label: "IA - Iowa" },
-  { value: "KS", label: "KS - Kansas" },
-  { value: "KY", label: "KY - Kentucky" },
-  { value: "LA", label: "LA - Louisiana" },
-  { value: "ME", label: "ME - Maine" },
-  { value: "MD", label: "MD - Maryland" },
-  { value: "MA", label: "MA - Massachusetts" },
-  { value: "MI", label: "MI - Michigan" },
-  { value: "MN", label: "MN - Minnesota" },
-  { value: "MS", label: "MS - Mississippi" },
-  { value: "MO", label: "MO - Missouri" },
-  { value: "MT", label: "MT - Montana" },
-  { value: "NE", label: "NE - Nebraska" },
-  { value: "NV", label: "NV - Nevada" },
-  { value: "NH", label: "NH - New Hampshire" },
-  { value: "NJ", label: "NJ - New Jersey" },
-  { value: "NM", label: "NM - New Mexico" },
-  { value: "NY", label: "NY - New York" },
-  { value: "NC", label: "NC - North Carolina" },
-  { value: "ND", label: "ND - North Dakota" },
-  { value: "OH", label: "OH - Ohio" },
-  { value: "OK", label: "OK - Oklahoma" },
-  { value: "OR", label: "OR - Oregon" },
-  { value: "PA", label: "PA - Pennsylvania" },
-  { value: "RI", label: "RI - Rhode Island" },
-  { value: "SC", label: "SC - South Carolina" },
-  { value: "SD", label: "SD - South Dakota" },
-  { value: "TN", label: "TN - Tennessee" },
-  { value: "TX", label: "TX - Texas" },
-  { value: "UT", label: "UT - Utah" },
-  { value: "VT", label: "VT - Vermont" },
-  { value: "VA", label: "VA - Virginia" },
-  { value: "WA", label: "WA - Washington" },
-  { value: "WV", label: "WV - West Virginia" },
-  { value: "WI", label: "WI - Wisconsin" },
-  { value: "WY", label: "WY - Wyoming" }
+  { value: "AL", label: "Alabama (AL)" },
+  { value: "AK", label: "Alaska (AK)" },
+  { value: "AZ", label: "Arizona (AZ)" },
+  { value: "AR", label: "Arkansas (AR)" },
+  { value: "CA", label: "California (CA)" },
+  { value: "CO", label: "Colorado (CO)" },
+  { value: "CT", label: "Connecticut (CT)" },
+  { value: "DE", label: "Delaware (DE)" },
+  { value: "FL", label: "Florida (FL)" },
+  { value: "GA", label: "Georgia (GA)" },
+  { value: "HI", label: "Hawaii (HI)" },
+  { value: "ID", label: "Idaho (ID)" },
+  { value: "IL", label: "Illinois (IL)" },
+  { value: "IN", label: "Indiana (IN)" },
+  { value: "IA", label: "Iowa (IA)" },
+  { value: "KS", label: "Kansas (KS)" },
+  { value: "KY", label: "Kentucky (KY)" },
+  { value: "LA", label: "Louisiana (LA)" },
+  { value: "ME", label: "Maine (ME)" },
+  { value: "MD", label: "Maryland (MD)" },
+  { value: "MA", label: "Massachusetts (MA)" },
+  { value: "MI", label: "Michigan (MI)" },
+  { value: "MN", label: "Minnesota (MN)" },
+  { value: "MS", label: "Mississippi (MS)" },
+  { value: "MO", label: "Missouri (MO)" },
+  { value: "MT", label: "Montana (MT)" },
+  { value: "NE", label: "Nebraska (NE)" },
+  { value: "NV", label: "Nevada (NV)" },
+  { value: "NH", label: "New Hampshire (NH)" },
+  { value: "NJ", label: "New Jersey (NJ)" },
+  { value: "NM", label: "New Mexico (NM)" },
+  { value: "NY", label: "New York (NY)" },
+  { value: "NC", label: "North Carolina (NC)" },
+  { value: "ND", label: "North Dakota (ND)" },
+  { value: "OH", label: "Ohio (OH)" },
+  { value: "OK", label: "Oklahoma (OK)" },
+  { value: "OR", label: "Oregon (OR)" },
+  { value: "PA", label: "Pennsylvania (PA)" },
+  { value: "RI", label: "Rhode Island (RI)" },
+  { value: "SC", label: "South Carolina (SC)" },
+  { value: "SD", label: "South Dakota (SD)" },
+  { value: "TN", label: "Tennessee (TN)" },
+  { value: "TX", label: "Texas (TX)" },
+  { value: "UT", label: "Utah (UT)" },
+  { value: "VT", label: "Vermont (VT)" },
+  { value: "VA", label: "Virginia (VA)" },
+  { value: "WA", label: "Washington (WA)" },
+  { value: "WV", label: "West Virginia (WV)" },
+  { value: "WI", label: "Wisconsin (WI)" },
+  { value: "WY", label: "Wyoming (WY)" }
 ];
 
 interface StateScrollerProps {
@@ -65,53 +61,18 @@ interface StateScrollerProps {
 }
 
 export function StateScroller({ value, onValueChange, placeholder = "Select state" }: StateScrollerProps) {
-  const [open, setOpen] = useState(false);
-
-  const selectedState = US_STATES.find(state => state.value === value);
-
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className={cn(
-            "w-full justify-between",
-            !value && "text-muted-foreground"
-          )}
-        >
-          {selectedState ? selectedState.label : placeholder}
-          <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0" side="bottom" align="start">
-        <ScrollArea className="h-[200px] w-full pointer-events-auto">
-          <div className="p-1">
-            {US_STATES.map((state) => (
-              <div
-                key={state.value}
-                className={cn(
-                  "flex items-center px-3 py-2 cursor-pointer rounded-sm hover:bg-accent transition-colors",
-                  value === state.value && "bg-accent"
-                )}
-                onClick={() => {
-                  onValueChange(state.value);
-                  setOpen(false);
-                }}
-              >
-                <Check
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    value === state.value ? "opacity-100" : "opacity-0"
-                  )}
-                />
-                <span className="text-sm">{state.label}</span>
-              </div>
-            ))}
-          </div>
-        </ScrollArea>
-      </PopoverContent>
-    </Popover>
+    <Select value={value} onValueChange={onValueChange}>
+      <SelectTrigger>
+        <SelectValue placeholder={placeholder} />
+      </SelectTrigger>
+      <SelectContent>
+        {US_STATES.map((state) => (
+          <SelectItem key={state.value} value={state.value}>
+            {state.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }
