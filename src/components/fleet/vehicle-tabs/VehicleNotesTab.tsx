@@ -186,7 +186,7 @@ export function VehicleNotesTab({ vehicleId }: VehicleNotesTabProps) {
       <Card>
         <CardContent className="pt-6">
           {/* Filters */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label>Vehicle Tag</Label>
               <Select value={selectedVehicleTag} onValueChange={setSelectedVehicleTag}>
@@ -237,7 +237,7 @@ export function VehicleNotesTab({ vehicleId }: VehicleNotesTabProps) {
           </div>
 
           {/* Date Range Filter */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
             <div className="space-y-2">
               <Label>From Date</Label>
               <Popover>

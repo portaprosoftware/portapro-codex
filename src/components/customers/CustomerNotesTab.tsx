@@ -178,7 +178,7 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
       {/* Filters Section */}
       <Card>
         <CardContent className="space-y-4 pt-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             {/* Communication Tags Filter */}
             <div className="space-y-2">
               <Label htmlFor="communication-filter">Communication</Label>
@@ -227,7 +227,7 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
           </div>
 
           {/* Date Range Filter */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>From Date</Label>
               <Popover>
