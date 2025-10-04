@@ -12,6 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
 
 interface EditVehicleNotesModalProps {
   isOpen: boolean;
@@ -184,21 +185,16 @@ export function EditVehicleNotesModal({
             />
           </div>
 
-          {/* Important Checkbox */}
-          <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
+          {/* Important Toggle */}
+          <div className="flex items-center justify-between space-x-2">
+            <Label htmlFor="important" className="cursor-pointer">
+              Mark as important/urgent
+            </Label>
+            <Switch
               id="important"
               checked={isImportant}
-              onChange={(e) => setIsImportant(e.target.checked)}
-              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              onCheckedChange={setIsImportant}
             />
-            <Label htmlFor="important">Mark as important</Label>
-            {isImportant && (
-              <Badge variant="destructive" className="ml-2">
-                Important
-              </Badge>
-            )}
           </div>
         </div>
 
