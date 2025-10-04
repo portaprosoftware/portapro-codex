@@ -228,7 +228,7 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
           </div>
 
           {/* Date Range Filter */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_auto] gap-4 items-end">
             <div className="space-y-2">
               <Label>From Date</Label>
               <Popover>
@@ -282,10 +282,8 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
                 </PopoverContent>
               </Popover>
             </div>
-          </div>
 
-          {(dateFrom || dateTo) && (
-            <div className="flex items-center gap-2">
+            {(dateFrom || dateTo) && (
               <Button
                 variant="ghost"
                 size="sm"
@@ -293,13 +291,13 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
                   setDateFrom(undefined);
                   setDateTo(undefined);
                 }}
-                className="h-8"
+                className="h-10 whitespace-nowrap"
               >
                 <X className="h-3 w-3 mr-1" />
                 Clear date filter
               </Button>
-            </div>
-          )}
+            )}
+          </div>
 
           {/* Search Bar */}
           <div>
