@@ -36,6 +36,8 @@ import { VehicleTypeSelector } from "./VehicleTypeSelector";
 import { getVehicleTypeDisplayName } from "@/lib/vehicleTypeUtils";
 import { TabSkeleton } from "./vehicle-tabs/TabSkeleton";
 import { useAnalytics } from "@/hooks/useAnalytics";
+import { DeleteConfirmationDialog } from '@/components/ui/delete-confirmation-dialog';
+import { useNavigate } from 'react-router-dom';
 
 // Lazy load tab components for better performance
 const VehicleOverviewTab = lazy(() => import('./vehicle-tabs/VehicleOverviewTab').then(m => ({ default: m.VehicleOverviewTab })));
@@ -68,8 +70,10 @@ interface VehicleDetailDrawerProps {
 
 export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicle, isOpen, onClose }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   const { trackEvent } = useAnalytics();
+  const navigate = useNavigate();
   
   // Track vehicle profile view
   useEffect(() => {
@@ -164,6 +168,28 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
     onError: (error: any) => {
       toast.error(error.message || "Failed to update vehicle");
     }
+  });
+
+  const deleteVehicleMutation = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from('vehicles')
+        .delete()
+        .eq('id', vehicle.id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success('Vehicle deleted successfully');
+      setIsEditing(false);
+      setShowDeleteDialog(false);
+      onClose();
+      navigate('/fleet');
+    },
+    onError: (error: any) => {
+      console.error('Error deleting vehicle:', error);
+      toast.error('Failed to delete vehicle');
+    },
   });
 
   const uploadImageMutation = useMutation({
@@ -821,17 +847,39 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 pt-4">
-              <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={updateVehicleMutation.isPending}>
-                {updateVehicleMutation.isPending ? "Saving..." : "Save Changes"}
-              </Button>
+            <div className="flex flex-col gap-4 pt-4 border-t">
+              <div className="flex justify-between items-center w-full gap-2">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  className="bg-red-600 hover:bg-red-700 text-white border-red-600"
+                  onClick={() => setShowDeleteDialog(true)}
+                >
+                  Delete Vehicle
+                </Button>
+                <div className="flex gap-2">
+                  <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={updateVehicleMutation.isPending}>
+                    {updateVehicleMutation.isPending ? "Saving..." : "Save Changes"}
+                  </Button>
+                </div>
+              </div>
             </div>
           </form>
         </DialogContent>
       </Dialog>
+
+      <DeleteConfirmationDialog
+        isOpen={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        onConfirm={() => deleteVehicleMutation.mutate()}
+        title="Delete Vehicle"
+        description={`Are you sure you want to permanently delete ${vehicle?.license_plate || 'this vehicle'}? This action cannot be undone.`}
+        itemName={vehicle?.license_plate || 'vehicle'}
+        isLoading={deleteVehicleMutation.isPending}
+      />
 
       {/* Vehicle Type Selector Modal */}
       <VehicleTypeSelector
