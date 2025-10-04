@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Edit, Trash2, Download, Plus, Search } from 'lucide-react';
+import { Edit, Trash2, Download, Plus, Search, Truck } from 'lucide-react';
 import { DatePickerWithRange } from '@/components/ui/DatePickerWithRange';
 import { DateRange } from 'react-day-picker';
 import { useToast } from '@/hooks/use-toast';
@@ -15,6 +15,19 @@ import { AddFuelLogModal } from './AddFuelLogModal';
 import { EditFuelLogModal } from './EditFuelLogModal';
 import { ExportFuelDataModal } from './ExportFuelDataModal';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { MultiSelectVehicleFilter } from '../MultiSelectVehicleFilter';
+
+interface Vehicle {
+  id: string;
+  license_plate: string | null;
+  vehicle_type?: string | null;
+  make?: string | null;
+  model?: string | null;
+  year?: number | null;
+  status?: string | null;
+  vehicle_image?: string | null;
+  nickname?: string | null;
+}
 
 interface FuelLog {
   id: string;
@@ -40,7 +53,8 @@ interface FuelLog {
 
 export const FuelAllLogsTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedVehicle, setSelectedVehicle] = useState('all');
+  const [selectedVehicles, setSelectedVehicles] = useState<Vehicle[]>([]);
+  const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
   const [selectedDriver, setSelectedDriver] = useState('all');
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [showAddModal, setShowAddModal] = useState(false);
@@ -53,7 +67,7 @@ export const FuelAllLogsTab: React.FC = () => {
 
   // Fetch fuel logs with filters
   const { data: fuelLogs, isLoading } = useQuery({
-    queryKey: ['fuel-logs', searchTerm, selectedVehicle, selectedDriver, dateRange],
+    queryKey: ['fuel-logs', searchTerm, selectedVehicles, selectedDriver, dateRange],
     queryFn: async () => {
       let query = supabase
         .from('fuel_logs')
@@ -72,8 +86,9 @@ export const FuelAllLogsTab: React.FC = () => {
         .order('log_date', { ascending: false });
 
       // Apply filters
-      if (selectedVehicle && selectedVehicle !== 'all') {
-        query = query.eq('vehicle_id', selectedVehicle);
+      if (selectedVehicles && selectedVehicles.length > 0) {
+        const vehicleIds = selectedVehicles.map(v => v.id);
+        query = query.in('vehicle_id', vehicleIds);
       }
       
       if (selectedDriver && selectedDriver !== 'all') {
@@ -129,20 +144,8 @@ export const FuelAllLogsTab: React.FC = () => {
     }
   });
 
-  // Fetch vehicles for filter
-  const { data: vehicles } = useQuery({
-    queryKey: ['vehicles'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('vehicles')
-        .select('id, license_plate')
-        .eq('status', 'active')
-        .order('license_plate');
-      
-      if (error) throw error;
-      return data;
-    }
-  });
+  // Get selected vehicle count for display
+  const selectedVehicleCount = selectedVehicles.length;
 
   // Fetch drivers for filter
   const { data: drivers } = useQuery({
@@ -228,19 +231,16 @@ export const FuelAllLogsTab: React.FC = () => {
             </div>
 
             <div>
-              <Select value={selectedVehicle} onValueChange={setSelectedVehicle}>
-                <SelectTrigger>
-                  <SelectValue placeholder="All vehicles" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All vehicles</SelectItem>
-                  {vehicles?.map((vehicle) => (
-                    <SelectItem key={vehicle.id} value={vehicle.id}>
-                      {vehicle.license_plate}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Button
+                variant="outline"
+                onClick={() => setIsVehicleModalOpen(true)}
+                className="w-full justify-start"
+              >
+                <Truck className="h-4 w-4 mr-2" />
+                {selectedVehicleCount === 0
+                  ? "All vehicles"
+                  : `${selectedVehicleCount} vehicle${selectedVehicleCount > 1 ? 's' : ''} selected`}
+              </Button>
             </div>
 
             <div>
@@ -374,6 +374,14 @@ export const FuelAllLogsTab: React.FC = () => {
         fuelLog={editingLog}
       />
       <ExportFuelDataModal open={showExportModal} onOpenChange={setShowExportModal} />
+      
+      {/* Vehicle Multi-Select Modal */}
+      <MultiSelectVehicleFilter
+        open={isVehicleModalOpen}
+        onOpenChange={setIsVehicleModalOpen}
+        selectedVehicles={selectedVehicles}
+        onVehiclesChange={setSelectedVehicles}
+      />
     </div>
   );
 };
