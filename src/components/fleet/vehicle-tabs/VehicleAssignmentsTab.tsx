@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useVehicleAssignments } from '@/hooks/vehicle/useVehicleAssignments';
-import { Calendar, Plus, ExternalLink, User } from 'lucide-react';
+import { Calendar, Plus, User } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
@@ -53,20 +53,10 @@ export function VehicleAssignmentsTab({
             <Calendar className="w-5 h-5" />
             Vehicle Assignments ({assignments?.total || 0})
           </CardTitle>
-          <div className="flex gap-2">
-            <Button size="sm" onClick={handleNavigateToAssignments}>
-              <Plus className="w-4 h-4 mr-1" />
-              New Assignment
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={handleNavigateToAssignments}
-              title="View all assignments"
-            >
-              <ExternalLink className="w-4 h-4" />
-            </Button>
-          </div>
+          <Button size="sm" onClick={handleNavigateToAssignments}>
+            <Plus className="w-4 h-4 mr-1" />
+            New Assignment
+          </Button>
         </CardHeader>
         <CardContent>
           {isLoading ? (
