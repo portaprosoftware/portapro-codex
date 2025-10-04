@@ -164,7 +164,6 @@ export const FuelOverviewTab: React.FC = () => {
         <Button
           onClick={() => setShowAddModal(true)}
           className="flex items-center gap-2 bg-gradient-to-r from-primary to-primary-variant text-white"
-          size="lg"
         >
           <Plus className="h-4 w-4" />
           Add Fuel Log
@@ -174,7 +173,6 @@ export const FuelOverviewTab: React.FC = () => {
           onClick={() => setShowImportModal(true)}
           variant="outline"
           className="flex items-center gap-2"
-          size="lg"
         >
           <Upload className="h-4 w-4" />
           Import CSV
