@@ -222,27 +222,11 @@ export const FuelAllLogsTab: React.FC = () => {
       )}
       {/* Filters */}
       <Card>
-        <CardHeader>
-          <CardTitle>Filters</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex-1" />
-            {hasActiveFilters && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={clearAllFilters}
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <X className="h-4 w-4 mr-2" />
-                Clear Filters
-              </Button>
-            )}
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div>
+        <CardContent className="pt-6">
+          {/* Filters Title and Search Bar Row */}
+          <div className="flex items-center gap-4 mb-4">
+            <h3 className="text-base font-semibold">Filters</h3>
+            <div className="flex-1">
               <Input
                 placeholder="Search Logs"
                 value={searchTerm}
@@ -250,12 +234,15 @@ export const FuelAllLogsTab: React.FC = () => {
                 className="w-full"
               />
             </div>
+          </div>
 
+          {/* Filter Buttons Row */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
               <Button
                 variant="outline"
                 onClick={() => setIsVehicleModalOpen(true)}
-                className="w-full justify-start"
+                className="w-full justify-start hover:scale-[1.02] transition-transform"
               >
                 <Truck className="h-4 w-4 mr-2" />
                 {selectedVehicleCount === 0
@@ -268,7 +255,7 @@ export const FuelAllLogsTab: React.FC = () => {
               <Button
                 variant="outline"
                 onClick={() => setIsDriverModalOpen(true)}
-                className="w-full justify-start"
+                className="w-full justify-start hover:scale-[1.02] transition-transform"
               >
                 <Users className="h-4 w-4 mr-2" />
                 {selectedDriverCount === 0
@@ -283,6 +270,19 @@ export const FuelAllLogsTab: React.FC = () => {
                 onDateChange={setDateRange}
                 placeholder="Select date range"
               />
+            </div>
+
+            <div>
+              {hasActiveFilters && (
+                <Button
+                  variant="outline"
+                  onClick={clearAllFilters}
+                  className="w-full justify-start hover:scale-[1.02] transition-transform text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-4 w-4 mr-2" />
+                  Clear Filters
+                </Button>
+              )}
             </div>
           </div>
         </CardContent>
