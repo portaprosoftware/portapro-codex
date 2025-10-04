@@ -444,12 +444,10 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
               </div>
               <div>
                 <div className="flex items-center gap-2">
+                  <h1 className="text-2xl font-bold text-gray-900">{vehicle.license_plate}</h1>
                   {vehicle.nickname && (
-                    <h1 className="text-2xl font-bold text-gray-900">{vehicle.nickname}</h1>
+                    <h2 className="text-lg font-semibold text-gray-600">{vehicle.nickname}</h2>
                   )}
-                  <h2 className={cn(
-                    vehicle.nickname ? "text-lg font-semibold text-gray-600" : "text-2xl font-bold text-gray-900"
-                  )}>{vehicle.license_plate}</h2>
                   <Badge className={cn("badge-gradient", getStatusColor(vehicle.status))}>
                     {vehicle.status.charAt(0).toUpperCase() + vehicle.status.slice(1)}
                   </Badge>
