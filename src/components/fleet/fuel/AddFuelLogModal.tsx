@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -214,13 +214,13 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
     : '0.00';
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Add Fuel Log</DialogTitle>
-        </DialogHeader>
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      <DrawerContent className="h-[50vh] overflow-y-auto">
+        <DrawerHeader>
+          <DrawerTitle>Add Fuel Log</DrawerTitle>
+        </DrawerHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 px-4 pb-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="vehicle">Vehicle *</Label>
@@ -380,7 +380,7 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
             </Button>
           </div>
         </form>
-      </DialogContent>
-    </Dialog>
+      </DrawerContent>
+    </Drawer>
   );
 };
