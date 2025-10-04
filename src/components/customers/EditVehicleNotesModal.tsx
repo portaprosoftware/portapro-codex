@@ -10,9 +10,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Checkbox } from '@/components/ui/checkbox';
-import { X } from 'lucide-react';
 
 interface EditVehicleNotesModalProps {
   isOpen: boolean;
@@ -44,7 +43,7 @@ export function EditVehicleNotesModal({
 }: EditVehicleNotesModalProps) {
   const [title, setTitle] = useState('');
   const [noteText, setNoteText] = useState('');
-  const [tags, setTags] = useState<string[]>([]);
+  const [tags, setTags] = useState('');
   const [isImportant, setIsImportant] = useState(false);
 
   // Reset form when modal opens/closes or existing note changes
@@ -53,24 +52,30 @@ export function EditVehicleNotesModal({
       if (existingNote) {
         setTitle(existingNote.title || '');
         setNoteText(existingNote.note_text || '');
-        setTags(existingNote.tags || []);
+        setTags(existingNote.tags?.join(', ') || '');
         setIsImportant(existingNote.is_important || false);
       } else {
         setTitle('');
         setNoteText('');
-        setTags([]);
+        setTags('');
         setIsImportant(false);
       }
     }
   }, [isOpen, existingNote]);
 
   const handleQuickTagClick = (tag: string) => {
-    setTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
-    );
+    const currentTags = tags ? tags.split(',').map(t => t.trim()).filter(Boolean) : [];
+    
+    if (currentTags.includes(tag)) {
+      // Remove tag if already present
+      const newTags = currentTags.filter(t => t !== tag);
+      setTags(newTags.join(', '));
+    } else {
+      // Add tag if not present
+      const newTags = [...currentTags, tag];
+      setTags(newTags.join(', '));
+    }
   };
-
-  const isTagSelected = (tag: string) => tags.includes(tag);
 
   const handleSave = () => {
     if (!noteText.trim()) return;
@@ -78,118 +83,122 @@ export function EditVehicleNotesModal({
     onSave({
       title: title.trim() || undefined,
       note_text: noteText.trim(),
-      tags,
+      tags: tags ? tags.split(',').map(tag => tag.trim()).filter(Boolean) : [],
       is_important: isImportant,
     });
 
     // Reset form
     setTitle('');
     setNoteText('');
-    setTags([]);
+    setTags('');
     setIsImportant(false);
   };
 
   const handleClose = () => {
     setTitle('');
     setNoteText('');
-    setTags([]);
+    setTags('');
     setIsImportant(false);
     onClose();
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>
-            {existingNote ? 'Edit Note' : 'Add New Note'}
+            {existingNote ? 'Edit Vehicle Note' : 'Add Vehicle Note'}
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
           {/* Title */}
-          <div className="space-y-2">
-            <Label htmlFor="title">Title (Optional)</Label>
+          <div>
+            <Label htmlFor="title">Note Title</Label>
             <Input
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Enter note title"
+              placeholder="Enter a title for this note..."
+              className="mt-1"
             />
           </div>
 
           {/* Note Text */}
-          <div className="space-y-2">
-            <Label htmlFor="note-text">Note *</Label>
+          <div>
+            <Label htmlFor="note-text">Note Content *</Label>
             <Textarea
               id="note-text"
               value={noteText}
               onChange={(e) => setNoteText(e.target.value)}
-              placeholder="Enter your note here..."
-              rows={4}
-              required
+              placeholder="Enter vehicle note details..."
+              rows={6}
+              className="mt-1"
             />
           </div>
 
-          {/* Vehicle Tags */}
-          {vehicleTags.length > 0 && (
-            <div className="space-y-2">
-              <Label>Vehicle Tags</Label>
-              <div className="flex flex-wrap gap-2">
-                {vehicleTags.map((tag) => (
-                  <Badge
-                    key={tag}
-                    variant={isTagSelected(tag) ? 'default' : 'outline'}
-                    className="cursor-pointer hover:opacity-80"
-                    onClick={() => handleQuickTagClick(tag)}
-                  >
-                    {tag}
-                    {isTagSelected(tag) && (
-                      <X className="ml-1 h-3 w-3" />
-                    )}
-                  </Badge>
-                ))}
-              </div>
+          {/* Tags */}
+          <div>
+            <Label htmlFor="tags">Tags</Label>
+            
+            {/* Vehicle-focused tags dropdown */}
+            <div className="mt-2 mb-3">
+              <Label className="text-sm text-muted-foreground mb-2 block">Vehicle-focused tags</Label>
+              <Select onValueChange={(value) => handleQuickTagClick(value)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select a vehicle tag..." />
+                </SelectTrigger>
+                <SelectContent className="bg-background z-50">
+                  {vehicleTags.map((tag) => (
+                    <SelectItem key={tag} value={tag}>
+                      {tag}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-          )}
+            
+            {/* General business tags dropdown */}
+            <div className="mb-3">
+              <Label className="text-sm text-muted-foreground mb-2 block">General business tags</Label>
+              <Select onValueChange={(value) => handleQuickTagClick(value)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select a business tag..." />
+                </SelectTrigger>
+                <SelectContent className="bg-background z-50">
+                  {generalTags.map((tag) => (
+                    <SelectItem key={tag} value={tag}>
+                      {tag}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          {/* General Tags */}
-          {generalTags.length > 0 && (
-            <div className="space-y-2">
-              <Label>General Tags</Label>
-              <div className="flex flex-wrap gap-2">
-                {generalTags.map((tag) => (
-                  <Badge
-                    key={tag}
-                    variant={isTagSelected(tag) ? 'default' : 'outline'}
-                    className="cursor-pointer hover:opacity-80"
-                    onClick={() => handleQuickTagClick(tag)}
-                  >
-                    {tag}
-                    {isTagSelected(tag) && (
-                      <X className="ml-1 h-3 w-3" />
-                    )}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
+            <Input
+              id="tags"
+              value={tags}
+              onChange={(e) => setTags(e.target.value)}
+              placeholder="Add custom tags (comma-separated)"
+              className="mt-1"
+            />
+          </div>
 
           {/* Important Checkbox */}
           <div className="flex items-center space-x-2">
-            <Checkbox
+            <input
+              type="checkbox"
               id="important"
               checked={isImportant}
-              onCheckedChange={(checked) => setIsImportant(checked === true)}
+              onChange={(e) => setIsImportant(e.target.checked)}
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             />
-            <Label htmlFor="important" className="cursor-pointer">
-              Mark as Important
-              {isImportant && (
-                <Badge variant="destructive" className="ml-2 text-xs">
-                  Important
-                </Badge>
-              )}
-            </Label>
+            <Label htmlFor="important">Mark as important</Label>
+            {isImportant && (
+              <Badge variant="destructive" className="ml-2">
+                Important
+              </Badge>
+            )}
           </div>
         </div>
 
@@ -197,7 +206,11 @@ export function EditVehicleNotesModal({
           <Button variant="outline" onClick={handleClose}>
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={!noteText.trim()}>
+          <Button 
+            onClick={handleSave} 
+            disabled={!noteText.trim()}
+            className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
+          >
             {existingNote ? 'Update Note' : 'Add Note'}
           </Button>
         </DialogFooter>
