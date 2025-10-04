@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { StockVehicleSelectionModal } from '@/components/fleet/StockVehicleSelectionModal';
 
 interface AddFuelLogModalProps {
   open: boolean;
@@ -50,6 +51,9 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
   vehicleContextName = null
 }) => {
   const isVehicleContextLocked = !!vehicleContextId;
+  const [showVehicleModal, setShowVehicleModal] = useState(false);
+  const [selectedVehicleData, setSelectedVehicleData] = useState<any>(null);
+  
   // Initialize with vehicle context if provided
   const [formData, setFormData] = useState({
     vehicle_id: vehicleContextId || preselectedVehicleId,
@@ -231,20 +235,18 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
                   <Badge variant="secondary" className="ml-auto text-xs">Locked</Badge>
                 </div>
               ) : (
-                <Select value={formData.vehicle_id} onValueChange={(value) => 
-                  setFormData(prev => ({ ...prev, vehicle_id: value }))
-                }>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select vehicle" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {vehicles?.map((vehicle) => (
-                      <SelectItem key={vehicle.id} value={vehicle.id}>
-                        {vehicle.license_plate} - {vehicle.vehicle_type}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full justify-start"
+                  onClick={() => setShowVehicleModal(true)}
+                >
+                  <Truck className="mr-2 h-4 w-4" />
+                  {selectedVehicleData 
+                    ? `${selectedVehicleData.license_plate} - ${selectedVehicleData.vehicle_type || 'Vehicle'}`
+                    : 'Select vehicle'
+                  }
+                </Button>
               )}
             </div>
 
@@ -381,6 +383,18 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
           </div>
         </form>
       </DrawerContent>
+
+      <StockVehicleSelectionModal
+        open={showVehicleModal}
+        onOpenChange={setShowVehicleModal}
+        selectedDate={formData.log_date}
+        selectedVehicle={selectedVehicleData}
+        onVehicleSelect={(vehicle) => {
+          setSelectedVehicleData(vehicle);
+          setFormData(prev => ({ ...prev, vehicle_id: vehicle.id }));
+          setShowVehicleModal(false);
+        }}
+      />
     </Drawer>
   );
 };
