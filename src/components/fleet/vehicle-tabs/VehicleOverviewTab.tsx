@@ -355,9 +355,11 @@ export function VehicleOverviewTab({ vehicleId, licensePlate, vehicleData, isAct
             {vehicleInfo?.notes && (
               <div className="pt-3 border-t">
                 <div className="space-y-1">
-                  <span className="text-gray-600 font-medium">General Information:</span>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 font-medium">General Information:</span>
+                    <span className="text-xs text-muted-foreground italic">Advanced notes on next tab</span>
+                  </div>
                   <p className="text-sm text-gray-700 whitespace-pre-wrap">{vehicleInfo.notes}</p>
-                  <p className="text-xs text-muted-foreground italic">Advanced notes on next tab</p>
                 </div>
               </div>
             )}
