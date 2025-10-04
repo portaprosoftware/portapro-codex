@@ -509,8 +509,7 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
                 <Suspense fallback={<TabSkeleton />}>
                   <VehicleMaintenanceTab 
                     vehicleId={vehicle.id} 
-                    licensePlate={vehicle.license_plate} 
-                    isActive={activeTab === 'maintenance'}
+                    licensePlate={vehicle.license_plate}
                   />
                 </Suspense>
               </TabsContent>

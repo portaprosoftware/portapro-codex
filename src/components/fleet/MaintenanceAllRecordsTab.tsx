@@ -20,7 +20,11 @@ import { MultiSelectVehicleFilter } from "./MultiSelectVehicleFilter";
 import { MaintenancePDFExportModal } from "./MaintenancePDFExportModal";
 import { toast } from "sonner";
 
-export const MaintenanceAllRecordsTab: React.FC = () => {
+interface MaintenanceAllRecordsTabProps {
+  vehicleId?: string;
+}
+
+export const MaintenanceAllRecordsTab: React.FC<MaintenanceAllRecordsTabProps> = ({ vehicleId }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedVehicles, setSelectedVehicles] = useState<any[]>([]);
@@ -53,7 +57,7 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
   });
 
   const { data: maintenanceRecords, isLoading } = useQuery({
-    queryKey: ["maintenance-records", searchTerm, statusFilter, selectedVehicles.map(v => v.id), companySettings?.company_timezone],
+    queryKey: ["maintenance-records", searchTerm, statusFilter, selectedVehicles.map(v => v.id), vehicleId, companySettings?.company_timezone],
     queryFn: async () => {
       let query = supabase
         .from("maintenance_records")
@@ -64,6 +68,11 @@ export const MaintenanceAllRecordsTab: React.FC = () => {
           maintenance_vendors(name)
         `)
         .order("scheduled_date", { ascending: false });
+
+      // Filter by vehicleId if provided
+      if (vehicleId) {
+        query = query.eq("vehicle_id", vehicleId);
+      }
 
       if (statusFilter !== "all") {
         const companyTimezone = companySettings?.company_timezone || 'America/New_York';

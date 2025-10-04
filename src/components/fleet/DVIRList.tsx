@@ -6,17 +6,28 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DVIRForm } from "./DVIRForm";
 
-export const DVIRList: React.FC = () => {
+interface DVIRListProps {
+  vehicleId?: string;
+}
+
+export const DVIRList: React.FC<DVIRListProps> = ({ vehicleId }) => {
   const [open, setOpen] = useState(false);
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["dvir-reports"],
+    queryKey: ["dvir-reports", vehicleId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from("dvir_reports")
         .select("*")
         .order("created_at", { ascending: false })
         .limit(50);
+      
+      // Filter by vehicleId if provided
+      if (vehicleId) {
+        query = query.eq("asset_id", vehicleId).eq("asset_type", "vehicle");
+      }
+      
+      const { data, error } = await query;
       if (error) throw error;
       return data || [];
     }

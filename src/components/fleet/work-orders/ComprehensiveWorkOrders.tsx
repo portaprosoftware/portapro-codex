@@ -15,7 +15,11 @@ import { AddWorkOrderDrawer } from "./AddWorkOrderDrawer";
 import { useToast } from "@/hooks/use-toast";
 import { WorkOrder } from "./types";
 
-export const ComprehensiveWorkOrders: React.FC = () => {
+interface ComprehensiveWorkOrdersProps {
+  vehicleId?: string;
+}
+
+export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = ({ vehicleId }) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
@@ -33,13 +37,19 @@ export const ComprehensiveWorkOrders: React.FC = () => {
 
   // Fetch work orders with enhanced data
   const { data: workOrders, isLoading, refetch } = useQuery({
-    queryKey: ["comprehensive-work-orders", searchTerm, selectedAssetType, selectedPriority, selectedSource, selectedAssignee, overdueOnly, oosOnly],
+    queryKey: ["comprehensive-work-orders", searchTerm, selectedAssetType, selectedPriority, selectedSource, selectedAssignee, overdueOnly, oosOnly, vehicleId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from("work_orders")
         .select("*")
         .order("created_at", { ascending: false });
+      
+      // Filter by vehicleId if provided
+      if (vehicleId) {
+        query = query.eq("asset_id", vehicleId).eq("asset_type", "vehicle");
+      }
 
+      const { data, error } = await query;
       if (error) throw error;
       
       // Apply client-side filtering to avoid complex query rebuilds

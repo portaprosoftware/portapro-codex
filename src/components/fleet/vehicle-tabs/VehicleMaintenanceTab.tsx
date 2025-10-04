@@ -1,210 +1,87 @@
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { useVehicleWorkOrders } from '@/hooks/vehicle/useVehicleWorkOrders';
-import { useVehicleDVIRs } from '@/hooks/vehicle/useVehicleDVIRs';
-import { Wrench, Plus, ExternalLink, FileText, Clock } from 'lucide-react';
-import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
-import { useNavigate } from 'react-router-dom';
-import { DVIRFormModal } from '@/components/fleet/DVIRFormModal';
+import React from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { VehicleMaintenanceOverviewTab } from "./VehicleMaintenanceOverviewTab";
+import { MaintenanceAllRecordsTab } from "../MaintenanceAllRecordsTab";
+import { DVIRList } from "../DVIRList";
+import { WorkOrdersBoard } from "../WorkOrdersBoard";
+import { PMSchedulesTab } from "../PMSchedulesTab";
 
 interface VehicleMaintenanceTabProps {
-  vehicleId: string;
+  vehicleId: string | null;
   licensePlate: string;
-  onAddWorkOrder?: () => void;
-  onAddDVIR?: () => void;
-  isActive?: boolean;
 }
 
-export function VehicleMaintenanceTab({ 
-  vehicleId, 
-  licensePlate,
-  onAddWorkOrder,
-  onAddDVIR,
-  isActive = true
-}: VehicleMaintenanceTabProps) {
-  const navigate = useNavigate();
-  const [isDVIRModalOpen, setIsDVIRModalOpen] = useState(false);
-  
-  const { data: workOrders, isLoading: workOrdersLoading } = useVehicleWorkOrders({
-    vehicleId,
-    limit: 5,
-    enabled: isActive,
-  });
-
-  const { data: dvirs, isLoading: dvirsLoading } = useVehicleDVIRs({
-    vehicleId,
-    limit: 5,
-    enabled: isActive,
-  });
-
-  const handleAddDVIR = () => {
-    setIsDVIRModalOpen(true);
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status?.toLowerCase()) {
-      case 'open':
-      case 'in_progress':
-        return 'bg-gradient-to-r from-orange-500 to-orange-600';
-      case 'completed':
-        return 'bg-gradient-to-r from-green-500 to-green-600';
-      case 'cancelled':
-        return 'bg-gradient-to-r from-gray-500 to-gray-600';
-      default:
-        return 'bg-gradient-to-r from-blue-500 to-blue-600';
-    }
-  };
+export const VehicleMaintenanceTab: React.FC<VehicleMaintenanceTabProps> = ({
+  vehicleId,
+  licensePlate
+}) => {
+  if (!vehicleId) {
+    return (
+      <div className="text-center py-8 text-gray-500">
+        No vehicle selected
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      {/* Work Orders */}
-      <Card className="border-2">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Wrench className="w-5 h-5" />
-            Work Orders ({workOrders?.total || 0})
-          </CardTitle>
-          <div className="flex gap-2">
-            <Button size="sm" onClick={onAddWorkOrder}>
-              <Plus className="w-4 h-4 mr-1" />
-              New Work Order
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => navigate(`/fleet/maintenance?vehicle_id=${vehicleId}&vehicle_name=${encodeURIComponent(licensePlate)}`)}
-              title="View all work orders"
-            >
-              <ExternalLink className="w-4 h-4" />
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {workOrdersLoading ? (
-            <div className="space-y-3">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="animate-pulse h-16 bg-gray-100 rounded" />
-              ))}
-            </div>
-          ) : workOrders && workOrders.items.length > 0 ? (
-            <div className="space-y-3">
-              {workOrders.items.map((wo: any) => (
-                <div
-                  key={wo.id}
-                  className="flex items-center justify-between p-3 rounded-lg border hover:border-blue-300 transition-colors"
-                >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <p className="font-medium text-sm">{wo.asset_name || licensePlate}</p>
-                      <Badge className={cn("text-white font-bold", getStatusColor(wo.status))}>
-                        {wo.status?.replace('_', ' ').toUpperCase()}
-                      </Badge>
-                    </div>
-                    <p className="text-xs text-muted-foreground">{wo.description}</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {format(new Date(wo.created_at), 'MMM d, yyyy')}
-                    </p>
-                  </div>
-                  {wo.priority === 'high' && (
-                    <Badge variant="destructive" className="font-bold">HIGH</Badge>
-                  )}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              <Wrench className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-              <p className="text-sm text-muted-foreground mb-3">No work orders yet</p>
-              <Button size="sm" onClick={onAddWorkOrder}>
-                <Plus className="w-4 h-4 mr-1" />
-                Create First Work Order
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <Tabs defaultValue="overview" className="space-y-6">
+        <TabsList className="bg-white rounded-full p-1 shadow-sm border w-fit overflow-x-auto">
+          <TabsTrigger 
+            value="overview" 
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap"
+          >
+            Overview
+          </TabsTrigger>
+          <TabsTrigger 
+            value="records" 
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap"
+          >
+            All Records
+          </TabsTrigger>
+          <TabsTrigger 
+            value="dvir" 
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap"
+          >
+            DVIR
+          </TabsTrigger>
+          <TabsTrigger 
+            value="pm" 
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap"
+          >
+            PM Schedules
+          </TabsTrigger>
+          <TabsTrigger 
+            value="workorders" 
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap"
+          >
+            Work Orders
+          </TabsTrigger>
+        </TabsList>
 
-      {/* DVIRs */}
-      <Card className="border-2">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <FileText className="w-5 h-5" />
-            Recent DVIRs ({dvirs?.total || 0})
-          </CardTitle>
-          <div className="flex gap-2">
-            <Button size="sm" onClick={handleAddDVIR}>
-              <Plus className="w-4 h-4 mr-1" />
-              New DVIR
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => navigate(`/fleet/compliance?tab=dvirs&vehicle_id=${vehicleId}&vehicle_name=${encodeURIComponent(licensePlate)}`)}
-              title="View all DVIRs"
-            >
-              <ExternalLink className="w-4 h-4" />
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {dvirsLoading ? (
-            <div className="space-y-3">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="animate-pulse h-16 bg-gray-100 rounded" />
-              ))}
-            </div>
-          ) : dvirs && dvirs.items.length > 0 ? (
-            <div className="space-y-3">
-              {dvirs.items.map((dvir: any) => (
-                <div
-                  key={dvir.id}
-                  className="flex items-center justify-between p-3 rounded-lg border hover:border-blue-300 transition-colors"
-                >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Badge className={cn(
-                        "font-bold text-white",
-                        dvir.status === 'pass' 
-                          ? 'bg-gradient-to-r from-green-500 to-green-600'
-                          : 'bg-gradient-to-r from-red-500 to-red-600'
-                      )}>
-                        {dvir.status?.toUpperCase()}
-                      </Badge>
-                      <p className="text-xs text-muted-foreground">
-                        {format(new Date(dvir.created_at), 'MMM d, yyyy h:mm a')}
-                      </p>
-                    </div>
-                    {dvir.odometer_reading && (
-                      <p className="text-xs text-muted-foreground">
-                        Odometer: {dvir.odometer_reading.toLocaleString()} mi
-                      </p>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              <FileText className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-              <p className="text-sm text-muted-foreground mb-3">No DVIRs yet</p>
-              <Button size="sm" onClick={handleAddDVIR}>
-                <Plus className="w-4 h-4 mr-1" />
-                Create First DVIR
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+        <TabsContent value="overview">
+          <VehicleMaintenanceOverviewTab 
+            vehicleId={vehicleId} 
+            licensePlate={licensePlate} 
+          />
+        </TabsContent>
 
-      <DVIRFormModal
-        open={isDVIRModalOpen}
-        onOpenChange={setIsDVIRModalOpen}
-        vehicleContextId={vehicleId}
-        vehicleContextName={licensePlate}
-      />
+        <TabsContent value="records">
+          <MaintenanceAllRecordsTab vehicleId={vehicleId} />
+        </TabsContent>
+
+        <TabsContent value="dvir">
+          <DVIRList vehicleId={vehicleId} />
+        </TabsContent>
+
+        <TabsContent value="pm">
+          <PMSchedulesTab vehicleId={vehicleId} />
+        </TabsContent>
+
+        <TabsContent value="workorders">
+          <WorkOrdersBoard vehicleId={vehicleId} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
-}
+};

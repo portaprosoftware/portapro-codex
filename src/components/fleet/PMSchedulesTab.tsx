@@ -22,7 +22,11 @@ import {
   CheckCircle
 } from "lucide-react";
 
-export const PMSchedulesTab: React.FC = () => {
+interface PMSchedulesTabProps {
+  vehicleId?: string;
+}
+
+export const PMSchedulesTab: React.FC<PMSchedulesTabProps> = ({ vehicleId }) => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState<any>(null);
   const queryClient = useQueryClient();
