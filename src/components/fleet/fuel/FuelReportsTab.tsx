@@ -23,6 +23,10 @@ interface FuelTrendData {
 interface VehicleEfficiencyData {
   vehicle_id: string;
   license_plate: string;
+  make?: string;
+  model?: string;
+  nickname?: string;
+  vehicle_type?: string;
   total_gallons: number;
   total_miles: number;
   mpg: number;
@@ -135,18 +139,40 @@ export const FuelReportsTab: React.FC = () => {
     }
   });
 
-  // Fetch vehicle efficiency data
+  // Fetch vehicle efficiency data with vehicle details
   const { data: efficiencyData, isLoading: efficiencyLoading } = useQuery({
     queryKey: ['vehicle-efficiency', startDate, endDate],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data: effData, error: effError } = await supabase
         .rpc('get_vehicle_efficiency', {
           start_date: startDate,
           end_date: endDate
         });
 
-      if (error) throw error;
-      return data as VehicleEfficiencyData[];
+      if (effError) throw effError;
+      
+      // Fetch vehicle details for display
+      const vehicleIds = effData?.map((v: any) => v.vehicle_id) || [];
+      if (vehicleIds.length === 0) return [];
+      
+      const { data: vehicles, error: vehError } = await supabase
+        .from('vehicles')
+        .select('id, license_plate, make, model, nickname, vehicle_type')
+        .in('id', vehicleIds);
+      
+      if (vehError) throw vehError;
+      
+      // Merge efficiency data with vehicle details
+      return effData?.map((eff: any) => {
+        const vehicle = vehicles?.find(v => v.id === eff.vehicle_id);
+        return {
+          ...eff,
+          make: vehicle?.make,
+          model: vehicle?.model,
+          nickname: vehicle?.nickname,
+          vehicle_type: vehicle?.vehicle_type
+        };
+      }) || [];
     }
   });
 
@@ -328,7 +354,15 @@ export const FuelReportsTab: React.FC = () => {
                 {efficiencyData?.map((vehicle) => (
                   <TableRow key={vehicle.vehicle_id}>
                     <TableCell>
-                      <Badge variant="outline">{vehicle.license_plate}</Badge>
+                      <div className="flex flex-col gap-0.5">
+                        <span className="font-medium">
+                          {vehicle.make} {vehicle.model}
+                          {vehicle.nickname && ` - ${vehicle.nickname}`}
+                        </span>
+                        <span className="text-sm text-muted-foreground">
+                          {vehicle.license_plate}
+                        </span>
+                      </div>
                     </TableCell>
                     <TableCell>{vehicle.total_gallons?.toFixed(1)}</TableCell>
                     <TableCell>{vehicle.total_miles?.toLocaleString()}</TableCell>
