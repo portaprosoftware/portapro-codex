@@ -22,6 +22,9 @@ interface FuelLog {
   vehicle: {
     license_plate: string;
     vehicle_type: string;
+    make?: string;
+    model?: string;
+    nickname?: string;
   };
   driver: {
     first_name: string;
@@ -63,7 +66,7 @@ export const FuelAllLogsTab: React.FC = () => {
           total_cost,
           fuel_station,
           notes,
-          vehicles!inner(license_plate, vehicle_type),
+          vehicles!inner(license_plate, vehicle_type, make, model, nickname),
           profiles!inner(first_name, last_name)
         `)
         .order('log_date', { ascending: false });
@@ -101,7 +104,10 @@ export const FuelAllLogsTab: React.FC = () => {
         notes: log.notes,
         vehicle: {
           license_plate: log.vehicles?.license_plate || 'Unknown',
-          vehicle_type: log.vehicles?.vehicle_type || 'Unknown'
+          vehicle_type: log.vehicles?.vehicle_type || 'Unknown',
+          make: log.vehicles?.make,
+          model: log.vehicles?.model,
+          nickname: log.vehicles?.nickname
         },
         driver: {
           first_name: log.profiles?.first_name || 'Unknown',
@@ -309,7 +315,14 @@ export const FuelAllLogsTab: React.FC = () => {
                     <TableRow key={log.id}>
                       <TableCell>{new Date(log.log_date).toLocaleDateString()}</TableCell>
                       <TableCell>
-                        <Badge variant="outline">{log.vehicle?.license_plate}</Badge>
+                        <div className="space-y-1">
+                          <div className="font-medium">
+                            {log.vehicle?.make && log.vehicle?.model 
+                              ? `${log.vehicle.make} ${log.vehicle.model}${log.vehicle.nickname ? ` - ${log.vehicle.nickname}` : ''}`
+                              : 'Unknown Vehicle'}
+                          </div>
+                          <div className="text-sm text-muted-foreground">{log.vehicle?.license_plate}</div>
+                        </div>
                       </TableCell>
                       <TableCell>
                         {log.driver ? `${log.driver.first_name} ${log.driver.last_name}` : 'Unknown'}
