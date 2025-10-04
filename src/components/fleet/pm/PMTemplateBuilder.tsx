@@ -21,20 +21,26 @@ export const PMTemplateBuilder: React.FC<PMTemplateBuilderProps> = ({ open, onOp
   const queryClient = useQueryClient();
   
   const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
   const [category, setCategory] = useState("pump_truck");
+  const [triggerType, setTriggerType] = useState("mileage");
+  const [triggerInterval, setTriggerInterval] = useState("");
   const [instructions, setInstructions] = useState("");
+  const [estimatedCost, setEstimatedCost] = useState("");
   const [estimatedHours, setEstimatedHours] = useState("");
-  const [triggers, setTriggers] = useState<Record<string, string>>({});
   const [checklistItems, setChecklistItems] = useState<any[]>([]);
   const [partsList, setPartsList] = useState<any[]>([]);
 
   useEffect(() => {
     if (template) {
       setName(template.name || "");
+      setDescription(template.description || "");
       setCategory(template.category || "pump_truck");
+      setTriggerType(template.trigger_type || "mileage");
+      setTriggerInterval(template.trigger_interval?.toString() || "");
       setInstructions(template.instructions || "");
+      setEstimatedCost(template.estimated_cost?.toString() || "");
       setEstimatedHours(template.estimated_labor_hours?.toString() || "");
-      setTriggers(template.default_triggers || {});
       setChecklistItems(template.checklist || []);
       setPartsList(template.parts_list || []);
     } else {
@@ -44,10 +50,13 @@ export const PMTemplateBuilder: React.FC<PMTemplateBuilderProps> = ({ open, onOp
 
   const reset = () => {
     setName("");
+    setDescription("");
     setCategory("pump_truck");
+    setTriggerType("mileage");
+    setTriggerInterval("");
     setInstructions("");
+    setEstimatedCost("");
     setEstimatedHours("");
-    setTriggers({});
     setChecklistItems([]);
     setPartsList([]);
   };
@@ -56,10 +65,13 @@ export const PMTemplateBuilder: React.FC<PMTemplateBuilderProps> = ({ open, onOp
     mutationFn: async () => {
       const data = {
         name,
+        description,
         category,
+        trigger_type: triggerType,
+        trigger_interval: triggerInterval ? parseInt(triggerInterval) : null,
         instructions,
+        estimated_cost: estimatedCost ? parseFloat(estimatedCost) : null,
         estimated_labor_hours: estimatedHours ? parseFloat(estimatedHours) : null,
-        default_triggers: triggers,
         checklist: checklistItems,
         parts_list: partsList
       };
@@ -79,6 +91,7 @@ export const PMTemplateBuilder: React.FC<PMTemplateBuilderProps> = ({ open, onOp
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pm-templates'] });
+      queryClient.invalidateQueries({ queryKey: ['pm-templates-active'] });
       toast({ title: template ? "Template updated" : "Template created" });
       onOpenChange(false);
       reset();
@@ -103,11 +116,11 @@ export const PMTemplateBuilder: React.FC<PMTemplateBuilderProps> = ({ open, onOp
         <div className="space-y-6">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Template Name</Label>
-              <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g., Pump Truck - 5K Service" />
+              <Label>Template Name *</Label>
+              <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g., Oil Change & Filter Service" />
             </div>
             <div className="space-y-2">
-              <Label>Category</Label>
+              <Label>Category *</Label>
               <Select value={category} onValueChange={setCategory}>
                 <SelectTrigger>
                   <SelectValue />
@@ -123,43 +136,67 @@ export const PMTemplateBuilder: React.FC<PMTemplateBuilderProps> = ({ open, onOp
           </div>
 
           <div className="space-y-2">
-            <Label>Triggers</Label>
-            <div className="grid grid-cols-3 gap-2">
+            <Label>Description</Label>
+            <Textarea 
+              value={description} 
+              onChange={(e) => setDescription(e.target.value)} 
+              placeholder="Brief description of this maintenance template"
+              rows={2}
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Trigger Type *</Label>
+              <Select value={triggerType} onValueChange={setTriggerType}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="mileage">Mileage-Based</SelectItem>
+                  <SelectItem value="time">Time-Based (Days)</SelectItem>
+                  <SelectItem value="engine_hours">Engine Hours</SelectItem>
+                  <SelectItem value="job_count">Job Count</SelectItem>
+                  <SelectItem value="pump_hours">Pump Hours</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Trigger Interval *</Label>
               <Input
                 type="number"
-                placeholder="Miles"
-                value={triggers.miles || ""}
-                onChange={(e) => setTriggers({ ...triggers, miles: e.target.value })}
+                value={triggerInterval}
+                onChange={(e) => setTriggerInterval(e.target.value)}
+                placeholder={
+                  triggerType === "mileage" ? "e.g., 5000" :
+                  triggerType === "time" ? "e.g., 90" :
+                  triggerType === "engine_hours" ? "e.g., 250" :
+                  triggerType === "job_count" ? "e.g., 100" :
+                  "e.g., 500"
+                }
               />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Estimated Cost ($)</Label>
               <Input
                 type="number"
-                placeholder="Engine Hours"
-                value={triggers.hours || ""}
-                onChange={(e) => setTriggers({ ...triggers, hours: e.target.value })}
+                step="0.01"
+                value={estimatedCost}
+                onChange={(e) => setEstimatedCost(e.target.value)}
+                placeholder="0.00"
               />
+            </div>
+            <div className="space-y-2">
+              <Label>Estimated Labor (hours)</Label>
               <Input
                 type="number"
-                placeholder="Days"
-                value={triggers.days || ""}
-                onChange={(e) => setTriggers({ ...triggers, days: e.target.value })}
-              />
-              <Input
-                type="number"
-                placeholder="Job Count"
-                value={triggers.job_count || ""}
-                onChange={(e) => setTriggers({ ...triggers, job_count: e.target.value })}
-              />
-              <Input
-                type="number"
-                placeholder="Pump Hours"
-                value={triggers.pump_hours || ""}
-                onChange={(e) => setTriggers({ ...triggers, pump_hours: e.target.value })}
-              />
-              <Input
-                type="number"
-                placeholder="Est. Labor (hrs)"
+                step="0.5"
                 value={estimatedHours}
                 onChange={(e) => setEstimatedHours(e.target.value)}
+                placeholder="0.0"
               />
             </div>
           </div>
