@@ -294,7 +294,7 @@ export function VehicleNotesTab({ vehicleId }: VehicleNotesTabProps) {
 
             {(dateFrom || dateTo) && (
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
                 onClick={() => {
                   setDateFrom(undefined);

@@ -285,7 +285,7 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
 
             {(dateFrom || dateTo) && (
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
                 onClick={() => {
                   setDateFrom(undefined);
