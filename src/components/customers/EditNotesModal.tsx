@@ -72,8 +72,6 @@ export function EditNotesModal({
   // General business tags
   const businessTags = [
     'Follow-up',
-    'Urgent', 
-    'Important',
     'Completed',
     'In progress',
     'Needs attention',
