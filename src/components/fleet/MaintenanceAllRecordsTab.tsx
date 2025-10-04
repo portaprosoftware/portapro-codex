@@ -333,26 +333,29 @@ export const MaintenanceAllRecordsTab: React.FC<MaintenanceAllRecordsTabProps> =
             </SelectContent>
           </Select>
 
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              onClick={() => setIsVehicleModalOpen(true)}
-              className="flex items-center justify-center gap-2 px-3 py-2 w-auto"
-            >
-              <Truck className="h-4 w-4" />
-              <span className="whitespace-nowrap">{getSelectedVehiclesText()}</span>
-            </Button>
-            {selectedVehicles.length > 0 && (
+          {/* Only show vehicle filter when NOT in vehicle context */}
+          {!vehicleId && (
+            <div className="flex items-center gap-2">
               <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleClearVehicleFilter}
-                className="px-2"
+                variant="outline"
+                onClick={() => setIsVehicleModalOpen(true)}
+                className="flex items-center justify-center gap-2 px-3 py-2 w-auto"
               >
-                ×
+                <Truck className="h-4 w-4" />
+                <span className="whitespace-nowrap">{getSelectedVehiclesText()}</span>
               </Button>
-            )}
-          </div>
+              {selectedVehicles.length > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleClearVehicleFilter}
+                  className="px-2"
+                >
+                  ×
+                </Button>
+              )}
+            </div>
+          )}
 
           <Button variant="outline" onClick={handleExport}>
             <Download className="w-4 h-4 mr-2" />

@@ -225,6 +225,7 @@ export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = (
         onClearFilters={handleClearFilters}
         onBulkAssign={handleBulkAssign}
         onExport={handleExport}
+        hideAssetTypeFilter={!!vehicleId}
       />
 
       {/* View Toggle */}

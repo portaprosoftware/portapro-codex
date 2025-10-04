@@ -22,6 +22,7 @@ interface WorkOrderFiltersProps {
   onClearFilters: () => void;
   onBulkAssign: () => void;
   onExport: () => void;
+  hideAssetTypeFilter?: boolean;
 }
 
 export const WorkOrderFilters: React.FC<WorkOrderFiltersProps> = ({
@@ -38,7 +39,8 @@ export const WorkOrderFilters: React.FC<WorkOrderFiltersProps> = ({
   activeFiltersCount,
   onClearFilters,
   onBulkAssign,
-  onExport
+  onExport,
+  hideAssetTypeFilter = false
 }) => {
   return (
     <div className="space-y-4">
@@ -78,18 +80,20 @@ export const WorkOrderFilters: React.FC<WorkOrderFiltersProps> = ({
       </div>
 
       {/* Filter Row */}
-      <div className="grid grid-cols-4 gap-3">
-        <Select value={selectedAssetType} onValueChange={onAssetTypeChange}>
-          <SelectTrigger>
-            <SelectValue placeholder="Asset Type" />
-          </SelectTrigger>
-          <SelectContent className="bg-background border border-border shadow-lg z-50" sideOffset={4}>
-            <SelectItem value="all">All Assets</SelectItem>
-            <SelectItem value="vehicle">Vehicles</SelectItem>
-            <SelectItem value="trailer">Trailers</SelectItem>
-            <SelectItem value="equipment">Equipment</SelectItem>
-          </SelectContent>
-        </Select>
+      <div className={hideAssetTypeFilter ? "grid grid-cols-3 gap-3" : "grid grid-cols-4 gap-3"}>
+        {!hideAssetTypeFilter && (
+          <Select value={selectedAssetType} onValueChange={onAssetTypeChange}>
+            <SelectTrigger>
+              <SelectValue placeholder="Asset Type" />
+            </SelectTrigger>
+            <SelectContent className="bg-background border border-border shadow-lg z-50" sideOffset={4}>
+              <SelectItem value="all">All Assets</SelectItem>
+              <SelectItem value="vehicle">Vehicles</SelectItem>
+              <SelectItem value="trailer">Trailers</SelectItem>
+              <SelectItem value="equipment">Equipment</SelectItem>
+            </SelectContent>
+          </Select>
+        )}
 
         <Select value={selectedPriority} onValueChange={onPriorityChange}>
           <SelectTrigger>
