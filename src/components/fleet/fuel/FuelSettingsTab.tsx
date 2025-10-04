@@ -86,16 +86,26 @@ export const FuelSettingsTab: React.FC = () => {
 
   const addStationMutation = useMutation({
     mutationFn: async (stationData: any) => {
+      // Ensure we're saving to the correct columns
+      const dataToSave = {
+        name: stationData.name,
+        address: stationData.address,
+        street: stationData.address, // Save to both for compatibility
+        city: stationData.city,
+        state: stationData.state,
+        zip: stationData.zip
+      };
+      
       if (editingStation) {
         const { error } = await supabase
           .from('fuel_stations')
-          .update(stationData)
+          .update(dataToSave)
           .eq('id', editingStation.id);
         if (error) throw error;
       } else {
         const { error } = await supabase
           .from('fuel_stations')
-          .insert(stationData);
+          .insert(dataToSave);
         if (error) throw error;
       }
     },
@@ -214,7 +224,7 @@ export const FuelSettingsTab: React.FC = () => {
     setEditingStation(station);
     setStationFormData({
       name: station.name || '',
-      address: station.address || '',
+      address: station.address || station.street || '',
       city: station.city || '',
       state: station.state || '',
       zip: station.zip || ''
@@ -443,7 +453,7 @@ export const FuelSettingsTab: React.FC = () => {
                 {fuelStations.map((station: any) => (
                   <TableRow key={station.id}>
                     <TableCell className="font-medium">{station.name}</TableCell>
-                    <TableCell>{station.address || '-'}</TableCell>
+                    <TableCell>{station.address || station.street || '-'}</TableCell>
                     <TableCell>{station.city || '-'}</TableCell>
                     <TableCell>{station.state || '-'}</TableCell>
                     <TableCell>{station.zip || '-'}</TableCell>
