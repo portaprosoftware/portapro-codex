@@ -22,6 +22,7 @@ import { MaintenanceCalendarTab } from "./MaintenanceCalendarTab";
 import { DVIRList } from "./DVIRList";
 import { WorkOrdersBoard } from "./WorkOrdersBoard";
 import { PMSchedulesTab } from "./PMSchedulesTab";
+import { PMTemplateManager } from "./pm/PMTemplateManager";
 import { MaintenanceRecordCard } from "./maintenance/MaintenanceRecordCard";
 import { MaintenanceRecordModal } from "./maintenance/MaintenanceRecordModal";
 
@@ -291,7 +292,7 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
               <TabsTrigger value="dvir" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">DVIR</TabsTrigger>
               <TabsTrigger value="pm" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">PM Schedules</TabsTrigger>
               <TabsTrigger value="workorders" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Work Orders</TabsTrigger>
-              
+              <TabsTrigger value="templates" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Templates</TabsTrigger>
               <TabsTrigger value="settings" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Settings</TabsTrigger>
               {inHouseEnabled && (
                 <>
@@ -426,6 +427,11 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
         {/* Work Orders Tab */}
         <TabsContent value="workorders">
           <WorkOrdersBoard />
+        </TabsContent>
+
+        {/* PM Templates Tab */}
+        <TabsContent value="templates">
+          <PMTemplateManager />
         </TabsContent>
 
         {/* Settings Tab */}
