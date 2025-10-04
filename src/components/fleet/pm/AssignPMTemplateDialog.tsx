@@ -1,42 +1,56 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { CalendarDays, Gauge, Clock } from 'lucide-react';
+import { CalendarDays, Gauge, Clock, Truck } from 'lucide-react';
+import { StockVehicleSelectionModal } from '../StockVehicleSelectionModal';
 
 interface AssignPMTemplateDialogProps {
   template: any;
   onOpenChange?: (open: boolean) => void;
+  vehicleId?: string;
 }
 
 export const AssignPMTemplateDialog: React.FC<AssignPMTemplateDialogProps> = ({ 
   template, 
-  onOpenChange 
+  onOpenChange,
+  vehicleId
 }) => {
   const [isOpen, setIsOpen] = useState(onOpenChange ? true : false);
-  const [selectedVehicleId, setSelectedVehicleId] = useState('');
+  const [selectedVehicle, setSelectedVehicle] = useState<any>(null);
+  const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
   const [baselineMileage, setBaselineMileage] = useState('');
   const [baselineHours, setBaselineHours] = useState('');
   const [baselineDate, setBaselineDate] = useState(new Date().toISOString().split('T')[0]);
   const queryClient = useQueryClient();
 
-  const { data: vehicles } = useQuery({
-    queryKey: ['vehicles-for-pm'],
+  // Load the vehicle if vehicleId is provided
+  const { data: initialVehicle } = useQuery({
+    queryKey: ['vehicle-for-pm', vehicleId],
     queryFn: async () => {
+      if (!vehicleId) return null;
       const { data, error } = await supabase
         .from('vehicles')
-        .select('id, license_plate, vehicle_type')
-        .eq('status', 'active')
-        .order('license_plate');
+        .select('*')
+        .eq('id', vehicleId)
+        .single();
       if (error) throw error;
-      return data || [];
-    }
+      return data;
+    },
+    enabled: !!vehicleId
   });
+
+  // Set the initial vehicle when loaded
+  useEffect(() => {
+    if (initialVehicle && !selectedVehicle) {
+      setSelectedVehicle(initialVehicle);
+    }
+  }, [initialVehicle, selectedVehicle]);
 
   const assignMutation = useMutation({
     mutationFn: async (scheduleData: any) => {
@@ -63,21 +77,23 @@ export const AssignPMTemplateDialog: React.FC<AssignPMTemplateDialogProps> = ({
   });
 
   const resetForm = () => {
-    setSelectedVehicleId('');
+    if (!vehicleId) {
+      setSelectedVehicle(null);
+    }
     setBaselineMileage('');
     setBaselineHours('');
     setBaselineDate(new Date().toISOString().split('T')[0]);
   };
 
   const handleAssign = () => {
-    if (!selectedVehicleId) {
+    if (!selectedVehicle) {
       toast.error('Please select a vehicle');
       return;
     }
 
     const scheduleData: any = {
       template_id: template.id,
-      vehicle_id: selectedVehicleId,
+      vehicle_id: selectedVehicle.id,
       baseline_date: baselineDate,
       status: 'active',
       active: true
@@ -125,18 +141,37 @@ export const AssignPMTemplateDialog: React.FC<AssignPMTemplateDialogProps> = ({
         <div className="space-y-4">
           <div>
             <Label>Select Vehicle</Label>
-            <Select value={selectedVehicleId} onValueChange={setSelectedVehicleId}>
-              <SelectTrigger>
-                <SelectValue placeholder="Choose a vehicle..." />
-              </SelectTrigger>
-              <SelectContent>
-                {vehicles?.map((vehicle) => (
-                  <SelectItem key={vehicle.id} value={vehicle.id}>
-                    {vehicle.license_plate} ({vehicle.vehicle_type})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {selectedVehicle ? (
+              <Card className="p-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Truck className="w-5 h-5 text-primary" />
+                    <div>
+                      <p className="font-semibold">{selectedVehicle.license_plate}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {selectedVehicle.year} {selectedVehicle.make} {selectedVehicle.model}
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSelectedVehicle(null)}
+                  >
+                    Change
+                  </Button>
+                </div>
+              </Card>
+            ) : (
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={() => setIsVehicleModalOpen(true)}
+              >
+                <Truck className="w-4 h-4 mr-2" />
+                Choose a vehicle...
+              </Button>
+            )}
           </div>
 
           {template?.trigger_type === 'mileage' && (
@@ -191,6 +226,17 @@ export const AssignPMTemplateDialog: React.FC<AssignPMTemplateDialogProps> = ({
           </div>
         </div>
       </DialogContent>
+
+      <StockVehicleSelectionModal
+        open={isVehicleModalOpen}
+        onOpenChange={setIsVehicleModalOpen}
+        selectedDate={new Date()}
+        selectedVehicle={selectedVehicle}
+        onVehicleSelect={(vehicle) => {
+          setSelectedVehicle(vehicle);
+          setIsVehicleModalOpen(false);
+        }}
+      />
     </Dialog>
   );
 };

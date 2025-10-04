@@ -201,6 +201,7 @@ export const ActivePMSchedulesList: React.FC<ActivePMSchedulesListProps> = ({ ve
           <AssignPMTemplateDialog 
             template={templates[0]} 
             onOpenChange={setShowAssignDialog}
+            vehicleId={vehicleId}
           />
         )}
       </>
@@ -322,6 +323,7 @@ export const ActivePMSchedulesList: React.FC<ActivePMSchedulesListProps> = ({ ve
         <AssignPMTemplateDialog 
           template={templates[0]} 
           onOpenChange={setShowAssignDialog}
+          vehicleId={vehicleId}
         />
       )}
 

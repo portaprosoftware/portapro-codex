@@ -211,7 +211,7 @@ export const PMSchedulesTab: React.FC<PMSchedulesTabProps> = ({ vehicleId, licen
                         )}
                       </div>
                       <div className="flex gap-2">
-                        <AssignPMTemplateDialog template={template} />
+                        <AssignPMTemplateDialog template={template} vehicleId={vehicleId} />
                         <Button
                           variant="outline"
                           size="sm"
