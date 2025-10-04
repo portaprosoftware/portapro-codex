@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { Plus, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -29,6 +30,7 @@ export const PMTemplateBuilder: React.FC<PMTemplateBuilderProps> = ({ open, onOp
   const [estimatedHours, setEstimatedHours] = useState("");
   const [checklistItems, setChecklistItems] = useState<any[]>([]);
   const [partsList, setPartsList] = useState<any[]>([]);
+  const [isActive, setIsActive] = useState(true);
 
   useEffect(() => {
     if (template) {
@@ -41,6 +43,7 @@ export const PMTemplateBuilder: React.FC<PMTemplateBuilderProps> = ({ open, onOp
       setEstimatedHours(template.estimated_labor_hours?.toString() || "");
       setChecklistItems(template.checklist_items || []);
       setPartsList(template.parts_list || []);
+      setIsActive(template.is_active ?? true);
     } else {
       reset();
     }
@@ -56,6 +59,7 @@ export const PMTemplateBuilder: React.FC<PMTemplateBuilderProps> = ({ open, onOp
     setEstimatedHours("");
     setChecklistItems([]);
     setPartsList([]);
+    setIsActive(true);
   };
 
   const saveMutation = useMutation({
@@ -70,7 +74,7 @@ export const PMTemplateBuilder: React.FC<PMTemplateBuilderProps> = ({ open, onOp
         estimated_labor_hours: estimatedHours ? parseFloat(estimatedHours) : null,
         checklist_items: checklistItems,
         parts_list: partsList,
-        is_active: true
+        is_active: isActive
       };
 
       if (template?.id) {
@@ -195,6 +199,19 @@ export const PMTemplateBuilder: React.FC<PMTemplateBuilderProps> = ({ open, onOp
                 placeholder="0.0"
               />
             </div>
+          </div>
+
+          <div className="flex items-center justify-between p-4 bg-muted/20 rounded-lg">
+            <div className="space-y-0.5">
+              <Label className="text-base">Active Status</Label>
+              <p className="text-sm text-muted-foreground">
+                Enable this template to make it available for assignment
+              </p>
+            </div>
+            <Switch
+              checked={isActive}
+              onCheckedChange={setIsActive}
+            />
           </div>
 
           <div className="space-y-2">
