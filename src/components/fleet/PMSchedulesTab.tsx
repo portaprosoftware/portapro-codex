@@ -24,9 +24,10 @@ import {
 
 interface PMSchedulesTabProps {
   vehicleId?: string;
+  licensePlate?: string;
 }
 
-export const PMSchedulesTab: React.FC<PMSchedulesTabProps> = ({ vehicleId }) => {
+export const PMSchedulesTab: React.FC<PMSchedulesTabProps> = ({ vehicleId, licensePlate }) => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState<any>(null);
   const queryClient = useQueryClient();

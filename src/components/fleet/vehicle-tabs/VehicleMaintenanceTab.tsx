@@ -71,15 +71,15 @@ export const VehicleMaintenanceTab: React.FC<VehicleMaintenanceTabProps> = ({
         </TabsContent>
 
         <TabsContent value="dvir">
-          <DVIRList vehicleId={vehicleId} />
+          <DVIRList vehicleId={vehicleId} licensePlate={licensePlate} />
         </TabsContent>
 
         <TabsContent value="pm">
-          <PMSchedulesTab vehicleId={vehicleId} />
+          <PMSchedulesTab vehicleId={vehicleId} licensePlate={licensePlate} />
         </TabsContent>
 
         <TabsContent value="workorders">
-          <WorkOrdersBoard vehicleId={vehicleId} />
+          <WorkOrdersBoard vehicleId={vehicleId} licensePlate={licensePlate} />
         </TabsContent>
       </Tabs>
     </div>

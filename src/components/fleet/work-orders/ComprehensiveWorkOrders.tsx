@@ -17,9 +17,10 @@ import { WorkOrder } from "./types";
 
 interface ComprehensiveWorkOrdersProps {
   vehicleId?: string;
+  licensePlate?: string;
 }
 
-export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = ({ vehicleId }) => {
+export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = ({ vehicleId, licensePlate }) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
@@ -303,6 +304,8 @@ export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = (
         open={isAddDrawerOpen}
         onOpenChange={setIsAddDrawerOpen}
         onSuccess={() => refetch()}
+        vehicleContextId={vehicleId || null}
+        vehicleContextName={licensePlate || null}
       />
     </div>
   );

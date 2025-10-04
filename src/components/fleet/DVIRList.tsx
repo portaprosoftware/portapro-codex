@@ -8,9 +8,10 @@ import { DVIRForm } from "./DVIRForm";
 
 interface DVIRListProps {
   vehicleId?: string;
+  licensePlate?: string;
 }
 
-export const DVIRList: React.FC<DVIRListProps> = ({ vehicleId }) => {
+export const DVIRList: React.FC<DVIRListProps> = ({ vehicleId, licensePlate }) => {
   const [open, setOpen] = useState(false);
 
   const { data, isLoading, refetch } = useQuery({
@@ -112,7 +113,11 @@ export const DVIRList: React.FC<DVIRListProps> = ({ vehicleId }) => {
         </CardContent>
       </Card>
 
-      <DVIRForm open={open} onOpenChange={(v)=>{ setOpen(v); if(!v) refetch(); }} />
+      <DVIRForm 
+        open={open} 
+        onOpenChange={(v)=>{ setOpen(v); if(!v) refetch(); }} 
+        preSelectedVehicleId={vehicleId}
+      />
     </div>
   );
 };
