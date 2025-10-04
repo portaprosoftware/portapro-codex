@@ -454,8 +454,8 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
               onClick={onClose}
               className="gap-2"
             >
-              <X className="w-4 h-4" />
               Close Vehicle Profile
+              <X className="w-4 h-4" />
             </Button>
           </div>
           <div className="mt-2 ml-16">
