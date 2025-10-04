@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Package, ExternalLink } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { VehicleSummaryData } from '@/hooks/vehicle/useVehicleSummary';
 
@@ -21,8 +21,7 @@ export function VehicleStockSummary({
   return (
     <Card className="hover:shadow-md transition-shadow">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Package className="h-5 w-5 text-teal-600" />
+        <CardTitle>
           Vehicle Stock
         </CardTitle>
       </CardHeader>
@@ -51,7 +50,7 @@ export function VehicleStockSummary({
             className="flex-1"
             onClick={() => navigate(`/fleet/truck-stock?vehicle=${vehicleId}`)}
           >
-            Manage Stock <ExternalLink className="w-3 h-3 ml-1" />
+            Manage Stock
           </Button>
         </div>
       </CardContent>
