@@ -235,36 +235,30 @@ export function VehicleOverviewTab({ vehicleId, licensePlate, vehicleData, isAct
   return (
     <div className="space-y-6">
       {/* Details/Notes Toggle */}
-      <div className="flex gap-2 border-b">
+      <div className="inline-flex rounded-lg bg-gray-100 p-1 gap-1">
         <button
           onClick={() => setActiveSubTab('details')}
           className={cn(
-            "flex items-center gap-2 px-4 py-2 font-medium transition-all relative",
+            "flex items-center gap-2 px-4 py-2 rounded-md font-medium transition-all",
             activeSubTab === 'details'
-              ? "text-primary"
-              : "text-muted-foreground hover:text-foreground"
+              ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-sm"
+              : "text-gray-600 hover:text-gray-900"
           )}
         >
           <User className="h-4 w-4" />
           Details
-          {activeSubTab === 'details' && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-600" />
-          )}
         </button>
         <button
           onClick={() => setActiveSubTab('notes')}
           className={cn(
-            "flex items-center gap-2 px-4 py-2 font-medium transition-all relative",
+            "flex items-center gap-2 px-4 py-2 rounded-md font-medium transition-all",
             activeSubTab === 'notes'
-              ? "text-primary"
-              : "text-muted-foreground hover:text-foreground"
+              ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-sm"
+              : "text-gray-600 hover:text-gray-900"
           )}
         >
           <FileText className="h-4 w-4" />
           Notes
-          {activeSubTab === 'notes' && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-600" />
-          )}
         </button>
       </div>
 
