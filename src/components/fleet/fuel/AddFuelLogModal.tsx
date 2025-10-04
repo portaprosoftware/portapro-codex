@@ -222,12 +222,13 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="h-[100vh] md:h-[75vh] overflow-y-auto">
-        <DrawerHeader>
+      <DrawerContent className="h-[100vh] md:h-[75vh] flex flex-col">
+        <DrawerHeader className="flex-shrink-0">
           <DrawerTitle>Add Fuel Log</DrawerTitle>
         </DrawerHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4 px-4 pb-4">
+        <div className="flex-1 overflow-y-auto px-4">
+          <form onSubmit={handleSubmit} className="space-y-4 pb-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="vehicle">Vehicle *</Label>
@@ -366,23 +367,24 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
             />
           </div>
 
-          <div className="flex justify-end gap-2 pt-4">
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={() => onOpenChange(false)}
-            >
-              Cancel
-            </Button>
-            <Button 
-              type="submit" 
-              disabled={addFuelLogMutation.isPending}
-              className="bg-gradient-to-r from-primary to-primary-variant"
-            >
-              {addFuelLogMutation.isPending ? 'Adding...' : 'Add Fuel Log'}
-            </Button>
-          </div>
-        </form>
+            <div className="flex justify-end gap-2 pt-4 border-t mt-4">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => onOpenChange(false)}
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="submit" 
+                disabled={addFuelLogMutation.isPending}
+                className="bg-gradient-to-r from-primary to-primary-variant"
+              >
+                {addFuelLogMutation.isPending ? 'Adding...' : 'Add Fuel Log'}
+              </Button>
+            </div>
+          </form>
+        </div>
       </DrawerContent>
 
       <StockVehicleSelectionModal
