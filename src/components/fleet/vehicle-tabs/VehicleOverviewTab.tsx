@@ -395,17 +395,6 @@ export function VehicleOverviewTab({ vehicleId, licensePlate, vehicleData, isAct
         </Card>
       </div>
 
-      {/* Notes section */}
-      {vehicleInfo?.notes && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Notes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-700">{vehicleInfo.notes}</p>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Last DVIR Status */}
       {metrics?.last_dvir_date && (
