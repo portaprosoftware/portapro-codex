@@ -46,6 +46,7 @@ import { VehicleComplianceTab } from './vehicle-tabs/VehicleComplianceTab';
 import { VehicleDocumentsSummary } from './vehicle-tabs/VehicleDocumentsSummary';
 import { VehicleStockSummary } from './vehicle-tabs/VehicleStockSummary';
 import { useVehicleSummary } from '@/hooks/vehicle/useVehicleSummary';
+import { AssignmentCreationWizard } from './AssignmentCreationWizard';
 
 // Keep only Overview and Assignments as full tabs (lazy loaded)
 const VehicleOverviewTab = lazy(() => import('./vehicle-tabs/VehicleOverviewTab').then(m => ({ default: m.VehicleOverviewTab })));
@@ -78,6 +79,7 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showDeletePhotoDialog, setShowDeletePhotoDialog] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
+  const [assignmentWizardOpen, setAssignmentWizardOpen] = useState(false);
   const { trackEvent } = useAnalytics();
   const navigate = useNavigate();
   
@@ -585,6 +587,7 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
                   <VehicleAssignmentsTab 
                     vehicleId={vehicle.id} 
                     licensePlate={vehicle.license_plate}
+                    onAddAssignment={() => setAssignmentWizardOpen(true)}
                     isActive={activeTab === 'assignments'}
                   />
                 </Suspense>
@@ -794,6 +797,15 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
         onOpenChange={setShowVehicleTypeSelector}
         onTypeSelect={handleVehicleTypeSelect}
         selectedTypeId={selectedVehicleType}
+      />
+
+      {/* Assignment Creation Wizard */}
+      <AssignmentCreationWizard
+        open={assignmentWizardOpen}
+        onOpenChange={setAssignmentWizardOpen}
+        initialDate={new Date()}
+        vehicleContextId={vehicle.id}
+        vehicleContextName={vehicle.license_plate}
       />
     </>
   );
