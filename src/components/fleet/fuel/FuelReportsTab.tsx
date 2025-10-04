@@ -34,6 +34,25 @@ export const FuelReportsTab: React.FC = () => {
   const [reportPeriod, setReportPeriod] = useState('last_30_days');
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
 
+  // Fetch fuel settings for unit preference
+  const { data: fuelSettings } = useQuery({
+    queryKey: ['fuel-settings'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('fuel_settings')
+        .select('fuel_unit')
+        .limit(1)
+        .single();
+      
+      if (error && error.code !== 'PGRST116') throw error;
+      return data;
+    }
+  });
+
+  const fuelUnit = fuelSettings?.fuel_unit || 'gallons';
+  const fuelUnitLabel = fuelUnit === 'gallons' ? 'Gallons' : 'Liters';
+  const fuelUnitAbbrev = fuelUnit === 'gallons' ? 'gal' : 'L';
+
   // Calculate date range based on period
   const getDateRange = () => {
     const endDate = new Date();
@@ -229,11 +248,11 @@ export const FuelReportsTab: React.FC = () => {
               <BarChart data={trendData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
-                <YAxis label={{ value: 'Gallons', angle: -90, position: 'insideLeft' }} />
+                <YAxis label={{ value: fuelUnitLabel, angle: -90, position: 'insideLeft' }} />
                 <Tooltip 
                   formatter={(value, name) => [
-                    name === 'gallons' ? `${value} gal` : `$${Number(value).toFixed(2)}`,
-                    name === 'gallons' ? 'Gallons' : 'Cost'
+                    name === 'gallons' ? `${value} ${fuelUnitAbbrev}` : `$${Number(value).toFixed(2)}`,
+                    name === 'gallons' ? fuelUnitLabel : 'Cost'
                   ]}
                 />
                 <Bar 
