@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
+import { X } from 'lucide-react';
 
 interface EditVehicleNotesModalProps {
   isOpen: boolean;
@@ -67,15 +68,21 @@ export function EditVehicleNotesModal({
   const handleQuickTagClick = (tag: string) => {
     const currentTags = tags ? tags.split(',').map(t => t.trim()).filter(Boolean) : [];
     
-    if (currentTags.includes(tag)) {
-      // Remove tag if already present
-      const newTags = currentTags.filter(t => t !== tag);
-      setTags(newTags.join(', '));
-    } else {
+    if (!currentTags.includes(tag)) {
       // Add tag if not present
       const newTags = [...currentTags, tag];
       setTags(newTags.join(', '));
     }
+  };
+
+  const handleRemoveTag = (tagToRemove: string) => {
+    const currentTags = tags ? tags.split(',').map(t => t.trim()).filter(Boolean) : [];
+    const newTags = currentTags.filter(t => t !== tagToRemove);
+    setTags(newTags.join(', '));
+  };
+
+  const getCurrentTags = () => {
+    return tags ? tags.split(',').map(t => t.trim()).filter(Boolean) : [];
   };
 
   const handleSave = () => {
@@ -176,11 +183,50 @@ export function EditVehicleNotesModal({
               </Select>
             </div>
 
+            {/* Display selected tags as badges */}
+            {getCurrentTags().length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-3 p-3 bg-muted/30 rounded-lg border">
+                {getCurrentTags().map((tag) => (
+                  <Badge
+                    key={tag}
+                    className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold pl-3 pr-2 py-1 flex items-center gap-1.5"
+                  >
+                    <span className="capitalize">{tag}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveTag(tag)}
+                      className="hover:bg-white/20 rounded-full p-0.5 transition-colors"
+                      aria-label={`Remove ${tag} tag`}
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </Badge>
+                ))}
+              </div>
+            )}
+
             <Input
               id="tags"
-              value={tags}
-              onChange={(e) => setTags(e.target.value)}
-              placeholder="Add custom tags (comma-separated)"
+              value=""
+              onChange={(e) => {
+                const newTag = e.target.value.trim();
+                if (newTag && e.nativeEvent instanceof InputEvent && e.nativeEvent.inputType === 'insertText' && newTag.endsWith(',')) {
+                  handleQuickTagClick(newTag.slice(0, -1).trim());
+                  e.target.value = '';
+                }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ',') {
+                  e.preventDefault();
+                  const input = e.currentTarget;
+                  const newTag = input.value.trim();
+                  if (newTag) {
+                    handleQuickTagClick(newTag);
+                    input.value = '';
+                  }
+                }
+              }}
+              placeholder="Type custom tag and press Enter or comma..."
               className="mt-1"
             />
           </div>
