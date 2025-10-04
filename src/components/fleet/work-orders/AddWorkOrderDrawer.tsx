@@ -20,8 +20,12 @@ import {
 import { CalendarDays, Plus, X, AlertTriangle, Wrench, Package, Truck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { WorkOrderChecklistSection } from "./WorkOrderChecklistSection";
+import { WorkOrderPartsSection } from "./WorkOrderPartsSection";
+import { WorkOrderLaborSection } from "./WorkOrderLaborSection";
+import { WorkOrderSignOffSection } from "./WorkOrderSignOffSection";
 
 interface AddWorkOrderDrawerProps {
   open: boolean;
@@ -31,6 +35,38 @@ interface AddWorkOrderDrawerProps {
   preselectedAssetId?: string;
   vehicleContextId?: string | null;
   vehicleContextName?: string | null;
+}
+
+interface ChecklistItem {
+  id: string;
+  item_name: string;
+  category: string;
+  status: 'pass' | 'fail' | 'na' | 'in_progress';
+  severity?: 'minor' | 'major' | 'critical';
+  notes?: string;
+  photos?: string[];
+}
+
+interface WorkOrderPart {
+  id: string;
+  part_id?: string;
+  part_name: string;
+  quantity: number;
+  unit_cost: number;
+  source: 'truck_stock' | 'warehouse' | 'vendor';
+  storage_location_id?: string;
+}
+
+interface WorkOrderLabor {
+  id: string;
+  technician_id?: string;
+  technician_name?: string;
+  start_time?: string;
+  end_time?: string;
+  hours?: number;
+  hourly_rate: number;
+  notes?: string;
+  is_active?: boolean;
 }
 
 interface WorkOrderForm {
@@ -47,6 +83,13 @@ interface WorkOrderForm {
   driver_verification_required: boolean;
   notify_assignee: boolean;
   notify_fleet_manager: boolean;
+  template_id?: string;
+  checklist_items: ChecklistItem[];
+  parts: WorkOrderPart[];
+  labor: WorkOrderLabor[];
+  technician_signature?: string;
+  reviewer_signature?: string;
+  return_to_service: boolean;
 }
 
 export const AddWorkOrderDrawer: React.FC<AddWorkOrderDrawerProps> = ({
@@ -76,7 +119,11 @@ export const AddWorkOrderDrawer: React.FC<AddWorkOrderDrawerProps> = ({
     out_of_service: false,
     driver_verification_required: false,
     notify_assignee: true,
-    notify_fleet_manager: false
+    notify_fleet_manager: false,
+    checklist_items: [],
+    parts: [],
+    labor: [],
+    return_to_service: false
   });
 
   const [newTask, setNewTask] = useState('');
@@ -130,13 +177,76 @@ export const AddWorkOrderDrawer: React.FC<AddWorkOrderDrawerProps> = ({
         status: 'open' as const,
         opened_at: new Date().toISOString(),
         source_context: isVehicleContextLocked ? 'vehicle_profile' : null,
+        template_id: form.template_id || null,
+        technician_signature: form.technician_signature || null,
+        reviewer_signature: form.reviewer_signature || null,
+        return_to_service_at: form.return_to_service ? new Date().toISOString() : null,
       };
 
-      const { error } = await supabase
+      const { data: workOrder, error } = await supabase
         .from('work_orders')
-        .insert(payload);
+        .insert(payload)
+        .select()
+        .single();
 
       if (error) throw error;
+
+      // Insert checklist items
+      if (form.checklist_items.length > 0 && workOrder) {
+        const checklistPayload = form.checklist_items.map(item => ({
+          work_order_id: workOrder.id,
+          item_name: item.item_name,
+          category: item.category,
+          status: item.status,
+          severity: item.severity,
+          notes: item.notes,
+          photos: item.photos || []
+        }));
+        
+        const { error: checklistError } = await supabase
+          .from('work_order_items' as any)
+          .insert(checklistPayload as any);
+        
+        if (checklistError) throw checklistError;
+      }
+
+      // Insert parts
+      if (form.parts.length > 0 && workOrder) {
+        const partsPayload = form.parts.map(part => ({
+          work_order_id: workOrder.id,
+          part_id: part.part_id,
+          part_name: part.part_name,
+          quantity: part.quantity,
+          unit_cost: part.unit_cost,
+          source: part.source,
+          storage_location_id: part.storage_location_id
+        }));
+        
+        const { error: partsError } = await supabase
+          .from('work_order_parts' as any)
+          .insert(partsPayload as any);
+        
+        if (partsError) throw partsError;
+      }
+
+      // Insert labor
+      if (form.labor.length > 0 && workOrder) {
+        const laborPayload = form.labor.map(labor => ({
+          work_order_id: workOrder.id,
+          technician_id: labor.technician_id,
+          start_time: labor.start_time,
+          end_time: labor.end_time,
+          hours: labor.hours,
+          hourly_rate: labor.hourly_rate,
+          notes: labor.notes
+        }));
+        
+        const { error: laborError } = await supabase
+          .from('work_order_labor' as any)
+          .insert(laborPayload as any);
+        
+        if (laborError) throw laborError;
+      }
 
       // Invalidate relevant queries
       queryClient.invalidateQueries({ queryKey: ['work-orders'] });
@@ -171,7 +281,11 @@ export const AddWorkOrderDrawer: React.FC<AddWorkOrderDrawerProps> = ({
         out_of_service: false,
         driver_verification_required: false,
         notify_assignee: true,
-        notify_fleet_manager: false
+        notify_fleet_manager: false,
+        checklist_items: [],
+        parts: [],
+        labor: [],
+        return_to_service: false
       });
     } catch (error) {
       console.error('Error creating work order:', error);
@@ -397,7 +511,40 @@ export const AddWorkOrderDrawer: React.FC<AddWorkOrderDrawerProps> = ({
             </CardContent>
           </Card>
 
-          {/* D) Flags & Follow-ups */}
+          {/* C) Inspection Checklist (if PM or template selected) */}
+          {(form.source === 'pm_schedule' || form.template_id) && form.checklist_items.length > 0 && (
+            <WorkOrderChecklistSection
+              items={form.checklist_items}
+              onChange={(items) => setForm(prev => ({ ...prev, checklist_items: items }))}
+            />
+          )}
+
+          {/* D) Parts & Fluids */}
+          <WorkOrderPartsSection
+            parts={form.parts}
+            onChange={(parts) => setForm(prev => ({ ...prev, parts }))}
+            vehicleId={form.asset_id}
+          />
+
+          {/* E) Labor */}
+          <WorkOrderLaborSection
+            labor={form.labor}
+            onChange={(labor) => setForm(prev => ({ ...prev, labor }))}
+          />
+
+          {/* F) Sign-Offs & Return to Service */}
+          <WorkOrderSignOffSection
+            technicianSignature={form.technician_signature}
+            reviewerSignature={form.reviewer_signature}
+            returnToService={form.return_to_service}
+            onTechnicianSignatureChange={(sig) => setForm(prev => ({ ...prev, technician_signature: sig }))}
+            onReviewerSignatureChange={(sig) => setForm(prev => ({ ...prev, reviewer_signature: sig }))}
+            onReturnToServiceChange={(val) => setForm(prev => ({ ...prev, return_to_service: val }))}
+            outOfService={form.out_of_service}
+            hasFailedItems={form.checklist_items.some(item => item.status === 'fail')}
+          />
+
+          {/* G) Flags & Follow-ups */}
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm">Flags & Follow-ups</CardTitle>
