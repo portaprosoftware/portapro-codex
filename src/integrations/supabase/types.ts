@@ -11407,6 +11407,10 @@ export type Database = {
           open_work_orders: number
         }[]
       }
+      get_vehicle_summary: {
+        Args: { p_vehicle_id: string }
+        Returns: Json
+      }
       handle_padlock_operation: {
         Args: {
           code_reference?: string
