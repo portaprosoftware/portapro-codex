@@ -42,7 +42,6 @@ const VEHICLE_TAGS = [
 // General tags
 const GENERAL_TAGS = [
   'Urgent',
-  'Important',
   'Completed',
   'In progress',
   'Follow-up required',
