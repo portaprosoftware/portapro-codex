@@ -188,7 +188,7 @@ export function EditVehicleNotesModal({
           {/* Important Toggle */}
           <div className="flex items-center justify-between space-x-2">
             <Label htmlFor="important" className="cursor-pointer">
-              Mark as important/urgent
+              Mark Important / Urgent
             </Label>
             <Switch
               id="important"
