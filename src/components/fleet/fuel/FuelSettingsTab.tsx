@@ -295,6 +295,36 @@ export const FuelSettingsTab: React.FC = () => {
     }
   });
 
+  // Individual mutations for toggles (auto-save)
+  const updateToggleMutation = useMutation({
+    mutationFn: async (newSettings: Partial<FuelSettings>) => {
+      if (settings?.id) {
+        const { error } = await supabase
+          .from('fuel_settings')
+          .update(newSettings)
+          .eq('id', settings.id);
+        
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('fuel_settings')
+          .insert(newSettings);
+        
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['fuel-settings'] });
+    },
+    onError: () => {
+      toast({
+        title: 'Error',
+        description: 'Failed to update setting',
+        variant: 'destructive'
+      });
+    }
+  });
+
 
   const handleSaveSettings = () => {
     if (localSettings && Object.keys(localSettings).length > 0) {
@@ -394,8 +424,9 @@ export const FuelSettingsTab: React.FC = () => {
             </div>
             <Switch
               id="require-receipt"
-              checked={localSettings?.require_receipt || false}
-              onCheckedChange={(checked) => setLocalSettings(prev => ({ ...prev, require_receipt: checked }))}
+              checked={settings?.require_receipt || false}
+              onCheckedChange={(checked) => updateToggleMutation.mutate({ require_receipt: checked })}
+              disabled={updateToggleMutation.isPending}
             />
           </div>
 
@@ -406,8 +437,9 @@ export const FuelSettingsTab: React.FC = () => {
             </div>
             <Switch
               id="driver-edit"
-              checked={localSettings?.driver_edit_permission || false}
-              onCheckedChange={(checked) => setLocalSettings(prev => ({ ...prev, driver_edit_permission: checked }))}
+              checked={settings?.driver_edit_permission || false}
+              onCheckedChange={(checked) => updateToggleMutation.mutate({ driver_edit_permission: checked })}
+              disabled={updateToggleMutation.isPending}
             />
           </div>
 
@@ -418,8 +450,9 @@ export const FuelSettingsTab: React.FC = () => {
             </div>
             <Switch
               id="auto-mpg"
-              checked={localSettings?.auto_calculate_mpg || false}
-              onCheckedChange={(checked) => setLocalSettings(prev => ({ ...prev, auto_calculate_mpg: checked }))}
+              checked={settings?.auto_calculate_mpg || false}
+              onCheckedChange={(checked) => updateToggleMutation.mutate({ auto_calculate_mpg: checked })}
+              disabled={updateToggleMutation.isPending}
             />
           </div>
         </CardContent>
