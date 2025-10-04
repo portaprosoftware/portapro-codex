@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Eye, Edit, Trash2, AlertCircle, MoreVertical, Search, CalendarIcon, X } from 'lucide-react';
 import { useVehicleNotes } from '@/hooks/useVehicleNotes';
@@ -327,7 +327,7 @@ export function VehicleNotesTab({ vehicleId }: VehicleNotesTabProps) {
 
       {/* Notes List */}
       {filteredNotes.length === 0 ? (
-        <Card>
+        <Card className="rounded-2xl">
           <CardContent className="py-12 text-center">
             <AlertCircle className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
             <p className="text-muted-foreground">
@@ -338,65 +338,111 @@ export function VehicleNotesTab({ vehicleId }: VehicleNotesTabProps) {
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-3">
-          {filteredNotes.map((note) => (
-            <Card key={note.id} className="hover:shadow-md transition-shadow">
-              <CardContent className="p-4">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 space-y-2">
+        <Card className="rounded-2xl">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg">Notes ({filteredNotes.length})</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-0">
+            {/* Header Row */}
+            <div className="grid grid-cols-12 gap-4 pb-3 border-b text-sm font-medium text-muted-foreground">
+              <div className="col-span-4">Title</div>
+              <div className="col-span-4">Content Preview</div>
+              <div className="col-span-2">Date</div>
+              <div className="col-span-2 text-right">Actions</div>
+            </div>
+            
+            {/* Notes List */}
+            <div className="space-y-0">
+              {filteredNotes.map((note) => (
+                <div
+                  key={note.id}
+                  className="grid grid-cols-12 gap-4 py-3 border-b last:border-b-0 hover:bg-muted/30 transition-colors"
+                >
+                  {/* Title Column */}
+                  <div className="col-span-4 space-y-1">
                     <div className="flex items-center gap-2">
-                      {note.title && (
-                        <h4 className="font-semibold">{note.title}</h4>
-                      )}
+                      <button
+                        onClick={() => handleViewNote(note)}
+                        className="text-sm font-medium text-foreground hover:text-primary cursor-pointer text-left"
+                      >
+                        {note.title || 'Vehicle Note'}
+                      </button>
                       {note.is_important && (
                         <Badge variant="destructive" className="text-xs">
                           Important
                         </Badge>
                       )}
                     </div>
+                    {note.tags && note.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {note.tags.slice(0, 2).map((tag, index) => (
+                          <Badge key={index} variant="outline" className="text-xs h-5">
+                            {tag}
+                          </Badge>
+                        ))}
+                        {note.tags.length > 2 && (
+                          <Badge variant="outline" className="text-xs h-5">
+                            +{note.tags.length - 2} more
+                          </Badge>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Content Preview Column */}
+                  <div className="col-span-4">
                     <p className="text-sm text-muted-foreground line-clamp-2">
-                      {note.note_text}
-                    </p>
-                    <div className="flex flex-wrap gap-1">
-                      {note.tags?.map((tag: string) => (
-                        <Badge key={tag} variant="outline" className="text-xs">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      {format(new Date(note.created_at), 'MMM dd, yyyy • h:mm a')}
+                      {note.note_text.length > 100 
+                        ? `${note.note_text.substring(0, 100)}...` 
+                        : note.note_text
+                      }
                     </p>
                   </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm">
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-40">
-                      <DropdownMenuItem onClick={() => handleViewNote(note)}>
-                        <Eye className="h-4 w-4 mr-2" />
-                        View
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleEditNote(note)}>
-                        <Edit className="h-4 w-4 mr-2" />
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        onClick={() => handleDeleteClick(note)}
-                        className="text-destructive focus:text-destructive"
-                      >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  
+                  {/* Date Column */}
+                  <div className="col-span-2">
+                    <div className="text-xs text-muted-foreground">
+                      {format(new Date(note.created_at), 'MMM d, yyyy')}
+                    </div>
+                    {note.updated_at !== note.created_at && (
+                      <div className="text-xs text-muted-foreground">
+                        Updated {format(new Date(note.updated_at), 'MMM d')}
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Actions Column */}
+                  <div className="col-span-2 flex items-center justify-end">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-40">
+                        <DropdownMenuItem onClick={() => handleViewNote(note)}>
+                          <Eye className="h-4 w-4 mr-2" />
+                          View
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleEditNote(note)}>
+                          <Edit className="h-4 w-4 mr-2" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => handleDeleteClick(note)}
+                          className="text-destructive focus:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* Modals */}
