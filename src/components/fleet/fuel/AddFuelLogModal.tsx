@@ -89,6 +89,55 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
     }
   });
 
+  // Fetch current mileage for selected vehicle
+  const { data: vehicleMileage } = useQuery({
+    queryKey: ['vehicle-mileage', formData.vehicle_id],
+    queryFn: async () => {
+      if (!formData.vehicle_id) return null;
+      
+      // Get the latest odometer reading from fuel logs
+      const { data: fuelLog, error: fuelError } = await supabase
+        .from('fuel_logs')
+        .select('odometer_reading')
+        .eq('vehicle_id', formData.vehicle_id)
+        .order('log_date', { ascending: false })
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      
+      if (fuelError) console.error('Error fetching fuel log mileage:', fuelError);
+      
+      // If we have fuel log data, use it
+      if (fuelLog?.odometer_reading) {
+        return fuelLog.odometer_reading;
+      }
+      
+      // Otherwise, try to get from daily vehicle assignments
+      const { data: assignment, error: assignmentError } = await supabase
+        .from('daily_vehicle_assignments')
+        .select('end_mileage, start_mileage')
+        .eq('vehicle_id', formData.vehicle_id)
+        .order('assignment_date', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      
+      if (assignmentError) console.error('Error fetching assignment mileage:', assignmentError);
+      
+      return assignment?.end_mileage || assignment?.start_mileage || null;
+    },
+    enabled: !!formData.vehicle_id
+  });
+
+  // Auto-fill odometer reading when vehicle mileage is fetched
+  React.useEffect(() => {
+    if (vehicleMileage && !formData.odometer_reading) {
+      setFormData(prev => ({
+        ...prev,
+        odometer_reading: vehicleMileage.toString()
+      }));
+    }
+  }, [vehicleMileage]);
+
   // Fetch drivers
   const { data: drivers } = useQuery({
     queryKey: ['drivers'],
@@ -394,7 +443,11 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
         selectedVehicle={selectedVehicleData}
         onVehicleSelect={(vehicle) => {
           setSelectedVehicleData(vehicle);
-          setFormData(prev => ({ ...prev, vehicle_id: vehicle.id }));
+          setFormData(prev => ({ 
+            ...prev, 
+            vehicle_id: vehicle.id,
+            odometer_reading: '' // Clear to allow auto-fill
+          }));
           setShowVehicleModal(false);
         }}
       />
