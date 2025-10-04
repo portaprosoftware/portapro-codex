@@ -204,8 +204,8 @@ export const AddWorkOrderDrawer: React.FC<AddWorkOrderDrawerProps> = ({
         }));
         
         const { error: checklistError } = await supabase
-          .from('work_order_items' as any)
-          .insert(checklistPayload as any);
+          .from('work_order_items')
+          .insert(checklistPayload);
         
         if (checklistError) throw checklistError;
       }
@@ -223,8 +223,8 @@ export const AddWorkOrderDrawer: React.FC<AddWorkOrderDrawerProps> = ({
         }));
         
         const { error: partsError } = await supabase
-          .from('work_order_parts' as any)
-          .insert(partsPayload as any);
+          .from('work_order_parts')
+          .insert(partsPayload);
         
         if (partsError) throw partsError;
       }
@@ -233,17 +233,18 @@ export const AddWorkOrderDrawer: React.FC<AddWorkOrderDrawerProps> = ({
       if (form.labor.length > 0 && workOrder) {
         const laborPayload = form.labor.map(labor => ({
           work_order_id: workOrder.id,
-          technician_id: labor.technician_id,
+          technician_name: labor.technician_name,
           start_time: labor.start_time,
           end_time: labor.end_time,
           hours: labor.hours,
           hourly_rate: labor.hourly_rate,
-          notes: labor.notes
+          notes: labor.notes,
+          is_active: labor.is_active
         }));
         
         const { error: laborError } = await supabase
-          .from('work_order_labor' as any)
-          .insert(laborPayload as any);
+          .from('work_order_labor')
+          .insert(laborPayload);
         
         if (laborError) throw laborError;
       }
