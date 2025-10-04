@@ -42,7 +42,7 @@ import { useNavigate } from 'react-router-dom';
 // Import new lightweight summary components
 import { VehicleMaintenanceSummary } from './vehicle-tabs/VehicleMaintenanceSummary';
 import { VehicleFuelSummary } from './vehicle-tabs/VehicleFuelSummary';
-import { VehicleComplianceSummary } from './vehicle-tabs/VehicleComplianceSummary';
+import { VehicleComplianceTab } from './vehicle-tabs/VehicleComplianceTab';
 import { VehicleDocumentsSummary } from './vehicle-tabs/VehicleDocumentsSummary';
 import { VehicleStockSummary } from './vehicle-tabs/VehicleStockSummary';
 import { useVehicleSummary } from '@/hooks/vehicle/useVehicleSummary';
@@ -573,15 +573,10 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
 
               <TabsContent value="compliance" className="space-y-4">
                 {activeTab === 'compliance' && (
-                  summaryLoading ? (
-                    <TabSkeleton />
-                  ) : (
-                    <VehicleComplianceSummary 
-                      summary={summary?.compliance}
-                      vehicleId={vehicle.id} 
-                      licensePlate={vehicle.license_plate}
-                    />
-                  )
+                  <VehicleComplianceTab 
+                    vehicleId={vehicle.id} 
+                    licensePlate={vehicle.license_plate}
+                  />
                 )}
               </TabsContent>
 
