@@ -461,7 +461,7 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
               onClick={onClose}
               className="gap-2"
             >
-              Close Vehicle Profile
+              Back to Fleet
               <X className="w-4 h-4" />
             </Button>
           </div>
