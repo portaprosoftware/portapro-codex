@@ -9,6 +9,7 @@ import { format } from "date-fns";
 import { getCurrentDateInTimezone } from "@/lib/timezoneUtils";
 import { MaintenanceRecordCard } from "../maintenance/MaintenanceRecordCard";
 import { AddMaintenanceRecordModal } from "../AddMaintenanceRecordModal";
+import { AddRecurringServiceSlider } from "../AddRecurringServiceSlider";
 
 interface VehicleMaintenanceOverviewTabProps {
   vehicleId: string;
@@ -20,6 +21,7 @@ export const VehicleMaintenanceOverviewTab: React.FC<VehicleMaintenanceOverviewT
   licensePlate
 }) => {
   const [addRecordOpen, setAddRecordOpen] = useState(false);
+  const [scheduleRecurringOpen, setScheduleRecurringOpen] = useState(false);
   
   // Fetch company timezone
   const { data: companySettings } = useQuery({
@@ -186,13 +188,23 @@ export const VehicleMaintenanceOverviewTab: React.FC<VehicleMaintenanceOverviewT
             <h2 className="text-2xl font-bold">Maintenance Overview</h2>
             <p className="text-gray-600">Vehicle: {licensePlate}</p>
           </div>
-          <Button
-            onClick={() => setAddRecordOpen(true)}
-            className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Schedule Maintenance Service
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => setAddRecordOpen(true)}
+              className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Schedule Maintenance Service
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setScheduleRecurringOpen(true)}
+              className="border-blue-500 text-blue-600 hover:bg-blue-50"
+            >
+              <Calendar className="w-4 h-4 mr-2" />
+              Schedule Recurring Service
+            </Button>
+          </div>
         </div>
 
         {/* KPI Cards */}
@@ -305,6 +317,13 @@ export const VehicleMaintenanceOverviewTab: React.FC<VehicleMaintenanceOverviewT
       <AddMaintenanceRecordModal
         open={addRecordOpen}
         onOpenChange={setAddRecordOpen}
+        preselectedVehicleId={vehicleId}
+      />
+
+      {/* Schedule Recurring Service Slider */}
+      <AddRecurringServiceSlider
+        open={scheduleRecurringOpen}
+        onOpenChange={setScheduleRecurringOpen}
         preselectedVehicleId={vehicleId}
       />
     </>
