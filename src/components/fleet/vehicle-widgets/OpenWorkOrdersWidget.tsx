@@ -55,8 +55,7 @@ export const OpenWorkOrdersWidget: React.FC<OpenWorkOrdersWidgetProps> = ({
     return (
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-sm flex items-center gap-2">
-            <Wrench className="h-4 w-4" />
+          <CardTitle className="text-sm">
             Open Work Orders
           </CardTitle>
         </CardHeader>
@@ -74,8 +73,7 @@ export const OpenWorkOrdersWidget: React.FC<OpenWorkOrdersWidgetProps> = ({
     <Card>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-sm flex items-center gap-2">
-            <Wrench className="h-4 w-4" />
+          <CardTitle className="text-sm">
             Open Work Orders
           </CardTitle>
           {workOrders && workOrders.length > 0 && (
@@ -87,11 +85,8 @@ export const OpenWorkOrdersWidget: React.FC<OpenWorkOrdersWidgetProps> = ({
       </CardHeader>
       <CardContent>
         {!workOrders || workOrders.length === 0 ? (
-          <div className="text-center py-4 space-y-3">
-            <div className="text-muted-foreground">
-              <Wrench className="h-8 w-8 mx-auto mb-2 opacity-50" />
-              <p className="text-sm">No open work orders</p>
-            </div>
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">No open work orders</p>
             <Button 
               variant="outline" 
               size="sm" 
