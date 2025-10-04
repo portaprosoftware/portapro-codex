@@ -94,9 +94,9 @@ export const MultiSelectDriverFilter: React.FC<MultiSelectDriverFilterProps> = (
         <div className="flex gap-2">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search by name or email..."
-              value={searchTerm}
+          <Input
+            placeholder="Search by name or email"
+            value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-9"
             />
@@ -110,7 +110,7 @@ export const MultiSelectDriverFilter: React.FC<MultiSelectDriverFilterProps> = (
         </div>
 
         {/* Driver Grid */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto px-1">
           {isLoading ? (
             <div className="text-center py-8 text-muted-foreground">Loading drivers...</div>
           ) : filteredDrivers.length === 0 ? (
