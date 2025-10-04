@@ -22,6 +22,9 @@ interface RecentFuelLog {
   id: string;
   log_date: string;
   vehicle_license: string;
+  vehicle_make?: string;
+  vehicle_model?: string;
+  vehicle_nickname?: string;
   driver_name: string;
   gallons_purchased: number;
   cost_per_gallon: number;
@@ -86,7 +89,7 @@ export const FuelOverviewTab: React.FC = () => {
           total_cost,
           fuel_station,
           odometer_reading,
-          vehicles!inner(license_plate),
+          vehicles!inner(license_plate, make, model, nickname),
           profiles!inner(first_name, last_name)
         `)
         .order('log_date', { ascending: false })
@@ -98,6 +101,9 @@ export const FuelOverviewTab: React.FC = () => {
         id: log.id,
         log_date: log.log_date,
         vehicle_license: log.vehicles?.license_plate || 'Unknown',
+        vehicle_make: log.vehicles?.make,
+        vehicle_model: log.vehicles?.model,
+        vehicle_nickname: log.vehicles?.nickname,
         driver_name: `${log.profiles?.first_name || ''} ${log.profiles?.last_name || ''}`.trim() || 'Unknown',
         gallons_purchased: log.gallons_purchased || 0,
         cost_per_gallon: log.cost_per_gallon || 0,
@@ -191,7 +197,11 @@ export const FuelOverviewTab: React.FC = () => {
                     <div className="flex items-center gap-3">
                       <Badge variant="outline">{log.vehicle_license}</Badge>
                       <span className="font-medium">{log.driver_name}</span>
-                      <span className="text-sm text-muted-foreground">{log.fuel_station}</span>
+                      <span className="text-sm text-muted-foreground">
+                        {log.vehicle_make && log.vehicle_model 
+                          ? `${log.vehicle_make} ${log.vehicle_model}${log.vehicle_nickname ? ` - ${log.vehicle_nickname}` : ''}`
+                          : 'Unknown'}
+                      </span>
                     </div>
                     <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
                       <span>{new Date(log.log_date).toLocaleDateString()}</span>
