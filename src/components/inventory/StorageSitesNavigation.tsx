@@ -19,7 +19,7 @@ export const StorageSitesNavigation: React.FC<StorageSitesNavigationProps> = ({ 
       icon: Warehouse
     },
     {
-      title: "Garage Location Data", 
+      title: "Analytics", 
       value: "reporting",
       icon: BarChart3
     }
