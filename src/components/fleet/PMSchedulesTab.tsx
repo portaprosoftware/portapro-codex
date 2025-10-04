@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
@@ -24,6 +25,8 @@ import {
   Play
 } from "lucide-react";
 import { AddWorkOrderDrawer } from "./work-orders/AddWorkOrderDrawer";
+import { AssignPMTemplateDialog } from "./pm/AssignPMTemplateDialog";
+import { ActivePMSchedulesList } from "./pm/ActivePMSchedulesList";
 
 interface PMSchedulesTabProps {
   vehicleId?: string;
@@ -37,7 +40,6 @@ export const PMSchedulesTab: React.FC<PMSchedulesTabProps> = ({ vehicleId, licen
   const [isWorkOrderDrawerOpen, setIsWorkOrderDrawerOpen] = useState(false);
   const queryClient = useQueryClient();
 
-  // Form state
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -52,7 +54,6 @@ export const PMSchedulesTab: React.FC<PMSchedulesTabProps> = ({ vehicleId, licen
     is_active: true
   });
 
-  // Fetch PM templates
   const { data: templates, isLoading } = useQuery({
     queryKey: ["pm-templates"],
     queryFn: async () => {
@@ -65,7 +66,6 @@ export const PMSchedulesTab: React.FC<PMSchedulesTabProps> = ({ vehicleId, licen
     }
   });
 
-  // Create template mutation
   const createTemplateMutation = useMutation({
     mutationFn: async (templateData: any) => {
       const { error } = await supabase.from("pm_templates").insert(templateData);
@@ -83,7 +83,6 @@ export const PMSchedulesTab: React.FC<PMSchedulesTabProps> = ({ vehicleId, licen
     }
   });
 
-  // Update template mutation
   const updateTemplateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: any }) => {
       const { error } = await supabase.from("pm_templates").update(data).eq("id", id);
@@ -101,7 +100,6 @@ export const PMSchedulesTab: React.FC<PMSchedulesTabProps> = ({ vehicleId, licen
     }
   });
 
-  // Delete template mutation
   const deleteTemplateMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase.from("pm_templates").delete().eq("id", id);
@@ -199,27 +197,6 @@ export const PMSchedulesTab: React.FC<PMSchedulesTabProps> = ({ vehicleId, licen
     }
   };
 
-  const getTriggerDisplay = (template: any) => {
-    const { trigger_type, trigger_interval, trigger_config } = template;
-    
-    if (trigger_type === 'multi' && trigger_config) {
-      const triggers = [];
-      if (trigger_config.mileage) triggers.push(`${trigger_config.mileage} miles`);
-      if (trigger_config.hours) triggers.push(`${trigger_config.hours} hrs`);
-      if (trigger_config.days) triggers.push(`${trigger_config.days} days`);
-      return triggers.length > 0 ? triggers.join(" or ") : "No triggers configured";
-    }
-    
-    if (!trigger_interval) return "Not configured";
-    
-    switch (trigger_type) {
-      case 'mileage': return `Every ${trigger_interval.toLocaleString()} miles`;
-      case 'hours': return `Every ${trigger_interval} engine hours`;
-      case 'days': return `Every ${trigger_interval} days`;
-      default: return `Interval: ${trigger_interval}`;
-    }
-  };
-
   const getGradientColors = (index: number) => {
     const gradients = [
       { from: '#3b82f6', to: '#2563eb', bg: 'from-blue-500 to-blue-600' },
@@ -233,286 +210,269 @@ export const PMSchedulesTab: React.FC<PMSchedulesTabProps> = ({ vehicleId, licen
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">PM Templates</h2>
-          <p className="text-gray-600">Reusable maintenance templates for your fleet</p>
-        </div>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button 
-              onClick={() => { resetForm(); setEditingTemplate(null); }}
-              className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              New PM Template
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>
-                {editingTemplate ? "Edit PM Template" : "Create PM Template"}
-              </DialogTitle>
-              <DialogDescription>
-                Create a reusable maintenance template for your fleet
-              </DialogDescription>
-            </DialogHeader>
-            
-            <div className="space-y-6">
-              {/* Basic Information */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold border-b pb-2">Basic Information</h3>
-                <div className="grid grid-cols-1 gap-4">
-                  <div>
-                    <Label htmlFor="name">Template Name *</Label>
-                    <Input
-                      id="name"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      placeholder="e.g., Oil Change, Brake Inspection"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="description">Description</Label>
-                    <Textarea
-                      id="description"
-                      value={formData.description}
-                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                      placeholder="Brief description of this maintenance type..."
-                      rows={2}
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="asset_type">Asset Type</Label>
-                      <Select value={formData.asset_type} onValueChange={(value) => setFormData({ ...formData, asset_type: value })}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="vehicle">Vehicle</SelectItem>
-                          <SelectItem value="trailer">Trailer</SelectItem>
-                          <SelectItem value="equipment">Equipment</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label htmlFor="trigger_type">Trigger Type</Label>
-                      <Select value={formData.trigger_type} onValueChange={(value) => setFormData({ ...formData, trigger_type: value })}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="mileage">Mileage Based</SelectItem>
-                          <SelectItem value="hours">Engine Hours</SelectItem>
-                          <SelectItem value="days">Time Based (Days)</SelectItem>
-                          <SelectItem value="multi">Multi-Trigger</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  
-                  {formData.trigger_type !== 'multi' && (
-                    <div>
-                      <Label htmlFor="trigger_interval">Trigger Interval</Label>
-                      <Input
-                        id="trigger_interval"
-                        type="number"
-                        value={formData.trigger_interval}
-                        onChange={(e) => setFormData({ ...formData, trigger_interval: e.target.value })}
-                        placeholder={formData.trigger_type === 'mileage' ? '5000' : formData.trigger_type === 'hours' ? '250' : '90'}
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
+      <Tabs defaultValue="templates" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="templates">PM Templates</TabsTrigger>
+          <TabsTrigger value="schedules">Active Schedules</TabsTrigger>
+        </TabsList>
 
-              {/* Estimates */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold border-b pb-2">Cost & Labor Estimates</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="estimated_cost">Estimated Cost ($)</Label>
-                    <Input
-                      id="estimated_cost"
-                      type="number"
-                      step="0.01"
-                      value={formData.estimated_cost}
-                      onChange={(e) => setFormData({ ...formData, estimated_cost: e.target.value })}
-                      placeholder="150.00"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="estimated_labor_hours">Estimated Labor (hours)</Label>
-                    <Input
-                      id="estimated_labor_hours"
-                      type="number"
-                      step="0.5"
-                      value={formData.estimated_labor_hours}
-                      onChange={(e) => setFormData({ ...formData, estimated_labor_hours: e.target.value })}
-                      placeholder="2.0"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Active Status */}
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="is_active"
-                  checked={formData.is_active}
-                  onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
-                />
-                <Label htmlFor="is_active">Template Active</Label>
-              </div>
-
-              <div className="flex justify-end space-x-2 pt-4 border-t">
-                <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-                  Cancel
-                </Button>
-                <Button onClick={handleSubmit} className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
-                  {editingTemplate ? "Update Template" : "Create Template"}
-                </Button>
-              </div>
+        <TabsContent value="templates" className="space-y-6 mt-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold">PM Templates</h2>
+              <p className="text-gray-600">Reusable maintenance templates for your fleet</p>
             </div>
-          </DialogContent>
-        </Dialog>
-      </div>
-
-      {/* Templates Grid */}
-      <div className="grid gap-4">
-        {isLoading ? (
-          <Card>
-            <CardContent className="p-8">
-              <p className="text-gray-500 text-center">Loading templates...</p>
-            </CardContent>
-          </Card>
-        ) : templates?.length === 0 ? (
-          <Card className="border-2 border-dashed">
-            <CardContent className="p-12 text-center">
-              <FileText className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-xl font-semibold mb-2">No PM Templates</h3>
-              <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                Create reusable maintenance templates to streamline work order creation and ensure consistency
-              </p>
-              <Button 
-                onClick={() => setIsCreateDialogOpen(true)}
-                className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Create First Template
-              </Button>
-            </CardContent>
-          </Card>
-        ) : (
-          templates.map((template, index) => {
-            const gradient = getGradientColors(index);
-            return (
-              <Card key={template.id} className="overflow-hidden border-l-4" style={{ borderLeftColor: gradient.from }}>
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div 
-                        className={`h-12 w-12 rounded-xl bg-gradient-to-br ${gradient.bg} flex items-center justify-center shadow-lg`}
-                      >
-                        {getTriggerIcon(template.trigger_type)}
-                        <span className="sr-only">PM Template Icon</span>
+            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+              <DialogTrigger asChild>
+                <Button 
+                  onClick={() => { resetForm(); setEditingTemplate(null); }}
+                  className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  New PM Template
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>
+                    {editingTemplate ? "Edit PM Template" : "Create PM Template"}
+                  </DialogTitle>
+                  <DialogDescription>
+                    Create a reusable maintenance template for your fleet
+                  </DialogDescription>
+                </DialogHeader>
+                
+                <div className="space-y-6">
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold border-b pb-2">Basic Information</h3>
+                    <div className="grid grid-cols-1 gap-4">
+                      <div>
+                        <Label htmlFor="name">Template Name *</Label>
+                        <Input
+                          id="name"
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          placeholder="e.g., Oil Change, Brake Inspection"
+                        />
                       </div>
                       <div>
-                        <h3 className="text-lg font-bold">{template.name}</h3>
-                        {template.description && (
-                          <p className="text-sm text-gray-600">{template.description}</p>
-                        )}
+                        <Label htmlFor="description">Description</Label>
+                        <Textarea
+                          id="description"
+                          value={formData.description}
+                          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                          placeholder="Brief description of this maintenance type..."
+                          rows={2}
+                        />
                       </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant={template.is_active ? "default" : "secondary"} className="text-xs">
-                        {template.is_active ? "Active" : "Inactive"}
-                      </Badge>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEdit(template)}
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDelete(template.id)}
-                      >
-                        <Trash2 className="w-4 h-4 text-red-500" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <div className="flex items-center gap-2 text-sm">
-                      {getTriggerIcon(template.trigger_type)}
-                      <div>
-                        <p className="text-xs text-gray-500">Trigger</p>
-                        <p className="font-medium">{getTriggerDisplay(template)}</p>
-                      </div>
-                    </div>
-                    
-                    {template.estimated_cost && (
-                      <div className="flex items-center gap-2 text-sm">
-                        <div className="h-8 w-8 rounded-lg bg-green-100 flex items-center justify-center">
-                          <span className="text-green-600 font-bold">$</span>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="asset_type">Asset Type</Label>
+                          <Select value={formData.asset_type} onValueChange={(value) => setFormData({ ...formData, asset_type: value })}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="vehicle">Vehicle</SelectItem>
+                              <SelectItem value="trailer">Trailer</SelectItem>
+                              <SelectItem value="equipment">Equipment</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
                         <div>
-                          <p className="text-xs text-gray-500">Est. Cost</p>
-                          <p className="font-medium">${template.estimated_cost.toLocaleString()}</p>
+                          <Label htmlFor="trigger_type">Trigger Type</Label>
+                          <Select value={formData.trigger_type} onValueChange={(value) => setFormData({ ...formData, trigger_type: value })}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="mileage">Mileage Based</SelectItem>
+                              <SelectItem value="hours">Engine Hours</SelectItem>
+                              <SelectItem value="days">Time Based (Days)</SelectItem>
+                              <SelectItem value="multi">Multi-Trigger</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
                       </div>
-                    )}
-                    
-                    {template.estimated_labor_hours && (
-                      <div className="flex items-center gap-2 text-sm">
-                        <Clock className="w-4 h-4 text-blue-500" />
+                      
+                      {formData.trigger_type !== 'multi' && (
                         <div>
-                          <p className="text-xs text-gray-500">Est. Labor</p>
-                          <p className="font-medium">{template.estimated_labor_hours}h</p>
+                          <Label htmlFor="trigger_interval">Trigger Interval</Label>
+                          <Input
+                            id="trigger_interval"
+                            type="number"
+                            value={formData.trigger_interval}
+                            onChange={(e) => setFormData({ ...formData, trigger_interval: e.target.value })}
+                            placeholder={formData.trigger_type === 'mileage' ? '5000' : formData.trigger_type === 'hours' ? '250' : '90'}
+                          />
                         </div>
-                      </div>
-                    )}
-                    
-                    <div className="flex items-center gap-2 text-sm">
-                      <Badge variant="outline" className="capitalize">
-                        {template.asset_type}
-                      </Badge>
+                      )}
                     </div>
                   </div>
 
-                  <div className="flex gap-2 pt-2 border-t">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleCreateWorkOrder(template)}
-                      className="flex-1"
-                    >
-                      <Play className="w-4 h-4 mr-2" />
-                      Create Work Order
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold border-b pb-2">Cost & Labor Estimates</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="estimated_cost">Estimated Cost ($)</Label>
+                        <Input
+                          id="estimated_cost"
+                          type="number"
+                          step="0.01"
+                          value={formData.estimated_cost}
+                          onChange={(e) => setFormData({ ...formData, estimated_cost: e.target.value })}
+                          placeholder="150.00"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="estimated_labor_hours">Estimated Labor (hours)</Label>
+                        <Input
+                          id="estimated_labor_hours"
+                          type="number"
+                          step="0.5"
+                          value={formData.estimated_labor_hours}
+                          onChange={(e) => setFormData({ ...formData, estimated_labor_hours: e.target.value })}
+                          placeholder="2.0"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="is_active"
+                      checked={formData.is_active}
+                      onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
+                    />
+                    <Label htmlFor="is_active">Template Active</Label>
+                  </div>
+
+                  <div className="flex justify-end space-x-2 pt-4 border-t">
+                    <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+                      Cancel
+                    </Button>
+                    <Button onClick={handleSubmit} className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+                      {editingTemplate ? "Update Template" : "Create Template"}
                     </Button>
                   </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          <div className="grid gap-4">
+            {isLoading ? (
+              <Card>
+                <CardContent className="p-8">
+                  <p className="text-gray-500 text-center">Loading templates...</p>
                 </CardContent>
               </Card>
-            );
-          })
-        )}
-      </div>
+            ) : templates?.length === 0 ? (
+              <Card className="border-2 border-dashed">
+                <CardContent className="p-12 text-center">
+                  <FileText className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+                  <h3 className="text-xl font-semibold mb-2">No PM Templates</h3>
+                  <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                    Create reusable maintenance templates to streamline work order creation
+                  </p>
+                  <Button 
+                    onClick={() => setIsCreateDialogOpen(true)}
+                    className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Create First Template
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              templates.map((template, index) => {
+                const gradient = getGradientColors(index);
+                return (
+                  <Card key={template.id} className="overflow-hidden border-l-4" style={{ borderLeftColor: gradient.from }}>
+                    <CardHeader className="pb-3">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center gap-3 mb-2">
+                          <div 
+                            className={`h-12 w-12 rounded-xl bg-gradient-to-br ${gradient.bg} flex items-center justify-center shadow-lg text-white`}
+                          >
+                            {getTriggerIcon(template.trigger_type)}
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-bold">{template.name}</h3>
+                            {template.description && (
+                              <p className="text-sm text-gray-600">{template.description}</p>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge variant={template.is_active ? "default" : "secondary"} className="text-xs">
+                            {template.is_active ? "Active" : "Inactive"}
+                          </Badge>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleEdit(template)}
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDelete(template.id)}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                          <p className="text-xs text-gray-500">Trigger</p>
+                          <p className="font-semibold">
+                            Every {template.trigger_interval} {template.trigger_type}
+                          </p>
+                        </div>
+                        {template.estimated_cost && (
+                          <div>
+                            <p className="text-xs text-gray-500">Est. Cost</p>
+                            <p className="font-semibold">${template.estimated_cost}</p>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        <AssignPMTemplateDialog template={template} />
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleCreateWorkOrder(template)}
+                        >
+                          <Play className="w-4 h-4 mr-2" />
+                          Create Work Order
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })
+            )}
+          </div>
+        </TabsContent>
 
-      {/* Work Order Drawer */}
+        <TabsContent value="schedules" className="mt-6">
+          <ActivePMSchedulesList vehicleId={vehicleId} />
+        </TabsContent>
+      </Tabs>
+
       {selectedTemplateForWO && (
         <AddWorkOrderDrawer
-          open={isWorkOrderDrawerOpen}
-          onOpenChange={setIsWorkOrderDrawerOpen}
-          onSuccess={() => {
+          isOpen={isWorkOrderDrawerOpen}
+          onClose={() => {
             setIsWorkOrderDrawerOpen(false);
             setSelectedTemplateForWO(null);
           }}
-          preselectedAssetId={vehicleId}
+          vehicleId={vehicleId}
           pmTemplate={selectedTemplateForWO}
         />
       )}
