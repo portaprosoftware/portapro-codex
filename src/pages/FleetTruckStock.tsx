@@ -14,6 +14,7 @@ import { Package, Truck, ArrowLeftRight, PlusCircle, MinusCircle, Droplets } fro
 import { RouteStockCheck } from "@/components/fleet/RouteStockCheck";
 import { StockVehicleSelectionModal } from "@/components/fleet/StockVehicleSelectionModal";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useSearchParams } from "react-router-dom";
 
 interface Vehicle { id: string; license_plate: string | null; vehicle_type?: string | null; make?: string | null; model?: string | null; year?: number | null; vehicle_image?: string | null }
 interface BalanceRow { consumable_id: string; balance_qty: number }
@@ -23,14 +24,25 @@ interface StorageLocation { id: string; name: string }
 const FleetTruckStock: React.FC = () => {
   const { toast } = useToast();
   const qc = useQueryClient();
+  const [searchParams] = useSearchParams();
+  
+  // Get vehicle ID from URL or default to empty string
+  const urlVehicleId = searchParams.get('vehicle') || "";
 
-  const [vehicleId, setVehicleId] = useState<string>("");
+  const [vehicleId, setVehicleId] = useState<string>(urlVehicleId);
   const [serviceDate, setServiceDate] = useState<string>(new Date().toISOString().slice(0,10));
   const [consumableId, setConsumableId] = useState<string>("");
   const [quantity, setQuantity] = useState<string>("");
   const [destVehicleId, setDestVehicleId] = useState<string>("");
   const [sourceLocationId, setSourceLocationId] = useState<string>("");
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState<boolean>(false);
+  
+  // Update vehicleId when URL parameter changes
+  useEffect(() => {
+    if (urlVehicleId) {
+      setVehicleId(urlVehicleId);
+    }
+  }, [urlVehicleId]);
 
   // Fetch all vehicles
   const { data: vehicles = [] } = useQuery({
