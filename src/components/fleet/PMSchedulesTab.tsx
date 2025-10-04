@@ -217,7 +217,6 @@ export const PMSchedulesTab: React.FC<PMSchedulesTabProps> = ({ vehicleId, licen
                           size="sm"
                           onClick={() => handleCreateWorkOrder(template)}
                         >
-                          <Play className="w-4 h-4 mr-2" />
                           Create Work Order
                         </Button>
                       </div>
