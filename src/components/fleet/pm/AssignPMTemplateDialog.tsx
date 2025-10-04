@@ -11,10 +11,14 @@ import { CalendarDays, Gauge, Clock } from 'lucide-react';
 
 interface AssignPMTemplateDialogProps {
   template: any;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export const AssignPMTemplateDialog: React.FC<AssignPMTemplateDialogProps> = ({ template }) => {
-  const [isOpen, setIsOpen] = useState(false);
+export const AssignPMTemplateDialog: React.FC<AssignPMTemplateDialogProps> = ({ 
+  template, 
+  onOpenChange 
+}) => {
+  const [isOpen, setIsOpen] = useState(onOpenChange ? true : false);
   const [selectedVehicleId, setSelectedVehicleId] = useState('');
   const [baselineMileage, setBaselineMileage] = useState('');
   const [baselineHours, setBaselineHours] = useState('');
@@ -44,7 +48,12 @@ export const AssignPMTemplateDialog: React.FC<AssignPMTemplateDialogProps> = ({ 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['vehicle-pm-schedules'] });
       toast.success('PM schedule assigned successfully');
-      setIsOpen(false);
+      const shouldClose = !onOpenChange;
+      if (shouldClose) {
+        setIsOpen(false);
+      } else {
+        onOpenChange?.(false);
+      }
       resetForm();
     },
     onError: (error) => {
@@ -94,17 +103,24 @@ export const AssignPMTemplateDialog: React.FC<AssignPMTemplateDialogProps> = ({ 
     assignMutation.mutate(scheduleData);
   };
 
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    onOpenChange?.(open);
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button variant="default" size="sm" className="flex-1">
-          <CalendarDays className="w-4 h-4 mr-2" />
-          Assign to Vehicle
-        </Button>
-      </DialogTrigger>
+    <Dialog open={onOpenChange ? true : isOpen} onOpenChange={handleOpenChange}>
+      {!onOpenChange && (
+        <DialogTrigger asChild>
+          <Button variant="default" size="sm" className="flex-1">
+            <CalendarDays className="w-4 h-4 mr-2" />
+            Assign to Vehicle
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Assign PM: {template.name}</DialogTitle>
+          <DialogTitle>Assign PM: {template?.name || 'Schedule'}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div>
@@ -123,7 +139,7 @@ export const AssignPMTemplateDialog: React.FC<AssignPMTemplateDialogProps> = ({ 
             </Select>
           </div>
 
-          {template.trigger_type === 'mileage' && (
+          {template?.trigger_type === 'mileage' && (
             <div>
               <Label>Current Mileage</Label>
               <div className="relative">
@@ -139,7 +155,7 @@ export const AssignPMTemplateDialog: React.FC<AssignPMTemplateDialogProps> = ({ 
             </div>
           )}
 
-          {template.trigger_type === 'hours' && (
+          {template?.trigger_type === 'hours' && (
             <div>
               <Label>Current Engine Hours</Label>
               <div className="relative">
@@ -166,7 +182,7 @@ export const AssignPMTemplateDialog: React.FC<AssignPMTemplateDialogProps> = ({ 
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
-            <Button variant="outline" onClick={() => setIsOpen(false)}>
+            <Button variant="outline" onClick={() => handleOpenChange(false)}>
               Cancel
             </Button>
             <Button onClick={handleAssign} disabled={assignMutation.isPending}>

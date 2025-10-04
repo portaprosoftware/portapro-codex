@@ -4,9 +4,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
-import { Play, Pause, Trash2, AlertCircle, CheckCircle, Clock } from 'lucide-react';
+import { Play, Pause, Trash2, AlertCircle, CheckCircle, Clock, Plus } from 'lucide-react';
 import { AddWorkOrderDrawer } from '../work-orders/AddWorkOrderDrawer';
+import { AssignPMTemplateDialog } from './AssignPMTemplateDialog';
 
 interface ActivePMSchedulesListProps {
   vehicleId?: string;
@@ -15,7 +17,22 @@ interface ActivePMSchedulesListProps {
 export const ActivePMSchedulesList: React.FC<ActivePMSchedulesListProps> = ({ vehicleId }) => {
   const [selectedScheduleForWO, setSelectedScheduleForWO] = useState<any>(null);
   const [isWorkOrderDrawerOpen, setIsWorkOrderDrawerOpen] = useState(false);
+  const [showAssignDialog, setShowAssignDialog] = useState(false);
   const queryClient = useQueryClient();
+
+  // Fetch all PM templates for assignment
+  const { data: templates } = useQuery({
+    queryKey: ['pm-templates-active'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('pm_templates')
+        .select('*')
+        .eq('is_active', true)
+        .order('name');
+      if (error) throw error;
+      return data || [];
+    }
+  });
 
   const { data: schedules, isLoading } = useQuery({
     queryKey: ['vehicle-pm-schedules', vehicleId],
@@ -49,7 +66,8 @@ export const ActivePMSchedulesList: React.FC<ActivePMSchedulesListProps> = ({ ve
       const { data, error } = await query;
       if (error) throw error;
       return data || [];
-    }
+    },
+    staleTime: 30000 // Cache for 30 seconds to reduce load time
   });
 
   const toggleActiveMutation = useMutation({
@@ -121,30 +139,84 @@ export const ActivePMSchedulesList: React.FC<ActivePMSchedulesListProps> = ({ ve
 
   if (isLoading) {
     return (
-      <Card>
-        <CardContent className="p-8">
-          <p className="text-center text-muted-foreground">Loading schedules...</p>
-        </CardContent>
-      </Card>
+      <div className="space-y-4">
+        {[1, 2, 3].map((i) => (
+          <Card key={i}>
+            <CardHeader>
+              <Skeleton className="h-6 w-3/4" />
+              <Skeleton className="h-4 w-1/2 mt-2" />
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+              <Skeleton className="h-10 w-full" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     );
   }
 
   if (!schedules || schedules.length === 0) {
     return (
-      <Card className="border-2 border-dashed">
-        <CardContent className="p-12 text-center">
-          <Clock className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-          <h3 className="text-xl font-semibold mb-2">No Active PM Schedules</h3>
-          <p className="text-gray-600 mb-6 max-w-md mx-auto">
-            Assign PM templates to vehicles to start tracking maintenance schedules
-          </p>
-        </CardContent>
-      </Card>
+      <>
+        <Card className="border-2 border-dashed">
+          <CardContent className="p-12 text-center">
+            <Clock className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+            <h3 className="text-xl font-semibold mb-2">No Active PM Schedules</h3>
+            <p className="text-gray-600 mb-6 max-w-md mx-auto">
+              Assign PM templates to vehicles to start tracking maintenance schedules
+            </p>
+            {templates && templates.length > 0 ? (
+              <Button 
+                onClick={() => setShowAssignDialog(true)}
+                className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Assign PM Schedule
+              </Button>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                Create PM templates first in the "PM Templates" tab
+              </p>
+            )}
+          </CardContent>
+        </Card>
+        
+        {showAssignDialog && templates && templates[0] && (
+          <AssignPMTemplateDialog 
+            template={templates[0]} 
+            onOpenChange={setShowAssignDialog}
+          />
+        )}
+      </>
     );
   }
 
   return (
     <>
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h3 className="text-lg font-semibold">Active PM Schedules</h3>
+          <p className="text-sm text-muted-foreground">
+            {schedules.length} schedule{schedules.length !== 1 ? 's' : ''} active
+          </p>
+        </div>
+        {templates && templates.length > 0 && (
+          <Button 
+            onClick={() => setShowAssignDialog(true)}
+            className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Assign PM Schedule
+          </Button>
+        )}
+      </div>
+
       <div className="space-y-4">
         {(schedules as any[])?.map((schedule: any) => (
           <Card key={schedule.id} className="overflow-hidden">
@@ -237,6 +309,13 @@ export const ActivePMSchedulesList: React.FC<ActivePMSchedulesListProps> = ({ ve
           </Card>
         ))}
       </div>
+
+      {showAssignDialog && templates && templates[0] && (
+        <AssignPMTemplateDialog 
+          template={templates[0]} 
+          onOpenChange={setShowAssignDialog}
+        />
+      )}
 
       {selectedScheduleForWO && (
         <AddWorkOrderDrawer
