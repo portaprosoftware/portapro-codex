@@ -106,14 +106,21 @@ export const PMTemplateManager: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {templates?.filter(t => t.is_active).map(template => (
-          <Card key={template.id} className="p-4 space-y-3">
+        {templates?.map(template => (
+          <Card key={template.id} className={`p-4 space-y-3 ${!template.is_active ? 'opacity-50' : ''}`}>
             <div className="flex items-start justify-between">
-              <div className="space-y-1">
+              <div className="space-y-1 flex-1">
                 <h3 className="font-semibold">{template.name}</h3>
-                <Badge className={`${categoryColors[template.category]} text-white`}>
-                  {categoryLabels[template.category] || template.category}
-                </Badge>
+                <div className="flex gap-2">
+                  <Badge className={`${template.is_active ? categoryColors[template.category] : 'bg-gray-400'} text-white`}>
+                    {categoryLabels[template.category] || template.category}
+                  </Badge>
+                  {!template.is_active && (
+                    <Badge variant="outline" className="bg-gray-100 text-gray-600 border-gray-300">
+                      Inactive
+                    </Badge>
+                  )}
+                </div>
               </div>
             </div>
 
