@@ -46,6 +46,7 @@ export function EditVehicleNotesModal({
   const [title, setTitle] = useState('');
   const [noteText, setNoteText] = useState('');
   const [tags, setTags] = useState('');
+  const [customTagInput, setCustomTagInput] = useState('');
   const [isImportant, setIsImportant] = useState(false);
 
   // Reset form when modal opens/closes or existing note changes
@@ -62,6 +63,7 @@ export function EditVehicleNotesModal({
         setTags('');
         setIsImportant(false);
       }
+      setCustomTagInput('');
     }
   }, [isOpen, existingNote]);
 
@@ -99,6 +101,7 @@ export function EditVehicleNotesModal({
     setTitle('');
     setNoteText('');
     setTags('');
+    setCustomTagInput('');
     setIsImportant(false);
   };
 
@@ -106,6 +109,7 @@ export function EditVehicleNotesModal({
     setTitle('');
     setNoteText('');
     setTags('');
+    setCustomTagInput('');
     setIsImportant(false);
     onClose();
   };
@@ -205,30 +209,28 @@ export function EditVehicleNotesModal({
               </div>
             )}
 
-            <Input
-              id="tags"
-              value=""
-              onChange={(e) => {
-                const newTag = e.target.value.trim();
-                if (newTag && e.nativeEvent instanceof InputEvent && e.nativeEvent.inputType === 'insertText' && newTag.endsWith(',')) {
-                  handleQuickTagClick(newTag.slice(0, -1).trim());
-                  e.target.value = '';
-                }
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ',') {
-                  e.preventDefault();
-                  const input = e.currentTarget;
-                  const newTag = input.value.trim();
-                  if (newTag) {
-                    handleQuickTagClick(newTag);
-                    input.value = '';
+            <div>
+              <Input
+                id="tags"
+                value={customTagInput}
+                onChange={(e) => setCustomTagInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ',') {
+                    e.preventDefault();
+                    const newTag = customTagInput.trim();
+                    if (newTag) {
+                      handleQuickTagClick(newTag);
+                      setCustomTagInput('');
+                    }
                   }
-                }
-              }}
-              placeholder="Type custom tag and press Enter or comma..."
-              className="mt-1"
-            />
+                }}
+                placeholder="Type custom tag and press Enter or comma..."
+                className="mt-1"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Press <kbd className="px-1 py-0.5 bg-muted rounded text-xs">Enter</kbd> or add a <kbd className="px-1 py-0.5 bg-muted rounded text-xs">,</kbd> to add tag
+              </p>
+            </div>
           </div>
 
           {/* Important Toggle */}
