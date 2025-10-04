@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Edit, Trash2, Download, Plus, Search, Truck, Users } from 'lucide-react';
+import { Edit, Trash2, Download, Plus, Search, Truck, Users, X } from 'lucide-react';
 import { DatePickerWithRange } from '@/components/ui/DatePickerWithRange';
 import { DateRange } from 'react-day-picker';
 import { useToast } from '@/hooks/use-toast';
@@ -158,6 +158,12 @@ export const FuelAllLogsTab: React.FC = () => {
   // Get selected counts for display
   const selectedVehicleCount = selectedVehicles.length;
   const selectedDriverCount = selectedDrivers.length;
+  const hasActiveFilters = selectedVehicleCount > 0 || selectedDriverCount > 0;
+
+  const clearAllFilters = () => {
+    setSelectedVehicles([]);
+    setSelectedDrivers([]);
+  };
 
   const deleteFuelLogMutation = useMutation({
     mutationFn: async (id: string) => {
@@ -217,6 +223,21 @@ export const FuelAllLogsTab: React.FC = () => {
           <CardTitle>Filters</CardTitle>
         </CardHeader>
         <CardContent>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex-1" />
+            {hasActiveFilters && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={clearAllFilters}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4 mr-2" />
+                Clear Filters
+              </Button>
+            )}
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
               <Input
