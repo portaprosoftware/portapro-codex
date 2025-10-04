@@ -1,5 +1,5 @@
 import React from 'react';
-import { SpillKitHistory } from './SpillKitHistory';
+import { SpillKitRoleGateway } from './SpillKitRoleGateway';
 
 interface SpillKitsTabProps {
   inspectionDrawerOpen?: boolean;
@@ -8,6 +8,9 @@ interface SpillKitsTabProps {
 
 export function SpillKitsTab({ inspectionDrawerOpen, setInspectionDrawerOpen }: SpillKitsTabProps) {
   return (
-    <SpillKitHistory />
+    <SpillKitRoleGateway 
+      inspectionDrawerOpen={inspectionDrawerOpen}
+      setInspectionDrawerOpen={setInspectionDrawerOpen}
+    />
   );
 }
