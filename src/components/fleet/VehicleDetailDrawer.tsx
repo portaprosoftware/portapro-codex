@@ -163,6 +163,7 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["vehicles"] });
+      queryClient.invalidateQueries({ queryKey: ["vehicle", vehicle.id] });
       setIsEditing(false);
       toast.success("Vehicle updated successfully!");
     },
@@ -846,7 +847,7 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
                   placeholder="Add general vehicle notes..."
                   rows={3}
                 />
-                <p className="text-xs text-muted-foreground">Advanced notes available on next tab</p>
+                <p className="text-xs text-muted-foreground">Advanced notes available on above tab</p>
               </div>
 
             </div>

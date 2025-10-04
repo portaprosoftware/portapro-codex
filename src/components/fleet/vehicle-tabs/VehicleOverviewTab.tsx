@@ -357,7 +357,7 @@ export function VehicleOverviewTab({ vehicleId, licensePlate, vehicleData, isAct
                 <div className="space-y-1">
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600 font-medium">General Information:</span>
-                    <span className="text-xs text-muted-foreground italic">Advanced notes on next tab</span>
+                    <span className="text-xs text-muted-foreground italic">Advanced notes on above tab</span>
                   </div>
                   <p className="text-sm text-gray-700 whitespace-pre-wrap">{vehicleInfo.notes}</p>
                 </div>
