@@ -42,13 +42,14 @@ export const PMTemplateManager: React.FC = () => {
     mutationFn: async (id: string) => {
       const { error } = await supabase
         .from('pm_templates' as any)
-        .update({ is_active: false })
+        .delete()
         .eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pm-templates'] });
-      toast({ title: "Template deactivated" });
+      queryClient.invalidateQueries({ queryKey: ['pm-templates-active'] });
+      toast({ title: "Template deleted" });
     }
   });
 

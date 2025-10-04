@@ -22,10 +22,9 @@ export const PMTemplateBuilder: React.FC<PMTemplateBuilderProps> = ({ open, onOp
   
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("pump_truck");
+  const [assetType, setAssetType] = useState("vehicle");
   const [triggerType, setTriggerType] = useState("mileage");
   const [triggerInterval, setTriggerInterval] = useState("");
-  const [instructions, setInstructions] = useState("");
   const [estimatedCost, setEstimatedCost] = useState("");
   const [estimatedHours, setEstimatedHours] = useState("");
   const [checklistItems, setChecklistItems] = useState<any[]>([]);
@@ -35,13 +34,12 @@ export const PMTemplateBuilder: React.FC<PMTemplateBuilderProps> = ({ open, onOp
     if (template) {
       setName(template.name || "");
       setDescription(template.description || "");
-      setCategory(template.category || "pump_truck");
+      setAssetType(template.asset_type || "vehicle");
       setTriggerType(template.trigger_type || "mileage");
       setTriggerInterval(template.trigger_interval?.toString() || "");
-      setInstructions(template.instructions || "");
       setEstimatedCost(template.estimated_cost?.toString() || "");
       setEstimatedHours(template.estimated_labor_hours?.toString() || "");
-      setChecklistItems(template.checklist || []);
+      setChecklistItems(template.checklist_items || []);
       setPartsList(template.parts_list || []);
     } else {
       reset();
@@ -51,10 +49,9 @@ export const PMTemplateBuilder: React.FC<PMTemplateBuilderProps> = ({ open, onOp
   const reset = () => {
     setName("");
     setDescription("");
-    setCategory("pump_truck");
+    setAssetType("vehicle");
     setTriggerType("mileage");
     setTriggerInterval("");
-    setInstructions("");
     setEstimatedCost("");
     setEstimatedHours("");
     setChecklistItems([]);
@@ -66,14 +63,14 @@ export const PMTemplateBuilder: React.FC<PMTemplateBuilderProps> = ({ open, onOp
       const data = {
         name,
         description,
-        category,
+        asset_type: assetType,
         trigger_type: triggerType,
         trigger_interval: triggerInterval ? parseInt(triggerInterval) : null,
-        instructions,
         estimated_cost: estimatedCost ? parseFloat(estimatedCost) : null,
         estimated_labor_hours: estimatedHours ? parseFloat(estimatedHours) : null,
-        checklist: checklistItems,
-        parts_list: partsList
+        checklist_items: checklistItems,
+        parts_list: partsList,
+        is_active: true
       };
 
       if (template?.id) {
@@ -120,16 +117,15 @@ export const PMTemplateBuilder: React.FC<PMTemplateBuilderProps> = ({ open, onOp
               <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g., Oil Change & Filter Service" />
             </div>
             <div className="space-y-2">
-              <Label>Category *</Label>
-              <Select value={category} onValueChange={setCategory}>
+              <Label>Asset Type *</Label>
+              <Select value={assetType} onValueChange={setAssetType}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="pump_truck">Pump Truck</SelectItem>
+                  <SelectItem value="vehicle">Vehicle</SelectItem>
                   <SelectItem value="trailer">Trailer</SelectItem>
-                  <SelectItem value="generator">Generator</SelectItem>
-                  <SelectItem value="unit">Unit</SelectItem>
+                  <SelectItem value="equipment">Equipment</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -199,11 +195,6 @@ export const PMTemplateBuilder: React.FC<PMTemplateBuilderProps> = ({ open, onOp
                 placeholder="0.0"
               />
             </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Instructions</Label>
-            <Textarea value={instructions} onChange={(e) => setInstructions(e.target.value)} rows={3} />
           </div>
 
           <div className="space-y-2">

@@ -26,7 +26,7 @@ export const NextPMDueWidget: React.FC<NextPMDueWidgetProps> = ({
     queryKey: ['vehicle-pm-schedules', vehicleId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('pm_schedules' as any)
+        .from('vehicle_pm_schedules' as any)
         .select('*')
         .eq('vehicle_id', vehicleId)
         .eq('active', true)
@@ -40,7 +40,7 @@ export const NextPMDueWidget: React.FC<NextPMDueWidgetProps> = ({
         if (templateIds.length > 0) {
           const { data: templates, error: templatesError } = await supabase
             .from('pm_templates' as any)
-            .select('id, name, category')
+            .select('id, name, asset_type')
             .in('id', templateIds);
           
           if (!templatesError && templates) {
@@ -62,28 +62,31 @@ export const NextPMDueWidget: React.FC<NextPMDueWidgetProps> = ({
     const triggers = [];
 
     // Mileage trigger
-    if (schedule.trigger_miles_every && schedule.next_due_odometer) {
-      const milesRemaining = schedule.next_due_odometer - currentOdometer;
-      const totalInterval = schedule.trigger_miles_every;
-      const progress = Math.max(0, Math.min(100, ((totalInterval - milesRemaining) / totalInterval) * 100));
+    if (schedule.next_due_mileage && currentOdometer) {
+      const milesRemaining = schedule.next_due_mileage - currentOdometer;
+      const baselineMileage = schedule.baseline_mileage || 0;
+      const totalInterval = schedule.next_due_mileage - baselineMileage;
+      const progress = totalInterval > 0 ? Math.max(0, Math.min(100, ((totalInterval - milesRemaining) / totalInterval) * 100)) : 0;
       triggers.push({ percent: progress, remaining: milesRemaining, unit: 'mi', priority: 1 });
     }
 
     // Engine hours trigger
-    if (schedule.trigger_hours_every && schedule.next_due_hours) {
-      const hoursRemaining = schedule.next_due_hours - currentEngineHours;
-      const totalInterval = schedule.trigger_hours_every;
-      const progress = Math.max(0, Math.min(100, ((totalInterval - hoursRemaining) / totalInterval) * 100));
+    if (schedule.next_due_engine_hours && currentEngineHours) {
+      const hoursRemaining = schedule.next_due_engine_hours - currentEngineHours;
+      const baselineHours = schedule.baseline_engine_hours || 0;
+      const totalInterval = schedule.next_due_engine_hours - baselineHours;
+      const progress = totalInterval > 0 ? Math.max(0, Math.min(100, ((totalInterval - hoursRemaining) / totalInterval) * 100)) : 0;
       triggers.push({ percent: progress, remaining: hoursRemaining, unit: 'hr', priority: 2 });
     }
 
     // Days trigger
-    if (schedule.trigger_days_every && schedule.next_due_date) {
+    if (schedule.next_due_date) {
       const dueDate = new Date(schedule.next_due_date);
       const now = new Date();
+      const baselineDate = schedule.baseline_date ? new Date(schedule.baseline_date) : now;
       const daysRemaining = Math.ceil((dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-      const totalInterval = schedule.trigger_days_every;
-      const progress = Math.max(0, Math.min(100, ((totalInterval - daysRemaining) / totalInterval) * 100));
+      const totalInterval = Math.ceil((dueDate.getTime() - baselineDate.getTime()) / (1000 * 60 * 60 * 24));
+      const progress = totalInterval > 0 ? Math.max(0, Math.min(100, ((totalInterval - daysRemaining) / totalInterval) * 100)) : 0;
       triggers.push({ percent: progress, remaining: daysRemaining, unit: 'days', priority: 3 });
     }
 
@@ -165,7 +168,7 @@ export const NextPMDueWidget: React.FC<NextPMDueWidgetProps> = ({
         {/* PM Template name */}
         <div>
           <div className="font-medium text-sm">{nextPM.pm_template?.name || 'PM Service'}</div>
-          <div className="text-xs text-muted-foreground">{nextPM.pm_template?.category || ''}</div>
+          <div className="text-xs text-muted-foreground">{nextPM.pm_template?.asset_type || ''}</div>
         </div>
 
         {/* Progress bar */}
@@ -184,10 +187,10 @@ export const NextPMDueWidget: React.FC<NextPMDueWidgetProps> = ({
 
         {/* Due date/mileage details */}
         <div className="grid grid-cols-2 gap-2 text-xs">
-          {nextPM.next_due_odometer && (
+          {nextPM.next_due_mileage && (
             <div className="flex items-center gap-1 text-muted-foreground">
               <Gauge className="h-3 w-3" />
-              <span>{nextPM.next_due_odometer.toLocaleString()} mi</span>
+              <span>{nextPM.next_due_mileage.toLocaleString()} mi</span>
             </div>
           )}
           {nextPM.next_due_date && (

@@ -39,23 +39,7 @@ export const ActivePMSchedulesList: React.FC<ActivePMSchedulesListProps> = ({ ve
     queryFn: async () => {
       let query = supabase
         .from('vehicle_pm_schedules' as any)
-        .select(`
-          *,
-          pm_templates (
-            id,
-            name,
-            description,
-            trigger_type,
-            trigger_interval,
-            estimated_cost,
-            estimated_labor_hours
-          ),
-          vehicles (
-            id,
-            license_plate,
-            vehicle_type
-          )
-        `)
+        .select('*')
         .eq('active', true)
         .order('next_due_date', { ascending: true });
 
@@ -63,9 +47,30 @@ export const ActivePMSchedulesList: React.FC<ActivePMSchedulesListProps> = ({ ve
         query = query.eq('vehicle_id', vehicleId);
       }
 
-      const { data, error } = await query;
+      const { data: schedulesData, error } = await query;
       if (error) throw error;
-      return data || [];
+
+      if (!schedulesData || schedulesData.length === 0) return [];
+
+      // Fetch templates and vehicles separately
+      const templateIds = [...new Set(schedulesData.map((s: any) => s.template_id).filter(Boolean))];
+      const vehicleIds = [...new Set(schedulesData.map((s: any) => s.vehicle_id).filter(Boolean))];
+
+      const [templatesResult, vehiclesResult] = await Promise.all([
+        templateIds.length > 0 
+          ? supabase.from('pm_templates').select('id, name, description, trigger_type, trigger_interval, estimated_cost, estimated_labor_hours').in('id', templateIds)
+          : { data: [], error: null },
+        vehicleIds.length > 0
+          ? supabase.from('vehicles').select('id, license_plate, vehicle_type').in('id', vehicleIds)
+          : { data: [], error: null }
+      ]);
+
+      // Merge data
+      return schedulesData.map((schedule: any) => ({
+        ...schedule,
+        pm_templates: templatesResult.data?.find((t: any) => t.id === schedule.template_id),
+        vehicles: vehiclesResult.data?.find((v: any) => v.id === schedule.vehicle_id)
+      }));
     },
     staleTime: 30000 // Cache for 30 seconds to reduce load time
   });

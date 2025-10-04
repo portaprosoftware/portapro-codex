@@ -16,7 +16,7 @@ export function useVehiclePMSchedules({
       if (!vehicleId) return [];
 
       let query = supabase
-        .from('pm_schedules' as any)
+        .from('vehicle_pm_schedules' as any)
         .select('*')
         .eq('vehicle_id', vehicleId)
         .order('next_due_date', { ascending: true });
@@ -35,7 +35,7 @@ export function useVehiclePMSchedules({
         if (templateIds.length > 0) {
           const { data: templates, error: templatesError } = await supabase
             .from('pm_templates' as any)
-            .select('id, name, category')
+            .select('id, name, asset_type')
             .in('id', templateIds);
 
           if (!templatesError && templates) {
