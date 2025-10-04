@@ -28,6 +28,10 @@ export function VehicleAssignmentsTab({
     enabled: isActive,
   });
 
+  const handleNavigateToAssignments = () => {
+    navigate(`/fleet/assignments?vehicle_id=${vehicleId}&vehicle_name=${encodeURIComponent(licensePlate)}`);
+  };
+
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
       case 'active':
@@ -50,14 +54,14 @@ export function VehicleAssignmentsTab({
             Vehicle Assignments ({assignments?.total || 0})
           </CardTitle>
           <div className="flex gap-2">
-            <Button size="sm" onClick={onAddAssignment}>
+            <Button size="sm" onClick={handleNavigateToAssignments}>
               <Plus className="w-4 h-4 mr-1" />
               New Assignment
             </Button>
             <Button 
               variant="ghost" 
               size="sm"
-              onClick={() => navigate(`/fleet/assignments?vehicle_id=${vehicleId}&vehicle_name=${encodeURIComponent(licensePlate)}`)}
+              onClick={handleNavigateToAssignments}
               title="View all assignments"
             >
               <ExternalLink className="w-4 h-4" />
@@ -111,7 +115,7 @@ export function VehicleAssignmentsTab({
             <div className="text-center py-8">
               <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-3" />
               <p className="text-sm text-muted-foreground mb-3">No assignments yet</p>
-              <Button size="sm" onClick={onAddAssignment}>
+              <Button size="sm" onClick={handleNavigateToAssignments}>
                 <Plus className="w-4 h-4 mr-1" />
                 Create First Assignment
               </Button>
