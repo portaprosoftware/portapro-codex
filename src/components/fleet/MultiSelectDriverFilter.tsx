@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -71,6 +71,9 @@ export const MultiSelectDriverFilter: React.FC<MultiSelectDriverFilterProps> = (
           <DialogTitle>
             Select Drivers {selectedDrivers.length > 0 && `(${selectedDrivers.length} selected)`}
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Filter and select one or more drivers
+          </DialogDescription>
         </DialogHeader>
 
         {/* Selected Drivers Summary */}

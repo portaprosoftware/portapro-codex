@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -76,7 +76,7 @@ export const FuelAllLogsTab: React.FC = () => {
   const queryClient = useQueryClient();
 
   // Fetch fuel logs with filters
-  const { data: fuelLogs, isLoading } = useQuery({
+  const { data: fuelLogs, isLoading, isFetching } = useQuery({
     queryKey: ['fuel-logs', searchTerm, selectedVehicles, selectedDrivers, dateRange],
     queryFn: async () => {
       let query = supabase
@@ -152,7 +152,9 @@ export const FuelAllLogsTab: React.FC = () => {
       }
       
       return mappedData as FuelLog[];
-    }
+    },
+    placeholderData: keepPreviousData,
+    refetchOnWindowFocus: false
   });
 
   // Get selected counts for display
@@ -211,12 +213,13 @@ export const FuelAllLogsTab: React.FC = () => {
     }
   };
 
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
-
   return (
     <div className="space-y-6">
+      {isLoading && !fuelLogs && (
+        <div className="flex justify-center py-8">
+          <LoadingSpinner />
+        </div>
+      )}
       {/* Filters */}
       <Card>
         <CardHeader>
