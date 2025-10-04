@@ -42,14 +42,17 @@ import { useAnalytics } from "@/hooks/useAnalytics";
 import { DeleteConfirmationDialog } from '@/components/ui/delete-confirmation-dialog';
 import { useNavigate } from 'react-router-dom';
 
-// Lazy load tab components for better performance
+// Import new lightweight summary components
+import { VehicleMaintenanceSummary } from './vehicle-tabs/VehicleMaintenanceSummary';
+import { VehicleFuelSummary } from './vehicle-tabs/VehicleFuelSummary';
+import { VehicleComplianceSummary } from './vehicle-tabs/VehicleComplianceSummary';
+import { VehicleDocumentsSummary } from './vehicle-tabs/VehicleDocumentsSummary';
+import { VehicleStockSummary } from './vehicle-tabs/VehicleStockSummary';
+import { useVehicleSummary } from '@/hooks/vehicle/useVehicleSummary';
+
+// Keep only Overview and Assignments as full tabs (lazy loaded)
 const VehicleOverviewTab = lazy(() => import('./vehicle-tabs/VehicleOverviewTab').then(m => ({ default: m.VehicleOverviewTab })));
-const VehicleMaintenanceTab = lazy(() => import('./vehicle-tabs/VehicleMaintenanceTab').then(m => ({ default: m.VehicleMaintenanceTab })));
-const VehicleFuelTab = lazy(() => import('./vehicle-tabs/VehicleFuelTab').then(m => ({ default: m.VehicleFuelTab })));
 const VehicleAssignmentsTab = lazy(() => import('./vehicle-tabs/VehicleAssignmentsTab').then(m => ({ default: m.VehicleAssignmentsTab })));
-const VehicleSpillKitTab = lazy(() => import('./vehicle-tabs/VehicleSpillKitTab').then(m => ({ default: m.VehicleSpillKitTab })));
-const VehicleDocumentsTab = lazy(() => import('./vehicle-tabs/VehicleDocumentsTab').then(m => ({ default: m.VehicleDocumentsTab })));
-const VehicleStockTab = lazy(() => import('./vehicle-tabs/VehicleStockTab').then(m => ({ default: m.VehicleStockTab })));
 
 interface Vehicle {
   id: string;
@@ -79,6 +82,9 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
   const [activeTab, setActiveTab] = useState("overview");
   const { trackEvent } = useAnalytics();
   const navigate = useNavigate();
+  
+  // Fetch vehicle summary data (lightweight, only when drawer is open)
+  const { data: summary, isLoading: summaryLoading } = useVehicleSummary(isOpen ? vehicle.id : null);
   
   // Track vehicle profile view
   useEffect(() => {
@@ -561,22 +567,31 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
               </TabsContent>
 
               <TabsContent value="stock" className="space-y-4">
-                <Suspense fallback={<TabSkeleton />}>
-                  <VehicleStockTab 
-                    vehicleId={vehicle.id} 
-                    licensePlate={vehicle.license_plate}
-                  />
-                </Suspense>
+                {activeTab === 'stock' && (
+                  summaryLoading ? (
+                    <TabSkeleton />
+                  ) : (
+                    <VehicleStockSummary 
+                      summary={summary?.stock}
+                      vehicleId={vehicle.id} 
+                      licensePlate={vehicle.license_plate}
+                    />
+                  )
+                )}
               </TabsContent>
 
               <TabsContent value="compliance" className="space-y-4">
-                <Suspense fallback={<TabSkeleton />}>
-                  <VehicleSpillKitTab 
-                    vehicleId={vehicle.id} 
-                    licensePlate={vehicle.license_plate}
-                    isActive={activeTab === 'compliance'}
-                  />
-                </Suspense>
+                {activeTab === 'compliance' && (
+                  summaryLoading ? (
+                    <TabSkeleton />
+                  ) : (
+                    <VehicleComplianceSummary 
+                      summary={summary?.compliance}
+                      vehicleId={vehicle.id} 
+                      licensePlate={vehicle.license_plate}
+                    />
+                  )
+                )}
               </TabsContent>
 
               <TabsContent value="assignments" className="space-y-4">
@@ -590,32 +605,45 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
               </TabsContent>
 
               <TabsContent value="maintenance" className="space-y-4">
-                <Suspense fallback={<TabSkeleton />}>
-                  <VehicleMaintenanceTab 
-                    vehicleId={vehicle.id} 
-                    licensePlate={vehicle.license_plate}
-                  />
-                </Suspense>
+                {activeTab === 'maintenance' && (
+                  summaryLoading ? (
+                    <TabSkeleton />
+                  ) : (
+                    <VehicleMaintenanceSummary 
+                      summary={summary?.maintenance}
+                      vehicleId={vehicle.id} 
+                      licensePlate={vehicle.license_plate}
+                    />
+                  )
+                )}
               </TabsContent>
 
               <TabsContent value="fuel" className="space-y-4">
-                <Suspense fallback={<TabSkeleton />}>
-                  <VehicleFuelTab 
-                    vehicleId={vehicle.id} 
-                    licensePlate={vehicle.license_plate} 
-                    isActive={activeTab === 'fuel'}
-                  />
-                </Suspense>
+                {activeTab === 'fuel' && (
+                  summaryLoading ? (
+                    <TabSkeleton />
+                  ) : (
+                    <VehicleFuelSummary 
+                      summary={summary?.fuel}
+                      vehicleId={vehicle.id} 
+                      licensePlate={vehicle.license_plate}
+                    />
+                  )
+                )}
               </TabsContent>
 
               <TabsContent value="documents" className="space-y-4">
-                <Suspense fallback={<TabSkeleton />}>
-                  <VehicleDocumentsTab 
-                    vehicleId={vehicle.id} 
-                    licensePlate={vehicle.license_plate}
-                    isActive={activeTab === 'documents'}
-                  />
-                </Suspense>
+                {activeTab === 'documents' && (
+                  summaryLoading ? (
+                    <TabSkeleton />
+                  ) : (
+                    <VehicleDocumentsSummary 
+                      summary={summary?.documents}
+                      vehicleId={vehicle.id} 
+                      licensePlate={vehicle.license_plate}
+                    />
+                  )
+                )}
               </TabsContent>
 
             </Tabs>
