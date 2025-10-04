@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Edit, Trash2, Download, Plus, Search, Truck } from 'lucide-react';
+import { Edit, Trash2, Download, Plus, Search, Truck, Users } from 'lucide-react';
 import { DatePickerWithRange } from '@/components/ui/DatePickerWithRange';
 import { DateRange } from 'react-day-picker';
 import { useToast } from '@/hooks/use-toast';
@@ -16,6 +16,7 @@ import { EditFuelLogModal } from './EditFuelLogModal';
 import { ExportFuelDataModal } from './ExportFuelDataModal';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MultiSelectVehicleFilter } from '../MultiSelectVehicleFilter';
+import { MultiSelectDriverFilter } from '../MultiSelectDriverFilter';
 
 interface Vehicle {
   id: string;
@@ -27,6 +28,14 @@ interface Vehicle {
   status?: string | null;
   vehicle_image?: string | null;
   nickname?: string | null;
+}
+
+interface Driver {
+  id: string;
+  first_name: string | null;
+  last_name: string | null;
+  email: string | null;
+  clerk_user_id: string | null;
 }
 
 interface FuelLog {
@@ -55,7 +64,8 @@ export const FuelAllLogsTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedVehicles, setSelectedVehicles] = useState<Vehicle[]>([]);
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
-  const [selectedDriver, setSelectedDriver] = useState('all');
+  const [selectedDrivers, setSelectedDrivers] = useState<Driver[]>([]);
+  const [isDriverModalOpen, setIsDriverModalOpen] = useState(false);
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -67,7 +77,7 @@ export const FuelAllLogsTab: React.FC = () => {
 
   // Fetch fuel logs with filters
   const { data: fuelLogs, isLoading } = useQuery({
-    queryKey: ['fuel-logs', searchTerm, selectedVehicles, selectedDriver, dateRange],
+    queryKey: ['fuel-logs', searchTerm, selectedVehicles, selectedDrivers, dateRange],
     queryFn: async () => {
       let query = supabase
         .from('fuel_logs')
@@ -91,8 +101,9 @@ export const FuelAllLogsTab: React.FC = () => {
         query = query.in('vehicle_id', vehicleIds);
       }
       
-      if (selectedDriver && selectedDriver !== 'all') {
-        query = query.eq('driver_id', selectedDriver);
+      if (selectedDrivers && selectedDrivers.length > 0) {
+        const driverIds = selectedDrivers.map(d => d.id);
+        query = query.in('driver_id', driverIds);
       }
 
       if (dateRange?.from) {
@@ -144,23 +155,9 @@ export const FuelAllLogsTab: React.FC = () => {
     }
   });
 
-  // Get selected vehicle count for display
+  // Get selected counts for display
   const selectedVehicleCount = selectedVehicles.length;
-
-  // Fetch drivers for filter
-  const { data: drivers } = useQuery({
-    queryKey: ['drivers'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, first_name, last_name')
-        .eq('is_active', true)
-        .order('first_name');
-      
-      if (error) throw error;
-      return data;
-    }
-  });
+  const selectedDriverCount = selectedDrivers.length;
 
   const deleteFuelLogMutation = useMutation({
     mutationFn: async (id: string) => {
@@ -244,19 +241,16 @@ export const FuelAllLogsTab: React.FC = () => {
             </div>
 
             <div>
-              <Select value={selectedDriver} onValueChange={setSelectedDriver}>
-                <SelectTrigger>
-                  <SelectValue placeholder="All drivers" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All drivers</SelectItem>
-                  {drivers?.map((driver) => (
-                    <SelectItem key={driver.id} value={driver.id}>
-                      {driver.first_name} {driver.last_name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Button
+                variant="outline"
+                onClick={() => setIsDriverModalOpen(true)}
+                className="w-full justify-start"
+              >
+                <Users className="h-4 w-4 mr-2" />
+                {selectedDriverCount === 0
+                  ? "All drivers"
+                  : `${selectedDriverCount} driver${selectedDriverCount > 1 ? 's' : ''} selected`}
+              </Button>
             </div>
 
             <div>
@@ -381,6 +375,14 @@ export const FuelAllLogsTab: React.FC = () => {
         onOpenChange={setIsVehicleModalOpen}
         selectedVehicles={selectedVehicles}
         onVehiclesChange={setSelectedVehicles}
+      />
+      
+      {/* Driver Multi-Select Modal */}
+      <MultiSelectDriverFilter
+        open={isDriverModalOpen}
+        onOpenChange={setIsDriverModalOpen}
+        selectedDrivers={selectedDrivers}
+        onDriversChange={setSelectedDrivers}
       />
     </div>
   );
