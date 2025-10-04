@@ -164,6 +164,12 @@ export const PMSchedulesTab: React.FC<PMSchedulesTabProps> = ({ vehicleId, licen
                     <SelectItem value="vehicle">Vehicle</SelectItem>
                     <SelectItem value="trailer">Trailer</SelectItem>
                     <SelectItem value="equipment">Equipment</SelectItem>
+                    <SelectItem value="pump_truck">Pump Truck</SelectItem>
+                    <SelectItem value="portable_unit">Portable Unit</SelectItem>
+                    <SelectItem value="handwash_station">Handwash Station</SelectItem>
+                    <SelectItem value="generator_heater">Generator / Heater</SelectItem>
+                    <SelectItem value="shop_equipment">Shop Equipment</SelectItem>
+                    <SelectItem value="inventory_consumables">Inventory / Consumables</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -180,6 +186,9 @@ export const PMSchedulesTab: React.FC<PMSchedulesTabProps> = ({ vehicleId, licen
                     <SelectItem value="hours">Engine Hours</SelectItem>
                     <SelectItem value="job_count">Job Count</SelectItem>
                     <SelectItem value="pump_hours">Pump Hours</SelectItem>
+                    <SelectItem value="event_based">Event-Based (DVIR Fail / Incident)</SelectItem>
+                    <SelectItem value="seasonal">Seasonal / Calendar</SelectItem>
+                    <SelectItem value="manual">Manual / On-Demand</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
