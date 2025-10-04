@@ -1,10 +1,10 @@
 import React, { useState, useMemo } from 'react';
+import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Eye, Edit, Trash2, AlertCircle, MoreVertical, Search } from 'lucide-react';
+import { Plus, Eye, Edit, Trash2, AlertCircle, MoreVertical, Search, CalendarIcon, X } from 'lucide-react';
 import { useVehicleNotes } from '@/hooks/useVehicleNotes';
-import { format } from 'date-fns';
 import { Loader2 } from 'lucide-react';
 import { EditVehicleNotesModal } from '@/components/customers/EditVehicleNotesModal';
 import { ViewNoteModal } from '@/components/customers/ViewNoteModal';
@@ -25,6 +25,9 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { cn } from '@/lib/utils';
 
 interface VehicleNotesTabProps {
   vehicleId: string;
@@ -73,6 +76,8 @@ export function VehicleNotesTab({ vehicleId }: VehicleNotesTabProps) {
   const [selectedGeneralTag, setSelectedGeneralTag] = useState<string>('all');
   const [showImportantOnly, setShowImportantOnly] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [dateFrom, setDateFrom] = useState<Date | undefined>();
+  const [dateTo, setDateTo] = useState<Date | undefined>();
 
   // Handlers
   const handleAddNote = () => {
@@ -138,9 +143,20 @@ export function VehicleNotesTab({ vehicleId }: VehicleNotesTabProps) {
         }
       }
 
+      // Filter by date range
+      if (dateFrom || dateTo) {
+        const noteDate = new Date(note.created_at);
+        if (dateFrom && noteDate < dateFrom) return false;
+        if (dateTo) {
+          const endOfDay = new Date(dateTo);
+          endOfDay.setHours(23, 59, 59, 999);
+          if (noteDate > endOfDay) return false;
+        }
+      }
+
       return true;
     });
-  }, [notes, selectedVehicleTag, selectedGeneralTag, showImportantOnly, searchTerm]);
+  }, [notes, selectedVehicleTag, selectedGeneralTag, showImportantOnly, searchTerm, dateFrom, dateTo]);
 
   if (isLoading) {
     return (
@@ -169,20 +185,6 @@ export function VehicleNotesTab({ vehicleId }: VehicleNotesTabProps) {
       {/* Search and Filters */}
       <Card>
         <CardContent className="pt-6">
-          {/* Search Bar */}
-          <div className="mb-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="text"
-                placeholder="Search notes by title, content, or tags..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9"
-              />
-            </div>
-          </div>
-
           {/* Filters */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
@@ -231,6 +233,95 @@ export function VehicleNotesTab({ vehicleId }: VehicleNotesTabProps) {
                   {showImportantOnly ? 'Showing important notes only' : 'Showing all notes'}
                 </span>
               </div>
+            </div>
+          </div>
+
+          {/* Date Range Filter */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            <div className="space-y-2">
+              <Label>From Date</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !dateFrom && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dateFrom ? format(dateFrom, "PPP") : "Select start date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={dateFrom}
+                    onSelect={setDateFrom}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            <div className="space-y-2">
+              <Label>To Date</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !dateTo && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dateTo ? format(dateTo, "PPP") : "Select end date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={dateTo}
+                    onSelect={setDateTo}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+          </div>
+
+          {(dateFrom || dateTo) && (
+            <div className="flex items-center gap-2 mt-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setDateFrom(undefined);
+                  setDateTo(undefined);
+                }}
+                className="h-8"
+              >
+                <X className="h-3 w-3 mr-1" />
+                Clear date filter
+              </Button>
+            </div>
+          )}
+
+          {/* Search Bar */}
+          <div className="mt-4">
+            <Label>Search Notes</Label>
+            <div className="relative mt-2">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Search notes by title, content, or tags..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-9"
+              />
             </div>
           </div>
         </CardContent>

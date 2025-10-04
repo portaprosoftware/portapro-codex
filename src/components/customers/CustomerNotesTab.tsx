@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
+import { format } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Eye, Edit, Trash2, Plus, Filter, FileText, MoreVertical, Search } from 'lucide-react';
+import { Eye, Edit, Trash2, Plus, Filter, FileText, MoreVertical, Search, CalendarIcon, X } from 'lucide-react';
 import { useCustomerNotes } from '@/hooks/useCustomerNotes';
 import { EditNotesModal } from './EditNotesModal';
 import { ViewNoteModal } from './ViewNoteModal';
@@ -12,7 +13,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { format } from 'date-fns';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { cn } from '@/lib/utils';
 
 interface CustomerNotesTabProps {
   customerId: string;
@@ -33,6 +36,8 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
   const [selectedGeneralTag, setSelectedGeneralTag] = useState<string>('all');
   const [showImportantOnly, setShowImportantOnly] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [dateFrom, setDateFrom] = useState<Date | undefined>();
+  const [dateTo, setDateTo] = useState<Date | undefined>();
 
   // Tag options
   const communicationTags = [
@@ -133,9 +138,20 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
         }
       }
 
+      // Filter by date range
+      if (dateFrom || dateTo) {
+        const noteDate = new Date(note.created_at);
+        if (dateFrom && noteDate < dateFrom) return false;
+        if (dateTo) {
+          const endOfDay = new Date(dateTo);
+          endOfDay.setHours(23, 59, 59, 999);
+          if (noteDate > endOfDay) return false;
+        }
+      }
+
       return true;
     }) || [];
-  }, [notes, showImportantOnly, selectedCommunicationTag, selectedGeneralTag, searchTerm]);
+  }, [notes, showImportantOnly, selectedCommunicationTag, selectedGeneralTag, searchTerm, dateFrom, dateTo]);
 
   if (isLoading) {
     return (
@@ -162,20 +178,6 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
       {/* Filters Section */}
       <Card>
         <CardContent className="space-y-4 pt-6">
-          {/* Search Bar */}
-          <div className="mb-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="text"
-                placeholder="Search notes by title, content, or tags..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9"
-              />
-            </div>
-          </div>
-
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Communication Tags Filter */}
             <div className="space-y-2">
@@ -221,8 +223,97 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
                 <span className="text-sm text-muted-foreground">
                   {showImportantOnly ? 'Showing important notes only' : 'Showing all notes'}
                 </span>
-              </div>
             </div>
+          </div>
+
+          {/* Date Range Filter */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>From Date</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !dateFrom && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dateFrom ? format(dateFrom, "PPP") : "Select start date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={dateFrom}
+                    onSelect={setDateFrom}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            <div className="space-y-2">
+              <Label>To Date</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !dateTo && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dateTo ? format(dateTo, "PPP") : "Select end date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={dateTo}
+                    onSelect={setDateTo}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+          </div>
+
+          {(dateFrom || dateTo) && (
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setDateFrom(undefined);
+                  setDateTo(undefined);
+                }}
+                className="h-8"
+              >
+                <X className="h-3 w-3 mr-1" />
+                Clear date filter
+              </Button>
+            </div>
+          )}
+
+          {/* Search Bar */}
+          <div>
+            <Label>Search Notes</Label>
+            <div className="relative mt-2">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Search notes by title, content, or tags..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+          </div>
           </div>
         </CardContent>
       </Card>
