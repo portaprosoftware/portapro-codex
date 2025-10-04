@@ -53,20 +53,28 @@ export const FuelSettingsTab: React.FC = () => {
 
   const updateSettingsMutation = useMutation({
     mutationFn: async (newSettings: Partial<FuelSettings>) => {
-      if (settings?.id) {
-        const { error } = await supabase
-          .from('fuel_settings')
-          .update(newSettings)
-          .eq('id', settings.id);
-        
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from('fuel_settings')
-          .insert(newSettings);
-        
-        if (error) throw error;
-      }
+      // Add minimum loading duration to prevent flash
+      const [result] = await Promise.all([
+        (async () => {
+          if (settings?.id) {
+            const { error } = await supabase
+              .from('fuel_settings')
+              .update(newSettings)
+              .eq('id', settings.id);
+            
+            if (error) throw error;
+          } else {
+            const { error } = await supabase
+              .from('fuel_settings')
+              .insert(newSettings);
+            
+            if (error) throw error;
+          }
+        })(),
+        // Minimum 600ms loading time
+        new Promise(resolve => setTimeout(resolve, 600))
+      ]);
+      return result;
     },
     onSuccess: () => {
       toast({
