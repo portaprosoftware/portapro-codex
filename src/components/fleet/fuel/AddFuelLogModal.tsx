@@ -153,9 +153,9 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
     }
   });
 
-  // Fetch fuel stations
+  // Fetch fuel stations (basic data only for selector)
   const { data: fuelStations } = useQuery({
-    queryKey: ['fuel-stations'],
+    queryKey: ['fuel-stations', 'basic'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('fuel_stations')

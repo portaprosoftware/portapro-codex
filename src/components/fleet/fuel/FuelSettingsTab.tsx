@@ -70,9 +70,9 @@ export const FuelSettingsTab: React.FC = () => {
     }
   }, [settings, localSettings]);
 
-  // Fetch fuel stations
+  // Fetch fuel stations with full data
   const { data: fuelStations = [], isLoading: stationsLoading } = useQuery({
-    queryKey: ['fuel-stations'],
+    queryKey: ['fuel-stations', 'full'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('fuel_stations')
@@ -114,7 +114,8 @@ export const FuelSettingsTab: React.FC = () => {
         title: 'Success',
         description: editingStation ? 'Station updated successfully' : 'Station added successfully'
       });
-      queryClient.invalidateQueries({ queryKey: ['fuel-stations'] });
+      queryClient.invalidateQueries({ queryKey: ['fuel-stations', 'full'] });
+      queryClient.invalidateQueries({ queryKey: ['fuel-stations', 'basic'] });
       setShowStationModal(false);
       setEditingStation(null);
       setStationFormData({ name: '', address: '', city: '', state: '', zip: '' });
@@ -141,7 +142,8 @@ export const FuelSettingsTab: React.FC = () => {
         title: 'Success',
         description: 'Station deleted successfully'
       });
-      queryClient.invalidateQueries({ queryKey: ['fuel-stations'] });
+      queryClient.invalidateQueries({ queryKey: ['fuel-stations', 'full'] });
+      queryClient.invalidateQueries({ queryKey: ['fuel-stations', 'basic'] });
     },
     onError: () => {
       toast({
