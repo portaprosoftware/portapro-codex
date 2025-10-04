@@ -28,9 +28,6 @@ import {
   Package,
   Shield
 } from "lucide-react";
-import { AddMaintenanceRecordModal } from "./AddMaintenanceRecordModal";
-import { AddFuelLogModal } from "./fuel/AddFuelLogModal";
-import { AddWorkOrderDrawer } from "./work-orders/AddWorkOrderDrawer";
 import { VehicleSpillKitManager } from "./VehicleSpillKitManager";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -86,13 +83,22 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
   // Fetch vehicle summary data (lightweight, only when drawer is open)
   const { data: summary, isLoading: summaryLoading } = useVehicleSummary(isOpen ? vehicle.id : null);
   
-  // Track vehicle profile view
+  // Phase 5: URL State Management
+  // Update URL when drawer opens/closes
   useEffect(() => {
     if (isOpen) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('vehicle', vehicle.id);
+      window.history.pushState({}, '', url.toString());
+      
       trackEvent('vehicle_profile_viewed', {
         vehicleId: vehicle.id,
         vehicleName: vehicle.license_plate,
       });
+    } else {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('vehicle');
+      window.history.pushState({}, '', url.toString());
     }
   }, [isOpen, vehicle.id, vehicle.license_plate, trackEvent]);
   
@@ -115,10 +121,7 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
   const [damageSeverity, setDamageSeverity] = useState("minor");
   const [isUploadingDamage, setIsUploadingDamage] = useState(false);
   
-  // Modal states for add functionality
-  const [addMaintenanceOpen, setAddMaintenanceOpen] = useState(false);
-  const [addFuelLogOpen, setAddFuelLogOpen] = useState(false);
-  const [addWorkOrderOpen, setAddWorkOrderOpen] = useState(false);
+  // Modal states
   const [addDocumentOpen, setAddDocumentOpen] = useState(false);
   const [showVehicleTypeSelector, setShowVehicleTypeSelector] = useState(false);
   const [selectedVehicleType, setSelectedVehicleType] = useState<string>(vehicle.vehicle_type || "");
@@ -650,29 +653,6 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
           </div>
         </div>
       </div>
-
-      {/* Child Modals */}
-      <AddMaintenanceRecordModal 
-        open={addMaintenanceOpen}
-        onOpenChange={setAddMaintenanceOpen}
-        preselectedVehicleId={vehicle.id}
-      />
-
-      <AddFuelLogModal 
-        open={addFuelLogOpen}
-        onOpenChange={setAddFuelLogOpen}
-        preselectedVehicleId={vehicle.id}
-      />
-
-      <AddWorkOrderDrawer 
-        open={addWorkOrderOpen}
-        onOpenChange={setAddWorkOrderOpen}
-        onSuccess={() => {
-          queryClient.invalidateQueries({ queryKey: ["work-orders"] });
-          queryClient.invalidateQueries({ queryKey: ["vehicles"] });
-        }}
-        preselectedAssetId={vehicle.id}
-      />
 
       {/* Simple document upload placeholder */}
       {addDocumentOpen && (

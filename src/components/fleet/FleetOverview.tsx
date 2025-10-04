@@ -49,6 +49,20 @@ export const FleetOverview: React.FC = () => {
     staleTime: 0, // Always refetch when component mounts
   });
 
+  // Phase 5: Handle URL-based vehicle selection (after vehicles are loaded)
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const vehicleId = urlParams.get('vehicle');
+    
+    if (vehicleId && vehicles) {
+      const vehicle = vehicles.find(v => v.id === vehicleId);
+      if (vehicle && !isVehicleModalOpen) {
+        setSelectedVehicle(vehicle);
+        setIsVehicleModalOpen(true);
+      }
+    }
+  }, [vehicles, isVehicleModalOpen]);
+
   const filteredVehicles = vehicles?.filter(vehicle => {
     const matchesSearch = vehicle.license_plate?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          vehicle.vehicle_type?.toLowerCase().includes(searchQuery.toLowerCase());
