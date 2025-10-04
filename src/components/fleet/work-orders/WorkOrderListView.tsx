@@ -57,14 +57,16 @@ export const WorkOrderListView: React.FC<WorkOrderListViewProps> = ({
   const getPriorityBadge = (priority: string) => {
     const priorityColors = {
       'Low': 'bg-green-100 text-green-800 border-green-200',
-      'Medium': 'bg-yellow-100 text-yellow-800 border-yellow-200',
+      'Normal': 'bg-blue-100 text-blue-800 border-blue-200',
       'High': 'bg-orange-100 text-orange-800 border-orange-200',
       'Critical': 'bg-red-100 text-red-800 border-red-200'
     };
     
+    const capitalizedPriority = priority.charAt(0).toUpperCase() + priority.slice(1);
+    
     return (
-      <Badge className={`${priorityColors[priority as keyof typeof priorityColors] || 'bg-gray-100 text-gray-800'} text-xs`}>
-        {priority}
+      <Badge className={`${priorityColors[capitalizedPriority as keyof typeof priorityColors] || 'bg-gray-100 text-gray-800'} text-xs`}>
+        {capitalizedPriority}
       </Badge>
     );
   };

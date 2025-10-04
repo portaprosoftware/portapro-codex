@@ -248,7 +248,7 @@ export const WorkOrderCalendarView: React.FC<WorkOrderCalendarViewProps> = ({
                               {workOrder.status}
                             </Badge>
                             <Badge variant="outline" className={`${getPriorityColor(workOrder.priority)} text-white border-transparent`}>
-                              {workOrder.priority}
+                              {workOrder.priority.charAt(0).toUpperCase() + workOrder.priority.slice(1)}
                             </Badge>
                           </div>
                         </div>

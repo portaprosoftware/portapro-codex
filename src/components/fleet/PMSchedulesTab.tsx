@@ -407,7 +407,7 @@ export const PMSchedulesTab: React.FC<PMSchedulesTabProps> = ({ vehicleId, licen
                     <div className="flex items-center gap-3 mb-2">
                       <h3 className="text-lg font-medium">{schedule.name}</h3>
                       <Badge variant={getPriorityBadgeVariant(schedule.default_priority)}>
-                        {schedule.default_priority}
+                        {schedule.default_priority.charAt(0).toUpperCase() + schedule.default_priority.slice(1)}
                       </Badge>
                       {!schedule.active && (
                         <Badge variant="secondary">Inactive</Badge>
