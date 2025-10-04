@@ -123,7 +123,7 @@ export const NextPMDueWidget: React.FC<NextPMDueWidgetProps> = ({
             variant="outline" 
             size="sm" 
             className="w-full text-xs"
-            onClick={() => navigate(`/fleet/maintenance?vehicle=${vehicleId}&returnTo=/fleet-management&tab=pm-schedules`)}
+            onClick={() => navigate('/fleet/maintenance?tab=pm-schedules')}
           >
             <Plus className="h-3 w-3 mr-1" />
             Add PM Schedule
