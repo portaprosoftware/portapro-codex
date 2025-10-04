@@ -15,6 +15,7 @@ import { AddMaintenanceRecordModal } from "./AddMaintenanceRecordModal";
 import { TechnicianAssignmentModal } from "./TechnicianAssignmentModal";
 import { AddRecurringServiceSlider } from "./AddRecurringServiceSlider";
 import { MaintenanceAllRecordsTab } from "./MaintenanceAllRecordsTab";
+import { useSearchParams } from "react-router-dom";
 
 import { MaintenanceSettingsTab } from "./MaintenanceSettingsTab";
 import { MaintenancePartsInventoryTab } from "./MaintenancePartsInventoryTab";
@@ -62,6 +63,21 @@ interface CompanyMaintenanceSettings {
 }
 
 export const EnhancedMaintenanceManagement: React.FC = () => {
+  const [searchParams] = useSearchParams();
+  const tabParam = searchParams.get('tab');
+  
+  // Map tab parameter to actual tab values
+  const getInitialTab = () => {
+    if (tabParam === 'pm-schedules') return 'pm';
+    if (tabParam === 'work-orders') return 'workorders';
+    if (tabParam === 'dvir') return 'dvir';
+    if (tabParam === 'records') return 'records';
+    if (tabParam === 'settings') return 'settings';
+    if (tabParam === 'parts') return 'parts';
+    if (tabParam === 'calendar') return 'calendar';
+    return 'overview';
+  };
+  
   const [selectedRecord, setSelectedRecord] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [addRecordOpen, setAddRecordOpen] = useState(false);
@@ -284,7 +300,7 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
           </div>
 
           {/* Tab Navigation Inside Card */}
-          <Tabs defaultValue="overview" className="space-y-6">
+          <Tabs defaultValue={getInitialTab()} className="space-y-6">
             <TabsList className="bg-white rounded-full p-1 shadow-sm border w-fit overflow-x-auto">
               <TabsTrigger value="overview" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Overview</TabsTrigger>
               <TabsTrigger value="records" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">All Records</TabsTrigger>
