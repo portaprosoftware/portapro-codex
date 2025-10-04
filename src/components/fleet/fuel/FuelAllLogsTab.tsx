@@ -220,7 +220,7 @@ export const FuelAllLogsTab: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
               <Input
-                placeholder="Search logs..."
+                placeholder="Search Logs"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full"
