@@ -467,12 +467,13 @@ export const PMSchedulesTab: React.FC<PMSchedulesTabProps> = ({ vehicleId, licen
 
       {selectedTemplateForWO && (
         <AddWorkOrderDrawer
-          isOpen={isWorkOrderDrawerOpen}
-          onClose={() => {
+          open={isWorkOrderDrawerOpen}
+          onOpenChange={setIsWorkOrderDrawerOpen}
+          onSuccess={() => {
             setIsWorkOrderDrawerOpen(false);
             setSelectedTemplateForWO(null);
           }}
-          vehicleId={vehicleId}
+          vehicleContextId={vehicleId}
           pmTemplate={selectedTemplateForWO}
         />
       )}
