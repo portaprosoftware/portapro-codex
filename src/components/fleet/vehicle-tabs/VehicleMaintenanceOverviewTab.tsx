@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { StatCard } from "@/components/ui/StatCard";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertTriangle, Clock, Calendar, DollarSign } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { AlertTriangle, Clock, Calendar, DollarSign, Plus } from "lucide-react";
 import { format } from "date-fns";
 import { getCurrentDateInTimezone } from "@/lib/timezoneUtils";
 import { MaintenanceRecordCard } from "../maintenance/MaintenanceRecordCard";
+import { AddMaintenanceRecordModal } from "../AddMaintenanceRecordModal";
 
 interface VehicleMaintenanceOverviewTabProps {
   vehicleId: string;
@@ -17,6 +19,8 @@ export const VehicleMaintenanceOverviewTab: React.FC<VehicleMaintenanceOverviewT
   vehicleId,
   licensePlate
 }) => {
+  const [addRecordOpen, setAddRecordOpen] = useState(false);
+  
   // Fetch company timezone
   const { data: companySettings } = useQuery({
     queryKey: ["company-timezone-settings"],
@@ -174,9 +178,25 @@ export const VehicleMaintenanceOverviewTab: React.FC<VehicleMaintenanceOverviewT
   };
 
   return (
-    <div className="space-y-6">
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+    <>
+      <div className="space-y-6">
+        {/* Header with Create Button */}
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-2xl font-bold">Maintenance Overview</h2>
+            <p className="text-gray-600">Vehicle: {licensePlate}</p>
+          </div>
+          <Button
+            onClick={() => setAddRecordOpen(true)}
+            className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Create Maintenance Record
+          </Button>
+        </div>
+
+        {/* KPI Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
         <StatCard
           title="Past Due"
           value={pastDueCount || 0}
@@ -279,6 +299,14 @@ export const VehicleMaintenanceOverviewTab: React.FC<VehicleMaintenanceOverviewT
           </CardContent>
         </Card>
       </div>
-    </div>
+      </div>
+
+      {/* Add Maintenance Record Modal */}
+      <AddMaintenanceRecordModal
+        open={addRecordOpen}
+        onOpenChange={setAddRecordOpen}
+        preselectedVehicleId={vehicleId}
+      />
+    </>
   );
 };
