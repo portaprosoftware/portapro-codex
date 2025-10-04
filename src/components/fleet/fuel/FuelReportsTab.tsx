@@ -229,7 +229,7 @@ export const FuelReportsTab: React.FC = () => {
               <BarChart data={trendData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
-                <YAxis />
+                <YAxis label={{ value: 'Gallons', angle: -90, position: 'insideLeft' }} />
                 <Tooltip 
                   formatter={(value, name) => [
                     name === 'gallons' ? `${value} gal` : `$${Number(value).toFixed(2)}`,
