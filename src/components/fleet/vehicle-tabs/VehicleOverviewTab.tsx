@@ -20,7 +20,9 @@ import {
   Edit,
   Camera,
   Upload,
-  Trash2
+  Trash2,
+  ClipboardCheck,
+  CalendarClock
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -192,7 +194,7 @@ export function VehicleOverviewTab({ vehicleId, licensePlate, vehicleData, isAct
     {
       label: 'DVIRs (30 days)',
       value: metrics?.dvirs_last_30d || 0,
-      icon: FileText,
+      icon: ClipboardCheck,
       gradient: 'from-blue-500 to-blue-600',
       textColor: 'text-blue-700',
     },
@@ -206,9 +208,9 @@ export function VehicleOverviewTab({ vehicleId, licensePlate, vehicleData, isAct
     {
       label: 'Docs Expiring',
       value: metrics?.docs_expiring_30d || 0,
-      icon: Calendar,
-      gradient: 'from-yellow-500 to-yellow-600',
-      textColor: 'text-yellow-700',
+      icon: CalendarClock,
+      gradient: 'from-amber-500 to-amber-600',
+      textColor: 'text-amber-700',
     },
   ];
 
