@@ -235,29 +235,29 @@ export function VehicleOverviewTab({ vehicleId, licensePlate, vehicleData, isAct
   return (
     <div className="space-y-6">
       {/* Details/Notes Toggle */}
-      <div className="inline-flex rounded-lg bg-gray-100 p-1 gap-1">
+      <div className="inline-flex rounded-lg bg-gray-100 p-0.5 gap-0.5">
         <button
           onClick={() => setActiveSubTab('details')}
           className={cn(
-            "flex items-center gap-2 px-4 py-2 rounded-md font-medium transition-all",
+            "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all",
             activeSubTab === 'details'
               ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-sm"
               : "text-gray-600 hover:text-gray-900"
           )}
         >
-          <User className="h-4 w-4" />
+          <User className="h-3.5 w-3.5" />
           Details
         </button>
         <button
           onClick={() => setActiveSubTab('notes')}
           className={cn(
-            "flex items-center gap-2 px-4 py-2 rounded-md font-medium transition-all",
+            "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all",
             activeSubTab === 'notes'
               ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-sm"
               : "text-gray-600 hover:text-gray-900"
           )}
         >
-          <FileText className="h-4 w-4" />
+          <FileText className="h-3.5 w-3.5" />
           Notes
         </button>
       </div>
