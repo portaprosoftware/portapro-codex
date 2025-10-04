@@ -295,33 +295,127 @@ export const FuelSettingsTab: React.FC = () => {
     }
   });
 
-  // Individual mutations for toggles (auto-save)
-  const updateToggleMutation = useMutation({
-    mutationFn: async (newSettings: Partial<FuelSettings>) => {
+  // Separate mutations for each toggle to prevent interference
+  const updateRequireReceiptMutation = useMutation({
+    mutationFn: async (checked: boolean) => {
       if (settings?.id) {
         const { error } = await supabase
           .from('fuel_settings')
-          .update(newSettings)
+          .update({ require_receipt: checked })
           .eq('id', settings.id);
         
         if (error) throw error;
       } else {
         const { error } = await supabase
           .from('fuel_settings')
-          .insert(newSettings);
+          .insert({ require_receipt: checked });
         
         if (error) throw error;
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['fuel-settings'] });
+    onMutate: async (checked) => {
+      await queryClient.cancelQueries({ queryKey: ['fuel-settings'] });
+      const previousSettings = queryClient.getQueryData(['fuel-settings']);
+      
+      queryClient.setQueryData(['fuel-settings'], (old: any) => ({
+        ...old,
+        require_receipt: checked
+      }));
+      
+      return { previousSettings };
     },
-    onError: () => {
+    onError: (err, newValue, context) => {
+      queryClient.setQueryData(['fuel-settings'], context?.previousSettings);
       toast({
         title: 'Error',
         description: 'Failed to update setting',
         variant: 'destructive'
       });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['fuel-settings'] });
+    }
+  });
+
+  const updateDriverEditMutation = useMutation({
+    mutationFn: async (checked: boolean) => {
+      if (settings?.id) {
+        const { error } = await supabase
+          .from('fuel_settings')
+          .update({ driver_edit_permission: checked })
+          .eq('id', settings.id);
+        
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('fuel_settings')
+          .insert({ driver_edit_permission: checked });
+        
+        if (error) throw error;
+      }
+    },
+    onMutate: async (checked) => {
+      await queryClient.cancelQueries({ queryKey: ['fuel-settings'] });
+      const previousSettings = queryClient.getQueryData(['fuel-settings']);
+      
+      queryClient.setQueryData(['fuel-settings'], (old: any) => ({
+        ...old,
+        driver_edit_permission: checked
+      }));
+      
+      return { previousSettings };
+    },
+    onError: (err, newValue, context) => {
+      queryClient.setQueryData(['fuel-settings'], context?.previousSettings);
+      toast({
+        title: 'Error',
+        description: 'Failed to update setting',
+        variant: 'destructive'
+      });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['fuel-settings'] });
+    }
+  });
+
+  const updateAutoMpgMutation = useMutation({
+    mutationFn: async (checked: boolean) => {
+      if (settings?.id) {
+        const { error } = await supabase
+          .from('fuel_settings')
+          .update({ auto_calculate_mpg: checked })
+          .eq('id', settings.id);
+        
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('fuel_settings')
+          .insert({ auto_calculate_mpg: checked });
+        
+        if (error) throw error;
+      }
+    },
+    onMutate: async (checked) => {
+      await queryClient.cancelQueries({ queryKey: ['fuel-settings'] });
+      const previousSettings = queryClient.getQueryData(['fuel-settings']);
+      
+      queryClient.setQueryData(['fuel-settings'], (old: any) => ({
+        ...old,
+        auto_calculate_mpg: checked
+      }));
+      
+      return { previousSettings };
+    },
+    onError: (err, newValue, context) => {
+      queryClient.setQueryData(['fuel-settings'], context?.previousSettings);
+      toast({
+        title: 'Error',
+        description: 'Failed to update setting',
+        variant: 'destructive'
+      });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['fuel-settings'] });
     }
   });
 
@@ -425,8 +519,8 @@ export const FuelSettingsTab: React.FC = () => {
             <Switch
               id="require-receipt"
               checked={settings?.require_receipt || false}
-              onCheckedChange={(checked) => updateToggleMutation.mutate({ require_receipt: checked })}
-              disabled={updateToggleMutation.isPending}
+              onCheckedChange={(checked) => updateRequireReceiptMutation.mutate(checked)}
+              disabled={updateRequireReceiptMutation.isPending}
             />
           </div>
 
@@ -438,8 +532,8 @@ export const FuelSettingsTab: React.FC = () => {
             <Switch
               id="driver-edit"
               checked={settings?.driver_edit_permission || false}
-              onCheckedChange={(checked) => updateToggleMutation.mutate({ driver_edit_permission: checked })}
-              disabled={updateToggleMutation.isPending}
+              onCheckedChange={(checked) => updateDriverEditMutation.mutate(checked)}
+              disabled={updateDriverEditMutation.isPending}
             />
           </div>
 
@@ -451,8 +545,8 @@ export const FuelSettingsTab: React.FC = () => {
             <Switch
               id="auto-mpg"
               checked={settings?.auto_calculate_mpg || false}
-              onCheckedChange={(checked) => updateToggleMutation.mutate({ auto_calculate_mpg: checked })}
-              disabled={updateToggleMutation.isPending}
+              onCheckedChange={(checked) => updateAutoMpgMutation.mutate(checked)}
+              disabled={updateAutoMpgMutation.isPending}
             />
           </div>
         </CardContent>
