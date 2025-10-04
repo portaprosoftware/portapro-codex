@@ -305,7 +305,7 @@ export const MaintenanceAllRecordsTab: React.FC<MaintenanceAllRecordsTabProps> =
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto">
+    <div className={vehicleId ? "w-full" : "w-full max-w-6xl mx-auto"}>
       <Card className="bg-white rounded-lg border shadow-sm w-full overflow-hidden">
       <CardHeader className="px-6 py-4">
         <CardTitle className="text-xl font-semibold text-gray-900">All Maintenance Records</CardTitle>
