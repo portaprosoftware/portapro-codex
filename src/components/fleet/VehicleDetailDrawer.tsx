@@ -847,7 +847,6 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
                   placeholder="Add general vehicle notes..."
                   rows={3}
                 />
-                <p className="text-xs text-muted-foreground">Advanced notes available via toggle above</p>
               </div>
 
             </div>
