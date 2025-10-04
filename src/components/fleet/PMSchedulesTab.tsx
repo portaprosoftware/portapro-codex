@@ -157,7 +157,7 @@ export const PMSchedulesTab: React.FC<PMSchedulesTabProps> = ({ vehicleId, licen
               templates.map((template, index) => {
                 const gradient = getGradientColors(index);
                 return (
-                  <Card key={template.id} className="overflow-hidden border-l-4" style={{ borderLeftColor: gradient.from }}>
+                  <Card key={template.id} className={`overflow-hidden border-l-4 ${!template.is_active ? 'opacity-60' : ''}`} style={{ borderLeftColor: template.is_active ? gradient.from : '#9CA3AF' }}>
                     <CardHeader className="pb-3">
                       <div className="flex items-start justify-between">
                         <div className="flex items-center gap-3 mb-2">
@@ -174,7 +174,7 @@ export const PMSchedulesTab: React.FC<PMSchedulesTabProps> = ({ vehicleId, licen
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Badge variant={template.is_active ? "default" : "secondary"} className="text-xs">
+                          <Badge variant={template.is_active ? "active" : "inactive"} className="text-xs">
                             {template.is_active ? "Active" : "Inactive"}
                           </Badge>
                           <Button
