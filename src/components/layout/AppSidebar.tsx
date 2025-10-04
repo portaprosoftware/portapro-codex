@@ -110,7 +110,8 @@ const managementItems: NavigationItem[] = [
     title: 'Fleet Management', 
     url: '/fleet', 
     icon: Truck,
-    permission: 'staff'
+    permission: 'staff',
+    description: 'fleet-gradient'
   },
   { 
     title: 'Services Hub', 
@@ -228,7 +229,8 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
                   asChild 
                   isActive={isActive}
                   className={cn(
-                    isActive && "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold hover:bg-gradient-to-r hover:from-blue-800 hover:to-blue-900 [&_*]:text-white [&_*]:font-bold"
+                    isActive && "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold hover:bg-gradient-to-r hover:from-blue-800 hover:to-blue-900 [&_*]:text-white [&_*]:font-bold",
+                    item.description === 'fleet-gradient' && !isActive && "hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100"
                   )}
                 >
                   <NavLink
@@ -239,7 +241,19 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
                       isActive && "text-white [&_*]:text-white"
                     )}
                   >
-                    <item.icon className="h-5 w-5 flex-shrink-0" />
+                    {item.description === 'fleet-gradient' ? (
+                      <div className={cn(
+                        "p-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 flex-shrink-0",
+                        isActive && "from-white to-white"
+                      )}>
+                        <item.icon className={cn(
+                          "h-4 w-4 text-white stroke-[2.5]",
+                          isActive && "text-blue-700"
+                        )} />
+                      </div>
+                    ) : (
+                      <item.icon className="h-5 w-5 flex-shrink-0" />
+                    )}
                     <span className="truncate">{item.title}</span>
                   </NavLink>
                 </SidebarMenuButton>
