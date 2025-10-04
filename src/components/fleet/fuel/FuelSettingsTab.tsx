@@ -12,6 +12,7 @@ import { Save, Plus, Edit, Trash2 } from 'lucide-react';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { StateScroller } from '@/components/ui/state-scroller';
 
 interface FuelSettings {
   id: string;
@@ -448,12 +449,10 @@ export const FuelSettingsTab: React.FC = () => {
               </div>
               <div>
                 <Label htmlFor="station-state">State</Label>
-                <Input
-                  id="station-state"
+                <StateScroller
                   value={stationFormData.state}
-                  onChange={(e) => setStationFormData(prev => ({ ...prev, state: e.target.value }))}
+                  onValueChange={(value) => setStationFormData(prev => ({ ...prev, state: value }))}
                   placeholder="State"
-                  maxLength={2}
                 />
               </div>
             </div>
