@@ -83,22 +83,13 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
   // Fetch vehicle summary data (lightweight, only when drawer is open)
   const { data: summary, isLoading: summaryLoading } = useVehicleSummary(isOpen ? vehicle.id : null);
   
-  // Phase 5: URL State Management
-  // Update URL when drawer opens/closes
+  // Phase 5: Track analytics when drawer opens
   useEffect(() => {
     if (isOpen) {
-      const url = new URL(window.location.href);
-      url.searchParams.set('vehicle', vehicle.id);
-      window.history.pushState({}, '', url.toString());
-      
       trackEvent('vehicle_profile_viewed', {
         vehicleId: vehicle.id,
         vehicleName: vehicle.license_plate,
       });
-    } else {
-      const url = new URL(window.location.href);
-      url.searchParams.delete('vehicle');
-      window.history.pushState({}, '', url.toString());
     }
   }, [isOpen, vehicle.id, vehicle.license_plate, trackEvent]);
   

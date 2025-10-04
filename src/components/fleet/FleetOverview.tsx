@@ -26,6 +26,7 @@ export const FleetOverview: React.FC = () => {
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
   const [isAddVehicleModalOpen, setIsAddVehicleModalOpen] = useState(false);
   const [isSpillKitCollapsed, setIsSpillKitCollapsed] = useState(true);
+  const [manuallyClosedVehicleId, setManuallyClosedVehicleId] = useState<string | null>(null);
   const navigate = useNavigate();
 
   // Invalidate and refetch vehicles query when component mounts or when returning to overview
@@ -55,13 +56,19 @@ export const FleetOverview: React.FC = () => {
     const vehicleId = urlParams.get('vehicle');
     
     if (vehicleId && vehicles) {
+      // Don't re-open if this vehicle was just manually closed
+      if (vehicleId === manuallyClosedVehicleId) {
+        return;
+      }
+      
       const vehicle = vehicles.find(v => v.id === vehicleId);
       if (vehicle && !isVehicleModalOpen) {
         setSelectedVehicle(vehicle);
         setIsVehicleModalOpen(true);
+        setManuallyClosedVehicleId(null); // Clear the flag when opening
       }
     }
-  }, [vehicles, isVehicleModalOpen]);
+  }, [vehicles, isVehicleModalOpen, manuallyClosedVehicleId]);
 
   const filteredVehicles = vehicles?.filter(vehicle => {
     const matchesSearch = vehicle.license_plate?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -147,6 +154,7 @@ export const FleetOverview: React.FC = () => {
   const handleManageVehicle = (vehicle: any) => {
     setSelectedVehicle(vehicle);
     setIsVehicleModalOpen(true);
+    setManuallyClosedVehicleId(null); // Clear flag when explicitly opening
   };
 
   if (pageMode === "management") {
@@ -376,7 +384,13 @@ export const FleetOverview: React.FC = () => {
           isOpen={isVehicleModalOpen}
           onClose={() => {
             setIsVehicleModalOpen(false);
+            setManuallyClosedVehicleId(selectedVehicle.id); // Track manually closed vehicle
             setSelectedVehicle(null);
+            
+            // Clear URL parameter
+            const url = new URL(window.location.href);
+            url.searchParams.delete('vehicle');
+            window.history.pushState({}, '', url.toString());
           }}
         />
       )}
