@@ -35,6 +35,7 @@ interface AddWorkOrderDrawerProps {
   preselectedAssetId?: string;
   vehicleContextId?: string | null;
   vehicleContextName?: string | null;
+  pmTemplate?: any;
 }
 
 interface ChecklistItem {
@@ -99,7 +100,8 @@ export const AddWorkOrderDrawer: React.FC<AddWorkOrderDrawerProps> = ({
   defaultDueDate,
   preselectedAssetId = "",
   vehicleContextId = null,
-  vehicleContextName = null
+  vehicleContextName = null,
+  pmTemplate
 }) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
