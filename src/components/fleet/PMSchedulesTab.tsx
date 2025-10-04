@@ -39,6 +39,9 @@ export const PMSchedulesTab: React.FC<PMSchedulesTabProps> = ({ vehicleId, licen
   const [editingTemplate, setEditingTemplate] = useState<any>(null);
   const [selectedTemplateForWO, setSelectedTemplateForWO] = useState<any>(null);
   const [isWorkOrderDrawerOpen, setIsWorkOrderDrawerOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [assetTypeFilter, setAssetTypeFilter] = useState<string>("all");
+  const [triggerTypeFilter, setTriggerTypeFilter] = useState<string>("all");
   const queryClient = useQueryClient();
 
   const { data: templates, isLoading } = useQuery({
@@ -106,6 +109,16 @@ export const PMSchedulesTab: React.FC<PMSchedulesTabProps> = ({ vehicleId, licen
     return gradients[index % gradients.length];
   };
 
+  // Filter templates based on search and filters
+  const filteredTemplates = templates?.filter(template => {
+    const matchesSearch = template.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         template.description?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesAssetType = assetTypeFilter === "all" || template.asset_type === assetTypeFilter;
+    const matchesTriggerType = triggerTypeFilter === "all" || template.trigger_type === triggerTypeFilter;
+    
+    return matchesSearch && matchesAssetType && matchesTriggerType;
+  });
+
   return (
     <div className="space-y-6">
       <Tabs defaultValue="templates" className="w-full">
@@ -129,6 +142,50 @@ export const PMSchedulesTab: React.FC<PMSchedulesTabProps> = ({ vehicleId, licen
             </Button>
           </div>
 
+          {/* Filter Card */}
+          <Card className="p-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label>Search Templates</Label>
+                <Input
+                  placeholder="Search by name or description..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Asset Type</Label>
+                <Select value={assetTypeFilter} onValueChange={setAssetTypeFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Asset Types" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Asset Types</SelectItem>
+                    <SelectItem value="vehicle">Vehicle</SelectItem>
+                    <SelectItem value="trailer">Trailer</SelectItem>
+                    <SelectItem value="equipment">Equipment</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Trigger Type</Label>
+                <Select value={triggerTypeFilter} onValueChange={setTriggerTypeFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Trigger Types" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Trigger Types</SelectItem>
+                    <SelectItem value="mileage">Mileage-Based</SelectItem>
+                    <SelectItem value="days">Time-Based (Days)</SelectItem>
+                    <SelectItem value="hours">Engine Hours</SelectItem>
+                    <SelectItem value="job_count">Job Count</SelectItem>
+                    <SelectItem value="pump_hours">Pump Hours</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </Card>
+
           <div className="grid gap-4">
             {isLoading ? (
               <Card>
@@ -136,25 +193,29 @@ export const PMSchedulesTab: React.FC<PMSchedulesTabProps> = ({ vehicleId, licen
                   <p className="text-gray-500 text-center">Loading templates...</p>
                 </CardContent>
               </Card>
-            ) : templates?.length === 0 ? (
+            ) : filteredTemplates?.length === 0 ? (
               <Card className="border-2 border-dashed">
                 <CardContent className="p-12 text-center">
                   <FileText className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">No PM Templates</h3>
+                  <h3 className="text-xl font-semibold mb-2">No Templates Found</h3>
                   <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                    Create reusable maintenance templates to streamline work order creation
+                    {searchTerm || assetTypeFilter !== "all" || triggerTypeFilter !== "all"
+                      ? "No templates match your search criteria. Try adjusting your filters."
+                      : "Create reusable maintenance templates to streamline work order creation"}
                   </p>
-                  <Button 
-                    onClick={() => { setEditingTemplate(null); setIsBuilderOpen(true); }}
-                    className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold"
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Create First Template
-                  </Button>
+                  {!searchTerm && assetTypeFilter === "all" && triggerTypeFilter === "all" && (
+                    <Button 
+                      onClick={() => { setEditingTemplate(null); setIsBuilderOpen(true); }}
+                      className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Create First Template
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             ) : (
-              templates.map((template, index) => {
+              filteredTemplates.map((template, index) => {
                 const gradient = getGradientColors(index);
                 return (
                   <Card key={template.id} className={`overflow-hidden border-l-4 ${!template.is_active ? 'opacity-60' : ''}`} style={{ borderLeftColor: template.is_active ? gradient.from : '#9CA3AF' }}>
