@@ -457,6 +457,11 @@ export const FuelSettingsTab: React.FC = () => {
                 title: 'Location Found',
                 description: `ZIP code ${numericZip} detected from your location.`
               });
+              
+              // Automatically trigger search after setting ZIP code
+              setTimeout(() => {
+                handleSearchGasStations();
+              }, 500);
             } else {
               toast({
                 title: 'ZIP Code Not Found',
@@ -1015,13 +1020,18 @@ export const FuelSettingsTab: React.FC = () => {
                   variant="outline"
                   onClick={handleFindMyLocation}
                   disabled={isLocating}
-                  className="h-12"
-                  title="Find my ZIP code"
+                  className="h-12 gap-2"
                 >
                   {isLocating ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Locating...
+                    </>
                   ) : (
-                    <Locate className="h-4 w-4" />
+                    <>
+                      <Locate className="h-4 w-4" />
+                      Use Current Location
+                    </>
                   )}
                 </Button>
               </div>
