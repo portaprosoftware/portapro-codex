@@ -18,3 +18,6 @@ verify_jwt = false
 [functions.search-gas-stations]
 verify_jwt = false
 
+[functions.search-gas-stations-google]
+verify_jwt = false
+

@@ -361,7 +361,7 @@ export const FuelSettingsTab: React.FC = () => {
     if (!zipCodeSearch.trim()) {
       toast({
         title: 'Validation Error',
-        description: 'Please enter a zip code',
+        description: 'Please enter a ZIP code',
         variant: 'destructive'
       });
       return;
@@ -371,32 +371,49 @@ export const FuelSettingsTab: React.FC = () => {
     setSearchResults([]);
     
     try {
-      const { data, error } = await supabase.functions.invoke('search-gas-stations', {
+      console.log('🔍 Searching for gas stations with ZIP:', zipCodeSearch.trim());
+      
+      const { data, error } = await supabase.functions.invoke('search-gas-stations-google', {
         body: { zipCode: zipCodeSearch.trim() }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Google search error:', error);
+        throw error;
+      }
 
-      if (data.gasStations && data.gasStations.length > 0) {
+      console.log('✅ Search results:', data);
+
+      if (data?.error) {
+        toast({
+          title: 'Search Issue',
+          description: data.error === 'Invalid ZIP code' 
+            ? 'No results found. Try a nearby ZIP code.'
+            : data.error,
+          variant: 'destructive',
+        });
+        setSearchResults([]);
+      } else if (data.gasStations && data.gasStations.length > 0) {
         setSearchResults(data.gasStations);
         toast({
           title: 'Success',
-          description: `Found ${data.gasStations.length} gas stations`
+          description: `Found ${data.gasStations.length} gas stations nearby`
         });
       } else {
         setSearchResults([]);
         toast({
-          title: 'No Results',
-          description: 'No gas stations found for this zip code'
+          title: 'No Stations Found',
+          description: 'Try searching with a nearby ZIP code.'
         });
       }
     } catch (error) {
-      console.error('Error searching gas stations:', error);
+      console.error('💥 Search exception:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to search gas stations',
+        title: 'Search Failed',
+        description: 'Could not search for gas stations. Please try again.',
         variant: 'destructive'
       });
+      setSearchResults([]);
     } finally {
       setIsSearching(false);
     }
@@ -849,31 +866,51 @@ export const FuelSettingsTab: React.FC = () => {
               </div>
               
               {/* Station Results List */}
-              {searchResults.length > 0 ? (
+              {isSearching ? (
+                <div className="flex flex-col items-center justify-center py-12 text-center space-y-3">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  <p className="text-muted-foreground">Searching for gas stations...</p>
+                </div>
+              ) : searchResults.length > 0 ? (
                 <div className="max-h-[500px] overflow-y-auto space-y-2 pr-2">
                   {searchResults.map((station, index) => (
                     <Card 
                       key={index}
-                      className="cursor-pointer transition-all hover:shadow-md hover:border-primary/50"
+                      className="cursor-pointer transition-all hover:shadow-md hover:border-primary/50 border-2"
                       onClick={() => handleSelectStation(station)}
                     >
                       <CardContent className="p-4">
                         <div className="flex items-start justify-between gap-4">
-                          <div className="flex-1">
-                            <h4 className="font-semibold text-base mb-1">{station.name}</h4>
-                            <p className="text-sm text-muted-foreground">{station.address}</p>
+                          <div className="flex-1 space-y-1">
+                            <h4 className="font-semibold text-base">{station.name}</h4>
                             <p className="text-sm text-muted-foreground">
-                              {station.city}, {station.state} {station.zip}
+                              {station.address || 'Address not available'}
                             </p>
+                            {(station.city || station.state || station.zip) && (
+                              <p className="text-sm text-muted-foreground">
+                                {[station.city, station.state, station.zip].filter(Boolean).join(', ')}
+                              </p>
+                            )}
                             {station.phone && (
-                              <p className="text-sm text-muted-foreground mt-1">
+                              <p className="text-sm text-muted-foreground">
                                 📞 {station.phone}
+                              </p>
+                            )}
+                            {station.metadata?.rating && (
+                              <p className="text-xs text-muted-foreground">
+                                ⭐ {station.metadata.rating} ({station.metadata.user_ratings_total} reviews)
+                              </p>
+                            )}
+                            {station.metadata?.open_now !== undefined && (
+                              <p className={`text-xs font-medium ${station.metadata.open_now ? 'text-green-600' : 'text-red-600'}`}>
+                                {station.metadata.open_now ? '🟢 Open now' : '🔴 Closed'}
                               </p>
                             )}
                           </div>
                           <Button 
                             size="sm" 
                             variant="outline"
+                            className="shrink-0"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleSelectStation(station);
@@ -889,8 +926,9 @@ export const FuelSettingsTab: React.FC = () => {
               ) : (
                 <div className="text-center py-12 text-muted-foreground border rounded-lg bg-muted/20">
                   <MapPin className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                  <p className="font-medium">No stations found</p>
-                  <p className="text-sm mt-1">Enter a zip code above and click Search to find nearby gas stations</p>
+                  <p className="font-medium">Enter a ZIP code to search</p>
+                  <p className="text-sm mt-1">Find gas stations near any location</p>
+                  <p className="text-xs mt-2 text-muted-foreground/70">Powered by Google Places</p>
                 </div>
               )}
             </TabsContent>
