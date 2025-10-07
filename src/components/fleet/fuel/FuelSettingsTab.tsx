@@ -8,11 +8,12 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
-import { Save, Plus, Edit, Trash2 } from 'lucide-react';
+import { Save, Plus, Edit, Trash2, MapPin, Loader2 } from 'lucide-react';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { StateScroller } from '@/components/ui/state-scroller';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { geocodeAddress } from '@/services/geocoding';
@@ -33,6 +34,9 @@ export const FuelSettingsTab: React.FC = () => {
   const [localSettings, setLocalSettings] = useState<Partial<FuelSettings>>({});
   const [showStationModal, setShowStationModal] = useState(false);
   const [editingStation, setEditingStation] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState("manual");
+  const [zipCodeSearch, setZipCodeSearch] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
   const [stationFormData, setStationFormData] = useState({
     name: '',
     address: '',
@@ -44,6 +48,7 @@ export const FuelSettingsTab: React.FC = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const marker = useRef<mapboxgl.Marker | null>(null);
+  const markers = useRef<mapboxgl.Marker[]>([]);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const mapboxToken = 'pk.eyJ1IjoicG9ydGFwcm9zb2Z0d2FyZSIsImEiOiJjbWJybnBnMnIwY2x2Mm1wd3p2MWdqY2FnIn0.7ZIJ7ufeGtn-ufiOGJpq1Q';
@@ -252,6 +257,117 @@ export const FuelSettingsTab: React.FC = () => {
     }
     addStationMutation.mutate(stationFormData);
   };
+
+  const handleSearchGasStations = async () => {
+    if (!zipCodeSearch.trim()) {
+      toast({
+        title: 'Validation Error',
+        description: 'Please enter a zip code',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    setIsSearching(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('search-gas-stations', {
+        body: { zipCode: zipCodeSearch.trim() }
+      });
+
+      if (error) throw error;
+
+      if (data.gasStations && data.gasStations.length > 0) {
+        // Clear existing markers
+        markers.current.forEach(m => m.remove());
+        markers.current = [];
+        
+        // Reinitialize map for search results if needed
+        if (!map.current && mapContainer.current) {
+          mapboxgl.accessToken = mapboxToken;
+          map.current = new mapboxgl.Map({
+            container: mapContainer.current,
+            style: 'mapbox://styles/mapbox/streets-v12',
+            center: [data.searchCenter.longitude, data.searchCenter.latitude],
+            zoom: 12
+          });
+          map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+        } else if (map.current && data.searchCenter) {
+          map.current.flyTo({
+            center: [data.searchCenter.longitude, data.searchCenter.latitude],
+            zoom: 12
+          });
+        }
+        
+        // Add markers for each gas station
+        data.gasStations.forEach((station: any) => {
+          if (!map.current) return;
+          
+          const el = document.createElement('div');
+          el.className = 'gas-station-marker';
+          el.style.width = '25px';
+          el.style.height = '25px';
+          el.style.backgroundColor = 'hsl(var(--primary))';
+          el.style.borderRadius = '50%';
+          el.style.border = '2px solid white';
+          el.style.cursor = 'pointer';
+          el.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
+          
+          const stationMarker = new mapboxgl.Marker(el)
+            .setLngLat([station.coordinates.longitude, station.coordinates.latitude])
+            .setPopup(
+              new mapboxgl.Popup({ offset: 25 })
+                .setHTML(`
+                  <div style="padding: 8px;">
+                    <h3 style="font-weight: bold; margin-bottom: 4px;">${station.name}</h3>
+                    <p style="font-size: 12px; margin: 2px 0;">${station.address}</p>
+                    <p style="font-size: 12px; margin: 2px 0;">${station.city}, ${station.state} ${station.zip}</p>
+                    <p style="font-size: 11px; margin-top: 6px; color: #666;">Click marker to use this station</p>
+                  </div>
+                `)
+            )
+            .addTo(map.current);
+          
+          el.addEventListener('click', () => {
+            setStationFormData({
+              name: station.name,
+              address: station.address,
+              city: station.city,
+              state: station.state,
+              zip: station.zip
+            });
+            setActiveTab("manual");
+            toast({
+              title: 'Success',
+              description: 'Station details loaded! Please review and save.'
+            });
+          });
+          
+          markers.current.push(stationMarker);
+        });
+        
+        toast({
+          title: 'Success',
+          description: `Found ${data.gasStations.length} gas stations`
+        });
+      } else {
+        toast({
+          title: 'No Results',
+          description: 'No gas stations found for this zip code'
+        });
+      }
+    } catch (error) {
+      console.error('Error searching gas stations:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to search gas stations',
+        variant: 'destructive'
+      });
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
 
 
   const updateSettingsMutation = useMutation({
@@ -630,11 +746,60 @@ export const FuelSettingsTab: React.FC = () => {
 
       {/* Add/Edit Station Modal */}
       <Dialog open={showStationModal} onOpenChange={setShowStationModal}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editingStation ? 'Edit Fuel Station' : 'Add Fuel Station'}</DialogTitle>
-            <p className="text-sm text-muted-foreground">Add or edit fuel station details for your fleet</p>
+            <DialogTitle className="flex items-center gap-2">
+              <MapPin className="h-5 w-5" />
+              {editingStation ? 'Edit Fuel Station' : 'Add Fuel Station'}
+            </DialogTitle>
           </DialogHeader>
+          
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="manual">Manual Entry</TabsTrigger>
+              <TabsTrigger value="map">
+                <MapPin className="h-4 w-4 mr-2" />
+                Search Map
+              </TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="map" className="space-y-4 mt-4">
+              <div className="flex gap-2">
+                <div className="flex-1">
+                  <Input
+                    placeholder="Enter zip code to search"
+                    value={zipCodeSearch}
+                    onChange={(e) => setZipCodeSearch(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSearchGasStations()}
+                  />
+                </div>
+                <Button 
+                  type="button"
+                  onClick={handleSearchGasStations}
+                  disabled={isSearching}
+                >
+                  {isSearching ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Searching...
+                    </>
+                  ) : (
+                    'Search'
+                  )}
+                </Button>
+              </div>
+              
+              <div 
+                ref={mapContainer} 
+                className="w-full h-[450px] rounded-lg border"
+              />
+              
+              <p className="text-sm text-muted-foreground">
+                Enter a zip code and click Search to find nearby gas stations. Click any marker on the map to auto-fill the form with that station's details.
+              </p>
+            </TabsContent>
+            
+            <TabsContent value="manual">
           <div className="space-y-4">
             <div>
               <Label htmlFor="station-name">Station Name *</Label>
@@ -706,6 +871,8 @@ export const FuelSettingsTab: React.FC = () => {
               {addStationMutation.isPending ? 'Saving...' : 'Save Station'}
             </Button>
           </DialogFooter>
+            </TabsContent>
+          </Tabs>
         </DialogContent>
       </Dialog>
     </div>
