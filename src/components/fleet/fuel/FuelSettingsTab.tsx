@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
-import { Save, Plus, Edit, Trash2, MapPin, Loader2 } from 'lucide-react';
+import { Save, Plus, Edit, Trash2, MapPin, Loader2, Locate } from 'lucide-react';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -40,6 +40,7 @@ export const FuelSettingsTab: React.FC = () => {
   const [activeTab, setActiveTab] = useState("manual");
   const [zipCodeSearch, setZipCodeSearch] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [stationFormData, setStationFormData] = useState({
     name: '',
@@ -420,6 +421,92 @@ export const FuelSettingsTab: React.FC = () => {
     } finally {
       setIsSearching(false);
     }
+  };
+
+  const handleFindMyLocation = async () => {
+    if (!navigator.geolocation) {
+      toast({
+        title: 'Location Not Supported',
+        description: 'Your browser does not support geolocation.',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    setIsLocating(true);
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+          
+          // Reverse geocode using Mapbox
+          const response = await fetch(
+            `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?types=postcode&access_token=${mapboxToken}`
+          );
+          
+          const data = await response.json();
+          
+          if (data.features && data.features.length > 0) {
+            const zipCode = data.features[0].text;
+            const numericZip = zipCode.replace(/\D/g, '').slice(0, 5);
+            
+            if (numericZip.length === 5) {
+              setZipCodeSearch(numericZip);
+              toast({
+                title: 'Location Found',
+                description: `ZIP code ${numericZip} detected from your location.`
+              });
+            } else {
+              toast({
+                title: 'ZIP Code Not Found',
+                description: 'Could not determine ZIP code from your location.',
+                variant: 'destructive'
+              });
+            }
+          } else {
+            toast({
+              title: 'Location Error',
+              description: 'Could not determine ZIP code from your location.',
+              variant: 'destructive'
+            });
+          }
+        } catch (error) {
+          console.error('Reverse geocoding error:', error);
+          toast({
+            title: 'Geocoding Failed',
+            description: 'Failed to convert location to ZIP code.',
+            variant: 'destructive'
+          });
+        } finally {
+          setIsLocating(false);
+        }
+      },
+      (error) => {
+        console.error('Geolocation error:', error);
+        setIsLocating(false);
+        
+        let errorMessage = 'Could not access your location.';
+        if (error.code === error.PERMISSION_DENIED) {
+          errorMessage = 'Location permission denied. Please enable location access in your browser settings.';
+        } else if (error.code === error.POSITION_UNAVAILABLE) {
+          errorMessage = 'Location information unavailable.';
+        } else if (error.code === error.TIMEOUT) {
+          errorMessage = 'Location request timed out.';
+        }
+        
+        toast({
+          title: 'Location Error',
+          description: errorMessage,
+          variant: 'destructive'
+        });
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
+    );
   };
 
   const handleSelectStation = (station: any) => {
@@ -922,7 +1009,21 @@ export const FuelSettingsTab: React.FC = () => {
                     'Search'
                   )}
                 </Button>
-              </div>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleFindMyLocation}
+                  disabled={isLocating}
+                  className="h-12"
+                  title="Find my ZIP code"
+                >
+                  {isLocating ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Locate className="h-4 w-4" />
+                  )}
+                </Button>
               
               {/* Station Results List */}
               {isSearching ? (
