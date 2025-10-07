@@ -58,11 +58,21 @@ serve(async (req) => {
     }
 
     const [longitude, latitude] = geocodeData.features[0].center
+
+    // Build a local bounding box (~50km radius) to constrain results
+    const radiusKm = 50
+    const latDelta = radiusKm / 111.32
+    const lonDelta = radiusKm / (111.32 * Math.cos(latitude * Math.PI / 180))
+    const minLon = longitude - lonDelta
+    const maxLon = longitude + lonDelta
+    const minLat = latitude - latDelta
+    const maxLat = latitude + latDelta
     
-    console.log(`🔍 Searching for gas stations near: ${latitude}, ${longitude}`)
+    console.log(`🔍 Searching for US gas stations near: ${latitude}, ${longitude}`)
+    console.log('🧭 Using bbox:', { minLon, minLat, maxLon, maxLat })
     
-    // Search for gas stations using Mapbox Geocoding API
-    const searchUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/gas%20station.json?proximity=${longitude},${latitude}&limit=20&access_token=${mapboxToken}`
+    // Use Mapbox Geocoding API for POIs, constrained to US and bbox
+    const searchUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/gas%20station.json?proximity=${longitude},${latitude}&types=poi&country=US&language=en&bbox=${minLon},${minLat},${maxLon},${maxLat}&limit=20&access_token=${mapboxToken}`
     
     console.log('📡 Mapbox search URL:', searchUrl.replace(mapboxToken, 'TOKEN'))
     
@@ -77,43 +87,59 @@ serve(async (req) => {
     const searchData = await searchResponse.json()
     console.log(`✅ Mapbox returned ${searchData.features?.length || 0} features`)
     
-    // Format the results
-    const gasStations = (searchData.features || []).map((feature: any) => {
+    // Helper to compute distance (km)
+    const haversine = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+      const toRad = (v: number) => (v * Math.PI) / 180
+      const R = 6371
+      const dLat = toRad(lat2 - lat1)
+      const dLon = toRad(lon2 - lon1)
+      const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+      return R * c
+    }
+
+    // Format the results (POIs only) and sort by distance
+    let gasStations = (searchData.features || []).map((feature: any) => {
       const coords = feature.geometry?.coordinates || [0, 0]
       const placeName = feature.place_name || ''
-      
-      // Extract address components from context
       const context = feature.context || []
+
       let city = ''
       let state = ''
       let zip = zipCode
-      
       context.forEach((ctx: any) => {
         if (ctx.id.startsWith('place')) city = ctx.text
         if (ctx.id.startsWith('region')) state = ctx.short_code?.replace('US-', '') || ctx.text
         if (ctx.id.startsWith('postcode')) zip = ctx.text
       })
-      
-      // Extract street address (before the first comma)
-      const address = placeName.split(',')[0] || ''
-      
+
+      const parts = placeName.split(',').map((s: string) => s.trim())
+      const address = (feature.properties?.address || parts[1] || '').trim()
+
       return {
         id: feature.id || `station-${Math.random()}`,
-        name: feature.text || 'Gas Station',
-        address: address,
-        city: city,
-        state: state,
-        zip: zip,
+        name: feature.text || feature.properties?.name || 'Gas Station',
+        address,
+        city,
+        state,
+        zip,
         phone: feature.properties?.tel || feature.properties?.phone || '',
         coordinates: {
           longitude: coords[0],
           latitude: coords[1]
         },
+        distance_km: haversine(latitude, longitude, coords[1], coords[0]),
         metadata: feature.properties || {}
       }
     })
+
+    // Keep only results within ~75km and sort by nearest
+    gasStations = gasStations
+      .filter((g: any) => (g.distance_km ?? 9999) <= 75)
+      .sort((a: any, b: any) => (a.distance_km ?? 0) - (b.distance_km ?? 0))
+      .map(({ distance_km, ...rest }: any) => rest)
     
-    console.log(`📍 Formatted ${gasStations.length} gas stations`)
+    console.log(`📍 Formatted ${gasStations.length} gas stations (post-filter)`)
 
     return new Response(
       JSON.stringify({ 
