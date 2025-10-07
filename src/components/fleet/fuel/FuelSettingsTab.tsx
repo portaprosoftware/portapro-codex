@@ -978,7 +978,7 @@ export const FuelSettingsTab: React.FC = () => {
             </TabsList>
             
             <TabsContent value="map" className="space-y-4 mt-4">
-              <Label className="text-sm text-muted-foreground">Enter ZIP code to search area</Label>
+              <Label className="text-sm text-muted-foreground">Enter ZIP code to search region</Label>
               <div className="flex gap-2 items-center">
                 <div className="flex-1 border rounded-lg px-4 py-3 bg-background">
                   <div className="flex items-center gap-3">
