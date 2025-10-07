@@ -424,7 +424,7 @@ export const FuelSettingsTab: React.FC = () => {
 
   const handleSelectStation = (station: any) => {
     setStationFormData({
-      name: station.name,
+      name: formatStationName(station.name),
       address: station.address,
       city: station.city,
       state: station.state,
