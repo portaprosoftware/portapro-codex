@@ -906,12 +906,7 @@ export const FuelSettingsTab: React.FC = () => {
                             </p>
                             {(station.city || station.state || station.zip) && (
                               <p className="text-sm text-muted-foreground">
-                                {[station.city, station.state, station.zip].filter(Boolean).join(', ')}
-                              </p>
-                            )}
-                            {station.phone && (
-                              <p className="text-sm text-muted-foreground">
-                                📞 {station.phone}
+                                {station.zip}
                               </p>
                             )}
                             {station.metadata?.rating && (
