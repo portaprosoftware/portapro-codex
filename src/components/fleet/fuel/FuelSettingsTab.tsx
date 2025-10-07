@@ -37,6 +37,7 @@ export const FuelSettingsTab: React.FC = () => {
   const [activeTab, setActiveTab] = useState("manual");
   const [zipCodeSearch, setZipCodeSearch] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  const [searchResults, setSearchResults] = useState<any[]>([]);
   const [stationFormData, setStationFormData] = useState({
     name: '',
     address: '',
@@ -45,11 +46,9 @@ export const FuelSettingsTab: React.FC = () => {
     zip: ''
   });
   const [mapCoordinates, setMapCoordinates] = useState<[number, number] | null>(null);
-  const mapSearchContainer = useRef<HTMLDivElement>(null);
   const mapPreviewContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const marker = useRef<mapboxgl.Marker | null>(null);
-  const markers = useRef<mapboxgl.Marker[]>([]);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [mapboxToken, setMapboxToken] = useState<string>('');
@@ -224,95 +223,6 @@ export const FuelSettingsTab: React.FC = () => {
     }
   }, [stationFormData.address, stationFormData.city, stationFormData.state, stationFormData.zip, showStationModal]);
 
-  // Initialize map for Search Map tab
-  useEffect(() => {
-    if (!showStationModal || activeTab !== "map" || !mapSearchContainer.current) {
-      console.log('🗺️ Search map: Skipping initialization', { 
-        showStationModal, 
-        activeTab, 
-        hasContainer: !!mapSearchContainer.current 
-      });
-      return;
-    }
-
-    if (!mapboxToken) {
-      console.log('🗺️ Search map: No Mapbox token yet, waiting...');
-      return;
-    }
-
-    console.log('🗺️ Search map: Initializing...');
-    
-    // Log container dimensions
-    const rect = mapSearchContainer.current.getBoundingClientRect();
-    console.log('🗺️ Search map container dimensions:', {
-      width: rect.width,
-      height: rect.height,
-      visible: rect.width > 0 && rect.height > 0
-    });
-
-    // Clean up existing map
-    if (map.current) {
-      console.log('🗺️ Search map: Cleaning up existing map');
-      map.current.remove();
-      map.current = null;
-    }
-
-    try {
-      // Initialize new map for search
-      mapboxgl.accessToken = mapboxToken;
-      console.log('🗺️ Search map: Creating Mapbox instance...');
-      
-      map.current = new mapboxgl.Map({
-        container: mapSearchContainer.current,
-        style: 'mapbox://styles/mapbox/streets-v12',
-        center: [-95.7129, 37.0902], // Center of US
-        zoom: 4
-      });
-
-      // Add navigation controls
-      map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
-      
-      map.current.on('load', () => {
-        console.log('🗺️ Search map: Map loaded successfully!');
-        requestAnimationFrame(() => {
-          map.current?.resize();
-          console.log('🗺️ Search map: Resized after load');
-        });
-        setTimeout(() => {
-          map.current?.resize();
-          console.log('🗺️ Search map: Resized with delay');
-        }, 100);
-      });
-
-      map.current.on('error', (e) => {
-        console.error('🗺️ Search map: Mapbox error:', e.error);
-        toast({
-          title: 'Map Error',
-          description: 'Failed to load map. Please try refreshing.',
-          variant: 'destructive'
-        });
-      });
-
-      console.log('🗺️ Search map: Map instance created successfully');
-    } catch (err) {
-      console.error('🗺️ Search map: Exception during initialization:', err);
-      toast({
-        title: 'Map Initialization Error',
-        description: 'Failed to create map. Please try again.',
-        variant: 'destructive'
-      });
-    }
-
-    return () => {
-      console.log('🗺️ Search map: Cleanup triggered');
-      markers.current.forEach(m => m.remove());
-      markers.current = [];
-      marker.current?.remove();
-      map.current?.remove();
-      map.current = null;
-      marker.current = null;
-    };
-  }, [showStationModal, activeTab, mapboxToken]);
 
   // Initialize map for Manual Entry tab when coordinates are available
   useEffect(() => {
@@ -458,6 +368,7 @@ export const FuelSettingsTab: React.FC = () => {
     }
 
     setIsSearching(true);
+    setSearchResults([]);
     
     try {
       const { data, error } = await supabase.functions.invoke('search-gas-stations', {
@@ -467,70 +378,13 @@ export const FuelSettingsTab: React.FC = () => {
       if (error) throw error;
 
       if (data.gasStations && data.gasStations.length > 0) {
-        // Clear existing markers
-        markers.current.forEach(m => m.remove());
-        markers.current = [];
-        
-        // Fly to search location if map exists
-        if (map.current && data.searchCenter) {
-          map.current.flyTo({
-            center: [data.searchCenter.longitude, data.searchCenter.latitude],
-            zoom: 12
-          });
-        }
-        
-        // Add markers for each gas station
-        data.gasStations.forEach((station: any) => {
-          if (!map.current) return;
-          
-          const el = document.createElement('div');
-          el.className = 'gas-station-marker';
-          el.style.width = '25px';
-          el.style.height = '25px';
-          el.style.backgroundColor = 'hsl(var(--primary))';
-          el.style.borderRadius = '50%';
-          el.style.border = '2px solid white';
-          el.style.cursor = 'pointer';
-          el.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
-          
-          const stationMarker = new mapboxgl.Marker(el)
-            .setLngLat([station.coordinates.longitude, station.coordinates.latitude])
-            .setPopup(
-              new mapboxgl.Popup({ offset: 25 })
-                .setHTML(`
-                  <div style="padding: 8px;">
-                    <h3 style="font-weight: bold; margin-bottom: 4px;">${station.name}</h3>
-                    <p style="font-size: 12px; margin: 2px 0;">${station.address}</p>
-                    <p style="font-size: 12px; margin: 2px 0;">${station.city}, ${station.state} ${station.zip}</p>
-                    <p style="font-size: 11px; margin-top: 6px; color: #666;">Click marker to use this station</p>
-                  </div>
-                `)
-            )
-            .addTo(map.current);
-          
-          el.addEventListener('click', () => {
-            setStationFormData({
-              name: station.name,
-              address: station.address,
-              city: station.city,
-              state: station.state,
-              zip: station.zip
-            });
-            setActiveTab("manual");
-            toast({
-              title: 'Success',
-              description: 'Station details loaded! Please review and save.'
-            });
-          });
-          
-          markers.current.push(stationMarker);
-        });
-        
+        setSearchResults(data.gasStations);
         toast({
           title: 'Success',
           description: `Found ${data.gasStations.length} gas stations`
         });
       } else {
+        setSearchResults([]);
         toast({
           title: 'No Results',
           description: 'No gas stations found for this zip code'
@@ -546,6 +400,27 @@ export const FuelSettingsTab: React.FC = () => {
     } finally {
       setIsSearching(false);
     }
+  };
+
+  const handleSelectStation = (station: any) => {
+    setStationFormData({
+      name: station.name,
+      address: station.address,
+      city: station.city,
+      state: station.state,
+      zip: station.zip
+    });
+    
+    // Store coordinates if available
+    if (station.coordinates) {
+      setMapCoordinates([station.coordinates.longitude, station.coordinates.latitude]);
+    }
+    
+    setActiveTab("manual");
+    toast({
+      title: 'Station Selected',
+      description: 'Review the details and click Save to add this station.'
+    });
   };
 
 
@@ -960,6 +835,7 @@ export const FuelSettingsTab: React.FC = () => {
                   type="button"
                   onClick={handleSearchGasStations}
                   disabled={isSearching}
+                  className="bg-gradient-to-r from-primary to-primary-variant"
                 >
                   {isSearching ? (
                     <>
@@ -972,14 +848,51 @@ export const FuelSettingsTab: React.FC = () => {
                 </Button>
               </div>
               
-              <div 
-                ref={mapSearchContainer} 
-                className="w-full h-[450px] rounded-lg border"
-              />
-              
-              <p className="text-sm text-muted-foreground">
-                Enter a zip code and click Search to find nearby gas stations. Click any marker on the map to auto-fill the form with that station's details.
-              </p>
+              {/* Station Results List */}
+              {searchResults.length > 0 ? (
+                <div className="max-h-[500px] overflow-y-auto space-y-2 pr-2">
+                  {searchResults.map((station, index) => (
+                    <Card 
+                      key={index}
+                      className="cursor-pointer transition-all hover:shadow-md hover:border-primary/50"
+                      onClick={() => handleSelectStation(station)}
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-base mb-1">{station.name}</h4>
+                            <p className="text-sm text-muted-foreground">{station.address}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {station.city}, {station.state} {station.zip}
+                            </p>
+                            {station.phone && (
+                              <p className="text-sm text-muted-foreground mt-1">
+                                📞 {station.phone}
+                              </p>
+                            )}
+                          </div>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleSelectStation(station);
+                            }}
+                          >
+                            Select
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12 text-muted-foreground border rounded-lg bg-muted/20">
+                  <MapPin className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                  <p className="font-medium">No stations found</p>
+                  <p className="text-sm mt-1">Enter a zip code above and click Search to find nearby gas stations</p>
+                </div>
+              )}
             </TabsContent>
             
             <TabsContent value="manual">
