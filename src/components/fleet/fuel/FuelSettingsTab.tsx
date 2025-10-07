@@ -1133,16 +1133,6 @@ export const FuelSettingsTab: React.FC = () => {
                                     <span>See all hours</span>
                                     <ChevronDown className="h-3 w-3" />
                                   </CollapsibleTrigger>
-                          
-                          {/* Select Button */}
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleSelectStation(station)}
-                            className="shrink-0"
-                          >
-                            Select
-                          </Button>
                         </div>
                                 
                                 <CollapsibleContent className="mt-2 space-y-1">
