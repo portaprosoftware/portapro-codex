@@ -272,11 +272,14 @@ export const FuelSettingsTab: React.FC = () => {
         container: mapPreviewContainer.current,
         style: 'mapbox://styles/mapbox/streets-v12',
         center: mapCoordinates,
-        zoom: 14
+        zoom: 14,
+        attributionControl: false
       });
 
       // Add navigation controls
       map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+      // Add compact attribution control (just the Mapbox icon)
+      map.current.addControl(new mapboxgl.AttributionControl({ compact: true }), 'bottom-right');
       
       map.current.on('load', () => {
         console.log('🗺️ Preview map: Map loaded successfully!');
