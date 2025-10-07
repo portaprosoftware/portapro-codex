@@ -1243,9 +1243,23 @@ export const FuelSettingsTab: React.FC = () => {
               />
             </div>
 
+            {/* Action Buttons */}
+            <div className="flex justify-end gap-3 pt-4">
+              <Button variant="outline" onClick={() => setShowStationModal(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleSaveStation}
+                disabled={addStationMutation.isPending}
+                className="bg-gradient-to-r from-primary to-primary-variant"
+              >
+                {addStationMutation.isPending ? 'Saving...' : 'Save Station'}
+              </Button>
+            </div>
+
             {/* Map View */}
             {mapCoordinates && stationFormData.address && stationFormData.city && stationFormData.state && stationFormData.zip ? (
-              <div className="space-y-2 mb-12">
+              <div className="space-y-2 mt-4">
                 <Label>Location Preview</Label>
                 <div 
                   ref={mapPreviewContainer} 
@@ -1254,18 +1268,6 @@ export const FuelSettingsTab: React.FC = () => {
               </div>
             ) : null}
           </div>
-          <DialogFooter className="mt-6">
-            <Button variant="outline" onClick={() => setShowStationModal(false)}>
-              Cancel
-            </Button>
-            <Button 
-              onClick={handleSaveStation}
-              disabled={addStationMutation.isPending}
-              className="bg-gradient-to-r from-primary to-primary-variant"
-            >
-              {addStationMutation.isPending ? 'Saving...' : 'Save Station'}
-            </Button>
-          </DialogFooter>
             </TabsContent>
           </Tabs>
         </DialogContent>
