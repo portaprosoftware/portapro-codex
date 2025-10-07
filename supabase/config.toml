@@ -1,4 +1,3 @@
-
 project_id = "unpnuonbndubcuzxfnmg"
 
 [functions.fleet-docs]
@@ -14,5 +13,8 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.get-current-weather]
+verify_jwt = false
+
+[functions.search-gas-stations]
 verify_jwt = false
 
