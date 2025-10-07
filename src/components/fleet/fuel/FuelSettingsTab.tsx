@@ -1094,8 +1094,7 @@ export const FuelSettingsTab: React.FC = () => {
                   {searchResults.map((station, index) => (
                     <Card 
                       key={index}
-                      className="cursor-pointer transition-all hover:shadow-md hover:border-primary/50 border-2"
-                      onClick={() => handleSelectStation(station)}
+                      className="transition-all hover:shadow-md border-2"
                     >
                       <CardContent className="p-4">
                          <div className="flex items-start justify-between gap-4">
@@ -1134,7 +1133,17 @@ export const FuelSettingsTab: React.FC = () => {
                                     <span>See all hours</span>
                                     <ChevronDown className="h-3 w-3" />
                                   </CollapsibleTrigger>
-                                </div>
+                          
+                          {/* Select Button */}
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleSelectStation(station)}
+                            className="shrink-0"
+                          >
+                            Select
+                          </Button>
+                        </div>
                                 
                                 <CollapsibleContent className="mt-2 space-y-1">
                                   {station.metadata.weekday_text.map((dayHours: string, idx: number) => (
