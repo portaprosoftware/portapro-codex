@@ -11,10 +11,11 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
-import { Save, Plus, Edit, Trash2, MapPin, Loader2, Locate } from 'lucide-react';
+import { Save, Plus, Edit, Trash2, MapPin, Loader2, Locate, ChevronDown } from 'lucide-react';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { StateScroller } from '@/components/ui/state-scroller';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import mapboxgl from 'mapbox-gl';
@@ -1118,6 +1119,34 @@ export const FuelSettingsTab: React.FC = () => {
                                 ⭐ {station.metadata.rating} ({station.metadata.user_ratings_total} reviews)
                               </p>
                             )}
+                            
+                            {/* Hours Display */}
+                            {station.metadata?.weekday_text && station.metadata.weekday_text.length > 0 && (
+                              <Collapsible className="mt-2">
+                                <div className="space-y-1">
+                                  {/* Today's hours */}
+                                  <p className="text-sm font-medium text-foreground">
+                                    {station.metadata.weekday_text[new Date().getDay()]}
+                                  </p>
+                                  
+                                  {/* Expandable all hours */}
+                                  <CollapsibleTrigger className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                                    <span>See all hours</span>
+                                    <ChevronDown className="h-3 w-3" />
+                                  </CollapsibleTrigger>
+                                </div>
+                                
+                                <CollapsibleContent className="mt-2 space-y-1">
+                                  {station.metadata.weekday_text.map((dayHours: string, idx: number) => (
+                                    <p key={idx} className="text-xs text-muted-foreground pl-2">
+                                      {dayHours}
+                                    </p>
+                                  ))}
+                                </CollapsibleContent>
+                              </Collapsible>
+                            )}
+
+                            {/* Status badge */}
                             {station.metadata?.open_now !== undefined && (() => {
                               const statusInfo = getStationStatus(station.metadata);
                               const badgeStyle = getStatusBadgeStyle(statusInfo.status);

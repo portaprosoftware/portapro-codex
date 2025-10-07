@@ -135,8 +135,8 @@ serve(async (req) => {
 
     console.log(`✅ Google: Found ${placesData.results?.length || 0} gas stations`)
 
-    // Step 3: Calculate distances and format results
-    const gasStationsWithDistance = (placesData.results || []).map((place: any) => {
+    // Step 3: Calculate distances and format results with detailed hours
+    const gasStationsWithDistance = await Promise.all((placesData.results || []).slice(0, 20).map(async (place: any) => {
       // Calculate distance from search center
       const distance = calculateDistance(
         latitude,
@@ -144,12 +144,26 @@ serve(async (req) => {
         place.geometry?.location?.lat || 0,
         place.geometry?.location?.lng || 0
       );
+
+      // Fetch place details to get full opening hours
+      let weekdayText: string[] = []
+      try {
+        const detailsUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${place.place_id}&fields=opening_hours&key=${googleApiKey}`
+        const detailsResponse = await fetch(detailsUrl)
+        const detailsData = await detailsResponse.json()
+        
+        if (detailsData.status === 'OK' && detailsData.result?.opening_hours?.weekday_text) {
+          weekdayText = detailsData.result.opening_hours.weekday_text
+        }
+      } catch (error) {
+        console.error(`Failed to fetch details for ${place.name}:`, error)
+      }
+
       // Parse address components
       const vicinity = place.vicinity || ''
       const addressParts = vicinity.split(',').map((s: string) => s.trim())
       
       // Use the city and state from the ZIP code search for consistency
-      // Only try to extract ZIP from vicinity if different from search ZIP
       let stationZip = zipCode
       let stationCity = searchCity
       let stationState = searchState
@@ -170,8 +184,8 @@ serve(async (req) => {
         city: stationCity,
         state: stationState,
         zip: stationZip,
-        phone: '', // Would need Place Details API for phone
-        distance: distance, // Distance in miles
+        phone: '',
+        distance: distance,
         coordinates: {
           latitude: place.geometry?.location?.lat || 0,
           longitude: place.geometry?.location?.lng || 0
@@ -181,10 +195,11 @@ serve(async (req) => {
           rating: place.rating,
           user_ratings_total: place.user_ratings_total,
           business_status: place.business_status,
-          open_now: place.opening_hours?.open_now
+          open_now: place.opening_hours?.open_now,
+          weekday_text: weekdayText
         }
       }
-    })
+    }))
 
     // Step 4: Filter stations within 10km (~6.2 miles) and sort by distance
     const gasStations = gasStationsWithDistance
