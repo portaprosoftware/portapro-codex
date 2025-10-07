@@ -182,9 +182,43 @@ export const FuelSettingsTab: React.FC = () => {
     }
   }, [stationFormData.address, stationFormData.city, stationFormData.state, stationFormData.zip, showStationModal]);
 
-  // Initialize map when modal opens and coordinates are available
+  // Initialize map for Search Map tab
   useEffect(() => {
-    if (!showStationModal || !mapContainer.current || !mapCoordinates) {
+    if (!showStationModal || activeTab !== "map" || !mapContainer.current) {
+      return;
+    }
+
+    // Clean up existing map
+    if (map.current) {
+      map.current.remove();
+      map.current = null;
+    }
+
+    // Initialize new map for search
+    mapboxgl.accessToken = mapboxToken;
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: 'mapbox://styles/mapbox/streets-v12',
+      center: [-95.7129, 37.0902], // Center of US
+      zoom: 4
+    });
+
+    // Add navigation controls
+    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+    return () => {
+      markers.current.forEach(m => m.remove());
+      markers.current = [];
+      marker.current?.remove();
+      map.current?.remove();
+      map.current = null;
+      marker.current = null;
+    };
+  }, [showStationModal, activeTab]);
+
+  // Initialize map for Manual Entry tab when coordinates are available
+  useEffect(() => {
+    if (!showStationModal || activeTab !== "manual" || !mapContainer.current || !mapCoordinates) {
       return;
     }
 
@@ -217,7 +251,7 @@ export const FuelSettingsTab: React.FC = () => {
       map.current = null;
       marker.current = null;
     };
-  }, [mapCoordinates, showStationModal]);
+  }, [mapCoordinates, showStationModal, activeTab]);
 
   // Update marker position when coordinates change
   useEffect(() => {
@@ -282,17 +316,8 @@ export const FuelSettingsTab: React.FC = () => {
         markers.current.forEach(m => m.remove());
         markers.current = [];
         
-        // Reinitialize map for search results if needed
-        if (!map.current && mapContainer.current) {
-          mapboxgl.accessToken = mapboxToken;
-          map.current = new mapboxgl.Map({
-            container: mapContainer.current,
-            style: 'mapbox://styles/mapbox/streets-v12',
-            center: [data.searchCenter.longitude, data.searchCenter.latitude],
-            zoom: 12
-          });
-          map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
-        } else if (map.current && data.searchCenter) {
+        // Fly to search location if map exists
+        if (map.current && data.searchCenter) {
           map.current.flyTo({
             center: [data.searchCenter.longitude, data.searchCenter.latitude],
             zoom: 12
