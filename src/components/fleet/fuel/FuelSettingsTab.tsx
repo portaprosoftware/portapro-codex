@@ -1245,7 +1245,7 @@ export const FuelSettingsTab: React.FC = () => {
 
             {/* Map View */}
             {mapCoordinates && stationFormData.address && stationFormData.city && stationFormData.state && stationFormData.zip ? (
-              <div className="space-y-2">
+              <div className="space-y-2 mb-6">
                 <Label>Location Preview</Label>
                 <div 
                   ref={mapPreviewContainer} 
