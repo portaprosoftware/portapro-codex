@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { formatStationName } from '@/lib/textUtils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -767,9 +768,9 @@ export const FuelSettingsTab: React.FC = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {fuelStations.map((station: any) => (
+                  {fuelStations.map((station: any) => (
                   <TableRow key={station.id}>
-                    <TableCell className="font-medium">{station.name}</TableCell>
+                    <TableCell className="font-medium">{formatStationName(station.name)}</TableCell>
                     <TableCell>{station.address || station.street || '-'}</TableCell>
                     <TableCell>{station.city || '-'}</TableCell>
                     <TableCell>{station.state || '-'}</TableCell>
@@ -881,8 +882,8 @@ export const FuelSettingsTab: React.FC = () => {
                     >
                       <CardContent className="p-4">
                         <div className="flex items-start justify-between gap-4">
-                          <div className="flex-1 space-y-1">
-                            <h4 className="font-semibold text-base">{station.name}</h4>
+                        <div className="flex-1 space-y-1">
+                            <h4 className="font-semibold text-base">{formatStationName(station.name)}</h4>
                             <p className="text-sm text-muted-foreground">
                               {station.address || 'Address not available'}
                             </p>
