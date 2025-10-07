@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { formatStationName } from '@/lib/textUtils';
+import { getStationStatus, getStatusBadgeStyle } from '@/lib/stationUtils';
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -902,11 +904,27 @@ export const FuelSettingsTab: React.FC = () => {
                                 ⭐ {station.metadata.rating} ({station.metadata.user_ratings_total} reviews)
                               </p>
                             )}
-                            {station.metadata?.open_now !== undefined && (
-                              <p className={`text-xs font-medium ${station.metadata.open_now ? 'text-green-600' : 'text-red-600'}`}>
-                                {station.metadata.open_now ? '🟢 Open now' : '🔴 Closed'}
-                              </p>
-                            )}
+                            {station.metadata?.open_now !== undefined && (() => {
+                              const statusInfo = getStationStatus(station.metadata);
+                              const badgeStyle = getStatusBadgeStyle(statusInfo.status);
+                              
+                              let statusText = '';
+                              if (statusInfo.status === 'open') {
+                                statusText = statusInfo.closingTime 
+                                  ? `Open · Closes ${statusInfo.closingTime}` 
+                                  : 'Open now';
+                              } else if (statusInfo.status === 'closing_soon') {
+                                statusText = `Closing soon · ${statusInfo.closingTime}`;
+                              } else {
+                                statusText = 'Closed';
+                              }
+
+                              return (
+                                <Badge className={`${badgeStyle.gradient} ${badgeStyle.textColor} font-bold text-xs px-2 py-1`}>
+                                  {statusText}
+                                </Badge>
+                              );
+                            })()}
                           </div>
                           <Button 
                             size="sm" 
