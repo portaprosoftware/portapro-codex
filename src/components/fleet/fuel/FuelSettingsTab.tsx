@@ -1247,7 +1247,7 @@ export const FuelSettingsTab: React.FC = () => {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex justify-end gap-3 pt-4">
+            <div className="flex justify-end gap-3 pt-2">
               <Button variant="outline" onClick={() => setShowStationModal(false)}>
                 Cancel
               </Button>
@@ -1262,7 +1262,7 @@ export const FuelSettingsTab: React.FC = () => {
 
             {/* Map View */}
             {mapCoordinates && stationFormData.address && stationFormData.city && stationFormData.state && stationFormData.zip ? (
-              <div className="space-y-2 mt-4">
+              <div className="space-y-2 mt-2">
                 <Label>Location Preview</Label>
                 <div 
                   ref={mapPreviewContainer} 
