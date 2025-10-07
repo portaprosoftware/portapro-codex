@@ -29,7 +29,7 @@ export function capitalizeFirst(text: string): string {
 
 /**
  * Formats gas station names with proper capitalization
- * - Words with 3 or fewer letters are fully uppercased (e.g., "bp" → "BP")
+ * - Words with 2 or fewer letters are fully uppercased (e.g., "bp" → "BP")
  * - Longer words have first letter capitalized
  * @param name - The station name to format
  * @returns Formatted station name
@@ -40,7 +40,7 @@ export function formatStationName(name: string): string {
   return name
     .split(' ')
     .map(word => {
-      if (word.length <= 3) {
+      if (word.length <= 2) {
         return word.toUpperCase();
       }
       return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
