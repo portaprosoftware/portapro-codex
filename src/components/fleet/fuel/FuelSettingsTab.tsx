@@ -453,16 +453,59 @@ export const FuelSettingsTab: React.FC = () => {
             
             if (numericZip.length === 5) {
               setZipCodeSearch(numericZip);
+              setIsLocating(false);
+              
               toast({
                 title: 'Location Found',
-                description: `ZIP code ${numericZip} detected from your location.`
+                description: `Searching for gas stations near ${numericZip}...`
               });
               
-              // Automatically trigger search after setting ZIP code
-              setTimeout(() => {
-                handleSearchGasStations();
-              }, 500);
+              // Trigger search immediately after ZIP is set
+              setTimeout(async () => {
+                try {
+                  setIsSearching(true);
+                  const { data, error } = await supabase.functions.invoke('search-gas-stations-google', {
+                    body: { zipCode: numericZip }
+                  });
+
+                  if (error) throw error;
+
+                  if (data?.error) {
+                    toast({
+                      title: 'Search Issue',
+                      description: data.error === 'Invalid ZIP code' 
+                        ? 'No results found. Try a nearby ZIP code.'
+                        : data.error,
+                      variant: 'destructive',
+                    });
+                    setSearchResults([]);
+                  } else if (data.gasStations && data.gasStations.length > 0) {
+                    setSearchResults(data.gasStations);
+                    toast({
+                      title: 'Success',
+                      description: `Found ${data.gasStations.length} gas stations nearby`
+                    });
+                  } else {
+                    setSearchResults([]);
+                    toast({
+                      title: 'No Stations Found',
+                      description: 'Try searching with a nearby ZIP code.'
+                    });
+                  }
+                } catch (error) {
+                  console.error('Search exception:', error);
+                  toast({
+                    title: 'Search Failed',
+                    description: 'Could not search for gas stations.',
+                    variant: 'destructive'
+                  });
+                  setSearchResults([]);
+                } finally {
+                  setIsSearching(false);
+                }
+              }, 100);
             } else {
+              setIsLocating(false);
               toast({
                 title: 'ZIP Code Not Found',
                 description: 'Could not determine ZIP code from your location.',
@@ -470,6 +513,7 @@ export const FuelSettingsTab: React.FC = () => {
               });
             }
           } else {
+            setIsLocating(false);
             toast({
               title: 'Location Error',
               description: 'Could not determine ZIP code from your location.',
@@ -478,13 +522,12 @@ export const FuelSettingsTab: React.FC = () => {
           }
         } catch (error) {
           console.error('Reverse geocoding error:', error);
+          setIsLocating(false);
           toast({
             title: 'Geocoding Failed',
             description: 'Failed to convert location to ZIP code.',
             variant: 'destructive'
           });
-        } finally {
-          setIsLocating(false);
         }
       },
       (error) => {
