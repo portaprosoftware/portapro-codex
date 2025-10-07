@@ -842,27 +842,56 @@ export const FuelSettingsTab: React.FC = () => {
             </TabsList>
             
             <TabsContent value="map" className="space-y-4 mt-4">
-              <div className="flex gap-2">
-                <div className="flex-1">
-                  <Input
-                    placeholder="Enter zip code to search"
-                    value={zipCodeSearch}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      // Only allow numbers and limit to 5 digits
-                      const numericValue = value.replace(/\D/g, '').slice(0, 5);
-                      setZipCodeSearch(numericValue);
-                    }}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSearchGasStations()}
-                    maxLength={5}
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                  />
+              <div className="flex gap-2 items-center">
+                <div className="flex gap-2">
+                  {[0, 1, 2, 3, 4].map((index) => (
+                    <Input
+                      key={index}
+                      id={`zip-${index}`}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      maxLength={1}
+                      value={zipCodeSearch[index] || ''}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, '');
+                        if (value.length <= 1) {
+                          const newZip = zipCodeSearch.split('');
+                          newZip[index] = value;
+                          setZipCodeSearch(newZip.join('').slice(0, 5));
+                          
+                          // Auto-focus next input
+                          if (value && index < 4) {
+                            document.getElementById(`zip-${index + 1}`)?.focus();
+                          }
+                        }
+                      }}
+                      onKeyDown={(e) => {
+                        // Handle backspace to move to previous input
+                        if (e.key === 'Backspace' && !zipCodeSearch[index] && index > 0) {
+                          document.getElementById(`zip-${index - 1}`)?.focus();
+                        }
+                        // Handle Enter to search
+                        if (e.key === 'Enter') {
+                          handleSearchGasStations();
+                        }
+                      }}
+                      onPaste={(e) => {
+                        e.preventDefault();
+                        const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 5);
+                        setZipCodeSearch(pastedData);
+                        // Focus last filled input or last input
+                        const focusIndex = Math.min(pastedData.length, 4);
+                        setTimeout(() => document.getElementById(`zip-${focusIndex}`)?.focus(), 0);
+                      }}
+                      className="w-12 h-12 text-center text-lg font-semibold"
+                    />
+                  ))}
                 </div>
                 <Button 
                   type="button"
                   onClick={handleSearchGasStations}
-                  disabled={isSearching}
+                  disabled={isSearching || zipCodeSearch.length !== 5}
                   className="bg-gradient-to-r from-primary to-primary-variant"
                 >
                   {isSearching ? (
