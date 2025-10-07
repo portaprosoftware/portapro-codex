@@ -942,6 +942,7 @@ export const FuelSettingsTab: React.FC = () => {
                         inputMode="numeric"
                         pattern="[0-9]*"
                         maxLength={1}
+                        placeholder={String(index + 1)}
                         value={zipCodeSearch[index] || ''}
                         onChange={(e) => {
                           const value = e.target.value.replace(/\D/g, '');
@@ -974,7 +975,7 @@ export const FuelSettingsTab: React.FC = () => {
                           const focusIndex = Math.min(pastedData.length, 4);
                           setTimeout(() => document.getElementById(`zip-${focusIndex}`)?.focus(), 0);
                         }}
-                        className="w-12 h-12 text-center text-lg font-semibold border-input"
+                        className="w-12 h-12 text-center text-lg font-semibold border-input placeholder:text-muted-foreground/40"
                       />
                       ))}
                     </div>
@@ -1009,7 +1010,6 @@ export const FuelSettingsTab: React.FC = () => {
                     'Search'
                   )}
                 </Button>
-                </div>
                 <Button
                   type="button"
                   variant="outline"
@@ -1024,6 +1024,7 @@ export const FuelSettingsTab: React.FC = () => {
                     <Locate className="h-4 w-4" />
                   )}
                 </Button>
+              </div>
               
               {/* Station Results List */}
               {isSearching ? (
