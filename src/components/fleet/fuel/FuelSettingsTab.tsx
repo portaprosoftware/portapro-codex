@@ -49,10 +49,10 @@ export const FuelSettingsTab: React.FC = () => {
   const mapPreviewContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const marker = useRef<mapboxgl.Marker | null>(null);
-const markers = useRef<mapboxgl.Marker[]>([]);
+  const markers = useRef<mapboxgl.Marker[]>([]);
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const mapboxToken = 'pk.eyJ1IjoicG9ydGFwcm9zb2Z0d2FyZSIsImEiOiJjbWJybnBnMnIwY2x2Mm1wd3p2MWdqY2FnIn0.7ZIJ7ufeGtn-ufiOGJpq1Q';
+  const [mapboxToken, setMapboxToken] = useState<string>('');
 
   // Fetch fuel settings
   const { data: settings, isLoading: settingsLoading } = useQuery({
@@ -75,6 +75,47 @@ const markers = useRef<mapboxgl.Marker[]>([]);
       setLocalSettings(settings);
     }
   }, [settings, localSettings]);
+
+  // Fetch Mapbox token
+  useEffect(() => {
+    const fetchMapboxToken = async () => {
+      try {
+        console.log('🗺️ Fetching Mapbox token from Supabase function...');
+        const { data, error } = await supabase.functions.invoke('get-mapbox-token');
+        
+        if (error) {
+          console.error('🗺️ Error fetching Mapbox token:', error);
+          toast({
+            title: 'Map Configuration Error',
+            description: 'Failed to load map token. Map features may not work.',
+            variant: 'destructive'
+          });
+          return;
+        }
+        
+        if (data?.token) {
+          console.log('🗺️ Mapbox token received successfully');
+          setMapboxToken(data.token);
+        } else {
+          console.error('🗺️ No token in response:', data);
+          toast({
+            title: 'Map Configuration Error',
+            description: 'Mapbox token not configured. Please contact support.',
+            variant: 'destructive'
+          });
+        }
+      } catch (err) {
+        console.error('🗺️ Exception fetching Mapbox token:', err);
+        toast({
+          title: 'Map Configuration Error',
+          description: 'Failed to initialize map. Please refresh the page.',
+          variant: 'destructive'
+        });
+      }
+    };
+    
+    fetchMapboxToken();
+  }, []);
 
   // Fetch fuel stations with full data
   const { data: fuelStations = [], isLoading: stationsLoading } = useQuery({
@@ -186,33 +227,84 @@ const markers = useRef<mapboxgl.Marker[]>([]);
   // Initialize map for Search Map tab
   useEffect(() => {
     if (!showStationModal || activeTab !== "map" || !mapSearchContainer.current) {
+      console.log('🗺️ Search map: Skipping initialization', { 
+        showStationModal, 
+        activeTab, 
+        hasContainer: !!mapSearchContainer.current 
+      });
       return;
     }
 
+    if (!mapboxToken) {
+      console.log('🗺️ Search map: No Mapbox token yet, waiting...');
+      return;
+    }
+
+    console.log('🗺️ Search map: Initializing...');
+    
+    // Log container dimensions
+    const rect = mapSearchContainer.current.getBoundingClientRect();
+    console.log('🗺️ Search map container dimensions:', {
+      width: rect.width,
+      height: rect.height,
+      visible: rect.width > 0 && rect.height > 0
+    });
+
     // Clean up existing map
     if (map.current) {
+      console.log('🗺️ Search map: Cleaning up existing map');
       map.current.remove();
       map.current = null;
     }
 
-    // Initialize new map for search
-    mapboxgl.accessToken = mapboxToken;
-    map.current = new mapboxgl.Map({
-      container: mapSearchContainer.current,
-      style: 'mapbox://styles/mapbox/streets-v12',
-      center: [-95.7129, 37.0902], // Center of US
-      zoom: 4
-    });
+    try {
+      // Initialize new map for search
+      mapboxgl.accessToken = mapboxToken;
+      console.log('🗺️ Search map: Creating Mapbox instance...');
+      
+      map.current = new mapboxgl.Map({
+        container: mapSearchContainer.current,
+        style: 'mapbox://styles/mapbox/streets-v12',
+        center: [-95.7129, 37.0902], // Center of US
+        zoom: 4
+      });
 
-    // Add navigation controls
-    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
-    map.current.on('load', () => {
-      map.current?.resize();
-      // extra safety in modals
-      setTimeout(() => map.current?.resize(), 100);
-    });
+      // Add navigation controls
+      map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+      
+      map.current.on('load', () => {
+        console.log('🗺️ Search map: Map loaded successfully!');
+        requestAnimationFrame(() => {
+          map.current?.resize();
+          console.log('🗺️ Search map: Resized after load');
+        });
+        setTimeout(() => {
+          map.current?.resize();
+          console.log('🗺️ Search map: Resized with delay');
+        }, 100);
+      });
+
+      map.current.on('error', (e) => {
+        console.error('🗺️ Search map: Mapbox error:', e.error);
+        toast({
+          title: 'Map Error',
+          description: 'Failed to load map. Please try refreshing.',
+          variant: 'destructive'
+        });
+      });
+
+      console.log('🗺️ Search map: Map instance created successfully');
+    } catch (err) {
+      console.error('🗺️ Search map: Exception during initialization:', err);
+      toast({
+        title: 'Map Initialization Error',
+        description: 'Failed to create map. Please try again.',
+        variant: 'destructive'
+      });
+    }
 
     return () => {
+      console.log('🗺️ Search map: Cleanup triggered');
       markers.current.forEach(m => m.remove());
       markers.current = [];
       marker.current?.remove();
@@ -220,48 +312,101 @@ const markers = useRef<mapboxgl.Marker[]>([]);
       map.current = null;
       marker.current = null;
     };
-  }, [showStationModal, activeTab]);
+  }, [showStationModal, activeTab, mapboxToken]);
 
   // Initialize map for Manual Entry tab when coordinates are available
   useEffect(() => {
     if (!showStationModal || activeTab !== "manual" || !mapPreviewContainer.current || !mapCoordinates) {
+      console.log('🗺️ Preview map: Skipping initialization', { 
+        showStationModal, 
+        activeTab, 
+        hasContainer: !!mapPreviewContainer.current,
+        hasCoordinates: !!mapCoordinates
+      });
       return;
     }
 
+    if (!mapboxToken) {
+      console.log('🗺️ Preview map: No Mapbox token yet, waiting...');
+      return;
+    }
+
+    console.log('🗺️ Preview map: Initializing with coordinates:', mapCoordinates);
+    
+    // Log container dimensions
+    const rect = mapPreviewContainer.current.getBoundingClientRect();
+    console.log('🗺️ Preview map container dimensions:', {
+      width: rect.width,
+      height: rect.height,
+      visible: rect.width > 0 && rect.height > 0
+    });
+
     // Clean up existing map
     if (map.current) {
+      console.log('🗺️ Preview map: Cleaning up existing map');
       map.current.remove();
       map.current = null;
     }
 
-    // Initialize new map
-    mapboxgl.accessToken = mapboxToken;
-    map.current = new mapboxgl.Map({
-      container: mapPreviewContainer.current,
-      style: 'mapbox://styles/mapbox/streets-v12',
-      center: mapCoordinates,
-      zoom: 14
-    });
+    try {
+      // Initialize new map
+      mapboxgl.accessToken = mapboxToken;
+      console.log('🗺️ Preview map: Creating Mapbox instance...');
+      
+      map.current = new mapboxgl.Map({
+        container: mapPreviewContainer.current,
+        style: 'mapbox://styles/mapbox/streets-v12',
+        center: mapCoordinates,
+        zoom: 14
+      });
 
-    // Add navigation controls
-    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
-    map.current.on('load', () => {
-      map.current?.resize();
-      setTimeout(() => map.current?.resize(), 100);
-    });
+      // Add navigation controls
+      map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+      
+      map.current.on('load', () => {
+        console.log('🗺️ Preview map: Map loaded successfully!');
+        requestAnimationFrame(() => {
+          map.current?.resize();
+          console.log('🗺️ Preview map: Resized after load');
+        });
+        setTimeout(() => {
+          map.current?.resize();
+          console.log('🗺️ Preview map: Resized with delay');
+        }, 100);
+      });
 
-    // Add marker
-    marker.current = new mapboxgl.Marker({ color: '#3b82f6' })
-      .setLngLat(mapCoordinates)
-      .addTo(map.current);
+      map.current.on('error', (e) => {
+        console.error('🗺️ Preview map: Mapbox error:', e.error);
+        toast({
+          title: 'Map Error',
+          description: 'Failed to load preview map.',
+          variant: 'destructive'
+        });
+      });
+
+      // Add marker
+      marker.current = new mapboxgl.Marker({ color: '#3b82f6' })
+        .setLngLat(mapCoordinates)
+        .addTo(map.current);
+
+      console.log('🗺️ Preview map: Map and marker created successfully');
+    } catch (err) {
+      console.error('🗺️ Preview map: Exception during initialization:', err);
+      toast({
+        title: 'Map Initialization Error',
+        description: 'Failed to create preview map.',
+        variant: 'destructive'
+      });
+    }
 
     return () => {
+      console.log('🗺️ Preview map: Cleanup triggered');
       marker.current?.remove();
       map.current?.remove();
       map.current = null;
       marker.current = null;
     };
-  }, [mapCoordinates, showStationModal, activeTab]);
+  }, [mapCoordinates, showStationModal, activeTab, mapboxToken]);
 
   // Update marker position when coordinates change
   useEffect(() => {
