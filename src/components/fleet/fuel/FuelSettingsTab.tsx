@@ -1067,11 +1067,9 @@ export const FuelSettingsTab: React.FC = () => {
                             <p className="text-sm text-muted-foreground">
                               {station.address || 'Address not available'}
                             </p>
-                            {(station.city || station.state || station.zip) && (
-                              <p className="text-sm text-muted-foreground">
-                                {station.zip}
-                              </p>
-                            )}
+                            <p className="text-sm text-muted-foreground">
+                              {[station.city, station.state, station.zip].filter(Boolean).join(', ') || station.zip}
+                            </p>
                             {station.metadata?.rating && (
                               <p className="text-xs text-muted-foreground">
                                 ⭐ {station.metadata.rating} ({station.metadata.user_ratings_total} reviews)

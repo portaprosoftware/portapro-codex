@@ -93,6 +93,22 @@ serve(async (req) => {
     
     console.log(`📍 Google: Geocoded to: ${latitude}, ${longitude}`)
 
+    // Extract city and state from geocode results for consistent data
+    let searchCity = ''
+    let searchState = ''
+    
+    const addressComponents = geocodeData.results[0].address_components || []
+    for (const component of addressComponents) {
+      if (component.types.includes('locality')) {
+        searchCity = component.long_name
+      }
+      if (component.types.includes('administrative_area_level_1')) {
+        searchState = component.short_name
+      }
+    }
+    
+    console.log(`📍 Google: Search area - ${searchCity}, ${searchState} ${zipCode}`)
+
     // Step 2: Search for gas stations near these coordinates
     // Using 10km (10000m) radius for more localized results
     const placesUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=10000&type=gas_station&key=${googleApiKey}`
@@ -132,26 +148,18 @@ serve(async (req) => {
       const vicinity = place.vicinity || ''
       const addressParts = vicinity.split(',').map((s: string) => s.trim())
       
-      // Try to extract city, state, zip from vicinity
-      let city = ''
-      let state = ''
-      let stationZip = zipCode // Default to search ZIP
+      // Use the city and state from the ZIP code search for consistency
+      // Only try to extract ZIP from vicinity if different from search ZIP
+      let stationZip = zipCode
+      let stationCity = searchCity
+      let stationState = searchState
       
+      // Try to extract ZIP from vicinity if present
       if (addressParts.length >= 2) {
-        // Last part usually contains "City, State ZIP"
         const lastPart = addressParts[addressParts.length - 1]
-        const stateZipMatch = lastPart.match(/([A-Z]{2})\s+(\d{5})/)
-        if (stateZipMatch) {
-          state = stateZipMatch[1]
-          stationZip = stateZipMatch[2]
-          city = addressParts[addressParts.length - 1].replace(stateZipMatch[0], '').trim()
-        } else {
-          // Try just state
-          const stateMatch = lastPart.match(/([A-Z]{2})/)
-          if (stateMatch) {
-            state = stateMatch[1]
-            city = lastPart.replace(stateMatch[0], '').trim()
-          }
+        const zipMatch = lastPart.match(/\d{5}/)
+        if (zipMatch) {
+          stationZip = zipMatch[0]
         }
       }
 
@@ -159,8 +167,8 @@ serve(async (req) => {
         id: place.place_id,
         name: place.name || 'Gas Station',
         address: addressParts[0] || vicinity,
-        city: city || '',
-        state: state || '',
+        city: stationCity,
+        state: stationState,
         zip: stationZip,
         phone: '', // Would need Place Details API for phone
         distance: distance, // Distance in miles
