@@ -883,9 +883,16 @@ export const FuelSettingsTab: React.FC = () => {
                       onClick={() => handleSelectStation(station)}
                     >
                       <CardContent className="p-4">
-                        <div className="flex items-start justify-between gap-4">
+                         <div className="flex items-start justify-between gap-4">
                         <div className="flex-1 space-y-1">
-                            <h4 className="font-semibold text-base">{formatStationName(station.name)}</h4>
+                            <div className="flex items-center gap-2">
+                              <h4 className="font-semibold text-base">{formatStationName(station.name)}</h4>
+                              {station.distance !== undefined && (
+                                <span className="text-xs text-muted-foreground font-medium">
+                                  {station.distance.toFixed(1)} mi
+                                </span>
+                              )}
+                            </div>
                             <p className="text-sm text-muted-foreground">
                               {station.address || 'Address not available'}
                             </p>

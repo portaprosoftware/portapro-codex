@@ -5,6 +5,18 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+// Haversine formula to calculate distance between two GPS coordinates (in miles)
+function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 3959; // Earth radius in miles
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c; // Distance in miles
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -82,8 +94,8 @@ serve(async (req) => {
     console.log(`📍 Google: Geocoded to: ${latitude}, ${longitude}`)
 
     // Step 2: Search for gas stations near these coordinates
-    // Using 50km (50000m) radius for comprehensive results
-    const placesUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=50000&type=gas_station&key=${googleApiKey}`
+    // Using 10km (10000m) radius for more localized results
+    const placesUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=10000&type=gas_station&key=${googleApiKey}`
     
     console.log('🏪 Google: Searching for gas stations...')
     
@@ -107,8 +119,15 @@ serve(async (req) => {
 
     console.log(`✅ Google: Found ${placesData.results?.length || 0} gas stations`)
 
-    // Step 3: Format results for our UI
-    const gasStations = (placesData.results || []).slice(0, 20).map((place: any) => {
+    // Step 3: Calculate distances and format results
+    const gasStationsWithDistance = (placesData.results || []).map((place: any) => {
+      // Calculate distance from search center
+      const distance = calculateDistance(
+        latitude,
+        longitude,
+        place.geometry?.location?.lat || 0,
+        place.geometry?.location?.lng || 0
+      );
       // Parse address components
       const vicinity = place.vicinity || ''
       const addressParts = vicinity.split(',').map((s: string) => s.trim())
@@ -144,6 +163,7 @@ serve(async (req) => {
         state: state || '',
         zip: stationZip,
         phone: '', // Would need Place Details API for phone
+        distance: distance, // Distance in miles
         coordinates: {
           latitude: place.geometry?.location?.lat || 0,
           longitude: place.geometry?.location?.lng || 0
@@ -157,6 +177,12 @@ serve(async (req) => {
         }
       }
     })
+
+    // Step 4: Filter stations within 10km (~6.2 miles) and sort by distance
+    const gasStations = gasStationsWithDistance
+      .filter(station => station.distance <= 6.2)
+      .sort((a, b) => a.distance - b.distance)
+      .slice(0, 20)
 
     console.log(`📦 Returning ${gasStations.length} formatted gas stations`)
 
