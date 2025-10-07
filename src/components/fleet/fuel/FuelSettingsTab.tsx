@@ -837,14 +837,16 @@ export const FuelSettingsTab: React.FC = () => {
               <TabsTrigger value="manual">Manual Entry</TabsTrigger>
               <TabsTrigger value="map">
                 <MapPin className="h-4 w-4 mr-2" />
-                Search Map
+                Search ZIP Code
               </TabsTrigger>
             </TabsList>
             
             <TabsContent value="map" className="space-y-4 mt-4">
               <div className="flex gap-2 items-center">
-                <div className="flex-1 border rounded-lg px-4 py-3 bg-background flex items-center gap-3">
-                  <div className="flex gap-2">
+                <div className="flex-1 border rounded-lg px-4 py-3 bg-background">
+                  <Label className="text-sm text-muted-foreground mb-2 block">Enter ZIP code to search area</Label>
+                  <div className="flex items-center gap-3">
+                    <div className="flex gap-2">
                     {[0, 1, 2, 3, 4].map((index) => (
                       <Input
                         key={index}
@@ -887,22 +889,23 @@ export const FuelSettingsTab: React.FC = () => {
                         }}
                         className="w-12 h-12 text-center text-lg font-semibold border-input"
                       />
-                    ))}
+                      ))}
+                    </div>
+                    {zipCodeSearch.length > 0 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setZipCodeSearch('');
+                          setTimeout(() => document.getElementById('zip-0')?.focus(), 0);
+                        }}
+                        className="h-8 px-2"
+                      >
+                        Clear
+                      </Button>
+                    )}
                   </div>
-                  {zipCodeSearch.length > 0 && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setZipCodeSearch('');
-                        setTimeout(() => document.getElementById('zip-0')?.focus(), 0);
-                      }}
-                      className="ml-auto h-8 px-2"
-                    >
-                      Clear
-                    </Button>
-                  )}
                 </div>
                 <Button 
                   type="button"
