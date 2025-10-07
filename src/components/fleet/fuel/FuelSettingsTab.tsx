@@ -10,7 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { Save, Plus, Edit, Trash2, MapPin, Loader2 } from 'lucide-react';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { StateScroller } from '@/components/ui/state-scroller';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -45,10 +45,11 @@ export const FuelSettingsTab: React.FC = () => {
     zip: ''
   });
   const [mapCoordinates, setMapCoordinates] = useState<[number, number] | null>(null);
-  const mapContainer = useRef<HTMLDivElement>(null);
+  const mapSearchContainer = useRef<HTMLDivElement>(null);
+  const mapPreviewContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const marker = useRef<mapboxgl.Marker | null>(null);
-  const markers = useRef<mapboxgl.Marker[]>([]);
+const markers = useRef<mapboxgl.Marker[]>([]);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const mapboxToken = 'pk.eyJ1IjoicG9ydGFwcm9zb2Z0d2FyZSIsImEiOiJjbWJybnBnMnIwY2x2Mm1wd3p2MWdqY2FnIn0.7ZIJ7ufeGtn-ufiOGJpq1Q';
@@ -184,7 +185,7 @@ export const FuelSettingsTab: React.FC = () => {
 
   // Initialize map for Search Map tab
   useEffect(() => {
-    if (!showStationModal || activeTab !== "map" || !mapContainer.current) {
+    if (!showStationModal || activeTab !== "map" || !mapSearchContainer.current) {
       return;
     }
 
@@ -197,7 +198,7 @@ export const FuelSettingsTab: React.FC = () => {
     // Initialize new map for search
     mapboxgl.accessToken = mapboxToken;
     map.current = new mapboxgl.Map({
-      container: mapContainer.current,
+      container: mapSearchContainer.current,
       style: 'mapbox://styles/mapbox/streets-v12',
       center: [-95.7129, 37.0902], // Center of US
       zoom: 4
@@ -205,6 +206,11 @@ export const FuelSettingsTab: React.FC = () => {
 
     // Add navigation controls
     map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+    map.current.on('load', () => {
+      map.current?.resize();
+      // extra safety in modals
+      setTimeout(() => map.current?.resize(), 100);
+    });
 
     return () => {
       markers.current.forEach(m => m.remove());
@@ -218,7 +224,7 @@ export const FuelSettingsTab: React.FC = () => {
 
   // Initialize map for Manual Entry tab when coordinates are available
   useEffect(() => {
-    if (!showStationModal || activeTab !== "manual" || !mapContainer.current || !mapCoordinates) {
+    if (!showStationModal || activeTab !== "manual" || !mapPreviewContainer.current || !mapCoordinates) {
       return;
     }
 
@@ -231,7 +237,7 @@ export const FuelSettingsTab: React.FC = () => {
     // Initialize new map
     mapboxgl.accessToken = mapboxToken;
     map.current = new mapboxgl.Map({
-      container: mapContainer.current,
+      container: mapPreviewContainer.current,
       style: 'mapbox://styles/mapbox/streets-v12',
       center: mapCoordinates,
       zoom: 14
@@ -239,6 +245,10 @@ export const FuelSettingsTab: React.FC = () => {
 
     // Add navigation controls
     map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+    map.current.on('load', () => {
+      map.current?.resize();
+      setTimeout(() => map.current?.resize(), 100);
+    });
 
     // Add marker
     marker.current = new mapboxgl.Marker({ color: '#3b82f6' })
@@ -777,6 +787,9 @@ export const FuelSettingsTab: React.FC = () => {
               <MapPin className="h-5 w-5" />
               {editingStation ? 'Edit Fuel Station' : 'Add Fuel Station'}
             </DialogTitle>
+            <DialogDescription>
+              Add or search for a station. Use Search Map to find by ZIP and click a marker to auto-fill.
+            </DialogDescription>
           </DialogHeader>
           
           <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -815,7 +828,7 @@ export const FuelSettingsTab: React.FC = () => {
               </div>
               
               <div 
-                ref={mapContainer} 
+                ref={mapSearchContainer} 
                 className="w-full h-[450px] rounded-lg border"
               />
               
@@ -878,7 +891,7 @@ export const FuelSettingsTab: React.FC = () => {
               <div className="space-y-2">
                 <Label>Location Preview</Label>
                 <div 
-                  ref={mapContainer} 
+                  ref={mapPreviewContainer} 
                   className="w-full h-64 rounded-lg border border-border"
                 />
               </div>
