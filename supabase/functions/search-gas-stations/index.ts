@@ -59,43 +59,61 @@ serve(async (req) => {
 
     const [longitude, latitude] = geocodeData.features[0].center
     
-    // Search for gas stations using Mapbox Search API
-    // Using the category 'fuel' to find gas stations
-    const searchUrl = `https://api.mapbox.com/search/searchbox/v1/category/fuel?proximity=${longitude},${latitude}&limit=20&access_token=${mapboxToken}`
+    console.log(`🔍 Searching for gas stations near: ${latitude}, ${longitude}`)
+    
+    // Search for gas stations using Mapbox Geocoding API
+    const searchUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/gas%20station.json?proximity=${longitude},${latitude}&limit=20&access_token=${mapboxToken}`
+    
+    console.log('📡 Mapbox search URL:', searchUrl.replace(mapboxToken, 'TOKEN'))
     
     const searchResponse = await fetch(searchUrl)
     
     if (!searchResponse.ok) {
-      console.error('Mapbox search failed:', await searchResponse.text())
+      const errorText = await searchResponse.text()
+      console.error('❌ Mapbox search failed:', errorText)
       throw new Error('Failed to search for gas stations')
     }
 
     const searchData = await searchResponse.json()
+    console.log(`✅ Mapbox returned ${searchData.features?.length || 0} features`)
     
     // Format the results
     const gasStations = (searchData.features || []).map((feature: any) => {
-      const props = feature.properties || {}
       const coords = feature.geometry?.coordinates || [0, 0]
+      const placeName = feature.place_name || ''
       
-      // Extract address components
-      const fullAddress = props.full_address || props.address || ''
-      const addressParts = fullAddress.split(',').map((s: string) => s.trim())
+      // Extract address components from context
+      const context = feature.context || []
+      let city = ''
+      let state = ''
+      let zip = zipCode
+      
+      context.forEach((ctx: any) => {
+        if (ctx.id.startsWith('place')) city = ctx.text
+        if (ctx.id.startsWith('region')) state = ctx.short_code?.replace('US-', '') || ctx.text
+        if (ctx.id.startsWith('postcode')) zip = ctx.text
+      })
+      
+      // Extract street address (before the first comma)
+      const address = placeName.split(',')[0] || ''
       
       return {
         id: feature.id || `station-${Math.random()}`,
-        name: props.name || 'Gas Station',
-        address: addressParts[0] || '',
-        city: addressParts[1] || '',
-        state: addressParts[2]?.split(' ')[0] || '',
-        zip: addressParts[2]?.split(' ')[1] || zipCode,
-        phone: props.phone || '',
+        name: feature.text || 'Gas Station',
+        address: address,
+        city: city,
+        state: state,
+        zip: zip,
+        phone: feature.properties?.tel || feature.properties?.phone || '',
         coordinates: {
           longitude: coords[0],
           latitude: coords[1]
         },
-        metadata: props.metadata || {}
+        metadata: feature.properties || {}
       }
     })
+    
+    console.log(`📍 Formatted ${gasStations.length} gas stations`)
 
     return new Response(
       JSON.stringify({ 
