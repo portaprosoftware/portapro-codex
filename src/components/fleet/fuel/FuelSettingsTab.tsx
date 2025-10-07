@@ -1245,7 +1245,7 @@ export const FuelSettingsTab: React.FC = () => {
 
             {/* Map View */}
             {mapCoordinates && stationFormData.address && stationFormData.city && stationFormData.state && stationFormData.zip ? (
-              <div className="space-y-2 mb-6">
+              <div className="space-y-2 mb-12">
                 <Label>Location Preview</Label>
                 <div 
                   ref={mapPreviewContainer} 
@@ -1254,7 +1254,7 @@ export const FuelSettingsTab: React.FC = () => {
               </div>
             ) : null}
           </div>
-          <DialogFooter>
+          <DialogFooter className="mt-6">
             <Button variant="outline" onClick={() => setShowStationModal(false)}>
               Cancel
             </Button>
