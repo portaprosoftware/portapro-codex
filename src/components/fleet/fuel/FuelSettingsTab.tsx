@@ -847,8 +847,16 @@ export const FuelSettingsTab: React.FC = () => {
                   <Input
                     placeholder="Enter zip code to search"
                     value={zipCodeSearch}
-                    onChange={(e) => setZipCodeSearch(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      // Only allow numbers and limit to 5 digits
+                      const numericValue = value.replace(/\D/g, '').slice(0, 5);
+                      setZipCodeSearch(numericValue);
+                    }}
                     onKeyDown={(e) => e.key === 'Enter' && handleSearchGasStations()}
+                    maxLength={5}
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                   />
                 </div>
                 <Button 
