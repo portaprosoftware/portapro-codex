@@ -939,7 +939,9 @@ export const FuelSettingsTab: React.FC = () => {
                   <Label className="text-sm text-muted-foreground mb-2 block">Enter ZIP code to search area</Label>
                   <div className="flex items-center gap-3">
                     <div className="flex gap-2">
-                    {[0, 1, 2, 3, 4].map((index) => (
+                    {[0, 1, 2, 3, 4].map((index) => {
+                      const placeholderDigits = ['1', '0', '0', '0', '1'];
+                      return (
                       <Input
                         key={index}
                         id={`zip-${index}`}
@@ -947,7 +949,7 @@ export const FuelSettingsTab: React.FC = () => {
                         inputMode="numeric"
                         pattern="[0-9]*"
                         maxLength={1}
-                        placeholder={String(index + 1)}
+                        placeholder={placeholderDigits[index]}
                         value={zipCodeSearch[index] || ''}
                         onChange={(e) => {
                           const value = e.target.value.replace(/\D/g, '');
@@ -982,7 +984,8 @@ export const FuelSettingsTab: React.FC = () => {
                         }}
                         className="w-12 h-12 text-center text-lg font-semibold border-input placeholder:text-muted-foreground/40"
                       />
-                      ))}
+                      );
+                    })}
                     </div>
                     {zipCodeSearch.length > 0 && (
                       <Button
