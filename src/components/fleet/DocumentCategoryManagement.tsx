@@ -34,6 +34,7 @@ interface DocumentCategoryFormData {
 export const DocumentCategoryManagement: React.FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<DocumentCategory | null>(null);
+  const [filterGroup, setFilterGroup] = useState<string>("all");
   const [formData, setFormData] = useState<DocumentCategoryFormData>({
     name: "",
     description: "",
@@ -246,11 +247,17 @@ export const DocumentCategoryManagement: React.FC = () => {
 
   // Group categories by parent_group
   const categoryGroups = useMemo(() => {
-    return groupDefinitions.map(group => ({
+    const groups = groupDefinitions.map(group => ({
       ...group,
       categories: categories?.filter(cat => cat.parent_group === group.id) || []
     }));
-  }, [categories]);
+    
+    // Filter groups based on selected filter
+    if (filterGroup === "all") {
+      return groups;
+    }
+    return groups.filter(g => g.id === filterGroup);
+  }, [categories, filterGroup]);
 
   if (isLoading) {
     return (
@@ -268,20 +275,39 @@ export const DocumentCategoryManagement: React.FC = () => {
           <p className="text-sm text-gray-600">Manage document types and their display settings</p>
         </div>
         
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button 
-              onClick={() => {
-                setEditingCategory(null);
-                resetForm();
-              }}
-              className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
+        <div className="flex items-center gap-3">
+          {/* Filter Dropdown */}
+          <div className="flex items-center gap-2">
+            <Label htmlFor="filter-group" className="text-sm whitespace-nowrap">Filter:</Label>
+            <select
+              id="filter-group"
+              value={filterGroup}
+              onChange={(e) => setFilterGroup(e.target.value)}
+              className="px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm min-w-[200px]"
             >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Category
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
+              <option value="all">All Categories</option>
+              {groupDefinitions.map((group) => (
+                <option key={group.id} value={group.id}>
+                  {group.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button 
+                onClick={() => {
+                  setEditingCategory(null);
+                  resetForm();
+                }}
+                className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add Category
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
             <DialogHeader>
               <DialogTitle>
                 {editingCategory ? "Edit Document Category" : "Add Document Category"}
@@ -349,10 +375,11 @@ export const DocumentCategoryManagement: React.FC = () => {
             </form>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       {/* Grouped Categories with Accordion */}
-      <Accordion type="multiple" defaultValue={categoryGroups.map(g => g.id)} className="space-y-4">
+      <Accordion type="multiple" className="space-y-4">
         {categoryGroups.map((group) => (
           <AccordionItem key={group.id} value={group.id} className="border rounded-lg bg-white shadow-sm">
             <AccordionTrigger className="px-6 py-4 hover:no-underline">
