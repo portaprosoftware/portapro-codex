@@ -61,7 +61,7 @@ export default function FleetFiles() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("document_categories")
-        .select("id, name, icon, color, description, requires_expiration, custom_fields_schema, reminder_days_before")
+        .select("id, name, icon, color, description, requires_expiration, custom_fields_schema, reminder_days_before, parent_group")
         .eq("is_active", true)
         .order("display_order");
       
