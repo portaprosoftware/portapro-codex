@@ -221,9 +221,8 @@ export const FuelAllLogsTab: React.FC = () => {
       {/* Filters */}
       <Card>
         <CardContent className="pt-6">
-          {/* Filters Title and Search Bar Row */}
+          {/* Search Bar and Actions Row */}
           <div className="flex items-center gap-4 mb-4">
-            <h3 className="text-base font-semibold">Filters</h3>
             <div className="flex-1">
               <Input
                 placeholder="Search Logs"
@@ -232,6 +231,20 @@ export const FuelAllLogsTab: React.FC = () => {
                 className="w-full"
               />
             </div>
+            <Button 
+              onClick={() => setShowAddModal(true)}
+              className="bg-gradient-to-r from-primary to-primary-variant"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Fuel Log
+            </Button>
+            <Button 
+              onClick={() => setShowExportModal(true)}
+              variant="outline"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Export Data
+            </Button>
           </div>
 
           {/* Filter Buttons Row */}
@@ -308,27 +321,6 @@ export const FuelAllLogsTab: React.FC = () => {
           </div>
         </CardContent>
       </Card>
-
-      {/* Actions */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-between">
-        <div className="flex gap-2">
-          <Button 
-            onClick={() => setShowAddModal(true)}
-            className="bg-gradient-to-r from-primary to-primary-variant"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add Fuel Log
-          </Button>
-        </div>
-        
-        <Button 
-          onClick={() => setShowExportModal(true)}
-          variant="outline"
-        >
-          <Download className="h-4 w-4 mr-2" />
-          Export Data
-        </Button>
-      </div>
 
       {/* Table */}
       <Card>
