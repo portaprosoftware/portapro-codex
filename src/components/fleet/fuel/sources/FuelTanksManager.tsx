@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Plus, Container, AlertTriangle, CheckCircle, Calendar, Truck, Building2 } from 'lucide-react';
+import { Plus, Container, AlertTriangle, CheckCircle, Calendar, Truck } from 'lucide-react';
 import { useFuelTanks, useSPCCTanks } from '@/hooks/useFuelTanks';
 import { useFuelTankDeliveries } from '@/hooks/useFuelTankDeliveries';
 import { AddFuelTankDialog } from './AddFuelTankDialog';
@@ -121,16 +121,13 @@ export const FuelTanksManager: React.FC = () => {
       {/* Suppliers Toggle */}
       <Card className="p-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Building2 className="h-5 w-5 text-muted-foreground" />
-            <div>
-              <Label htmlFor="show-suppliers" className="text-base font-semibold cursor-pointer">
-                View Fuel Suppliers
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                Manage your fuel tank delivery vendors
-              </p>
-            </div>
+          <div>
+            <Label htmlFor="show-suppliers" className="text-base font-semibold cursor-pointer">
+              View Fuel Suppliers
+            </Label>
+            <p className="text-sm text-muted-foreground">
+              Manage your fuel tank delivery vendors
+            </p>
           </div>
           <Switch
             id="show-suppliers"
