@@ -5688,10 +5688,66 @@ export type Database = {
         }
         Relationships: []
       }
+      mobile_fuel_service_vehicles: {
+        Row: {
+          created_at: string
+          gallons_dispensed: number
+          id: string
+          odometer_reading: number | null
+          service_id: string
+          updated_at: string
+          vehicle_id: string
+          vehicle_notes: string | null
+        }
+        Insert: {
+          created_at?: string
+          gallons_dispensed: number
+          id?: string
+          odometer_reading?: number | null
+          service_id: string
+          updated_at?: string
+          vehicle_id: string
+          vehicle_notes?: string | null
+        }
+        Update: {
+          created_at?: string
+          gallons_dispensed?: number
+          id?: string
+          odometer_reading?: number | null
+          service_id?: string
+          updated_at?: string
+          vehicle_id?: string
+          vehicle_notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mobile_fuel_service_vehicles_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "mobile_fuel_services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mobile_fuel_service_vehicles_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicle_quick_metrics"
+            referencedColumns: ["vehicle_id"]
+          },
+          {
+            foreignKeyName: "mobile_fuel_service_vehicles_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mobile_fuel_services: {
         Row: {
           cost_per_gallon: number | null
           created_at: string
+          delivery_ticket_urls: string[] | null
           fuel_grade: string | null
           id: string
           invoice_number: string | null
@@ -5705,14 +5761,18 @@ export type Database = {
           total_cost: number
           total_gallons: number
           updated_at: string
+          variance_flag: boolean | null
+          variance_notes: string | null
           vehicles_fueled: number | null
           vendor_driver_name: string | null
           vendor_id: string
           vendor_truck_number: string | null
+          verified_by_user_id: string | null
         }
         Insert: {
           cost_per_gallon?: number | null
           created_at?: string
+          delivery_ticket_urls?: string[] | null
           fuel_grade?: string | null
           id?: string
           invoice_number?: string | null
@@ -5726,14 +5786,18 @@ export type Database = {
           total_cost: number
           total_gallons: number
           updated_at?: string
+          variance_flag?: boolean | null
+          variance_notes?: string | null
           vehicles_fueled?: number | null
           vendor_driver_name?: string | null
           vendor_id: string
           vendor_truck_number?: string | null
+          verified_by_user_id?: string | null
         }
         Update: {
           cost_per_gallon?: number | null
           created_at?: string
+          delivery_ticket_urls?: string[] | null
           fuel_grade?: string | null
           id?: string
           invoice_number?: string | null
@@ -5747,10 +5811,13 @@ export type Database = {
           total_cost?: number
           total_gallons?: number
           updated_at?: string
+          variance_flag?: boolean | null
+          variance_notes?: string | null
           vehicles_fueled?: number | null
           vendor_driver_name?: string | null
           vendor_id?: string
           vendor_truck_number?: string | null
+          verified_by_user_id?: string | null
         }
         Relationships: [
           {

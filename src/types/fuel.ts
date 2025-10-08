@@ -216,6 +216,17 @@ export interface MobileFuelVendor {
 export type FuelGrade = 'diesel_2' | 'dyed_diesel' | 'gasoline_87' | 'gasoline_91' | 'def' | 'biodiesel';
 export type MobilePaymentMethod = 'ach' | 'check' | 'net_30' | 'cod' | 'credit_card' | 'cash';
 
+export interface MobileFuelServiceVehicle {
+  id: string;
+  service_id: string;
+  vehicle_id: string;
+  gallons_dispensed: number;
+  odometer_reading?: number;
+  vehicle_notes?: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface MobileFuelService {
   id: string;
   vendor_id: string;
@@ -238,6 +249,11 @@ export interface MobileFuelService {
   fuel_grade?: FuelGrade;
   price_per_gallon?: number;
   payment_method?: MobilePaymentMethod;
+  // Tier 2 fields
+  verified_by_user_id?: string;
+  delivery_ticket_urls?: string[];
+  variance_flag?: boolean;
+  variance_notes?: string;
 }
 
 export interface EnhancedFuelLog {
