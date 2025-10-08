@@ -3,19 +3,32 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Search, Upload, FolderOpen, Settings } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Search, Upload, FolderOpen, Settings, Truck } from "lucide-react";
 import { FleetLayout } from "@/components/fleet/FleetLayout";
 import { DocumentCard } from "@/components/fleet/DocumentCard";
 import { DocumentUploadModal } from "@/components/fleet/DocumentUploadModal";
 import { DocumentCategoryManagement } from "@/components/fleet/DocumentCategoryManagement";
+import { MultiSelectVehicleFilter } from "@/components/fleet/MultiSelectVehicleFilter";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@clerk/clerk-react";
 
+interface Vehicle {
+  id: string;
+  license_plate: string | null;
+  vehicle_type?: string | null;
+  make?: string | null;
+  model?: string | null;
+  year?: number | null;
+  status?: string | null;
+  vehicle_image?: string | null;
+  nickname?: string | null;
+}
+
 export default function FleetFiles() {
-  const [selectedVehicle, setSelectedVehicle] = useState<string>("all");
+  const [selectedVehicles, setSelectedVehicles] = useState<Vehicle[]>([]);
+  const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [documentToDelete, setDocumentToDelete] = useState<any>(null);
@@ -87,7 +100,10 @@ export default function FleetFiles() {
     if (!enrichedDocuments) return [] as any[];
 
     return enrichedDocuments.filter((doc: any) => {
-      const vehicleMatch = selectedVehicle === "all" || doc.vehicle_id === selectedVehicle;
+      // Vehicle filter - if vehicles are selected, only show docs for those vehicles
+      const vehicleMatch = selectedVehicles.length === 0 || 
+        selectedVehicles.some(v => v.id === doc.vehicle_id);
+      
       const categoryMatch = selectedCategory === "all" || doc.category === selectedCategory;
       const searchMatch =
         searchQuery === "" ||
@@ -98,7 +114,7 @@ export default function FleetFiles() {
 
       return vehicleMatch && categoryMatch && searchMatch;
     });
-  }, [enrichedDocuments, selectedVehicle, selectedCategory, searchQuery]);
+  }, [enrichedDocuments, selectedVehicles, selectedCategory, searchQuery]);
 
   // Group documents by category for tabs
   const documentsByCategory = useMemo(() => {
@@ -271,20 +287,18 @@ export default function FleetFiles() {
             />
           </div>
 
-          {/* Vehicle Filter */}
-          <Select value={selectedVehicle} onValueChange={setSelectedVehicle}>
-            <SelectTrigger className="w-full sm:w-48">
-              <SelectValue placeholder="All Vehicles" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Vehicles</SelectItem>
-              {vehicles?.map((vehicle) => (
-                <SelectItem key={vehicle.id} value={vehicle.id}>
-                  {vehicle.license_plate}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {/* Vehicle Filter Button */}
+          <Button
+            variant="outline"
+            onClick={() => setIsVehicleModalOpen(true)}
+            className="flex items-center gap-2 whitespace-nowrap"
+          >
+            <Truck className="h-4 w-4" />
+            {selectedVehicles.length === 0 
+              ? "All Vehicles" 
+              : `${selectedVehicles.length} Vehicle${selectedVehicles.length > 1 ? 's' : ''}`
+            }
+          </Button>
         </div>
 
         {/* Document Categories Navigation */}
@@ -365,6 +379,14 @@ export default function FleetFiles() {
           </Tabs>
         </div>
       </div>
+
+      {/* Vehicle Multi-Select Modal */}
+      <MultiSelectVehicleFilter
+        open={isVehicleModalOpen}
+        onOpenChange={setIsVehicleModalOpen}
+        selectedVehicles={selectedVehicles}
+        onVehiclesChange={setSelectedVehicles}
+      />
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={!!documentToDelete} onOpenChange={() => setDocumentToDelete(null)}>
