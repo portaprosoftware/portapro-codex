@@ -3184,6 +3184,13 @@ export type Database = {
             foreignKeyName: "fuel_logs_mobile_vendor_id_fkey"
             columns: ["mobile_vendor_id"]
             isOneToOne: false
+            referencedRelation: "expiring_vendor_compliance"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fuel_logs_mobile_vendor_id_fkey"
+            columns: ["mobile_vendor_id"]
+            isOneToOne: false
             referencedRelation: "mobile_fuel_vendors"
             referencedColumns: ["id"]
           },
@@ -5722,6 +5729,13 @@ export type Database = {
             foreignKeyName: "mobile_fuel_services_vendor_id_fkey"
             columns: ["vendor_id"]
             isOneToOne: false
+            referencedRelation: "expiring_vendor_compliance"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mobile_fuel_services_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
             referencedRelation: "mobile_fuel_vendors"
             referencedColumns: ["id"]
           },
@@ -5732,67 +5746,91 @@ export type Database = {
           after_hours_contact_person: string | null
           after_hours_phone: string | null
           contact_person: string | null
+          contract_document_url: string | null
           contract_number: string | null
           created_at: string
           delivery_hours: string | null
+          dot_hazmat_permit: string | null
           email: string | null
+          fuel_certifications: Json | null
           fuel_type: Database["public"]["Enums"]["fuel_type"]
           id: string
+          insurance_document_url: string | null
+          insurance_expiration_date: string | null
           is_active: boolean | null
+          last_audit_date: string | null
           min_delivery_quantity_gal: number | null
           notes: string | null
           payment_terms: string | null
           phone: string | null
           preferred_contact_method: string | null
           pricing_model: string | null
+          safety_status: string | null
           service_area: string | null
           updated_at: string
           vendor_id: string | null
           vendor_name: string
+          w9_document_url: string | null
         }
         Insert: {
           after_hours_contact_person?: string | null
           after_hours_phone?: string | null
           contact_person?: string | null
+          contract_document_url?: string | null
           contract_number?: string | null
           created_at?: string
           delivery_hours?: string | null
+          dot_hazmat_permit?: string | null
           email?: string | null
+          fuel_certifications?: Json | null
           fuel_type: Database["public"]["Enums"]["fuel_type"]
           id?: string
+          insurance_document_url?: string | null
+          insurance_expiration_date?: string | null
           is_active?: boolean | null
+          last_audit_date?: string | null
           min_delivery_quantity_gal?: number | null
           notes?: string | null
           payment_terms?: string | null
           phone?: string | null
           preferred_contact_method?: string | null
           pricing_model?: string | null
+          safety_status?: string | null
           service_area?: string | null
           updated_at?: string
           vendor_id?: string | null
           vendor_name: string
+          w9_document_url?: string | null
         }
         Update: {
           after_hours_contact_person?: string | null
           after_hours_phone?: string | null
           contact_person?: string | null
+          contract_document_url?: string | null
           contract_number?: string | null
           created_at?: string
           delivery_hours?: string | null
+          dot_hazmat_permit?: string | null
           email?: string | null
+          fuel_certifications?: Json | null
           fuel_type?: Database["public"]["Enums"]["fuel_type"]
           id?: string
+          insurance_document_url?: string | null
+          insurance_expiration_date?: string | null
           is_active?: boolean | null
+          last_audit_date?: string | null
           min_delivery_quantity_gal?: number | null
           notes?: string | null
           payment_terms?: string | null
           phone?: string | null
           preferred_contact_method?: string | null
           pricing_model?: string | null
+          safety_status?: string | null
           service_area?: string | null
           updated_at?: string
           vendor_id?: string | null
           vendor_name?: string
+          w9_document_url?: string | null
         }
         Relationships: []
       }
@@ -11218,6 +11256,19 @@ export type Database = {
         }
         Relationships: []
       }
+      expiring_vendor_compliance: {
+        Row: {
+          audit_overdue: boolean | null
+          id: string | null
+          insurance_expiration_date: string | null
+          insurance_expiring_soon: boolean | null
+          last_audit_date: string | null
+          safety_status: string | null
+          vendor_id: string | null
+          vendor_name: string | null
+        }
+        Relationships: []
+      }
       incident_analytics: {
         Row: {
           avg_resolution_hours: number | null
@@ -12082,6 +12133,10 @@ export type Database = {
         Returns: boolean
       }
       refresh_revenue_analytics_cache: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      refresh_vendor_compliance_alerts: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }

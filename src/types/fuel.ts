@@ -193,6 +193,15 @@ export interface MobileFuelVendor {
   pricing_model?: 'fixed' | 'market_index' | 'cost_plus' | 'tiered';
   payment_terms?: 'net_15' | 'net_30' | 'cod' | 'prepaid';
   contract_number?: string;
+  // Tier 2: Compliance
+  insurance_expiration_date?: string;
+  dot_hazmat_permit?: string;
+  safety_status?: 'verified' | 'pending' | 'flagged';
+  fuel_certifications?: string[];
+  contract_document_url?: string;
+  w9_document_url?: string;
+  insurance_document_url?: string;
+  last_audit_date?: string;
   notes?: string;
   is_active: boolean;
   created_at: string;

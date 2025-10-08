@@ -1,12 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useAddMobileFuelVendor } from '@/hooks/useMobileFuelVendors';
 import { useForm } from 'react-hook-form';
+import { ChevronDown, Upload, FileText } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface AddMobileFuelVendorDialogProps {
   open: boolean;
@@ -28,6 +33,11 @@ interface VendorFormData {
   pricing_model: 'fixed' | 'market_index' | 'cost_plus' | 'tiered';
   payment_terms: 'net_15' | 'net_30' | 'cod' | 'prepaid';
   contract_number: string;
+  // Tier 2
+  insurance_expiration_date: string;
+  dot_hazmat_permit: string;
+  safety_status: 'verified' | 'pending' | 'flagged';
+  last_audit_date: string;
   notes: string;
 }
 
@@ -35,12 +45,22 @@ export const AddMobileFuelVendorDialog: React.FC<AddMobileFuelVendorDialogProps>
   open, 
   onOpenChange 
 }) => {
+  const [complianceOpen, setComplianceOpen] = useState(false);
+  const [fuelCertifications, setFuelCertifications] = useState<string[]>([]);
+  const [uploadingDoc, setUploadingDoc] = useState<string | null>(null);
+  const [documentUrls, setDocumentUrls] = useState({
+    contract: '',
+    w9: '',
+    insurance: ''
+  });
+
   const { register, handleSubmit, reset, setValue, watch } = useForm<VendorFormData>({
     defaultValues: {
       fuel_type: 'diesel',
       preferred_contact_method: 'phone',
       pricing_model: 'fixed',
       payment_terms: 'net_30',
+      safety_status: 'pending',
     },
   });
   
@@ -49,13 +69,55 @@ export const AddMobileFuelVendorDialog: React.FC<AddMobileFuelVendorDialogProps>
   const preferredContactMethod = watch('preferred_contact_method');
   const pricingModel = watch('pricing_model');
   const paymentTerms = watch('payment_terms');
+  const safetyStatus = watch('safety_status');
+
+  const handleFileUpload = async (file: File, docType: 'contract' | 'w9' | 'insurance') => {
+    setUploadingDoc(docType);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${docType}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { data, error } = await supabase.storage
+        .from('mobile-vendor-docs')
+        .upload(filePath, file);
+
+      if (error) throw error;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('mobile-vendor-docs')
+        .getPublicUrl(filePath);
+
+      setDocumentUrls(prev => ({ ...prev, [docType]: publicUrl }));
+      toast.success(`${docType.toUpperCase()} document uploaded`);
+    } catch (error: any) {
+      toast.error(`Upload failed: ${error.message}`);
+    } finally {
+      setUploadingDoc(null);
+    }
+  };
+
+  const toggleCertification = (cert: string) => {
+    setFuelCertifications(prev => 
+      prev.includes(cert) 
+        ? prev.filter(c => c !== cert)
+        : [...prev, cert]
+    );
+  };
 
   const onSubmit = async (data: VendorFormData) => {
     await addVendor.mutateAsync({
       ...data,
+      fuel_certifications: fuelCertifications,
+      contract_document_url: documentUrls.contract || undefined,
+      w9_document_url: documentUrls.w9 || undefined,
+      insurance_document_url: documentUrls.insurance || undefined,
       is_active: true,
     });
     reset();
+    setFuelCertifications([]);
+    setDocumentUrls({ contract: '', w9: '', insurance: '' });
+    setComplianceOpen(false);
     onOpenChange(false);
   };
 
@@ -256,6 +318,171 @@ export const AddMobileFuelVendorDialog: React.FC<AddMobileFuelVendorDialogProps>
               rows={3}
             />
           </div>
+
+          {/* Tier 2: Compliance & Billing Details - Collapsible */}
+          <Collapsible open={complianceOpen} onOpenChange={setComplianceOpen} className="border rounded-lg p-4 space-y-4">
+            <CollapsibleTrigger className="flex items-center justify-between w-full">
+              <span className="font-semibold text-sm">Compliance & Billing Details</span>
+              <ChevronDown className={`h-4 w-4 transition-transform ${complianceOpen ? 'rotate-180' : ''}`} />
+            </CollapsibleTrigger>
+            
+            <CollapsibleContent className="space-y-4 pt-4">
+              {/* Insurance & Permits */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="insurance_expiration_date">Insurance Expiration</Label>
+                  <Input
+                    id="insurance_expiration_date"
+                    type="date"
+                    {...register('insurance_expiration_date')}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="dot_hazmat_permit">DOT/Hazmat Permit #</Label>
+                  <Input
+                    id="dot_hazmat_permit"
+                    {...register('dot_hazmat_permit')}
+                    placeholder="Permit number"
+                  />
+                </div>
+              </div>
+
+              {/* Safety Status & Last Audit */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="safety_status">Safety Status</Label>
+                  <Select
+                    value={safetyStatus}
+                    onValueChange={(value) => setValue('safety_status', value as any)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="verified">Verified</SelectItem>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="flagged">Flagged</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="last_audit_date">Last Audit Date</Label>
+                  <Input
+                    id="last_audit_date"
+                    type="date"
+                    {...register('last_audit_date')}
+                  />
+                </div>
+              </div>
+
+              {/* Fuel Certifications */}
+              <div className="space-y-2">
+                <Label>Fuel Certifications</Label>
+                <div className="grid grid-cols-2 gap-3">
+                  {['ULSD Compliant', 'Winterized Blend', 'Biodiesel B5', 'Biodiesel B20', 'Dyed Off-Road'].map(cert => (
+                    <div key={cert} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={cert}
+                        checked={fuelCertifications.includes(cert)}
+                        onCheckedChange={() => toggleCertification(cert)}
+                      />
+                      <label htmlFor={cert} className="text-sm cursor-pointer">{cert}</label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Document Uploads */}
+              <div className="space-y-3">
+                <Label>Document Uploads</Label>
+                
+                <div className="grid gap-3">
+                  {/* Contract */}
+                  <div className="flex items-center gap-2">
+                    <label htmlFor="contract-upload" className="flex-1">
+                      <div className="border-2 border-dashed rounded-lg p-3 hover:border-primary cursor-pointer transition-colors">
+                        <div className="flex items-center gap-2">
+                          {uploadingDoc === 'contract' ? (
+                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                          ) : documentUrls.contract ? (
+                            <FileText className="h-4 w-4 text-green-600" />
+                          ) : (
+                            <Upload className="h-4 w-4" />
+                          )}
+                          <span className="text-sm">
+                            {documentUrls.contract ? 'Contract Uploaded ✓' : 'Upload Contract'}
+                          </span>
+                        </div>
+                      </div>
+                    </label>
+                    <input
+                      id="contract-upload"
+                      type="file"
+                      className="hidden"
+                      accept=".pdf,.doc,.docx"
+                      onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0], 'contract')}
+                    />
+                  </div>
+
+                  {/* W-9 */}
+                  <div className="flex items-center gap-2">
+                    <label htmlFor="w9-upload" className="flex-1">
+                      <div className="border-2 border-dashed rounded-lg p-3 hover:border-primary cursor-pointer transition-colors">
+                        <div className="flex items-center gap-2">
+                          {uploadingDoc === 'w9' ? (
+                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                          ) : documentUrls.w9 ? (
+                            <FileText className="h-4 w-4 text-green-600" />
+                          ) : (
+                            <Upload className="h-4 w-4" />
+                          )}
+                          <span className="text-sm">
+                            {documentUrls.w9 ? 'W-9 Uploaded ✓' : 'Upload W-9'}
+                          </span>
+                        </div>
+                      </div>
+                    </label>
+                    <input
+                      id="w9-upload"
+                      type="file"
+                      className="hidden"
+                      accept=".pdf,.doc,.docx"
+                      onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0], 'w9')}
+                    />
+                  </div>
+
+                  {/* Insurance Certificate */}
+                  <div className="flex items-center gap-2">
+                    <label htmlFor="insurance-upload" className="flex-1">
+                      <div className="border-2 border-dashed rounded-lg p-3 hover:border-primary cursor-pointer transition-colors">
+                        <div className="flex items-center gap-2">
+                          {uploadingDoc === 'insurance' ? (
+                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                          ) : documentUrls.insurance ? (
+                            <FileText className="h-4 w-4 text-green-600" />
+                          ) : (
+                            <Upload className="h-4 w-4" />
+                          )}
+                          <span className="text-sm">
+                            {documentUrls.insurance ? 'Insurance Certificate Uploaded ✓' : 'Upload Insurance Certificate'}
+                          </span>
+                        </div>
+                      </div>
+                    </label>
+                    <input
+                      id="insurance-upload"
+                      type="file"
+                      className="hidden"
+                      accept=".pdf,.doc,.docx"
+                      onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0], 'insurance')}
+                    />
+                  </div>
+                </div>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
 
           <div className="flex gap-2 justify-end pt-4">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
