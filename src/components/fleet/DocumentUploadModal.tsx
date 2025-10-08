@@ -69,7 +69,6 @@ export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentU
   const [documentTitle, setDocumentTitle] = useState("");
   const [documentNumber, setDocumentNumber] = useState("");
   const [notes, setNotes] = useState("");
-  const [expirationDate, setExpirationDate] = useState("");
   const [customFieldValues, setCustomFieldValues] = useState<Record<string, any>>({});
   const [aiSuggestion, setAiSuggestion] = useState<any>(null);
   const [isLoadingSuggestion, setIsLoadingSuggestion] = useState(false);
@@ -120,7 +119,6 @@ export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentU
             file_size: file.size,
             document_number: documentNumber || null,
             notes: notes || null,
-            expiry_date: expirationDate || null,
             custom_field_values: Object.keys(customFieldValues).length > 0 ? customFieldValues : null,
             upload_date: new Date().toISOString()
           })
@@ -147,7 +145,7 @@ export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentU
       setDocumentTitle("");
       setDocumentNumber("");
       setNotes("");
-      setExpirationDate("");
+      setNotes("");
       setCustomFieldValues({});
       setAiSuggestion(null);
     },
@@ -301,6 +299,11 @@ export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentU
                 </span>
               )}
             </Button>
+            {selectedCategoryData?.requires_expiration && (
+              <p className="text-xs text-amber-600 mt-2 font-medium">
+                ℹ️ This section is for overflow documents & photos. To add expiration dates to track documents, add them under Compliance.
+              </p>
+            )}
           </div>
 
           {/* Document Title */}
@@ -318,20 +321,6 @@ export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentU
             </p>
           </div>
 
-          {/* Expiration Date (if required by category) */}
-          {selectedCategoryData?.requires_expiration && (
-            <div>
-              <Label htmlFor="expiration-date">Expiration Date *</Label>
-              <Input
-                id="expiration-date"
-                type="date"
-                value={expirationDate}
-                onChange={(e) => setExpirationDate(e.target.value)}
-                className="mt-2"
-                required
-              />
-            </div>
-          )}
 
           {/* Custom Fields (if defined for category) */}
           {customFieldsSchema.length > 0 && (

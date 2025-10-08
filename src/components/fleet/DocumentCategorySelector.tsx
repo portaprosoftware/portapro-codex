@@ -277,14 +277,19 @@ export const DocumentCategorySelector: React.FC<DocumentCategorySelectorProps> =
                   onClick={() => handleCategoryClick(category.name)}
                 >
                   <CardContent className="p-4">
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="w-3 h-3 rounded-full flex-shrink-0"
-                        style={{ backgroundColor: category.color }}
-                      />
-                      <div>
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="w-3 h-3 rounded-full flex-shrink-0"
+                          style={{ backgroundColor: category.color }}
+                        />
                         <span className="font-medium text-gray-900">{category.name}</span>
                       </div>
+                      {category.requires_expiration && (
+                        <p className="text-xs text-amber-600 ml-6 font-medium">
+                          ℹ️ For overflow documents. Add expiration tracking under Compliance.
+                        </p>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
