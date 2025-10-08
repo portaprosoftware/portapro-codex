@@ -1,63 +1,131 @@
-import React, { useState, useMemo } from 'react';
+import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { DashboardCard } from '@/components/ui/dashboard-card';
-import { Button } from '@/components/ui/button';
-import { Plus, Upload, Fuel, DollarSign, TrendingUp, Truck, Store, Factory, TruckIcon } from 'lucide-react';
-import { AddFuelLogModal } from './AddFuelLogModal';
-import { ImportFuelCSVModal } from './ImportFuelCSVModal';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { 
+  Fuel, 
+  DollarSign, 
+  TrendingUp, 
+  FileText, 
+  Truck,
+  Store,
+  Factory,
+  TruckIcon as MobileVendor,
+  Calendar,
+  ArrowRight
+} from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { useUnifiedFuelMetrics, useUnifiedFuelConsumption } from '@/hooks/useUnifiedFuelConsumption';
+import { useNavigate } from 'react-router-dom';
 
-interface FuelMetrics {
-  total_gallons: number;
-  total_cost: number;
-  average_cost_per_gallon: number;
-  fleet_mpg: number;
-  log_count: number;
+interface MetricCardProps {
+  icon: React.ReactNode;
+  iconBgClass: string;
+  value: string;
+  label: string;
+  sublabel: string;
+  trend?: string;
 }
 
-interface RecentFuelLog {
-  id: string;
-  log_date: string;
-  vehicle_license: string;
-  vehicle_make?: string;
-  vehicle_model?: string;
-  vehicle_nickname?: string;
-  driver_name: string;
-  gallons_purchased: number;
-  cost_per_gallon: number;
-  total_cost: number;
-  fuel_station: string;
-  odometer_reading: number;
+const MetricCard: React.FC<MetricCardProps> = ({ 
+  icon, 
+  iconBgClass, 
+  value, 
+  label, 
+  sublabel,
+  trend 
+}) => {
+  return (
+    <Card className="hover:shadow-lg transition-shadow">
+      <CardContent className="pt-6">
+        <div className="flex items-start justify-between mb-4">
+          <div className={`p-3 rounded-xl ${iconBgClass}`}>
+            {icon}
+          </div>
+          {trend && (
+            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+              {trend}
+            </Badge>
+          )}
+        </div>
+        <div className="space-y-1">
+          <p className="text-3xl font-bold text-gray-900">{value}</p>
+          <p className="text-sm font-semibold text-gray-700">{label}</p>
+          <p className="text-xs text-gray-500">{sublabel}</p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+interface RecentLog {
+  reference_id: string;
+  fuel_date: string;
+  source_type: string;
+  source_name: string;
+  gallons: number;
+  cost: number;
+  vehicle_id: string;
 }
 
 export const FuelOverviewTab: React.FC = () => {
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showImportModal, setShowImportModal] = useState(false);
+  const navigate = useNavigate();
 
-  // Get last 30 days metrics
-  const startDate = new Date();
-  startDate.setDate(startDate.getDate() - 30);
-  const endDate = new Date();
+  // Fetch last 30 days metrics
+  const { data: metrics, isLoading: metricsLoading } = useQuery({
+    queryKey: ['fuel-overview-metrics'],
+    queryFn: async () => {
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-  // Use unified metrics hook
-  const { data: metrics, isLoading: metricsLoading, error: metricsError } = useUnifiedFuelMetrics({
-    dateFrom: startDate,
-    dateTo: endDate
+      const { data, error } = await supabase
+        .from('unified_fuel_consumption')
+        .select('*')
+        .gte('fuel_date', thirtyDaysAgo.toISOString().split('T')[0]);
+
+      if (error) throw error;
+
+      const totalGallons = data?.reduce((sum, log) => sum + (log.gallons || 0), 0) || 0;
+      const totalCost = data?.reduce((sum, log) => sum + (log.cost || 0), 0) || 0;
+      const avgCostPerGallon = totalGallons > 0 ? totalCost / totalGallons : 0;
+      const totalLogs = data?.length || 0;
+
+      // Calculate by source
+      const retailCount = data?.filter(l => l.source_type === 'retail_station').length || 0;
+      const yardTankCount = data?.filter(l => l.source_type === 'yard_tank').length || 0;
+      const mobileCount = data?.filter(l => l.source_type === 'mobile_service').length || 0;
+
+      return {
+        totalGallons: totalGallons.toFixed(1),
+        totalCost: totalCost.toFixed(2),
+        avgCostPerGallon: avgCostPerGallon.toFixed(3),
+        totalLogs,
+        retailCount,
+        yardTankCount,
+        mobileCount
+      };
+    }
   });
 
-  // Get recent unified fuel consumption
-  const { data: recentLogs, isLoading: logsLoading, error: logsError } = useUnifiedFuelConsumption({
-    dateFrom: undefined,
-    dateTo: undefined
+  // Fetch recent logs
+  const { data: recentLogs, isLoading: logsLoading } = useQuery({
+    queryKey: ['fuel-recent-logs'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('unified_fuel_consumption')
+        .select('*')
+        .order('fuel_date', { ascending: false })
+        .limit(5);
+
+      if (error) throw error;
+      return data as RecentLog[];
+    }
   });
 
-  // Fetch vehicle details for display
-  const { data: vehicles, isLoading: vehiclesLoading, error: vehiclesError } = useQuery({
-    queryKey: ['vehicles-lookup'],
+  // Fetch vehicle details for recent logs
+  const { data: vehicles } = useQuery({
+    queryKey: ['vehicles-overview'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('vehicles')
@@ -67,75 +135,22 @@ export const FuelOverviewTab: React.FC = () => {
     }
   });
 
-  const { data: drivers, isLoading: driversLoading, error: driversError } = useQuery({
-    queryKey: ['drivers-lookup'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, first_name, last_name');
-      if (error) throw error;
-      return data;
-    }
-  });
-
   const getSourceBadge = (sourceType: string) => {
     switch (sourceType) {
-      case 'retail':
-        return <Badge className="bg-blue-500 text-white text-xs"><Store className="h-3 w-3 mr-1" />Retail</Badge>;
+      case 'retail_station':
+        return <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold"><Store className="h-3 w-3 mr-1" />Retail</Badge>;
       case 'yard_tank':
-        return <Badge className="bg-green-500 text-white text-xs"><Factory className="h-3 w-3 mr-1" />Tank</Badge>;
+        return <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white font-bold"><Factory className="h-3 w-3 mr-1" />Yard Tank</Badge>;
       case 'mobile_service':
-        return <Badge className="bg-purple-500 text-white text-xs"><TruckIcon className="h-3 w-3 mr-1" />Mobile</Badge>;
+        return <Badge className="bg-gradient-to-r from-purple-500 to-purple-600 text-white font-bold"><MobileVendor className="h-3 w-3 mr-1" />Mobile</Badge>;
       default:
         return <Badge variant="outline">{sourceType}</Badge>;
     }
   };
 
-  // Memoize recent logs display to prevent unnecessary recalculations
-  const recentLogsDisplay = useMemo(() => {
-    if (!recentLogs || !vehicles || !drivers) return [];
-    
-    return recentLogs.slice(0, 5).map(log => {
-      const vehicle = vehicles.find(v => v.id === log.vehicle_id);
-      const driver = drivers.find(d => d.id === log.driver_id);
-
-      return {
-        id: log.reference_id,
-        log_date: log.fuel_date,
-        source_type: log.source_type,
-        source_name: log.source_name,
-        vehicle_license: vehicle?.license_plate || 'Unknown',
-        vehicle_make: vehicle?.make,
-        vehicle_model: vehicle?.model,
-        vehicle_nickname: vehicle?.nickname,
-        driver_name: driver ? `${driver.first_name} ${driver.last_name}` : 'Unknown',
-        gallons_purchased: log.gallons,
-        cost_per_gallon: log.cost_per_gallon,
-        total_cost: log.cost,
-        fuel_station: log.source_name,
-        odometer_reading: log.odometer_reading || 0
-      };
-    });
-  }, [recentLogs, vehicles, drivers]);
-
-  // Loading only for core data (metrics + recent logs)
-  const isLoading = metricsLoading || logsLoading;
-
-  // Log status to help diagnose any stuck states
-  console.info('FuelOverviewTab status', {
-    metricsLoading,
-    logsLoading,
-    vehiclesLoading,
-    driversLoading,
-    metricsError,
-    logsError,
-    vehiclesError,
-    driversError,
-  });
-
-  if (isLoading) {
+  if (metricsLoading) {
     return (
-      <div className="flex items-center justify-center py-12">
+      <div className="flex justify-center py-8">
         <LoadingSpinner />
       </div>
     );
@@ -143,160 +158,189 @@ export const FuelOverviewTab: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <DashboardCard
-          title="Total Gallons"
-          value={metrics?.total_gallons?.toFixed(1) || '0'}
-          subtitle={`Last 30 days • ${metrics?.log_count || 0} transactions`}
-          icon={Fuel}
-          gradientFrom="#F59E0B"
-          gradientTo="#D97706"
-        />
-        
-        <DashboardCard
-          title="Total Cost"
-          value={`$${metrics?.total_cost?.toFixed(2) || '0.00'}`}
-          subtitle="Last 30 days"
-          icon={DollarSign}
-          gradientFrom="#16A34A"
-          gradientTo="#15803D"
-        />
-        
-        <DashboardCard
-          title="Avg Cost/Gallon"
-          value={`$${metrics?.average_cost_per_gallon?.toFixed(2) || '0.00'}`}
-          subtitle="Last 30 days"
-          icon={TrendingUp}
-          gradientFrom="#DC2626"
-          gradientTo="#B91C1C"
-        />
-        
-        <DashboardCard
-          title="Fleet MPG"
-          value="0.0"
-          subtitle="Coming soon"
-          icon={Truck}
-          gradientFrom="#2563EB"
-          gradientTo="#1E40AF"
-        />
+      {/* Key Metrics */}
+      <div>
+        <h2 className="text-lg font-semibold mb-4">Key Metrics</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <MetricCard
+            icon={<Fuel className="h-6 w-6 text-white" />}
+            iconBgClass="bg-gradient-to-br from-orange-400 to-orange-600"
+            value={metrics?.totalGallons || '0'}
+            label="Total Gallons"
+            sublabel="Last 30 days"
+          />
+          <MetricCard
+            icon={<DollarSign className="h-6 w-6 text-white" />}
+            iconBgClass="bg-gradient-to-br from-green-400 to-green-600"
+            value={`$${metrics?.totalCost || '0.00'}`}
+            label="Total Cost"
+            sublabel="Last 30 days"
+          />
+          <MetricCard
+            icon={<TrendingUp className="h-6 w-6 text-white" />}
+            iconBgClass="bg-gradient-to-br from-blue-400 to-blue-600"
+            value={`$${metrics?.avgCostPerGallon || '0.000'}`}
+            label="Avg Cost/Gallon"
+            sublabel="Last 30 days"
+          />
+          <MetricCard
+            icon={<FileText className="h-6 w-6 text-white" />}
+            iconBgClass="bg-gradient-to-br from-purple-400 to-purple-600"
+            value={metrics?.totalLogs.toString() || '0'}
+            label="Fuel Logs"
+            sublabel="Last 30 days"
+          />
+        </div>
       </div>
 
-      {/* Source Breakdown */}
-      {metrics && metrics.by_source && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Fuel by Source (Last 30 Days)</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="p-4 border rounded-lg bg-blue-50 dark:bg-blue-950/20">
-                <div className="flex items-center gap-2 mb-2">
-                  <Store className="h-5 w-5 text-blue-600" />
-                  <span className="font-semibold">Retail Stations</span>
+      {/* Fuel Source Breakdown */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Fuel Source Breakdown</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-100">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg">
+                  <Store className="h-5 w-5 text-white" />
                 </div>
-                <div className="text-2xl font-bold">{metrics.by_source.retail.gallons.toFixed(1)} gal</div>
-                <div className="text-sm text-muted-foreground">
-                  ${metrics.by_source.retail.cost.toFixed(2)} • {metrics.by_source.retail.count} fills
-                </div>
-              </div>
-
-              <div className="p-4 border rounded-lg bg-green-50 dark:bg-green-950/20">
-                <div className="flex items-center gap-2 mb-2">
-                  <Factory className="h-5 w-5 text-green-600" />
-                  <span className="font-semibold">Yard Tanks</span>
-                </div>
-                <div className="text-2xl font-bold">{metrics.by_source.yard_tank.gallons.toFixed(1)} gal</div>
-                <div className="text-sm text-muted-foreground">
-                  ${metrics.by_source.yard_tank.cost.toFixed(2)} • {metrics.by_source.yard_tank.count} fills
-                </div>
-              </div>
-
-              <div className="p-4 border rounded-lg bg-purple-50 dark:bg-purple-950/20">
-                <div className="flex items-center gap-2 mb-2">
-                  <TruckIcon className="h-5 w-5 text-purple-600" />
-                  <span className="font-semibold">Mobile Vendors</span>
-                </div>
-                <div className="text-2xl font-bold">{metrics.by_source.mobile_service.gallons.toFixed(1)} gal</div>
-                <div className="text-sm text-muted-foreground">
-                  ${metrics.by_source.mobile_service.cost.toFixed(2)} • {metrics.by_source.mobile_service.count} fills
+                <div>
+                  <p className="text-2xl font-bold text-gray-900">{metrics?.retailCount || 0}</p>
+                  <p className="text-sm font-semibold text-gray-700">Retail Stations</p>
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
-      )}
 
-      {/* Quick Actions */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <Button
-          onClick={() => setShowAddModal(true)}
-          className="flex items-center gap-2 bg-gradient-to-r from-primary to-primary-variant text-white"
-        >
-          <Plus className="h-4 w-4" />
-          Add Fuel Log
-        </Button>
-        
-        <Button
-          onClick={() => setShowImportModal(true)}
-          variant="outline"
-          className="flex items-center gap-2"
-        >
-          <Upload className="h-4 w-4" />
-          Import CSV
-        </Button>
-      </div>
+            <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-100">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-green-500 to-green-600 rounded-lg">
+                  <Factory className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900">{metrics?.yardTankCount || 0}</p>
+                  <p className="text-sm font-semibold text-gray-700">Yard Tank</p>
+                </div>
+              </div>
+            </div>
 
-      {/* Recent Fueling Activity */}
+            <div className="flex items-center justify-between p-4 bg-purple-50 rounded-lg border border-purple-100">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg">
+                  <MobileVendor className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900">{metrics?.mobileCount || 0}</p>
+                  <p className="text-sm font-semibold text-gray-700">Mobile Vendor</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Recent Activity */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Recent Fueling Activity</CardTitle>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="text-lg">Recent Fuel Logs</CardTitle>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => navigate('/fleet/fuel?tab=logs')}
+          >
+            View All <ArrowRight className="h-4 w-4 ml-2" />
+          </Button>
         </CardHeader>
         <CardContent>
           {logsLoading ? (
-            <LoadingSpinner />
-          ) : recentLogsDisplay && recentLogsDisplay.length > 0 ? (
-            <div className="space-y-4">
-              {recentLogsDisplay.map((log) => (
-                <div key={log.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      {getSourceBadge(log.source_type)}
-                      <span className="text-xs text-muted-foreground">{log.source_name}</span>
-                    </div>
-                    <div className="space-y-1">
-                      <div className="font-medium">
-                        {log.vehicle_make && log.vehicle_model 
-                          ? `${log.vehicle_make} ${log.vehicle_model}${log.vehicle_nickname ? ` - ${log.vehicle_nickname}` : ''}`
-                          : 'Unknown Vehicle'}
+            <div className="flex justify-center py-4">
+              <LoadingSpinner />
+            </div>
+          ) : recentLogs && recentLogs.length > 0 ? (
+            <div className="space-y-3">
+              {recentLogs.map((log) => {
+                const vehicle = vehicles?.find(v => v.id === log.vehicle_id);
+                return (
+                  <div key={log.reference_id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-white rounded-lg border">
+                        <Truck className="h-4 w-4 text-gray-600" />
                       </div>
-                      <div className="text-sm text-muted-foreground">{log.vehicle_license}</div>
+                      <div>
+                        <p className="font-medium text-sm text-gray-900">
+                          {vehicle?.make && vehicle?.model 
+                            ? `${vehicle.make} ${vehicle.model}${vehicle.nickname ? ` - ${vehicle.nickname}` : ''}`
+                            : vehicle?.license_plate || 'Unknown Vehicle'}
+                        </p>
+                        <p className="text-xs text-gray-500 flex items-center gap-2">
+                          <Calendar className="h-3 w-3" />
+                          {new Date(log.fuel_date).toLocaleDateString()}
+                        </p>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
-                      <span>{log.driver_name}</span>
-                      <span>{new Date(log.log_date).toLocaleDateString()}</span>
-                      <span>{log.gallons_purchased?.toFixed(1)} gal</span>
-                      <span>${log.cost_per_gallon?.toFixed(2)}/gal</span>
-                      {log.odometer_reading > 0 && <span>{log.odometer_reading.toLocaleString()} mi</span>}
+                    <div className="flex items-center gap-4">
+                      {getSourceBadge(log.source_type)}
+                      <div className="text-right">
+                        <p className="text-sm font-semibold text-gray-900">{log.gallons.toFixed(1)} gal</p>
+                        <p className="text-xs font-medium text-green-600">${log.cost.toFixed(2)}</p>
+                      </div>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="font-semibold">${log.total_cost?.toFixed(2)}</div>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
-            <div className="text-center py-8 text-muted-foreground">
-              No fuel logs found. Start by adding your first fuel log.
+            <div className="text-center py-8 text-gray-500">
+              <FileText className="h-12 w-12 mx-auto mb-2 text-gray-300" />
+              <p>No recent fuel logs found</p>
             </div>
           )}
         </CardContent>
       </Card>
 
-      {/* Modals */}
-      <AddFuelLogModal open={showAddModal} onOpenChange={setShowAddModal} />
-      <ImportFuelCSVModal open={showImportModal} onOpenChange={setShowImportModal} />
+      {/* Quick Actions */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Quick Actions</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <Button 
+              variant="outline" 
+              className="justify-start h-auto py-3"
+              onClick={() => navigate('/fleet/fuel?tab=logs')}
+            >
+              <FileText className="h-5 w-5 mr-3" />
+              <div className="text-left">
+                <p className="font-semibold text-sm">View All Logs</p>
+                <p className="text-xs text-gray-500">See complete fuel history</p>
+              </div>
+            </Button>
+            <Button 
+              variant="outline" 
+              className="justify-start h-auto py-3"
+              onClick={() => navigate('/fleet/fuel?tab=analytics')}
+            >
+              <TrendingUp className="h-5 w-5 mr-3" />
+              <div className="text-left">
+                <p className="font-semibold text-sm">Analytics</p>
+                <p className="text-xs text-gray-500">Deep dive into fuel data</p>
+              </div>
+            </Button>
+            <Button 
+              variant="outline" 
+              className="justify-start h-auto py-3"
+              onClick={() => navigate('/fleet/fuel?tab=sources')}
+            >
+              <Store className="h-5 w-5 mr-3" />
+              <div className="text-left">
+                <p className="font-semibold text-sm">Fuel Sources</p>
+                <p className="text-xs text-gray-500">Manage fuel locations</p>
+              </div>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
