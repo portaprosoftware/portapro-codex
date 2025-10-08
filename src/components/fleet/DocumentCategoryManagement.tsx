@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Plus, Edit, Trash2, Settings } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -177,6 +178,100 @@ export const DocumentCategoryManagement: React.FC = () => {
     "#84CC16", // Lime
   ];
 
+  // Group categories by color/group
+  const categoryGroups = useMemo(() => {
+    const groups = [
+      {
+        id: "maintenance",
+        name: "Maintenance & Operations",
+        color: "#F97316", // Orange
+        description: "Work orders, maintenance invoices, fuel receipts",
+        categoryNames: [
+          "Maintenance & Repairs",
+          "Fuel Receipts",
+          "Inspection Reports",
+          "Service Records",
+          "Work Orders"
+        ]
+      },
+      {
+        id: "compliance",
+        name: "Vehicle Ownership & Compliance",
+        color: "#3B82F6", // Blue
+        description: "Registration, insurance, permits, and inspections",
+        categoryNames: [
+          "Registration",
+          "Title / Ownership",
+          "Insurance",
+          "Emissions & Inspection Certificates",
+          "Permits & Licensing"
+        ]
+      },
+      {
+        id: "personnel",
+        name: "Driver & Personnel",
+        color: "#8B5CF6", // Purple
+        description: "Driver licenses, training, incidents, and safety",
+        categoryNames: [
+          "Driver License & ID",
+          "Training Certificates",
+          "Accident / Incident Reports",
+          "Disciplinary / Safety Records"
+        ]
+      },
+      {
+        id: "equipment",
+        name: "Equipment & Asset Management",
+        color: "#10B981", // Green
+        description: "Manuals, warranties, and purchase agreements",
+        categoryNames: [
+          "Equipment Manuals",
+          "Warranty Documents",
+          "Purchase / Lease Agreements",
+          "Upfit / Modification Docs"
+        ]
+      },
+      {
+        id: "photos",
+        name: "Photos & Visual Records",
+        color: "#6B7280", // Gray
+        description: "Vehicle photos, job sites, and compliance images",
+        categoryNames: [
+          "Vehicle Photos",
+          "Job Site Photos",
+          "Compliance Photos"
+        ]
+      },
+      {
+        id: "financial",
+        name: "Financial & Administrative",
+        color: "#F59E0B", // Amber
+        description: "Invoices, receipts, and tax documents",
+        categoryNames: [
+          "Invoices & Receipts",
+          "Purchase Orders",
+          "Tax Documents",
+          "Contracts & Agreements"
+        ]
+      },
+      {
+        id: "other",
+        name: "Catch-All / Miscellaneous",
+        color: "#64748B", // Slate
+        description: "Temporary files and uncategorized documents",
+        categoryNames: [
+          "Other Documents",
+          "Temporary / Draft Files"
+        ]
+      }
+    ];
+
+    return groups.map(group => ({
+      ...group,
+      categories: categories?.filter(cat => group.categoryNames.includes(cat.name)) || []
+    }));
+  }, [categories]);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -272,73 +367,100 @@ export const DocumentCategoryManagement: React.FC = () => {
         </Dialog>
       </div>
 
-      <div className="grid gap-4">
-        {categories?.map((category) => (
-          <Card key={category.id} className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-3">
-                  <div 
-                    className="w-4 h-4 rounded-full border flex-shrink-0"
-                    style={{ backgroundColor: category.color }}
-                  />
-                  <h4 className="font-medium text-gray-900">{category.name}</h4>
+      {/* Grouped Categories with Accordion */}
+      <Accordion type="multiple" defaultValue={categoryGroups.map(g => g.id)} className="space-y-4">
+        {categoryGroups.map((group) => (
+          <AccordionItem key={group.id} value={group.id} className="border rounded-lg bg-white shadow-sm">
+            <AccordionTrigger className="px-6 py-4 hover:no-underline">
+              <div className="flex items-center gap-3 flex-1 text-left">
+                <div 
+                  className="w-3 h-3 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: group.color }}
+                />
+                <div>
+                  <h4 className="font-semibold text-gray-900">{group.name}</h4>
+                  <p className="text-sm text-gray-600 mt-0.5">{group.description}</p>
                 </div>
-                {category.description && (
-                  <p className="text-sm text-gray-600 mt-1">{category.description}</p>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent className="px-6 pb-4">
+              <div className="space-y-3 pt-3">
+                {group.categories.map((category) => (
+                  <Card key={category.id} className="p-4 bg-muted/30">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3">
+                          <div 
+                            className="w-3 h-3 rounded-full border flex-shrink-0"
+                            style={{ backgroundColor: category.color }}
+                          />
+                          <h5 className="font-medium text-gray-900">{category.name}</h5>
+                        </div>
+                        {category.description && (
+                          <p className="text-sm text-gray-600 mt-2 ml-6">{category.description}</p>
+                        )}
+                      </div>
+                      
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEdit(category)}
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="text-red-600 hover:bg-red-50"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete Document Category</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to delete "{category.name}"? This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => deleteMutation.mutate(category.id)}
+                                className="bg-red-600 hover:bg-red-700"
+                              >
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+                
+                {group.categories.length === 0 && (
+                  <div className="text-center py-4 text-sm text-gray-500">
+                    No categories in this group yet
+                  </div>
                 )}
               </div>
-              
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleEdit(category)}
-                >
-                  <Edit className="w-4 h-4" />
-                </Button>
-                
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-red-600 hover:bg-red-50"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Delete Document Category</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Are you sure you want to delete "{category.name}"? This action cannot be undone.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={() => deleteMutation.mutate(category.id)}
-                        className="bg-red-600 hover:bg-red-700"
-                      >
-                        Delete
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </div>
-            </div>
-          </Card>
+            </AccordionContent>
+          </AccordionItem>
         ))}
-        
-        {categories?.length === 0 && (
-          <Card className="p-8 text-center">
-            <Settings className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No document categories found</h3>
-            <p className="text-gray-600 mb-4">Create your first document category to start organizing your files.</p>
-          </Card>
-        )}
-      </div>
+      </Accordion>
+      
+      {categories?.length === 0 && (
+        <Card className="p-8 text-center">
+          <Settings className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2">No document categories found</h3>
+          <p className="text-gray-600 mb-4">Create your first document category to start organizing your files.</p>
+        </Card>
+      )}
     </div>
   );
 };
