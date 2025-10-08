@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription } from "@/components/ui/sheet";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,7 +11,6 @@ import { Upload, Plus, X, Truck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@clerk/clerk-react";
 import { StockVehicleSelectionModal } from "./StockVehicleSelectionModal";
-import { DialogDescription } from "@/components/ui/dialog";
 import { DocumentCategorySelector } from "./DocumentCategorySelector";
 
 // Sanitize filename for Supabase Storage
@@ -211,22 +210,22 @@ export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentU
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild>
         {trigger || (
           <Button>
             <Upload className="w-4 h-4 mr-2" />
             Upload Documents
           </Button>
         )}
-      </DialogTrigger>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>Upload Vehicle Documents</DialogTitle>
-          <DialogDescription>
+      </SheetTrigger>
+      <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto">
+        <SheetHeader>
+          <SheetTitle>Upload Vehicle Documents</SheetTitle>
+          <SheetDescription>
             Upload and organize vehicle documents by category and associate them with specific vehicles.
-          </DialogDescription>
-        </DialogHeader>
+          </SheetDescription>
+        </SheetHeader>
 
         <div className="space-y-6">
           {/* File Upload */}
@@ -394,7 +393,7 @@ export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentU
             </Button>
           </div>
         </div>
-      </DialogContent>
+      </SheetContent>
 
       {/* Vehicle Selection Modal */}
       <StockVehicleSelectionModal
@@ -413,6 +412,6 @@ export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentU
         selectedCategory={selectedCategory}
         onCategorySelect={setSelectedCategory}
       />
-    </Dialog>
+    </Sheet>
   );
 }
