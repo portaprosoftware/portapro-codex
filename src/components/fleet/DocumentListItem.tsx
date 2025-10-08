@@ -1,7 +1,8 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Eye, Download, Trash2, Calendar, FileText } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Eye, Download, Trash2, Calendar, MoreVertical, Edit } from "lucide-react";
 import { format } from "date-fns";
 
 interface DocumentListItemProps {
@@ -31,10 +32,11 @@ interface DocumentListItemProps {
   };
   onView?: (document: any) => void;
   onDownload?: (document: any) => void;
+  onEdit?: (document: any) => void;
   onDelete?: (document: any) => void;
 }
 
-export function DocumentListItem({ document, categoryInfo, onView, onDownload, onDelete }: DocumentListItemProps) {
+export function DocumentListItem({ document, categoryInfo, onView, onDownload, onEdit, onDelete }: DocumentListItemProps) {
   const formatFileSize = (bytes?: number) => {
     if (!bytes) return "Unknown size";
     const kb = bytes / 1024;
@@ -112,29 +114,37 @@ export function DocumentListItem({ document, categoryInfo, onView, onDownload, o
         <Button 
           variant="outline" 
           size="sm"
-          onClick={() => onView?.(document)}
-          className="whitespace-nowrap"
-        >
-          <Eye className="w-4 h-4 mr-1" />
-          View
-        </Button>
-        <Button 
-          variant="outline" 
-          size="sm"
           onClick={() => onDownload?.(document)}
           className="whitespace-nowrap"
         >
           <Download className="w-4 h-4 mr-1" />
           Download
         </Button>
-        <Button 
-          variant="ghost" 
-          size="sm"
-          className="h-9 w-9 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-          onClick={() => onDelete?.(document)}
-        >
-          <Trash2 className="w-4 h-4" />
-        </Button>
+        
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="sm" className="h-9 w-9 p-0">
+              <MoreVertical className="w-4 h-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => onView?.(document)}>
+              <Eye className="w-4 h-4 mr-2" />
+              View
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onEdit?.(document)}>
+              <Edit className="w-4 h-4 mr-2" />
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => onDelete?.(document)}
+              className="text-red-600 focus:text-red-600"
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );

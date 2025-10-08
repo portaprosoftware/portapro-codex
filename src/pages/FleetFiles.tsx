@@ -10,6 +10,8 @@ import { FleetLayout } from "@/components/fleet/FleetLayout";
 import { DocumentCard } from "@/components/fleet/DocumentCard";
 import { DocumentListItem } from "@/components/fleet/DocumentListItem";
 import { DocumentUploadModal } from "@/components/fleet/DocumentUploadModal";
+import { DocumentViewModal } from "@/components/fleet/DocumentViewModal";
+import { DocumentEditModal } from "@/components/fleet/DocumentEditModal";
 import { DocumentCategoryManagement } from "@/components/fleet/DocumentCategoryManagement";
 import { MultiSelectVehicleFilter } from "@/components/fleet/MultiSelectVehicleFilter";
 import { MultiSelectCategoryFilter } from "@/components/fleet/MultiSelectCategoryFilter";
@@ -37,6 +39,8 @@ export default function FleetFiles() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [documentToDelete, setDocumentToDelete] = useState<any>(null);
+  const [documentToView, setDocumentToView] = useState<any>(null);
+  const [documentToEdit, setDocumentToEdit] = useState<any>(null);
   const { toast } = useToast();
   const { getToken } = useAuth();
   const queryClient = useQueryClient();
@@ -150,29 +154,12 @@ export default function FleetFiles() {
     };
   };
 
-  const handleView = async (document: any) => {
-    try {
-      const token = await getToken();
-      const { data, error } = await supabase.functions.invoke('fleet-docs', {
-        body: {
-          action: 'create_signed_url',
-          payload: { path: document.file_path, expiresIn: 600 },
-        },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+  const handleView = (document: any) => {
+    setDocumentToView(document);
+  };
 
-      if (error || !data?.success) throw new Error((data as any)?.error || (error as any)?.message || 'Failed to create signed URL');
-
-      window.open((data as any).data.signedUrl, '_blank');
-    } catch (error) {
-      toast({
-        title: "View Failed",
-        description: "Could not open the document. Please try again.",
-        variant: "destructive",
-      });
-    }
+  const handleEdit = (document: any) => {
+    setDocumentToEdit(document);
   };
 
   const handleDownload = async (document: any) => {
@@ -363,6 +350,7 @@ export default function FleetFiles() {
                       categoryInfo={getCategoryInfo(doc.category)}
                       onView={handleView}
                       onDownload={handleDownload}
+                      onEdit={handleEdit}
                       onDelete={handleDelete}
                     />
                   ))}
@@ -434,6 +422,25 @@ export default function FleetFiles() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Document View Modal */}
+      {documentToView && (
+        <DocumentViewModal
+          isOpen={!!documentToView}
+          onClose={() => setDocumentToView(null)}
+          document={documentToView}
+          categoryInfo={getCategoryInfo(documentToView.category)}
+        />
+      )}
+
+      {/* Document Edit Modal */}
+      {documentToEdit && (
+        <DocumentEditModal
+          isOpen={!!documentToEdit}
+          onClose={() => setDocumentToEdit(null)}
+          document={documentToEdit}
+        />
+      )}
     </FleetLayout>
   );
 }
