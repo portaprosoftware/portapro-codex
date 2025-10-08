@@ -251,8 +251,8 @@ export const DocumentCategorySelector: React.FC<DocumentCategorySelectorProps> =
                           <p className="text-sm text-muted-foreground mb-3">
                             {group.description}
                           </p>
-                          <Badge className={group.color}>
-                            {group.count} types
+                          <Badge className={`${group.color} font-bold border-0`}>
+                            {group.count} Types
                           </Badge>
                         </div>
                       </div>
