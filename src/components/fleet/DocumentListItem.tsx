@@ -10,6 +10,9 @@ interface DocumentListItemProps {
     vehicle_id: string;
     vehicle_name?: string;
     vehicle_plate?: string;
+    vehicle_make?: string;
+    vehicle_model?: string;
+    vehicle_nickname?: string;
     document_type: string;
     document_name: string;
     category: string;
@@ -40,13 +43,6 @@ export function DocumentListItem({ document, categoryInfo, onView, onDownload, o
 
   return (
     <div className="flex items-center gap-4 p-4 bg-white border rounded-lg hover:shadow-md transition-all duration-200">
-      {/* Document Icon */}
-      <div className="flex-shrink-0">
-        <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
-          <FileText className="w-5 h-5 text-gray-600" />
-        </div>
-      </div>
-
       {/* Document Details */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
@@ -73,11 +69,22 @@ export function DocumentListItem({ document, categoryInfo, onView, onDownload, o
           
           <div className="flex items-center gap-1">
             <span className="font-medium">Vehicle:</span>
-            <span className="truncate">{document.vehicle_plate || document.vehicle_id}</span>
+            <span className="truncate">
+              {/* Format: Make Model - Nickname or just Make Model if no nickname */}
+              {document.vehicle_make && document.vehicle_model ? (
+                <>
+                  {document.vehicle_make} {document.vehicle_model}
+                  {document.vehicle_nickname && ` - ${document.vehicle_nickname}`}
+                </>
+              ) : (
+                document.vehicle_plate || document.vehicle_id
+              )}
+            </span>
           </div>
 
-          {document.vehicle_name && (
-            <span className="truncate">{document.vehicle_name}</span>
+          {/* License Plate */}
+          {document.vehicle_plate && (
+            <span className="text-blue-600 font-medium">{document.vehicle_plate}</span>
           )}
 
           {document.document_number && (

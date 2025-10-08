@@ -51,7 +51,7 @@ export default function FleetFiles() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("vehicles")
-        .select("id, license_plate, make, model")
+        .select("id, license_plate, make, model, nickname")
         .order("license_plate");
       
       if (error) throw error;
@@ -96,6 +96,9 @@ export default function FleetFiles() {
         ...doc,
         vehicle_name: v ? `${v.make || ''} ${v.model || ''}`.trim() || 'Unknown Vehicle' : 'Unknown Vehicle',
         vehicle_plate: v?.license_plate || 'Unknown',
+        vehicle_make: v?.make || '',
+        vehicle_model: v?.model || '',
+        vehicle_nickname: v?.nickname || '',
       };
     });
   }, [documents, vehicles]);

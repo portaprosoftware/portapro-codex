@@ -67,6 +67,7 @@ export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentU
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [documentTitle, setDocumentTitle] = useState("");
   const [documentNumber, setDocumentNumber] = useState("");
   const [notes, setNotes] = useState("");
   const [expirationDate, setExpirationDate] = useState("");
@@ -113,7 +114,7 @@ export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentU
           .insert({
             vehicle_id: selectedVehicle.id,
             document_type: selectedCategory,
-            document_name: file.name,
+            document_name: documentTitle || file.name,
             category: selectedCategory,
             file_name: file.name,
             file_path: storageData.path,
@@ -144,6 +145,7 @@ export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentU
       setFiles([]);
       setSelectedVehicle(null);
       setSelectedCategory("");
+      setDocumentTitle("");
       setDocumentNumber("");
       setNotes("");
       setExpirationDate("");
@@ -300,6 +302,21 @@ export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentU
                 </span>
               )}
             </Button>
+          </div>
+
+          {/* Document Title */}
+          <div>
+            <Label htmlFor="document-title">Document Title</Label>
+            <Input
+              id="document-title"
+              value={documentTitle}
+              onChange={(e) => setDocumentTitle(e.target.value)}
+              placeholder="e.g., Annual Registration, Insurance Certificate"
+              className="mt-2"
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              Optional: Add a custom title (defaults to filename if left blank)
+            </p>
           </div>
 
           {/* Expiration Date (if required by category) */}
