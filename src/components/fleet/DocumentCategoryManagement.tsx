@@ -278,11 +278,11 @@ export const DocumentCategoryManagement: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-3">
-                  <h4 className="font-medium text-gray-900">{category.name}</h4>
                   <div 
-                    className="w-4 h-4 rounded-full border"
+                    className="w-4 h-4 rounded-full border flex-shrink-0"
                     style={{ backgroundColor: category.color }}
                   />
+                  <h4 className="font-medium text-gray-900">{category.name}</h4>
                 </div>
                 {category.description && (
                   <p className="text-sm text-gray-600 mt-1">{category.description}</p>
