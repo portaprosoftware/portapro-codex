@@ -24,7 +24,8 @@ interface EditSupplierModalProps {
 
 interface SupplierFormData {
   supplier_name: string;
-  contact_name?: string;
+  contact_first_name?: string;
+  contact_last_name?: string;
   contact_phone?: string;
   contact_email?: string;
   payment_terms?: string;
@@ -51,9 +52,15 @@ export const EditSupplierModal: React.FC<EditSupplierModalProps> = ({
 
   useEffect(() => {
     if (supplier) {
+      // Split contact_name into first and last if it exists
+      const nameParts = supplier.contact_name?.trim().split(/\s+/) || [];
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+      
       reset({
         supplier_name: supplier.supplier_name,
-        contact_name: supplier.contact_name || '',
+        contact_first_name: firstName,
+        contact_last_name: lastName,
         contact_phone: supplier.contact_phone || '',
         contact_email: supplier.contact_email || '',
         payment_terms: supplier.payment_terms || '',
@@ -63,12 +70,30 @@ export const EditSupplierModal: React.FC<EditSupplierModalProps> = ({
     }
   }, [supplier, reset]);
 
+  const formatPhoneNumber = (value: string) => {
+    const numbers = value.replace(/\D/g, '');
+    if (numbers.length <= 3) return numbers;
+    if (numbers.length <= 6) return `(${numbers.slice(0, 3)}) ${numbers.slice(3)}`;
+    return `(${numbers.slice(0, 3)}) ${numbers.slice(3, 6)}-${numbers.slice(6, 10)}`;
+  };
+
   const onSubmit = async (data: SupplierFormData) => {
     if (!supplier) return;
 
+    // Combine first and last name into contact_name
+    const contact_name = [data.contact_first_name?.trim(), data.contact_last_name?.trim()]
+      .filter(Boolean)
+      .join(' ') || undefined;
+
     await updateSupplier.mutateAsync({
       id: supplier.id,
-      ...data,
+      supplier_name: data.supplier_name,
+      contact_name,
+      contact_phone: data.contact_phone,
+      contact_email: data.contact_email,
+      payment_terms: data.payment_terms,
+      notes: data.notes,
+      is_active: data.is_active,
     });
 
     onClose();
@@ -104,13 +129,24 @@ export const EditSupplierModal: React.FC<EditSupplierModalProps> = ({
             )}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="contact_name">Contact Name</Label>
-            <Input
-              id="contact_name"
-              {...register('contact_name')}
-              placeholder="Enter contact name"
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="contact_first_name">First Name</Label>
+              <Input
+                id="contact_first_name"
+                {...register('contact_first_name')}
+                placeholder="Enter first name"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="contact_last_name">Last Name</Label>
+              <Input
+                id="contact_last_name"
+                {...register('contact_last_name')}
+                placeholder="Enter last name"
+              />
+            </div>
           </div>
 
           <div className="space-y-2">
@@ -118,7 +154,12 @@ export const EditSupplierModal: React.FC<EditSupplierModalProps> = ({
             <Input
               id="contact_phone"
               {...register('contact_phone')}
-              placeholder="Enter contact phone"
+              placeholder="(123) 456-7890"
+              onChange={(e) => {
+                const formatted = formatPhoneNumber(e.target.value);
+                setValue('contact_phone', formatted);
+              }}
+              maxLength={14}
             />
           </div>
 
