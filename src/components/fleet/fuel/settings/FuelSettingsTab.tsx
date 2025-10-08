@@ -80,8 +80,8 @@ export const FuelSettingsTab: React.FC = () => {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid gap-6 md:grid-cols-3">
-            <div className="flex items-start gap-3">
-              <div className="space-y-0.5 flex-1">
+            <div className="space-y-2">
+              <div className="space-y-0.5">
                 <Label htmlFor="retail-enabled">Retail Stations</Label>
                 <p className="text-sm text-muted-foreground">Commercial gas stations</p>
               </div>
@@ -94,8 +94,8 @@ export const FuelSettingsTab: React.FC = () => {
               />
             </div>
 
-            <div className="flex items-start gap-3">
-              <div className="space-y-0.5 flex-1">
+            <div className="space-y-2">
+              <div className="space-y-0.5">
                 <Label htmlFor="yard-tank-enabled">Yard Tanks</Label>
                 <p className="text-sm text-muted-foreground">On-site fuel storage</p>
               </div>
@@ -108,8 +108,8 @@ export const FuelSettingsTab: React.FC = () => {
               />
             </div>
 
-            <div className="flex items-start gap-3">
-              <div className="space-y-0.5 flex-1">
+            <div className="space-y-2">
+              <div className="space-y-0.5">
                 <Label htmlFor="mobile-service-enabled">Mobile Service</Label>
                 <p className="text-sm text-muted-foreground">Fuel delivery trucks</p>
               </div>

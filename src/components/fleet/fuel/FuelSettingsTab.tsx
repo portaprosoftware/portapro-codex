@@ -765,7 +765,7 @@ export const FuelSettingsTab: React.FC = () => {
       {/* Default Units & Formats */}
       <Card>
         <CardHeader>
-          <CardTitle>Default Units & Formats</CardTitle>
+          <CardTitle className="text-lg">Default Units & Formats</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -852,7 +852,7 @@ export const FuelSettingsTab: React.FC = () => {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>Fuel Stations</CardTitle>
+            <CardTitle className="text-lg">Fuel Stations</CardTitle>
             <Button onClick={handleAddStation} size="sm" className="bg-gradient-to-r from-primary to-primary-variant">
               <Plus className="h-4 w-4 mr-2" />
               Add Station
