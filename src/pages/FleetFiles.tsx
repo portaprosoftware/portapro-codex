@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Search, Upload, FolderOpen, Settings, Truck, Filter } from "lucide-react";
+import { Search, Upload, FolderOpen, Settings, Truck, Filter, X } from "lucide-react";
 import { FleetLayout } from "@/components/fleet/FleetLayout";
 import { DocumentCard } from "@/components/fleet/DocumentCard";
 import { DocumentListItem } from "@/components/fleet/DocumentListItem";
@@ -313,6 +313,19 @@ export default function FleetFiles() {
                 : `${selectedCategoryFilters.length} Categor${selectedCategoryFilters.length > 1 ? 'ies' : 'y'}`
               }
             </Button>
+
+            {/* Clear Categories Filter Button */}
+            {selectedCategoryFilters.length > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedCategoryFilters([])}
+                className="flex items-center gap-1 text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+                Clear
+              </Button>
+            )}
           </div>
         )}
 
