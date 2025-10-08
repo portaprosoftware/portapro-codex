@@ -6,6 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
 import { FuelSupplier } from '@/types/fuel';
 import { Building2, Mail, Phone, DollarSign, FileText, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
@@ -27,10 +28,21 @@ export const ViewSupplierModal: React.FC<ViewSupplierModalProps> = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Building2 className="h-5 w-5 text-primary" />
-            Supplier Details
-          </DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="flex items-center gap-2">
+              <Building2 className="h-5 w-5 text-primary" />
+              Supplier Details
+            </DialogTitle>
+            <Badge 
+              variant="outline" 
+              className={supplier.is_active 
+                ? "bg-gradient-to-r from-primary/10 to-primary/5 text-primary font-bold" 
+                : "bg-muted text-muted-foreground font-bold"
+              }
+            >
+              {supplier.is_active ? 'Active' : 'Inactive'}
+            </Badge>
+          </div>
           <DialogDescription>
             View supplier information
           </DialogDescription>

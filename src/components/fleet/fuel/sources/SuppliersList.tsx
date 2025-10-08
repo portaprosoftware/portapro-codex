@@ -59,32 +59,29 @@ export const SuppliersList: React.FC = () => {
         <Card key={supplier.id}>
           <CardContent className="p-4">
             <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3 flex-1 min-w-0">
-                <Building2 className="h-5 w-5 text-primary flex-shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h4 className="font-semibold text-foreground truncate">{supplier.supplier_name}</h4>
-                    <Badge variant="outline" className="bg-gradient-to-r from-primary/10 to-primary/5 text-primary font-bold flex-shrink-0">
-                      Active
-                    </Badge>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-                    {supplier.contact_name && (
-                      <span className="truncate">{supplier.contact_name}</span>
-                    )}
-                    {supplier.contact_phone && (
-                      <span className="flex items-center gap-1 flex-shrink-0">
-                        <Phone className="h-3 w-3" />
-                        {supplier.contact_phone}
-                      </span>
-                    )}
-                    {supplier.payment_terms && (
-                      <span className="flex items-center gap-1 flex-shrink-0">
-                        <DollarSign className="h-3 w-3" />
-                        {supplier.payment_terms}
-                      </span>
-                    )}
-                  </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <h4 className="font-semibold text-foreground truncate">{supplier.supplier_name}</h4>
+                  <Badge variant="outline" className="bg-gradient-to-r from-primary/10 to-primary/5 text-primary font-bold flex-shrink-0">
+                    Active
+                  </Badge>
+                </div>
+                <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                  {supplier.contact_name && (
+                    <span className="truncate">{supplier.contact_name}</span>
+                  )}
+                  {supplier.contact_phone && (
+                    <span className="flex items-center gap-1 flex-shrink-0">
+                      <Phone className="h-3 w-3" />
+                      {supplier.contact_phone}
+                    </span>
+                  )}
+                  {supplier.payment_terms && (
+                    <span className="flex items-center gap-1 flex-shrink-0">
+                      <DollarSign className="h-3 w-3" />
+                      {supplier.payment_terms}
+                    </span>
+                  )}
                 </div>
               </div>
 

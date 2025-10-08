@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
 import { FuelSupplier } from '@/types/fuel';
 import { useUpdateFuelSupplier } from '@/hooks/useFuelSuppliers';
 import { useForm } from 'react-hook-form';
@@ -28,6 +29,7 @@ interface SupplierFormData {
   contact_email?: string;
   payment_terms?: string;
   notes?: string;
+  is_active: boolean;
 }
 
 export const EditSupplierModal: React.FC<EditSupplierModalProps> = ({
@@ -52,6 +54,7 @@ export const EditSupplierModal: React.FC<EditSupplierModalProps> = ({
         contact_email: supplier.contact_email || '',
         payment_terms: supplier.payment_terms || '',
         notes: supplier.notes || '',
+        is_active: supplier.is_active !== false,
       });
     }
   }, [supplier, reset]);
@@ -141,6 +144,21 @@ export const EditSupplierModal: React.FC<EditSupplierModalProps> = ({
               {...register('notes')}
               placeholder="Additional notes"
               rows={3}
+            />
+          </div>
+
+          <div className="flex items-center justify-between space-x-2 pt-2 border-t">
+            <div className="space-y-0.5">
+              <Label htmlFor="is_active" className="text-base font-semibold">
+                Active Status
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                Inactive suppliers won't appear in the active list
+              </p>
+            </div>
+            <Switch
+              id="is_active"
+              {...register('is_active')}
             />
           </div>
 
