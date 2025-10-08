@@ -44,19 +44,19 @@ export const FuelOverviewTab: React.FC = () => {
   const endDate = new Date();
 
   // Use unified metrics hook
-  const { data: metrics, isLoading: metricsLoading } = useUnifiedFuelMetrics({
+  const { data: metrics, isLoading: metricsLoading, error: metricsError } = useUnifiedFuelMetrics({
     dateFrom: startDate,
     dateTo: endDate
   });
 
   // Get recent unified fuel consumption
-  const { data: recentLogs, isLoading: logsLoading } = useUnifiedFuelConsumption({
+  const { data: recentLogs, isLoading: logsLoading, error: logsError } = useUnifiedFuelConsumption({
     dateFrom: undefined,
     dateTo: undefined
   });
 
   // Fetch vehicle details for display
-  const { data: vehicles, isLoading: vehiclesLoading } = useQuery({
+  const { data: vehicles, isLoading: vehiclesLoading, error: vehiclesError } = useQuery({
     queryKey: ['vehicles-lookup'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -67,7 +67,7 @@ export const FuelOverviewTab: React.FC = () => {
     }
   });
 
-  const { data: drivers, isLoading: driversLoading } = useQuery({
+  const { data: drivers, isLoading: driversLoading, error: driversError } = useQuery({
     queryKey: ['drivers-lookup'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -118,8 +118,20 @@ export const FuelOverviewTab: React.FC = () => {
     });
   }, [recentLogs, vehicles, drivers]);
 
-  // Comprehensive loading check - wait for all critical data
-  const isLoading = metricsLoading || logsLoading || vehiclesLoading || driversLoading;
+  // Loading only for core data (metrics + recent logs)
+  const isLoading = metricsLoading || logsLoading;
+
+  // Log status to help diagnose any stuck states
+  console.info('FuelOverviewTab status', {
+    metricsLoading,
+    logsLoading,
+    vehiclesLoading,
+    driversLoading,
+    metricsError,
+    logsError,
+    vehiclesError,
+    driversError,
+  });
 
   if (isLoading) {
     return (
