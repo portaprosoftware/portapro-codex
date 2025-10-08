@@ -252,9 +252,9 @@ export const FuelAllLogsTab: React.FC = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Sources</SelectItem>
-                  <SelectItem value="retail">🏪 Retail Stations</SelectItem>
-                  <SelectItem value="yard_tank">🏭 Yard Tanks</SelectItem>
-                  <SelectItem value="mobile_service">🚛 Mobile Vendors</SelectItem>
+                  <SelectItem value="retail">Retail Stations</SelectItem>
+                  <SelectItem value="yard_tank">Yard Tanks</SelectItem>
+                  <SelectItem value="mobile_service">Mobile Vendors</SelectItem>
                 </SelectContent>
               </Select>
             </div>
