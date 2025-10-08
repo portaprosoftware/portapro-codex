@@ -439,6 +439,8 @@ export default function FleetFiles() {
           isOpen={!!documentToEdit}
           onClose={() => setDocumentToEdit(null)}
           document={documentToEdit}
+          vehicles={vehicles || []}
+          categories={categories || []}
         />
       )}
     </FleetLayout>
