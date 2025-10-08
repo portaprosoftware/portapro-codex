@@ -3557,6 +3557,56 @@ export type Database = {
           },
         ]
       }
+      fuel_tank_level_history: {
+        Row: {
+          change_amount_gallons: number
+          change_type: string
+          created_at: string
+          id: string
+          new_level_gallons: number
+          notes: string | null
+          performed_by: string | null
+          previous_level_gallons: number
+          reference_id: string | null
+          reference_type: string | null
+          tank_id: string
+        }
+        Insert: {
+          change_amount_gallons: number
+          change_type: string
+          created_at?: string
+          id?: string
+          new_level_gallons: number
+          notes?: string | null
+          performed_by?: string | null
+          previous_level_gallons: number
+          reference_id?: string | null
+          reference_type?: string | null
+          tank_id: string
+        }
+        Update: {
+          change_amount_gallons?: number
+          change_type?: string
+          created_at?: string
+          id?: string
+          new_level_gallons?: number
+          notes?: string | null
+          performed_by?: string | null
+          previous_level_gallons?: number
+          reference_id?: string | null
+          reference_type?: string | null
+          tank_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fuel_tank_level_history_tank_id_fkey"
+            columns: ["tank_id"]
+            isOneToOne: false
+            referencedRelation: "fuel_tanks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       fuel_tanks: {
         Row: {
           access_notes: string | null
@@ -12438,6 +12488,18 @@ export type Database = {
       update_overdue_invoices: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      update_tank_level: {
+        Args: {
+          p_change_amount: number
+          p_change_type: string
+          p_notes?: string
+          p_performed_by?: string
+          p_reference_id?: string
+          p_reference_type?: string
+          p_tank_id: string
+        }
+        Returns: Json
       }
       user_has_role_safe: {
         Args: { required_role: string }
