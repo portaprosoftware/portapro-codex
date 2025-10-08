@@ -268,10 +268,10 @@ export default function FleetFiles() {
         <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-foreground font-inter">
-              Documents & Photos
+              Additional Documents & Photos
             </h1>
             <p className="text-muted-foreground mt-1">
-              Manage all documents & photos
+              Keep all your miscellaneous documents and photos in one place — anything not directly linked to compliance, maintenance, or preventive tasks.
             </p>
           </div>
           
