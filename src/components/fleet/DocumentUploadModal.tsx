@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@clerk/clerk-react";
 import { MultiSelectVehicleFilter } from "./MultiSelectVehicleFilter";
 import { DialogDescription } from "@/components/ui/dialog";
+import { DocumentCategorySelector } from "./DocumentCategorySelector";
 
 // Sanitize filename for Supabase Storage
 function sanitizeStorageKey(filename: string): string {
@@ -64,6 +65,7 @@ export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentU
   const [files, setFiles] = useState<File[]>([]);
   const [selectedVehicles, setSelectedVehicles] = useState<Vehicle[]>([]);
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [documentNumber, setDocumentNumber] = useState("");
   const [notes, setNotes] = useState("");
@@ -282,24 +284,25 @@ export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentU
                 ({Math.round(aiSuggestion.confidence * 100)}% confidence)
               </div>
             )}
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger className="mt-2">
-                <SelectValue placeholder={isLoadingSuggestion ? "Getting AI suggestion..." : "Select a category"} />
-              </SelectTrigger>
-              <SelectContent>
-                {categories?.map((category) => (
-                  <SelectItem key={category.name} value={category.name}>
-                    <div className="flex items-center space-x-2">
-                      <div 
-                        className="w-3 h-3 rounded-full" 
-                        style={{ backgroundColor: category.color }}
-                      />
-                      <span>{category.name}</span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Button
+              variant="outline"
+              onClick={() => setIsCategoryModalOpen(true)}
+              className="w-full mt-2 justify-start"
+            >
+              {selectedCategory ? (
+                <div className="flex items-center gap-2">
+                  <div
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: categories.find(c => c.name === selectedCategory)?.color }}
+                  />
+                  <span>{selectedCategory}</span>
+                </div>
+              ) : (
+                <span className="text-muted-foreground">
+                  {isLoadingSuggestion ? "Getting AI suggestion..." : "Select a category"}
+                </span>
+              )}
+            </Button>
           </div>
 
           {/* Expiration Date (if required by category) */}
@@ -385,6 +388,15 @@ export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentU
         onOpenChange={setIsVehicleModalOpen}
         selectedVehicles={selectedVehicles}
         onVehiclesChange={setSelectedVehicles}
+      />
+
+      {/* Category Selection Modal */}
+      <DocumentCategorySelector
+        open={isCategoryModalOpen}
+        onOpenChange={setIsCategoryModalOpen}
+        categories={categories}
+        selectedCategory={selectedCategory}
+        onCategorySelect={setSelectedCategory}
       />
     </Dialog>
   );
