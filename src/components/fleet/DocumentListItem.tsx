@@ -51,14 +51,6 @@ export function DocumentListItem({ document, categoryInfo, onView, onDownload, o
           <h3 className="font-semibold text-sm text-gray-900 truncate">
             {document.document_name}
           </h3>
-          <Badge 
-            className="font-bold text-white border-0 whitespace-nowrap"
-            style={{ 
-              background: categoryInfo.color
-            }}
-          >
-            {document.category}
-          </Badge>
         </div>
         
         <div className="flex items-center gap-4 text-xs text-muted-foreground">
@@ -109,8 +101,18 @@ export function DocumentListItem({ document, categoryInfo, onView, onDownload, o
         )}
       </div>
 
-      {/* Actions */}
-      <div className="flex items-center gap-2 flex-shrink-0">
+      {/* Actions - Badge and Buttons */}
+      <div className="flex items-center gap-3 flex-shrink-0">
+        {/* Category Badge */}
+        <Badge 
+          className="font-bold text-white border-0 whitespace-nowrap"
+          style={{ 
+            background: categoryInfo.color
+          }}
+        >
+          {document.category}
+        </Badge>
+        
         <Button 
           variant="outline" 
           size="sm"
