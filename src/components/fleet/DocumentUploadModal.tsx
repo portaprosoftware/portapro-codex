@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Upload, Plus, X, Truck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@clerk/clerk-react";
-import { MultiSelectVehicleFilter } from "./MultiSelectVehicleFilter";
+import { StockVehicleSelectionModal } from "./StockVehicleSelectionModal";
 import { DialogDescription } from "@/components/ui/dialog";
 import { DocumentCategorySelector } from "./DocumentCategorySelector";
 
@@ -63,7 +63,7 @@ interface DocumentUploadModalProps {
 export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentUploadModalProps) {
   const [open, setOpen] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
-  const [selectedVehicles, setSelectedVehicles] = useState<Vehicle[]>([]);
+  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -86,66 +86,63 @@ export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentU
 
   const uploadMutation = useMutation({
     mutationFn: async () => {
-      if (selectedVehicles.length === 0 || !selectedCategory || files.length === 0) {
+      if (!selectedVehicle || !selectedCategory || files.length === 0) {
         throw new Error("Please fill in all required fields");
       }
 
       const results = [];
       
-      // Upload documents for each selected vehicle
-      for (const vehicle of selectedVehicles) {
-        for (const file of files) {
-          // Sanitize filename and organize by vehicle
-          const sanitizedName = sanitizeStorageKey(file.name);
-          const timestamp = Date.now();
-          const filePath = `${vehicle.id}/${timestamp}-${sanitizedName}`;
-          
-          const { data: storageData, error: storageError } = await supabase.storage
-            .from('vehicle-documents')
-            .upload(filePath, file);
+      // Upload documents for the selected vehicle
+      for (const file of files) {
+        // Sanitize filename and organize by vehicle
+        const sanitizedName = sanitizeStorageKey(file.name);
+        const timestamp = Date.now();
+        const filePath = `${selectedVehicle.id}/${timestamp}-${sanitizedName}`;
+        
+        const { data: storageData, error: storageError } = await supabase.storage
+          .from('vehicle-documents')
+          .upload(filePath, file);
 
-          if (storageError) {
-            throw new Error(`Storage upload failed: ${storageError.message}`);
-          }
-
-          // Create document record
-          const { data, error } = await supabase
-            .from('vehicle_documents')
-            .insert({
-              vehicle_id: vehicle.id,
-              document_type: selectedCategory,
-              document_name: file.name,
-              category: selectedCategory,
-              file_name: file.name,
-              file_path: storageData.path,
-              file_size: file.size,
-              document_number: documentNumber || null,
-              notes: notes || null,
-              expiry_date: expirationDate || null,
-              custom_field_values: Object.keys(customFieldValues).length > 0 ? customFieldValues : null,
-              upload_date: new Date().toISOString()
-            })
-            .select()
-            .single();
-
-          if (error) throw error;
-          results.push(data);
+        if (storageError) {
+          throw new Error(`Storage upload failed: ${storageError.message}`);
         }
+
+        // Create document record
+        const { data, error } = await supabase
+          .from('vehicle_documents')
+          .insert({
+            vehicle_id: selectedVehicle.id,
+            document_type: selectedCategory,
+            document_name: file.name,
+            category: selectedCategory,
+            file_name: file.name,
+            file_path: storageData.path,
+            file_size: file.size,
+            document_number: documentNumber || null,
+            notes: notes || null,
+            expiry_date: expirationDate || null,
+            custom_field_values: Object.keys(customFieldValues).length > 0 ? customFieldValues : null,
+            upload_date: new Date().toISOString()
+          })
+          .select()
+          .single();
+
+        if (error) throw error;
+        results.push(data);
       }
 
       return results;
     },
     onSuccess: () => {
-      const totalDocs = files.length * selectedVehicles.length;
       toast({
         title: "Success",
-        description: `${totalDocs} document(s) uploaded successfully`,
+        description: `${files.length} document(s) uploaded successfully`,
       });
       queryClient.invalidateQueries({ queryKey: ["vehicle-documents"] });
       queryClient.invalidateQueries({ queryKey: ["expiring-documents"] });
       setOpen(false);
       setFiles([]);
-      setSelectedVehicles([]);
+      setSelectedVehicle(null);
       setSelectedCategory("");
       setDocumentNumber("");
       setNotes("");
@@ -268,9 +265,9 @@ export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentU
               className="w-full mt-2 justify-start"
             >
               <Truck className="h-4 w-4 mr-2" />
-              {selectedVehicles.length === 0 
-                ? "Select vehicle(s)" 
-                : `${selectedVehicles.length} vehicle${selectedVehicles.length > 1 ? 's' : ''} selected`
+              {!selectedVehicle
+                ? "Select vehicle" 
+                : selectedVehicle.license_plate || `Vehicle ${selectedVehicle.id.slice(0, 8)}`
               }
             </Button>
           </div>
@@ -374,7 +371,7 @@ export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentU
             </Button>
             <Button 
               onClick={() => uploadMutation.mutate()}
-              disabled={uploadMutation.isPending || selectedVehicles.length === 0 || !selectedCategory || files.length === 0}
+              disabled={uploadMutation.isPending || !selectedVehicle || !selectedCategory || files.length === 0}
             >
               {uploadMutation.isPending ? "Uploading..." : "Upload Documents"}
             </Button>
@@ -382,12 +379,13 @@ export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentU
         </div>
       </DialogContent>
 
-      {/* Vehicle Multi-Select Modal */}
-      <MultiSelectVehicleFilter
+      {/* Vehicle Selection Modal */}
+      <StockVehicleSelectionModal
         open={isVehicleModalOpen}
         onOpenChange={setIsVehicleModalOpen}
-        selectedVehicles={selectedVehicles}
-        onVehiclesChange={setSelectedVehicles}
+        selectedDate={new Date()}
+        selectedVehicle={selectedVehicle}
+        onVehicleSelect={setSelectedVehicle}
       />
 
       {/* Category Selection Modal */}
