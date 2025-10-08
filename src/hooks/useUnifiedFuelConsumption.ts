@@ -1,5 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useEffect } from 'react';
 
 export type FuelSourceType = 'retail' | 'yard_tank' | 'mobile_service';
 
@@ -31,6 +32,32 @@ export interface UnifiedFuelFilters {
 }
 
 export const useUnifiedFuelConsumption = (filters?: UnifiedFuelFilters) => {
+  const queryClient = useQueryClient();
+
+  // Set up real-time subscription for fuel_logs
+  useEffect(() => {
+    const channel = supabase
+      .channel('fuel-logs-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'fuel_logs'
+        },
+        () => {
+          // Invalidate and refetch when fuel logs change
+          queryClient.invalidateQueries({ queryKey: ['unified-fuel-consumption'] });
+          queryClient.invalidateQueries({ queryKey: ['unified-fuel-metrics'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
   return useQuery({
     queryKey: ['unified-fuel-consumption', filters],
     queryFn: async () => {
