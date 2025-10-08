@@ -1,6 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { FuelTankDelivery } from '@/types/fuel';
 import { toast } from 'sonner';
 
 export const useFuelTankDeliveries = (tankId?: string) => {
@@ -19,7 +18,7 @@ export const useFuelTankDeliveries = (tankId?: string) => {
       const { data, error } = await query;
 
       if (error) throw error;
-      return data as FuelTankDelivery[];
+      return data;
     },
   });
 };
@@ -28,7 +27,7 @@ export const useAddFuelTankDelivery = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (delivery: Omit<FuelTankDelivery, 'id' | 'created_at' | 'updated_at' | 'cost_per_gallon' | 'fuel_tanks'>) => {
+    mutationFn: async (delivery: any) => {
       const { data, error } = await supabase
         .from('fuel_tank_deliveries')
         .insert(delivery)
@@ -41,6 +40,7 @@ export const useAddFuelTankDelivery = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['fuel-tank-deliveries'] });
       queryClient.invalidateQueries({ queryKey: ['fuel-tanks'] });
+      queryClient.invalidateQueries({ queryKey: ['fuel-tank-alerts'] });
       toast.success('Tank delivery recorded successfully');
     },
     onError: (error) => {

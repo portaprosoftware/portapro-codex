@@ -1890,6 +1890,47 @@ export type Database = {
           },
         ]
       }
+      delivery_audit_log: {
+        Row: {
+          action_type: string
+          change_reason: string | null
+          changed_by: string
+          created_at: string | null
+          delivery_id: string
+          id: string
+          new_values: Json | null
+          old_values: Json | null
+        }
+        Insert: {
+          action_type: string
+          change_reason?: string | null
+          changed_by: string
+          created_at?: string | null
+          delivery_id: string
+          id?: string
+          new_values?: Json | null
+          old_values?: Json | null
+        }
+        Update: {
+          action_type?: string
+          change_reason?: string | null
+          changed_by?: string
+          created_at?: string | null
+          delivery_id?: string
+          id?: string
+          new_values?: Json | null
+          old_values?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delivery_audit_log_delivery_id_fkey"
+            columns: ["delivery_id"]
+            isOneToOne: false
+            referencedRelation: "fuel_tank_deliveries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       disposal_manifests: {
         Row: {
           created_at: string
@@ -3261,45 +3302,186 @@ export type Database = {
         }
         Relationships: []
       }
+      fuel_suppliers: {
+        Row: {
+          contact_email: string | null
+          contact_name: string | null
+          contact_phone: string | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          notes: string | null
+          payment_terms: string | null
+          supplier_name: string
+          updated_at: string | null
+        }
+        Insert: {
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          notes?: string | null
+          payment_terms?: string | null
+          supplier_name: string
+          updated_at?: string | null
+        }
+        Update: {
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          notes?: string | null
+          payment_terms?: string | null
+          supplier_name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       fuel_tank_deliveries: {
         Row: {
+          additive_notes: string | null
+          after_hours_delivery: boolean | null
+          blocked_reason: string | null
+          bol_ticket_number: string | null
+          calculated_variance: number | null
           cost_per_gallon: number | null
           created_at: string
           delivery_date: string
+          delivery_fee: number | null
+          delivery_time: string | null
+          dip_chart_url: string | null
+          driver_name: string | null
+          entered_by: string | null
+          excise_tax: number | null
+          fuel_grade: string | null
           gallons_delivered: number
+          gross_gallons: number | null
+          hazmat_fee: number | null
           id: string
           invoice_number: string | null
+          locked_at: string | null
+          locked_by: string | null
+          locked_to_ledger: boolean | null
           notes: string | null
+          other_fees: Json | null
+          partial_fill_blocked: boolean | null
+          payment_method: string | null
+          payment_terms: string | null
+          post_delivery_stick_reading: number | null
+          pre_delivery_stick_reading: number | null
+          price_per_gallon_pretax: number | null
           supplier_name: string | null
           tank_id: string
+          temperature_corrected_gallons: number | null
+          ticket_photo_urls: string[] | null
           total_cost: number
+          truck_number: string | null
           updated_at: string
+          variance_flag: boolean | null
+          variance_tolerance: number | null
+          verified_at: string | null
+          verified_by: string | null
+          water_bottom_inches: number | null
+          water_bottom_test_result: string | null
+          winter_blend: boolean | null
         }
         Insert: {
+          additive_notes?: string | null
+          after_hours_delivery?: boolean | null
+          blocked_reason?: string | null
+          bol_ticket_number?: string | null
+          calculated_variance?: number | null
           cost_per_gallon?: number | null
           created_at?: string
           delivery_date: string
+          delivery_fee?: number | null
+          delivery_time?: string | null
+          dip_chart_url?: string | null
+          driver_name?: string | null
+          entered_by?: string | null
+          excise_tax?: number | null
+          fuel_grade?: string | null
           gallons_delivered: number
+          gross_gallons?: number | null
+          hazmat_fee?: number | null
           id?: string
           invoice_number?: string | null
+          locked_at?: string | null
+          locked_by?: string | null
+          locked_to_ledger?: boolean | null
           notes?: string | null
+          other_fees?: Json | null
+          partial_fill_blocked?: boolean | null
+          payment_method?: string | null
+          payment_terms?: string | null
+          post_delivery_stick_reading?: number | null
+          pre_delivery_stick_reading?: number | null
+          price_per_gallon_pretax?: number | null
           supplier_name?: string | null
           tank_id: string
+          temperature_corrected_gallons?: number | null
+          ticket_photo_urls?: string[] | null
           total_cost: number
+          truck_number?: string | null
           updated_at?: string
+          variance_flag?: boolean | null
+          variance_tolerance?: number | null
+          verified_at?: string | null
+          verified_by?: string | null
+          water_bottom_inches?: number | null
+          water_bottom_test_result?: string | null
+          winter_blend?: boolean | null
         }
         Update: {
+          additive_notes?: string | null
+          after_hours_delivery?: boolean | null
+          blocked_reason?: string | null
+          bol_ticket_number?: string | null
+          calculated_variance?: number | null
           cost_per_gallon?: number | null
           created_at?: string
           delivery_date?: string
+          delivery_fee?: number | null
+          delivery_time?: string | null
+          dip_chart_url?: string | null
+          driver_name?: string | null
+          entered_by?: string | null
+          excise_tax?: number | null
+          fuel_grade?: string | null
           gallons_delivered?: number
+          gross_gallons?: number | null
+          hazmat_fee?: number | null
           id?: string
           invoice_number?: string | null
+          locked_at?: string | null
+          locked_by?: string | null
+          locked_to_ledger?: boolean | null
           notes?: string | null
+          other_fees?: Json | null
+          partial_fill_blocked?: boolean | null
+          payment_method?: string | null
+          payment_terms?: string | null
+          post_delivery_stick_reading?: number | null
+          pre_delivery_stick_reading?: number | null
+          price_per_gallon_pretax?: number | null
           supplier_name?: string | null
           tank_id?: string
+          temperature_corrected_gallons?: number | null
+          ticket_photo_urls?: string[] | null
           total_cost?: number
+          truck_number?: string | null
           updated_at?: string
+          variance_flag?: boolean | null
+          variance_tolerance?: number | null
+          verified_at?: string | null
+          verified_by?: string | null
+          water_bottom_inches?: number | null
+          water_bottom_test_result?: string | null
+          winter_blend?: boolean | null
         }
         Relationships: [
           {
@@ -11189,6 +11371,10 @@ export type Database = {
         Args: { tank_uuid: string }
         Returns: number
       }
+      calculate_delivery_variance: {
+        Args: { delivery_uuid: string }
+        Returns: Json
+      }
       calculate_fleet_efficiency_trends: {
         Args: { end_date?: string; start_date?: string }
         Returns: Json
@@ -11222,6 +11408,10 @@ export type Database = {
       check_and_flag_overdue_jobs: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      check_fuel_grade_mismatch: {
+        Args: { delivered_grade: string; tank_uuid: string }
+        Returns: Json
       }
       check_spcc_compliance: {
         Args: Record<PropertyKey, never>
@@ -11810,6 +12000,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      lock_delivery_to_ledger: {
+        Args: { delivery_uuid: string; locked_by_user: string }
+        Returns: boolean
+      }
       log_job_status_change: {
         Args: {
           change_notes?: string
@@ -12007,6 +12201,10 @@ export type Database = {
       validate_storage_location_integrity: {
         Args: Record<PropertyKey, never>
         Returns: Json
+      }
+      verify_delivery: {
+        Args: { delivery_uuid: string; verified_by_user: string }
+        Returns: boolean
       }
     }
     Enums: {

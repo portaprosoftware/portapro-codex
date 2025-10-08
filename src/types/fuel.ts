@@ -93,19 +93,87 @@ export interface FuelTankAlert {
   resolved_at?: string;
 }
 
+export type PaymentMethod = 'invoice' | 'ach' | 'card' | 'check' | 'cash';
+export type WaterBottomResult = 'pass' | 'fail';
+
+export interface OtherFee {
+  description: string;
+  amount: number;
+}
+
+export interface FuelSupplier {
+  id: string;
+  supplier_name: string;
+  contact_name?: string;
+  contact_phone?: string;
+  contact_email?: string;
+  payment_terms?: string;
+  notes?: string;
+  is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface FuelTankDelivery {
   id: string;
   tank_id: string;
   delivery_date: string;
+  delivery_time?: string;
+  
+  // Basic delivery info
   gallons_delivered: number;
+  bol_ticket_number?: string;
+  driver_name?: string;
+  truck_number?: string;
+  fuel_grade?: string;
+  winter_blend?: boolean;
+  additive_notes?: string;
+  
+  // Quantities & Pricing
+  gross_gallons?: number;
+  temperature_corrected_gallons?: number;
+  price_per_gallon_pretax?: number;
+  excise_tax?: number;
+  delivery_fee?: number;
+  hazmat_fee?: number;
+  other_fees?: OtherFee[];
   total_cost: number;
-  cost_per_gallon: number;
+  cost_per_gallon?: number;
+  payment_method?: PaymentMethod;
+  payment_terms?: string;
+  
+  // Reconciliation
+  pre_delivery_stick_reading?: number;
+  post_delivery_stick_reading?: number;
+  water_bottom_test_result?: WaterBottomResult;
+  water_bottom_inches?: number;
+  calculated_variance?: number;
+  variance_tolerance?: number;
+  variance_flag?: boolean;
+  ticket_photo_urls?: string[];
+  dip_chart_url?: string;
+  
+  // Operational
+  after_hours_delivery?: boolean;
+  partial_fill_blocked?: boolean;
+  blocked_reason?: string;
+  
+  // Legacy fields
   supplier_name?: string;
   invoice_number?: string;
   notes?: string;
-  fuel_tanks?: FuelTank;
+  
+  // Audit trail
+  entered_by?: string;
+  verified_by?: string;
+  verified_at?: string;
+  locked_to_ledger?: boolean;
+  locked_at?: string;
+  locked_by?: string;
+  
   created_at: string;
   updated_at: string;
+  fuel_tanks?: FuelTank;
 }
 
 export interface MobileFuelVendor {
