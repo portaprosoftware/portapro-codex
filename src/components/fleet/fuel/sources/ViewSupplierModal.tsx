@@ -28,26 +28,22 @@ export const ViewSupplierModal: React.FC<ViewSupplierModalProps> = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <div className="flex items-center justify-between">
-            <DialogTitle className="flex items-center gap-2">
-              <Building2 className="h-5 w-5 text-primary" />
-              Supplier Details
-            </DialogTitle>
-            <Badge 
-              className={supplier.is_active 
-                ? "bg-gradient-to-r from-green-500 to-green-600 text-white font-bold border-0" 
-                : "bg-muted text-muted-foreground font-bold border-0"
-              }
-            >
-              {supplier.is_active ? 'Active' : 'Inactive'}
-            </Badge>
-          </div>
+          <DialogTitle>Supplier Details</DialogTitle>
           <DialogDescription>
             View supplier information
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
+          <Badge 
+            className={supplier.is_active 
+              ? "bg-gradient-to-r from-green-500 to-green-600 text-white font-bold border-0 w-fit" 
+              : "bg-muted text-muted-foreground font-bold border-0 w-fit"
+            }
+          >
+            {supplier.is_active ? 'Active' : 'Inactive'}
+          </Badge>
+
           <div className="space-y-2">
             <label className="text-sm font-semibold text-foreground">Supplier Name</label>
             <p className="text-sm text-muted-foreground">{supplier.supplier_name}</p>
