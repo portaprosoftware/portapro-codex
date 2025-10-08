@@ -243,8 +243,10 @@ export const DocumentCategoryManagement: React.FC = () => {
                     <button
                       key={color}
                       type="button"
-                      className={`w-full h-10 rounded-md border-2 ${
-                        formData.color === color ? 'border-gray-400' : 'border-gray-200'
+                      className={`w-full h-10 rounded-md transition-all ${
+                        formData.color === color 
+                          ? 'border-4 border-gray-900 ring-2 ring-offset-2 ring-gray-900' 
+                          : 'border-2 border-gray-200 hover:border-gray-300'
                       }`}
                       style={{ backgroundColor: color }}
                       onClick={() => setFormData({ ...formData, color })}
