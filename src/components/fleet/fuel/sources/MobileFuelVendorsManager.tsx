@@ -7,6 +7,7 @@ import { useMobileFuelVendors } from '@/hooks/useMobileFuelVendors';
 import { useMobileFuelServices } from '@/hooks/useMobileFuelServices';
 import { AddMobileFuelVendorDialog } from './AddMobileFuelVendorDialog';
 import { AddMobileFuelServiceDialog } from './AddMobileFuelServiceDialog';
+import { FUEL_TYPE_LABELS, FUEL_TYPE_COLORS } from '@/types/fuel';
 import { format } from 'date-fns';
 
 export const MobileFuelVendorsManager: React.FC = () => {
@@ -76,8 +77,8 @@ export const MobileFuelVendorsManager: React.FC = () => {
                     <p className="text-sm text-muted-foreground">{vendor.contact_person}</p>
                   )}
                 </div>
-                <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                  {vendor.fuel_type}
+                <Badge className={`bg-gradient-to-r ${FUEL_TYPE_COLORS[vendor.fuel_type]} text-white font-bold border-0`}>
+                  {FUEL_TYPE_LABELS[vendor.fuel_type]}
                 </Badge>
               </div>
 
