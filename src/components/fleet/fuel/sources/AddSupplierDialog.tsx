@@ -26,13 +26,14 @@ export const AddSupplierDialog: React.FC<AddSupplierDialogProps> = ({
   open, 
   onOpenChange 
 }) => {
-  const { register, handleSubmit, reset } = useForm<SupplierFormData>({
+  const { register, handleSubmit, reset, setValue, watch } = useForm<SupplierFormData>({
     defaultValues: {
       payment_terms: 'Net-30',
     },
   });
   
   const addSupplier = useAddFuelSupplier();
+  const paymentTerms = watch('payment_terms');
 
   const onSubmit = async (data: SupplierFormData) => {
     await addSupplier.mutateAsync({
@@ -99,8 +100,8 @@ export const AddSupplierDialog: React.FC<AddSupplierDialogProps> = ({
           <div className="space-y-2">
             <Label htmlFor="payment_terms">Default Payment Terms</Label>
             <Select
-              defaultValue="Net-30"
-              onValueChange={(value) => register('payment_terms').onChange({ target: { value } })}
+              value={paymentTerms}
+              onValueChange={(value) => setValue('payment_terms', value)}
             >
               <SelectTrigger>
                 <SelectValue />
