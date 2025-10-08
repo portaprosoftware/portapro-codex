@@ -4,11 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar as CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
@@ -20,7 +15,6 @@ interface DocumentEditModalProps {
     id: string;
     document_name: string;
     document_number?: string;
-    expiration_date?: string;
     notes?: string;
   };
 }
@@ -28,9 +22,6 @@ interface DocumentEditModalProps {
 export function DocumentEditModal({ isOpen, onClose, document }: DocumentEditModalProps) {
   const [documentName, setDocumentName] = useState(document.document_name);
   const [documentNumber, setDocumentNumber] = useState(document.document_number || "");
-  const [expirationDate, setExpirationDate] = useState<Date | undefined>(
-    document.expiration_date ? new Date(document.expiration_date) : undefined
-  );
   const [notes, setNotes] = useState(document.notes || "");
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
@@ -39,7 +30,6 @@ export function DocumentEditModal({ isOpen, onClose, document }: DocumentEditMod
   useEffect(() => {
     setDocumentName(document.document_name);
     setDocumentNumber(document.document_number || "");
-    setExpirationDate(document.expiration_date ? new Date(document.expiration_date) : undefined);
     setNotes(document.notes || "");
   }, [document]);
 
@@ -51,7 +41,6 @@ export function DocumentEditModal({ isOpen, onClose, document }: DocumentEditMod
         .update({
           document_name: documentName,
           document_number: documentNumber || null,
-          expiration_date: expirationDate ? format(expirationDate, 'yyyy-MM-dd') : null,
           notes: notes || null,
         })
         .eq("id", document.id);
@@ -107,33 +96,6 @@ export function DocumentEditModal({ isOpen, onClose, document }: DocumentEditMod
               placeholder="Optional document number"
               className="mt-2"
             />
-          </div>
-
-          {/* Expiration Date */}
-          <div>
-            <Label>Expiration Date (Optional)</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal mt-2",
-                    !expirationDate && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {expirationDate ? format(expirationDate, "PPP") : "Pick a date"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={expirationDate}
-                  onSelect={setExpirationDate}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
           </div>
 
           {/* Notes */}
