@@ -26,20 +26,17 @@ export interface FuelStation {
 export interface FuelTank {
   id: string;
   tank_number: string;
-  tank_name?: string;
-  capacity_gallons: number;
+  tank_name: string;
   fuel_type: FuelType;
-  install_date?: string;
-  last_inspection_date?: string;
-  next_inspection_due?: string;
-  requires_spcc: boolean;
-  spcc_plan_url?: string;
-  spcc_plan_updated_at?: string;
-  spill_kit_location?: string;
-  meter_current_reading: number;
+  capacity_gallons: number;
+  current_level_gallons?: number;
   location_description?: string;
-  is_active: boolean;
+  last_inspection_date?: string;
+  next_inspection_date?: string;
+  requires_spcc?: boolean;
+  installation_date?: string;
   notes?: string;
+  is_active: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -48,38 +45,28 @@ export interface FuelTankDelivery {
   id: string;
   tank_id: string;
   delivery_date: string;
-  vendor_name: string;
-  vendor_contact?: string;
-  vendor_phone?: string;
   gallons_delivered: number;
-  cost_total: number;
-  cost_per_gallon?: number;
-  bol_number?: string;
+  total_cost: number;
+  cost_per_gallon: number;
+  supplier_name?: string;
   invoice_number?: string;
-  receipt_url?: string;
-  meter_before?: number;
-  meter_after?: number;
-  temperature?: number;
   notes?: string;
+  fuel_tanks?: FuelTank;
   created_at: string;
   updated_at: string;
-  fuel_tanks?: FuelTank;
 }
 
 export interface MobileFuelVendor {
   id: string;
   vendor_name: string;
-  contact_name?: string;
+  contact_person?: string;
   phone?: string;
   email?: string;
-  contract_start?: string;
-  contract_end?: string;
-  service_window?: string;
-  rates?: Record<string, any>;
-  billing_terms?: string;
-  after_hours_available: boolean;
-  is_active: boolean;
+  fuel_type: FuelType;
+  service_area?: string;
+  contract_number?: string;
   notes?: string;
+  is_active: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -88,21 +75,16 @@ export interface MobileFuelService {
   id: string;
   vendor_id: string;
   service_date: string;
-  invoice_number?: string;
   total_gallons: number;
   total_cost: number;
-  cost_per_gallon?: number;
-  after_hours: boolean;
-  vehicle_fills: Array<{
-    vehicle_id: string;
-    gallons: number;
-    notes?: string;
-  }>;
-  invoice_url?: string;
+  cost_per_gallon: number;
+  vehicles_fueled: number;
+  location?: string;
+  invoice_number?: string;
   notes?: string;
+  mobile_fuel_vendors?: MobileFuelVendor;
   created_at: string;
   updated_at: string;
-  mobile_fuel_vendors?: MobileFuelVendor;
 }
 
 export interface EnhancedFuelLog {

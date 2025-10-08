@@ -72,15 +72,13 @@ export const MobileFuelVendorsManager: React.FC = () => {
               <div className="flex items-start justify-between">
                 <div>
                   <h4 className="font-semibold">{vendor.vendor_name}</h4>
-                  {vendor.contact_name && (
-                    <p className="text-sm text-muted-foreground">{vendor.contact_name}</p>
+                  {vendor.contact_person && (
+                    <p className="text-sm text-muted-foreground">{vendor.contact_person}</p>
                   )}
                 </div>
-                {vendor.after_hours_available && (
-                  <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                    24/7 Available
-                  </Badge>
-                )}
+                <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                  {vendor.fuel_type}
+                </Badge>
               </div>
 
               <div className="space-y-2 text-sm">
@@ -98,16 +96,16 @@ export const MobileFuelVendorsManager: React.FC = () => {
                 )}
               </div>
 
-              {vendor.service_window && (
+              {vendor.service_area && (
                 <div className="text-xs text-muted-foreground">
-                  Service window: {vendor.service_window}
+                  Service area: {vendor.service_area}
                 </div>
               )}
 
-              {vendor.contract_end && new Date(vendor.contract_end) < new Date() && (
-                <Badge variant="destructive" className="text-xs">
-                  Contract Expired
-                </Badge>
+              {vendor.contract_number && (
+                <div className="text-xs text-muted-foreground">
+                  Contract: {vendor.contract_number}
+                </div>
               )}
 
               <Button 

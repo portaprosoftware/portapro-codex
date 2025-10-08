@@ -22,7 +22,8 @@ interface ServiceFormData {
   invoice_number: string;
   total_gallons: number;
   total_cost: number;
-  after_hours: boolean;
+  vehicles_fueled: number;
+  location: string;
   notes: string;
 }
 
@@ -35,14 +36,13 @@ export const AddMobileFuelServiceDialog: React.FC<AddMobileFuelServiceDialogProp
     defaultValues: {
       vendor_id: vendorId || '',
       service_date: new Date().toISOString().split('T')[0],
-      after_hours: false,
+      vehicles_fueled: 1,
     },
   });
   
   const { data: vendors = [] } = useMobileFuelVendors();
   const addService = useAddMobileFuelService();
   const selectedVendorId = watch('vendor_id');
-  const afterHours = watch('after_hours');
 
   React.useEffect(() => {
     if (vendorId) {
@@ -55,7 +55,7 @@ export const AddMobileFuelServiceDialog: React.FC<AddMobileFuelServiceDialogProp
       ...data,
       total_gallons: Number(data.total_gallons),
       total_cost: Number(data.total_cost),
-      vehicle_fills: [],
+      vehicles_fueled: Number(data.vehicles_fueled),
     });
     reset();
     onOpenChange(false);
@@ -132,15 +132,25 @@ export const AddMobileFuelServiceDialog: React.FC<AddMobileFuelServiceDialogProp
             </div>
           </div>
 
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="after_hours"
-              checked={afterHours}
-              onCheckedChange={(checked) => setValue('after_hours', !!checked)}
-            />
-            <Label htmlFor="after_hours" className="cursor-pointer">
-              After-hours service (premium rate)
-            </Label>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="vehicles_fueled">Vehicles Fueled *</Label>
+              <Input
+                id="vehicles_fueled"
+                type="number"
+                {...register('vehicles_fueled', { required: true })}
+                placeholder="e.g., 5"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="location">Location</Label>
+              <Input
+                id="location"
+                {...register('location')}
+                placeholder="e.g., Main yard"
+              />
+            </div>
           </div>
 
           <div className="space-y-2">

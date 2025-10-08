@@ -3064,10 +3064,15 @@ export type Database = {
           cost_per_gallon: number
           created_at: string | null
           driver_id: string
+          fuel_source: Database["public"]["Enums"]["fuel_source"] | null
           fuel_station: string | null
+          fuel_station_id: string | null
+          fuel_tank_id: string | null
+          fuel_type: Database["public"]["Enums"]["fuel_type"] | null
           gallons_purchased: number
           id: string
           log_date: string
+          mobile_vendor_id: string | null
           notes: string | null
           odometer_reading: number
           receipt_image: string | null
@@ -3078,10 +3083,15 @@ export type Database = {
           cost_per_gallon: number
           created_at?: string | null
           driver_id: string
+          fuel_source?: Database["public"]["Enums"]["fuel_source"] | null
           fuel_station?: string | null
+          fuel_station_id?: string | null
+          fuel_tank_id?: string | null
+          fuel_type?: Database["public"]["Enums"]["fuel_type"] | null
           gallons_purchased: number
           id?: string
           log_date?: string
+          mobile_vendor_id?: string | null
           notes?: string | null
           odometer_reading: number
           receipt_image?: string | null
@@ -3092,10 +3102,15 @@ export type Database = {
           cost_per_gallon?: number
           created_at?: string | null
           driver_id?: string
+          fuel_source?: Database["public"]["Enums"]["fuel_source"] | null
           fuel_station?: string | null
+          fuel_station_id?: string | null
+          fuel_tank_id?: string | null
+          fuel_type?: Database["public"]["Enums"]["fuel_type"] | null
           gallons_purchased?: number
           id?: string
           log_date?: string
+          mobile_vendor_id?: string | null
           notes?: string | null
           odometer_reading?: number
           receipt_image?: string | null
@@ -3108,6 +3123,27 @@ export type Database = {
             columns: ["driver_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fuel_logs_fuel_station_id_fkey"
+            columns: ["fuel_station_id"]
+            isOneToOne: false
+            referencedRelation: "fuel_stations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fuel_logs_fuel_tank_id_fkey"
+            columns: ["fuel_tank_id"]
+            isOneToOne: false
+            referencedRelation: "fuel_tanks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fuel_logs_mobile_vendor_id_fkey"
+            columns: ["mobile_vendor_id"]
+            isOneToOne: false
+            referencedRelation: "mobile_fuel_vendors"
             referencedColumns: ["id"]
           },
           {
@@ -3222,6 +3258,110 @@ export type Database = {
           street?: string | null
           updated_at?: string
           zip?: string | null
+        }
+        Relationships: []
+      }
+      fuel_tank_deliveries: {
+        Row: {
+          cost_per_gallon: number | null
+          created_at: string
+          delivery_date: string
+          gallons_delivered: number
+          id: string
+          invoice_number: string | null
+          notes: string | null
+          supplier_name: string | null
+          tank_id: string
+          total_cost: number
+          updated_at: string
+        }
+        Insert: {
+          cost_per_gallon?: number | null
+          created_at?: string
+          delivery_date: string
+          gallons_delivered: number
+          id?: string
+          invoice_number?: string | null
+          notes?: string | null
+          supplier_name?: string | null
+          tank_id: string
+          total_cost: number
+          updated_at?: string
+        }
+        Update: {
+          cost_per_gallon?: number | null
+          created_at?: string
+          delivery_date?: string
+          gallons_delivered?: number
+          id?: string
+          invoice_number?: string | null
+          notes?: string | null
+          supplier_name?: string | null
+          tank_id?: string
+          total_cost?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fuel_tank_deliveries_tank_id_fkey"
+            columns: ["tank_id"]
+            isOneToOne: false
+            referencedRelation: "fuel_tanks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fuel_tanks: {
+        Row: {
+          capacity_gallons: number
+          created_at: string
+          current_level_gallons: number | null
+          fuel_type: Database["public"]["Enums"]["fuel_type"]
+          id: string
+          installation_date: string | null
+          is_active: boolean | null
+          last_inspection_date: string | null
+          location_description: string | null
+          next_inspection_date: string | null
+          notes: string | null
+          requires_spcc: boolean | null
+          tank_name: string
+          tank_number: string
+          updated_at: string
+        }
+        Insert: {
+          capacity_gallons: number
+          created_at?: string
+          current_level_gallons?: number | null
+          fuel_type: Database["public"]["Enums"]["fuel_type"]
+          id?: string
+          installation_date?: string | null
+          is_active?: boolean | null
+          last_inspection_date?: string | null
+          location_description?: string | null
+          next_inspection_date?: string | null
+          notes?: string | null
+          requires_spcc?: boolean | null
+          tank_name: string
+          tank_number: string
+          updated_at?: string
+        }
+        Update: {
+          capacity_gallons?: number
+          created_at?: string
+          current_level_gallons?: number | null
+          fuel_type?: Database["public"]["Enums"]["fuel_type"]
+          id?: string
+          installation_date?: string | null
+          is_active?: boolean | null
+          last_inspection_date?: string | null
+          location_description?: string | null
+          next_inspection_date?: string | null
+          notes?: string | null
+          requires_spcc?: boolean | null
+          tank_name?: string
+          tank_number?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -5227,6 +5367,104 @@ export type Database = {
           template_id?: string | null
           total_recipients?: number | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      mobile_fuel_services: {
+        Row: {
+          cost_per_gallon: number | null
+          created_at: string
+          id: string
+          invoice_number: string | null
+          location: string | null
+          notes: string | null
+          service_date: string
+          total_cost: number
+          total_gallons: number
+          updated_at: string
+          vehicles_fueled: number | null
+          vendor_id: string
+        }
+        Insert: {
+          cost_per_gallon?: number | null
+          created_at?: string
+          id?: string
+          invoice_number?: string | null
+          location?: string | null
+          notes?: string | null
+          service_date: string
+          total_cost: number
+          total_gallons: number
+          updated_at?: string
+          vehicles_fueled?: number | null
+          vendor_id: string
+        }
+        Update: {
+          cost_per_gallon?: number | null
+          created_at?: string
+          id?: string
+          invoice_number?: string | null
+          location?: string | null
+          notes?: string | null
+          service_date?: string
+          total_cost?: number
+          total_gallons?: number
+          updated_at?: string
+          vehicles_fueled?: number | null
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mobile_fuel_services_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "mobile_fuel_vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mobile_fuel_vendors: {
+        Row: {
+          contact_person: string | null
+          contract_number: string | null
+          created_at: string
+          email: string | null
+          fuel_type: Database["public"]["Enums"]["fuel_type"]
+          id: string
+          is_active: boolean | null
+          notes: string | null
+          phone: string | null
+          service_area: string | null
+          updated_at: string
+          vendor_name: string
+        }
+        Insert: {
+          contact_person?: string | null
+          contract_number?: string | null
+          created_at?: string
+          email?: string | null
+          fuel_type: Database["public"]["Enums"]["fuel_type"]
+          id?: string
+          is_active?: boolean | null
+          notes?: string | null
+          phone?: string | null
+          service_area?: string | null
+          updated_at?: string
+          vendor_name: string
+        }
+        Update: {
+          contact_person?: string | null
+          contract_number?: string | null
+          created_at?: string
+          email?: string | null
+          fuel_type?: Database["public"]["Enums"]["fuel_type"]
+          id?: string
+          is_active?: boolean | null
+          notes?: string | null
+          phone?: string | null
+          service_area?: string | null
+          updated_at?: string
+          vendor_name?: string
         }
         Relationships: []
       }
@@ -11662,6 +11900,8 @@ export type Database = {
         | "defects_found"
         | "verified"
         | "rejected"
+      fuel_source: "retail_station" | "yard_tank" | "mobile_vendor"
+      fuel_type: "diesel" | "gasoline" | "off_road_diesel"
       incident_severity:
         | "minor"
         | "moderate"
@@ -11862,6 +12102,8 @@ export const Constants = {
         "verified",
         "rejected",
       ],
+      fuel_source: ["retail_station", "yard_tank", "mobile_vendor"],
+      fuel_type: ["diesel", "gasoline", "off_road_diesel"],
       incident_severity: [
         "minor",
         "moderate",

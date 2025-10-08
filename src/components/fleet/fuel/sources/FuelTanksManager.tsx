@@ -124,7 +124,7 @@ export const FuelTanksManager: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-muted-foreground">Current Level</p>
-                  <p className="font-semibold">{tank.meter_current_reading.toLocaleString()} gal</p>
+                  <p className="font-semibold">{(tank.current_level_gallons || 0).toLocaleString()} gal</p>
                 </div>
               </div>
 

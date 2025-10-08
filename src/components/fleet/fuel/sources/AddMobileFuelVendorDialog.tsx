@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAddMobileFuelVendor } from '@/hooks/useMobileFuelVendors';
 import { useForm } from 'react-hook-form';
 
@@ -15,14 +15,12 @@ interface AddMobileFuelVendorDialogProps {
 
 interface VendorFormData {
   vendor_name: string;
-  contact_name: string;
+  contact_person: string;
   phone: string;
   email: string;
-  contract_start: string;
-  contract_end: string;
-  service_window: string;
-  billing_terms: string;
-  after_hours_available: boolean;
+  fuel_type: 'diesel' | 'gasoline' | 'off_road_diesel';
+  service_area: string;
+  contract_number: string;
   notes: string;
 }
 
@@ -32,18 +30,17 @@ export const AddMobileFuelVendorDialog: React.FC<AddMobileFuelVendorDialogProps>
 }) => {
   const { register, handleSubmit, reset, setValue, watch } = useForm<VendorFormData>({
     defaultValues: {
-      after_hours_available: false,
+      fuel_type: 'diesel',
     },
   });
   
   const addVendor = useAddMobileFuelVendor();
-  const afterHours = watch('after_hours_available');
+  const fuelType = watch('fuel_type');
 
   const onSubmit = async (data: VendorFormData) => {
     await addVendor.mutateAsync({
       ...data,
       is_active: true,
-      rates: {},
     });
     reset();
     onOpenChange(false);
@@ -68,10 +65,10 @@ export const AddMobileFuelVendorDialog: React.FC<AddMobileFuelVendorDialogProps>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="contact_name">Contact Person</Label>
+              <Label htmlFor="contact_person">Contact Person</Label>
               <Input
-                id="contact_name"
-                {...register('contact_name')}
+                id="contact_person"
+                {...register('contact_person')}
                 placeholder="Contact name"
               />
             </div>
@@ -99,51 +96,39 @@ export const AddMobileFuelVendorDialog: React.FC<AddMobileFuelVendorDialogProps>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="contract_start">Contract Start</Label>
-              <Input
-                id="contract_start"
-                type="date"
-                {...register('contract_start')}
-              />
+              <Label htmlFor="fuel_type">Fuel Type *</Label>
+              <Select
+                value={fuelType}
+                onValueChange={(value) => setValue('fuel_type', value as any)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="diesel">Diesel</SelectItem>
+                  <SelectItem value="gasoline">Gasoline</SelectItem>
+                  <SelectItem value="off_road_diesel">Off-Road Diesel</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="contract_end">Contract End</Label>
+              <Label htmlFor="service_area">Service Area</Label>
               <Input
-                id="contract_end"
-                type="date"
-                {...register('contract_end')}
+                id="service_area"
+                {...register('service_area')}
+                placeholder="e.g., 50 mile radius"
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="service_window">Service Window</Label>
+            <Label htmlFor="contract_number">Contract Number</Label>
             <Input
-              id="service_window"
-              {...register('service_window')}
-              placeholder="e.g., 10pm - 6am"
+              id="contract_number"
+              {...register('contract_number')}
+              placeholder="Contract #"
             />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="billing_terms">Billing Terms</Label>
-            <Input
-              id="billing_terms"
-              {...register('billing_terms')}
-              placeholder="e.g., Net 30"
-            />
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="after_hours_available"
-              checked={afterHours}
-              onCheckedChange={(checked) => setValue('after_hours_available', !!checked)}
-            />
-            <Label htmlFor="after_hours_available" className="cursor-pointer">
-              24/7 After-hours service available
-            </Label>
           </div>
 
           <div className="space-y-2">

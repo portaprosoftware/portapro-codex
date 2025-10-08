@@ -18,15 +18,10 @@ interface AddTankDeliveryDialogProps {
 interface DeliveryFormData {
   tank_id: string;
   delivery_date: string;
-  vendor_name: string;
-  vendor_contact: string;
-  vendor_phone: string;
   gallons_delivered: number;
-  cost_total: number;
-  bol_number: string;
+  total_cost: number;
+  supplier_name: string;
   invoice_number: string;
-  meter_before: number;
-  meter_after: number;
   notes: string;
 }
 
@@ -56,9 +51,7 @@ export const AddTankDeliveryDialog: React.FC<AddTankDeliveryDialogProps> = ({
     await addDelivery.mutateAsync({
       ...data,
       gallons_delivered: Number(data.gallons_delivered),
-      cost_total: Number(data.cost_total),
-      meter_before: data.meter_before ? Number(data.meter_before) : undefined,
-      meter_after: data.meter_after ? Number(data.meter_after) : undefined,
+      total_cost: Number(data.total_cost),
     });
     reset();
     onOpenChange(false);
@@ -91,44 +84,13 @@ export const AddTankDeliveryDialog: React.FC<AddTankDeliveryDialogProps> = ({
             </Select>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="delivery_date">Delivery Date *</Label>
-              <Input
-                id="delivery_date"
-                type="date"
-                {...register('delivery_date', { required: true })}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="vendor_name">Vendor Name *</Label>
-              <Input
-                id="vendor_name"
-                {...register('vendor_name', { required: true })}
-                placeholder="e.g., ABC Fuel Supply"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="vendor_contact">Contact Person</Label>
-              <Input
-                id="vendor_contact"
-                {...register('vendor_contact')}
-                placeholder="Contact name"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="vendor_phone">Phone</Label>
-              <Input
-                id="vendor_phone"
-                {...register('vendor_phone')}
-                placeholder="Phone number"
-              />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="delivery_date">Delivery Date *</Label>
+            <Input
+              id="delivery_date"
+              type="date"
+              {...register('delivery_date', { required: true })}
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -144,12 +106,12 @@ export const AddTankDeliveryDialog: React.FC<AddTankDeliveryDialogProps> = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="cost_total">Total Cost *</Label>
+              <Label htmlFor="total_cost">Total Cost *</Label>
               <Input
-                id="cost_total"
+                id="total_cost"
                 type="number"
                 step="0.01"
-                {...register('cost_total', { required: true })}
+                {...register('total_cost', { required: true })}
                 placeholder="e.g., 1250.00"
               />
             </div>
@@ -157,11 +119,11 @@ export const AddTankDeliveryDialog: React.FC<AddTankDeliveryDialogProps> = ({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="bol_number">BOL Number</Label>
+              <Label htmlFor="supplier_name">Supplier Name</Label>
               <Input
-                id="bol_number"
-                {...register('bol_number')}
-                placeholder="Bill of Lading #"
+                id="supplier_name"
+                {...register('supplier_name')}
+                placeholder="e.g., ABC Fuel Supply"
               />
             </div>
 
@@ -171,30 +133,6 @@ export const AddTankDeliveryDialog: React.FC<AddTankDeliveryDialogProps> = ({
                 id="invoice_number"
                 {...register('invoice_number')}
                 placeholder="Invoice #"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="meter_before">Meter Before</Label>
-              <Input
-                id="meter_before"
-                type="number"
-                step="0.01"
-                {...register('meter_before')}
-                placeholder="Reading before delivery"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="meter_after">Meter After</Label>
-              <Input
-                id="meter_after"
-                type="number"
-                step="0.01"
-                {...register('meter_after')}
-                placeholder="Reading after delivery"
               />
             </div>
           </div>

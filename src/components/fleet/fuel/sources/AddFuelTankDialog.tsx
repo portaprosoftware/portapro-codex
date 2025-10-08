@@ -19,8 +19,7 @@ interface TankFormData {
   tank_name: string;
   capacity_gallons: number;
   fuel_type: FuelType;
-  install_date: string;
-  spill_kit_location: string;
+  installation_date: string;
   location_description: string;
   notes: string;
 }
@@ -37,7 +36,6 @@ export const AddFuelTankDialog: React.FC<AddFuelTankDialogProps> = ({ open, onOp
   const onSubmit = async (data: TankFormData) => {
     await addTank.mutateAsync({
       ...data,
-      meter_current_reading: 0,
       is_active: true,
     });
     reset();
@@ -105,20 +103,11 @@ export const AddFuelTankDialog: React.FC<AddFuelTankDialogProps> = ({ open, onOp
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="install_date">Install Date</Label>
+            <Label htmlFor="installation_date">Installation Date</Label>
             <Input
-              id="install_date"
+              id="installation_date"
               type="date"
-              {...register('install_date')}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="spill_kit_location">Spill Kit Location</Label>
-            <Input
-              id="spill_kit_location"
-              {...register('spill_kit_location')}
-              placeholder="e.g., North wall, 10ft from tank"
+              {...register('installation_date')}
             />
           </div>
 
