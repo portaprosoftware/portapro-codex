@@ -96,18 +96,30 @@ export function DocumentViewModal({ isOpen, onClose, document, categoryInfo }: D
     if (!signedUrl) return;
 
     try {
+      // Fetch the file as a blob
+      const response = await fetch(signedUrl);
+      if (!response.ok) throw new Error('Download failed');
+      
+      const blob = await response.blob();
+      
+      // Create object URL and trigger download
+      const blobUrl = URL.createObjectURL(blob);
       const a = window.document.createElement('a');
-      a.href = signedUrl;
+      a.href = blobUrl;
       a.download = document.file_name;
       window.document.body.appendChild(a);
       a.click();
       window.document.body.removeChild(a);
+      
+      // Clean up the object URL
+      URL.revokeObjectURL(blobUrl);
 
       toast({
-        title: "Download Started",
-        description: `${document.file_name} is downloading.`,
+        title: "Download Complete",
+        description: `${document.file_name} has been downloaded.`,
       });
     } catch (error) {
+      console.error('Download error:', error);
       toast({
         title: "Download Failed",
         description: "Could not download the document.",
