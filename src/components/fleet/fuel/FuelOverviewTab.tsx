@@ -162,7 +162,7 @@ export const FuelOverviewTab: React.FC = () => {
       {metrics && metrics.by_source && (
         <Card>
           <CardHeader>
-            <CardTitle>Fuel by Source (Last 30 Days)</CardTitle>
+            <CardTitle className="text-lg">Fuel by Source (Last 30 Days)</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -226,7 +226,7 @@ export const FuelOverviewTab: React.FC = () => {
       {/* Recent Fueling Activity */}
       <Card>
         <CardHeader>
-          <CardTitle>Recent Fueling Activity</CardTitle>
+          <CardTitle className="text-lg">Recent Fueling Activity</CardTitle>
         </CardHeader>
         <CardContent>
           {logsLoading ? (

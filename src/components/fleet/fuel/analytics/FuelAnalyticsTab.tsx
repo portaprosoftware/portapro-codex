@@ -80,7 +80,7 @@ export const FuelAnalyticsTab: React.FC<FuelAnalyticsTabProps> = ({ filters }) =
       {/* Header with Export */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Fuel Analytics & Reports</h2>
+          <h2 className="text-xl font-bold">Fuel Analytics & Reports</h2>
           <p className="text-muted-foreground">Advanced metrics and compliance tracking</p>
         </div>
         <Button onClick={handleExport} variant="outline" className="gap-2">
@@ -181,7 +181,7 @@ export const FuelAnalyticsTab: React.FC<FuelAnalyticsTabProps> = ({ filters }) =
           {/* Source Comparison */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-lg">
                 <BarChart3 className="h-5 w-5" />
                 Fuel Source Cost Comparison
               </CardTitle>
@@ -233,7 +233,7 @@ export const FuelAnalyticsTab: React.FC<FuelAnalyticsTabProps> = ({ filters }) =
           {/* Vendor Performance Rankings */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-lg">
                 <Award className="h-5 w-5" />
                 Vendor Performance Rankings
               </CardTitle>
@@ -283,7 +283,7 @@ export const FuelAnalyticsTab: React.FC<FuelAnalyticsTabProps> = ({ filters }) =
           {/* Cost Per Mile by Vehicle */}
           <Card>
             <CardHeader>
-              <CardTitle>Cost Per Mile by Vehicle</CardTitle>
+              <CardTitle className="text-lg">Cost Per Mile by Vehicle</CardTitle>
             </CardHeader>
             <CardContent>
               {costLoading ? (
@@ -322,7 +322,7 @@ export const FuelAnalyticsTab: React.FC<FuelAnalyticsTabProps> = ({ filters }) =
           {/* Fleet MPG by Vehicle */}
           <Card>
             <CardHeader>
-              <CardTitle>Fleet MPG by Vehicle</CardTitle>
+              <CardTitle className="text-lg">Fleet MPG by Vehicle</CardTitle>
             </CardHeader>
             <CardContent>
               {mpgLoading ? (

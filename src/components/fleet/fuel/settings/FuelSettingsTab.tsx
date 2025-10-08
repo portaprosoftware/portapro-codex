@@ -49,7 +49,7 @@ export const FuelSettingsTab: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold flex items-center gap-2">
+          <h2 className="text-xl font-bold flex items-center gap-2">
             <Settings className="h-6 w-6" />
             Fuel Management Settings
           </h2>
@@ -70,7 +70,7 @@ export const FuelSettingsTab: React.FC = () => {
       {/* Fuel Source Controls */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-lg">
             <Fuel className="h-5 w-5" />
             Fuel Source Controls
           </CardTitle>
@@ -152,7 +152,7 @@ export const FuelSettingsTab: React.FC = () => {
       {/* Alert Thresholds */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-lg">
             <Bell className="h-5 w-5" />
             Alert Thresholds
           </CardTitle>
@@ -248,7 +248,7 @@ export const FuelSettingsTab: React.FC = () => {
       {/* Auto-Calculation Rules */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-lg">
             <Calculator className="h-5 w-5" />
             Auto-Calculation Rules
           </CardTitle>
@@ -320,7 +320,7 @@ export const FuelSettingsTab: React.FC = () => {
       {/* Integration Toggles */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-lg">
             <Shield className="h-5 w-5" />
             Integration & Automation
           </CardTitle>
@@ -373,7 +373,7 @@ export const FuelSettingsTab: React.FC = () => {
       {/* Notification Preferences */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-lg">
             <Bell className="h-5 w-5" />
             Notification Preferences
           </CardTitle>
@@ -487,7 +487,7 @@ export const FuelSettingsTab: React.FC = () => {
       {/* SPCC Compliance */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-lg">
             <Shield className="h-5 w-5" />
             SPCC Compliance
           </CardTitle>

@@ -226,7 +226,7 @@ export const FuelReportsTab: React.FC = () => {
       {/* Report Controls */}
       <Card>
         <CardHeader>
-          <CardTitle>Report Settings</CardTitle>
+          <CardTitle className="text-lg">Report Settings</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -263,7 +263,7 @@ export const FuelReportsTab: React.FC = () => {
       {/* Fuel Usage Over Time */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-lg">
             <Fuel className="h-5 w-5" />
             Fuel Usage Over Time
           </CardTitle>
@@ -303,7 +303,7 @@ export const FuelReportsTab: React.FC = () => {
       {/* Cost Trends */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-lg">
             <DollarSign className="h-5 w-5" />
             Cost Trends
           </CardTitle>
@@ -348,7 +348,7 @@ export const FuelReportsTab: React.FC = () => {
       {/* Vehicle Efficiency */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-lg">
             <Gauge className="h-5 w-5" />
             Vehicle Efficiency Report
           </CardTitle>
@@ -413,7 +413,7 @@ export const FuelReportsTab: React.FC = () => {
       {/* Station Performance */}
       <Card>
         <CardHeader>
-          <CardTitle>Fuel Station Performance</CardTitle>
+          <CardTitle className="text-lg">Fuel Station Performance</CardTitle>
         </CardHeader>
         <CardContent>
           {!stationData || stationData.length === 0 ? (

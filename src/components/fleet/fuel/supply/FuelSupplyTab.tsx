@@ -150,7 +150,7 @@ export const FuelSupplyTab: React.FC = () => {
       {/* Tank Level Indicators */}
       <Card>
         <CardHeader>
-          <CardTitle>Tank Levels</CardTitle>
+          <CardTitle className="text-lg">Tank Levels</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -190,7 +190,7 @@ export const FuelSupplyTab: React.FC = () => {
       {/* Recent Deliveries */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Recent Deliveries</CardTitle>
+          <CardTitle className="text-lg">Recent Deliveries</CardTitle>
           <Button onClick={() => setShowAddDeliveryDialog(true)}>
             <Plus className="h-4 w-4 mr-2" />
             Add Delivery
