@@ -325,7 +325,7 @@ export default function FleetFiles() {
               </TabsTrigger>
               <TabsTrigger value="categories" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">
                 <Settings className="w-3 h-3 mr-1" />
-                Categories
+                Manage Subcategories
               </TabsTrigger>
             </TabsList>
 
