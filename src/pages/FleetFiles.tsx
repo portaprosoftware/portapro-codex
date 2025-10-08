@@ -60,7 +60,7 @@ export default function FleetFiles() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("document_categories")
-        .select("name, icon, color, description")
+        .select("id, name, icon, color, description")
         .eq("is_active", true)
         .order("display_order");
       
@@ -356,7 +356,7 @@ export default function FleetFiles() {
 
             {/* Category-specific tabs */}
             {categories?.map((category) => (
-              <TabsContent key={category.name} value={category.name} className="mt-6">
+              <TabsContent key={category.id || category.name} value={category.name} className="mt-6">
                 <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {(documentsByCategory[category.name] || []).map((doc) => (
                     <DocumentCard

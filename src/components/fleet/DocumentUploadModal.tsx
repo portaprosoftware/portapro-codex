@@ -11,6 +11,17 @@ import { Upload, Plus, X, Truck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@clerk/clerk-react";
 import { MultiSelectVehicleFilter } from "./MultiSelectVehicleFilter";
+import { DialogDescription } from "@/components/ui/dialog";
+
+// Sanitize filename for Supabase Storage
+function sanitizeStorageKey(filename: string): string {
+  // Remove or replace special characters that Supabase Storage doesn't like
+  return filename
+    .replace(/[^\w\s.-]/g, '') // Remove special chars except word chars, spaces, dots, hyphens
+    .replace(/\s+/g, '_') // Replace spaces with underscores
+    .replace(/_{2,}/g, '_') // Replace multiple underscores with single
+    .toLowerCase();
+}
 
 interface Vehicle {
   id: string;
@@ -53,13 +64,18 @@ export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentU
       // Upload documents for each selected vehicle
       for (const vehicle of selectedVehicles) {
         for (const file of files) {
-          // Upload file to storage
-          const fileName = `${Date.now()}-${file.name}`;
+          // Sanitize filename and organize by vehicle
+          const sanitizedName = sanitizeStorageKey(file.name);
+          const timestamp = Date.now();
+          const filePath = `${vehicle.id}/${timestamp}-${sanitizedName}`;
+          
           const { data: storageData, error: storageError } = await supabase.storage
             .from('vehicle-documents')
-            .upload(fileName, file);
+            .upload(filePath, file);
 
-          if (storageError) throw storageError;
+          if (storageError) {
+            throw new Error(`Storage upload failed: ${storageError.message}`);
+          }
 
           // Create document record
           const { data, error } = await supabase
@@ -100,11 +116,12 @@ export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentU
       setDocumentNumber("");
       setNotes("");
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error("Upload error:", error);
+      const errorMessage = error?.message || "Failed to upload documents. Please try again.";
       toast({
-        title: "Error",
-        description: "Failed to upload documents. Please try again.",
+        title: "Upload Failed",
+        description: errorMessage,
         variant: "destructive",
       });
     },
@@ -133,6 +150,9 @@ export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentU
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Upload Vehicle Documents</DialogTitle>
+          <DialogDescription>
+            Upload and organize vehicle documents by category and associate them with specific vehicles.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
