@@ -5,12 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Search, Upload, FolderOpen, Settings, Truck } from "lucide-react";
+import { Search, Upload, FolderOpen, Settings, Truck, Filter } from "lucide-react";
 import { FleetLayout } from "@/components/fleet/FleetLayout";
 import { DocumentCard } from "@/components/fleet/DocumentCard";
 import { DocumentUploadModal } from "@/components/fleet/DocumentUploadModal";
 import { DocumentCategoryManagement } from "@/components/fleet/DocumentCategoryManagement";
 import { MultiSelectVehicleFilter } from "@/components/fleet/MultiSelectVehicleFilter";
+import { MultiSelectCategoryFilter } from "@/components/fleet/MultiSelectCategoryFilter";
 import { ExpiringDocumentsAlert } from "@/components/fleet/ExpiringDocumentsAlert";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@clerk/clerk-react";
@@ -30,6 +31,8 @@ interface Vehicle {
 export default function FleetFiles() {
   const [selectedVehicles, setSelectedVehicles] = useState<Vehicle[]>([]);
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
+  const [isCategoryFilterOpen, setIsCategoryFilterOpen] = useState(false);
+  const [selectedCategoryFilters, setSelectedCategoryFilters] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [documentToDelete, setDocumentToDelete] = useState<any>(null);
@@ -105,6 +108,10 @@ export default function FleetFiles() {
       const vehicleMatch = selectedVehicles.length === 0 || 
         selectedVehicles.some(v => v.id === doc.vehicle_id);
       
+      // Category filter - if categories are selected, only show docs in those categories
+      const categoryFilterMatch = selectedCategoryFilters.length === 0 ||
+        selectedCategoryFilters.includes(doc.category);
+      
       const categoryMatch = selectedCategory === "all" || doc.category === selectedCategory;
       const searchMatch =
         searchQuery === "" ||
@@ -113,9 +120,9 @@ export default function FleetFiles() {
         doc.document_number?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         doc.vehicle_plate?.toLowerCase().includes(searchQuery.toLowerCase());
 
-      return vehicleMatch && categoryMatch && searchMatch;
+      return vehicleMatch && categoryFilterMatch && categoryMatch && searchMatch;
     });
-  }, [enrichedDocuments, selectedVehicles, selectedCategory, searchQuery]);
+  }, [enrichedDocuments, selectedVehicles, selectedCategoryFilters, selectedCategory, searchQuery]);
 
   // Group documents by category for tabs
   const documentsByCategory = useMemo(() => {
@@ -260,7 +267,7 @@ export default function FleetFiles() {
               Documents & Photos
             </h1>
             <p className="text-muted-foreground mt-1">
-              Manage receipts, warranties, photos, and vehicle paperwork
+              Manage all documents & photos
             </p>
           </div>
           
@@ -303,6 +310,19 @@ export default function FleetFiles() {
               : `${selectedVehicles.length} Vehicle${selectedVehicles.length > 1 ? 's' : ''}`
             }
           </Button>
+
+          {/* Category Filter Button */}
+          <Button
+            variant="outline"
+            onClick={() => setIsCategoryFilterOpen(true)}
+            className="flex items-center gap-2 whitespace-nowrap"
+          >
+            <Filter className="h-4 w-4" />
+            {selectedCategoryFilters.length === 0 
+              ? "All Categories" 
+              : `${selectedCategoryFilters.length} Category${selectedCategoryFilters.length > 1 ? 'ies' : ''}`
+            }
+          </Button>
         </div>
 
         {/* Document Categories Navigation */}
@@ -310,19 +330,7 @@ export default function FleetFiles() {
           <Tabs defaultValue="all" className="w-full">
             <TabsList className="bg-white rounded-full p-1 shadow-sm border w-fit overflow-x-auto">
               <TabsTrigger value="all" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">
-                All ({filteredDocuments.length})
-              </TabsTrigger>
-              <TabsTrigger value="receipt" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">
-                Receipts ({documentsByCategory.receipt?.length || 0})
-              </TabsTrigger>
-              <TabsTrigger value="warranty" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">
-                Warranties ({documentsByCategory.warranty?.length || 0})
-              </TabsTrigger>
-              <TabsTrigger value="photo" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">
-                Photos ({documentsByCategory.photo?.length || 0})
-              </TabsTrigger>
-              <TabsTrigger value="other" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">
-                Other ({documentsByCategory.other?.length || 0})
+                All Documents & Photos ({filteredDocuments.length})
               </TabsTrigger>
               <TabsTrigger value="categories" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">
                 <Settings className="w-3 h-3 mr-1" />
@@ -390,6 +398,15 @@ export default function FleetFiles() {
         onOpenChange={setIsVehicleModalOpen}
         selectedVehicles={selectedVehicles}
         onVehiclesChange={setSelectedVehicles}
+      />
+
+      {/* Category Multi-Select Modal */}
+      <MultiSelectCategoryFilter
+        open={isCategoryFilterOpen}
+        onOpenChange={setIsCategoryFilterOpen}
+        categories={categories || []}
+        selectedCategories={selectedCategoryFilters}
+        onSelectionChange={setSelectedCategoryFilters}
       />
 
       {/* Delete Confirmation Dialog */}
