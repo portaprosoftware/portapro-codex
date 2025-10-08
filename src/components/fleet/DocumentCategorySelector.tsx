@@ -176,14 +176,14 @@ export const DocumentCategorySelector: React.FC<DocumentCategorySelectorProps> =
 
           {/* Show search results if user is searching */}
           {searchTerm.trim() && filteredCategoriesWithGroup.length > 0 && (
-            <div className="space-y-3 overflow-y-auto max-h-96 px-1">
+            <div className="space-y-3 overflow-y-auto max-h-96 px-2 py-1">
               <div className="text-sm text-muted-foreground mb-3">
                 Found {filteredCategoriesWithGroup.length} document type{filteredCategoriesWithGroup.length !== 1 ? 's' : ''} matching "{searchTerm}"
               </div>
               {filteredCategoriesWithGroup.map((category) => (
                 <Card
                   key={category.name}
-                  className={`cursor-pointer transition-all hover:shadow-md hover:scale-[1.01] ${
+                  className={`cursor-pointer transition-all hover:shadow-md ${
                     selectedCategory === category.name
                       ? "ring-2 ring-blue-500 bg-blue-50"
                       : "hover:bg-gray-50"
@@ -230,13 +230,13 @@ export const DocumentCategorySelector: React.FC<DocumentCategorySelectorProps> =
 
           {/* Group Selection View (only show if not searching) */}
           {!searchTerm.trim() && !selectedGroup && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 overflow-y-auto max-h-96 px-1 pb-28">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 overflow-y-auto max-h-96 px-2 py-1 pb-28">
               {groupsWithCount.map((group) => {
                 const IconComponent = group.icon;
                 return (
                   <Card
                     key={group.id}
-                    className="cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02] hover:bg-gray-50"
+                    className="cursor-pointer transition-all hover:shadow-lg hover:bg-gray-50"
                     onClick={() => handleGroupSelect(group.id)}
                   >
                     <CardContent className="p-6">
@@ -265,11 +265,11 @@ export const DocumentCategorySelector: React.FC<DocumentCategorySelectorProps> =
 
           {/* Category Selection View (only show if group selected and not searching) */}
           {!searchTerm.trim() && selectedGroup && (
-            <div className="space-y-3 overflow-y-auto max-h-96 px-1">
+            <div className="space-y-3 overflow-y-auto max-h-96 px-2 py-1">
               {currentGroupCategories.map((category) => (
                 <Card
                   key={category.name}
-                  className={`cursor-pointer transition-all hover:shadow-md hover:scale-[1.01] ${
+                  className={`cursor-pointer transition-all hover:shadow-md ${
                     selectedCategory === category.name
                       ? "ring-2 ring-blue-500 bg-blue-50"
                       : "hover:bg-gray-50"
@@ -286,8 +286,8 @@ export const DocumentCategorySelector: React.FC<DocumentCategorySelectorProps> =
                         <span className="font-medium text-gray-900">{category.name}</span>
                       </div>
                       {category.requires_expiration && (
-                        <p className="text-xs text-amber-600 ml-6 font-medium">
-                          ℹ️ For overflow documents. Add expiration tracking under Compliance.
+                        <p className="text-xs text-blue-600 ml-6 font-medium">
+                          ℹ️ This section is for overflow documents & photos. To add expiration dates to track documents, add them under Compliance.
                         </p>
                       )}
                     </div>

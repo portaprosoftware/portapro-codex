@@ -300,7 +300,7 @@ export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentU
               )}
             </Button>
             {selectedCategoryData?.requires_expiration && (
-              <p className="text-xs text-amber-600 mt-2 font-medium">
+              <p className="text-xs text-blue-600 mt-2 font-medium">
                 ℹ️ This section is for overflow documents & photos. To add expiration dates to track documents, add them under Compliance.
               </p>
             )}
