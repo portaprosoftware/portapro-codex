@@ -42,8 +42,12 @@ export const EditSupplierModal: React.FC<EditSupplierModalProps> = ({
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<SupplierFormData>();
+
+  const isActive = watch('is_active');
 
   useEffect(() => {
     if (supplier) {
@@ -158,7 +162,8 @@ export const EditSupplierModal: React.FC<EditSupplierModalProps> = ({
             </div>
             <Switch
               id="is_active"
-              {...register('is_active')}
+              checked={isActive}
+              onCheckedChange={(checked) => setValue('is_active', checked)}
             />
           </div>
 
