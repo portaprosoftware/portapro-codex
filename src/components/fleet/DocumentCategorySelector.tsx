@@ -230,7 +230,7 @@ export const DocumentCategorySelector: React.FC<DocumentCategorySelectorProps> =
 
           {/* Group Selection View (only show if not searching) */}
           {!searchTerm.trim() && !selectedGroup && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 overflow-y-auto max-h-96 px-1">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 overflow-y-auto max-h-96 px-1 pb-20">
               {groupsWithCount.map((group) => {
                 const IconComponent = group.icon;
                 return (
