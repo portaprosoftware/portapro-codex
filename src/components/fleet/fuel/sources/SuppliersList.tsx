@@ -1,8 +1,14 @@
 import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Building2, Mail, Phone, DollarSign, FileText, Eye, Pencil, Trash2 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Building2, Mail, Phone, DollarSign, FileText, MoreVertical, Eye, Pencil, Trash2 } from 'lucide-react';
 import { useFuelSuppliers } from '@/hooks/useFuelSuppliers';
 import { FuelSupplier } from '@/types/fuel';
 import { ViewSupplierModal } from './ViewSupplierModal';
@@ -48,76 +54,64 @@ export const SuppliersList: React.FC = () => {
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="space-y-2">
       {suppliers.map((supplier) => (
         <Card key={supplier.id}>
-          <CardHeader className="pb-3">
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-2">
-                <Building2 className="h-5 w-5 text-primary" />
-                <CardTitle className="text-base">{supplier.supplier_name}</CardTitle>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                <Building2 className="h-5 w-5 text-primary flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h4 className="font-semibold text-foreground truncate">{supplier.supplier_name}</h4>
+                    <Badge variant="outline" className="bg-gradient-to-r from-primary/10 to-primary/5 text-primary font-bold flex-shrink-0">
+                      Active
+                    </Badge>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                    {supplier.contact_name && (
+                      <span className="truncate">{supplier.contact_name}</span>
+                    )}
+                    {supplier.contact_phone && (
+                      <span className="flex items-center gap-1 flex-shrink-0">
+                        <Phone className="h-3 w-3" />
+                        {supplier.contact_phone}
+                      </span>
+                    )}
+                    {supplier.payment_terms && (
+                      <span className="flex items-center gap-1 flex-shrink-0">
+                        <DollarSign className="h-3 w-3" />
+                        {supplier.payment_terms}
+                      </span>
+                    )}
+                  </div>
+                </div>
               </div>
-              <Badge variant="outline" className="bg-gradient-to-r from-primary/10 to-primary/5 text-primary font-bold">
-                Active
-              </Badge>
-            </div>
-            {supplier.contact_name && (
-              <CardDescription className="text-sm">{supplier.contact_name}</CardDescription>
-            )}
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {supplier.contact_email && (
-              <div className="flex items-center gap-2 text-sm">
-                <Mail className="h-4 w-4 text-muted-foreground" />
-                <span className="text-foreground">{supplier.contact_email}</span>
-              </div>
-            )}
-            {supplier.contact_phone && (
-              <div className="flex items-center gap-2 text-sm">
-                <Phone className="h-4 w-4 text-muted-foreground" />
-                <span className="text-foreground">{supplier.contact_phone}</span>
-              </div>
-            )}
-            {supplier.payment_terms && (
-              <div className="flex items-center gap-2 text-sm">
-                <DollarSign className="h-4 w-4 text-muted-foreground" />
-                <span className="text-foreground">Payment: {supplier.payment_terms}</span>
-              </div>
-            )}
-            {supplier.notes && (
-              <div className="flex items-start gap-2 text-sm pt-2 border-t">
-                <FileText className="h-4 w-4 text-muted-foreground mt-0.5" />
-                <span className="text-muted-foreground line-clamp-2">{supplier.notes}</span>
-              </div>
-            )}
-            <div className="flex items-center gap-2 pt-3 border-t mt-3">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleView(supplier)}
-                className="flex-1"
-              >
-                <Eye className="h-4 w-4 mr-1" />
-                View
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleEdit(supplier)}
-                className="flex-1"
-              >
-                <Pencil className="h-4 w-4 mr-1" />
-                Edit
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleDelete(supplier)}
-                className="flex-1 text-destructive hover:text-destructive"
-              >
-                <Trash2 className="h-4 w-4 mr-1" />
-                Delete
-              </Button>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => handleView(supplier)}>
+                    <Eye className="h-4 w-4 mr-2" />
+                    View
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleEdit(supplier)}>
+                    <Pencil className="h-4 w-4 mr-2" />
+                    Edit
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => handleDelete(supplier)}
+                    className="text-destructive focus:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </CardContent>
         </Card>

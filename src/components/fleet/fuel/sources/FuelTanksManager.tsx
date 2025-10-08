@@ -149,69 +149,65 @@ export const FuelTanksManager: React.FC = () => {
       )}
 
       {/* Tanks List */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {tanks.map((tank) => (
-          <Card key={tank.id} className="p-4">
-            <div className="space-y-3">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h4 className="font-semibold">{tank.tank_name || `Tank ${tank.tank_number}`}</h4>
-                  <p className="text-sm text-muted-foreground">#{tank.tank_number}</p>
+      <div className="space-y-3">
+        <h4 className="text-sm font-medium text-muted-foreground">List of Tanks</h4>
+        <div className="space-y-2">
+          {tanks.map((tank) => (
+            <Card key={tank.id} className="p-4">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-md flex-shrink-0">
+                    <Droplets className="h-5 w-5 text-white" strokeWidth={2.5} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h4 className="font-semibold text-foreground truncate">
+                        {tank.tank_name || `Tank ${tank.tank_number}`}
+                      </h4>
+                      <Badge className={`bg-gradient-to-r ${FUEL_TYPE_COLORS[tank.fuel_type]} text-white font-bold border-0 flex-shrink-0`}>
+                        {FUEL_TYPE_LABELS[tank.fuel_type]}
+                      </Badge>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                      <span className="truncate">#{tank.tank_number}</span>
+                      <span className="flex-shrink-0">Capacity: {tank.capacity_gallons.toLocaleString()} gal</span>
+                      <span className="flex-shrink-0">Current Level: {(tank.current_level_gallons || 0).toLocaleString()} gal</span>
+                      {tank.requires_spcc && (
+                        <span className="flex items-center gap-1 text-amber-600 font-medium flex-shrink-0">
+                          <AlertTriangle className="h-3 w-3" />
+                          SPCC Required
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
-                <Badge className={`bg-gradient-to-r ${FUEL_TYPE_COLORS[tank.fuel_type]} text-white font-bold border-0`}>
-                  {FUEL_TYPE_LABELS[tank.fuel_type]}
-                </Badge>
+
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => handleAddDelivery(tank.id)}
+                  className="flex-shrink-0"
+                >
+                  Log Delivery
+                </Button>
               </div>
+            </Card>
+          ))}
 
-              <div className="grid grid-cols-2 gap-3 text-sm">
-                <div>
-                  <p className="text-muted-foreground">Capacity</p>
-                  <p className="font-semibold">{tank.capacity_gallons.toLocaleString()} gal</p>
-                </div>
-                <div>
-                  <p className="text-muted-foreground">Current Level</p>
-                  <p className="font-semibold">{(tank.current_level_gallons || 0).toLocaleString()} gal</p>
-                </div>
-              </div>
-
-              {tank.requires_spcc && (
-                <div className="flex items-center gap-2 text-xs">
-                  <AlertTriangle className="h-3 w-3 text-amber-600" />
-                  <span className="text-amber-600 font-medium">SPCC Required</span>
-                </div>
-              )}
-
-              {tank.last_inspection_date && (
-                <div className="text-xs text-muted-foreground">
-                  Last inspection: {format(new Date(tank.last_inspection_date), 'MMM d, yyyy')}
-                </div>
-              )}
-
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="w-full"
-                onClick={() => handleAddDelivery(tank.id)}
-              >
-                Log Delivery
+          {tanks.length === 0 && (
+            <Card className="p-8 text-center">
+              <Droplets className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+              <h4 className="font-semibold mb-2">No Fuel Tanks</h4>
+              <p className="text-sm text-muted-foreground mb-4">
+                Add your first on-site fuel tank to start tracking bulk deliveries
+              </p>
+              <Button onClick={() => setShowAddTank(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Tank
               </Button>
-            </div>
-          </Card>
-        ))}
-
-        {tanks.length === 0 && (
-          <Card className="p-8 col-span-full text-center">
-            <Droplets className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-            <h4 className="font-semibold mb-2">No Fuel Tanks</h4>
-            <p className="text-sm text-muted-foreground mb-4">
-              Add your first on-site fuel tank to start tracking bulk deliveries
-            </p>
-            <Button onClick={() => setShowAddTank(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Tank
-            </Button>
-          </Card>
-        )}
+            </Card>
+          )}
+        </div>
       </div>
 
       <AddFuelTankDialog open={showAddTank} onOpenChange={setShowAddTank} />
