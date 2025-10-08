@@ -8,6 +8,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Search, Upload, FolderOpen, Settings, Truck, Filter } from "lucide-react";
 import { FleetLayout } from "@/components/fleet/FleetLayout";
 import { DocumentCard } from "@/components/fleet/DocumentCard";
+import { DocumentListItem } from "@/components/fleet/DocumentListItem";
 import { DocumentUploadModal } from "@/components/fleet/DocumentUploadModal";
 import { DocumentCategoryManagement } from "@/components/fleet/DocumentCategoryManagement";
 import { MultiSelectVehicleFilter } from "@/components/fleet/MultiSelectVehicleFilter";
@@ -351,9 +352,9 @@ export default function FleetFiles() {
                   <p className="text-muted-foreground">No documents found matching your criteria.</p>
                 </div>
               ) : (
-                <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div className="space-y-3">
                   {filteredDocuments.map((doc) => (
-                    <DocumentCard
+                    <DocumentListItem
                       key={doc.id}
                       document={doc}
                       categoryInfo={getCategoryInfo(doc.category)}
