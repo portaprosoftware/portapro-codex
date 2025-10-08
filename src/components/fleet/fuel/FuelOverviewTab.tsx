@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { DashboardCard } from '@/components/ui/dashboard-card';
@@ -56,7 +56,7 @@ export const FuelOverviewTab: React.FC = () => {
   });
 
   // Fetch vehicle details for display
-  const { data: vehicles } = useQuery({
+  const { data: vehicles, isLoading: vehiclesLoading } = useQuery({
     queryKey: ['vehicles-lookup'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -67,7 +67,7 @@ export const FuelOverviewTab: React.FC = () => {
     }
   });
 
-  const { data: drivers } = useQuery({
+  const { data: drivers, isLoading: driversLoading } = useQuery({
     queryKey: ['drivers-lookup'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -91,30 +91,42 @@ export const FuelOverviewTab: React.FC = () => {
     }
   };
 
-  const recentLogsDisplay = recentLogs?.slice(0, 5).map(log => {
-    const vehicle = vehicles?.find(v => v.id === log.vehicle_id);
-    const driver = drivers?.find(d => d.id === log.driver_id);
+  // Memoize recent logs display to prevent unnecessary recalculations
+  const recentLogsDisplay = useMemo(() => {
+    if (!recentLogs || !vehicles || !drivers) return [];
+    
+    return recentLogs.slice(0, 5).map(log => {
+      const vehicle = vehicles.find(v => v.id === log.vehicle_id);
+      const driver = drivers.find(d => d.id === log.driver_id);
 
-    return {
-      id: log.reference_id,
-      log_date: log.fuel_date,
-      source_type: log.source_type,
-      source_name: log.source_name,
-      vehicle_license: vehicle?.license_plate || 'Unknown',
-      vehicle_make: vehicle?.make,
-      vehicle_model: vehicle?.model,
-      vehicle_nickname: vehicle?.nickname,
-      driver_name: driver ? `${driver.first_name} ${driver.last_name}` : 'Unknown',
-      gallons_purchased: log.gallons,
-      cost_per_gallon: log.cost_per_gallon,
-      total_cost: log.cost,
-      fuel_station: log.source_name,
-      odometer_reading: log.odometer_reading || 0
-    };
-  }) || [];
+      return {
+        id: log.reference_id,
+        log_date: log.fuel_date,
+        source_type: log.source_type,
+        source_name: log.source_name,
+        vehicle_license: vehicle?.license_plate || 'Unknown',
+        vehicle_make: vehicle?.make,
+        vehicle_model: vehicle?.model,
+        vehicle_nickname: vehicle?.nickname,
+        driver_name: driver ? `${driver.first_name} ${driver.last_name}` : 'Unknown',
+        gallons_purchased: log.gallons,
+        cost_per_gallon: log.cost_per_gallon,
+        total_cost: log.cost,
+        fuel_station: log.source_name,
+        odometer_reading: log.odometer_reading || 0
+      };
+    });
+  }, [recentLogs, vehicles, drivers]);
 
-  if (metricsLoading) {
-    return <LoadingSpinner />;
+  // Comprehensive loading check - wait for all critical data
+  const isLoading = metricsLoading || logsLoading || vehiclesLoading || driversLoading;
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   return (
