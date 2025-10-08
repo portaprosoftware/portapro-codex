@@ -2025,32 +2025,74 @@ export type Database = {
         Row: {
           color: string
           created_at: string | null
+          custom_fields_schema: Json | null
           description: string | null
           display_order: number | null
           icon: string
           id: string
           is_active: boolean | null
           name: string
+          reminder_days_before: number | null
+          requires_expiration: boolean | null
         }
         Insert: {
           color: string
           created_at?: string | null
+          custom_fields_schema?: Json | null
           description?: string | null
           display_order?: number | null
           icon: string
           id?: string
           is_active?: boolean | null
           name: string
+          reminder_days_before?: number | null
+          requires_expiration?: boolean | null
         }
         Update: {
           color?: string
           created_at?: string | null
+          custom_fields_schema?: Json | null
           description?: string | null
           display_order?: number | null
           icon?: string
           id?: string
           is_active?: boolean | null
           name?: string
+          reminder_days_before?: number | null
+          requires_expiration?: boolean | null
+        }
+        Relationships: []
+      }
+      document_notification_settings: {
+        Row: {
+          created_at: string | null
+          dashboard_alerts: boolean | null
+          email_notifications: boolean | null
+          id: string
+          notification_emails: string[] | null
+          notification_phones: string[] | null
+          sms_notifications: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          dashboard_alerts?: boolean | null
+          email_notifications?: boolean | null
+          id?: string
+          notification_emails?: string[] | null
+          notification_phones?: string[] | null
+          sms_notifications?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          dashboard_alerts?: boolean | null
+          email_notifications?: boolean | null
+          id?: string
+          notification_emails?: string[] | null
+          notification_phones?: string[] | null
+          sms_notifications?: boolean | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -10422,6 +10464,7 @@ export type Database = {
           category: string | null
           cost: number | null
           created_at: string | null
+          custom_field_values: Json | null
           document_name: string
           document_number: string | null
           document_type: string
@@ -10433,8 +10476,10 @@ export type Database = {
           id: string
           issue_date: string | null
           issuing_authority: string | null
+          last_reminder_sent_at: string | null
           linked_maintenance_record_id: string | null
           notes: string | null
+          reminder_sent: boolean | null
           tags: Json | null
           updated_at: string | null
           upload_date: string | null
@@ -10445,6 +10490,7 @@ export type Database = {
           category?: string | null
           cost?: number | null
           created_at?: string | null
+          custom_field_values?: Json | null
           document_name: string
           document_number?: string | null
           document_type: string
@@ -10456,8 +10502,10 @@ export type Database = {
           id?: string
           issue_date?: string | null
           issuing_authority?: string | null
+          last_reminder_sent_at?: string | null
           linked_maintenance_record_id?: string | null
           notes?: string | null
+          reminder_sent?: boolean | null
           tags?: Json | null
           updated_at?: string | null
           upload_date?: string | null
@@ -10468,6 +10516,7 @@ export type Database = {
           category?: string | null
           cost?: number | null
           created_at?: string | null
+          custom_field_values?: Json | null
           document_name?: string
           document_number?: string | null
           document_type?: string
@@ -10479,8 +10528,10 @@ export type Database = {
           id?: string
           issue_date?: string | null
           issuing_authority?: string | null
+          last_reminder_sent_at?: string | null
           linked_maintenance_record_id?: string | null
           notes?: string | null
+          reminder_sent?: boolean | null
           tags?: Json | null
           updated_at?: string | null
           upload_date?: string | null
@@ -11522,6 +11573,21 @@ export type Database = {
           reorder_point: number | null
           sigma_30: number | null
           target_days_supply: number | null
+        }
+        Relationships: []
+      }
+      expiring_documents: {
+        Row: {
+          category: string | null
+          days_until_expiration: number | null
+          document_name: string | null
+          expiration_date: string | null
+          file_path: string | null
+          id: string | null
+          license_plate: string | null
+          reminder_days_before: number | null
+          reminder_sent: boolean | null
+          vehicle_id: string | null
         }
         Relationships: []
       }

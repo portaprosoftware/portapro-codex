@@ -11,6 +11,7 @@ import { DocumentCard } from "@/components/fleet/DocumentCard";
 import { DocumentUploadModal } from "@/components/fleet/DocumentUploadModal";
 import { DocumentCategoryManagement } from "@/components/fleet/DocumentCategoryManagement";
 import { MultiSelectVehicleFilter } from "@/components/fleet/MultiSelectVehicleFilter";
+import { ExpiringDocumentsAlert } from "@/components/fleet/ExpiringDocumentsAlert";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@clerk/clerk-react";
 
@@ -54,13 +55,13 @@ export default function FleetFiles() {
     },
   });
 
-  // Fetch document categories
+  // Fetch document categories with all fields
   const { data: categories } = useQuery({
     queryKey: ["document-categories"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("document_categories")
-        .select("id, name, icon, color, description")
+        .select("id, name, icon, color, description, requires_expiration, custom_fields_schema, reminder_days_before")
         .eq("is_active", true)
         .order("display_order");
       
@@ -248,6 +249,9 @@ export default function FleetFiles() {
 
   return (
     <FleetLayout>
+      {/* Expiring Documents Alert */}
+      <ExpiringDocumentsAlert />
+      
       {/* Enhanced Header */}
       <div className="bg-white rounded-lg border shadow-sm p-6">
         <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">

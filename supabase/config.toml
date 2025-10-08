@@ -21,3 +21,9 @@ verify_jwt = false
 [functions.search-gas-stations-google]
 verify_jwt = false
 
+[functions.check-document-expirations]
+verify_jwt = false
+
+[functions.suggest-document-category]
+verify_jwt = false
+

@@ -35,9 +35,27 @@ interface Vehicle {
   nickname?: string | null;
 }
 
+interface CustomField {
+  name: string;
+  label: string;
+  type: 'text' | 'number' | 'date';
+  required: boolean;
+}
+
+interface Category {
+  id?: string;
+  name: string;
+  icon: string;
+  color: string;
+  description: string;
+  requires_expiration?: boolean;
+  custom_fields_schema?: any; // JSON from Supabase
+  reminder_days_before?: number;
+}
+
 interface DocumentUploadModalProps {
   vehicles: Vehicle[];
-  categories: Array<{ name: string; icon: string; color: string; description: string }>;
+  categories: Category[];
   trigger?: React.ReactNode;
 }
 
@@ -49,9 +67,20 @@ export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentU
   const [selectedCategory, setSelectedCategory] = useState("");
   const [documentNumber, setDocumentNumber] = useState("");
   const [notes, setNotes] = useState("");
+  const [expirationDate, setExpirationDate] = useState("");
+  const [customFieldValues, setCustomFieldValues] = useState<Record<string, any>>({});
+  const [aiSuggestion, setAiSuggestion] = useState<any>(null);
+  const [isLoadingSuggestion, setIsLoadingSuggestion] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { getToken } = useAuth();
+
+  const selectedCategoryData = categories.find(c => c.name === selectedCategory);
+  const customFieldsSchema: CustomField[] = selectedCategoryData?.custom_fields_schema 
+    ? (Array.isArray(selectedCategoryData.custom_fields_schema) 
+        ? selectedCategoryData.custom_fields_schema 
+        : JSON.parse(selectedCategoryData.custom_fields_schema as string))
+    : [];
 
   const uploadMutation = useMutation({
     mutationFn: async () => {
@@ -90,6 +119,8 @@ export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentU
               file_size: file.size,
               document_number: documentNumber || null,
               notes: notes || null,
+              expiry_date: expirationDate || null,
+              custom_field_values: Object.keys(customFieldValues).length > 0 ? customFieldValues : null,
               upload_date: new Date().toISOString()
             })
             .select()
@@ -109,12 +140,16 @@ export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentU
         description: `${totalDocs} document(s) uploaded successfully`,
       });
       queryClient.invalidateQueries({ queryKey: ["vehicle-documents"] });
+      queryClient.invalidateQueries({ queryKey: ["expiring-documents"] });
       setOpen(false);
       setFiles([]);
       setSelectedVehicles([]);
       setSelectedCategory("");
       setDocumentNumber("");
       setNotes("");
+      setExpirationDate("");
+      setCustomFieldValues({});
+      setAiSuggestion(null);
     },
     onError: (error: any) => {
       console.error("Upload error:", error);
@@ -127,14 +162,51 @@ export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentU
     },
   });
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setFiles(Array.from(e.target.files));
+      const newFiles = Array.from(e.target.files);
+      setFiles(newFiles);
+      
+      // Get AI suggestion for the first file
+      if (newFiles.length > 0 && !selectedCategory) {
+        await getSuggestion(newFiles[0].name);
+      }
     }
   };
 
   const removeFile = (index: number) => {
     setFiles(files.filter((_, i) => i !== index));
+  };
+
+  const getSuggestion = async (filename: string) => {
+    setIsLoadingSuggestion(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('suggest-document-category', {
+        body: { filename, availableCategories: categories }
+      });
+
+      if (error) throw error;
+      
+      setAiSuggestion(data);
+      if (data.confidence > 0.7) {
+        setSelectedCategory(data.category);
+        toast({
+          title: "Category Suggested",
+          description: `AI suggested: ${data.category} (${Math.round(data.confidence * 100)}% confidence)`,
+        });
+      }
+    } catch (error: any) {
+      console.error('Error getting AI suggestion:', error);
+    } finally {
+      setIsLoadingSuggestion(false);
+    }
+  };
+
+  const handleCustomFieldChange = (fieldName: string, value: any) => {
+    setCustomFieldValues(prev => ({
+      ...prev,
+      [fieldName]: value
+    }));
   };
 
   return (
@@ -201,12 +273,18 @@ export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentU
             </Button>
           </div>
 
-          {/* Category Selection */}
+          {/* Category Selection with AI Suggestion */}
           <div>
             <Label htmlFor="category">Document Category *</Label>
+            {aiSuggestion && aiSuggestion.confidence > 0.5 && (
+              <div className="mt-1 text-xs text-muted-foreground">
+                AI suggests: <span className="font-semibold">{aiSuggestion.category}</span> 
+                ({Math.round(aiSuggestion.confidence * 100)}% confidence)
+              </div>
+            )}
             <Select value={selectedCategory} onValueChange={setSelectedCategory}>
               <SelectTrigger className="mt-2">
-                <SelectValue placeholder="Select a category" />
+                <SelectValue placeholder={isLoadingSuggestion ? "Getting AI suggestion..." : "Select a category"} />
               </SelectTrigger>
               <SelectContent>
                 {categories?.map((category) => (
@@ -223,6 +301,43 @@ export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentU
               </SelectContent>
             </Select>
           </div>
+
+          {/* Expiration Date (if required by category) */}
+          {selectedCategoryData?.requires_expiration && (
+            <div>
+              <Label htmlFor="expiration-date">Expiration Date *</Label>
+              <Input
+                id="expiration-date"
+                type="date"
+                value={expirationDate}
+                onChange={(e) => setExpirationDate(e.target.value)}
+                className="mt-2"
+                required
+              />
+            </div>
+          )}
+
+          {/* Custom Fields (if defined for category) */}
+          {customFieldsSchema.length > 0 && (
+            <div className="space-y-3">
+              <div className="text-sm font-medium">Additional Information</div>
+              {customFieldsSchema.map((field: CustomField) => (
+                <div key={field.name}>
+                  <Label htmlFor={field.name}>
+                    {field.label} {field.required && '*'}
+                  </Label>
+                  <Input
+                    id={field.name}
+                    type={field.type}
+                    value={customFieldValues[field.name] || ''}
+                    onChange={(e) => handleCustomFieldChange(field.name, e.target.value)}
+                    className="mt-2"
+                    required={field.required}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* Document Number */}
           <div>
