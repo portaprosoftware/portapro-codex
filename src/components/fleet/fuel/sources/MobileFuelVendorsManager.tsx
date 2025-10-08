@@ -32,8 +32,8 @@ export const MobileFuelVendorsManager: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <Truck className="h-5 w-5 text-purple-600" />
+            <div className="p-2 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-md">
+              <Truck className="h-5 w-5 text-white" strokeWidth={2.5} />
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Active Vendors</p>
@@ -44,8 +44,8 @@ export const MobileFuelVendorsManager: React.FC = () => {
 
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <Calendar className="h-5 w-5 text-green-600" />
+            <div className="p-2 bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-md">
+              <Calendar className="h-5 w-5 text-white" strokeWidth={2.5} />
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Total Services</p>

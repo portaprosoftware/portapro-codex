@@ -58,8 +58,8 @@ export const FuelTanksManager: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Droplets className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-md">
+              <Droplets className="h-5 w-5 text-white" strokeWidth={2.5} />
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Active Tanks</p>
@@ -70,8 +70,8 @@ export const FuelTanksManager: React.FC = () => {
 
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <CheckCircle className="h-5 w-5 text-green-600" />
+            <div className="p-2 bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-md">
+              <CheckCircle className="h-5 w-5 text-white" strokeWidth={2.5} />
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Total Capacity</p>
@@ -82,8 +82,8 @@ export const FuelTanksManager: React.FC = () => {
 
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <Calendar className="h-5 w-5 text-purple-600" />
+            <div className="p-2 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-md">
+              <Calendar className="h-5 w-5 text-white" strokeWidth={2.5} />
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Recent Deliveries</p>
