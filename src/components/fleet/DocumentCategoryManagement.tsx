@@ -28,6 +28,7 @@ interface DocumentCategoryFormData {
   description: string;
   icon: string;
   color: string;
+  parent_group: string;
 }
 
 export const DocumentCategoryManagement: React.FC = () => {
@@ -37,7 +38,8 @@ export const DocumentCategoryManagement: React.FC = () => {
     name: "",
     description: "",
     icon: "",
-    color: "#3B82F6"
+    color: "#3B82F6",
+    parent_group: ""
   });
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -55,12 +57,66 @@ export const DocumentCategoryManagement: React.FC = () => {
     },
   });
 
+  // Group definitions
+  const groupDefinitions = [
+    {
+      id: "maintenance",
+      name: "Maintenance & Operations",
+      color: "#F97316",
+      description: "Work orders, maintenance invoices, fuel receipts"
+    },
+    {
+      id: "compliance",
+      name: "Vehicle Ownership & Compliance",
+      color: "#3B82F6",
+      description: "Registration, insurance, permits, and inspections"
+    },
+    {
+      id: "personnel",
+      name: "Driver & Personnel",
+      color: "#8B5CF6",
+      description: "Driver licenses, training, incidents, and safety"
+    },
+    {
+      id: "equipment",
+      name: "Equipment & Asset Management",
+      color: "#10B981",
+      description: "Manuals, warranties, and purchase agreements"
+    },
+    {
+      id: "photos",
+      name: "Photos & Visual Records",
+      color: "#6B7280",
+      description: "Vehicle photos, job sites, and compliance images"
+    },
+    {
+      id: "financial",
+      name: "Financial & Administrative",
+      color: "#F59E0B",
+      description: "Invoices, receipts, and tax documents"
+    },
+    {
+      id: "other",
+      name: "Catch-All / Miscellaneous",
+      color: "#64748B",
+      description: "Temporary files and uncategorized documents"
+    }
+  ];
+
   const createMutation = useMutation({
     mutationFn: async (data: DocumentCategoryFormData) => {
+      // Get color from parent group
+      const selectedGroup = groupDefinitions.find(g => g.id === data.parent_group);
+      const color = selectedGroup?.color || "#3B82F6";
+      
       const { error } = await supabase
         .from("document_categories")
         .insert([{
-          ...data,
+          name: data.name,
+          description: data.description,
+          icon: data.icon,
+          color: color,
+          parent_group: data.parent_group,
           display_order: (categories?.length || 0) + 1
         }]);
       
@@ -86,9 +142,19 @@ export const DocumentCategoryManagement: React.FC = () => {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: DocumentCategoryFormData }) => {
+      // Get color from parent group
+      const selectedGroup = groupDefinitions.find(g => g.id === data.parent_group);
+      const color = selectedGroup?.color || "#3B82F6";
+      
       const { error } = await supabase
         .from("document_categories")
-        .update(data)
+        .update({
+          name: data.name,
+          description: data.description,
+          icon: data.icon,
+          color: color,
+          parent_group: data.parent_group
+        })
         .eq("id", id);
       
       if (error) throw error;
@@ -142,23 +208,34 @@ export const DocumentCategoryManagement: React.FC = () => {
       name: "",
       description: "",
       icon: "",
-      color: "#3B82F6"
+      color: "#3B82F6",
+      parent_group: ""
     });
   };
 
-  const handleEdit = (category: DocumentCategory) => {
+  const handleEdit = (category: any) => {
     setEditingCategory(category);
     setFormData({
       name: category.name,
       description: category.description || "",
       icon: category.icon,
-      color: category.color
+      color: category.color,
+      parent_group: category.parent_group || ""
     });
     setIsDialogOpen(true);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!formData.parent_group) {
+      toast({
+        title: "Error",
+        description: "Please select a parent group",
+        variant: "destructive",
+      });
+      return;
+    }
     
     if (editingCategory) {
       updateMutation.mutate({ id: editingCategory.id, data: formData });
@@ -167,108 +244,11 @@ export const DocumentCategoryManagement: React.FC = () => {
     }
   };
 
-  const colorOptions = [
-    "#3B82F6", // Blue
-    "#10B981", // Green
-    "#F59E0B", // Amber
-    "#EF4444", // Red
-    "#8B5CF6", // Purple
-    "#06B6D4", // Cyan
-    "#F97316", // Orange
-    "#84CC16", // Lime
-  ];
-
-  // Group categories by color/group
+  // Group categories by parent_group
   const categoryGroups = useMemo(() => {
-    const groups = [
-      {
-        id: "maintenance",
-        name: "Maintenance & Operations",
-        color: "#F97316", // Orange
-        description: "Work orders, maintenance invoices, fuel receipts",
-        categoryNames: [
-          "Maintenance & Repairs",
-          "Fuel Receipts",
-          "Inspection Reports",
-          "Service Records",
-          "Work Orders"
-        ]
-      },
-      {
-        id: "compliance",
-        name: "Vehicle Ownership & Compliance",
-        color: "#3B82F6", // Blue
-        description: "Registration, insurance, permits, and inspections",
-        categoryNames: [
-          "Registration",
-          "Title / Ownership",
-          "Insurance",
-          "Emissions & Inspection Certificates",
-          "Permits & Licensing"
-        ]
-      },
-      {
-        id: "personnel",
-        name: "Driver & Personnel",
-        color: "#8B5CF6", // Purple
-        description: "Driver licenses, training, incidents, and safety",
-        categoryNames: [
-          "Driver License & ID",
-          "Training Certificates",
-          "Accident / Incident Reports",
-          "Disciplinary / Safety Records"
-        ]
-      },
-      {
-        id: "equipment",
-        name: "Equipment & Asset Management",
-        color: "#10B981", // Green
-        description: "Manuals, warranties, and purchase agreements",
-        categoryNames: [
-          "Equipment Manuals",
-          "Warranty Documents",
-          "Purchase / Lease Agreements",
-          "Upfit / Modification Docs"
-        ]
-      },
-      {
-        id: "photos",
-        name: "Photos & Visual Records",
-        color: "#6B7280", // Gray
-        description: "Vehicle photos, job sites, and compliance images",
-        categoryNames: [
-          "Vehicle Photos",
-          "Job Site Photos",
-          "Compliance Photos"
-        ]
-      },
-      {
-        id: "financial",
-        name: "Financial & Administrative",
-        color: "#F59E0B", // Amber
-        description: "Invoices, receipts, and tax documents",
-        categoryNames: [
-          "Invoices & Receipts",
-          "Purchase Orders",
-          "Tax Documents",
-          "Contracts & Agreements"
-        ]
-      },
-      {
-        id: "other",
-        name: "Catch-All / Miscellaneous",
-        color: "#64748B", // Slate
-        description: "Temporary files and uncategorized documents",
-        categoryNames: [
-          "Other Documents",
-          "Temporary / Draft Files"
-        ]
-      }
-    ];
-
-    return groups.map(group => ({
+    return groupDefinitions.map(group => ({
       ...group,
-      categories: categories?.filter(cat => group.categoryNames.includes(cat.name)) || []
+      categories: categories?.filter(cat => cat.parent_group === group.id) || []
     }));
   }, [categories]);
 
@@ -310,13 +290,36 @@ export const DocumentCategoryManagement: React.FC = () => {
             
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
+                <Label htmlFor="parent_group">Parent Group *</Label>
+                <select
+                  id="parent_group"
+                  value={formData.parent_group}
+                  onChange={(e) => setFormData({ ...formData, parent_group: e.target.value })}
+                  required
+                  className="w-full mt-2 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Select a group...</option>
+                  {groupDefinitions.map((group) => (
+                    <option key={group.id} value={group.id}>
+                      {group.name}
+                    </option>
+                  ))}
+                </select>
+                {formData.parent_group && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {groupDefinitions.find(g => g.id === formData.parent_group)?.description}
+                  </p>
+                )}
+              </div>
+              
+              <div>
                 <Label htmlFor="name">Name *</Label>
                 <Input
                   id="name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
-                  placeholder="e.g., Receipt, Warranty, Photo"
+                  placeholder="e.g., DOT Permit, Annual Registration"
                 />
               </div>
               
@@ -329,25 +332,6 @@ export const DocumentCategoryManagement: React.FC = () => {
                   placeholder="Optional description of this category"
                   rows={3}
                 />
-              </div>
-              
-              <div>
-                <Label>Color</Label>
-                <div className="grid grid-cols-4 gap-2 mt-2">
-                  {colorOptions.map((color) => (
-                    <button
-                      key={color}
-                      type="button"
-                      className={`w-full h-10 rounded-md transition-all ${
-                        formData.color === color 
-                          ? 'border-4 border-gray-900 ring-2 ring-offset-2 ring-gray-900' 
-                          : 'border-2 border-gray-200 hover:border-gray-300'
-                      }`}
-                      style={{ backgroundColor: color }}
-                      onClick={() => setFormData({ ...formData, color })}
-                    />
-                  ))}
-                </div>
               </div>
               
               <div className="flex gap-2 pt-4">

@@ -2032,6 +2032,7 @@ export type Database = {
           id: string
           is_active: boolean | null
           name: string
+          parent_group: string | null
           reminder_days_before: number | null
           requires_expiration: boolean | null
         }
@@ -2045,6 +2046,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name: string
+          parent_group?: string | null
           reminder_days_before?: number | null
           requires_expiration?: boolean | null
         }
@@ -2058,6 +2060,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name?: string
+          parent_group?: string | null
           reminder_days_before?: number | null
           requires_expiration?: boolean | null
         }
