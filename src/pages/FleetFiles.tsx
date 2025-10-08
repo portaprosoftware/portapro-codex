@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +22,7 @@ export default function FleetFiles() {
   const [documentToDelete, setDocumentToDelete] = useState<any>(null);
   const { toast } = useToast();
   const { getToken } = useAuth();
+  const queryClient = useQueryClient();
   
   useEffect(() => {
     document.title = "Fleet Documents & Photos | PortaPro";
@@ -193,9 +194,14 @@ export default function FleetFiles() {
     try {
       // Delete from storage
       if (documentToDelete.file_path) {
-        await supabase.storage
-          .from('fleet-files')
+        const { error: storageError } = await supabase.storage
+          .from('vehicle-documents')
           .remove([documentToDelete.file_path]);
+        
+        if (storageError) {
+          console.error('Storage delete error:', storageError);
+          // Continue with database deletion even if storage fails
+        }
       }
       
       // Delete from database
@@ -206,16 +212,20 @@ export default function FleetFiles() {
       
       if (error) throw error;
       
+      // Invalidate query to refresh the list
+      queryClient.invalidateQueries({ queryKey: ["vehicle-documents"] });
+      
       toast({
         title: "Document Deleted",
         description: "The document has been successfully deleted.",
       });
       
       setDocumentToDelete(null);
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Delete error:', error);
       toast({
         title: "Delete Failed",
-        description: "Could not delete the document. Please try again.",
+        description: error.message || "Could not delete the document. Please try again.",
         variant: "destructive",
       });
     }

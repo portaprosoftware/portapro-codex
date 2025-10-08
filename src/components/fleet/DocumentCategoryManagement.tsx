@@ -237,20 +237,6 @@ export const DocumentCategoryManagement: React.FC = () => {
               </div>
               
               <div>
-                <Label htmlFor="icon">Icon</Label>
-                <Input
-                  id="icon"
-                  value={formData.icon}
-                  onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                  placeholder="📄"
-                  maxLength={2}
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Use an emoji to represent this category
-                </p>
-              </div>
-              
-              <div>
                 <Label>Color</Label>
                 <div className="grid grid-cols-4 gap-2 mt-2">
                   {colorOptions.map((color) => (
@@ -292,9 +278,6 @@ export const DocumentCategoryManagement: React.FC = () => {
                 <div className="flex items-center gap-3">
                   <span className="text-xl">{category.icon}</span>
                   <h4 className="font-medium text-gray-900">{category.name}</h4>
-                  <Badge variant={category.is_active ? "default" : "secondary"}>
-                    {category.is_active ? "Active" : "Inactive"}
-                  </Badge>
                   <div 
                     className="w-4 h-4 rounded-full border"
                     style={{ backgroundColor: category.color }}
