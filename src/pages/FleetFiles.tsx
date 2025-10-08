@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Search, Upload, FolderOpen, Grid3X3, List, Settings } from "lucide-react";
+import { Search, Upload, FolderOpen, Settings } from "lucide-react";
 import { FleetLayout } from "@/components/fleet/FleetLayout";
 import { DocumentCard } from "@/components/fleet/DocumentCard";
 import { DocumentUploadModal } from "@/components/fleet/DocumentUploadModal";
@@ -18,7 +18,6 @@ export default function FleetFiles() {
   const [selectedVehicle, setSelectedVehicle] = useState<string>("all");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [documentToDelete, setDocumentToDelete] = useState<any>(null);
   const { toast } = useToast();
   const { getToken } = useAuth();
@@ -286,24 +285,6 @@ export default function FleetFiles() {
               ))}
             </SelectContent>
           </Select>
-
-          {/* View Toggle */}
-          <div className="flex border rounded-lg p-1">
-            <Button
-              variant={viewMode === "grid" ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setViewMode("grid")}
-            >
-              <Grid3X3 className="w-4 h-4" />
-            </Button>
-            <Button
-              variant={viewMode === "list" ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setViewMode("list")}
-            >
-              <List className="w-4 h-4" />
-            </Button>
-          </div>
         </div>
 
         {/* Document Categories Navigation */}
@@ -344,11 +325,7 @@ export default function FleetFiles() {
                   <p className="text-muted-foreground">No documents found matching your criteria.</p>
                 </div>
               ) : (
-                <div className={`grid gap-4 ${
-                  viewMode === "grid" 
-                    ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" 
-                    : "grid-cols-1"
-                }`}>
+                <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {filteredDocuments.map((doc) => (
                     <DocumentCard
                       key={doc.id}
@@ -366,11 +343,7 @@ export default function FleetFiles() {
             {/* Category-specific tabs */}
             {categories?.map((category) => (
               <TabsContent key={category.name} value={category.name} className="mt-6">
-                <div className={`grid gap-4 ${
-                  viewMode === "grid" 
-                    ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" 
-                    : "grid-cols-1"
-                }`}>
+                <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {(documentsByCategory[category.name] || []).map((doc) => (
                     <DocumentCard
                       key={doc.id}
