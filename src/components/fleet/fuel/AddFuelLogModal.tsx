@@ -187,7 +187,6 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
               fuel_station: data.fuel_station,
               receipt_image: data.receipt_image,
               notes: data.notes,
-              source_context: isVehicleContextLocked ? 'vehicle_profile' : null,
             }
           }
         });
@@ -207,7 +206,6 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
             fuel_station: data.fuel_station,
             receipt_image: data.receipt_image,
             notes: data.notes,
-            source_context: isVehicleContextLocked ? 'vehicle_profile' : null,
           });
         if (error) throw error;
       }
