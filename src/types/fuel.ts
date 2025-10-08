@@ -215,6 +215,15 @@ export interface MobileFuelVendor {
 
 export type FuelGrade = 'diesel_2' | 'dyed_diesel' | 'gasoline_87' | 'gasoline_91' | 'def' | 'biodiesel';
 export type MobilePaymentMethod = 'ach' | 'check' | 'net_30' | 'cod' | 'credit_card' | 'cash';
+export type MobileLocationType = 'yard' | 'job_site' | 'remote' | 'emergency';
+
+export interface FeeBreakdown {
+  delivery_fee?: number;
+  environmental_fee?: number;
+  excise_tax?: number;
+  fuel_tax?: number;
+  other_fees?: Array<{ description: string; amount: number }>;
+}
 
 export interface MobileFuelServiceVehicle {
   id: string;
@@ -254,6 +263,14 @@ export interface MobileFuelService {
   delivery_ticket_urls?: string[];
   variance_flag?: boolean;
   variance_notes?: string;
+  // Tier 3 fields
+  fees_breakdown?: FeeBreakdown;
+  after_hours_service?: boolean;
+  location_type?: MobileLocationType;
+  location_description?: string;
+  service_quality_rating?: number;
+  invoice_reconciled?: boolean;
+  reconciliation_date?: string;
 }
 
 export interface EnhancedFuelLog {
@@ -319,4 +336,11 @@ export const PAYMENT_METHOD_LABELS: Record<MobilePaymentMethod, string> = {
   'cod': 'COD',
   'credit_card': 'Credit Card',
   'cash': 'Cash',
+};
+
+export const LOCATION_TYPE_LABELS: Record<MobileLocationType, string> = {
+  'yard': 'Yard',
+  'job_site': 'Job Site',
+  'remote': 'Remote Location',
+  'emergency': 'Emergency Service',
 };

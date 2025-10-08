@@ -5745,18 +5745,25 @@ export type Database = {
       }
       mobile_fuel_services: {
         Row: {
+          after_hours_service: boolean | null
           cost_per_gallon: number | null
           created_at: string
           delivery_ticket_urls: string[] | null
+          fees_breakdown: Json | null
           fuel_grade: string | null
           id: string
           invoice_number: string | null
+          invoice_reconciled: boolean | null
           location: string | null
+          location_description: string | null
+          location_type: string | null
           notes: string | null
           payment_method: string | null
           price_per_gallon: number | null
+          reconciliation_date: string | null
           service_date: string
           service_end_time: string | null
+          service_quality_rating: number | null
           service_start_time: string | null
           total_cost: number
           total_gallons: number
@@ -5770,18 +5777,25 @@ export type Database = {
           verified_by_user_id: string | null
         }
         Insert: {
+          after_hours_service?: boolean | null
           cost_per_gallon?: number | null
           created_at?: string
           delivery_ticket_urls?: string[] | null
+          fees_breakdown?: Json | null
           fuel_grade?: string | null
           id?: string
           invoice_number?: string | null
+          invoice_reconciled?: boolean | null
           location?: string | null
+          location_description?: string | null
+          location_type?: string | null
           notes?: string | null
           payment_method?: string | null
           price_per_gallon?: number | null
+          reconciliation_date?: string | null
           service_date: string
           service_end_time?: string | null
+          service_quality_rating?: number | null
           service_start_time?: string | null
           total_cost: number
           total_gallons: number
@@ -5795,18 +5809,25 @@ export type Database = {
           verified_by_user_id?: string | null
         }
         Update: {
+          after_hours_service?: boolean | null
           cost_per_gallon?: number | null
           created_at?: string
           delivery_ticket_urls?: string[] | null
+          fees_breakdown?: Json | null
           fuel_grade?: string | null
           id?: string
           invoice_number?: string | null
+          invoice_reconciled?: boolean | null
           location?: string | null
+          location_description?: string | null
+          location_type?: string | null
           notes?: string | null
           payment_method?: string | null
           price_per_gallon?: number | null
+          reconciliation_date?: string | null
           service_date?: string
           service_end_time?: string | null
+          service_quality_rating?: number | null
           service_start_time?: string | null
           total_cost?: number
           total_gallons?: number

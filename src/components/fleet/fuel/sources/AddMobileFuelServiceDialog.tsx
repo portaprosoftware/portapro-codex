@@ -9,11 +9,12 @@ import { Badge } from '@/components/ui/badge';
 import { useAddMobileFuelService } from '@/hooks/useMobileFuelServices';
 import { useMobileFuelVendors } from '@/hooks/useMobileFuelVendors';
 import { useForm } from 'react-hook-form';
-import { FUEL_GRADE_LABELS, PAYMENT_METHOD_LABELS, FuelGrade, MobilePaymentMethod } from '@/types/fuel';
+import { FUEL_GRADE_LABELS, PAYMENT_METHOD_LABELS, LOCATION_TYPE_LABELS, FuelGrade, MobilePaymentMethod, MobileLocationType, FeeBreakdown } from '@/types/fuel';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Upload, X, AlertTriangle, Plus, Trash2 } from 'lucide-react';
+import { Upload, X, AlertTriangle, Plus, Trash2, Star, ChevronDown, ChevronUp } from 'lucide-react';
 import { useUser } from '@clerk/clerk-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 interface AddMobileFuelServiceDialogProps {
   open: boolean;
@@ -40,6 +41,8 @@ interface ServiceFormData {
   payment_method?: MobilePaymentMethod;
   // Tier 2 fields
   variance_notes?: string;
+  // Tier 3 fields
+  location_description?: string;
 }
 
 interface VehicleAssignment {
@@ -75,6 +78,14 @@ export const AddMobileFuelServiceDialog: React.FC<AddMobileFuelServiceDialogProp
   const [vehicleAssignments, setVehicleAssignments] = useState<VehicleAssignment[]>([]);
   const [deliveryTickets, setDeliveryTickets] = useState<File[]>([]);
   const [uploadingTickets, setUploadingTickets] = useState(false);
+
+  // Tier 3: Advanced fields
+  const [afterHours, setAfterHours] = useState(false);
+  const [locationType, setLocationType] = useState<MobileLocationType | ''>('');
+  const [serviceQuality, setServiceQuality] = useState<number>(0);
+  const [feesExpanded, setFeesExpanded] = useState(false);
+  const [feeBreakdown, setFeeBreakdown] = useState<FeeBreakdown>({});
+  const [otherFees, setOtherFees] = useState<Array<{ description: string; amount: number }>>([]);
 
   // Fetch vehicles for dropdown
   const { data: vehicles = [] } = useQuery({
@@ -137,6 +148,12 @@ export const AddMobileFuelServiceDialog: React.FC<AddMobileFuelServiceDialogProp
       }
     }
 
+    // Build fees breakdown
+    const completeFeeBreakdown: FeeBreakdown = {
+      ...feeBreakdown,
+      other_fees: otherFees.length > 0 ? otherFees : undefined,
+    };
+
     await addService.mutateAsync({
       service: {
         ...data,
@@ -147,6 +164,11 @@ export const AddMobileFuelServiceDialog: React.FC<AddMobileFuelServiceDialogProp
         verified_by_user_id: user?.id,
         delivery_ticket_urls: ticketUrls.length > 0 ? ticketUrls : undefined,
         variance_flag: hasVariance,
+        // Tier 3 fields
+        after_hours_service: afterHours,
+        location_type: locationType || undefined,
+        service_quality_rating: serviceQuality > 0 ? serviceQuality : undefined,
+        fees_breakdown: Object.keys(completeFeeBreakdown).length > 0 ? completeFeeBreakdown : undefined,
       },
       vehicles: vehicleAssignments.length > 0 ? vehicleAssignments.map(v => ({
         vehicle_id: v.vehicle_id,
@@ -159,6 +181,11 @@ export const AddMobileFuelServiceDialog: React.FC<AddMobileFuelServiceDialogProp
     reset();
     setVehicleAssignments([]);
     setDeliveryTickets([]);
+    setAfterHours(false);
+    setLocationType('');
+    setServiceQuality(0);
+    setFeeBreakdown({});
+    setOtherFees([]);
     onOpenChange(false);
   };
 
@@ -187,6 +214,20 @@ export const AddMobileFuelServiceDialog: React.FC<AddMobileFuelServiceDialogProp
 
   const removeTicket = (index: number) => {
     setDeliveryTickets(deliveryTickets.filter((_, i) => i !== index));
+  };
+
+  const addOtherFee = () => {
+    setOtherFees([...otherFees, { description: '', amount: 0 }]);
+  };
+
+  const removeOtherFee = (index: number) => {
+    setOtherFees(otherFees.filter((_, i) => i !== index));
+  };
+
+  const updateOtherFee = (index: number, field: 'description' | 'amount', value: string | number) => {
+    const updated = [...otherFees];
+    updated[index] = { ...updated[index], [field]: value };
+    setOtherFees(updated);
   };
 
   return (
@@ -489,6 +530,188 @@ export const AddMobileFuelServiceDialog: React.FC<AddMobileFuelServiceDialogProp
               />
             </div>
           )}
+
+          {/* Tier 3: Advanced Features */}
+          <div className="space-y-4 border-t pt-4">
+            <div className="flex items-center justify-between">
+              <Label className="text-base font-semibold">Service Details</Label>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="location_type">Location Type</Label>
+                <Select
+                  value={locationType}
+                  onValueChange={(value) => setLocationType(value as MobileLocationType)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select location type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(LOCATION_TYPE_LABELS).map(([value, label]) => (
+                      <SelectItem key={value} value={value}>
+                        {label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center space-x-2 pt-7">
+                <input
+                  type="checkbox"
+                  id="after_hours"
+                  checked={afterHours}
+                  onChange={(e) => setAfterHours(e.target.checked)}
+                  className="h-4 w-4 rounded border-gray-300"
+                />
+                <Label htmlFor="after_hours" className="cursor-pointer">
+                  After-Hours Service
+                </Label>
+              </div>
+            </div>
+
+            {locationType && (
+              <div className="space-y-2">
+                <Label htmlFor="location_description">Location Description</Label>
+                <Input
+                  id="location_description"
+                  {...register('location_description')}
+                  placeholder="Additional details about the service location..."
+                />
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <Label>Service Quality Rating</Label>
+              <div className="flex gap-1">
+                {[1, 2, 3, 4, 5].map((rating) => (
+                  <button
+                    key={rating}
+                    type="button"
+                    onClick={() => setServiceQuality(rating)}
+                    className="transition-colors"
+                  >
+                    <Star
+                      className={`h-6 w-6 ${
+                        rating <= serviceQuality
+                          ? 'fill-yellow-400 text-yellow-400'
+                          : 'text-gray-300'
+                      }`}
+                    />
+                  </button>
+                ))}
+                {serviceQuality > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setServiceQuality(0)}
+                    className="ml-2 text-xs text-muted-foreground hover:text-foreground"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Tier 3: Fees & Taxes Breakdown */}
+          <Collapsible open={feesExpanded} onOpenChange={setFeesExpanded} className="border-t pt-4">
+            <CollapsibleTrigger className="flex w-full items-center justify-between">
+              <Label className="text-base font-semibold cursor-pointer">Fees & Taxes Breakdown (Optional)</Label>
+              {feesExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </CollapsibleTrigger>
+            <CollapsibleContent className="space-y-3 pt-3">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="delivery_fee">Delivery Fee</Label>
+                  <Input
+                    id="delivery_fee"
+                    type="number"
+                    step="0.01"
+                    placeholder="0.00"
+                    value={feeBreakdown.delivery_fee || ''}
+                    onChange={(e) => setFeeBreakdown({ ...feeBreakdown, delivery_fee: e.target.value ? Number(e.target.value) : undefined })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="environmental_fee">Environmental Fee</Label>
+                  <Input
+                    id="environmental_fee"
+                    type="number"
+                    step="0.01"
+                    placeholder="0.00"
+                    value={feeBreakdown.environmental_fee || ''}
+                    onChange={(e) => setFeeBreakdown({ ...feeBreakdown, environmental_fee: e.target.value ? Number(e.target.value) : undefined })}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="excise_tax">Excise Tax</Label>
+                  <Input
+                    id="excise_tax"
+                    type="number"
+                    step="0.01"
+                    placeholder="0.00"
+                    value={feeBreakdown.excise_tax || ''}
+                    onChange={(e) => setFeeBreakdown({ ...feeBreakdown, excise_tax: e.target.value ? Number(e.target.value) : undefined })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="fuel_tax">Fuel Tax</Label>
+                  <Input
+                    id="fuel_tax"
+                    type="number"
+                    step="0.01"
+                    placeholder="0.00"
+                    value={feeBreakdown.fuel_tax || ''}
+                    onChange={(e) => setFeeBreakdown({ ...feeBreakdown, fuel_tax: e.target.value ? Number(e.target.value) : undefined })}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label>Other Fees</Label>
+                  <Button type="button" size="sm" variant="outline" onClick={addOtherFee}>
+                    <Plus className="h-3 w-3 mr-1" />
+                    Add Fee
+                  </Button>
+                </div>
+                {otherFees.map((fee, index) => (
+                  <div key={index} className="grid grid-cols-12 gap-2">
+                    <div className="col-span-7">
+                      <Input
+                        placeholder="Fee description"
+                        value={fee.description}
+                        onChange={(e) => updateOtherFee(index, 'description', e.target.value)}
+                      />
+                    </div>
+                    <div className="col-span-4">
+                      <Input
+                        type="number"
+                        step="0.01"
+                        placeholder="0.00"
+                        value={fee.amount || ''}
+                        onChange={(e) => updateOtherFee(index, 'amount', Number(e.target.value))}
+                      />
+                    </div>
+                    <div className="col-span-1">
+                      <Button
+                        type="button"
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => removeOtherFee(index)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
 
           <div className="space-y-2">
             <Label htmlFor="payment_method">Payment Method / Terms</Label>

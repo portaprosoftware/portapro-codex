@@ -29,7 +29,7 @@ export const useAddMobileFuelService = () => {
 
   return useMutation({
     mutationFn: async (params: { 
-      service: Omit<MobileFuelService, 'id' | 'created_at' | 'updated_at' | 'cost_per_gallon' | 'mobile_fuel_vendors'>,
+      service: any,
       vehicles?: Array<{ vehicle_id: string; gallons_dispensed: number; odometer_reading?: number; vehicle_notes?: string }>
     }) => {
       const { service, vehicles } = params;
@@ -37,7 +37,7 @@ export const useAddMobileFuelService = () => {
       // Insert the service record
       const { data: serviceData, error: serviceError } = await supabase
         .from('mobile_fuel_services')
-        .insert(service)
+        .insert([service as any])
         .select()
         .single();
 
