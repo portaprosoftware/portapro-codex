@@ -52,7 +52,7 @@ Deno.serve(async (req) => {
 
     if (action === 'create_signed_upload') {
       if (!payload?.path) throw new Error('Missing path');
-      const { data, error } = await supabase.storage.from('fleet-files').createSignedUploadUrl(payload.path);
+      const { data, error } = await supabase.storage.from('vehicle-documents').createSignedUploadUrl(payload.path);
       if (error) throw error;
       return new Response(JSON.stringify({ success: true, data }), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders },
@@ -62,7 +62,7 @@ Deno.serve(async (req) => {
     if (action === 'create_signed_url') {
       if (!payload?.path) throw new Error('Missing path');
       const expiresIn = Number(payload?.expiresIn ?? 600);
-      const { data, error } = await supabase.storage.from('fleet-files').createSignedUrl(payload.path, expiresIn);
+      const { data, error } = await supabase.storage.from('vehicle-documents').createSignedUrl(payload.path, expiresIn);
       if (error) throw error;
       return new Response(JSON.stringify({ success: true, data }), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders },
