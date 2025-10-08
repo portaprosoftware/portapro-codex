@@ -2,6 +2,10 @@
 
 export type FuelType = 'diesel' | 'gasoline' | 'off_road_diesel';
 export type FuelSource = 'retail' | 'yard_tank' | 'mobile_service';
+export type TankType = 'above_ground' | 'underground' | 'mobile_skid';
+export type DispenserType = 'gravity' | 'electric_pump' | 'manual';
+export type AlertType = 'low_inventory' | 'spcc_compliance' | 'inspection_due' | 'grade_mismatch' | 'overfill_risk';
+export type AlertSeverity = 'low' | 'medium' | 'high' | 'critical';
 
 export interface FuelStation {
   id: string;
@@ -39,6 +43,54 @@ export interface FuelTank {
   is_active: boolean;
   created_at: string;
   updated_at: string;
+  
+  // Identification & Basics
+  tank_type?: TankType;
+  fuel_grade?: string;
+  dispenser_type?: DispenserType;
+  meter_serial_number?: string;
+  photo_urls?: string[];
+  
+  // Capacity & Location
+  usable_capacity_gallons?: number;
+  secondary_containment_capacity?: number;
+  gps_coordinates?: { x: number; y: number };
+  access_notes?: string;
+  
+  // Compliance & Safety
+  spcc_plan_on_file?: boolean;
+  spcc_document_url?: string;
+  overfill_protection_type?: string;
+  leak_detection_method?: string;
+  emergency_shutoff_location?: string;
+  fire_code_permit_number?: string;
+  
+  // Inventory Controls
+  initial_stick_reading?: number;
+  reorder_threshold_gallons?: number;
+  target_fill_level_gallons?: number;
+  calibration_table_url?: string;
+  notify_on_low_stock?: boolean;
+  notification_emails?: string[];
+  notification_sms?: string[];
+  
+  // Security
+  lock_id?: string;
+  tamper_seal_number?: string;
+}
+
+export interface FuelTankAlert {
+  id: string;
+  tank_id: string;
+  alert_type: AlertType;
+  severity: AlertSeverity;
+  message: string;
+  alert_data?: Record<string, any>;
+  acknowledged: boolean;
+  acknowledged_by?: string;
+  acknowledged_at?: string;
+  created_at: string;
+  resolved_at?: string;
 }
 
 export interface FuelTankDelivery {

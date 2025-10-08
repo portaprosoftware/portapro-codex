@@ -7,6 +7,7 @@ import { useFuelTanks, useSPCCTanks } from '@/hooks/useFuelTanks';
 import { useFuelTankDeliveries } from '@/hooks/useFuelTankDeliveries';
 import { AddFuelTankDialog } from './AddFuelTankDialog';
 import { AddTankDeliveryDialog } from './AddTankDeliveryDialog';
+import { FuelTankAlerts } from './FuelTankAlerts';
 import { FUEL_TYPE_LABELS, FUEL_TYPE_COLORS } from '@/types/fuel';
 import { format } from 'date-fns';
 
@@ -33,6 +34,9 @@ export const FuelTanksManager: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Alerts Section */}
+      <FuelTankAlerts />
+      
       {/* SPCC Compliance Alert */}
       {spccRequired && (
         <Card className="p-4 border-l-4 border-l-amber-500 bg-amber-50">

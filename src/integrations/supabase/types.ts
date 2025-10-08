@@ -3311,57 +3311,179 @@ export type Database = {
           },
         ]
       }
+      fuel_tank_inventory_alerts: {
+        Row: {
+          acknowledged: boolean | null
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          alert_data: Json | null
+          alert_type: string
+          created_at: string | null
+          id: string
+          message: string
+          resolved_at: string | null
+          severity: string
+          tank_id: string
+        }
+        Insert: {
+          acknowledged?: boolean | null
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          alert_data?: Json | null
+          alert_type: string
+          created_at?: string | null
+          id?: string
+          message: string
+          resolved_at?: string | null
+          severity?: string
+          tank_id: string
+        }
+        Update: {
+          acknowledged?: boolean | null
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          alert_data?: Json | null
+          alert_type?: string
+          created_at?: string | null
+          id?: string
+          message?: string
+          resolved_at?: string | null
+          severity?: string
+          tank_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fuel_tank_inventory_alerts_tank_id_fkey"
+            columns: ["tank_id"]
+            isOneToOne: false
+            referencedRelation: "fuel_tanks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       fuel_tanks: {
         Row: {
+          access_notes: string | null
+          calibration_table_url: string | null
           capacity_gallons: number
           created_at: string
           current_level_gallons: number | null
+          dispenser_type: string | null
+          emergency_shutoff_location: string | null
+          fire_code_permit_number: string | null
+          fuel_grade: string | null
           fuel_type: Database["public"]["Enums"]["fuel_type"]
+          gps_coordinates: unknown | null
           id: string
+          initial_stick_reading: number | null
           installation_date: string | null
           is_active: boolean | null
           last_inspection_date: string | null
+          leak_detection_method: string | null
           location_description: string | null
+          lock_id: string | null
+          meter_serial_number: string | null
           next_inspection_date: string | null
           notes: string | null
+          notification_emails: string[] | null
+          notification_sms: string[] | null
+          notify_on_low_stock: boolean | null
+          overfill_protection_type: string | null
+          photo_urls: string[] | null
+          reorder_threshold_gallons: number | null
           requires_spcc: boolean | null
+          secondary_containment_capacity: number | null
+          spcc_document_url: string | null
+          spcc_plan_on_file: boolean | null
+          tamper_seal_number: string | null
           tank_name: string
           tank_number: string
+          tank_type: string | null
+          target_fill_level_gallons: number | null
           updated_at: string
+          usable_capacity_gallons: number | null
         }
         Insert: {
+          access_notes?: string | null
+          calibration_table_url?: string | null
           capacity_gallons: number
           created_at?: string
           current_level_gallons?: number | null
+          dispenser_type?: string | null
+          emergency_shutoff_location?: string | null
+          fire_code_permit_number?: string | null
+          fuel_grade?: string | null
           fuel_type: Database["public"]["Enums"]["fuel_type"]
+          gps_coordinates?: unknown | null
           id?: string
+          initial_stick_reading?: number | null
           installation_date?: string | null
           is_active?: boolean | null
           last_inspection_date?: string | null
+          leak_detection_method?: string | null
           location_description?: string | null
+          lock_id?: string | null
+          meter_serial_number?: string | null
           next_inspection_date?: string | null
           notes?: string | null
+          notification_emails?: string[] | null
+          notification_sms?: string[] | null
+          notify_on_low_stock?: boolean | null
+          overfill_protection_type?: string | null
+          photo_urls?: string[] | null
+          reorder_threshold_gallons?: number | null
           requires_spcc?: boolean | null
+          secondary_containment_capacity?: number | null
+          spcc_document_url?: string | null
+          spcc_plan_on_file?: boolean | null
+          tamper_seal_number?: string | null
           tank_name: string
           tank_number: string
+          tank_type?: string | null
+          target_fill_level_gallons?: number | null
           updated_at?: string
+          usable_capacity_gallons?: number | null
         }
         Update: {
+          access_notes?: string | null
+          calibration_table_url?: string | null
           capacity_gallons?: number
           created_at?: string
           current_level_gallons?: number | null
+          dispenser_type?: string | null
+          emergency_shutoff_location?: string | null
+          fire_code_permit_number?: string | null
+          fuel_grade?: string | null
           fuel_type?: Database["public"]["Enums"]["fuel_type"]
+          gps_coordinates?: unknown | null
           id?: string
+          initial_stick_reading?: number | null
           installation_date?: string | null
           is_active?: boolean | null
           last_inspection_date?: string | null
+          leak_detection_method?: string | null
           location_description?: string | null
+          lock_id?: string | null
+          meter_serial_number?: string | null
           next_inspection_date?: string | null
           notes?: string | null
+          notification_emails?: string[] | null
+          notification_sms?: string[] | null
+          notify_on_low_stock?: boolean | null
+          overfill_protection_type?: string | null
+          photo_urls?: string[] | null
+          reorder_threshold_gallons?: number | null
           requires_spcc?: boolean | null
+          secondary_containment_capacity?: number | null
+          spcc_document_url?: string | null
+          spcc_plan_on_file?: boolean | null
+          tamper_seal_number?: string | null
           tank_name?: string
           tank_number?: string
+          tank_type?: string | null
+          target_fill_level_gallons?: number | null
           updated_at?: string
+          usable_capacity_gallons?: number | null
         }
         Relationships: []
       }
@@ -11063,6 +11185,10 @@ export type Database = {
         Args: { target_date: string }
         Returns: undefined
       }
+      calculate_days_of_coverage: {
+        Args: { tank_uuid: string }
+        Returns: number
+      }
       calculate_fleet_efficiency_trends: {
         Args: { end_date?: string; start_date?: string }
         Returns: Json
@@ -11085,11 +11211,27 @@ export type Database = {
         Args: { rules_json: Json } | { segment_type: string }
         Returns: number
       }
+      calculate_tank_cost_per_gallon: {
+        Args: { tank_uuid: string }
+        Returns: number
+      }
       can_delete_user: {
         Args: { user_uuid: string }
         Returns: Json
       }
       check_and_flag_overdue_jobs: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      check_spcc_compliance: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      check_tank_inspections_due: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      check_tank_low_inventory: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
