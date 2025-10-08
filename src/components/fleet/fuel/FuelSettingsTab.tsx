@@ -835,52 +835,6 @@ export const FuelSettingsTab: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Driver Permissions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Driver Permissions</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <Label htmlFor="require-receipt">Require Receipt Upload</Label>
-              <p className="text-sm text-muted-foreground">Force drivers to upload receipt photos</p>
-            </div>
-            <Switch
-              id="require-receipt"
-              checked={settings?.require_receipt || false}
-              onCheckedChange={(checked) => updateRequireReceiptMutation.mutate(checked)}
-              disabled={updateRequireReceiptMutation.isPending}
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div>
-              <Label htmlFor="driver-edit">Allow Driver Editing</Label>
-              <p className="text-sm text-muted-foreground">Let drivers edit their fuel logs</p>
-            </div>
-            <Switch
-              id="driver-edit"
-              checked={settings?.driver_edit_permission || false}
-              onCheckedChange={(checked) => updateDriverEditMutation.mutate(checked)}
-              disabled={updateDriverEditMutation.isPending}
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div>
-              <Label htmlFor="auto-mpg">Auto-Calculate MPG</Label>
-              <p className="text-sm text-muted-foreground">Automatically calculate MPG from odometer readings</p>
-            </div>
-            <Switch
-              id="auto-mpg"
-              checked={settings?.auto_calculate_mpg || false}
-              onCheckedChange={(checked) => updateAutoMpgMutation.mutate(checked)}
-              disabled={updateAutoMpgMutation.isPending}
-            />
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Fuel Stations Management */}
       <Card>
