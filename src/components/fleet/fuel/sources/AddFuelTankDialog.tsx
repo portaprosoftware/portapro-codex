@@ -87,12 +87,13 @@ export const AddFuelTankDialog: React.FC<AddFuelTankDialogProps> = ({ open, onOp
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col p-6">
         <DialogHeader>
           <DialogTitle>Add Fuel Tank</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
+          <div className="flex-1 overflow-y-auto pr-2 space-y-4">
           <Accordion type="multiple" defaultValue={['basic', 'capacity']} className="w-full">
             {/* Basic Information */}
             <AccordionItem value="basic">
@@ -475,8 +476,9 @@ export const AddFuelTankDialog: React.FC<AddFuelTankDialogProps> = ({ open, onOp
               </AccordionContent>
             </AccordionItem>
           </Accordion>
+          </div>
 
-          <div className="flex gap-2 justify-end pt-4 border-t">
+          <div className="flex gap-2 justify-end pt-4 border-t mt-4 bg-background">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
