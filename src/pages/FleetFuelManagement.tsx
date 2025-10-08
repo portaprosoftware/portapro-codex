@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FleetLayout } from '@/components/fleet/FleetLayout';
 import { PageHeader } from '@/components/ui/PageHeader';
-import { FuelOverviewTab } from '@/components/fleet/fuel/FuelOverviewTab';
+
 import { FuelAllLogsTab } from '@/components/fleet/fuel/FuelAllLogsTab';
 import { FuelReportsTab } from '@/components/fleet/fuel/FuelReportsTab';
 import { FuelSourcesTab } from '@/components/fleet/fuel/FuelSourcesTab';
@@ -15,7 +15,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
 export const FleetFuelManagement: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('logs');
   const [searchParams] = useSearchParams();
   const vehicleId = searchParams.get('vehicle');
   const returnTo = searchParams.get('returnTo');
@@ -63,7 +63,7 @@ export const FleetFuelManagement: React.FC = () => {
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <div className="flex items-center mt-4">
               <TabsList className="bg-white rounded-full p-1 shadow-sm border w-fit overflow-x-auto">
-                <TabsTrigger value="overview" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Overview</TabsTrigger>
+                
                 <TabsTrigger value="logs" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">All Logs</TabsTrigger>
                 <TabsTrigger value="supply" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Supply</TabsTrigger>
                 <TabsTrigger value="analytics" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Analytics</TabsTrigger>
@@ -74,9 +74,6 @@ export const FleetFuelManagement: React.FC = () => {
             </div>
           
             <div className="flex-1 overflow-auto">
-              <TabsContent value="overview" className="mt-6">
-                <FuelOverviewTab />
-              </TabsContent>
 
               <TabsContent value="logs" className="mt-6">
                 <FuelAllLogsTab />
