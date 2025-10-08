@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Edit, Trash2, Download, Plus, Search, Truck, Users, X } from 'lucide-react';
+import { Edit, Trash2, Download, Plus, Search, Truck, Users, X, Store, Factory, TruckIcon } from 'lucide-react';
 import { DatePickerWithRange } from '@/components/ui/DatePickerWithRange';
 import { DateRange } from 'react-day-picker';
 import { useToast } from '@/hooks/use-toast';
@@ -17,6 +17,7 @@ import { ExportFuelDataModal } from './ExportFuelDataModal';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MultiSelectVehicleFilter } from '../MultiSelectVehicleFilter';
 import { MultiSelectDriverFilter } from '../MultiSelectDriverFilter';
+import { useUnifiedFuelConsumption, FuelSourceType } from '@/hooks/useUnifiedFuelConsumption';
 
 interface Vehicle {
   id: string;
@@ -67,6 +68,7 @@ export const FuelAllLogsTab: React.FC = () => {
   const [selectedDrivers, setSelectedDrivers] = useState<Driver[]>([]);
   const [isDriverModalOpen, setIsDriverModalOpen] = useState(false);
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [selectedSourceTypes, setSelectedSourceTypes] = useState<FuelSourceType[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
@@ -75,96 +77,92 @@ export const FuelAllLogsTab: React.FC = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Fetch fuel logs with filters
-  const { data: fuelLogs, isLoading, isFetching } = useQuery({
-    queryKey: ['fuel-logs', searchTerm, selectedVehicles, selectedDrivers, dateRange],
-    queryFn: async () => {
-      let query = supabase
-        .from('fuel_logs')
-        .select(`
-          id,
-          log_date,
-          odometer_reading,
-          gallons_purchased,
-          cost_per_gallon,
-          total_cost,
-          fuel_station,
-          notes,
-          vehicles!inner(license_plate, vehicle_type, make, model, nickname),
-          profiles!inner(first_name, last_name)
-        `)
-        .order('log_date', { ascending: false });
-
-      // Apply filters
-      if (selectedVehicles && selectedVehicles.length > 0) {
-        const vehicleIds = selectedVehicles.map(v => v.id);
-        query = query.in('vehicle_id', vehicleIds);
-      }
-      
-      if (selectedDrivers && selectedDrivers.length > 0) {
-        const driverIds = selectedDrivers.map(d => d.id);
-        query = query.in('driver_id', driverIds);
-      }
-
-      if (dateRange?.from) {
-        query = query.gte('log_date', dateRange.from.toISOString().split('T')[0]);
-      }
-      
-      if (dateRange?.to) {
-        query = query.lte('log_date', dateRange.to.toISOString().split('T')[0]);
-      }
-
-      const { data, error } = await query;
-      
-      if (error) throw error;
-      
-      // Map the data to match expected interface
-      let mappedData = data?.map(log => ({
-        id: log.id,
-        log_date: log.log_date,
-        odometer_reading: log.odometer_reading,
-        gallons_purchased: log.gallons_purchased,
-        cost_per_gallon: log.cost_per_gallon,
-        total_cost: log.total_cost,
-        fuel_station: log.fuel_station,
-        notes: log.notes,
-        vehicle: {
-          license_plate: log.vehicles?.license_plate || 'Unknown',
-          vehicle_type: log.vehicles?.vehicle_type || 'Unknown',
-          make: log.vehicles?.make,
-          model: log.vehicles?.model,
-          nickname: log.vehicles?.nickname
-        },
-        driver: {
-          first_name: log.profiles?.first_name || 'Unknown',
-          last_name: log.profiles?.last_name || 'Driver'
-        }
-      })) || [];
-      
-      // Filter by search term locally
-      if (searchTerm) {
-        const term = searchTerm.toLowerCase();
-        mappedData = mappedData.filter(log => 
-          log.vehicle?.license_plate?.toLowerCase().includes(term) ||
-          log.fuel_station?.toLowerCase().includes(term) ||
-          `${log.driver?.first_name} ${log.driver?.last_name}`.toLowerCase().includes(term)
-        );
-      }
-      
-      return mappedData as FuelLog[];
-    },
-    placeholderData: keepPreviousData,
-    refetchOnWindowFocus: false
+  // Fetch unified fuel consumption data
+  const { data: unifiedData, isLoading, isFetching } = useUnifiedFuelConsumption({
+    sourceTypes: selectedSourceTypes.length > 0 ? selectedSourceTypes : undefined,
+    vehicleIds: selectedVehicles.map(v => v.id),
+    driverIds: selectedDrivers.map(d => d.id),
+    dateFrom: dateRange?.from,
+    dateTo: dateRange?.to,
+    searchTerm
   });
+
+  // Fetch vehicle and driver details for display
+  const { data: vehicles } = useQuery({
+    queryKey: ['vehicles-lookup'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('vehicles')
+        .select('id, license_plate, make, model, nickname');
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const { data: drivers } = useQuery({
+    queryKey: ['drivers-lookup'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, first_name, last_name');
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  // Map unified data to display format
+  const fuelLogs = unifiedData?.map(log => {
+    const vehicle = vehicles?.find(v => v.id === log.vehicle_id);
+    const driver = drivers?.find(d => d.id === log.driver_id);
+
+    return {
+      id: log.reference_id,
+      log_date: log.fuel_date,
+      source_type: log.source_type,
+      source_name: log.source_name,
+      vehicle: {
+        license_plate: vehicle?.license_plate || 'Unknown',
+        vehicle_type: '',
+        make: vehicle?.make,
+        model: vehicle?.model,
+        nickname: vehicle?.nickname
+      },
+      driver: {
+        first_name: driver?.first_name || 'Unknown',
+        last_name: driver?.last_name || ''
+      },
+      odometer_reading: log.odometer_reading || 0,
+      gallons_purchased: log.gallons,
+      cost_per_gallon: log.cost_per_gallon,
+      total_cost: log.cost,
+      fuel_station: log.source_name,
+      notes: log.notes || ''
+    };
+  }) || [];
 
   // Get selected counts for display
   const selectedVehicleCount = selectedVehicles.length;
   const selectedDriverCount = selectedDrivers.length;
-  const hasActiveFilters = selectedVehicleCount > 0 || selectedDriverCount > 0;
+  const selectedSourceCount = selectedSourceTypes.length;
+  const hasActiveFilters = selectedVehicleCount > 0 || selectedDriverCount > 0 || selectedSourceCount > 0;
 
   const clearAllFilters = () => {
     setSelectedVehicles([]);
     setSelectedDrivers([]);
+    setSelectedSourceTypes([]);
+  };
+
+  const getSourceBadge = (sourceType: string) => {
+    switch (sourceType) {
+      case 'retail':
+        return <Badge className="bg-blue-500 text-white"><Store className="h-3 w-3 mr-1" />Retail</Badge>;
+      case 'yard_tank':
+        return <Badge className="bg-green-500 text-white"><Factory className="h-3 w-3 mr-1" />Yard Tank</Badge>;
+      case 'mobile_service':
+        return <Badge className="bg-purple-500 text-white"><TruckIcon className="h-3 w-3 mr-1" />Mobile Vendor</Badge>;
+      default:
+        return <Badge variant="outline">{sourceType}</Badge>;
+    }
   };
 
   const deleteFuelLogMutation = useMutation({
@@ -237,7 +235,30 @@ export const FuelAllLogsTab: React.FC = () => {
           </div>
 
           {/* Filter Buttons Row */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <div>
+              <Select
+                value={selectedSourceTypes.length === 0 ? 'all' : selectedSourceTypes[0]}
+                onValueChange={(value) => {
+                  if (value === 'all') {
+                    setSelectedSourceTypes([]);
+                  } else {
+                    setSelectedSourceTypes([value as FuelSourceType]);
+                  }
+                }}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="All Sources" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Sources</SelectItem>
+                  <SelectItem value="retail">🏪 Retail Stations</SelectItem>
+                  <SelectItem value="yard_tank">🏭 Yard Tanks</SelectItem>
+                  <SelectItem value="mobile_service">🚛 Mobile Vendors</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
             <div>
               <Button
                 variant="outline"
@@ -317,21 +338,23 @@ export const FuelAllLogsTab: React.FC = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Date</TableHead>
+                  <TableHead>Source</TableHead>
                   <TableHead>Vehicle</TableHead>
                   <TableHead>Driver</TableHead>
                   <TableHead>Odometer</TableHead>
                   <TableHead>Gallons</TableHead>
                   <TableHead>Cost/Gal</TableHead>
                   <TableHead>Total Cost</TableHead>
-                  <TableHead>Station</TableHead>
+                  <TableHead>Location</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {fuelLogs && fuelLogs.length > 0 ? (
-                  fuelLogs.map((log) => (
+                  fuelLogs.map((log: any) => (
                     <TableRow key={log.id}>
                       <TableCell>{new Date(log.log_date).toLocaleDateString()}</TableCell>
+                      <TableCell>{getSourceBadge(log.source_type)}</TableCell>
                       <TableCell>
                         <div className="space-y-1">
                           <div className="font-medium">
@@ -345,17 +368,19 @@ export const FuelAllLogsTab: React.FC = () => {
                       <TableCell>
                         {log.driver ? `${log.driver.first_name} ${log.driver.last_name}` : 'Unknown'}
                       </TableCell>
-                      <TableCell>{log.odometer_reading?.toLocaleString()}</TableCell>
-                      <TableCell>{log.gallons_purchased}</TableCell>
+                      <TableCell>{log.odometer_reading?.toLocaleString() || 'N/A'}</TableCell>
+                      <TableCell>{log.gallons_purchased?.toFixed(1)}</TableCell>
                       <TableCell>${log.cost_per_gallon?.toFixed(3)}</TableCell>
                       <TableCell className="font-semibold">${log.total_cost?.toFixed(2)}</TableCell>
-                      <TableCell>{log.fuel_station || 'N/A'}</TableCell>
+                      <TableCell>{log.source_name || 'N/A'}</TableCell>
                       <TableCell>
                         <div className="flex gap-2">
                           <Button
                             size="sm"
                             variant="outline"
                             onClick={() => handleEditLog(log)}
+                            disabled={log.source_type !== 'retail'}
+                            title={log.source_type !== 'retail' ? 'Only retail logs can be edited here' : 'Edit log'}
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
@@ -363,7 +388,8 @@ export const FuelAllLogsTab: React.FC = () => {
                             size="sm"
                             variant="outline"
                             onClick={() => handleDeleteLog(log.id)}
-                            disabled={deleteFuelLogMutation.isPending}
+                            disabled={deleteFuelLogMutation.isPending || log.source_type !== 'retail'}
+                            title={log.source_type !== 'retail' ? 'Only retail logs can be deleted here' : 'Delete log'}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -373,7 +399,7 @@ export const FuelAllLogsTab: React.FC = () => {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={10} className="text-center py-8 text-muted-foreground">
                       No fuel logs found
                     </TableCell>
                   </TableRow>

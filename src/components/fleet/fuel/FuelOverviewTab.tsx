@@ -3,12 +3,13 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { DashboardCard } from '@/components/ui/dashboard-card';
 import { Button } from '@/components/ui/button';
-import { Plus, Upload, Fuel, DollarSign, TrendingUp, Truck } from 'lucide-react';
+import { Plus, Upload, Fuel, DollarSign, TrendingUp, Truck, Store, Factory, TruckIcon } from 'lucide-react';
 import { AddFuelLogModal } from './AddFuelLogModal';
 import { ImportFuelCSVModal } from './ImportFuelCSVModal';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { useUnifiedFuelMetrics, useUnifiedFuelConsumption } from '@/hooks/useUnifiedFuelConsumption';
 
 interface FuelMetrics {
   total_gallons: number;
@@ -42,77 +43,75 @@ export const FuelOverviewTab: React.FC = () => {
   startDate.setDate(startDate.getDate() - 30);
   const endDate = new Date();
 
-  const { data: metrics, isLoading: metricsLoading } = useQuery({
-    queryKey: ['fuel-metrics'],
+  // Use unified metrics hook
+  const { data: metrics, isLoading: metricsLoading } = useUnifiedFuelMetrics({
+    dateFrom: startDate,
+    dateTo: endDate
+  });
+
+  // Get recent unified fuel consumption
+  const { data: recentLogs, isLoading: logsLoading } = useUnifiedFuelConsumption({
+    dateFrom: undefined,
+    dateTo: undefined
+  });
+
+  // Fetch vehicle details for display
+  const { data: vehicles } = useQuery({
+    queryKey: ['vehicles-lookup'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('fuel_logs')
-        .select('gallons_purchased, total_cost, cost_per_gallon')
-        .gte('log_date', startDate.toISOString().split('T')[0])
-        .lte('log_date', endDate.toISOString().split('T')[0]);
-      
+        .from('vehicles')
+        .select('id, license_plate, make, model, nickname');
       if (error) throw error;
-      
-      if (!data || data.length === 0) {
-        return {
-          total_gallons: 0,
-          total_cost: 0,
-          average_cost_per_gallon: 0,
-          fleet_mpg: 0,
-          log_count: 0
-        };
-      }
-      
-      const totalGallons = data.reduce((sum, log) => sum + (log.gallons_purchased || 0), 0);
-      const totalCost = data.reduce((sum, log) => sum + (log.total_cost || 0), 0);
-      
-      return {
-        total_gallons: totalGallons,
-        total_cost: totalCost,
-        average_cost_per_gallon: totalGallons > 0 ? totalCost / totalGallons : 0,
-        fleet_mpg: 0, // Calculate later
-        log_count: data.length
-      };
+      return data;
     }
   });
 
-  const { data: recentLogs, isLoading: logsLoading } = useQuery({
-    queryKey: ['recent-fuel-logs'],
+  const { data: drivers } = useQuery({
+    queryKey: ['drivers-lookup'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('fuel_logs')
-        .select(`
-          id,
-          log_date,
-          gallons_purchased,
-          cost_per_gallon,
-          total_cost,
-          fuel_station,
-          odometer_reading,
-          vehicles!inner(license_plate, make, model, nickname),
-          profiles!inner(first_name, last_name)
-        `)
-        .order('log_date', { ascending: false })
-        .limit(5);
-      
+        .from('profiles')
+        .select('id, first_name, last_name');
       if (error) throw error;
-      
-      return data?.map(log => ({
-        id: log.id,
-        log_date: log.log_date,
-        vehicle_license: log.vehicles?.license_plate || 'Unknown',
-        vehicle_make: log.vehicles?.make,
-        vehicle_model: log.vehicles?.model,
-        vehicle_nickname: log.vehicles?.nickname,
-        driver_name: `${log.profiles?.first_name || ''} ${log.profiles?.last_name || ''}`.trim() || 'Unknown',
-        gallons_purchased: log.gallons_purchased || 0,
-        cost_per_gallon: log.cost_per_gallon || 0,
-        total_cost: log.total_cost || 0,
-        fuel_station: log.fuel_station || 'Unknown',
-        odometer_reading: log.odometer_reading || 0
-      })) || [];
+      return data;
     }
   });
+
+  const getSourceBadge = (sourceType: string) => {
+    switch (sourceType) {
+      case 'retail':
+        return <Badge className="bg-blue-500 text-white text-xs"><Store className="h-3 w-3 mr-1" />Retail</Badge>;
+      case 'yard_tank':
+        return <Badge className="bg-green-500 text-white text-xs"><Factory className="h-3 w-3 mr-1" />Tank</Badge>;
+      case 'mobile_service':
+        return <Badge className="bg-purple-500 text-white text-xs"><TruckIcon className="h-3 w-3 mr-1" />Mobile</Badge>;
+      default:
+        return <Badge variant="outline">{sourceType}</Badge>;
+    }
+  };
+
+  const recentLogsDisplay = recentLogs?.slice(0, 5).map(log => {
+    const vehicle = vehicles?.find(v => v.id === log.vehicle_id);
+    const driver = drivers?.find(d => d.id === log.driver_id);
+
+    return {
+      id: log.reference_id,
+      log_date: log.fuel_date,
+      source_type: log.source_type,
+      source_name: log.source_name,
+      vehicle_license: vehicle?.license_plate || 'Unknown',
+      vehicle_make: vehicle?.make,
+      vehicle_model: vehicle?.model,
+      vehicle_nickname: vehicle?.nickname,
+      driver_name: driver ? `${driver.first_name} ${driver.last_name}` : 'Unknown',
+      gallons_purchased: log.gallons,
+      cost_per_gallon: log.cost_per_gallon,
+      total_cost: log.cost,
+      fuel_station: log.source_name,
+      odometer_reading: log.odometer_reading || 0
+    };
+  }) || [];
 
   if (metricsLoading) {
     return <LoadingSpinner />;
@@ -125,7 +124,7 @@ export const FuelOverviewTab: React.FC = () => {
         <DashboardCard
           title="Total Gallons"
           value={metrics?.total_gallons?.toFixed(1) || '0'}
-          subtitle="Last 30 days"
+          subtitle={`Last 30 days • ${metrics?.log_count || 0} transactions`}
           icon={Fuel}
           gradientFrom="#F59E0B"
           gradientTo="#D97706"
@@ -151,13 +150,58 @@ export const FuelOverviewTab: React.FC = () => {
         
         <DashboardCard
           title="Fleet MPG"
-          value={metrics?.fleet_mpg?.toFixed(1) || '0.0'}
-          subtitle="Last 30 days"
+          value="0.0"
+          subtitle="Coming soon"
           icon={Truck}
           gradientFrom="#2563EB"
           gradientTo="#1E40AF"
         />
       </div>
+
+      {/* Source Breakdown */}
+      {metrics && metrics.by_source && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Fuel by Source (Last 30 Days)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-4 border rounded-lg bg-blue-50 dark:bg-blue-950/20">
+                <div className="flex items-center gap-2 mb-2">
+                  <Store className="h-5 w-5 text-blue-600" />
+                  <span className="font-semibold">Retail Stations</span>
+                </div>
+                <div className="text-2xl font-bold">{metrics.by_source.retail.gallons.toFixed(1)} gal</div>
+                <div className="text-sm text-muted-foreground">
+                  ${metrics.by_source.retail.cost.toFixed(2)} • {metrics.by_source.retail.count} fills
+                </div>
+              </div>
+
+              <div className="p-4 border rounded-lg bg-green-50 dark:bg-green-950/20">
+                <div className="flex items-center gap-2 mb-2">
+                  <Factory className="h-5 w-5 text-green-600" />
+                  <span className="font-semibold">Yard Tanks</span>
+                </div>
+                <div className="text-2xl font-bold">{metrics.by_source.yard_tank.gallons.toFixed(1)} gal</div>
+                <div className="text-sm text-muted-foreground">
+                  ${metrics.by_source.yard_tank.cost.toFixed(2)} • {metrics.by_source.yard_tank.count} fills
+                </div>
+              </div>
+
+              <div className="p-4 border rounded-lg bg-purple-50 dark:bg-purple-950/20">
+                <div className="flex items-center gap-2 mb-2">
+                  <TruckIcon className="h-5 w-5 text-purple-600" />
+                  <span className="font-semibold">Mobile Vendors</span>
+                </div>
+                <div className="text-2xl font-bold">{metrics.by_source.mobile_service.gallons.toFixed(1)} gal</div>
+                <div className="text-sm text-muted-foreground">
+                  ${metrics.by_source.mobile_service.cost.toFixed(2)} • {metrics.by_source.mobile_service.count} fills
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Quick Actions */}
       <div className="flex flex-col sm:flex-row gap-4">
@@ -187,11 +231,15 @@ export const FuelOverviewTab: React.FC = () => {
         <CardContent>
           {logsLoading ? (
             <LoadingSpinner />
-          ) : recentLogs && recentLogs.length > 0 ? (
+          ) : recentLogsDisplay && recentLogsDisplay.length > 0 ? (
             <div className="space-y-4">
-              {recentLogs.map((log) => (
+              {recentLogsDisplay.map((log) => (
                 <div key={log.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
                   <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      {getSourceBadge(log.source_type)}
+                      <span className="text-xs text-muted-foreground">{log.source_name}</span>
+                    </div>
                     <div className="space-y-1">
                       <div className="font-medium">
                         {log.vehicle_make && log.vehicle_model 
@@ -203,13 +251,13 @@ export const FuelOverviewTab: React.FC = () => {
                     <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
                       <span>{log.driver_name}</span>
                       <span>{new Date(log.log_date).toLocaleDateString()}</span>
-                      <span>{log.gallons_purchased} gal</span>
-                      <span>${log.cost_per_gallon}/gal</span>
-                      <span>{log.odometer_reading.toLocaleString()} mi</span>
+                      <span>{log.gallons_purchased?.toFixed(1)} gal</span>
+                      <span>${log.cost_per_gallon?.toFixed(2)}/gal</span>
+                      {log.odometer_reading > 0 && <span>{log.odometer_reading.toLocaleString()} mi</span>}
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-semibold">${log.total_cost.toFixed(2)}</div>
+                    <div className="font-semibold">${log.total_cost?.toFixed(2)}</div>
                   </div>
                 </div>
               ))}
