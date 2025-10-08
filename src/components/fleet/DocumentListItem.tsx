@@ -53,10 +53,10 @@ export function DocumentListItem({ document, categoryInfo, onView, onDownload, o
           </h3>
         </div>
         
-        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+        <div className="flex items-center gap-4 text-sm text-muted-foreground">
           {document.upload_date && (
             <div className="flex items-center gap-1">
-              <Calendar className="w-3 h-3" />
+              <Calendar className="w-3.5 h-3.5" />
               {format(new Date(document.upload_date), 'MMM d, yyyy')}
             </div>
           )}
@@ -89,13 +89,13 @@ export function DocumentListItem({ document, categoryInfo, onView, onDownload, o
           )}
         </div>
 
-        <div className="flex items-center gap-4 mt-1 text-xs text-gray-600">
+        <div className="flex items-center gap-4 mt-1 text-sm text-gray-600">
           <span className="truncate">{document.file_name}</span>
           <span>{formatFileSize(document.file_size)}</span>
         </div>
 
         {document.notes && (
-          <div className="text-xs text-gray-600 mt-2 truncate">
+          <div className="text-sm text-gray-600 mt-2 truncate">
             {document.notes}
           </div>
         )}
