@@ -388,8 +388,13 @@ export const DocumentCategoryManagement: React.FC = () => {
                   className="w-3 h-3 rounded-full flex-shrink-0"
                   style={{ backgroundColor: group.color }}
                 />
-                <div>
-                  <h4 className="font-semibold text-gray-900">{group.name}</h4>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-semibold text-gray-900">{group.name}</h4>
+                    <span className="text-xs text-muted-foreground">
+                      ({group.categories.length} {group.categories.length === 1 ? 'subcategory' : 'subcategories'})
+                    </span>
+                  </div>
                   <p className="text-sm text-gray-600 mt-0.5">{group.description}</p>
                 </div>
               </div>
