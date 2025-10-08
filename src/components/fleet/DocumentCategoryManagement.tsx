@@ -301,17 +301,17 @@ export const DocumentCategoryManagement: React.FC = () => {
                   setEditingCategory(null);
                   resetForm();
                 }}
-                className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Add Category
-              </Button>
+              className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold border-0"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Add Subcategory
+            </Button>
             </DialogTrigger>
             <DialogContent>
-            <DialogHeader>
-              <DialogTitle>
-                {editingCategory ? "Edit Document Category" : "Add Document Category"}
-              </DialogTitle>
+              <DialogHeader>
+                <DialogTitle>
+                  {editingCategory ? "Edit Document Subcategory" : "Add Document Subcategory"}
+                </DialogTitle>
             </DialogHeader>
             
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -362,7 +362,7 @@ export const DocumentCategoryManagement: React.FC = () => {
               
               <div className="flex gap-2 pt-4">
                 <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending}>
-                  {editingCategory ? "Update" : "Create"} Category
+                  {editingCategory ? "Update" : "Create"} Subcategory
                 </Button>
                 <Button 
                   type="button" 
