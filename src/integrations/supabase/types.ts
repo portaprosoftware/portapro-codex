@@ -3150,7 +3150,7 @@ export type Database = {
           cost_per_gallon: number
           created_at: string | null
           driver_id: string
-          fuel_source: Database["public"]["Enums"]["fuel_source"] | null
+          fuel_source: Database["public"]["Enums"]["fuel_source"]
           fuel_station: string | null
           fuel_station_id: string | null
           fuel_tank_id: string | null
@@ -3169,7 +3169,7 @@ export type Database = {
           cost_per_gallon: number
           created_at?: string | null
           driver_id: string
-          fuel_source?: Database["public"]["Enums"]["fuel_source"] | null
+          fuel_source?: Database["public"]["Enums"]["fuel_source"]
           fuel_station?: string | null
           fuel_station_id?: string | null
           fuel_tank_id?: string | null
@@ -3188,7 +3188,7 @@ export type Database = {
           cost_per_gallon?: number
           created_at?: string | null
           driver_id?: string
-          fuel_source?: Database["public"]["Enums"]["fuel_source"] | null
+          fuel_source?: Database["public"]["Enums"]["fuel_source"]
           fuel_station?: string | null
           fuel_station_id?: string | null
           fuel_tank_id?: string | null

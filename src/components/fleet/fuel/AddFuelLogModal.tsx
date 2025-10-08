@@ -184,12 +184,13 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
               gallons_purchased: parseFloat(data.gallons_purchased),
               cost_per_gallon: parseFloat(data.cost_per_gallon),
               total_cost: totalCost,
-              fuel_station: data.fuel_station,
-              receipt_image: data.receipt_image,
-              notes: data.notes,
-            }
+            fuel_station: data.fuel_station,
+            receipt_image: data.receipt_image,
+            notes: data.notes,
+            fuel_source: 'retail_station',
           }
-        });
+        }
+      });
         if (fnError) throw fnError;
         return result;
       } catch (_) {
@@ -203,11 +204,12 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
             gallons_purchased: parseFloat(data.gallons_purchased),
             cost_per_gallon: parseFloat(data.cost_per_gallon),
             total_cost: totalCost,
-            fuel_station: data.fuel_station,
-            receipt_image: data.receipt_image,
-            notes: data.notes,
-          });
-        if (error) throw error;
+          fuel_station: data.fuel_station,
+          receipt_image: data.receipt_image,
+          notes: data.notes,
+          fuel_source: 'retail_station',
+        });
+      if (error) throw error;
       }
     },
     onSuccess: () => {
