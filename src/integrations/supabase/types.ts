@@ -5729,45 +5729,69 @@ export type Database = {
       }
       mobile_fuel_vendors: {
         Row: {
+          after_hours_contact_person: string | null
+          after_hours_phone: string | null
           contact_person: string | null
           contract_number: string | null
           created_at: string
+          delivery_hours: string | null
           email: string | null
           fuel_type: Database["public"]["Enums"]["fuel_type"]
           id: string
           is_active: boolean | null
+          min_delivery_quantity_gal: number | null
           notes: string | null
+          payment_terms: string | null
           phone: string | null
+          preferred_contact_method: string | null
+          pricing_model: string | null
           service_area: string | null
           updated_at: string
+          vendor_id: string | null
           vendor_name: string
         }
         Insert: {
+          after_hours_contact_person?: string | null
+          after_hours_phone?: string | null
           contact_person?: string | null
           contract_number?: string | null
           created_at?: string
+          delivery_hours?: string | null
           email?: string | null
           fuel_type: Database["public"]["Enums"]["fuel_type"]
           id?: string
           is_active?: boolean | null
+          min_delivery_quantity_gal?: number | null
           notes?: string | null
+          payment_terms?: string | null
           phone?: string | null
+          preferred_contact_method?: string | null
+          pricing_model?: string | null
           service_area?: string | null
           updated_at?: string
+          vendor_id?: string | null
           vendor_name: string
         }
         Update: {
+          after_hours_contact_person?: string | null
+          after_hours_phone?: string | null
           contact_person?: string | null
           contract_number?: string | null
           created_at?: string
+          delivery_hours?: string | null
           email?: string | null
           fuel_type?: Database["public"]["Enums"]["fuel_type"]
           id?: string
           is_active?: boolean | null
+          min_delivery_quantity_gal?: number | null
           notes?: string | null
+          payment_terms?: string | null
           phone?: string | null
+          preferred_contact_method?: string | null
+          pricing_model?: string | null
           service_area?: string | null
           updated_at?: string
+          vendor_id?: string | null
           vendor_name?: string
         }
         Relationships: []
@@ -11600,6 +11624,10 @@ export type Database = {
       generate_storage_location_report: {
         Args: Record<PropertyKey, never>
         Returns: Json
+      }
+      generate_vendor_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
       }
       geocode_and_create_service_location: {
         Args: {

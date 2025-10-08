@@ -18,8 +18,15 @@ interface VendorFormData {
   contact_person: string;
   phone: string;
   email: string;
+  after_hours_contact_person: string;
+  after_hours_phone: string;
+  preferred_contact_method: 'phone' | 'email' | 'portal' | 'text';
   fuel_type: 'diesel' | 'gasoline' | 'off_road_diesel';
   service_area: string;
+  delivery_hours: string;
+  min_delivery_quantity_gal: number;
+  pricing_model: 'fixed' | 'market_index' | 'cost_plus' | 'tiered';
+  payment_terms: 'net_15' | 'net_30' | 'cod' | 'prepaid';
   contract_number: string;
   notes: string;
 }
@@ -31,11 +38,17 @@ export const AddMobileFuelVendorDialog: React.FC<AddMobileFuelVendorDialogProps>
   const { register, handleSubmit, reset, setValue, watch } = useForm<VendorFormData>({
     defaultValues: {
       fuel_type: 'diesel',
+      preferred_contact_method: 'phone',
+      pricing_model: 'fixed',
+      payment_terms: 'net_30',
     },
   });
   
   const addVendor = useAddMobileFuelVendor();
   const fuelType = watch('fuel_type');
+  const preferredContactMethod = watch('preferred_contact_method');
+  const pricingModel = watch('pricing_model');
+  const paymentTerms = watch('payment_terms');
 
   const onSubmit = async (data: VendorFormData) => {
     await addVendor.mutateAsync({
@@ -63,6 +76,7 @@ export const AddMobileFuelVendorDialog: React.FC<AddMobileFuelVendorDialogProps>
             />
           </div>
 
+          {/* Primary Contact */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="contact_person">Contact Person</Label>
@@ -94,6 +108,48 @@ export const AddMobileFuelVendorDialog: React.FC<AddMobileFuelVendorDialogProps>
             />
           </div>
 
+          {/* After-Hours Contact */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="after_hours_contact_person">After-Hours Contact</Label>
+              <Input
+                id="after_hours_contact_person"
+                {...register('after_hours_contact_person')}
+                placeholder="Night/weekend contact"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="after_hours_phone">After-Hours Phone</Label>
+              <Input
+                id="after_hours_phone"
+                type="tel"
+                {...register('after_hours_phone')}
+                placeholder="(555) 123-4567"
+              />
+            </div>
+          </div>
+
+          {/* Preferred Contact Method */}
+          <div className="space-y-2">
+            <Label htmlFor="preferred_contact_method">Preferred Contact Method</Label>
+            <Select
+              value={preferredContactMethod}
+              onValueChange={(value) => setValue('preferred_contact_method', value as any)}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="phone">Phone</SelectItem>
+                <SelectItem value="email">Email</SelectItem>
+                <SelectItem value="portal">Portal</SelectItem>
+                <SelectItem value="text">Text</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Service Details */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="fuel_type">Fuel Type *</Label>
@@ -119,6 +175,66 @@ export const AddMobileFuelVendorDialog: React.FC<AddMobileFuelVendorDialogProps>
                 {...register('service_area')}
                 placeholder="e.g., 50 mile radius"
               />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="delivery_hours">Delivery Hours</Label>
+              <Input
+                id="delivery_hours"
+                {...register('delivery_hours')}
+                placeholder="e.g., Weekdays 6 PM - 5 AM"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="min_delivery_quantity_gal">Min. Delivery (gallons)</Label>
+              <Input
+                id="min_delivery_quantity_gal"
+                type="number"
+                {...register('min_delivery_quantity_gal', { valueAsNumber: true })}
+                placeholder="e.g., 100"
+              />
+            </div>
+          </div>
+
+          {/* Pricing & Payment */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="pricing_model">Pricing Model</Label>
+              <Select
+                value={pricingModel}
+                onValueChange={(value) => setValue('pricing_model', value as any)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="fixed">Fixed Price</SelectItem>
+                  <SelectItem value="market_index">Market Index</SelectItem>
+                  <SelectItem value="cost_plus">Cost + Markup</SelectItem>
+                  <SelectItem value="tiered">Tiered Pricing</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="payment_terms">Payment Terms</Label>
+              <Select
+                value={paymentTerms}
+                onValueChange={(value) => setValue('payment_terms', value as any)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="net_15">Net 15</SelectItem>
+                  <SelectItem value="net_30">Net 30</SelectItem>
+                  <SelectItem value="cod">COD</SelectItem>
+                  <SelectItem value="prepaid">Prepaid</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 

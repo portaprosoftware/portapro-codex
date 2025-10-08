@@ -178,12 +178,20 @@ export interface FuelTankDelivery {
 
 export interface MobileFuelVendor {
   id: string;
+  vendor_id?: string;
   vendor_name: string;
   contact_person?: string;
   phone?: string;
   email?: string;
+  after_hours_contact_person?: string;
+  after_hours_phone?: string;
+  preferred_contact_method?: 'phone' | 'email' | 'portal' | 'text';
   fuel_type: FuelType;
   service_area?: string;
+  delivery_hours?: string;
+  min_delivery_quantity_gal?: number;
+  pricing_model?: 'fixed' | 'market_index' | 'cost_plus' | 'tiered';
+  payment_terms?: 'net_15' | 'net_30' | 'cod' | 'prepaid';
   contract_number?: string;
   notes?: string;
   is_active: boolean;
