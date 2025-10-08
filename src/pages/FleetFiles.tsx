@@ -247,9 +247,6 @@ export default function FleetFiles() {
 
   return (
     <FleetLayout>
-      {/* Expiring Documents Alert */}
-      <ExpiringDocumentsAlert />
-      
       {/* Enhanced Header */}
       <div className="bg-white rounded-lg border shadow-sm p-6">
         <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
@@ -282,7 +279,7 @@ export default function FleetFiles() {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
             <Input
-              placeholder="Search documents, file names, document numbers..."
+              placeholder="Search documents, file names, document numbers"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
