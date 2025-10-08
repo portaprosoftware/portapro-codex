@@ -3217,6 +3217,90 @@ export type Database = {
           },
         ]
       }
+      fuel_management_settings: {
+        Row: {
+          auto_calculate_cost_per_mile: boolean
+          auto_calculate_mpg: boolean
+          auto_flag_high_consumption: boolean
+          auto_flag_price_spikes: boolean
+          auto_update_tank_levels: boolean
+          created_at: string
+          default_fuel_source: string | null
+          email_notifications: boolean
+          id: string
+          mobile_service_enabled: boolean
+          notification_email: string | null
+          notification_frequency: string | null
+          notification_phone: string | null
+          notifications_enabled: boolean
+          price_spike_threshold_percent: number
+          retail_enabled: boolean
+          sms_notifications: boolean
+          spcc_compliance_enabled: boolean
+          spcc_tank_threshold_gallons: number
+          tank_critical_threshold_percent: number
+          tank_low_threshold_percent: number
+          unusual_consumption_threshold_percent: number
+          updated_at: string
+          variance_tolerance_percent: number
+          yard_tank_enabled: boolean
+        }
+        Insert: {
+          auto_calculate_cost_per_mile?: boolean
+          auto_calculate_mpg?: boolean
+          auto_flag_high_consumption?: boolean
+          auto_flag_price_spikes?: boolean
+          auto_update_tank_levels?: boolean
+          created_at?: string
+          default_fuel_source?: string | null
+          email_notifications?: boolean
+          id?: string
+          mobile_service_enabled?: boolean
+          notification_email?: string | null
+          notification_frequency?: string | null
+          notification_phone?: string | null
+          notifications_enabled?: boolean
+          price_spike_threshold_percent?: number
+          retail_enabled?: boolean
+          sms_notifications?: boolean
+          spcc_compliance_enabled?: boolean
+          spcc_tank_threshold_gallons?: number
+          tank_critical_threshold_percent?: number
+          tank_low_threshold_percent?: number
+          unusual_consumption_threshold_percent?: number
+          updated_at?: string
+          variance_tolerance_percent?: number
+          yard_tank_enabled?: boolean
+        }
+        Update: {
+          auto_calculate_cost_per_mile?: boolean
+          auto_calculate_mpg?: boolean
+          auto_flag_high_consumption?: boolean
+          auto_flag_price_spikes?: boolean
+          auto_update_tank_levels?: boolean
+          created_at?: string
+          default_fuel_source?: string | null
+          email_notifications?: boolean
+          id?: string
+          mobile_service_enabled?: boolean
+          notification_email?: string | null
+          notification_frequency?: string | null
+          notification_phone?: string | null
+          notifications_enabled?: boolean
+          price_spike_threshold_percent?: number
+          retail_enabled?: boolean
+          sms_notifications?: boolean
+          spcc_compliance_enabled?: boolean
+          spcc_tank_threshold_gallons?: number
+          tank_critical_threshold_percent?: number
+          tank_low_threshold_percent?: number
+          unusual_consumption_threshold_percent?: number
+          updated_at?: string
+          variance_tolerance_percent?: number
+          yard_tank_enabled?: boolean
+        }
+        Relationships: []
+      }
       fuel_settings: {
         Row: {
           auto_calculate_mpg: boolean
