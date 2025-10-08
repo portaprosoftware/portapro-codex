@@ -202,6 +202,11 @@ export interface MobileFuelVendor {
   w9_document_url?: string;
   insurance_document_url?: string;
   last_audit_date?: string;
+  // Tier 3: Analytics
+  service_radius_mi?: number;
+  average_response_time_hrs?: number;
+  fuel_surcharge_policy?: boolean;
+  fuel_surcharge_notes?: string;
   notes?: string;
   is_active: boolean;
   created_at: string;

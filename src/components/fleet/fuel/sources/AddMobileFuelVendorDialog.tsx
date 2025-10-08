@@ -38,6 +38,11 @@ interface VendorFormData {
   dot_hazmat_permit: string;
   safety_status: 'verified' | 'pending' | 'flagged';
   last_audit_date: string;
+  // Tier 3
+  service_radius_mi: number;
+  average_response_time_hrs: number;
+  fuel_surcharge_policy: boolean;
+  fuel_surcharge_notes: string;
   notes: string;
 }
 
@@ -46,6 +51,7 @@ export const AddMobileFuelVendorDialog: React.FC<AddMobileFuelVendorDialogProps>
   onOpenChange 
 }) => {
   const [complianceOpen, setComplianceOpen] = useState(false);
+  const [analyticsOpen, setAnalyticsOpen] = useState(false);
   const [fuelCertifications, setFuelCertifications] = useState<string[]>([]);
   const [uploadingDoc, setUploadingDoc] = useState<string | null>(null);
   const [documentUrls, setDocumentUrls] = useState({
@@ -61,6 +67,7 @@ export const AddMobileFuelVendorDialog: React.FC<AddMobileFuelVendorDialogProps>
       pricing_model: 'fixed',
       payment_terms: 'net_30',
       safety_status: 'pending',
+      fuel_surcharge_policy: false,
     },
   });
   
@@ -70,6 +77,7 @@ export const AddMobileFuelVendorDialog: React.FC<AddMobileFuelVendorDialogProps>
   const pricingModel = watch('pricing_model');
   const paymentTerms = watch('payment_terms');
   const safetyStatus = watch('safety_status');
+  const fuelSurchargePolicy = watch('fuel_surcharge_policy');
 
   const handleFileUpload = async (file: File, docType: 'contract' | 'w9' | 'insurance') => {
     setUploadingDoc(docType);
@@ -118,6 +126,7 @@ export const AddMobileFuelVendorDialog: React.FC<AddMobileFuelVendorDialogProps>
     setFuelCertifications([]);
     setDocumentUrls({ contract: '', w9: '', insurance: '' });
     setComplianceOpen(false);
+    setAnalyticsOpen(false);
     onOpenChange(false);
   };
 
@@ -480,6 +489,68 @@ export const AddMobileFuelVendorDialog: React.FC<AddMobileFuelVendorDialogProps>
                     />
                   </div>
                 </div>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+
+          {/* Tier 3: Advanced Analytics - Collapsible */}
+          <Collapsible open={analyticsOpen} onOpenChange={setAnalyticsOpen} className="border rounded-lg p-4 space-y-4">
+            <CollapsibleTrigger className="flex items-center justify-between w-full">
+              <span className="font-semibold text-sm">Advanced Analytics & Performance</span>
+              <ChevronDown className={`h-4 w-4 transition-transform ${analyticsOpen ? 'rotate-180' : ''}`} />
+            </CollapsibleTrigger>
+            
+            <CollapsibleContent className="space-y-4 pt-4">
+              {/* Service Radius & Response Time */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="service_radius_mi">Service Radius (miles)</Label>
+                  <Input
+                    id="service_radius_mi"
+                    type="number"
+                    {...register('service_radius_mi', { valueAsNumber: true })}
+                    placeholder="e.g., 50"
+                  />
+                  <p className="text-xs text-muted-foreground">For map-based filtering</p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="average_response_time_hrs">Avg. Response Time (hours)</Label>
+                  <Input
+                    id="average_response_time_hrs"
+                    type="number"
+                    step="0.5"
+                    {...register('average_response_time_hrs', { valueAsNumber: true })}
+                    placeholder="e.g., 2.5"
+                  />
+                  <p className="text-xs text-muted-foreground">Manual entry, auto-calculated later</p>
+                </div>
+              </div>
+
+              {/* Fuel Surcharge Policy */}
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="fuel_surcharge_policy"
+                    checked={fuelSurchargePolicy}
+                    onCheckedChange={(checked) => setValue('fuel_surcharge_policy', checked as boolean)}
+                  />
+                  <Label htmlFor="fuel_surcharge_policy" className="cursor-pointer font-normal">
+                    Vendor has fuel surcharge policy
+                  </Label>
+                </div>
+
+                {fuelSurchargePolicy && (
+                  <div className="space-y-2 pl-6">
+                    <Label htmlFor="fuel_surcharge_notes">Surcharge Policy Details</Label>
+                    <Textarea
+                      id="fuel_surcharge_notes"
+                      {...register('fuel_surcharge_notes')}
+                      placeholder="e.g., $0.15/gal when crude oil exceeds $90/barrel"
+                      rows={2}
+                    />
+                  </div>
+                )}
               </div>
             </CollapsibleContent>
           </Collapsible>

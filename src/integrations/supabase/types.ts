@@ -3195,6 +3195,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "fuel_logs_mobile_vendor_id_fkey"
+            columns: ["mobile_vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_performance_metrics"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "fuel_logs_vehicle_id_fkey"
             columns: ["vehicle_id"]
             isOneToOne: false
@@ -5739,12 +5746,20 @@ export type Database = {
             referencedRelation: "mobile_fuel_vendors"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "mobile_fuel_services_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_performance_metrics"
+            referencedColumns: ["id"]
+          },
         ]
       }
       mobile_fuel_vendors: {
         Row: {
           after_hours_contact_person: string | null
           after_hours_phone: string | null
+          average_response_time_hrs: number | null
           contact_person: string | null
           contract_document_url: string | null
           contract_number: string | null
@@ -5753,6 +5768,8 @@ export type Database = {
           dot_hazmat_permit: string | null
           email: string | null
           fuel_certifications: Json | null
+          fuel_surcharge_notes: string | null
+          fuel_surcharge_policy: boolean | null
           fuel_type: Database["public"]["Enums"]["fuel_type"]
           id: string
           insurance_document_url: string | null
@@ -5767,6 +5784,7 @@ export type Database = {
           pricing_model: string | null
           safety_status: string | null
           service_area: string | null
+          service_radius_mi: number | null
           updated_at: string
           vendor_id: string | null
           vendor_name: string
@@ -5775,6 +5793,7 @@ export type Database = {
         Insert: {
           after_hours_contact_person?: string | null
           after_hours_phone?: string | null
+          average_response_time_hrs?: number | null
           contact_person?: string | null
           contract_document_url?: string | null
           contract_number?: string | null
@@ -5783,6 +5802,8 @@ export type Database = {
           dot_hazmat_permit?: string | null
           email?: string | null
           fuel_certifications?: Json | null
+          fuel_surcharge_notes?: string | null
+          fuel_surcharge_policy?: boolean | null
           fuel_type: Database["public"]["Enums"]["fuel_type"]
           id?: string
           insurance_document_url?: string | null
@@ -5797,6 +5818,7 @@ export type Database = {
           pricing_model?: string | null
           safety_status?: string | null
           service_area?: string | null
+          service_radius_mi?: number | null
           updated_at?: string
           vendor_id?: string | null
           vendor_name: string
@@ -5805,6 +5827,7 @@ export type Database = {
         Update: {
           after_hours_contact_person?: string | null
           after_hours_phone?: string | null
+          average_response_time_hrs?: number | null
           contact_person?: string | null
           contract_document_url?: string | null
           contract_number?: string | null
@@ -5813,6 +5836,8 @@ export type Database = {
           dot_hazmat_permit?: string | null
           email?: string | null
           fuel_certifications?: Json | null
+          fuel_surcharge_notes?: string | null
+          fuel_surcharge_policy?: boolean | null
           fuel_type?: Database["public"]["Enums"]["fuel_type"]
           id?: string
           insurance_document_url?: string | null
@@ -5827,6 +5852,7 @@ export type Database = {
           pricing_model?: string | null
           safety_status?: string | null
           service_area?: string | null
+          service_radius_mi?: number | null
           updated_at?: string
           vendor_id?: string | null
           vendor_name?: string
@@ -11362,6 +11388,25 @@ export type Database = {
           activity_summary: string | null
           activity_type: string | null
           vehicle_id: string | null
+        }
+        Relationships: []
+      }
+      vendor_performance_metrics: {
+        Row: {
+          average_response_time_hrs: number | null
+          avg_cost_per_gallon: number | null
+          compliance_warning: boolean | null
+          fuel_surcharge_policy: boolean | null
+          id: string | null
+          last_service_date: string | null
+          payment_terms: string | null
+          pricing_model: string | null
+          safety_status: string | null
+          service_radius_mi: number | null
+          total_gallons_delivered: number | null
+          total_services: number | null
+          vendor_id: string | null
+          vendor_name: string | null
         }
         Relationships: []
       }
