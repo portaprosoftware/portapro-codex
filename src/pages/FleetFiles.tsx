@@ -37,6 +37,7 @@ export default function FleetFiles() {
   const [isCategoryFilterOpen, setIsCategoryFilterOpen] = useState(false);
   const [selectedCategoryFilters, setSelectedCategoryFilters] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [activeTab, setActiveTab] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [documentToDelete, setDocumentToDelete] = useState<any>(null);
   const [documentToView, setDocumentToView] = useState<any>(null);
@@ -273,49 +274,51 @@ export default function FleetFiles() {
           </div>
         </div>
 
-        {/* Advanced Filters */}
-        <div className="flex flex-col sm:flex-row gap-4 mt-6">
-          {/* Search */}
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-            <Input
-              placeholder="Search documents, file names, document numbers"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
+        {/* Advanced Filters - Only show when not in Manage Subcategories */}
+        {activeTab !== "categories" && (
+          <div className="flex flex-col sm:flex-row gap-4 mt-6">
+            {/* Search */}
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+              <Input
+                placeholder="Search documents, file names, document numbers"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+
+            {/* Vehicle Filter Button */}
+            <Button
+              variant="outline"
+              onClick={() => setIsVehicleModalOpen(true)}
+              className="flex items-center gap-2 whitespace-nowrap"
+            >
+              <Truck className="h-4 w-4" />
+              {selectedVehicles.length === 0 
+                ? "All Vehicles" 
+                : `${selectedVehicles.length} Vehicle${selectedVehicles.length > 1 ? 's' : ''}`
+              }
+            </Button>
+
+            {/* Category Filter Button */}
+            <Button
+              variant="outline"
+              onClick={() => setIsCategoryFilterOpen(true)}
+              className="flex items-center gap-2 whitespace-nowrap"
+            >
+              <Filter className="h-4 w-4" />
+              {selectedCategoryFilters.length === 0 
+                ? "All Categories" 
+                : `${selectedCategoryFilters.length} Category${selectedCategoryFilters.length > 1 ? 'ies' : ''}`
+              }
+            </Button>
           </div>
-
-          {/* Vehicle Filter Button */}
-          <Button
-            variant="outline"
-            onClick={() => setIsVehicleModalOpen(true)}
-            className="flex items-center gap-2 whitespace-nowrap"
-          >
-            <Truck className="h-4 w-4" />
-            {selectedVehicles.length === 0 
-              ? "All Vehicles" 
-              : `${selectedVehicles.length} Vehicle${selectedVehicles.length > 1 ? 's' : ''}`
-            }
-          </Button>
-
-          {/* Category Filter Button */}
-          <Button
-            variant="outline"
-            onClick={() => setIsCategoryFilterOpen(true)}
-            className="flex items-center gap-2 whitespace-nowrap"
-          >
-            <Filter className="h-4 w-4" />
-            {selectedCategoryFilters.length === 0 
-              ? "All Categories" 
-              : `${selectedCategoryFilters.length} Category${selectedCategoryFilters.length > 1 ? 'ies' : ''}`
-            }
-          </Button>
-        </div>
+        )}
 
         {/* Document Categories Navigation */}
         <div className="flex items-center mt-4">
-          <Tabs defaultValue="all" className="w-full">
+          <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="bg-white rounded-full p-1 shadow-sm border w-fit overflow-x-auto">
               <TabsTrigger value="all" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">
                 All Documents & Photos ({filteredDocuments.length})
