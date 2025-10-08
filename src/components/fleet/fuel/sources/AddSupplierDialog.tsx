@@ -103,10 +103,10 @@ export const AddSupplierDialog: React.FC<AddSupplierDialogProps> = ({
               value={paymentTerms}
               onValueChange={(value) => setValue('payment_terms', value)}
             >
-              <SelectTrigger>
+              <SelectTrigger className="bg-background">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-background z-50">
+              <SelectContent className="bg-background border shadow-lg z-[100]" position="popper" sideOffset={5}>
                 <SelectItem value="Net-30">Net-30</SelectItem>
                 <SelectItem value="Net-15">Net-15</SelectItem>
                 <SelectItem value="Due on Receipt">Due on Receipt</SelectItem>
