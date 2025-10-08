@@ -35,7 +35,7 @@ export const DocumentCategoryManagement: React.FC = () => {
   const [formData, setFormData] = useState<DocumentCategoryFormData>({
     name: "",
     description: "",
-    icon: "📄",
+    icon: "",
     color: "#3B82F6"
   });
   const { toast } = useToast();
@@ -140,7 +140,7 @@ export const DocumentCategoryManagement: React.FC = () => {
     setFormData({
       name: "",
       description: "",
-      icon: "📄",
+      icon: "",
       color: "#3B82F6"
     });
   };
@@ -276,7 +276,6 @@ export const DocumentCategoryManagement: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-3">
-                  <span className="text-xl">{category.icon}</span>
                   <h4 className="font-medium text-gray-900">{category.name}</h4>
                   <div 
                     className="w-4 h-4 rounded-full border"
