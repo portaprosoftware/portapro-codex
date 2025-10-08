@@ -11434,6 +11434,26 @@ export type Database = {
           },
         ]
       }
+      unified_fuel_consumption: {
+        Row: {
+          cost: number | null
+          cost_per_gallon: number | null
+          created_at: string | null
+          driver_id: string | null
+          fuel_date: string | null
+          fuel_type: string | null
+          gallons: number | null
+          notes: string | null
+          odometer_reading: number | null
+          reference_id: string | null
+          source_name: string | null
+          source_type: string | null
+          tank_id: string | null
+          vehicle_id: string | null
+          vendor_id: string | null
+        }
+        Relationships: []
+      }
       vehicle_consumable_balances: {
         Row: {
           balance_qty: number | null
