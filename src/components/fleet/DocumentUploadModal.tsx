@@ -144,7 +144,7 @@ export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentU
               type="file"
               multiple
               onChange={handleFileChange}
-              className="mt-2"
+              className="mt-2 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-transparent file:text-blue-600 hover:file:text-blue-700 file:cursor-pointer hover:file:underline"
               accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
             />
             {files.length > 0 && (
