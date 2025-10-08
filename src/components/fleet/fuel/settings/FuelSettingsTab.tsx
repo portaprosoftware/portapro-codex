@@ -80,8 +80,8 @@ export const FuelSettingsTab: React.FC = () => {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid gap-6 md:grid-cols-3">
-            <div className="flex items-center justify-between space-x-2">
-              <div className="space-y-0.5">
+            <div className="flex items-start gap-3">
+              <div className="space-y-0.5 flex-1">
                 <Label htmlFor="retail-enabled">Retail Stations</Label>
                 <p className="text-sm text-muted-foreground">Commercial gas stations</p>
               </div>
@@ -94,8 +94,8 @@ export const FuelSettingsTab: React.FC = () => {
               />
             </div>
 
-            <div className="flex items-center justify-between space-x-2">
-              <div className="space-y-0.5">
+            <div className="flex items-start gap-3">
+              <div className="space-y-0.5 flex-1">
                 <Label htmlFor="yard-tank-enabled">Yard Tanks</Label>
                 <p className="text-sm text-muted-foreground">On-site fuel storage</p>
               </div>
@@ -108,8 +108,8 @@ export const FuelSettingsTab: React.FC = () => {
               />
             </div>
 
-            <div className="flex items-center justify-between space-x-2">
-              <div className="space-y-0.5">
+            <div className="flex items-start gap-3">
+              <div className="space-y-0.5 flex-1">
                 <Label htmlFor="mobile-service-enabled">Mobile Service</Label>
                 <p className="text-sm text-muted-foreground">Fuel delivery trucks</p>
               </div>
@@ -258,8 +258,8 @@ export const FuelSettingsTab: React.FC = () => {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2">
-            <div className="flex items-center justify-between space-x-2">
-              <div className="space-y-0.5">
+            <div className="flex items-start gap-3">
+              <div className="space-y-0.5 flex-1">
                 <Label htmlFor="auto-mpg">Auto-Calculate MPG</Label>
                 <p className="text-sm text-muted-foreground">Calculate miles per gallon automatically</p>
               </div>
@@ -272,8 +272,8 @@ export const FuelSettingsTab: React.FC = () => {
               />
             </div>
 
-            <div className="flex items-center justify-between space-x-2">
-              <div className="space-y-0.5">
+            <div className="flex items-start gap-3">
+              <div className="space-y-0.5 flex-1">
                 <Label htmlFor="auto-cost-per-mile">Auto-Calculate Cost/Mile</Label>
                 <p className="text-sm text-muted-foreground">Track fuel cost per mile driven</p>
               </div>
@@ -286,8 +286,8 @@ export const FuelSettingsTab: React.FC = () => {
               />
             </div>
 
-            <div className="flex items-center justify-between space-x-2">
-              <div className="space-y-0.5">
+            <div className="flex items-start gap-3">
+              <div className="space-y-0.5 flex-1">
                 <Label htmlFor="auto-flag-consumption">Auto-Flag High Consumption</Label>
                 <p className="text-sm text-muted-foreground">Automatically detect unusual usage</p>
               </div>
@@ -300,8 +300,8 @@ export const FuelSettingsTab: React.FC = () => {
               />
             </div>
 
-            <div className="flex items-center justify-between space-x-2">
-              <div className="space-y-0.5">
+            <div className="flex items-start gap-3">
+              <div className="space-y-0.5 flex-1">
                 <Label htmlFor="auto-flag-prices">Auto-Flag Price Spikes</Label>
                 <p className="text-sm text-muted-foreground">Alert on unusually high fuel prices</p>
               </div>
@@ -329,8 +329,8 @@ export const FuelSettingsTab: React.FC = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="flex items-center justify-between space-x-2">
-            <div className="space-y-0.5">
+          <div className="flex items-start gap-3">
+            <div className="space-y-0.5 flex-1">
               <Label htmlFor="auto-update-tanks">Auto-Update Tank Levels</Label>
               <p className="text-sm text-muted-foreground">
                 Automatically adjust tank levels based on deliveries and fuel draws
@@ -382,8 +382,8 @@ export const FuelSettingsTab: React.FC = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="flex items-center justify-between space-x-2">
-            <div className="space-y-0.5">
+          <div className="flex items-start gap-3">
+            <div className="space-y-0.5 flex-1">
               <Label htmlFor="notifications-enabled">Enable Notifications</Label>
               <p className="text-sm text-muted-foreground">Master switch for all notifications</p>
             </div>
@@ -401,8 +401,8 @@ export const FuelSettingsTab: React.FC = () => {
               <Separator />
 
               <div className="grid gap-6 md:grid-cols-2">
-                <div className="flex items-center justify-between space-x-2">
-                  <div className="space-y-0.5">
+                <div className="flex items-start gap-3">
+                  <div className="space-y-0.5 flex-1">
                     <Label htmlFor="email-notifications">Email Notifications</Label>
                     <p className="text-sm text-muted-foreground">Send alerts via email</p>
                   </div>
@@ -415,8 +415,8 @@ export const FuelSettingsTab: React.FC = () => {
                   />
                 </div>
 
-                <div className="flex items-center justify-between space-x-2">
-                  <div className="space-y-0.5">
+                <div className="flex items-start gap-3">
+                  <div className="space-y-0.5 flex-1">
                     <Label htmlFor="sms-notifications">SMS Notifications</Label>
                     <p className="text-sm text-muted-foreground">Send alerts via text message</p>
                   </div>
@@ -496,8 +496,8 @@ export const FuelSettingsTab: React.FC = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="flex items-center justify-between space-x-2">
-            <div className="space-y-0.5">
+          <div className="flex items-start gap-3">
+            <div className="space-y-0.5 flex-1">
               <Label htmlFor="spcc-enabled">Enable SPCC Compliance Tracking</Label>
               <p className="text-sm text-muted-foreground">
                 Track and monitor tanks that require SPCC compliance
