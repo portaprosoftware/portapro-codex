@@ -6,6 +6,7 @@ import { FuelOverviewTab } from '@/components/fleet/fuel/FuelOverviewTab';
 import { FuelAllLogsTab } from '@/components/fleet/fuel/FuelAllLogsTab';
 import { FuelReportsTab } from '@/components/fleet/fuel/FuelReportsTab';
 import { FuelSourcesTab } from '@/components/fleet/fuel/FuelSourcesTab';
+import { FuelSupplyTab } from '@/components/fleet/fuel/supply/FuelSupplyTab';
 import { VehicleContextChip } from '@/components/fleet/VehicleContextChip';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -62,9 +63,9 @@ export const FleetFuelManagement: React.FC = () => {
               <TabsList className="bg-white rounded-full p-1 shadow-sm border w-fit overflow-x-auto">
                 <TabsTrigger value="overview" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Overview</TabsTrigger>
                 <TabsTrigger value="logs" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">All Logs</TabsTrigger>
+                <TabsTrigger value="supply" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Supply</TabsTrigger>
                 <TabsTrigger value="reports" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Reports</TabsTrigger>
                 <TabsTrigger value="sources" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Fuel Sources</TabsTrigger>
-                
               </TabsList>
             </div>
           
@@ -75,6 +76,10 @@ export const FleetFuelManagement: React.FC = () => {
 
               <TabsContent value="logs" className="mt-6">
                 <FuelAllLogsTab />
+              </TabsContent>
+
+              <TabsContent value="supply" className="mt-6">
+                <FuelSupplyTab />
               </TabsContent>
 
               <TabsContent value="reports" className="mt-6">
