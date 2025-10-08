@@ -34,10 +34,9 @@ export const ViewSupplierModal: React.FC<ViewSupplierModalProps> = ({
               Supplier Details
             </DialogTitle>
             <Badge 
-              variant="outline" 
               className={supplier.is_active 
-                ? "bg-gradient-to-r from-primary/10 to-primary/5 text-primary font-bold" 
-                : "bg-muted text-muted-foreground font-bold"
+                ? "bg-gradient-to-r from-green-500 to-green-600 text-white font-bold border-0" 
+                : "bg-muted text-muted-foreground font-bold border-0"
               }
             >
               {supplier.is_active ? 'Active' : 'Inactive'}

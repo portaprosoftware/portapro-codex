@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Building2, Droplets, Truck } from 'lucide-react';
+import { Building2, Fuel, Truck } from 'lucide-react';
 import { FuelTanksManager } from './sources/FuelTanksManager';
 import { MobileFuelVendorsManager } from './sources/MobileFuelVendorsManager';
 import { RetailStationsManager } from './sources/RetailStationsManager';
@@ -24,7 +24,7 @@ export const FuelSourcesTab: React.FC = () => {
             Retail Stations
           </TabsTrigger>
           <TabsTrigger value="tanks" className="flex items-center gap-2">
-            <Droplets className="h-4 w-4" />
+            <Fuel className="h-4 w-4" />
             Yard Tanks
           </TabsTrigger>
           <TabsTrigger value="mobile" className="flex items-center gap-2">

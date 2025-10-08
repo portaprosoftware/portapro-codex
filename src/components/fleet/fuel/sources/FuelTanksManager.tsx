@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Plus, Droplets, AlertTriangle, CheckCircle, Calendar, Truck, Building2 } from 'lucide-react';
+import { Plus, Fuel, AlertTriangle, CheckCircle, Calendar, Truck, Building2 } from 'lucide-react';
 import { useFuelTanks, useSPCCTanks } from '@/hooks/useFuelTanks';
 import { useFuelTankDeliveries } from '@/hooks/useFuelTankDeliveries';
 import { AddFuelTankDialog } from './AddFuelTankDialog';
@@ -69,7 +69,7 @@ export const FuelTanksManager: React.FC = () => {
         <Card className="p-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-md">
-              <Droplets className="h-5 w-5 text-white" strokeWidth={2.5} />
+              <Fuel className="h-5 w-5 text-white" strokeWidth={2.5} />
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Active Tanks</p>
@@ -191,7 +191,7 @@ export const FuelTanksManager: React.FC = () => {
 
           {tanks.length === 0 && (
             <Card className="p-8 text-center">
-              <Droplets className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+              <Fuel className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
               <h4 className="font-semibold mb-2">No Fuel Tanks</h4>
               <p className="text-sm text-muted-foreground mb-4">
                 Add your first on-site fuel tank to start tracking bulk deliveries
