@@ -5692,44 +5692,65 @@ export type Database = {
         Row: {
           cost_per_gallon: number | null
           created_at: string
+          fuel_grade: string | null
           id: string
           invoice_number: string | null
           location: string | null
           notes: string | null
+          payment_method: string | null
+          price_per_gallon: number | null
           service_date: string
+          service_end_time: string | null
+          service_start_time: string | null
           total_cost: number
           total_gallons: number
           updated_at: string
           vehicles_fueled: number | null
+          vendor_driver_name: string | null
           vendor_id: string
+          vendor_truck_number: string | null
         }
         Insert: {
           cost_per_gallon?: number | null
           created_at?: string
+          fuel_grade?: string | null
           id?: string
           invoice_number?: string | null
           location?: string | null
           notes?: string | null
+          payment_method?: string | null
+          price_per_gallon?: number | null
           service_date: string
+          service_end_time?: string | null
+          service_start_time?: string | null
           total_cost: number
           total_gallons: number
           updated_at?: string
           vehicles_fueled?: number | null
+          vendor_driver_name?: string | null
           vendor_id: string
+          vendor_truck_number?: string | null
         }
         Update: {
           cost_per_gallon?: number | null
           created_at?: string
+          fuel_grade?: string | null
           id?: string
           invoice_number?: string | null
           location?: string | null
           notes?: string | null
+          payment_method?: string | null
+          price_per_gallon?: number | null
           service_date?: string
+          service_end_time?: string | null
+          service_start_time?: string | null
           total_cost?: number
           total_gallons?: number
           updated_at?: string
           vehicles_fueled?: number | null
+          vendor_driver_name?: string | null
           vendor_id?: string
+          vendor_truck_number?: string | null
         }
         Relationships: [
           {

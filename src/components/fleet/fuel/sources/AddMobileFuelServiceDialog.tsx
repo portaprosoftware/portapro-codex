@@ -9,6 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useAddMobileFuelService } from '@/hooks/useMobileFuelServices';
 import { useMobileFuelVendors } from '@/hooks/useMobileFuelVendors';
 import { useForm } from 'react-hook-form';
+import { FUEL_GRADE_LABELS, PAYMENT_METHOD_LABELS, FuelGrade, MobilePaymentMethod } from '@/types/fuel';
 
 interface AddMobileFuelServiceDialogProps {
   open: boolean;
@@ -25,6 +26,14 @@ interface ServiceFormData {
   vehicles_fueled: number;
   location: string;
   notes: string;
+  // Tier 1 fields
+  service_start_time?: string;
+  service_end_time?: string;
+  vendor_driver_name?: string;
+  vendor_truck_number?: string;
+  fuel_grade?: FuelGrade;
+  price_per_gallon?: number;
+  payment_method?: MobilePaymentMethod;
 }
 
 export const AddMobileFuelServiceDialog: React.FC<AddMobileFuelServiceDialogProps> = ({ 
@@ -43,6 +52,18 @@ export const AddMobileFuelServiceDialog: React.FC<AddMobileFuelServiceDialogProp
   const { data: vendors = [] } = useMobileFuelVendors();
   const addService = useAddMobileFuelService();
   const selectedVendorId = watch('vendor_id');
+  const totalGallons = watch('total_gallons');
+  const pricePerGallon = watch('price_per_gallon');
+  const fuelGrade = watch('fuel_grade');
+  const paymentMethod = watch('payment_method');
+
+  // Auto-calculate total cost when price per gallon or total gallons changes
+  React.useEffect(() => {
+    if (pricePerGallon && totalGallons) {
+      const calculatedTotal = Number(pricePerGallon) * Number(totalGallons);
+      setValue('total_cost', Number(calculatedTotal.toFixed(2)));
+    }
+  }, [pricePerGallon, totalGallons, setValue]);
 
   React.useEffect(() => {
     if (vendorId) {
@@ -56,6 +77,7 @@ export const AddMobileFuelServiceDialog: React.FC<AddMobileFuelServiceDialogProp
       total_gallons: Number(data.total_gallons),
       total_cost: Number(data.total_cost),
       vehicles_fueled: Number(data.vehicles_fueled),
+      price_per_gallon: data.price_per_gallon ? Number(data.price_per_gallon) : undefined,
     });
     reset();
     onOpenChange(false);
@@ -110,6 +132,65 @@ export const AddMobileFuelServiceDialog: React.FC<AddMobileFuelServiceDialogProp
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
+              <Label htmlFor="service_start_time">Delivery Window Start</Label>
+              <Input
+                id="service_start_time"
+                type="time"
+                {...register('service_start_time')}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="service_end_time">Delivery Window End</Label>
+              <Input
+                id="service_end_time"
+                type="time"
+                {...register('service_end_time')}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="vendor_driver_name">Driver / Tech Name</Label>
+              <Input
+                id="vendor_driver_name"
+                {...register('vendor_driver_name')}
+                placeholder="Vendor representative"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="vendor_truck_number">Vendor Truck / Unit #</Label>
+              <Input
+                id="vendor_truck_number"
+                {...register('vendor_truck_number')}
+                placeholder="Truck identifier"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="fuel_grade">Fuel Grade / Type</Label>
+            <Select
+              value={fuelGrade}
+              onValueChange={(value) => setValue('fuel_grade', value as FuelGrade)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select fuel grade" />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(FUEL_GRADE_LABELS).map(([value, label]) => (
+                  <SelectItem key={value} value={value}>
+                    {label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
               <Label htmlFor="total_gallons">Total Gallons *</Label>
               <Input
                 id="total_gallons"
@@ -121,15 +202,30 @@ export const AddMobileFuelServiceDialog: React.FC<AddMobileFuelServiceDialogProp
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="total_cost">Total Cost *</Label>
+              <Label htmlFor="price_per_gallon">Price per Gallon</Label>
               <Input
-                id="total_cost"
+                id="price_per_gallon"
                 type="number"
-                step="0.01"
-                {...register('total_cost', { required: true })}
-                placeholder="e.g., 1250.00"
+                step="0.001"
+                {...register('price_per_gallon')}
+                placeholder="e.g., 2.50"
               />
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="total_cost">Total Cost * {pricePerGallon && totalGallons && (
+              <span className="text-xs text-muted-foreground ml-2">
+                (Auto-calculated: {totalGallons} gal × ${pricePerGallon}/gal)
+              </span>
+            )}</Label>
+            <Input
+              id="total_cost"
+              type="number"
+              step="0.01"
+              {...register('total_cost', { required: true })}
+              placeholder="e.g., 1250.00"
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -151,6 +247,25 @@ export const AddMobileFuelServiceDialog: React.FC<AddMobileFuelServiceDialogProp
                 placeholder="e.g., Main yard"
               />
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="payment_method">Payment Method / Terms</Label>
+            <Select
+              value={paymentMethod}
+              onValueChange={(value) => setValue('payment_method', value as MobilePaymentMethod)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select payment method" />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(PAYMENT_METHOD_LABELS).map(([value, label]) => (
+                  <SelectItem key={value} value={value}>
+                    {label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">

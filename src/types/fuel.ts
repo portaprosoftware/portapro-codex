@@ -213,6 +213,9 @@ export interface MobileFuelVendor {
   updated_at: string;
 }
 
+export type FuelGrade = 'diesel_2' | 'dyed_diesel' | 'gasoline_87' | 'gasoline_91' | 'def' | 'biodiesel';
+export type MobilePaymentMethod = 'ach' | 'check' | 'net_30' | 'cod' | 'credit_card' | 'cash';
+
 export interface MobileFuelService {
   id: string;
   vendor_id: string;
@@ -227,6 +230,14 @@ export interface MobileFuelService {
   mobile_fuel_vendors?: MobileFuelVendor;
   created_at: string;
   updated_at: string;
+  // Tier 1 fields
+  service_start_time?: string;
+  service_end_time?: string;
+  vendor_driver_name?: string;
+  vendor_truck_number?: string;
+  fuel_grade?: FuelGrade;
+  price_per_gallon?: number;
+  payment_method?: MobilePaymentMethod;
 }
 
 export interface EnhancedFuelLog {
@@ -274,4 +285,22 @@ export const FUEL_SOURCE_COLORS: Record<FuelSource, string> = {
   retail: 'from-blue-500 to-blue-600',
   yard_tank: 'from-green-500 to-green-600',
   mobile_service: 'from-purple-500 to-purple-600',
+};
+
+export const FUEL_GRADE_LABELS: Record<FuelGrade, string> = {
+  'diesel_2': 'Diesel #2',
+  'dyed_diesel': 'Dyed Diesel',
+  'gasoline_87': 'Gasoline 87',
+  'gasoline_91': 'Gasoline 91',
+  'def': 'DEF',
+  'biodiesel': 'Biodiesel',
+};
+
+export const PAYMENT_METHOD_LABELS: Record<MobilePaymentMethod, string> = {
+  'ach': 'ACH',
+  'check': 'Check',
+  'net_30': 'Net 30',
+  'cod': 'COD',
+  'credit_card': 'Credit Card',
+  'cash': 'Cash',
 };
