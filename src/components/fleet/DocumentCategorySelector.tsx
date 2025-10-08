@@ -15,6 +15,7 @@ interface Category {
   requires_expiration?: boolean;
   custom_fields_schema?: any;
   reminder_days_before?: number;
+  parent_group?: string;
 }
 
 interface DocumentCategorySelectorProps {
@@ -31,90 +32,49 @@ const categoryGroups = [
     name: "Maintenance & Operations",
     icon: FileText,
     color: "bg-gradient-to-r from-orange-500 to-orange-600 text-white",
-    description: "Work orders, maintenance invoices, oil change records",
-    categoryNames: [
-      "Maintenance & Repairs",
-      "Fuel Receipts",
-      "Inspection Reports",
-      "Service Records",
-      "Work Orders"
-    ]
+    description: "Work orders, maintenance invoices, oil change records"
   },
   {
     id: "compliance",
     name: "Vehicle Ownership & Compliance",
     icon: Shield,
     color: "bg-gradient-to-r from-blue-500 to-blue-600 text-white",
-    description: "Registration, insurance, permits, and inspections",
-    categoryNames: [
-      "Registration",
-      "Title / Ownership",
-      "Insurance",
-      "Emissions & Inspection Certificates",
-      "Permits & Licensing"
-    ]
+    description: "Registration, insurance, permits, and inspections"
   },
   {
     id: "personnel",
     name: "Driver & Personnel",
     icon: Users,
     color: "bg-gradient-to-r from-purple-500 to-purple-600 text-white",
-    description: "Driver licenses, training, incidents, and safety",
-    categoryNames: [
-      "Driver License & ID",
-      "Training Certificates",
-      "Accident / Incident Reports",
-      "Disciplinary / Safety Records"
-    ]
+    description: "Driver licenses, training, incidents, and safety"
   },
   {
     id: "equipment",
     name: "Equipment & Asset Management",
     icon: Package,
     color: "bg-gradient-to-r from-green-500 to-green-600 text-white",
-    description: "Manuals, warranties, and purchase agreements",
-    categoryNames: [
-      "Equipment Manuals",
-      "Warranty Documents",
-      "Purchase / Lease Agreements",
-      "Upfit / Modification Docs"
-    ]
+    description: "Manuals, warranties, and purchase agreements"
   },
   {
     id: "photos",
     name: "Photos & Visual Records",
     icon: Camera,
     color: "bg-gradient-to-r from-gray-500 to-gray-600 text-white",
-    description: "Vehicle photos, job sites, and compliance images",
-    categoryNames: [
-      "Vehicle Photos",
-      "Job Site Photos",
-      "Compliance Photos"
-    ]
+    description: "Vehicle photos, job sites, and compliance images"
   },
   {
     id: "financial",
     name: "Financial & Administrative",
     icon: DollarSign,
     color: "bg-gradient-to-r from-amber-500 to-amber-600 text-white",
-    description: "Invoices, receipts, and tax documents",
-    categoryNames: [
-      "Invoices & Receipts",
-      "Purchase Orders",
-      "Tax Documents",
-      "Contracts & Agreements"
-    ]
+    description: "Invoices, receipts, and tax documents"
   },
   {
     id: "other",
     name: "Catch-All / Miscellaneous",
     icon: Archive,
     color: "bg-gradient-to-r from-slate-500 to-slate-600 text-white",
-    description: "Temporary files and uncategorized documents",
-    categoryNames: [
-      "Other Documents",
-      "Temporary / Draft Files"
-    ]
+    description: "Temporary files and uncategorized documents"
   }
 ];
 
@@ -147,10 +107,10 @@ export const DocumentCategorySelector: React.FC<DocumentCategorySelectorProps> =
     setSearchTerm("");
   };
 
-  // Get categories for the current group
+  // Get categories for the current group (filter by parent_group)
   const currentGroup = selectedGroup ? categoryGroups.find(g => g.id === selectedGroup) : null;
   const currentGroupCategories = currentGroup
-    ? categories.filter(cat => currentGroup.categoryNames.includes(cat.name))
+    ? categories.filter(cat => cat.parent_group === currentGroup.id)
     : [];
 
   // Filter categories based on search term
@@ -161,16 +121,16 @@ export const DocumentCategorySelector: React.FC<DocumentCategorySelectorProps> =
       )
     : [];
 
-  // Add group info to filtered categories
+  // Add group info to filtered categories (use parent_group)
   const filteredCategoriesWithGroup = filteredCategories.map(cat => {
-    const group = categoryGroups.find(g => g.categoryNames.includes(cat.name));
+    const group = categoryGroups.find(g => g.id === cat.parent_group);
     return { ...cat, groupName: group?.name, groupColor: group?.color };
   });
 
-  // Get group with count
+  // Get group with count (use parent_group field)
   const groupsWithCount = categoryGroups.map(group => ({
     ...group,
-    count: categories.filter(cat => group.categoryNames.includes(cat.name)).length
+    count: categories.filter(cat => cat.parent_group === group.id).length
   }));
 
   return (
