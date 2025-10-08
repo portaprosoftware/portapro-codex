@@ -2,17 +2,19 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Droplets, AlertTriangle, CheckCircle, Calendar } from 'lucide-react';
+import { Plus, Droplets, AlertTriangle, CheckCircle, Calendar, Truck } from 'lucide-react';
 import { useFuelTanks, useSPCCTanks } from '@/hooks/useFuelTanks';
 import { useFuelTankDeliveries } from '@/hooks/useFuelTankDeliveries';
 import { AddFuelTankDialog } from './AddFuelTankDialog';
 import { AddTankDeliveryDialog } from './AddTankDeliveryDialog';
+import { AddSupplierDialog } from './AddSupplierDialog';
 import { FuelTankAlerts } from './FuelTankAlerts';
 import { FUEL_TYPE_LABELS, FUEL_TYPE_COLORS } from '@/types/fuel';
 import { format } from 'date-fns';
 
 export const FuelTanksManager: React.FC = () => {
   const [showAddTank, setShowAddTank] = useState(false);
+  const [showAddSupplier, setShowAddSupplier] = useState(false);
   const [showAddDelivery, setShowAddDelivery] = useState(false);
   const [selectedTankId, setSelectedTankId] = useState<string | undefined>();
 
@@ -97,13 +99,19 @@ export const FuelTanksManager: React.FC = () => {
         </Card>
       </div>
 
-      {/* Add Tank Button */}
+      {/* Add Tank & Supplier Buttons */}
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Fuel Tanks</h3>
-        <Button onClick={() => setShowAddTank(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Tank
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setShowAddSupplier(true)}>
+            <Truck className="h-4 w-4 mr-2" />
+            Add Supplier
+          </Button>
+          <Button onClick={() => setShowAddTank(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Tank
+          </Button>
+        </div>
       </div>
 
       {/* Tanks List */}
@@ -173,6 +181,7 @@ export const FuelTanksManager: React.FC = () => {
       </div>
 
       <AddFuelTankDialog open={showAddTank} onOpenChange={setShowAddTank} />
+      <AddSupplierDialog open={showAddSupplier} onOpenChange={setShowAddSupplier} />
       <AddTankDeliveryDialog 
         open={showAddDelivery} 
         onOpenChange={setShowAddDelivery}

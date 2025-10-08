@@ -31,8 +31,8 @@ export const SupplierAutocomplete: React.FC<SupplierAutocompleteProps> = ({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0">
-        <Command>
+      <PopoverContent className="w-full p-0 bg-background z-50">
+        <Command className="bg-background">
           <CommandInput placeholder="Search suppliers..." />
           <CommandEmpty>No supplier found.</CommandEmpty>
           <CommandGroup>
