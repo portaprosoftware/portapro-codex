@@ -832,6 +832,18 @@ export const FuelSettingsTab: React.FC = () => {
               />
             </div>
           </div>
+
+          {/* Save Settings Button */}
+          <div className="flex justify-end pt-4 border-t">
+            <Button 
+              onClick={handleSaveSettings}
+              disabled={updateSettingsMutation.isPending}
+              className="bg-gradient-to-r from-primary to-primary-variant"
+            >
+              <Save className="h-4 w-4 mr-2" />
+              {updateSettingsMutation.isPending ? 'Saving...' : 'Save Settings'}
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
@@ -899,18 +911,6 @@ export const FuelSettingsTab: React.FC = () => {
           )}
         </CardContent>
       </Card>
-
-      {/* Save Settings Button */}
-      <div className="flex justify-end">
-        <Button 
-          onClick={handleSaveSettings}
-          disabled={updateSettingsMutation.isPending}
-          className="bg-gradient-to-r from-primary to-primary-variant"
-        >
-          <Save className="h-4 w-4 mr-2" />
-          {updateSettingsMutation.isPending ? 'Saving...' : 'Save Settings'}
-        </Button>
-      </div>
 
       {/* Add/Edit Station Modal */}
       <Dialog open={showStationModal} onOpenChange={setShowStationModal}>
