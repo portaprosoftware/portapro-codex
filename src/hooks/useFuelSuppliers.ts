@@ -42,3 +42,50 @@ export const useAddFuelSupplier = () => {
     },
   });
 };
+
+export const useUpdateFuelSupplier = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, ...supplier }: Partial<FuelSupplier> & { id: string }) => {
+      const { data, error } = await supabase
+        .from('fuel_suppliers')
+        .update(supplier)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['fuel-suppliers'] });
+      toast.success('Supplier updated successfully');
+    },
+    onError: (error) => {
+      toast.error('Failed to update supplier: ' + error.message);
+    },
+  });
+};
+
+export const useDeleteFuelSupplier = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('fuel_suppliers')
+        .update({ is_active: false })
+        .eq('id', id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['fuel-suppliers'] });
+      toast.success('Supplier deleted successfully');
+    },
+    onError: (error) => {
+      toast.error('Failed to delete supplier: ' + error.message);
+    },
+  });
+};

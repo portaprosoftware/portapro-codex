@@ -1,11 +1,35 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Building2, Mail, Phone, DollarSign, FileText } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Building2, Mail, Phone, DollarSign, FileText, Eye, Pencil, Trash2 } from 'lucide-react';
 import { useFuelSuppliers } from '@/hooks/useFuelSuppliers';
+import { FuelSupplier } from '@/types/fuel';
+import { ViewSupplierModal } from './ViewSupplierModal';
+import { EditSupplierModal } from './EditSupplierModal';
+import { DeleteSupplierModal } from './DeleteSupplierModal';
 
 export const SuppliersList: React.FC = () => {
   const { data: suppliers, isLoading } = useFuelSuppliers();
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [selectedSupplier, setSelectedSupplier] = useState<FuelSupplier | null>(null);
+
+  const handleView = (supplier: FuelSupplier) => {
+    setSelectedSupplier(supplier);
+    setViewModalOpen(true);
+  };
+
+  const handleEdit = (supplier: FuelSupplier) => {
+    setSelectedSupplier(supplier);
+    setEditModalOpen(true);
+  };
+
+  const handleDelete = (supplier: FuelSupplier) => {
+    setSelectedSupplier(supplier);
+    setDeleteModalOpen(true);
+  };
 
   if (isLoading) {
     return <div className="text-sm text-muted-foreground">Loading suppliers...</div>;
@@ -66,9 +90,54 @@ export const SuppliersList: React.FC = () => {
                 <span className="text-muted-foreground line-clamp-2">{supplier.notes}</span>
               </div>
             )}
+            <div className="flex items-center gap-2 pt-3 border-t mt-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleView(supplier)}
+                className="flex-1"
+              >
+                <Eye className="h-4 w-4 mr-1" />
+                View
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleEdit(supplier)}
+                className="flex-1"
+              >
+                <Pencil className="h-4 w-4 mr-1" />
+                Edit
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleDelete(supplier)}
+                className="flex-1 text-destructive hover:text-destructive"
+              >
+                <Trash2 className="h-4 w-4 mr-1" />
+                Delete
+              </Button>
+            </div>
           </CardContent>
         </Card>
       ))}
+
+      <ViewSupplierModal
+        isOpen={viewModalOpen}
+        onClose={() => setViewModalOpen(false)}
+        supplier={selectedSupplier}
+      />
+      <EditSupplierModal
+        isOpen={editModalOpen}
+        onClose={() => setEditModalOpen(false)}
+        supplier={selectedSupplier}
+      />
+      <DeleteSupplierModal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        supplier={selectedSupplier}
+      />
     </div>
   );
 };
