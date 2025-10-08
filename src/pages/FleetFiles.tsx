@@ -310,7 +310,7 @@ export default function FleetFiles() {
               <Filter className="h-4 w-4" />
               {selectedCategoryFilters.length === 0 
                 ? "All Categories" 
-                : `${selectedCategoryFilters.length} Category${selectedCategoryFilters.length > 1 ? 'ies' : ''}`
+                : `${selectedCategoryFilters.length} Categor${selectedCategoryFilters.length > 1 ? 'ies' : 'y'}`
               }
             </Button>
           </div>
