@@ -9,8 +9,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Switch } from '@/components/ui/switch';
 import { useAddFuelTankDelivery } from '@/hooks/useFuelTankDeliveries';
 import { useFuelTanks } from '@/hooks/useFuelTanks';
+import { useFuelSuppliers } from '@/hooks/useFuelSuppliers';
 import { useForm } from 'react-hook-form';
-import { SupplierAutocomplete } from './SupplierAutocomplete';
 import { DeliveryPhotoUpload } from './DeliveryPhotoUpload';
 import { VarianceWarningBadge } from './VarianceWarningBadge';
 import { AlertTriangle } from 'lucide-react';
@@ -76,7 +76,13 @@ export const AddTankDeliveryDialog: React.FC<AddTankDeliveryDialogProps> = ({
   });
   
   const { data: tanks = [] } = useFuelTanks();
+  const { data: suppliers = [] } = useFuelSuppliers();
   const addDelivery = useAddFuelTankDelivery();
+  
+  // Sort suppliers alphabetically by name
+  const sortedSuppliers = [...suppliers].sort((a, b) => 
+    a.supplier_name.localeCompare(b.supplier_name)
+  );
   const selectedTankId = watch('tank_id');
   const selectedTank = tanks.find(t => t.id === selectedTankId);
   const fuelGrade = watch('fuel_grade');
@@ -240,10 +246,21 @@ export const AddTankDeliveryDialog: React.FC<AddTankDeliveryDialogProps> = ({
 
                   <div className="space-y-2">
                     <Label htmlFor="supplier_name">Supplier Name</Label>
-                    <SupplierAutocomplete
+                    <Select
                       value={watch('supplier_name')}
                       onValueChange={(value) => setValue('supplier_name', value)}
-                    />
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select supplier..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {sortedSuppliers.map((supplier) => (
+                          <SelectItem key={supplier.id} value={supplier.supplier_name}>
+                            {supplier.supplier_name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
 
