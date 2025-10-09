@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Edit, Trash2, Download, Plus, Search, Truck, Users, X, Store, Factory, TruckIcon } from 'lucide-react';
+import { Edit, Trash2, Download, Plus, Search, Truck, Users, X, TruckIcon, Fuel, Container } from 'lucide-react';
 import { DatePickerWithRange } from '@/components/ui/DatePickerWithRange';
 import { DateRange } from 'react-day-picker';
 import { useToast } from '@/hooks/use-toast';
@@ -155,11 +155,12 @@ export const FuelAllLogsTab: React.FC = () => {
   const getSourceBadge = (sourceType: string) => {
     switch (sourceType) {
       case 'retail':
-        return <Badge className="bg-blue-500 text-white"><Store className="h-3 w-3 mr-1" />Retail</Badge>;
+      case 'retail_station':
+        return <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold"><Fuel className="h-3 w-3 mr-1" />Retail</Badge>;
       case 'yard_tank':
-        return <Badge className="bg-green-500 text-white"><Factory className="h-3 w-3 mr-1" />Yard Tank</Badge>;
+        return <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white font-bold"><Container className="h-3 w-3 mr-1" />Yard Tank</Badge>;
       case 'mobile_service':
-        return <Badge className="bg-purple-500 text-white"><TruckIcon className="h-3 w-3 mr-1" />Mobile Vendor</Badge>;
+        return <Badge className="bg-gradient-to-r from-purple-500 to-purple-600 text-white font-bold"><TruckIcon className="h-3 w-3 mr-1" />Mobile Service</Badge>;
       default:
         return <Badge variant="outline">{sourceType}</Badge>;
     }

@@ -17,7 +17,9 @@ import {
   Download, 
   BarChart3,
   Award,
-  Gauge
+  Gauge,
+  Container,
+  TruckIcon
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
@@ -66,12 +68,17 @@ export const FuelAnalyticsTab: React.FC<FuelAnalyticsTabProps> = ({ filters }) =
     });
   };
 
-  const getSourceBadgeColor = (sourceType: string) => {
+  const getSourceBadge = (sourceType: string) => {
     switch (sourceType) {
-      case 'retail': return 'bg-blue-100 text-blue-800 border-blue-300';
-      case 'yard_tank': return 'bg-green-100 text-green-800 border-green-300';
-      case 'mobile_service': return 'bg-purple-100 text-purple-800 border-purple-300';
-      default: return 'bg-gray-100 text-gray-800 border-gray-300';
+      case 'retail':
+      case 'retail_station':
+        return <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold"><Fuel className="h-3 w-3 mr-1" />Retail</Badge>;
+      case 'yard_tank':
+        return <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white font-bold"><Container className="h-3 w-3 mr-1" />Yard Tank</Badge>;
+      case 'mobile_service':
+        return <Badge className="bg-gradient-to-r from-purple-500 to-purple-600 text-white font-bold"><TruckIcon className="h-3 w-3 mr-1" />Mobile Service</Badge>;
+      default:
+        return <Badge variant="outline">{sourceType}</Badge>;
     }
   };
 
@@ -201,12 +208,10 @@ export const FuelAnalyticsTab: React.FC<FuelAnalyticsTabProps> = ({ filters }) =
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {sourceComparison?.map((source) => (
+                     {sourceComparison?.map((source) => (
                       <TableRow key={source.source_type}>
                         <TableCell>
-                          <Badge variant="outline" className={getSourceBadgeColor(source.source_type)}>
-                            {source.source_type.replace('_', ' ').toUpperCase()}
-                          </Badge>
+                          {getSourceBadge(source.source_type)}
                         </TableCell>
                         <TableCell className="text-right font-medium">
                           {source.total_gallons.toFixed(1)}
