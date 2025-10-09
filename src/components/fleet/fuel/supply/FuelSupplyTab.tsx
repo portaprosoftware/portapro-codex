@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, TrendingUp, TrendingDown, AlertTriangle, Droplet } from 'lucide-react';
+import { Plus, AlertTriangle } from 'lucide-react';
 import { useFuelTankDeliveries } from '@/hooks/useFuelTankDeliveries';
 import { AddTankDeliveryDialog } from '../sources/AddTankDeliveryDialog';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
@@ -94,54 +94,42 @@ export const FuelSupplyTab: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Total Delivered</p>
-                <p className="text-2xl font-bold">{analytics?.totalDelivered.toFixed(0) || 0} gal</p>
-                <p className="text-xs text-muted-foreground mt-1">Last 30 days</p>
-              </div>
-              <TrendingUp className="h-8 w-8 text-green-500" />
+            <div>
+              <p className="text-sm text-muted-foreground">Total Delivered</p>
+              <p className="text-2xl font-bold">{analytics?.totalDelivered.toFixed(0) || 0} gal</p>
+              <p className="text-xs text-muted-foreground mt-1">Last 30 days</p>
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Total Consumed</p>
-                <p className="text-2xl font-bold">{analytics?.totalDrawn.toFixed(0) || 0} gal</p>
-                <p className="text-xs text-muted-foreground mt-1">Last 30 days</p>
-              </div>
-              <TrendingDown className="h-8 w-8 text-blue-500" />
+            <div>
+              <p className="text-sm text-muted-foreground">Total Consumed</p>
+              <p className="text-2xl font-bold">{analytics?.totalDrawn.toFixed(0) || 0} gal</p>
+              <p className="text-xs text-muted-foreground mt-1">Last 30 days</p>
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Net Change</p>
-                <p className={`text-2xl font-bold ${(analytics?.netChange || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  {(analytics?.netChange || 0) >= 0 ? '+' : ''}{analytics?.netChange.toFixed(0) || 0} gal
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">Last 30 days</p>
-              </div>
-              <Droplet className="h-8 w-8 text-purple-500" />
+            <div>
+              <p className="text-sm text-muted-foreground">Net Change</p>
+              <p className={`text-2xl font-bold ${(analytics?.netChange || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                {(analytics?.netChange || 0) >= 0 ? '+' : ''}{analytics?.netChange.toFixed(0) || 0} gal
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">Last 30 days</p>
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Delivery Cost</p>
-                <p className="text-2xl font-bold">${analytics?.deliveryCost.toFixed(2) || '0.00'}</p>
-                <p className="text-xs text-muted-foreground mt-1">{analytics?.deliveryCount || 0} deliveries</p>
-              </div>
-              <TrendingUp className="h-8 w-8 text-orange-500" />
+            <div>
+              <p className="text-sm text-muted-foreground">Delivery Cost</p>
+              <p className="text-2xl font-bold">${analytics?.deliveryCost.toFixed(2) || '0.00'}</p>
+              <p className="text-xs text-muted-foreground mt-1">{analytics?.deliveryCount || 0} deliveries</p>
             </div>
           </CardContent>
         </Card>
