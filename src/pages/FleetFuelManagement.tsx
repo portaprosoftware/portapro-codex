@@ -10,6 +10,7 @@ import { FuelSourcesTab } from '@/components/fleet/fuel/FuelSourcesTab';
 import { FuelSupplyTab } from '@/components/fleet/fuel/supply/FuelSupplyTab';
 import { FuelAnalyticsTab } from '@/components/fleet/fuel/analytics/FuelAnalyticsTab';
 import { FuelSettingsTab } from '@/components/fleet/fuel/settings/FuelSettingsTab';
+import { FuelLogsActions } from '@/components/fleet/fuel/FuelLogsActions';
 import { VehicleContextChip } from '@/components/fleet/VehicleContextChip';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -62,7 +63,7 @@ export const FleetFuelManagement: React.FC = () => {
           />
           
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <div className="flex items-center mt-4">
+            <div className="flex items-center justify-between mt-4 gap-4">
               <TabsList className="bg-white rounded-full p-1 shadow-sm border w-fit overflow-x-auto">
                 <TabsTrigger value="overview" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Overview</TabsTrigger>
                 
@@ -73,6 +74,10 @@ export const FleetFuelManagement: React.FC = () => {
                 <TabsTrigger value="sources" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Fuel Sources</TabsTrigger>
                 <TabsTrigger value="settings" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Settings</TabsTrigger>
               </TabsList>
+              
+              {activeTab === 'logs' && (
+                <FuelLogsActions />
+              )}
             </div>
           
             <div className="flex-1 overflow-auto">

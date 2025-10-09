@@ -62,7 +62,17 @@ interface FuelLog {
   notes: string;
 }
 
-export const FuelAllLogsTab: React.FC = () => {
+export const FuelAllLogsTab: React.FC<{ 
+  showAddModal?: boolean;
+  setShowAddModal?: (show: boolean) => void;
+  showExportModal?: boolean;
+  setShowExportModal?: (show: boolean) => void;
+}> = ({ 
+  showAddModal: externalShowAddModal, 
+  setShowAddModal: externalSetShowAddModal,
+  showExportModal: externalShowExportModal,
+  setShowExportModal: externalSetShowExportModal 
+}) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedVehicles, setSelectedVehicles] = useState<Vehicle[]>([]);
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
@@ -70,10 +80,15 @@ export const FuelAllLogsTab: React.FC = () => {
   const [isDriverModalOpen, setIsDriverModalOpen] = useState(false);
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [selectedSourceTypes, setSelectedSourceTypes] = useState<FuelSourceType[]>([]);
-  const [showAddModal, setShowAddModal] = useState(false);
+  const [internalShowAddModal, setInternalShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [showExportModal, setShowExportModal] = useState(false);
+  const [internalShowExportModal, setInternalShowExportModal] = useState(false);
   const [editingLog, setEditingLog] = useState<FuelLog | null>(null);
+
+  const showAddModal = externalShowAddModal !== undefined ? externalShowAddModal : internalShowAddModal;
+  const setShowAddModal = externalSetShowAddModal || setInternalShowAddModal;
+  const showExportModal = externalShowExportModal !== undefined ? externalShowExportModal : internalShowExportModal;
+  const setShowExportModal = externalSetShowExportModal || setInternalShowExportModal;
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -224,7 +239,7 @@ export const FuelAllLogsTab: React.FC = () => {
       {/* Filters */}
       <Card>
         <CardContent className="pt-6">
-          {/* Search Bar and Actions Row */}
+          {/* Search Bar Row */}
           <div className="flex items-center gap-4 mb-4">
             <div className="flex-1">
               <Input
@@ -234,24 +249,10 @@ export const FuelAllLogsTab: React.FC = () => {
                 className="w-full"
               />
             </div>
-            <Button 
-              onClick={() => setShowAddModal(true)}
-              className="bg-gradient-to-r from-primary to-primary-variant"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Add Fuel Log
-            </Button>
-            <Button 
-              onClick={() => setShowExportModal(true)}
-              variant="outline"
-            >
-              <Download className="h-4 w-4 mr-2" />
-              Export Data
-            </Button>
           </div>
 
           {/* Filter Buttons Row */}
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
             <div>
               <Select
                 value={selectedSourceTypes.length === 0 ? 'all' : selectedSourceTypes[0]}
@@ -284,26 +285,28 @@ export const FuelAllLogsTab: React.FC = () => {
             <div>
               <Button
                 variant="outline"
+                size="sm"
                 onClick={() => setIsVehicleModalOpen(true)}
-                className="w-full justify-start hover:scale-[1.02] transition-transform"
+                className="w-full justify-start h-9"
               >
-                <Truck className="h-4 w-4 mr-2" />
+                <Truck className="h-4 w-4 mr-1.5" />
                 {selectedVehicleCount === 0
                   ? "All vehicles"
-                  : `${selectedVehicleCount} vehicle${selectedVehicleCount > 1 ? 's' : ''} selected`}
+                  : `${selectedVehicleCount} selected`}
               </Button>
             </div>
 
             <div>
               <Button
                 variant="outline"
+                size="sm"
                 onClick={() => setIsDriverModalOpen(true)}
-                className="w-full justify-start hover:scale-[1.02] transition-transform"
+                className="w-full justify-start h-9"
               >
-                <Users className="h-4 w-4 mr-2" />
+                <Users className="h-4 w-4 mr-1.5" />
                 {selectedDriverCount === 0
                   ? "All drivers"
-                  : `${selectedDriverCount} driver${selectedDriverCount > 1 ? 's' : ''} selected`}
+                  : `${selectedDriverCount} selected`}
               </Button>
             </div>
 
@@ -311,7 +314,8 @@ export const FuelAllLogsTab: React.FC = () => {
               <DatePickerWithRange
                 date={dateRange}
                 onDateChange={setDateRange}
-                placeholder="Select date range"
+                placeholder="Date range"
+                className="h-9"
               />
             </div>
 
