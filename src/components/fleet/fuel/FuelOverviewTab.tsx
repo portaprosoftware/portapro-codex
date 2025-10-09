@@ -38,9 +38,9 @@ const MetricCard: React.FC<MetricCardProps> = ({
 }) => {
   return (
     <Card className="hover:shadow-lg transition-shadow">
-      <CardContent className="pt-6">
-        <div className="flex items-start justify-between mb-4">
-          <div className={`p-3 rounded-xl ${iconBgClass}`}>
+      <CardContent className="pt-5">
+        <div className="flex items-start justify-between mb-3">
+          <div className={`p-2.5 rounded-xl ${iconBgClass}`}>
             {icon}
           </div>
           {trend && (
@@ -50,7 +50,7 @@ const MetricCard: React.FC<MetricCardProps> = ({
           )}
         </div>
         <div className="space-y-1">
-          <p className="text-3xl font-bold text-gray-900">{value}</p>
+          <p className="text-2xl font-bold text-gray-900">{value}</p>
           <p className="text-sm font-semibold text-gray-700">{label}</p>
           <p className="text-xs text-gray-500">{sublabel}</p>
         </div>
@@ -163,28 +163,28 @@ export const FuelOverviewTab: React.FC = () => {
         <h2 className="text-lg font-semibold mb-4">Key Metrics</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <MetricCard
-            icon={<Fuel className="h-6 w-6 text-white" />}
+            icon={<Fuel className="h-5 w-5 text-white" />}
             iconBgClass="bg-gradient-to-br from-orange-400 to-orange-600"
             value={metrics?.totalGallons || '0'}
             label="Total Gallons"
             sublabel="Last 30 days"
           />
           <MetricCard
-            icon={<DollarSign className="h-6 w-6 text-white" />}
+            icon={<DollarSign className="h-5 w-5 text-white" />}
             iconBgClass="bg-gradient-to-br from-green-400 to-green-600"
             value={`$${metrics?.totalCost || '0.00'}`}
             label="Total Cost"
             sublabel="Last 30 days"
           />
           <MetricCard
-            icon={<TrendingUp className="h-6 w-6 text-white" />}
+            icon={<TrendingUp className="h-5 w-5 text-white" />}
             iconBgClass="bg-gradient-to-br from-blue-400 to-blue-600"
             value={`$${metrics?.avgCostPerGallon || '0.000'}`}
             label="Avg Cost/Gallon"
             sublabel="Last 30 days"
           />
           <MetricCard
-            icon={<FileText className="h-6 w-6 text-white" />}
+            icon={<FileText className="h-5 w-5 text-white" />}
             iconBgClass="bg-gradient-to-br from-purple-400 to-purple-600"
             value={metrics?.totalLogs.toString() || '0'}
             label="Fuel Logs"
