@@ -2,6 +2,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { 
   Fuel, 
@@ -9,8 +10,7 @@ import {
   TrendingUp, 
   FileText, 
   Truck,
-  Store,
-  Factory,
+  Container,
   TruckIcon as MobileVendor,
   Calendar,
   ArrowRight
@@ -138,9 +138,9 @@ export const FuelOverviewTab: React.FC = () => {
   const getSourceBadge = (sourceType: string) => {
     switch (sourceType) {
       case 'retail_station':
-        return <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold"><Store className="h-3 w-3 mr-1" />Retail</Badge>;
+        return <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold"><Fuel className="h-3 w-3 mr-1" />Retail</Badge>;
       case 'yard_tank':
-        return <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white font-bold"><Factory className="h-3 w-3 mr-1" />Yard Tank</Badge>;
+        return <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white font-bold"><Container className="h-3 w-3 mr-1" />Yard Tank</Badge>;
       case 'mobile_service':
         return <Badge className="bg-gradient-to-r from-purple-500 to-purple-600 text-white font-bold"><MobileVendor className="h-3 w-3 mr-1" />Mobile</Badge>;
       default:
@@ -203,7 +203,7 @@ export const FuelOverviewTab: React.FC = () => {
             <div className="flex items-center justify-between p-4">
               <div className="flex items-center gap-3">
                 <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg">
-                  <Store className="h-5 w-5 text-white font-bold stroke-[2.5]" />
+                  <Fuel className="h-5 w-5 text-white font-bold stroke-[2.5]" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900">{metrics?.retailCount || 0}</p>
@@ -212,10 +212,12 @@ export const FuelOverviewTab: React.FC = () => {
               </div>
             </div>
 
+            <Separator />
+
             <div className="flex items-center justify-between p-4">
               <div className="flex items-center gap-3">
                 <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-lg">
-                  <Factory className="h-5 w-5 text-white font-bold stroke-[2.5]" />
+                  <Container className="h-5 w-5 text-white font-bold stroke-[2.5]" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900">{metrics?.yardTankCount || 0}</p>
@@ -223,6 +225,8 @@ export const FuelOverviewTab: React.FC = () => {
                 </div>
               </div>
             </div>
+
+            <Separator />
 
             <div className="flex items-center justify-between p-4">
               <div className="flex items-center gap-3">
@@ -332,7 +336,7 @@ export const FuelOverviewTab: React.FC = () => {
               className="justify-start h-auto py-3"
               onClick={() => navigate('/fleet/fuel?tab=sources')}
             >
-              <Store className="h-5 w-5 mr-3" />
+              <Fuel className="h-5 w-5 mr-3" />
               <div className="text-left">
                 <p className="font-semibold text-sm">Fuel Sources</p>
                 <p className="text-xs text-gray-500">Manage fuel locations</p>
