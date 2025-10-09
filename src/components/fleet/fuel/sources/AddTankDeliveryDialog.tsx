@@ -10,6 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { useAddFuelTankDelivery } from '@/hooks/useFuelTankDeliveries';
 import { useFuelTanks } from '@/hooks/useFuelTanks';
 import { useFuelSuppliers } from '@/hooks/useFuelSuppliers';
+import { useFuelManagementSettings } from '@/hooks/useFuelManagementSettings';
 import { useForm } from 'react-hook-form';
 import { DeliveryPhotoUpload } from './DeliveryPhotoUpload';
 import { VarianceWarningBadge } from './VarianceWarningBadge';
@@ -77,6 +78,7 @@ export const AddTankDeliveryDialog: React.FC<AddTankDeliveryDialogProps> = ({
   
   const { data: tanks = [] } = useFuelTanks();
   const { data: suppliers = [] } = useFuelSuppliers();
+  const { data: settings } = useFuelManagementSettings();
   const addDelivery = useAddFuelTankDelivery();
   
   // Sort suppliers alphabetically by name
@@ -142,6 +144,8 @@ export const AddTankDeliveryDialog: React.FC<AddTankDeliveryDialogProps> = ({
   const variancePercent = tempCorrectedGallons
     ? (variance / tempCorrectedGallons) * 100
     : 0;
+  
+  const varianceTolerance = settings?.variance_tolerance_percent || 2;
 
   React.useEffect(() => {
     if (tankId) {
@@ -497,7 +501,7 @@ export const AddTankDeliveryDialog: React.FC<AddTankDeliveryDialogProps> = ({
                     <VarianceWarningBadge
                       variance={variance}
                       variancePercent={variancePercent}
-                      tolerance={2.0}
+                      tolerance={varianceTolerance}
                     />
                   </div>
                 )}

@@ -27,3 +27,6 @@ verify_jwt = false
 [functions.suggest-document-category]
 verify_jwt = false
 
+[functions.send-fuel-notifications]
+verify_jwt = false
+
