@@ -199,8 +199,8 @@ export const FuelOverviewTab: React.FC = () => {
           <CardTitle className="text-lg">Fuel Source Breakdown</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="flex items-center justify-between p-4">
+          <div className="flex items-center divide-x">
+            <div className="flex items-center justify-between p-4 flex-1">
               <div className="flex items-center gap-3">
                 <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg">
                   <Fuel className="h-5 w-5 text-white font-bold stroke-[2.5]" />
@@ -212,9 +212,7 @@ export const FuelOverviewTab: React.FC = () => {
               </div>
             </div>
 
-            <Separator />
-
-            <div className="flex items-center justify-between p-4">
+            <div className="flex items-center justify-between p-4 flex-1">
               <div className="flex items-center gap-3">
                 <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-lg">
                   <Container className="h-5 w-5 text-white font-bold stroke-[2.5]" />
@@ -226,9 +224,7 @@ export const FuelOverviewTab: React.FC = () => {
               </div>
             </div>
 
-            <Separator />
-
-            <div className="flex items-center justify-between p-4">
+            <div className="flex items-center justify-between p-4 flex-1">
               <div className="flex items-center gap-3">
                 <div className="p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg">
                   <MobileVendor className="h-5 w-5 text-white font-bold stroke-[2.5]" />
