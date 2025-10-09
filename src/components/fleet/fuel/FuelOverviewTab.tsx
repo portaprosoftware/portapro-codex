@@ -138,6 +138,7 @@ export const FuelOverviewTab: React.FC = () => {
   const getSourceBadge = (sourceType: string) => {
     switch (sourceType) {
       case 'retail_station':
+      case 'retail':
         return <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold"><Fuel className="h-3 w-3 mr-1" />Retail</Badge>;
       case 'yard_tank':
         return <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white font-bold"><Container className="h-3 w-3 mr-1" />Yard Tank</Badge>;
