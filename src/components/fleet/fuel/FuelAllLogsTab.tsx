@@ -18,6 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MultiSelectVehicleFilter } from '../MultiSelectVehicleFilter';
 import { MultiSelectDriverFilter } from '../MultiSelectDriverFilter';
 import { useUnifiedFuelConsumption, FuelSourceType } from '@/hooks/useUnifiedFuelConsumption';
+import { useFuelManagementSettings } from '@/hooks/useFuelManagementSettings';
 
 interface Vehicle {
   id: string;
@@ -76,6 +77,7 @@ export const FuelAllLogsTab: React.FC = () => {
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { data: fuelSettings } = useFuelManagementSettings();
 
   // Fetch unified fuel consumption data
   const { data: unifiedData, isLoading, isFetching } = useUnifiedFuelConsumption({
@@ -266,9 +268,15 @@ export const FuelAllLogsTab: React.FC = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Sources</SelectItem>
-                  <SelectItem value="retail">Retail Stations</SelectItem>
-                  <SelectItem value="yard_tank">Yard Tanks</SelectItem>
-                  <SelectItem value="mobile_service">Mobile Vendors</SelectItem>
+                  {fuelSettings?.retail_enabled && (
+                    <SelectItem value="retail">Retail Stations</SelectItem>
+                  )}
+                  {fuelSettings?.yard_tank_enabled && (
+                    <SelectItem value="yard_tank">Yard Tanks</SelectItem>
+                  )}
+                  {fuelSettings?.mobile_service_enabled && (
+                    <SelectItem value="mobile_service">Mobile Vendors</SelectItem>
+                  )}
                 </SelectContent>
               </Select>
             </div>

@@ -17,6 +17,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { StockVehicleSelectionModal } from '@/components/fleet/StockVehicleSelectionModal';
 import { DriverSelectionModal } from '@/components/fleet/DriverSelectionModal';
+import { useFuelManagementSettings } from '@/hooks/useFuelManagementSettings';
 
 interface AddFuelLogModalProps {
   open: boolean;
@@ -57,6 +58,11 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
   const [selectedVehicleData, setSelectedVehicleData] = useState<any>(null);
   const [selectedDriverData, setSelectedDriverData] = useState<any>(null);
   
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const { trackEvent } = useAnalytics();
+  const { data: fuelSettings } = useFuelManagementSettings();
+  
   // Initialize with vehicle context if provided
   const [formData, setFormData] = useState({
     vehicle_id: vehicleContextId || preselectedVehicleId,
@@ -66,13 +72,10 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
     gallons_purchased: '',
     cost_per_gallon: '',
     fuel_station: '',
+    fuel_source: fuelSettings?.default_fuel_source || 'retail_station',
     receipt_image: '',
     notes: ''
   });
-
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const { trackEvent } = useAnalytics();
 
   // Fetch vehicles
   const { data: vehicles } = useQuery({
@@ -182,12 +185,12 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
               log_date: format(data.log_date, 'yyyy-MM-dd'),
               odometer_reading: parseInt(data.odometer_reading),
               gallons_purchased: parseFloat(data.gallons_purchased),
-              cost_per_gallon: parseFloat(data.cost_per_gallon),
-              total_cost: totalCost,
+            cost_per_gallon: parseFloat(data.cost_per_gallon),
+            total_cost: totalCost,
             fuel_station: data.fuel_station,
             receipt_image: data.receipt_image,
             notes: data.notes,
-            fuel_source: 'retail_station',
+            fuel_source: data.fuel_source,
           }
         }
       });
@@ -207,7 +210,7 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
           fuel_station: data.fuel_station,
           receipt_image: data.receipt_image,
           notes: data.notes,
-          fuel_source: 'retail_station',
+          fuel_source: data.fuel_source,
         });
       if (error) throw error;
       }
@@ -235,6 +238,7 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
         gallons_purchased: '',
         cost_per_gallon: '',
         fuel_station: '',
+        fuel_source: fuelSettings?.default_fuel_source || 'retail_station',
         receipt_image: '',
         notes: ''
       });
@@ -385,6 +389,29 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
 
           <div>
             <Label>Total Cost: ${totalCost}</Label>
+          </div>
+
+          <div>
+            <Label htmlFor="fuel_source">Fuel Source *</Label>
+            <Select 
+              value={formData.fuel_source} 
+              onValueChange={(value) => setFormData(prev => ({ ...prev, fuel_source: value }))}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select fuel source" />
+              </SelectTrigger>
+              <SelectContent>
+                {fuelSettings?.retail_enabled && (
+                  <SelectItem value="retail_station">Retail Station</SelectItem>
+                )}
+                {fuelSettings?.yard_tank_enabled && (
+                  <SelectItem value="yard_tank">Yard Tank</SelectItem>
+                )}
+                {fuelSettings?.mobile_service_enabled && (
+                  <SelectItem value="mobile_service">Mobile Service</SelectItem>
+                )}
+              </SelectContent>
+            </Select>
           </div>
 
           <div>

@@ -4,8 +4,10 @@ import { FuelIcon, Container, Truck } from 'lucide-react';
 import { FuelTanksManager } from './sources/FuelTanksManager';
 import { MobileFuelVendorsManager } from './sources/MobileFuelVendorsManager';
 import { RetailStationsManager } from './sources/RetailStationsManager';
+import { useFuelManagementSettings } from '@/hooks/useFuelManagementSettings';
 
 export const FuelSourcesTab: React.FC = () => {
+  const { data: settings } = useFuelManagementSettings();
   const [activeSourceTab, setActiveSourceTab] = useState('retail');
 
   return (
@@ -18,32 +20,50 @@ export const FuelSourcesTab: React.FC = () => {
       </div>
 
       <Tabs value={activeSourceTab} onValueChange={setActiveSourceTab} className="w-full">
-        <TabsList className="grid grid-cols-3 w-full">
-          <TabsTrigger value="retail" className="flex items-center gap-2">
-            <FuelIcon className="h-4 w-4" />
-            Retail Stations
-          </TabsTrigger>
-          <TabsTrigger value="tanks" className="flex items-center gap-2">
-            <Container className="h-4 w-4" />
-            Yard Tanks
-          </TabsTrigger>
-          <TabsTrigger value="mobile" className="flex items-center gap-2">
-            <Truck className="h-4 w-4" />
-            Mobile Vendors
-          </TabsTrigger>
+        <TabsList className={`grid w-full ${
+          [settings?.retail_enabled, settings?.yard_tank_enabled, settings?.mobile_service_enabled].filter(Boolean).length === 3 
+            ? 'grid-cols-3' 
+            : [settings?.retail_enabled, settings?.yard_tank_enabled, settings?.mobile_service_enabled].filter(Boolean).length === 2
+            ? 'grid-cols-2'
+            : 'grid-cols-1'
+        }`}>
+          {settings?.retail_enabled && (
+            <TabsTrigger value="retail" className="flex items-center gap-2">
+              <FuelIcon className="h-4 w-4" />
+              Retail Stations
+            </TabsTrigger>
+          )}
+          {settings?.yard_tank_enabled && (
+            <TabsTrigger value="tanks" className="flex items-center gap-2">
+              <Container className="h-4 w-4" />
+              Yard Tanks
+            </TabsTrigger>
+          )}
+          {settings?.mobile_service_enabled && (
+            <TabsTrigger value="mobile" className="flex items-center gap-2">
+              <Truck className="h-4 w-4" />
+              Mobile Vendors
+            </TabsTrigger>
+          )}
         </TabsList>
 
-        <TabsContent value="retail" className="mt-6">
-          <RetailStationsManager />
-        </TabsContent>
+        {settings?.retail_enabled && (
+          <TabsContent value="retail" className="mt-6">
+            <RetailStationsManager />
+          </TabsContent>
+        )}
 
-        <TabsContent value="tanks" className="mt-6">
-          <FuelTanksManager />
-        </TabsContent>
+        {settings?.yard_tank_enabled && (
+          <TabsContent value="tanks" className="mt-6">
+            <FuelTanksManager />
+          </TabsContent>
+        )}
 
-        <TabsContent value="mobile" className="mt-6">
-          <MobileFuelVendorsManager />
-        </TabsContent>
+        {settings?.mobile_service_enabled && (
+          <TabsContent value="mobile" className="mt-6">
+            <MobileFuelVendorsManager />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );
