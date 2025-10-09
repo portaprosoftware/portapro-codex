@@ -68,15 +68,18 @@ export const useUpdateFuelTank = () => {
   });
 };
 
-export const useSPCCTanks = () => {
+export const useSPCCTanks = (thresholdGallons?: number) => {
   return useQuery({
-    queryKey: ['spcc-tanks'],
+    queryKey: ['spcc-tanks', thresholdGallons],
     queryFn: async () => {
+      // Use provided threshold or fall back to default 1320
+      const threshold = thresholdGallons || 1320;
+      
       const { data, error } = await supabase
         .from('fuel_tanks')
         .select('*')
         .eq('is_active', true)
-        .gte('capacity_gallons', 1320)
+        .gte('capacity_gallons', threshold)
         .order('tank_number', { ascending: true });
 
       if (error) throw error;

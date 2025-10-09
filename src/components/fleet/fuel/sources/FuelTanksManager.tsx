@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Plus, Container, AlertTriangle, CheckCircle, Calendar, Truck } from 'lucide-react';
 import { useFuelTanks, useSPCCTanks } from '@/hooks/useFuelTanks';
 import { useFuelTankDeliveries } from '@/hooks/useFuelTankDeliveries';
+import { useFuelManagementSettings } from '@/hooks/useFuelManagementSettings';
 import { AddFuelTankDialog } from './AddFuelTankDialog';
 import { AddTankDeliveryDialog } from './AddTankDeliveryDialog';
 import { AddSupplierDialog } from './AddSupplierDialog';
@@ -22,8 +23,11 @@ export const FuelTanksManager: React.FC = () => {
   const [selectedTankId, setSelectedTankId] = useState<string | undefined>();
   const [showSuppliers, setShowSuppliers] = useState(false);
 
+  const { data: settings } = useFuelManagementSettings();
+  const spccThreshold = settings?.spcc_tank_threshold_gallons || 1320;
+  
   const { data: tanks = [], isLoading } = useFuelTanks();
-  const { data: spccTanks = [] } = useSPCCTanks();
+  const { data: spccTanks = [] } = useSPCCTanks(spccThreshold);
   const { data: deliveries = [] } = useFuelTankDeliveries();
 
   const spccRequired = spccTanks.length > 0;
@@ -51,7 +55,7 @@ export const FuelTanksManager: React.FC = () => {
             <div className="flex-1">
               <h4 className="font-semibold text-amber-900">SPCC Compliance Required</h4>
               <p className="text-sm text-amber-800 mt-1">
-                Total tank capacity ({totalCapacity.toLocaleString()} gal) exceeds 1,320 gallons.
+                You have {spccTanks.length} tank(s) with capacity ≥ {spccThreshold.toLocaleString()} gallons.
                 EPA requires a Spill Prevention, Control, and Countermeasure (SPCC) plan.
               </p>
               <div className="mt-3 flex gap-2">

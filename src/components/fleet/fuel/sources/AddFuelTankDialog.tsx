@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Switch } from '@/components/ui/switch';
 import { useAddFuelTank } from '@/hooks/useFuelTanks';
+import { useFuelManagementSettings } from '@/hooks/useFuelManagementSettings';
 import { FuelType, FUEL_TYPE_LABELS, TankType, DispenserType } from '@/types/fuel';
 import { useForm } from 'react-hook-form';
 import { PhotoUploadZone } from './PhotoUploadZone';
@@ -66,12 +67,14 @@ export const AddFuelTankDialog: React.FC<AddFuelTankDialogProps> = ({ open, onOp
     },
   });
   const addTank = useAddFuelTank();
+  const { data: settings } = useFuelManagementSettings();
   const [photos, setPhotos] = useState<string[]>([]);
   
   const fuelType = watch('fuel_type');
   const tankType = watch('tank_type');
   const capacityGallons = watch('capacity_gallons');
-  const spccRequired = capacityGallons >= 1320;
+  const spccThreshold = settings?.spcc_tank_threshold_gallons || 1320;
+  const spccRequired = capacityGallons >= spccThreshold;
 
   const onSubmit = async (data: TankFormData) => {
     await addTank.mutateAsync({
@@ -213,7 +216,7 @@ export const AddFuelTankDialog: React.FC<AddFuelTankDialogProps> = ({ open, onOp
                       placeholder="e.g., 1500"
                     />
                     {spccRequired && (
-                      <p className="text-xs text-yellow-600">⚠️ Capacity ≥ 1320 gal requires SPCC</p>
+                      <p className="text-xs text-yellow-600">⚠️ Capacity ≥ {spccThreshold.toLocaleString()} gal requires SPCC</p>
                     )}
                   </div>
 
@@ -309,7 +312,7 @@ export const AddFuelTankDialog: React.FC<AddFuelTankDialogProps> = ({ open, onOp
                     <div className="space-y-0.5">
                       <Label htmlFor="spcc_plan_on_file">SPCC Plan On File?</Label>
                       <p className="text-xs text-muted-foreground">
-                        {spccRequired ? 'Required for tanks ≥ 1320 gallons' : 'Optional'}
+                        {spccRequired ? `Required for tanks ≥ ${spccThreshold.toLocaleString()} gallons` : 'Optional'}
                       </p>
                     </div>
                     <Switch

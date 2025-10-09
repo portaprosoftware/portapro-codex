@@ -189,7 +189,7 @@ export const ComplianceAlerts: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-sm text-muted-foreground mb-3">
-              Tanks over 1,320 gallons require SPCC compliance
+              Tanks over {fuelSettings?.spcc_tank_threshold_gallons?.toLocaleString() || '1,320'} gallons require SPCC compliance
             </div>
             <div className="space-y-2">
               {spccCompliance.map(tank => (
