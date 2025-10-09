@@ -5,8 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { AlertTriangle, AlertCircle, TrendingUp, DollarSign, Droplet } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { useFuelManagementSettings } from '@/hooks/useFuelManagementSettings';
 
 export const ComplianceAlerts: React.FC = () => {
+  const { data: fuelSettings } = useFuelManagementSettings();
   const { data: tankAlerts } = useQuery({
     queryKey: ['tank-refill-alerts'],
     queryFn: async () => {
@@ -17,13 +19,16 @@ export const ComplianceAlerts: React.FC = () => {
 
       if (error) throw error;
 
+      const criticalThreshold = (fuelSettings?.tank_critical_threshold_percent || 10) / 100;
+      const lowThreshold = (fuelSettings?.tank_low_threshold_percent || 25) / 100;
+      
       return data?.filter(tank => {
         const currentLevel = tank.current_level_gallons || 0;
         const reorderPoint = tank.reorder_threshold_gallons || 0;
         return currentLevel <= reorderPoint;
       }).map(tank => ({
         ...tank,
-        severity: (tank.current_level_gallons || 0) <= (tank.reorder_threshold_gallons || 0) * 0.5 
+        severity: (tank.current_level_gallons || 0) <= (tank.reorder_threshold_gallons || 0) * criticalThreshold
           ? 'critical' 
           : 'warning'
       }));
@@ -32,27 +37,36 @@ export const ComplianceAlerts: React.FC = () => {
   });
 
   const { data: spccCompliance } = useQuery({
-    queryKey: ['spcc-compliance'],
+    queryKey: ['spcc-compliance', fuelSettings?.spcc_tank_threshold_gallons],
     queryFn: async () => {
+      if (!fuelSettings?.spcc_compliance_enabled) return [];
+      
+      const threshold = fuelSettings?.spcc_tank_threshold_gallons || 1320;
+      
       const { data, error } = await supabase
         .from('fuel_tanks')
         .select('*')
         .eq('is_active', true)
-        .gte('capacity_gallons', 1320);
+        .gte('capacity_gallons', threshold);
 
       if (error) throw error;
 
       return data?.map(tank => ({
         ...tank,
         requires_spcc: true,
-        compliance_status: tank.capacity_gallons >= 1320 ? 'active' : 'not_required'
+        compliance_status: tank.capacity_gallons >= threshold ? 'active' : 'not_required'
       }));
-    }
+    },
+    enabled: !!fuelSettings
   });
 
   const { data: unusualConsumption } = useQuery({
-    queryKey: ['unusual-consumption-alerts'],
+    queryKey: ['unusual-consumption-alerts', fuelSettings?.unusual_consumption_threshold_percent],
     queryFn: async () => {
+      if (!fuelSettings?.auto_flag_high_consumption) return [];
+      
+      const threshold = (fuelSettings?.unusual_consumption_threshold_percent || 150) / 100;
+      
       // Get consumption data for last 30 days
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -82,8 +96,8 @@ export const ComplianceAlerts: React.FC = () => {
         const avgGallons = consumption.gallons.reduce((a, b) => a + b, 0) / consumption.gallons.length;
         const maxGallons = Math.max(...consumption.gallons);
         
-        // Flag if any single transaction is > 150% of average
-        if (maxGallons > avgGallons * 1.5) {
+        // Flag if any single transaction exceeds threshold
+        if (maxGallons > avgGallons * threshold) {
           alerts.push({
             vehicle_id: vehicleId,
             type: 'high_consumption',
@@ -95,12 +109,17 @@ export const ComplianceAlerts: React.FC = () => {
       });
 
       return alerts;
-    }
+    },
+    enabled: !!fuelSettings
   });
 
   const { data: priceSpikes } = useQuery({
-    queryKey: ['price-spike-alerts'],
+    queryKey: ['price-spike-alerts', fuelSettings?.price_spike_threshold_percent],
     queryFn: async () => {
+      if (!fuelSettings?.auto_flag_price_spikes) return [];
+      
+      const threshold = 1 + ((fuelSettings?.price_spike_threshold_percent || 15) / 100);
+      
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
@@ -117,13 +136,14 @@ export const ComplianceAlerts: React.FC = () => {
       const avgPrice = data.reduce((sum, log) => sum + (log.cost_per_gallon || 0), 0) / data.length;
       
       return data
-        .filter(log => (log.cost_per_gallon || 0) > avgPrice * 1.15)
+        .filter(log => (log.cost_per_gallon || 0) > avgPrice * threshold)
         .map(log => ({
           ...log,
           avg_price: avgPrice,
           variance_percent: (((log.cost_per_gallon || 0) - avgPrice) / avgPrice * 100).toFixed(1)
         }));
-    }
+    },
+    enabled: !!fuelSettings
   });
 
   return (

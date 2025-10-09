@@ -174,6 +174,38 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
   const addFuelLogMutation = useMutation({
     mutationFn: async (data: any) => {
       const totalCost = parseFloat(data.gallons_purchased) * parseFloat(data.cost_per_gallon);
+      const gallons = parseFloat(data.gallons_purchased);
+      const odometerReading = parseInt(data.odometer_reading);
+      
+      // Calculate MPG and Cost/Mile if auto-calculation is enabled
+      let mpg = null;
+      let costPerMile = null;
+      
+      if (fuelSettings?.auto_calculate_mpg || fuelSettings?.auto_calculate_cost_per_mile) {
+        // Get previous fuel log for this vehicle to calculate distance
+        const { data: previousLog } = await supabase
+          .from('fuel_logs')
+          .select('odometer_reading, log_date')
+          .eq('vehicle_id', data.vehicle_id)
+          .lt('log_date', format(data.log_date, 'yyyy-MM-dd'))
+          .order('log_date', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        
+        if (previousLog && previousLog.odometer_reading) {
+          const milesDriven = odometerReading - previousLog.odometer_reading;
+          
+          if (milesDriven > 0) {
+            if (fuelSettings?.auto_calculate_mpg) {
+              mpg = milesDriven / gallons;
+            }
+            if (fuelSettings?.auto_calculate_cost_per_mile) {
+              costPerMile = totalCost / milesDriven;
+            }
+          }
+        }
+      }
+      
       // Try secure Edge Function first (Clerk-verified), then gracefully fallback
       try {
         const { data: result, error: fnError } = await supabase.functions.invoke('fleet-writes', {
@@ -183,17 +215,19 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
               vehicle_id: data.vehicle_id,
               driver_id: data.driver_id,
               log_date: format(data.log_date, 'yyyy-MM-dd'),
-              odometer_reading: parseInt(data.odometer_reading),
-              gallons_purchased: parseFloat(data.gallons_purchased),
-            cost_per_gallon: parseFloat(data.cost_per_gallon),
-            total_cost: totalCost,
-            fuel_station: data.fuel_station,
-            receipt_image: data.receipt_image,
-            notes: data.notes,
-            fuel_source: data.fuel_source,
+              odometer_reading: odometerReading,
+              gallons_purchased: gallons,
+              cost_per_gallon: parseFloat(data.cost_per_gallon),
+              total_cost: totalCost,
+              fuel_station: data.fuel_station,
+              receipt_image: data.receipt_image,
+              notes: data.notes,
+              fuel_source: data.fuel_source,
+              mpg: mpg,
+              cost_per_mile: costPerMile
+            }
           }
-        }
-      });
+        });
         if (fnError) throw fnError;
         return result;
       } catch (_) {
@@ -203,16 +237,18 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
             vehicle_id: data.vehicle_id,
             driver_id: data.driver_id,
             log_date: format(data.log_date, 'yyyy-MM-dd'),
-            odometer_reading: parseInt(data.odometer_reading),
-            gallons_purchased: parseFloat(data.gallons_purchased),
+            odometer_reading: odometerReading,
+            gallons_purchased: gallons,
             cost_per_gallon: parseFloat(data.cost_per_gallon),
             total_cost: totalCost,
-          fuel_station: data.fuel_station,
-          receipt_image: data.receipt_image,
-          notes: data.notes,
-          fuel_source: data.fuel_source,
-        });
-      if (error) throw error;
+            fuel_station: data.fuel_station,
+            receipt_image: data.receipt_image,
+            notes: data.notes,
+            fuel_source: data.fuel_source,
+            mpg: mpg,
+            cost_per_mile: costPerMile
+          });
+        if (error) throw error;
       }
     },
     onSuccess: () => {

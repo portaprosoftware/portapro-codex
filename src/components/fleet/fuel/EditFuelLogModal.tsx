@@ -13,6 +13,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { useFuelManagementSettings } from '@/hooks/useFuelManagementSettings';
 
 interface EditFuelLogModalProps {
   open: boolean;
@@ -39,6 +40,7 @@ export const EditFuelLogModal: React.FC<EditFuelLogModalProps> = ({
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { data: fuelSettings } = useFuelManagementSettings();
 
   // Update form data when fuelLog changes
   useEffect(() => {
@@ -105,6 +107,39 @@ export const EditFuelLogModal: React.FC<EditFuelLogModalProps> = ({
   const updateFuelLogMutation = useMutation({
     mutationFn: async (data: any) => {
       const totalCost = parseFloat(data.gallons_purchased) * parseFloat(data.cost_per_gallon);
+      const gallons = parseFloat(data.gallons_purchased);
+      const odometerReading = parseInt(data.odometer_reading);
+      
+      // Calculate MPG and Cost/Mile if auto-calculation is enabled
+      let mpg = null;
+      let costPerMile = null;
+      
+      if (fuelSettings?.auto_calculate_mpg || fuelSettings?.auto_calculate_cost_per_mile) {
+        // Get previous fuel log for this vehicle to calculate distance
+        const { data: previousLog } = await supabase
+          .from('fuel_logs')
+          .select('odometer_reading, log_date')
+          .eq('vehicle_id', data.vehicle_id)
+          .lt('log_date', format(data.log_date, 'yyyy-MM-dd'))
+          .neq('id', fuelLog.id) // Exclude current log
+          .order('log_date', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        
+        if (previousLog && previousLog.odometer_reading) {
+          const milesDriven = odometerReading - previousLog.odometer_reading;
+          
+          if (milesDriven > 0) {
+            if (fuelSettings?.auto_calculate_mpg) {
+              mpg = milesDriven / gallons;
+            }
+            if (fuelSettings?.auto_calculate_cost_per_mile) {
+              costPerMile = totalCost / milesDriven;
+            }
+          }
+        }
+      }
+      
       // Try secure Edge Function first (Clerk-verified), then fallback
       try {
         const { error: fnError } = await supabase.functions.invoke('fleet-writes', {
@@ -115,13 +150,15 @@ export const EditFuelLogModal: React.FC<EditFuelLogModalProps> = ({
               vehicle_id: data.vehicle_id,
               driver_id: data.driver_id,
               log_date: format(data.log_date, 'yyyy-MM-dd'),
-              odometer_reading: parseInt(data.odometer_reading),
-              gallons_purchased: parseFloat(data.gallons_purchased),
+              odometer_reading: odometerReading,
+              gallons_purchased: gallons,
               cost_per_gallon: parseFloat(data.cost_per_gallon),
               total_cost: totalCost,
               fuel_station: data.fuel_station,
               receipt_image: data.receipt_image,
-              notes: data.notes
+              notes: data.notes,
+              mpg: mpg,
+              cost_per_mile: costPerMile
             }
           }
         });
@@ -134,13 +171,15 @@ export const EditFuelLogModal: React.FC<EditFuelLogModalProps> = ({
             vehicle_id: data.vehicle_id,
             driver_id: data.driver_id,
             log_date: format(data.log_date, 'yyyy-MM-dd'),
-            odometer_reading: parseInt(data.odometer_reading),
-            gallons_purchased: parseFloat(data.gallons_purchased),
+            odometer_reading: odometerReading,
+            gallons_purchased: gallons,
             cost_per_gallon: parseFloat(data.cost_per_gallon),
             total_cost: totalCost,
             fuel_station: data.fuel_station,
             receipt_image: data.receipt_image,
-            notes: data.notes
+            notes: data.notes,
+            mpg: mpg,
+            cost_per_mile: costPerMile
           })
           .eq('id', fuelLog.id);
         if (error) throw error;
