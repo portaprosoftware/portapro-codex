@@ -298,49 +298,6 @@ export const FuelOverviewTab: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Quick Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Quick Actions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <Button 
-              variant="outline" 
-              className="justify-start h-auto py-3"
-              onClick={() => navigate('/fleet/fuel?tab=logs')}
-            >
-              <FileText className="h-5 w-5 mr-3" />
-              <div className="text-left">
-                <p className="font-semibold text-sm">View All Logs</p>
-                <p className="text-xs text-gray-500">See complete fuel history</p>
-              </div>
-            </Button>
-            <Button 
-              variant="outline" 
-              className="justify-start h-auto py-3"
-              onClick={() => navigate('/fleet/fuel?tab=analytics')}
-            >
-              <TrendingUp className="h-5 w-5 mr-3" />
-              <div className="text-left">
-                <p className="font-semibold text-sm">Analytics</p>
-                <p className="text-xs text-gray-500">Deep dive into fuel data</p>
-              </div>
-            </Button>
-            <Button 
-              variant="outline" 
-              className="justify-start h-auto py-3"
-              onClick={() => navigate('/fleet/fuel?tab=sources')}
-            >
-              <Fuel className="h-5 w-5 mr-3" />
-              <div className="text-left">
-                <p className="font-semibold text-sm">Fuel Sources</p>
-                <p className="text-xs text-gray-500">Manage fuel locations</p>
-              </div>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 };
