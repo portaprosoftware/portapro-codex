@@ -241,15 +241,8 @@ export const FuelOverviewTab: React.FC = () => {
 
       {/* Recent Activity */}
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader>
           <CardTitle className="text-lg">Recent Fuel Logs</CardTitle>
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => navigate('/fleet/fuel?tab=logs')}
-          >
-            View All <ArrowRight className="h-4 w-4 ml-2" />
-          </Button>
         </CardHeader>
         <CardContent>
           {logsLoading ? (
