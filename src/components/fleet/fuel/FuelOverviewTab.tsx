@@ -200,10 +200,10 @@ export const FuelOverviewTab: React.FC = () => {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-100">
+            <div className="flex items-center justify-between p-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg">
-                  <Store className="h-5 w-5 text-white" />
+                <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg">
+                  <Store className="h-5 w-5 text-white font-bold stroke-[2.5]" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900">{metrics?.retailCount || 0}</p>
@@ -212,10 +212,10 @@ export const FuelOverviewTab: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-100">
+            <div className="flex items-center justify-between p-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-gradient-to-br from-green-500 to-green-600 rounded-lg">
-                  <Factory className="h-5 w-5 text-white" />
+                <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-lg">
+                  <Factory className="h-5 w-5 text-white font-bold stroke-[2.5]" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900">{metrics?.yardTankCount || 0}</p>
@@ -224,10 +224,10 @@ export const FuelOverviewTab: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex items-center justify-between p-4 bg-purple-50 rounded-lg border border-purple-100">
+            <div className="flex items-center justify-between p-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg">
-                  <MobileVendor className="h-5 w-5 text-white" />
+                <div className="p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg">
+                  <MobileVendor className="h-5 w-5 text-white font-bold stroke-[2.5]" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900">{metrics?.mobileCount || 0}</p>
