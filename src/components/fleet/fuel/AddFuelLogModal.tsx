@@ -63,7 +63,6 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
   const { trackEvent } = useAnalytics();
   const { data: fuelSettings } = useFuelManagementSettings();
   
-  // Initialize with vehicle context if provided
   const [formData, setFormData] = useState({
     vehicle_id: vehicleContextId || preselectedVehicleId,
     driver_id: '',
@@ -72,7 +71,7 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
     gallons_purchased: '',
     cost_per_gallon: '',
     fuel_station: '',
-    fuel_source: fuelSettings?.default_fuel_source || 'retail_station',
+    fuel_source: 'retail_station', // Always retail station
     receipt_image: '',
     notes: ''
   });
@@ -274,7 +273,7 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
         gallons_purchased: '',
         cost_per_gallon: '',
         fuel_station: '',
-        fuel_source: fuelSettings?.default_fuel_source || 'retail_station',
+        fuel_source: 'retail_station', // Always retail station
         receipt_image: '',
         notes: ''
       });
@@ -313,7 +312,7 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="h-[95vh] flex flex-col">
         <DrawerHeader className="flex-shrink-0">
-          <DrawerTitle>Add Fuel Log</DrawerTitle>
+          <DrawerTitle>Add Retail Fuel Log</DrawerTitle>
         </DrawerHeader>
 
         <div className="flex-1 overflow-y-auto px-4">
@@ -425,29 +424,6 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
 
           <div>
             <Label>Total Cost: ${totalCost}</Label>
-          </div>
-
-          <div>
-            <Label htmlFor="fuel_source">Fuel Source *</Label>
-            <Select 
-              value={formData.fuel_source} 
-              onValueChange={(value) => setFormData(prev => ({ ...prev, fuel_source: value }))}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select fuel source" />
-              </SelectTrigger>
-              <SelectContent>
-                {fuelSettings?.retail_enabled && (
-                  <SelectItem value="retail_station">Retail Station</SelectItem>
-                )}
-                {fuelSettings?.yard_tank_enabled && (
-                  <SelectItem value="yard_tank">Yard Tank</SelectItem>
-                )}
-                {fuelSettings?.mobile_service_enabled && (
-                  <SelectItem value="mobile_service">Mobile Service</SelectItem>
-                )}
-              </SelectContent>
-            </Select>
           </div>
 
           <div>
