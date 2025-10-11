@@ -34,10 +34,10 @@ export interface UnifiedFuelFilters {
 export const useUnifiedFuelConsumption = (filters?: UnifiedFuelFilters) => {
   const queryClient = useQueryClient();
 
-  // Set up real-time subscription for fuel_logs
+  // Set up real-time subscriptions for all fuel sources
   useEffect(() => {
     const channel = supabase
-      .channel('fuel-logs-changes')
+      .channel('unified-fuel-changes')
       .on(
         'postgres_changes',
         {
@@ -46,7 +46,42 @@ export const useUnifiedFuelConsumption = (filters?: UnifiedFuelFilters) => {
           table: 'fuel_logs'
         },
         () => {
-          // Invalidate and refetch when fuel logs change
+          queryClient.invalidateQueries({ queryKey: ['unified-fuel-consumption'] });
+          queryClient.invalidateQueries({ queryKey: ['unified-fuel-metrics'] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'fuel_tank_deliveries'
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['unified-fuel-consumption'] });
+          queryClient.invalidateQueries({ queryKey: ['unified-fuel-metrics'] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'mobile_fuel_services'
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['unified-fuel-consumption'] });
+          queryClient.invalidateQueries({ queryKey: ['unified-fuel-metrics'] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'mobile_fuel_service_vehicles'
+        },
+        () => {
           queryClient.invalidateQueries({ queryKey: ['unified-fuel-consumption'] });
           queryClient.invalidateQueries({ queryKey: ['unified-fuel-metrics'] });
         }
