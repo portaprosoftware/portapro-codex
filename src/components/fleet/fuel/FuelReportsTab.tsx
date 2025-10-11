@@ -412,13 +412,18 @@ export const FuelReportsTab: React.FC = () => {
                           cy="50%"
                           outerRadius={80}
                           dataKey="cost"
-                          label={({ station, cost }) => `${station}: $${cost.toFixed(0)}`}
+                          label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
                         >
                           {stationData?.slice(0, 5).map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                           ))}
                         </Pie>
-                        <Tooltip formatter={(value) => [`$${Number(value).toFixed(2)}`, 'Total Cost']} />
+                        <Tooltip 
+                          formatter={(value, name, props) => [
+                            `$${Number(value).toFixed(2)}`,
+                            props.payload.station
+                          ]}
+                        />
                       </PieChart>
                     </ResponsiveContainer>
                   </div>
