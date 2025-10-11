@@ -57,10 +57,23 @@ interface DocumentUploadModalProps {
   vehicles: Vehicle[];
   categories: Category[];
   trigger?: React.ReactNode;
+  defaultVehicleId?: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentUploadModalProps) {
-  const [open, setOpen] = useState(false);
+export function DocumentUploadModal({ 
+  vehicles, 
+  categories, 
+  trigger,
+  defaultVehicleId,
+  open: controlledOpen,
+  onOpenChange 
+}: DocumentUploadModalProps) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const setOpen = onOpenChange || setInternalOpen;
+  
   const [files, setFiles] = useState<File[]>([]);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
@@ -75,6 +88,16 @@ export function DocumentUploadModal({ vehicles, categories, trigger }: DocumentU
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { getToken } = useAuth();
+
+  // Set default vehicle when provided
+  React.useEffect(() => {
+    if (defaultVehicleId && vehicles.length > 0 && !selectedVehicle) {
+      const vehicle = vehicles.find(v => v.id === defaultVehicleId);
+      if (vehicle) {
+        setSelectedVehicle(vehicle);
+      }
+    }
+  }, [defaultVehicleId, vehicles, selectedVehicle]);
 
   const selectedCategoryData = categories.find(c => c.name === selectedCategory);
   const customFieldsSchema: CustomField[] = selectedCategoryData?.custom_fields_schema 

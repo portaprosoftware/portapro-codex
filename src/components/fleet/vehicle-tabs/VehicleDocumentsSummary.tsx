@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileText, ExternalLink, Plus, AlertTriangle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { DocumentUploadModal } from '@/components/fleet/DocumentUploadModal';
 import type { VehicleSummaryData } from '@/hooks/vehicle/useVehicleSummary';
 
 interface VehicleDocumentsSummaryProps {
@@ -17,6 +20,33 @@ export function VehicleDocumentsSummary({
   licensePlate 
 }: VehicleDocumentsSummaryProps) {
   const navigate = useNavigate();
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+
+  // Fetch vehicles for the upload modal
+  const { data: vehicles } = useQuery({
+    queryKey: ['vehicles-for-upload'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('vehicles')
+        .select('id, license_plate, vehicle_type, make, model, year, status, vehicle_image, nickname');
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  // Fetch categories for the upload modal
+  const { data: categories } = useQuery({
+    queryKey: ['document-categories-for-upload'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('document_categories')
+        .select('*')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true });
+      if (error) throw error;
+      return data;
+    }
+  });
 
   return (
     <Card className="hover:shadow-md transition-shadow">
@@ -66,11 +96,22 @@ export function VehicleDocumentsSummary({
           <Button
             size="sm"
             className="flex-1"
-            onClick={() => navigate(`/fleet/files?action=upload&vehicle=${vehicleId}&returnTo=/fleet-management`)}
+            onClick={() => setIsUploadModalOpen(true)}
           >
             <Plus className="w-3 h-3 mr-1" /> Upload
           </Button>
         </div>
+
+        {/* Upload Modal */}
+        {vehicles && categories && (
+          <DocumentUploadModal
+            vehicles={vehicles}
+            categories={categories}
+            defaultVehicleId={vehicleId}
+            open={isUploadModalOpen}
+            onOpenChange={setIsUploadModalOpen}
+          />
+        )}
       </CardContent>
     </Card>
   );
