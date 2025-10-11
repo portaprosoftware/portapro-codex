@@ -156,12 +156,12 @@ export const FuelAnalyticsTab: React.FC<FuelAnalyticsTabProps> = ({ filters }) =
                 <TrendingUp className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                {costLoading ? (
+                {sourceLoading ? (
                   <div className="text-2xl font-bold">Loading...</div>
                 ) : (
                   <>
                     <div className="text-2xl font-bold">
-                      ${costPerMile?.total_fuel_cost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
+                      ${(sourceComparison?.reduce((sum, source) => sum + source.total_cost, 0) || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </div>
                     <p className="text-xs text-muted-foreground">All sources combined</p>
                   </>
