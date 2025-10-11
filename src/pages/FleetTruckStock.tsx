@@ -124,8 +124,8 @@ const FleetTruckStock: React.FC = () => {
         .insert({
           consumable_id,
           vehicle_id,
-          type: action === "load" ? "vehicle_load" : "vehicle_unload",
-          qty: action === "load" ? qty : -qty,
+          type: action === "load" ? "transfer_in" : "transfer_out",
+          qty,
           notes: `${action === "load" ? "Loaded" : "Unloaded"} via Truck Stock Management`,
           occurred_at: new Date().toISOString()
         });
@@ -184,8 +184,8 @@ const FleetTruckStock: React.FC = () => {
         .insert({
           consumable_id,
           vehicle_id: from_vehicle_id,
-          type: "vehicle_unload",
-          qty: -qty,
+          type: "transfer_out",
+          qty,
           notes: `Transferred to vehicle ${vehicles.find(v => v.id === to_vehicle_id)?.license_plate || to_vehicle_id}`,
           occurred_at: new Date().toISOString()
         });
@@ -201,8 +201,8 @@ const FleetTruckStock: React.FC = () => {
         .insert({
           consumable_id,
           vehicle_id: to_vehicle_id,
-          type: "vehicle_load",
-          qty: qty,
+          type: "transfer_in",
+          qty,
           notes: `Transferred from vehicle ${vehicles.find(v => v.id === from_vehicle_id)?.license_plate || from_vehicle_id}`,
           occurred_at: new Date().toISOString()
         });
