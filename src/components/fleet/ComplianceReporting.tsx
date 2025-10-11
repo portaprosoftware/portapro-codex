@@ -121,10 +121,14 @@ export const ComplianceReporting: React.FC = () => {
         }
       });
 
-      const overdueInspections = vehicles?.filter(v => {
+      const overdueVehicles = vehicles?.filter(v => {
         const lastCheck = latestChecksByVehicle.get(v.id);
         return !lastCheck || new Date(lastCheck.created_at) < thirtyDaysAgo;
-      }).length || 0;
+      }).map(v => ({
+        id: v.id,
+        license_plate: v.license_plate,
+        lastCheckDate: latestChecksByVehicle.get(v.id)?.created_at || null,
+      })) || [];
 
       return {
         vehicles: vehicles || [],
@@ -136,7 +140,7 @@ export const ComplianceReporting: React.FC = () => {
         recentDecon: recentDecon || [],
         recentDocs: recentDocs || [],
         lowStock: lowStock || [],
-        overdueInspections,
+        overdueVehicles,
       };
     },
   });
@@ -146,13 +150,14 @@ export const ComplianceReporting: React.FC = () => {
     if (!complianceData) return null;
 
     const totalVehicles = complianceData.vehicles.length;
-    const criticalCount = complianceData.expiredDocs.length + complianceData.overdueInspections + complianceData.activeIncidents.length;
+    const criticalCount = complianceData.expiredDocs.length + complianceData.overdueVehicles.length + complianceData.activeIncidents.length;
     
     // Calculate health score
     const vehiclesWithIssues = new Set([
       ...complianceData.expiredDocs.map(d => d.vehicle_id),
       ...complianceData.activeIncidents.map(i => i.vehicle_id),
-    ]).size + complianceData.overdueInspections;
+      ...complianceData.overdueVehicles.map(v => v.id),
+    ]).size;
     
     const healthScore = totalVehicles > 0 ? ((totalVehicles - vehiclesWithIssues) / totalVehicles) * 100 : 100;
 
@@ -194,12 +199,13 @@ export const ComplianceReporting: React.FC = () => {
     });
 
     // Medium priority: Overdue inspections
-    if (complianceData.overdueInspections > 0) {
+    complianceData.overdueVehicles.forEach(vehicle => {
       actionItems.push({
         priority: 'medium',
-        description: `Complete overdue spill kit inspections for ${complianceData.overdueInspections} vehicle(s)`,
+        description: `Complete overdue spill kit inspection`,
+        vehicle: vehicle.license_plate,
       });
-    }
+    });
 
     // Low priority: Low stock
     complianceData.lowStock.forEach(item => {
@@ -233,7 +239,13 @@ export const ComplianceReporting: React.FC = () => {
           docType: doc.compliance_document_types?.name || 'Unknown',
           daysOverdue: Math.abs(differenceInDays(new Date(), new Date(doc.expiration_date))),
         })),
-        overdueInspections: complianceData.overdueInspections,
+        overdueInspections: complianceData.overdueVehicles.map(v => ({
+          vehicle: v.license_plate || 'Unknown',
+          lastCheckDate: v.lastCheckDate ? new Date(v.lastCheckDate) : null,
+          daysOverdue: v.lastCheckDate 
+            ? Math.abs(differenceInDays(new Date(), new Date(v.lastCheckDate)))
+            : null,
+        })),
         activeIncidents: complianceData.activeIncidents.map((inc: any) => ({
           vehicle: inc.vehicles?.license_plate || 'Unknown',
           incidentType: inc.configurable_spill_types?.name || 'Unknown',
@@ -406,15 +418,25 @@ export const ComplianceReporting: React.FC = () => {
                       <Badge variant="destructive">Action Required</Badge>
                     </div>
                   ))}
-                  {complianceData && complianceData.overdueInspections > 0 && (
-                    <div className="flex items-start justify-between p-3 border border-red-200 rounded-lg bg-red-50">
+                  {complianceData?.overdueVehicles.map((vehicle, idx) => (
+                    <div key={`overdue-${idx}`} className="flex items-start justify-between p-3 border border-red-200 rounded-lg bg-red-50">
                       <div>
-                        <p className="font-medium">Multiple Vehicles</p>
-                        <p className="text-sm text-muted-foreground">Overdue Spill Kit Inspections</p>
+                        <p className="font-medium">{vehicle.license_plate}</p>
+                        <p className="text-sm text-muted-foreground">
+                          Overdue Spill Kit Inspection
+                          {vehicle.lastCheckDate && 
+                            ` - Last checked ${format(new Date(vehicle.lastCheckDate), 'MMM dd, yyyy')}`
+                          }
+                        </p>
                       </div>
-                      <Badge variant="destructive">{complianceData.overdueInspections} vehicles</Badge>
+                      <Badge variant="destructive">
+                        {vehicle.lastCheckDate 
+                          ? `${Math.abs(differenceInDays(new Date(), new Date(vehicle.lastCheckDate)))} days overdue`
+                          : 'Never inspected'
+                        }
+                      </Badge>
                     </div>
-                  )}
+                  ))}
                 </div>
               </CardContent>
             </Card>

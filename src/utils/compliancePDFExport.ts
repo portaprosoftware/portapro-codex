@@ -8,7 +8,7 @@ interface ComplianceSummaryData {
   totalVehicles: number;
   criticalItems: {
     expiredDocuments: Array<{ vehicle: string; docType: string; daysOverdue: number }>;
-    overdueInspections: number;
+    overdueInspections: Array<{ vehicle: string; lastCheckDate: Date | null; daysOverdue: number | null }>;
     activeIncidents: Array<{ vehicle: string; incidentType: string; date: Date }>;
   };
   expiringSoon: Array<{ vehicle: string; itemType: string; expirationDate: Date; daysUntilDue: number }>;
@@ -86,7 +86,7 @@ export const exportComplianceSummaryToPDF = (
   doc.text(`Total Vehicles: ${data.totalVehicles}`, 100, currentY);
   
   currentY += 6;
-  const criticalCount = data.criticalItems.expiredDocuments.length + data.criticalItems.overdueInspections + data.criticalItems.activeIncidents.length;
+  const criticalCount = data.criticalItems.expiredDocuments.length + data.criticalItems.overdueInspections.length + data.criticalItems.activeIncidents.length;
   doc.text(`Critical Items: ${criticalCount}`, 20, currentY);
   doc.text(`Expiring Soon: ${data.expiringSoon.length}`, 100, currentY);
 
@@ -125,14 +125,16 @@ export const exportComplianceSummaryToPDF = (
     });
 
     // Overdue inspections
-    if (data.criticalItems.overdueInspections > 0) {
+    data.criticalItems.overdueInspections.forEach(item => {
       criticalData.push([
-        'Multiple',
-        'Overdue Inspections',
-        `${data.criticalItems.overdueInspections} vehicle(s)`,
-        'Action Required'
+        item.vehicle,
+        'Overdue Inspection',
+        'Spill Kit Check',
+        item.daysOverdue 
+          ? `${item.daysOverdue} days overdue`
+          : 'Never inspected'
       ]);
-    }
+    });
 
     if (criticalData.length > 0) {
       autoTable(doc, {
