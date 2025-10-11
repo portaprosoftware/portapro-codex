@@ -90,7 +90,7 @@ const FleetTruckStock: React.FC = () => {
     enabled: !!vehicleId
   });
 
-  // Load/Unload mutation - simplified
+  // Load/Unload mutation
   const loadUnloadMutation = useMutation({
     mutationFn: async ({ action, consumable_id, qty, vehicle_id }: {
       action: "load" | "unload";
@@ -98,20 +98,51 @@ const FleetTruckStock: React.FC = () => {
       qty: number;
       vehicle_id: string;
     }) => {
-      // Placeholder - would integrate with actual inventory system
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // For unload, validate sufficient stock
+      if (action === "unload") {
+        const { data: balanceData } = await supabase
+          .from("vehicle_consumable_balances")
+          .select("balance_qty")
+          .eq("vehicle_id", vehicle_id)
+          .eq("consumable_id", consumable_id)
+          .single();
+        
+        if (!balanceData || balanceData.balance_qty < qty) {
+          throw new Error(`Insufficient stock. Available: ${balanceData?.balance_qty || 0}`);
+        }
+      }
+
+      // Insert record into consumable_stock_ledger
+      const { error } = await supabase
+        .from("consumable_stock_ledger")
+        .insert({
+          consumable_id,
+          vehicle_id,
+          type: action === "load" ? "vehicle_load" : "vehicle_unload",
+          qty: action === "load" ? qty : -qty,
+          notes: `${action === "load" ? "Loaded" : "Unloaded"} via Truck Stock Management`,
+          occurred_at: new Date().toISOString()
+        });
+      
+      if (error) throw error;
     },
-    onSuccess: () => {
-      toast({ title: "Success", description: "Operation completed successfully" });
+    onSuccess: (_, variables) => {
+      const action = variables.action === "load" ? "loaded to" : "unloaded from";
+      toast({ title: "Success", description: `Stock ${action} vehicle successfully` });
       qc.invalidateQueries({ queryKey: ["vehicle-inventory"] });
       setQuantity("");
+      setConsumableId("");
     },
-    onError: (error) => {
-      toast({ title: "Error", description: "Operation failed", variant: "destructive" });
+    onError: (error: any) => {
+      toast({ 
+        title: "Error", 
+        description: error.message || "Operation failed", 
+        variant: "destructive" 
+      });
     }
   });
 
-  // Transfer mutation - simplified
+  // Transfer mutation
   const transferMutation = useMutation({
     mutationFn: async ({ consumable_id, qty, from_vehicle_id, to_vehicle_id }: {
       consumable_id: string;
@@ -119,17 +150,59 @@ const FleetTruckStock: React.FC = () => {
       from_vehicle_id: string;
       to_vehicle_id: string;
     }) => {
-      // Placeholder - would integrate with actual inventory system
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Validate source vehicle has sufficient stock
+      const { data: balanceData } = await supabase
+        .from("vehicle_consumable_balances")
+        .select("balance_qty")
+        .eq("vehicle_id", from_vehicle_id)
+        .eq("consumable_id", consumable_id)
+        .single();
+      
+      if (!balanceData || balanceData.balance_qty < qty) {
+        throw new Error(`Insufficient stock in source vehicle. Available: ${balanceData?.balance_qty || 0}`);
+      }
+
+      // Create unload entry for source vehicle
+      const { error: unloadError } = await supabase
+        .from("consumable_stock_ledger")
+        .insert({
+          consumable_id,
+          vehicle_id: from_vehicle_id,
+          type: "vehicle_unload",
+          qty: -qty,
+          notes: `Transferred to vehicle ${vehicles.find(v => v.id === to_vehicle_id)?.license_plate || to_vehicle_id}`,
+          occurred_at: new Date().toISOString()
+        });
+      
+      if (unloadError) throw unloadError;
+
+      // Create load entry for destination vehicle
+      const { error: loadError } = await supabase
+        .from("consumable_stock_ledger")
+        .insert({
+          consumable_id,
+          vehicle_id: to_vehicle_id,
+          type: "vehicle_load",
+          qty: qty,
+          notes: `Transferred from vehicle ${vehicles.find(v => v.id === from_vehicle_id)?.license_plate || from_vehicle_id}`,
+          occurred_at: new Date().toISOString()
+        });
+      
+      if (loadError) throw loadError;
     },
     onSuccess: () => {
       toast({ title: "Success", description: "Transfer completed successfully" });
       qc.invalidateQueries({ queryKey: ["vehicle-inventory"] });
       setQuantity("");
       setDestVehicleId("");
+      setConsumableId("");
     },
-    onError: (error) => {
-      toast({ title: "Error", description: "Transfer failed", variant: "destructive" });
+    onError: (error: any) => {
+      toast({ 
+        title: "Error", 
+        description: error.message || "Transfer failed", 
+        variant: "destructive" 
+      });
     }
   });
 
