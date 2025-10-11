@@ -408,7 +408,7 @@ export const ComplianceReporting: React.FC = () => {
                       : vehicle?.license_plate || 'Unknown';
                     
                     return (
-                      <div key={idx} className="flex items-start justify-between p-3 border border-red-200 rounded-lg bg-red-50">
+                      <div key={idx} className="flex items-start justify-between p-3 border border-red-200 rounded-lg">
                         <div>
                           <p className="font-medium">{vehicleName}</p>
                           <p className="text-sm text-muted-foreground">{vehicle?.license_plate}</p>
@@ -429,7 +429,7 @@ export const ComplianceReporting: React.FC = () => {
                       : vehicle?.license_plate || 'Unknown';
                     
                     return (
-                      <div key={idx} className="flex items-start justify-between p-3 border border-red-200 rounded-lg bg-red-50">
+                      <div key={idx} className="flex items-start justify-between p-3 border border-red-200 rounded-lg">
                         <div>
                           <p className="font-medium">{vehicleName}</p>
                           <p className="text-sm text-muted-foreground">{vehicle?.license_plate}</p>
@@ -447,7 +447,7 @@ export const ComplianceReporting: React.FC = () => {
                       : vehicle.license_plate || 'Unknown';
                     
                     return (
-                      <div key={`overdue-${idx}`} className="flex items-start justify-between p-3 border border-red-200 rounded-lg bg-red-50">
+                      <div key={`overdue-${idx}`} className="flex items-start justify-between p-3 border border-red-200 rounded-lg">
                         <div>
                           <p className="font-medium">{vehicleName}</p>
                           <p className="text-sm text-muted-foreground">{vehicle.license_plate}</p>
@@ -492,7 +492,7 @@ export const ComplianceReporting: React.FC = () => {
                       : vehicle?.license_plate || 'Unknown';
                     
                     return (
-                      <div key={idx} className="flex items-start justify-between p-3 border border-yellow-200 rounded-lg bg-yellow-50">
+                      <div key={idx} className="flex items-start justify-between p-3 border border-yellow-200 rounded-lg">
                         <div>
                           <p className="font-medium">{vehicleName}</p>
                           <p className="text-sm text-muted-foreground">{vehicle?.license_plate}</p>
@@ -582,16 +582,16 @@ export const ComplianceReporting: React.FC = () => {
               <CardContent>
                 <div className="space-y-2">
                   {summary.actionItems.map((item, idx) => {
-                    const priorityBg = item.priority === 'high' ? 'bg-red-50 border-red-200' : item.priority === 'medium' ? 'bg-yellow-50 border-yellow-200' : 'bg-gray-50 border-gray-200';
                     const priorityGradient = item.priority === 'high' 
                       ? 'from-red-500 to-red-600' 
                       : item.priority === 'medium' 
                       ? 'from-blue-500 to-blue-600' 
                       : 'from-gray-500 to-gray-600';
+                    const borderColor = item.priority === 'high' ? 'border-red-200' : item.priority === 'medium' ? 'border-blue-200' : 'border-gray-200';
                     const priorityLabel = item.priority.charAt(0).toUpperCase() + item.priority.slice(1);
                     
                     return (
-                      <div key={idx} className={cn("flex items-start gap-3 p-3 border rounded-lg", priorityBg)}>
+                      <div key={idx} className={cn("flex items-start gap-3 p-3 border rounded-lg", borderColor)}>
                         <span className="font-bold text-gray-700">{idx + 1}.</span>
                         <div className="flex-1">
                           <p className="font-medium">{item.description}</p>
