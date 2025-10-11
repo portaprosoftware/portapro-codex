@@ -404,9 +404,11 @@ export const ComplianceReporting: React.FC = () => {
                         <p className="font-medium">{doc.vehicles?.license_plate}</p>
                         <p className="text-sm text-muted-foreground">Expired: {doc.compliance_document_types?.name || 'Document'}</p>
                       </div>
-                      <Badge variant="destructive">
-                        {Math.abs(differenceInDays(new Date(), new Date(doc.expiration_date)))} days overdue
-                      </Badge>
+                      <div className="bg-gradient-to-r from-red-500 to-red-600 px-3 py-1 rounded-md">
+                        <span className="text-white font-bold text-sm">
+                          {Math.abs(differenceInDays(new Date(), new Date(doc.expiration_date)))} Days Overdue
+                        </span>
+                      </div>
                     </div>
                   ))}
                   {complianceData?.activeIncidents.map((incident: any, idx) => (
@@ -415,7 +417,9 @@ export const ComplianceReporting: React.FC = () => {
                         <p className="font-medium">{incident.vehicles?.license_plate}</p>
                         <p className="text-sm text-muted-foreground">Active Incident: {incident.configurable_spill_types?.name || 'Incident'}</p>
                       </div>
-                      <Badge variant="destructive">Action Required</Badge>
+                      <div className="bg-gradient-to-r from-red-500 to-red-600 px-3 py-1 rounded-md">
+                        <span className="text-white font-bold text-sm">Action Required</span>
+                      </div>
                     </div>
                   ))}
                   {complianceData?.overdueVehicles.map((vehicle, idx) => (
@@ -429,12 +433,14 @@ export const ComplianceReporting: React.FC = () => {
                           }
                         </p>
                       </div>
-                      <Badge variant="destructive">
-                        {vehicle.lastCheckDate 
-                          ? `${Math.abs(differenceInDays(new Date(), new Date(vehicle.lastCheckDate)))} days overdue`
-                          : 'Never inspected'
-                        }
-                      </Badge>
+                      <div className="bg-gradient-to-r from-red-500 to-red-600 px-3 py-1 rounded-md">
+                        <span className="text-white font-bold text-sm">
+                          {vehicle.lastCheckDate 
+                            ? `${Math.abs(differenceInDays(new Date(), new Date(vehicle.lastCheckDate)))} Days Overdue`
+                            : 'Never Inspected'
+                          }
+                        </span>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -459,9 +465,11 @@ export const ComplianceReporting: React.FC = () => {
                         <p className="font-medium">{doc.vehicles?.license_plate}</p>
                         <p className="text-sm text-muted-foreground">{doc.compliance_document_types?.name || 'Document'}</p>
                       </div>
-                      <Badge variant="secondary">
-                        {differenceInDays(new Date(doc.expiration_date), new Date())} days left
-                      </Badge>
+                      <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 px-3 py-1 rounded-md">
+                        <span className="text-white font-bold text-sm">
+                          {differenceInDays(new Date(doc.expiration_date), new Date())} Days Left
+                        </span>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -518,7 +526,9 @@ export const ComplianceReporting: React.FC = () => {
                           Current: {item.current_stock} | Min: {item.minimum_threshold}
                         </p>
                       </div>
-                      <Badge className="bg-orange-600 hover:bg-orange-700">Reorder Needed</Badge>
+                      <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-3 py-1 rounded-md">
+                        <span className="text-white font-bold text-sm">Reorder Needed</span>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -538,20 +548,25 @@ export const ComplianceReporting: React.FC = () => {
               <CardContent>
                 <div className="space-y-2">
                   {summary.actionItems.map((item, idx) => {
-                    const priorityColor = item.priority === 'high' ? 'text-red-600' : item.priority === 'medium' ? 'text-yellow-600' : 'text-gray-600';
                     const priorityBg = item.priority === 'high' ? 'bg-red-50 border-red-200' : item.priority === 'medium' ? 'bg-yellow-50 border-yellow-200' : 'bg-gray-50 border-gray-200';
+                    const priorityGradient = item.priority === 'high' 
+                      ? 'from-red-500 to-red-600' 
+                      : item.priority === 'medium' 
+                      ? 'from-blue-500 to-blue-600' 
+                      : 'from-gray-500 to-gray-600';
+                    const priorityLabel = item.priority.charAt(0).toUpperCase() + item.priority.slice(1);
                     
                     return (
                       <div key={idx} className={cn("flex items-start gap-3 p-3 border rounded-lg", priorityBg)}>
-                        <span className={cn("font-bold", priorityColor)}>{idx + 1}.</span>
+                        <span className="font-bold text-gray-700">{idx + 1}.</span>
                         <div className="flex-1">
                           <p className="font-medium">{item.description}</p>
                           {item.vehicle && <p className="text-sm text-muted-foreground">Vehicle: {item.vehicle}</p>}
                           {item.dueDate && <p className="text-sm text-muted-foreground">Due: {format(item.dueDate, 'MMM dd, yyyy')}</p>}
                         </div>
-                        <Badge variant={item.priority === 'high' ? 'destructive' : 'secondary'}>
-                          {item.priority.toUpperCase()}
-                        </Badge>
+                        <div className={cn("bg-gradient-to-r px-3 py-1 rounded-md", priorityGradient)}>
+                          <span className="text-white font-bold text-sm">{priorityLabel}</span>
+                        </div>
                       </div>
                     );
                   })}
