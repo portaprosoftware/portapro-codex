@@ -6,7 +6,13 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Edit, Trash2, Download, Plus, Search, Truck, Users, X, TruckIcon, Fuel, Container } from 'lucide-react';
+import { Edit, Trash2, Download, Plus, Search, Truck, Users, X, TruckIcon, Fuel, Container, MoreVertical } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { DatePickerWithRange } from '@/components/ui/DatePickerWithRange';
 import { DateRange } from 'react-day-picker';
 import { useToast } from '@/hooks/use-toast';
@@ -389,26 +395,34 @@ export const FuelAllLogsTab: React.FC<{
                       <TableCell className="font-semibold">${log.total_cost?.toFixed(2)}</TableCell>
                       <TableCell>{log.source_name || 'N/A'}</TableCell>
                       <TableCell>
-                        <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleEditLog(log)}
-                            disabled={log.source_type !== 'retail'}
-                            title={log.source_type !== 'retail' ? 'Only retail logs can be edited here' : 'Edit log'}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleDeleteLog(log.id)}
-                            disabled={deleteFuelLogMutation.isPending || log.source_type !== 'retail'}
-                            title={log.source_type !== 'retail' ? 'Only retail logs can be deleted here' : 'Delete log'}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-8 w-8 p-0"
+                            >
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={() => handleEditLog(log)}
+                              disabled={log.source_type !== 'retail'}
+                            >
+                              <Edit className="h-4 w-4 mr-2" />
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => handleDeleteLog(log.id)}
+                              disabled={deleteFuelLogMutation.isPending || log.source_type !== 'retail'}
+                              className="text-red-600"
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </TableCell>
                     </TableRow>
                   ))
