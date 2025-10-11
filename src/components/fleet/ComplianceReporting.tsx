@@ -514,8 +514,7 @@ export const ComplianceReporting: React.FC = () => {
           {/* Recent Activity */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />
+              <CardTitle>
                 Recent Activity ({format(fromDate, 'MMM dd')} - {format(toDate, 'MMM dd')})
               </CardTitle>
             </CardHeader>
