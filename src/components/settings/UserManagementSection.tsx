@@ -307,24 +307,6 @@ export function UserManagementSection() {
       return matchesSearch && matchesRole;
   });
 
-  const handleDeleteClick = (user: any) => {
-    setUserToDelete(user);
-    setDeleteConfirmOpen(true);
-  };
-
-  const handleDeleteConfirm = () => {
-    if (userToDelete) {
-      deleteUser.mutate(userToDelete.id);
-    }
-  };
-
-  // Check if user can delete (admin/dispatcher role and not themselves)
-  const canDeleteUser = (user: any) => {
-    if (!isOwner) return false; // Only admin/dispatcher can delete
-    if (user.clerk_user_id === clerkUser?.id) return false; // Can't delete themselves
-    return true;
-  };
-
     // Apply sorting
     if (sortColumn && sortDirection !== 'default') {
       filtered = [...filtered].sort((a, b) => {
@@ -576,6 +558,30 @@ export function UserManagementSection() {
             onOpenChange={(open) => !open && setEditingUser(null)}
           />
         )}
+
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete User</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete {userToDelete?.first_name} {userToDelete?.last_name}?
+                This action cannot be undone and will permanently remove this user from the system.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setDeleteConfirmOpen(false)}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteConfirm}
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
       </CardContent>
     </Card>
