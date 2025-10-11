@@ -359,34 +359,36 @@ export function VehicleNotesTab({ vehicleId }: VehicleNotesTabProps) {
                   className="grid grid-cols-12 gap-4 py-3 border-b last:border-b-0 hover:bg-muted/30 transition-colors"
                 >
                   {/* Title Column */}
-                  <div className="col-span-4 space-y-1">
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => handleViewNote(note)}
-                        className="text-sm font-medium text-foreground hover:text-primary cursor-pointer text-left"
-                      >
-                        {note.title || 'Vehicle Note'}
-                      </button>
+                  <div className="col-span-4 space-y-2">
+                    <button
+                      onClick={() => handleViewNote(note)}
+                      className="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline cursor-pointer text-left transition-colors"
+                    >
+                      {note.title || 'Vehicle Note'}
+                    </button>
+                    
+                    {/* Important badge and tags on new row */}
+                    <div className="space-y-1">
                       {note.is_important && (
-                        <Badge variant="destructive" className="text-xs">
+                        <Badge variant="destructive" className="text-xs font-bold">
                           Important
                         </Badge>
                       )}
+                      {note.tags && note.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1">
+                          {note.tags.slice(0, 2).map((tag, index) => (
+                            <Badge key={index} variant="outline" className="text-xs h-5">
+                              {tag}
+                            </Badge>
+                          ))}
+                          {note.tags.length > 2 && (
+                            <Badge variant="outline" className="text-xs h-5">
+                              +{note.tags.length - 2} more
+                            </Badge>
+                          )}
+                        </div>
+                      )}
                     </div>
-                    {note.tags && note.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1">
-                        {note.tags.slice(0, 2).map((tag, index) => (
-                          <Badge key={index} variant="outline" className="text-xs h-5">
-                            {tag}
-                          </Badge>
-                        ))}
-                        {note.tags.length > 2 && (
-                          <Badge variant="outline" className="text-xs h-5">
-                            +{note.tags.length - 2} more
-                          </Badge>
-                        )}
-                      </div>
-                    )}
                   </div>
                   
                   {/* Content Preview Column */}
