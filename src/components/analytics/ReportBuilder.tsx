@@ -90,7 +90,7 @@ export const ReportBuilder: React.FC<ReportBuilderProps> = ({ isOpen, onClose, d
 
   return (
     <Drawer open={isOpen} onOpenChange={onClose}>
-      <DrawerContent className="h-[90vh] max-h-[90vh]">
+      <DrawerContent className="h-full max-h-full">
         <div className="flex flex-col h-full max-w-7xl mx-auto w-full">
           {/* Header */}
           <DrawerHeader className="border-b border-gray-200">
