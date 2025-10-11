@@ -11721,6 +11721,7 @@ export type Database = {
           activity_id: string | null
           activity_summary: string | null
           activity_type: string | null
+          rn: number | null
           vehicle_id: string | null
         }
         Relationships: []
@@ -12410,6 +12411,8 @@ export type Database = {
           activity_id: string
           activity_summary: string
           activity_type: string
+          rn: number
+          vehicle_id: string
         }[]
       }
       get_vehicle_efficiency: {
