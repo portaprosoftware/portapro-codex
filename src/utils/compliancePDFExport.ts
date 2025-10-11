@@ -74,12 +74,24 @@ export const exportComplianceSummaryToPDF = (
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
   
-  // Health Score with color
+  // Health Score with badge-style formatting
   const healthScore = data.fleetHealthScore;
   const scoreColor: [number, number, number] = healthScore >= 90 ? [34, 197, 94] : healthScore >= 70 ? [250, 204, 21] : [239, 68, 68];
-  doc.setTextColor(scoreColor[0], scoreColor[1], scoreColor[2]);
+  
+  doc.setTextColor(0, 0, 0);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Fleet Health Score:', 20, currentY);
+  
+  // Draw badge background for score
+  const scoreText = `${healthScore.toFixed(1)}%`;
+  const scoreWidth = doc.getTextWidth(scoreText) + 6;
+  doc.setFillColor(scoreColor[0], scoreColor[1], scoreColor[2]);
+  doc.roundedRect(65, currentY - 4, scoreWidth, 6, 1, 1, 'F');
+  
+  // Draw white bold score text
+  doc.setTextColor(255, 255, 255);
   doc.setFont('helvetica', 'bold');
-  doc.text(`Fleet Health Score: ${healthScore.toFixed(1)}%`, 20, currentY);
+  doc.text(scoreText, 68, currentY);
   
   doc.setTextColor(0, 0, 0);
   doc.setFont('helvetica', 'normal');
@@ -97,7 +109,7 @@ export const exportComplianceSummaryToPDF = (
     doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(239, 68, 68);
-    doc.text('🔴 Critical Items Requiring Immediate Attention', 15, currentY);
+    doc.text('Critical Items Requiring Immediate Attention', 15, currentY);
     doc.setTextColor(0, 0, 0);
     
     currentY += 5;
@@ -154,7 +166,7 @@ export const exportComplianceSummaryToPDF = (
     doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(250, 204, 21);
-    doc.text('⚠️ Expiring in Next 30 Days', 15, currentY);
+    doc.text('Expiring in Next 30 Days', 15, currentY);
     doc.setTextColor(0, 0, 0);
     
     currentY += 5;
@@ -187,7 +199,7 @@ export const exportComplianceSummaryToPDF = (
   doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(59, 130, 246);
-  doc.text('📊 Recent Activity', 15, currentY);
+  doc.text('Recent Activity', 15, currentY);
   doc.setTextColor(0, 0, 0);
   
   currentY += 8;
@@ -208,7 +220,7 @@ export const exportComplianceSummaryToPDF = (
     doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(234, 88, 12);
-    doc.text('📦 Low Stock Alerts', 15, currentY);
+    doc.text('Low Stock Alerts', 15, currentY);
     doc.setTextColor(0, 0, 0);
     
     currentY += 5;
@@ -240,7 +252,7 @@ export const exportComplianceSummaryToPDF = (
 
     doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
-    doc.text('✅ Priority Action Items', 15, currentY);
+    doc.text('Priority Action Items', 15, currentY);
     
     currentY += 8;
     doc.setFontSize(10);
