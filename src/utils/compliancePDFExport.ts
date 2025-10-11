@@ -290,7 +290,7 @@ export const exportComplianceSummaryToPDF = (
       doc.setFont('helvetica', 'normal');
       const actionText = `${item.description}${item.vehicle ? ` - ${item.vehicle}` : ''}${item.dueDate ? ` (Due: ${format(item.dueDate, 'MMM dd')})` : ''}`;
       doc.text(actionText, 27 + badgeWidth + 3, currentY);
-      currentY += 5;
+      currentY += 8;
     });
   }
 
