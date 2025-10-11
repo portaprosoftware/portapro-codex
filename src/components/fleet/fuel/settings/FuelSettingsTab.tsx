@@ -22,14 +22,12 @@ import {
 import { useFuelManagementSettings, useUpdateFuelManagementSettings } from '@/hooks/useFuelManagementSettings';
 import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useToast } from '@/hooks/use-toast';
 
 export const FuelSettingsTab: React.FC = () => {
   const { data: settings, isLoading } = useFuelManagementSettings();
   const updateSettings = useUpdateFuelManagementSettings();
   const [localSettings, setLocalSettings] = useState(settings);
   const [isSaving, setIsSaving] = useState(false);
-  const { toast } = useToast();
 
   React.useEffect(() => {
     if (settings) {
@@ -37,21 +35,17 @@ export const FuelSettingsTab: React.FC = () => {
     }
   }, [settings]);
 
+  // Watch for mutation success to reset button state
+  React.useEffect(() => {
+    if (updateSettings.isSuccess) {
+      setIsSaving(true);
+      setTimeout(() => setIsSaving(false), 1000);
+    }
+  }, [updateSettings.isSuccess]);
+
   const handleSave = () => {
     if (localSettings) {
-      setIsSaving(true);
-      updateSettings.mutate(localSettings, {
-        onSuccess: () => {
-          toast({
-            title: "Saved Successfully",
-            description: "Fuel management settings have been updated.",
-          });
-          setTimeout(() => setIsSaving(false), 1000);
-        },
-        onError: () => {
-          setIsSaving(false);
-        }
-      });
+      updateSettings.mutate(localSettings);
     }
   };
 
