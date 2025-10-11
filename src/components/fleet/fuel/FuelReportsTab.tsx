@@ -477,9 +477,9 @@ export const FuelReportsTab: React.FC = () => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="vehicle_efficiency">Vehicle Efficiency</SelectItem>
                   <SelectItem value="fuel_usage">Fuel Usage Over Time</SelectItem>
                   <SelectItem value="cost_trends">Cost Trends</SelectItem>
-                  <SelectItem value="vehicle_efficiency">Vehicle Efficiency</SelectItem>
                   <SelectItem value="station_performance">Station Performance</SelectItem>
                 </SelectContent>
               </Select>
