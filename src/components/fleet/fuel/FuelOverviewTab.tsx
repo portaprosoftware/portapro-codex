@@ -97,9 +97,9 @@ export const FuelOverviewTab: React.FC = () => {
       const mobileCount = data?.filter(l => l.source_type === 'mobile_service').length || 0;
 
       return {
-        totalGallons: totalGallons.toFixed(1),
-        totalCost: totalCost.toFixed(2),
-        avgCostPerGallon: avgCostPerGallon.toFixed(3),
+        totalGallons: totalGallons.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
+        totalCost: totalCost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+        avgCostPerGallon: avgCostPerGallon.toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 }),
         totalLogs,
         retailCount,
         yardTankCount,
