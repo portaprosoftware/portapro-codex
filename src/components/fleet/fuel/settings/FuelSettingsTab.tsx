@@ -122,30 +122,6 @@ export const FuelSettingsTab: React.FC = () => {
               />
             </div>
           </div>
-
-          <Separator />
-
-          <div className="space-y-2">
-            <Label htmlFor="default-source">Default Fuel Source</Label>
-            <Select
-              value={localSettings.default_fuel_source}
-              onValueChange={(value: any) => 
-                setLocalSettings({ ...localSettings, default_fuel_source: value })
-              }
-            >
-              <SelectTrigger id="default-source" className="bg-background">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-background border shadow-lg z-50">
-                <SelectItem value="retail">Retail Stations</SelectItem>
-                <SelectItem value="yard_tank">Yard Tanks</SelectItem>
-                <SelectItem value="mobile_service">Mobile Service</SelectItem>
-              </SelectContent>
-            </Select>
-            <p className="text-sm text-muted-foreground">
-              This source will be pre-selected when logging new fuel entries
-            </p>
-          </div>
         </CardContent>
       </Card>
 
