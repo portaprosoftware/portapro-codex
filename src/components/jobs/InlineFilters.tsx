@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Check, Info, X, ChevronDown, ChevronUp, Calendar, Truck } from 'lucide-react';
+import { Search, Check, Info, X, ChevronDown, ChevronUp, Calendar, Truck, Users } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -16,6 +16,7 @@ import { AvailabilityTrackerSheet } from '@/components/inventory/AvailabilityTra
 import { StockVehicleSelectionModal } from '@/components/fleet/StockVehicleSelectionModal';
 import { UniversalJobsHeader } from './UniversalJobsHeader';
 import { FilterToggle } from './FilterToggle';
+import { MultiSelectDriverFilter } from '@/components/fleet/MultiSelectDriverFilter';
 
 interface InlineFiltersProps {
   searchTerm: string;
@@ -67,6 +68,18 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
   const [stockServiceDate, setStockServiceDate] = useState<string>(new Date().toISOString().slice(0, 10));
   const [showAvailabilityTracker, setShowAvailabilityTracker] = useState(false);
   const [showVehicleModal, setShowVehicleModal] = useState(false);
+  const [showDriverModal, setShowDriverModal] = useState(false);
+  
+  // Convert drivers array to match MultiSelectDriverFilter format
+  const selectedDriversForModal = selectedDriver === 'all' 
+    ? [] 
+    : drivers.filter(d => d.id === selectedDriver).map(d => ({
+        id: d.id,
+        first_name: d.first_name,
+        last_name: d.last_name,
+        email: null,
+        clerk_user_id: null
+      }));
 
   // Route vs Truck Stock queries
   const { data: vehicles } = useQuery({
@@ -131,33 +144,20 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
             </div>
           </div>
 
-        {/* Driver Filter */}
-        <Select value={selectedDriver} onValueChange={onDriverChange}>
-          <SelectTrigger className="w-48">
-            <SelectValue placeholder="All Drivers" />
-          </SelectTrigger>
-          <SelectContent className="bg-white border shadow-lg z-[9999]">
-            {/* Key directly above driver names */}
-            <div className="flex items-center gap-2 text-xs text-gray-600 px-2 py-1 border-b border-gray-100">
-              <span>Drivers With Jobs Today</span>
-              <Truck className="w-3 h-3 text-green-500" />
-            </div>
-            <SelectItem value="all">All Drivers</SelectItem>
-            {drivers.filter(driver => driver.id && driver.id.trim() !== '').map(driver => (
-               <SelectItem key={driver.id} value={driver.id}>
-                 <div className="flex items-center w-full">
-                   <span className="truncate">{driver.first_name} {driver.last_name}</span>
-                   {driversWithJobsToday.has(driver.id) && (
-                     <>
-                       <span className="mx-1"> - </span>
-                       <Truck className="w-3 h-3 text-green-500" />
-                     </>
-                   )}
-                 </div>
-               </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        {/* Driver Filter - Multi-Select Button */}
+        <Button
+          variant="outline"
+          onClick={() => setShowDriverModal(true)}
+          className="w-48 justify-between"
+        >
+          <span className="truncate">
+            {selectedDriver === 'all' 
+              ? 'All Drivers' 
+              : `${drivers.find(d => d.id === selectedDriver)?.first_name} ${drivers.find(d => d.id === selectedDriver)?.last_name}`
+            }
+          </span>
+          <Users className="h-4 w-4 ml-2 opacity-50" />
+        </Button>
 
         {/* Job Type Filter */}
         <Select value={selectedJobType} onValueChange={onJobTypeChange}>
@@ -435,6 +435,24 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
           onOpenChange={setShowAvailabilityTracker}
           selectedDate={selectedDate}
           onDateSelect={onDateChange}
+        />
+
+        {/* Multi-Select Driver Filter Modal */}
+        <MultiSelectDriverFilter
+          open={showDriverModal}
+          onOpenChange={setShowDriverModal}
+          selectedDrivers={selectedDriversForModal}
+          onDriversChange={(drivers) => {
+            if (drivers.length === 0) {
+              onDriverChange('all');
+            } else if (drivers.length === 1) {
+              onDriverChange(drivers[0].id);
+            } else {
+              // For multiple drivers, just use the first one for now
+              // Later you might want to update the Jobs page to support multiple driver filtering
+              onDriverChange(drivers[0].id);
+            }
+          }}
         />
       </div>
     </TooltipProvider>
