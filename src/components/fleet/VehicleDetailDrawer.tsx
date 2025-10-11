@@ -596,7 +596,6 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
                     <TabSkeleton />
                   ) : (
                     <VehicleMaintenanceSummary 
-                      summary={summary?.maintenance}
                       vehicleId={vehicle.id} 
                       licensePlate={vehicle.license_plate}
                     />

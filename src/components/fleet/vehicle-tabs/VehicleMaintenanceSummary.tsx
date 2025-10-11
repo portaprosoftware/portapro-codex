@@ -1,23 +1,98 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Wrench, ExternalLink, Plus, CheckCircle, AlertCircle } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Wrench, ExternalLink, Plus, Calendar, DollarSign, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
-import type { VehicleSummaryData } from '@/hooks/vehicle/useVehicleSummary';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 interface VehicleMaintenanceSummaryProps {
-  summary: VehicleSummaryData['maintenance'] | undefined;
   vehicleId: string;
   licensePlate: string;
 }
 
 export function VehicleMaintenanceSummary({ 
-  summary, 
   vehicleId, 
   licensePlate 
 }: VehicleMaintenanceSummaryProps) {
   const navigate = useNavigate();
+
+  // Fetch all maintenance logs (work orders + maintenance records)
+  const { data: maintenanceLogs, isLoading } = useQuery({
+    queryKey: ['vehicle-all-maintenance', vehicleId],
+    queryFn: async () => {
+      // Fetch work orders
+      const { data: workOrders, error: woError } = await supabase
+        .from('work_orders')
+        .select('*')
+        .eq('asset_id', vehicleId)
+        .eq('asset_type', 'vehicle')
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (woError) throw woError;
+
+      // Fetch maintenance records
+      const { data: maintenanceRecords, error: mrError } = await supabase
+        .from('maintenance_records')
+        .select('*')
+        .eq('vehicle_id', vehicleId)
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (mrError) throw mrError;
+
+      // Combine and sort by date
+      const combined = [
+        ...(workOrders || []).map(wo => ({
+          id: wo.id,
+          type: 'work_order' as const,
+          title: wo.description?.substring(0, 50) || `Work Order ${wo.id.substring(0, 8)}`,
+          description: wo.description,
+          status: wo.status,
+          created_at: wo.created_at,
+          completed_at: wo.closed_at,
+          cost: wo.total_cost,
+          priority: wo.priority
+        })),
+        ...(maintenanceRecords || []).map(mr => ({
+          id: mr.id,
+          type: 'maintenance_record' as const,
+          title: mr.description?.substring(0, 50) || `Maintenance ${mr.id.substring(0, 8)}`,
+          description: mr.description,
+          status: mr.status,
+          created_at: mr.created_at,
+          completed_at: mr.completed_date,
+          cost: mr.total_cost,
+          priority: mr.priority
+        }))
+      ].sort((a, b) => new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime());
+
+      return combined.slice(0, 10);
+    },
+    enabled: !!vehicleId
+  });
+
+  const getStatusBadge = (status: string) => {
+    const statusConfig = {
+      open: { variant: 'default' as const, className: 'bg-blue-100 text-blue-700 font-bold' },
+      in_progress: { variant: 'default' as const, className: 'bg-yellow-100 text-yellow-700 font-bold' },
+      completed: { variant: 'default' as const, className: 'bg-green-100 text-green-700 font-bold' },
+      cancelled: { variant: 'outline' as const, className: 'font-bold' },
+      scheduled: { variant: 'default' as const, className: 'bg-purple-100 text-purple-700 font-bold' },
+    };
+    
+    const config = statusConfig[status as keyof typeof statusConfig] || { variant: 'outline' as const, className: '' };
+    
+    return (
+      <Badge variant={config.variant} className={config.className}>
+        {status.replace('_', ' ')}
+      </Badge>
+    );
+  };
 
   return (
     <Card className="hover:shadow-md transition-shadow">
@@ -28,43 +103,63 @@ export function VehicleMaintenanceSummary({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Key Stats */}
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Open Work Orders:</span>
-            <span className="font-semibold">{summary?.open_work_orders ?? 0}</span>
+        {isLoading ? (
+          <div className="flex justify-center py-8">
+            <LoadingSpinner />
           </div>
-          
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">DVIRs (Last 30 Days):</span>
-            <span className="font-semibold">{summary?.dvirs_30d ?? 0}</span>
-          </div>
-
-          {summary?.next_pm_due && (
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Next PM Due:</span>
-              <span className="font-semibold text-orange-600">
-                {summary.next_pm_due.name} ({summary.next_pm_due.due_value} {summary.next_pm_due.trigger_type})
-              </span>
-            </div>
-          )}
-
-          {summary?.last_dvir && (
-            <div className="flex justify-between text-sm items-center">
-              <span className="text-muted-foreground">Last DVIR:</span>
-              <div className="flex items-center gap-2">
-                {summary.last_dvir.status === 'pass' ? (
-                  <CheckCircle className="w-4 h-4 text-green-600" />
-                ) : (
-                  <AlertCircle className="w-4 h-4 text-red-600" />
-                )}
-                <span className="font-semibold capitalize">
-                  {summary.last_dvir.status} ({format(new Date(summary.last_dvir.date), 'MMM d')})
-                </span>
+        ) : maintenanceLogs && maintenanceLogs.length > 0 ? (
+          <div className="space-y-3 max-h-96 overflow-y-auto">
+            {maintenanceLogs.map((log) => (
+              <div
+                key={`${log.type}-${log.id}`}
+                className="p-3 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
+                onClick={() => {
+                  if (log.type === 'work_order') {
+                    navigate(`/fleet/maintenance?tab=work-orders&vehicle=${vehicleId}&returnTo=/fleet-management`);
+                  } else {
+                    navigate(`/fleet/maintenance?tab=all-records&vehicle=${vehicleId}&returnTo=/fleet-management`);
+                  }
+                }}
+              >
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-semibold text-sm truncate">{log.title}</h4>
+                    {log.description && (
+                      <p className="text-xs text-muted-foreground truncate">{log.description}</p>
+                    )}
+                  </div>
+                  {getStatusBadge(log.status)}
+                </div>
+                
+                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-1">
+                    <Calendar className="h-3 w-3" />
+                    {format(new Date(log.created_at || ''), 'MMM d, yyyy')}
+                  </div>
+                  
+                  {log.cost && (
+                    <div className="flex items-center gap-1 text-green-600 font-semibold">
+                      <DollarSign className="h-3 w-3" />
+                      {log.cost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </div>
+                  )}
+                  
+                  {log.completed_at && (
+                    <div className="flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      Completed {format(new Date(log.completed_at), 'MMM d')}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-8 text-muted-foreground">
+            <Wrench className="h-12 w-12 mx-auto mb-2 opacity-20" />
+            <p className="text-sm">No maintenance records found</p>
+          </div>
+        )}
 
         {/* Action Buttons */}
         <div className="flex gap-2 pt-2 border-t">
