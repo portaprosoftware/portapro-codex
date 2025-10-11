@@ -22,11 +22,14 @@ import {
 import { useFuelManagementSettings, useUpdateFuelManagementSettings } from '@/hooks/useFuelManagementSettings';
 import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useToast } from '@/hooks/use-toast';
 
 export const FuelSettingsTab: React.FC = () => {
   const { data: settings, isLoading } = useFuelManagementSettings();
   const updateSettings = useUpdateFuelManagementSettings();
   const [localSettings, setLocalSettings] = useState(settings);
+  const [isSaving, setIsSaving] = useState(false);
+  const { toast } = useToast();
 
   React.useEffect(() => {
     if (settings) {
@@ -36,7 +39,19 @@ export const FuelSettingsTab: React.FC = () => {
 
   const handleSave = () => {
     if (localSettings) {
-      updateSettings.mutate(localSettings);
+      setIsSaving(true);
+      updateSettings.mutate(localSettings, {
+        onSuccess: () => {
+          toast({
+            title: "Saved Successfully",
+            description: "Fuel management settings have been updated.",
+          });
+          setTimeout(() => setIsSaving(false), 1000);
+        },
+        onError: () => {
+          setIsSaving(false);
+        }
+      });
     }
   };
 
@@ -55,7 +70,11 @@ export const FuelSettingsTab: React.FC = () => {
           </h2>
           <p className="text-muted-foreground">Configure fuel tracking, alerts, and integrations</p>
         </div>
-        <Button onClick={handleSave} className="gap-2">
+        <Button 
+          onClick={handleSave} 
+          className={`gap-2 transition-all duration-200 ${isSaving ? 'scale-95 opacity-80' : ''}`}
+          disabled={isSaving}
+        >
           <Save className="h-4 w-4" />
           Save Changes
         </Button>
@@ -518,7 +537,12 @@ export const FuelSettingsTab: React.FC = () => {
 
       {/* Save Button (bottom) */}
       <div className="flex justify-end">
-        <Button onClick={handleSave} size="lg" className="gap-2">
+        <Button 
+          onClick={handleSave} 
+          size="lg" 
+          className={`gap-2 transition-all duration-200 ${isSaving ? 'scale-95 opacity-80' : ''}`}
+          disabled={isSaving}
+        >
           <Save className="h-4 w-4" />
           Save All Settings
         </Button>
