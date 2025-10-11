@@ -197,7 +197,7 @@ export const ExportFuelDataModal: React.FC<ExportFuelDataModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Export Fuel Data</DialogTitle>
         </DialogHeader>
