@@ -80,7 +80,13 @@ export const EditFuelLogModal: React.FC<EditFuelLogModalProps> = ({
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, first_name, last_name')
+        .select(`
+          id,
+          first_name,
+          last_name,
+          user_roles!inner(role)
+        `)
+        .eq('user_roles.role', 'driver')
         .eq('is_active', true)
         .order('first_name');
       

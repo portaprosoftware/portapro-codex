@@ -107,7 +107,11 @@ const queryClient = useQueryClient();
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('*')
+        .select(`
+          *,
+          user_roles!inner(role)
+        `)
+        .eq('user_roles.role', 'driver')
         .eq('is_active', true);
 
       if (error) throw error;
