@@ -149,6 +149,12 @@ export const FuelAllLogsTab: React.FC<{
   const fuelLogs = unifiedData?.map(log => {
     const vehicle = vehicles?.find(v => v.id === log.vehicle_id);
     const driver = drivers?.find(d => d.id === log.driver_id);
+    
+    // For yard_tank and mobile_service, show N/A if no vehicle/driver
+    const isNonRetail = log.source_type === 'yard_tank' || log.source_type === 'mobile_service';
+    const vehicleDisplay = vehicle?.license_plate || (isNonRetail ? 'N/A' : 'Unknown');
+    const driverFirstName = driver?.first_name || (isNonRetail ? 'N/A' : 'Unknown');
+    const driverLastName = driver?.last_name || '';
 
     return {
       id: log.reference_id,
@@ -156,15 +162,15 @@ export const FuelAllLogsTab: React.FC<{
       source_type: log.source_type,
       source_name: log.source_name,
       vehicle: {
-        license_plate: vehicle?.license_plate || 'Unknown',
+        license_plate: vehicleDisplay,
         vehicle_type: '',
         make: vehicle?.make,
         model: vehicle?.model,
         nickname: vehicle?.nickname
       },
       driver: {
-        first_name: driver?.first_name || 'Unknown',
-        last_name: driver?.last_name || ''
+        first_name: driverFirstName,
+        last_name: driverLastName
       },
       odometer_reading: log.odometer_reading || 0,
       gallons_purchased: log.gallons,
@@ -376,18 +382,24 @@ export const FuelAllLogsTab: React.FC<{
                     <TableRow key={log.id}>
                       <TableCell>{new Date(log.log_date).toLocaleDateString()}</TableCell>
                       <TableCell>{getSourceBadge(log.source_type)}</TableCell>
-                      <TableCell>
+                       <TableCell>
                         <div className="space-y-1">
                           <div className="font-medium">
-                            {log.vehicle?.make && log.vehicle?.model 
-                              ? `${log.vehicle.make} ${log.vehicle.model}${log.vehicle.nickname ? ` - ${log.vehicle.nickname}` : ''}`
-                              : 'Unknown Vehicle'}
+                            {log.vehicle?.license_plate === 'N/A' 
+                              ? 'N/A'
+                              : log.vehicle?.make && log.vehicle?.model 
+                                ? `${log.vehicle.make} ${log.vehicle.model}${log.vehicle.nickname ? ` - ${log.vehicle.nickname}` : ''}`
+                                : log.vehicle?.license_plate === 'Unknown' ? 'Unknown Vehicle' : 'N/A'}
                           </div>
-                          <div className="text-sm text-muted-foreground">{log.vehicle?.license_plate}</div>
+                          {log.vehicle?.license_plate !== 'N/A' && log.vehicle?.license_plate !== 'Unknown' && (
+                            <div className="text-sm text-muted-foreground">{log.vehicle?.license_plate}</div>
+                          )}
                         </div>
                       </TableCell>
                       <TableCell>
-                        {log.driver ? `${log.driver.first_name} ${log.driver.last_name}` : 'Unknown'}
+                        {log.driver?.first_name === 'N/A' 
+                          ? 'N/A' 
+                          : log.driver ? `${log.driver.first_name} ${log.driver.last_name}` : 'Unknown'}
                       </TableCell>
                       <TableCell>{log.odometer_reading?.toLocaleString() || 'N/A'}</TableCell>
                       <TableCell>{log.gallons_purchased?.toFixed(1)}</TableCell>
