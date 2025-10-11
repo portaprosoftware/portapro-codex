@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { DatePickerWithRange } from '@/components/ui/DatePickerWithRange';
@@ -168,139 +168,141 @@ export const ExportFuelDataModal: React.FC<ExportFuelDataModalProps> = ({
 
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Export Fuel Data</DialogTitle>
-        </DialogHeader>
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      <DrawerContent className="h-[95vh] flex flex-col">
+        <DrawerHeader className="flex-shrink-0">
+          <DrawerTitle>Export Fuel Data</DrawerTitle>
+        </DrawerHeader>
 
-        <div className="space-y-6">
-          {/* Export Format */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Export Format</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-4">
-                <div 
-                  className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-                    exportFormat === 'csv' ? 'border-primary bg-primary/10' : 'border-border'
-                  }`}
-                  onClick={() => setExportFormat('csv')}
-                >
-                  <div className="flex items-center gap-3">
-                    <FileSpreadsheet className="h-8 w-8 text-green-500" />
-                    <div>
-                      <p className="font-medium">CSV</p>
-                      <p className="text-sm text-muted-foreground">Spreadsheet format</p>
+        <div className="flex-1 overflow-y-auto px-4 pb-4">
+          <div className="space-y-6">
+            {/* Export Format */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Export Format</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-4">
+                  <div 
+                    className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                      exportFormat === 'csv' ? 'border-primary bg-primary/10' : 'border-border'
+                    }`}
+                    onClick={() => setExportFormat('csv')}
+                  >
+                    <div className="flex items-center gap-3">
+                      <FileSpreadsheet className="h-8 w-8 text-green-500" />
+                      <div>
+                        <p className="font-medium">CSV</p>
+                        <p className="text-sm text-muted-foreground">Spreadsheet format</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div 
+                    className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                      exportFormat === 'pdf' ? 'border-primary bg-primary/10' : 'border-border'
+                    }`}
+                    onClick={() => setExportFormat('pdf')}
+                  >
+                    <div className="flex items-center gap-3">
+                      <FileText className="h-8 w-8 text-red-500" />
+                      <div>
+                        <p className="font-medium">PDF</p>
+                        <p className="text-sm text-muted-foreground">Document format</p>
+                      </div>
                     </div>
                   </div>
                 </div>
+              </CardContent>
+            </Card>
 
-                <div 
-                  className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-                    exportFormat === 'pdf' ? 'border-primary bg-primary/10' : 'border-border'
-                  }`}
-                  onClick={() => setExportFormat('pdf')}
-                >
-                  <div className="flex items-center gap-3">
-                    <FileText className="h-8 w-8 text-red-500" />
-                    <div>
-                      <p className="font-medium">PDF</p>
-                      <p className="text-sm text-muted-foreground">Document format</p>
+            {/* Filters */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Filters</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label>Date Range</Label>
+                  <DatePickerWithRange
+                    date={dateRange}
+                    onDateChange={setDateRange}
+                    placeholder="Select date range (optional)"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Vehicles (Optional)</Label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setIsVehicleModalOpen(true)}
+                      className="w-full justify-start mt-2 h-9"
+                    >
+                      {selectedVehicles.length === 0
+                        ? 'All vehicles'
+                        : `${selectedVehicles.length} selected`}
+                    </Button>
+                  </div>
+
+                  <div>
+                    <Label>Drivers (Optional)</Label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setIsDriverModalOpen(true)}
+                      className="w-full justify-start mt-2 h-9"
+                    >
+                      {selectedDrivers.length === 0
+                        ? 'All drivers'
+                        : `${selectedDrivers.length} selected`}
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Column Selection */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Columns to Include</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-3 gap-4">
+                  {Object.entries(includeColumns).map(([key, checked]) => (
+                    <div key={key} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={key}
+                        checked={checked}
+                        onCheckedChange={(newChecked) =>
+                          setIncludeColumns(prev => ({ ...prev, [key]: newChecked }))
+                        }
+                      />
+                      <Label htmlFor={key} className="text-sm capitalize">
+                        {key.replace('_', ' ')}
+                      </Label>
                     </div>
-                  </div>
+                  ))}
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
 
-          {/* Filters */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Filters</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label>Date Range</Label>
-                <DatePickerWithRange
-                  date={dateRange}
-                  onDateChange={setDateRange}
-                  placeholder="Select date range (optional)"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Vehicles (Optional)</Label>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setIsVehicleModalOpen(true)}
-                    className="w-full justify-start mt-2 h-9"
-                  >
-                    {selectedVehicles.length === 0
-                      ? 'All vehicles'
-                      : `${selectedVehicles.length} selected`}
-                  </Button>
-                </div>
-
-                <div>
-                  <Label>Drivers (Optional)</Label>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setIsDriverModalOpen(true)}
-                    className="w-full justify-start mt-2 h-9"
-                  >
-                    {selectedDrivers.length === 0
-                      ? 'All drivers'
-                      : `${selectedDrivers.length} selected`}
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Column Selection */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Columns to Include</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-3 gap-4">
-                {Object.entries(includeColumns).map(([key, checked]) => (
-                  <div key={key} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={key}
-                      checked={checked}
-                      onCheckedChange={(newChecked) =>
-                        setIncludeColumns(prev => ({ ...prev, [key]: newChecked }))
-                      }
-                    />
-                    <Label htmlFor={key} className="text-sm capitalize">
-                      {key.replace('_', ' ')}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <div className="flex justify-end gap-2 pt-4 border-t mt-4 bg-white sticky bottom-0 px-4 pb-4">
+            <Button variant="outline" onClick={() => onOpenChange(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleExport}
+              className="bg-gradient-to-r from-primary to-primary-variant"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Export Data
+            </Button>
+          </div>
         </div>
-
-        <div className="flex justify-end gap-2 pt-4">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-          <Button 
-            onClick={handleExport}
-            className="bg-gradient-to-r from-primary to-primary-variant"
-          >
-            <Download className="h-4 w-4 mr-2" />
-            Export Data
-          </Button>
-        </div>
-      </DialogContent>
+      </DrawerContent>
 
       {/* Vehicle Multi-Select Modal */}
       <MultiSelectVehicleFilter
@@ -317,6 +319,6 @@ export const ExportFuelDataModal: React.FC<ExportFuelDataModalProps> = ({
         selectedDrivers={selectedDrivers}
         onDriversChange={setSelectedDrivers}
       />
-    </Dialog>
+    </Drawer>
   );
 };
