@@ -108,6 +108,63 @@ async function computeFuelSummary(vehicleId: string) {
   };
 }
 
+async function computeMaintenanceSummary(vehicleId: string) {
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+  try {
+    // Count open work orders
+    const { count: openWorkOrders } = await supabase
+      .from('work_orders')
+      .select('*', { count: 'exact', head: true })
+      .eq('asset_id', vehicleId)
+      .eq('asset_type', 'vehicle')
+      .in('status', ['open', 'in_progress']);
+
+    // DVIRs - skip for now as table schema is not in types
+    const dvirsCount = 0;
+    const lastDvirData = null;
+
+    // Get next PM due
+    const { data: pmSchedules } = await supabase
+      .from('vehicle_pm_schedules')
+      .select('*, pm_templates(name)')
+      .eq('vehicle_id', vehicleId)
+      .eq('active', true)
+      .order('next_due_date', { ascending: true, nullsFirst: false })
+      .limit(1);
+
+    let nextPmDue = null;
+    if (pmSchedules && pmSchedules.length > 0) {
+      const schedule = pmSchedules[0] as any;
+      nextPmDue = {
+        name: schedule.pm_templates?.name || 'PM Service',
+        due_value: schedule.next_due_date || schedule.next_due_mileage || schedule.next_due_engine_hours,
+        trigger_type: schedule.next_due_date ? 'date' 
+                    : schedule.next_due_mileage ? 'mileage' 
+                    : 'hours'
+      };
+    }
+
+    return {
+      open_work_orders: openWorkOrders || 0,
+      dvirs_30d: dvirsCount,
+      last_dvir: lastDvirData 
+        ? { date: lastDvirData.inspection_date, status: lastDvirData.status }
+        : null,
+      next_pm_due: nextPmDue
+    };
+  } catch (error) {
+    console.error('Error computing maintenance summary:', error);
+    return {
+      open_work_orders: 0,
+      dvirs_30d: 0,
+      last_dvir: null,
+      next_pm_due: null
+    };
+  }
+}
+
 export function useVehicleSummary(vehicleId: string | null) {
   return useQuery({
     queryKey: ['vehicle-summary', vehicleId],
@@ -123,29 +180,40 @@ export function useVehicleSummary(vehicleId: string | null) {
         const rpcData = data as unknown as VehicleSummaryData;
 
         // Check if fuel data is missing or empty, compute fallback
-        if (!rpcData || !rpcData.fuel || !rpcData.fuel.last_fill_date) {
-          const fuelSummary = await computeFuelSummary(vehicleId);
+        const needsFuelFallback = !rpcData || !rpcData.fuel || !rpcData.fuel.last_fill_date;
+        
+        // Check if maintenance data is missing or empty (all zeros)
+        const needsMaintenanceFallback = !rpcData || !rpcData.maintenance || 
+          (rpcData.maintenance.open_work_orders === 0 && 
+           rpcData.maintenance.dvirs_30d === 0 && 
+           !rpcData.maintenance.last_dvir && 
+           !rpcData.maintenance.next_pm_due);
+
+        if (needsFuelFallback || needsMaintenanceFallback) {
+          const [fuelSummary, maintenanceSummary] = await Promise.all([
+            needsFuelFallback ? computeFuelSummary(vehicleId) : Promise.resolve(rpcData.fuel),
+            needsMaintenanceFallback ? computeMaintenanceSummary(vehicleId) : Promise.resolve(rpcData.maintenance)
+          ]);
           
           return {
             ...rpcData,
             fuel: fuelSummary,
+            maintenance: maintenanceSummary,
           } as VehicleSummaryData;
         }
 
         return rpcData;
       } catch (error) {
-        console.error('RPC failed, using fallback fuel computation:', error);
+        console.error('RPC failed, using fallback computation:', error);
         
-        // If RPC completely fails, compute fuel summary as fallback
-        const fuelSummary = await computeFuelSummary(vehicleId);
+        // If RPC completely fails, compute both fuel and maintenance summaries as fallback
+        const [fuelSummary, maintenanceSummary] = await Promise.all([
+          computeFuelSummary(vehicleId),
+          computeMaintenanceSummary(vehicleId)
+        ]);
         
         return {
-          maintenance: {
-            open_work_orders: 0,
-            dvirs_30d: 0,
-            last_dvir: null,
-            next_pm_due: null,
-          },
+          maintenance: maintenanceSummary,
           fuel: fuelSummary,
           compliance: {
             spill_kit_status: 'missing' as const,
