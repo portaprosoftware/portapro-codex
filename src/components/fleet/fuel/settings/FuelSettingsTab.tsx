@@ -76,7 +76,7 @@ export const FuelSettingsTab: React.FC = () => {
 
       <Alert>
         <AlertDescription>
-          These settings affect all fuel tracking across your entire fleet. Changes take effect immediately.
+          These settings affect all fuel tracking across your entire fleet. Changes take effect immediately upon save.
         </AlertDescription>
       </Alert>
 
