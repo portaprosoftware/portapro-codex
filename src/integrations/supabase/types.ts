@@ -11995,6 +11995,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
+      force_delete_user: {
+        Args: { p_profile_id: string }
+        Returns: Json
+      }
       generate_customer_portal_token: {
         Args: { customer_uuid: string }
         Returns: string
@@ -12509,6 +12513,10 @@ export type Database = {
       preview_next_item_code: {
         Args: { category_prefix: string }
         Returns: string
+      }
+      purge_users_except: {
+        Args: { p_owner_clerk_id: string }
+        Returns: Json
       }
       quote_has_job: {
         Args: { quote_uuid: string }

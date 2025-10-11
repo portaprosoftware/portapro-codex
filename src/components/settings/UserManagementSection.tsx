@@ -213,78 +213,78 @@ export function UserManagementSection() {
 
   const deleteUser = useMutation({
     mutationFn: async (userId: string) => {
-      console.log("=== Starting user deletion ===");
-      console.log("User ID to delete:", userId);
+      console.log('🗑️ Starting deletion process for user:', userId);
       
-      // Get the user's clerk_user_id first
-      const { data: profile, error: fetchError } = await supabase
-        .from("profiles")
-        .select("clerk_user_id, first_name, last_name, email")
-        .eq("id", userId)
-        .single();
-
-      if (fetchError) {
-        console.error("Error fetching profile:", fetchError);
-        throw new Error(`Failed to fetch user profile: ${fetchError.message}`);
+      const userToDelete = users?.find(u => u.id === userId);
+      console.log('User to delete:', userToDelete);
+      
+      // Step 1: Check if user can be safely deleted
+      console.log('Step 1: Checking deletion blockers...');
+      const { data: canDeleteData, error: checkError } = await supabase
+        .rpc('can_delete_user', { user_uuid: userId });
+      
+      if (checkError) {
+        console.error('❌ Error checking deletion blockers:', checkError);
+        throw new Error(`Failed to check deletion status: ${checkError.message}`);
       }
-
-      console.log("Profile to delete:", profile);
-
-      // Check if this is a temporary test user
-      const isTemporaryUser = profile?.clerk_user_id?.startsWith('temp_');
-      if (isTemporaryUser) {
-        console.warn("⚠️ Attempting to delete temporary test user:", profile.clerk_user_id);
-      }
-
-      // Delete role first using clerk_user_id (if exists)
-      if (profile?.clerk_user_id) {
-        const { error: roleError, data: deletedRole } = await supabase
-          .from("user_roles")
-          .delete()
-          .eq("user_id", profile.clerk_user_id)
-          .select();
-
-        if (roleError) {
-          console.error("Error deleting user role:", roleError);
-          console.error("Role error details:", {
-            code: roleError.code,
-            message: roleError.message,
-            details: roleError.details,
-            hint: roleError.hint
-          });
-        } else {
-          console.log("✓ Deleted user_roles:", deletedRole);
+      
+      console.log('Deletion check result:', canDeleteData);
+      
+      // If there are blockers, throw error with details
+      if (canDeleteData && typeof canDeleteData === 'object' && 'can_delete' in canDeleteData) {
+        const result = canDeleteData as { can_delete: boolean; reason?: string };
+        if (!result.can_delete) {
+          const reason = result.reason || 'User has dependencies that must be removed first';
+          throw new Error(`BLOCKED: ${reason}`);
         }
       }
-
-      // Then delete profile
-      const { error: profileError, data: deletedProfile } = await supabase
-        .from("profiles")
+      
+      // Step 2: Try normal deletion (roles + profile)
+      console.log('Step 2: Attempting normal deletion...');
+      
+      // Delete from user_roles using profile id (uuid)
+      const { error: roleError } = await supabase
+        .from('user_roles')
         .delete()
-        .eq("id", userId)
-        .select();
-
+        .eq('user_id', userId);
+      
+      if (roleError) {
+        console.error('❌ Failed to delete user roles:', roleError);
+        if (roleError.code === '23503') {
+          throw new Error('Cannot delete: User role has dependencies in other tables');
+        }
+        throw new Error(`Failed to delete user role: ${roleError.message}`);
+      }
+      
+      console.log('✅ User roles deleted successfully');
+      
+      // Delete from profiles
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('id', userId);
+      
       if (profileError) {
-        console.error("Error deleting profile:", profileError);
-        console.error("Profile error details:", {
+        console.error('❌ Failed to delete profile:', profileError);
+        console.error('Profile error details:', {
           code: profileError.code,
           message: profileError.message,
           details: profileError.details,
           hint: profileError.hint
         });
         
-        // Provide more specific error messages
         if (profileError.code === '23503') {
-          throw new Error(`Cannot delete user: They have related records (jobs, assignments, etc.) that must be removed first.`);
-        } else if (profileError.code === '42501') {
-          throw new Error(`Permission denied: You don't have permission to delete this user.`);
-        } else {
-          throw new Error(`Failed to delete user profile: ${profileError.message}`);
+          throw new Error('Cannot delete: Profile has foreign key dependencies');
         }
+        if (profileError.code === '42501') {
+          throw new Error('Permission denied: Missing RLS policy for profile deletion');
+        }
+        
+        throw new Error(`Failed to delete profile: ${profileError.message}`);
       }
-
-      console.log("✓ Deleted profile:", deletedProfile);
-      console.log("=== User deletion completed successfully ===");
+      
+      console.log('✅ Profile deleted successfully');
+      return { success: true };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users-with-roles"] });
@@ -294,13 +294,94 @@ export function UserManagementSection() {
       setDeleteConfirmOpen(false);
       setUserToDelete(null);
     },
-    onError: (error: any) => {
-      console.error("=== User deletion failed ===");
-      console.error("Full error:", error);
+    onError: (error: Error) => {
+      console.error('Deletion error:', error);
       
-      // Show more specific error to user
-      const errorMessage = error?.message || "Failed to delete user. Please check console for details.";
-      toast.error(errorMessage);
+      // Check if this is a blocker error that needs force delete
+      if (error.message.startsWith('BLOCKED:')) {
+        const reason = error.message.replace('BLOCKED: ', '');
+        toast.error(reason, {
+          action: {
+            label: "Force Delete",
+            onClick: () => {
+              if (userToDelete) {
+                forceDeleteUser.mutate(userToDelete.id);
+              }
+            }
+          },
+          duration: 10000,
+        });
+      } else {
+        toast.error(error.message || "Failed to delete user");
+      }
+    },
+  });
+
+  const forceDeleteUser = useMutation({
+    mutationFn: async (userId: string) => {
+      console.log('💪 Force deleting user:', userId);
+      
+      const { data, error } = await supabase
+        .rpc('force_delete_user', { p_profile_id: userId });
+      
+      if (error) {
+        console.error('❌ Force delete error:', error);
+        throw new Error(`Force delete failed: ${error.message}`);
+      }
+      
+      console.log('✅ Force delete result:', data);
+      return data;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["users-with-roles"] });
+      queryClient.invalidateQueries({ queryKey: ['drivers-with-hours'] });
+      queryClient.invalidateQueries({ queryKey: ['drivers'] });
+      
+      const summary = Object.entries(data || {})
+        .filter(([key]) => key !== 'success')
+        .map(([key, value]) => `${key}: ${value}`)
+        .join(', ');
+      
+      toast.success(`User force deleted successfully. ${summary}`);
+      setDeleteConfirmOpen(false);
+      setUserToDelete(null);
+    },
+    onError: (error: Error) => {
+      console.error('Force delete mutation error:', error);
+      toast.error(error.message || "Force delete failed");
+    },
+  });
+
+  const purgeAllUsers = useMutation({
+    mutationFn: async () => {
+      if (!clerkUser?.id) {
+        throw new Error('No authenticated user found');
+      }
+      
+      console.log('🧹 Purging all users except:', clerkUser.id);
+      
+      const { data, error } = await supabase
+        .rpc('purge_users_except', { p_owner_clerk_id: clerkUser.id });
+      
+      if (error) {
+        console.error('❌ Purge error:', error);
+        throw new Error(`Purge failed: ${error.message}`);
+      }
+      
+      console.log('✅ Purge result:', data);
+      return data;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["users-with-roles"] });
+      queryClient.invalidateQueries({ queryKey: ['drivers-with-hours'] });
+      queryClient.invalidateQueries({ queryKey: ['drivers'] });
+      
+      const result = data as { processed: number; failures: number };
+      toast.success(`Purged ${result.processed} users successfully. ${result.failures} failures.`);
+    },
+    onError: (error: Error) => {
+      console.error('Purge mutation error:', error);
+      toast.error(error.message || "Purge failed");
     },
   });
 
@@ -428,13 +509,31 @@ export function UserManagementSection() {
             <Badge variant="secondary">{allFilteredUsers.length} users</Badge>
           </CardTitle>
           
-          <Button 
-            onClick={() => setIsCreateModalOpen(true)}
-            className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Invite User
-          </Button>
+          <div className="flex gap-2">
+            {isOwner && (
+              <Button 
+                variant="destructive" 
+                onClick={() => {
+                  if (confirm('⚠️ WARNING: This will DELETE ALL USERS except you.\n\nThis will clear all driver assignments, jobs, and related data.\n\nThis action CANNOT be undone!\n\nType YES to confirm.')) {
+                    const confirmation = prompt('Type "DELETE ALL" to confirm this action:');
+                    if (confirmation === 'DELETE ALL') {
+                      purgeAllUsers.mutate();
+                    }
+                  }
+                }}
+                disabled={purgeAllUsers.isPending}
+              >
+                {purgeAllUsers.isPending ? 'Purging...' : '🧹 Purge All Test Users'}
+              </Button>
+            )}
+            <Button 
+              onClick={() => setIsCreateModalOpen(true)}
+              className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Invite User
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
