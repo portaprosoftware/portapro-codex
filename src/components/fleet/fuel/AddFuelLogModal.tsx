@@ -311,7 +311,7 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="h-[100vh] md:h-[75vh] flex flex-col">
+      <DrawerContent className="h-[95vh] flex flex-col">
         <DrawerHeader className="flex-shrink-0">
           <DrawerTitle>Add Fuel Log</DrawerTitle>
         </DrawerHeader>
