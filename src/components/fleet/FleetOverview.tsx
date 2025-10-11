@@ -90,11 +90,18 @@ export const FleetOverview: React.FC = () => {
   const { data: spillKitStats } = useQuery({
     queryKey: ['fleet-spill-kit-stats'],
     queryFn: async () => {
-      // Get all active vehicles with spill kits
-      const { data: vehiclesWithKits, error } = await supabase
-        .from('vehicle_spill_kits')
-        .select('id, vehicle_id, required_contents, updated_at')
-        .eq('active', true);
+      // Get all active vehicles
+      const { data: allVehicles } = await supabase
+        .from('vehicles')
+        .select('id')
+        .eq('status', 'active');
+      
+      // Get latest spill kit check for each vehicle
+      const { data: allChecks, error } = await supabase
+        .from('vehicle_spill_kit_checks')
+        .select('vehicle_id, has_kit, item_conditions, created_at')
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false });
       
       if (error) throw error;
       
@@ -103,29 +110,42 @@ export const FleetOverview: React.FC = () => {
         .from('spill_kit_inventory')
         .select('id, current_stock, minimum_threshold, expiration_date');
       
-      // Calculate stats
-      const totalVehiclesWithKits = vehiclesWithKits?.length || 0;
+      // Get latest check per vehicle
+      const latestChecksByVehicle = new Map();
+      allChecks?.forEach(check => {
+        if (!latestChecksByVehicle.has(check.vehicle_id)) {
+          latestChecksByVehicle.set(check.vehicle_id, check);
+        }
+      });
       
-      // Count vehicles needing inspection (inspections older than 30 days)
+      // Calculate stats
+      const vehiclesWithKits = Array.from(latestChecksByVehicle.values()).filter(check => check.has_kit);
+      const totalVehiclesWithKits = vehiclesWithKits.length;
+      
+      // Count vehicles needing inspection (last check older than 30 days)
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      const needingInspection = vehiclesWithKits?.filter(vsk => 
-        !vsk.updated_at || new Date(vsk.updated_at) < thirtyDaysAgo
-      ).length || 0;
+      const needingInspection = vehiclesWithKits.filter(check => 
+        new Date(check.created_at) < thirtyDaysAgo
+      ).length;
       
-      // Count vehicles with missing/expired items
+      // Count vehicles with missing/expired items from latest check
       let vehiclesWithIssues = 0;
-      const inventoryMap = new Map(inventory?.map(i => [i.id, i]) || []);
-      
-      vehiclesWithKits?.forEach(vsk => {
-        const contents = vsk.required_contents as Array<{inventory_item_id: string}>;
-        const hasIssues = contents?.some(item => {
-          const inv = inventoryMap.get(item.inventory_item_id);
-          if (!inv) return true;
-          if (inv.current_stock === 0) return true;
-          if (inv.expiration_date && new Date(inv.expiration_date) < new Date()) return true;
+      vehiclesWithKits.forEach(check => {
+        const itemConditions = check.item_conditions as Array<{
+          item_name: string;
+          expiration_date?: string;
+          is_missing?: boolean;
+        }>;
+        
+        if (!itemConditions || itemConditions.length === 0) return;
+        
+        const hasIssues = itemConditions.some(item => {
+          if (item.is_missing) return true;
+          if (item.expiration_date && new Date(item.expiration_date) < new Date()) return true;
           return false;
         });
+        
         if (hasIssues) vehiclesWithIssues++;
       });
       
