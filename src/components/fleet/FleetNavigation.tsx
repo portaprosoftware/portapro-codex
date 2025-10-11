@@ -37,7 +37,7 @@ export const FleetNavigation: React.FC = () => {
 
   const navigationItems = [
     {
-      title: "Overview",
+      title: "Fleet",
       href: "/fleet-management",
       icon: Truck,
       end: true
