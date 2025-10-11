@@ -63,11 +63,13 @@ interface FuelLog {
 }
 
 export const FuelAllLogsTab: React.FC<{ 
+  vehicleId?: string;
   showAddModal?: boolean;
   setShowAddModal?: (show: boolean) => void;
   showExportModal?: boolean;
   setShowExportModal?: (show: boolean) => void;
 }> = ({ 
+  vehicleId,
   showAddModal: externalShowAddModal, 
   setShowAddModal: externalSetShowAddModal,
   showExportModal: externalShowExportModal,
@@ -115,6 +117,16 @@ export const FuelAllLogsTab: React.FC<{
       return data;
     }
   });
+
+  // Pre-select vehicle if vehicleId is provided via URL
+  React.useEffect(() => {
+    if (vehicleId && vehicles && selectedVehicles.length === 0) {
+      const vehicle = vehicles.find(v => v.id === vehicleId);
+      if (vehicle) {
+        setSelectedVehicles([vehicle as Vehicle]);
+      }
+    }
+  }, [vehicleId, vehicles]);
 
   const { data: drivers } = useQuery({
     queryKey: ['drivers-lookup'],

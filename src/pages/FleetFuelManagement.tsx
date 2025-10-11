@@ -15,11 +15,21 @@ import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
+// Helper function to map tab parameter to internal tab value
+const getInitialTab = (tabParam: string | null): string => {
+  if (tabParam === 'logs' || tabParam === 'all-logs') return 'logs';
+  if (tabParam === 'analytics') return 'analytics';
+  if (tabParam === 'sources') return 'sources';
+  if (tabParam === 'settings') return 'settings';
+  return 'overview'; // default
+};
+
 export const FleetFuelManagement: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('overview');
   const [searchParams] = useSearchParams();
+  const tabParam = searchParams.get('tab');
   const vehicleId = searchParams.get('vehicle');
   const returnTo = searchParams.get('returnTo');
+  const [activeTab, setActiveTab] = useState(getInitialTab(tabParam));
   
   useEffect(() => {
     document.title = 'Fuel Management | PortaPro';
@@ -88,7 +98,7 @@ export const FleetFuelManagement: React.FC = () => {
               </TabsContent>
 
               <TabsContent value="logs" className="mt-6">
-                <FuelAllLogsTab />
+                <FuelAllLogsTab vehicleId={vehicleId || undefined} />
               </TabsContent>
 
               <TabsContent value="analytics" className="mt-6">

@@ -66,7 +66,7 @@ export function VehicleFuelSummary({
             variant="outline"
             size="sm"
             className="flex-1"
-            onClick={() => navigate(`/fleet/fuel?vehicle=${vehicleId}&returnTo=/fleet-management`)}
+            onClick={() => navigate(`/fleet/fuel?tab=logs&vehicle=${vehicleId}&returnTo=/fleet-management`)}
           >
             View History <ExternalLink className="w-3 h-3 ml-1" />
           </Button>
