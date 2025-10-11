@@ -213,23 +213,78 @@ export function UserManagementSection() {
 
   const deleteUser = useMutation({
     mutationFn: async (userId: string) => {
-      // Delete role first (if exists)
-      const { error: roleError } = await supabase
-        .from("user_roles")
-        .delete()
-        .eq("user_id", userId);
+      console.log("=== Starting user deletion ===");
+      console.log("User ID to delete:", userId);
+      
+      // Get the user's clerk_user_id first
+      const { data: profile, error: fetchError } = await supabase
+        .from("profiles")
+        .select("clerk_user_id, first_name, last_name, email")
+        .eq("id", userId)
+        .single();
 
-      if (roleError) {
-        console.warn("Warning deleting user role:", roleError);
+      if (fetchError) {
+        console.error("Error fetching profile:", fetchError);
+        throw new Error(`Failed to fetch user profile: ${fetchError.message}`);
+      }
+
+      console.log("Profile to delete:", profile);
+
+      // Check if this is a temporary test user
+      const isTemporaryUser = profile?.clerk_user_id?.startsWith('temp_');
+      if (isTemporaryUser) {
+        console.warn("⚠️ Attempting to delete temporary test user:", profile.clerk_user_id);
+      }
+
+      // Delete role first using clerk_user_id (if exists)
+      if (profile?.clerk_user_id) {
+        const { error: roleError, data: deletedRole } = await supabase
+          .from("user_roles")
+          .delete()
+          .eq("user_id", profile.clerk_user_id)
+          .select();
+
+        if (roleError) {
+          console.error("Error deleting user role:", roleError);
+          console.error("Role error details:", {
+            code: roleError.code,
+            message: roleError.message,
+            details: roleError.details,
+            hint: roleError.hint
+          });
+        } else {
+          console.log("✓ Deleted user_roles:", deletedRole);
+        }
       }
 
       // Then delete profile
-      const { error: profileError } = await supabase
+      const { error: profileError, data: deletedProfile } = await supabase
         .from("profiles")
         .delete()
-        .eq("id", userId);
+        .eq("id", userId)
+        .select();
 
-      if (profileError) throw profileError;
+      if (profileError) {
+        console.error("Error deleting profile:", profileError);
+        console.error("Profile error details:", {
+          code: profileError.code,
+          message: profileError.message,
+          details: profileError.details,
+          hint: profileError.hint
+        });
+        
+        // Provide more specific error messages
+        if (profileError.code === '23503') {
+          throw new Error(`Cannot delete user: They have related records (jobs, assignments, etc.) that must be removed first.`);
+        } else if (profileError.code === '42501') {
+          throw new Error(`Permission denied: You don't have permission to delete this user.`);
+        } else {
+          throw new Error(`Failed to delete user profile: ${profileError.message}`);
+        }
+      }
+
+      console.log("✓ Deleted profile:", deletedProfile);
+      console.log("=== User deletion completed successfully ===");
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users-with-roles"] });
@@ -239,9 +294,13 @@ export function UserManagementSection() {
       setDeleteConfirmOpen(false);
       setUserToDelete(null);
     },
-    onError: (error) => {
-      toast.error("Failed to delete user");
-      console.error("Error deleting user:", error);
+    onError: (error: any) => {
+      console.error("=== User deletion failed ===");
+      console.error("Full error:", error);
+      
+      // Show more specific error to user
+      const errorMessage = error?.message || "Failed to delete user. Please check console for details.";
+      toast.error(errorMessage);
     },
   });
 
