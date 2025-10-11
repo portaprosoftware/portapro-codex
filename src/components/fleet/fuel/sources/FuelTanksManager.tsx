@@ -124,7 +124,7 @@ export const FuelTanksManager: React.FC = () => {
         <Card className="p-4">
           <div>
             <p className="text-sm text-muted-foreground">Total Delivered</p>
-            <p className="text-2xl font-bold">{analytics?.totalDelivered.toFixed(0) || 0} gal</p>
+            <p className="text-2xl font-bold">{(analytics?.totalDelivered || 0).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} gal</p>
             <p className="text-xs text-muted-foreground mt-1">Last 30 days</p>
           </div>
         </Card>
@@ -132,7 +132,7 @@ export const FuelTanksManager: React.FC = () => {
         <Card className="p-4">
           <div>
             <p className="text-sm text-muted-foreground">Total Consumed</p>
-            <p className="text-2xl font-bold">{analytics?.totalDrawn.toFixed(0) || 0} gal</p>
+            <p className="text-2xl font-bold">{(analytics?.totalDrawn || 0).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} gal</p>
             <p className="text-xs text-muted-foreground mt-1">Last 30 days</p>
           </div>
         </Card>
@@ -141,7 +141,7 @@ export const FuelTanksManager: React.FC = () => {
           <div>
             <p className="text-sm text-muted-foreground">Net Change</p>
             <p className={`text-2xl font-bold ${(analytics?.netChange || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {(analytics?.netChange || 0) >= 0 ? '+' : ''}{analytics?.netChange.toFixed(0) || 0} gal
+              {(analytics?.netChange || 0) >= 0 ? '+' : ''}{(analytics?.netChange || 0).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} gal
             </p>
             <p className="text-xs text-muted-foreground mt-1">Last 30 days</p>
           </div>
@@ -150,7 +150,7 @@ export const FuelTanksManager: React.FC = () => {
         <Card className="p-4">
           <div>
             <p className="text-sm text-muted-foreground">Delivery Cost</p>
-            <p className="text-2xl font-bold">${analytics?.deliveryCost.toFixed(2) || '0.00'}</p>
+            <p className="text-2xl font-bold">${(analytics?.deliveryCost || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
             <p className="text-xs text-muted-foreground mt-1">{analytics?.deliveryCount || 0} deliveries</p>
           </div>
         </Card>
