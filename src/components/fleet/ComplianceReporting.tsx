@@ -23,31 +23,31 @@ export const ComplianceReporting: React.FC = () => {
       const fromISO = fromDate.toISOString();
       const toISO = toDate.toISOString();
 
-      // Get all active vehicles
+      // Get all active vehicles with full details
       const { data: vehicles } = await supabase
         .from('vehicles')
-        .select('id, license_plate')
+        .select('id, license_plate, make, model, nickname')
         .eq('status', 'active');
 
-      // Get expired documents with type name
+      // Get expired documents with type name and vehicle details
       const { data: expiredDocs } = await supabase
         .from('vehicle_compliance_documents')
         .select(`
           *,
-          vehicles(license_plate),
+          vehicles(license_plate, make, model, nickname),
           compliance_document_types(name)
         `)
         .lt('expiration_date', new Date().toISOString())
         .is('deleted_at', null);
 
-      // Get expiring soon (next 30 days)
+      // Get expiring soon (next 30 days) with vehicle details
       const thirtyDaysFromNow = new Date();
       thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
       const { data: expiringSoon } = await supabase
         .from('vehicle_compliance_documents')
         .select(`
           *,
-          vehicles(license_plate),
+          vehicles(license_plate, make, model, nickname),
           compliance_document_types(name)
         `)
         .gte('expiration_date', new Date().toISOString())
@@ -62,24 +62,24 @@ export const ComplianceReporting: React.FC = () => {
         .lte('created_at', toISO)
         .is('deleted_at', null);
 
-      // Get recent incidents
+      // Get recent incidents with vehicle details
       const { data: recentIncidents } = await supabase
         .from('spill_incidents')
         .select(`
           *,
-          vehicles(license_plate),
+          vehicles(license_plate, make, model, nickname),
           configurable_spill_types(name)
         `)
         .gte('occurred_at', fromISO)
         .lte('occurred_at', toISO)
         .is('deleted_at', null);
 
-      // Get active incidents
+      // Get active incidents with vehicle details
       const { data: activeIncidents } = await supabase
         .from('spill_incidents')
         .select(`
           *,
-          vehicles(license_plate),
+          vehicles(license_plate, make, model, nickname),
           configurable_spill_types(name)
         `)
         .in('status', ['reported', 'investigating'])
@@ -127,6 +127,9 @@ export const ComplianceReporting: React.FC = () => {
       }).map(v => ({
         id: v.id,
         license_plate: v.license_plate,
+        make: v.make,
+        model: v.model,
+        nickname: v.nickname,
         lastCheckDate: latestChecksByVehicle.get(v.id)?.created_at || null,
       })) || [];
 
@@ -398,51 +401,74 @@ export const ComplianceReporting: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {complianceData?.expiredDocs.map((doc: any, idx) => (
-                    <div key={idx} className="flex items-start justify-between p-3 border border-red-200 rounded-lg bg-red-50">
-                      <div>
-                        <p className="font-medium">{doc.vehicles?.license_plate}</p>
-                        <p className="text-sm text-muted-foreground">Expired: {doc.compliance_document_types?.name || 'Document'}</p>
+                  {complianceData?.expiredDocs.map((doc: any, idx) => {
+                    const vehicle = doc.vehicles;
+                    const vehicleName = vehicle?.make && vehicle?.model 
+                      ? `${vehicle.make} ${vehicle.model}${vehicle.nickname ? ` - ${vehicle.nickname}` : ''}`
+                      : vehicle?.license_plate || 'Unknown';
+                    
+                    return (
+                      <div key={idx} className="flex items-start justify-between p-3 border border-red-200 rounded-lg bg-red-50">
+                        <div>
+                          <p className="font-medium">{vehicleName}</p>
+                          <p className="text-sm text-muted-foreground">{vehicle?.license_plate}</p>
+                          <p className="text-sm text-muted-foreground mt-1">Expired: {doc.compliance_document_types?.name || 'Document'}</p>
+                        </div>
+                        <div className="bg-gradient-to-r from-red-500 to-red-600 px-3 py-1 rounded-md">
+                          <span className="text-white font-bold text-sm">
+                            {Math.abs(differenceInDays(new Date(), new Date(doc.expiration_date)))} Days Overdue
+                          </span>
+                        </div>
                       </div>
-                      <div className="bg-gradient-to-r from-red-500 to-red-600 px-3 py-1 rounded-md">
-                        <span className="text-white font-bold text-sm">
-                          {Math.abs(differenceInDays(new Date(), new Date(doc.expiration_date)))} Days Overdue
-                        </span>
+                    );
+                  })}
+                  {complianceData?.activeIncidents.map((incident: any, idx) => {
+                    const vehicle = incident.vehicles;
+                    const vehicleName = vehicle?.make && vehicle?.model 
+                      ? `${vehicle.make} ${vehicle.model}${vehicle.nickname ? ` - ${vehicle.nickname}` : ''}`
+                      : vehicle?.license_plate || 'Unknown';
+                    
+                    return (
+                      <div key={idx} className="flex items-start justify-between p-3 border border-red-200 rounded-lg bg-red-50">
+                        <div>
+                          <p className="font-medium">{vehicleName}</p>
+                          <p className="text-sm text-muted-foreground">{vehicle?.license_plate}</p>
+                          <p className="text-sm text-muted-foreground mt-1">Active Incident: {incident.configurable_spill_types?.name || 'Incident'}</p>
+                        </div>
+                        <div className="bg-gradient-to-r from-red-500 to-red-600 px-3 py-1 rounded-md">
+                          <span className="text-white font-bold text-sm">Action Required</span>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                  {complianceData?.activeIncidents.map((incident: any, idx) => (
-                    <div key={idx} className="flex items-start justify-between p-3 border border-red-200 rounded-lg bg-red-50">
-                      <div>
-                        <p className="font-medium">{incident.vehicles?.license_plate}</p>
-                        <p className="text-sm text-muted-foreground">Active Incident: {incident.configurable_spill_types?.name || 'Incident'}</p>
+                    );
+                  })}
+                  {complianceData?.overdueVehicles.map((vehicle, idx) => {
+                    const vehicleName = vehicle.make && vehicle.model 
+                      ? `${vehicle.make} ${vehicle.model}${vehicle.nickname ? ` - ${vehicle.nickname}` : ''}`
+                      : vehicle.license_plate || 'Unknown';
+                    
+                    return (
+                      <div key={`overdue-${idx}`} className="flex items-start justify-between p-3 border border-red-200 rounded-lg bg-red-50">
+                        <div>
+                          <p className="font-medium">{vehicleName}</p>
+                          <p className="text-sm text-muted-foreground">{vehicle.license_plate}</p>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            Overdue Spill Kit Inspection
+                            {vehicle.lastCheckDate && 
+                              ` - Last checked ${format(new Date(vehicle.lastCheckDate), 'MMM dd, yyyy')}`
+                            }
+                          </p>
+                        </div>
+                        <div className="bg-gradient-to-r from-red-500 to-red-600 px-3 py-1 rounded-md">
+                          <span className="text-white font-bold text-sm">
+                            {vehicle.lastCheckDate 
+                              ? `${Math.abs(differenceInDays(new Date(), new Date(vehicle.lastCheckDate)))} Days Overdue`
+                              : 'Never Inspected'
+                            }
+                          </span>
+                        </div>
                       </div>
-                      <div className="bg-gradient-to-r from-red-500 to-red-600 px-3 py-1 rounded-md">
-                        <span className="text-white font-bold text-sm">Action Required</span>
-                      </div>
-                    </div>
-                  ))}
-                  {complianceData?.overdueVehicles.map((vehicle, idx) => (
-                    <div key={`overdue-${idx}`} className="flex items-start justify-between p-3 border border-red-200 rounded-lg bg-red-50">
-                      <div>
-                        <p className="font-medium">{vehicle.license_plate}</p>
-                        <p className="text-sm text-muted-foreground">
-                          Overdue Spill Kit Inspection
-                          {vehicle.lastCheckDate && 
-                            ` - Last checked ${format(new Date(vehicle.lastCheckDate), 'MMM dd, yyyy')}`
-                          }
-                        </p>
-                      </div>
-                      <div className="bg-gradient-to-r from-red-500 to-red-600 px-3 py-1 rounded-md">
-                        <span className="text-white font-bold text-sm">
-                          {vehicle.lastCheckDate 
-                            ? `${Math.abs(differenceInDays(new Date(), new Date(vehicle.lastCheckDate)))} Days Overdue`
-                            : 'Never Inspected'
-                          }
-                        </span>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
@@ -459,19 +485,27 @@ export const ComplianceReporting: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {complianceData.expiringSoon.slice(0, 10).map((doc: any, idx) => (
-                    <div key={idx} className="flex items-start justify-between p-3 border border-yellow-200 rounded-lg bg-yellow-50">
-                      <div>
-                        <p className="font-medium">{doc.vehicles?.license_plate}</p>
-                        <p className="text-sm text-muted-foreground">{doc.compliance_document_types?.name || 'Document'}</p>
+                  {complianceData.expiringSoon.slice(0, 10).map((doc: any, idx) => {
+                    const vehicle = doc.vehicles;
+                    const vehicleName = vehicle?.make && vehicle?.model 
+                      ? `${vehicle.make} ${vehicle.model}${vehicle.nickname ? ` - ${vehicle.nickname}` : ''}`
+                      : vehicle?.license_plate || 'Unknown';
+                    
+                    return (
+                      <div key={idx} className="flex items-start justify-between p-3 border border-yellow-200 rounded-lg bg-yellow-50">
+                        <div>
+                          <p className="font-medium">{vehicleName}</p>
+                          <p className="text-sm text-muted-foreground">{vehicle?.license_plate}</p>
+                          <p className="text-sm text-muted-foreground mt-1">{doc.compliance_document_types?.name || 'Document'}</p>
+                        </div>
+                        <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 px-3 py-1 rounded-md">
+                          <span className="text-white font-bold text-sm">
+                            {differenceInDays(new Date(doc.expiration_date), new Date())} Days Left
+                          </span>
+                        </div>
                       </div>
-                      <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 px-3 py-1 rounded-md">
-                        <span className="text-white font-bold text-sm">
-                          {differenceInDays(new Date(doc.expiration_date), new Date())} Days Left
-                        </span>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
