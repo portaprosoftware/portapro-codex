@@ -286,7 +286,7 @@ export const FuelAllLogsTab: React.FC<{
               <Button
                 variant="outline"
                 onClick={() => setIsVehicleModalOpen(true)}
-                className="w-full justify-start h-9"
+                className="w-full justify-start h-10"
               >
                 <Truck className="h-4 w-4 mr-1.5" />
                 {selectedVehicleCount === 0
@@ -299,7 +299,7 @@ export const FuelAllLogsTab: React.FC<{
               <Button
                 variant="outline"
                 onClick={() => setIsDriverModalOpen(true)}
-                className="w-full justify-start h-9"
+                className="w-full justify-start h-10"
               >
                 <Users className="h-4 w-4 mr-1.5" />
                 {selectedDriverCount === 0
@@ -313,7 +313,7 @@ export const FuelAllLogsTab: React.FC<{
                 date={dateRange}
                 onDateChange={setDateRange}
                 placeholder="Date range"
-                className="h-9"
+                className="h-10"
               />
             </div>
 
