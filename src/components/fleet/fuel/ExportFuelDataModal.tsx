@@ -2,15 +2,28 @@ import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DatePickerWithRange } from '@/components/ui/DatePickerWithRange';
 import { DateRange } from 'react-day-picker';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Download, FileText, FileSpreadsheet } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
+import { MultiSelectVehicleFilter } from '../MultiSelectVehicleFilter';
+import { MultiSelectDriverFilter } from '../MultiSelectDriverFilter';
+import { supabase } from '@/integrations/supabase/client';
+
+interface Vehicle {
+  id: string;
+  license_plate: string | null;
+}
+
+interface Driver {
+  id: string;
+  first_name: string | null;
+  last_name: string | null;
+  email: string | null;
+  clerk_user_id: string | null;
+}
 
 interface ExportFuelDataModalProps {
   open: boolean;
@@ -23,8 +36,10 @@ export const ExportFuelDataModal: React.FC<ExportFuelDataModalProps> = ({
 }) => {
   const [exportFormat, setExportFormat] = useState<'csv' | 'pdf'>('csv');
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
-  const [selectedVehicles, setSelectedVehicles] = useState<string[]>([]);
-  const [selectedDrivers, setSelectedDrivers] = useState<string[]>([]);
+  const [selectedVehicles, setSelectedVehicles] = useState<Vehicle[]>([]);
+  const [selectedDrivers, setSelectedDrivers] = useState<Driver[]>([]);
+  const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
+  const [isDriverModalOpen, setIsDriverModalOpen] = useState(false);
   const [includeColumns, setIncludeColumns] = useState({
     date: true,
     vehicle: true,
@@ -38,36 +53,6 @@ export const ExportFuelDataModal: React.FC<ExportFuelDataModalProps> = ({
   });
 
   const { toast } = useToast();
-
-  // Fetch vehicles for filter
-  const { data: vehicles } = useQuery({
-    queryKey: ['vehicles'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('vehicles')
-        .select('id, license_plate')
-        .eq('status', 'active')
-        .order('license_plate');
-      
-      if (error) throw error;
-      return data;
-    }
-  });
-
-  // Fetch drivers for filter
-  const { data: drivers } = useQuery({
-    queryKey: ['drivers'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, first_name, last_name')
-        .eq('is_active', true)
-        .order('first_name');
-      
-      if (error) throw error;
-      return data;
-    }
-  });
 
   const handleExport = async () => {
     try {
@@ -97,12 +82,14 @@ export const ExportFuelDataModal: React.FC<ExportFuelDataModalProps> = ({
 
       // Apply vehicle filter
       if (selectedVehicles.length > 0) {
-        query = query.in('vehicle_id', selectedVehicles);
+        const vehicleIds = selectedVehicles.map(v => v.id);
+        query = query.in('vehicle_id', vehicleIds);
       }
 
       // Apply driver filter
       if (selectedDrivers.length > 0) {
-        query = query.in('driver_id', selectedDrivers);
+        const driverIds = selectedDrivers.map(d => d.id);
+        query = query.in('driver_id', driverIds);
       }
 
       const { data, error } = await query;
@@ -179,21 +166,6 @@ export const ExportFuelDataModal: React.FC<ExportFuelDataModalProps> = ({
     });
   };
 
-  const toggleVehicle = (vehicleId: string) => {
-    setSelectedVehicles(prev =>
-      prev.includes(vehicleId)
-        ? prev.filter(id => id !== vehicleId)
-        : [...prev, vehicleId]
-    );
-  };
-
-  const toggleDriver = (driverId: string) => {
-    setSelectedDrivers(prev =>
-      prev.includes(driverId)
-        ? prev.filter(id => id !== driverId)
-        : [...prev, driverId]
-    );
-  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -261,38 +233,30 @@ export const ExportFuelDataModal: React.FC<ExportFuelDataModalProps> = ({
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label>Vehicles (Optional)</Label>
-                  <div className="mt-2 space-y-2 max-h-32 overflow-y-auto">
-                    {vehicles?.map((vehicle) => (
-                      <div key={vehicle.id} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={vehicle.id}
-                          checked={selectedVehicles.includes(vehicle.id)}
-                          onCheckedChange={() => toggleVehicle(vehicle.id)}
-                        />
-                        <Label htmlFor={vehicle.id} className="text-sm">
-                          {vehicle.license_plate}
-                        </Label>
-                      </div>
-                    ))}
-                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsVehicleModalOpen(true)}
+                    className="w-full justify-start mt-2 h-9"
+                  >
+                    {selectedVehicles.length === 0
+                      ? 'All vehicles'
+                      : `${selectedVehicles.length} selected`}
+                  </Button>
                 </div>
 
                 <div>
                   <Label>Drivers (Optional)</Label>
-                  <div className="mt-2 space-y-2 max-h-32 overflow-y-auto">
-                    {drivers?.map((driver) => (
-                      <div key={driver.id} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={driver.id}
-                          checked={selectedDrivers.includes(driver.id)}
-                          onCheckedChange={() => toggleDriver(driver.id)}
-                        />
-                        <Label htmlFor={driver.id} className="text-sm">
-                          {driver.first_name} {driver.last_name}
-                        </Label>
-                      </div>
-                    ))}
-                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsDriverModalOpen(true)}
+                    className="w-full justify-start mt-2 h-9"
+                  >
+                    {selectedDrivers.length === 0
+                      ? 'All drivers'
+                      : `${selectedDrivers.length} selected`}
+                  </Button>
                 </div>
               </div>
             </CardContent>
@@ -337,6 +301,22 @@ export const ExportFuelDataModal: React.FC<ExportFuelDataModalProps> = ({
           </Button>
         </div>
       </DialogContent>
+
+      {/* Vehicle Multi-Select Modal */}
+      <MultiSelectVehicleFilter
+        open={isVehicleModalOpen}
+        onOpenChange={setIsVehicleModalOpen}
+        selectedVehicles={selectedVehicles}
+        onVehiclesChange={setSelectedVehicles}
+      />
+
+      {/* Driver Multi-Select Modal */}
+      <MultiSelectDriverFilter
+        open={isDriverModalOpen}
+        onOpenChange={setIsDriverModalOpen}
+        selectedDrivers={selectedDrivers}
+        onDriversChange={setSelectedDrivers}
+      />
     </Dialog>
   );
 };
