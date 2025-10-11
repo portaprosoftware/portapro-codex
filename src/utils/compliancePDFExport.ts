@@ -7,11 +7,11 @@ interface ComplianceSummaryData {
   fleetHealthScore: number;
   totalVehicles: number;
   criticalItems: {
-    expiredDocuments: Array<{ vehicle: string; docType: string; daysOverdue: number }>;
-    overdueInspections: Array<{ vehicle: string; lastCheckDate: Date | null; daysOverdue: number | null }>;
-    activeIncidents: Array<{ vehicle: string; incidentType: string; date: Date }>;
+    expiredDocuments: Array<{ vehicle: string; vehicleName: string; docType: string; daysOverdue: number }>;
+    overdueInspections: Array<{ vehicle: string; vehicleName: string; lastCheckDate: Date | null; daysOverdue: number | null }>;
+    activeIncidents: Array<{ vehicle: string; vehicleName: string; incidentType: string; date: Date }>;
   };
-  expiringSoon: Array<{ vehicle: string; itemType: string; expirationDate: Date; daysUntilDue: number }>;
+  expiringSoon: Array<{ vehicle: string; vehicleName: string; itemType: string; expirationDate: Date; daysUntilDue: number }>;
   recentActivity: {
     newInspections: number;
     newIncidents: number;
@@ -119,6 +119,7 @@ export const exportComplianceSummaryToPDF = (
     // Expired documents
     data.criticalItems.expiredDocuments.forEach(item => {
       criticalData.push([
+        item.vehicleName,
         item.vehicle,
         'Expired Document',
         item.docType,
@@ -129,6 +130,7 @@ export const exportComplianceSummaryToPDF = (
     // Active incidents
     data.criticalItems.activeIncidents.forEach(item => {
       criticalData.push([
+        item.vehicleName,
         item.vehicle,
         'Active Incident',
         item.incidentType,
@@ -139,6 +141,7 @@ export const exportComplianceSummaryToPDF = (
     // Overdue inspections
     data.criticalItems.overdueInspections.forEach(item => {
       criticalData.push([
+        item.vehicleName,
         item.vehicle,
         'Overdue Inspection',
         'Spill Kit Check',
@@ -151,7 +154,7 @@ export const exportComplianceSummaryToPDF = (
     if (criticalData.length > 0) {
       autoTable(doc, {
         startY: currentY,
-        head: [['Vehicle', 'Issue Type', 'Details', 'Status']],
+        head: [['Vehicle', 'License Plate', 'Issue Type', 'Details', 'Status']],
         body: criticalData,
         theme: 'striped',
         headStyles: { fillColor: [239, 68, 68] },
@@ -172,6 +175,7 @@ export const exportComplianceSummaryToPDF = (
     currentY += 5;
 
     const expiringData = data.expiringSoon.slice(0, 10).map(item => [
+      item.vehicleName,
       item.vehicle,
       item.itemType,
       format(item.expirationDate, 'MMM dd, yyyy'),
@@ -180,7 +184,7 @@ export const exportComplianceSummaryToPDF = (
 
     autoTable(doc, {
       startY: currentY,
-      head: [['Vehicle', 'Item Type', 'Expiration Date', 'Days Until Due']],
+      head: [['Vehicle', 'License Plate', 'Item Type', 'Expiration Date', 'Days Until Due']],
       body: expiringData,
       theme: 'striped',
       headStyles: { fillColor: [250, 204, 21] },
@@ -264,13 +268,28 @@ export const exportComplianceSummaryToPDF = (
         currentY = 20;
       }
 
-      const priorityColor: [number, number, number] = item.priority === 'high' ? [239, 68, 68] : item.priority === 'medium' ? [250, 204, 21] : [156, 163, 175];
-      doc.setTextColor(priorityColor[0], priorityColor[1], priorityColor[2]);
-      doc.text(`${index + 1}.`, 20, currentY);
+      // Draw number in black
       doc.setTextColor(0, 0, 0);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`${index + 1}.`, 20, currentY);
       
-      const actionText = `[${item.priority.toUpperCase()}] ${item.description}${item.vehicle ? ` - ${item.vehicle}` : ''}${item.dueDate ? ` (Due: ${format(item.dueDate, 'MMM dd')})` : ''}`;
-      doc.text(actionText, 27, currentY);
+      // Draw priority badge
+      const priorityColor: [number, number, number] = item.priority === 'high' ? [239, 68, 68] : item.priority === 'medium' ? [59, 130, 246] : [156, 163, 175];
+      const priorityLabel = item.priority.charAt(0).toUpperCase() + item.priority.slice(1);
+      const badgeWidth = doc.getTextWidth(priorityLabel) + 6;
+      
+      doc.setFillColor(priorityColor[0], priorityColor[1], priorityColor[2]);
+      doc.roundedRect(27, currentY - 4, badgeWidth, 6, 1, 1, 'F');
+      
+      doc.setTextColor(255, 255, 255);
+      doc.setFont('helvetica', 'bold');
+      doc.text(priorityLabel, 30, currentY);
+      
+      // Draw action text
+      doc.setTextColor(0, 0, 0);
+      doc.setFont('helvetica', 'normal');
+      const actionText = `${item.description}${item.vehicle ? ` - ${item.vehicle}` : ''}${item.dueDate ? ` (Due: ${format(item.dueDate, 'MMM dd')})` : ''}`;
+      doc.text(actionText, 27 + badgeWidth + 3, currentY);
       currentY += 5;
     });
   }

@@ -237,30 +237,53 @@ export const ComplianceReporting: React.FC = () => {
       fleetHealthScore: summary.healthScore,
       totalVehicles: summary.totalVehicles,
       criticalItems: {
-        expiredDocuments: complianceData.expiredDocs.map((doc: any) => ({
-          vehicle: doc.vehicles?.license_plate || 'Unknown',
-          docType: doc.compliance_document_types?.name || 'Unknown',
-          daysOverdue: Math.abs(differenceInDays(new Date(), new Date(doc.expiration_date))),
-        })),
-        overdueInspections: complianceData.overdueVehicles.map(v => ({
-          vehicle: v.license_plate || 'Unknown',
-          lastCheckDate: v.lastCheckDate ? new Date(v.lastCheckDate) : null,
-          daysOverdue: v.lastCheckDate 
-            ? Math.abs(differenceInDays(new Date(), new Date(v.lastCheckDate)))
-            : null,
-        })),
-        activeIncidents: complianceData.activeIncidents.map((inc: any) => ({
-          vehicle: inc.vehicles?.license_plate || 'Unknown',
-          incidentType: inc.configurable_spill_types?.name || 'Unknown',
-          date: new Date(inc.occurred_at),
-        })),
+        expiredDocuments: complianceData.expiredDocs.map((doc: any) => {
+          const vehicle = doc.vehicles;
+          return {
+            vehicle: vehicle?.license_plate || 'Unknown',
+            vehicleName: vehicle?.make && vehicle?.model 
+              ? `${vehicle.make} ${vehicle.model}${vehicle.nickname ? ` - ${vehicle.nickname}` : ''}`
+              : vehicle?.license_plate || 'Unknown',
+            docType: doc.compliance_document_types?.name || 'Unknown',
+            daysOverdue: Math.abs(differenceInDays(new Date(), new Date(doc.expiration_date))),
+          };
+        }),
+        overdueInspections: complianceData.overdueVehicles.map(v => {
+          return {
+            vehicle: v.license_plate || 'Unknown',
+            vehicleName: v.make && v.model 
+              ? `${v.make} ${v.model}${v.nickname ? ` - ${v.nickname}` : ''}`
+              : v.license_plate || 'Unknown',
+            lastCheckDate: v.lastCheckDate ? new Date(v.lastCheckDate) : null,
+            daysOverdue: v.lastCheckDate 
+              ? Math.abs(differenceInDays(new Date(), new Date(v.lastCheckDate)))
+              : null,
+          };
+        }),
+        activeIncidents: complianceData.activeIncidents.map((inc: any) => {
+          const vehicle = inc.vehicles;
+          return {
+            vehicle: vehicle?.license_plate || 'Unknown',
+            vehicleName: vehicle?.make && vehicle?.model 
+              ? `${vehicle.make} ${vehicle.model}${vehicle.nickname ? ` - ${vehicle.nickname}` : ''}`
+              : vehicle?.license_plate || 'Unknown',
+            incidentType: inc.configurable_spill_types?.name || 'Unknown',
+            date: new Date(inc.occurred_at),
+          };
+        }),
       },
-      expiringSoon: complianceData.expiringSoon.map((doc: any) => ({
-        vehicle: doc.vehicles?.license_plate || 'Unknown',
-        itemType: doc.compliance_document_types?.name || 'Unknown',
-        expirationDate: new Date(doc.expiration_date),
-        daysUntilDue: differenceInDays(new Date(doc.expiration_date), new Date()),
-      })),
+      expiringSoon: complianceData.expiringSoon.map((doc: any) => {
+        const vehicle = doc.vehicles;
+        return {
+          vehicle: vehicle?.license_plate || 'Unknown',
+          vehicleName: vehicle?.make && vehicle?.model 
+            ? `${vehicle.make} ${vehicle.model}${vehicle.nickname ? ` - ${vehicle.nickname}` : ''}`
+            : vehicle?.license_plate || 'Unknown',
+          itemType: doc.compliance_document_types?.name || 'Unknown',
+          expirationDate: new Date(doc.expiration_date),
+          daysUntilDue: differenceInDays(new Date(doc.expiration_date), new Date()),
+        };
+      }),
       recentActivity: {
         newInspections: complianceData.recentChecks.length,
         newIncidents: complianceData.recentIncidents.length,
