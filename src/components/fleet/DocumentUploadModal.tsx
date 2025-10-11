@@ -232,14 +232,16 @@ export function DocumentUploadModal({
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        {trigger || (
-          <Button>
-            <Upload className="w-4 h-4 mr-2" />
-            Upload Documents
-          </Button>
-        )}
-      </SheetTrigger>
+      {!controlledOpen && (
+        <SheetTrigger asChild>
+          {trigger || (
+            <Button>
+              <Upload className="w-4 h-4 mr-2" />
+              Upload Documents
+            </Button>
+          )}
+        </SheetTrigger>
+      )}
       <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto">
         <SheetHeader>
           <SheetTitle>Upload Vehicle Documents</SheetTitle>
