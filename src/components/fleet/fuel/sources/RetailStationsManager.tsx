@@ -8,8 +8,11 @@ export const RetailStationsManager: React.FC = () => {
   const [showAddModal, setShowAddModal] = useState(false);
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-end">
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h3 className="text-xl font-semibold">Retail Fuel Pump Purchases</h3>
+        </div>
         <Button 
           onClick={() => setShowAddModal(true)}
           className="bg-gradient-to-r from-primary to-primary-variant"
