@@ -11703,11 +11703,13 @@ export type Database = {
       }
       vehicle_quick_metrics: {
         Row: {
+          decon_last_30d: number | null
           docs_expiring_30d: number | null
           dvirs_last_30d: number | null
           incidents_last_30d: number | null
           last_dvir_date: string | null
           last_dvir_status: Database["public"]["Enums"]["dvir_status"] | null
+          license_plate: string | null
           open_work_orders: number | null
           vehicle_id: string | null
         }
