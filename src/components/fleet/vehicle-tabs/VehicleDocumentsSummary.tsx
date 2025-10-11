@@ -59,14 +59,14 @@ export function VehicleDocumentsSummary({
             variant="outline"
             size="sm"
             className="flex-1"
-            onClick={() => navigate(`/fleet/compliance?vehicle=${vehicleId}&tab=documents&returnTo=/fleet-management`)}
+            onClick={() => navigate(`/fleet/documents?vehicle=${vehicleId}&returnTo=/fleet-management`)}
           >
             Manage Docs <ExternalLink className="w-3 h-3 ml-1" />
           </Button>
           <Button
             size="sm"
             className="flex-1"
-            onClick={() => navigate(`/fleet/compliance?action=upload&vehicle=${vehicleId}&returnTo=/fleet-management`)}
+            onClick={() => navigate(`/fleet/documents?action=upload&vehicle=${vehicleId}&returnTo=/fleet-management`)}
           >
             <Plus className="w-3 h-3 mr-1" /> Upload
           </Button>
