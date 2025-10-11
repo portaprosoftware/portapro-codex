@@ -10,6 +10,7 @@ import {
 import { UnifiedFuelFilters, useUnifiedFuelConsumption } from '@/hooks/useUnifiedFuelConsumption';
 import { exportUnifiedFuelToCSV, formatDateRange } from '@/utils/fuelExport';
 import { ComplianceAlerts } from './ComplianceAlerts';
+import { FuelReportsTab } from '../FuelReportsTab';
 import { 
   DollarSign, 
   TrendingUp, 
@@ -97,10 +98,11 @@ export const FuelAnalyticsTab: React.FC<FuelAnalyticsTabProps> = ({ filters }) =
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="performance">Performance</TabsTrigger>
           <TabsTrigger value="compliance">Compliance</TabsTrigger>
+          <TabsTrigger value="reports">Reports</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
@@ -366,6 +368,10 @@ export const FuelAnalyticsTab: React.FC<FuelAnalyticsTabProps> = ({ filters }) =
 
         <TabsContent value="compliance" className="space-y-4">
           <ComplianceAlerts />
+        </TabsContent>
+
+        <TabsContent value="reports" className="space-y-4">
+          <FuelReportsTab />
         </TabsContent>
       </Tabs>
     </div>
