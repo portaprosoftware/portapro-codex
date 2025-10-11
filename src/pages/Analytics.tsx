@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useUserRole } from '@/hooks/useUserRole';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,6 +17,7 @@ import { ReportBuilder } from '@/components/analytics/ReportBuilder';
 
 const Analytics = () => {
   const { hasAdminAccess } = useUserRole();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [isReportBuilderOpen, setIsReportBuilderOpen] = useState(false);
   const [dateRange, setDateRange] = useState({
@@ -46,7 +48,7 @@ const Analytics = () => {
 
   const handleTabClick = (tabId: string) => {
     if (tabId === 'reports') {
-      setIsReportBuilderOpen(true);
+      navigate('/analytics/reports');
     } else {
       setActiveTab(tabId);
       setIsReportBuilderOpen(false);
@@ -99,10 +101,8 @@ const Analytics = () => {
                 "flex items-center gap-2",
                 "focus:outline-none",
                 "transform hover:-translate-y-0.5",
-                activeTab === tab.id && !isReportBuilderOpen
+                activeTab === tab.id
                   ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold shadow-sm" 
-                  : tab.id === 'reports' && isReportBuilderOpen
-                  ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold shadow-sm"
                   : "bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
               )}
             >

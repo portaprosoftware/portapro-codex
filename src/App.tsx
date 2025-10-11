@@ -21,6 +21,7 @@ import FleetLoadsPage from './pages/FleetLoadsPage';
 import SpillKitInventoryPage from './pages/SpillKitInventoryPage';
 import Marketing from './pages/Marketing';
 import Analytics from "./pages/Analytics";
+import AnalyticsReports from "./pages/AnalyticsReports";
 import MaintenanceHub from "./pages/MaintenanceHub";
 import MaintenancePage from "./pages/MaintenancePage";
 import Settings from "./pages/Settings";
@@ -368,6 +369,12 @@ const App = () => {
           <Route path="/analytics" element={
             <>
               <SignedIn><Layout><Analytics /></Layout></SignedIn>
+              <SignedOut><Auth /></SignedOut>
+            </>
+          } />
+          <Route path="/analytics/reports" element={
+            <>
+              <SignedIn><Layout><AnalyticsReports /></Layout></SignedIn>
               <SignedOut><Auth /></SignedOut>
             </>
           } />
