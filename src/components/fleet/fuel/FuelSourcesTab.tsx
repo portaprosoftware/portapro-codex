@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FuelIcon, Container, Truck } from 'lucide-react';
+import { FuelIcon, Container, Truck, Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { FuelTanksManager } from './sources/FuelTanksManager';
 import { MobileFuelVendorsManager } from './sources/MobileFuelVendorsManager';
 import { RetailStationsManager } from './sources/RetailStationsManager';
+import { AddFuelTankDialog } from './sources/AddFuelTankDialog';
+import { AddSupplierDialog } from './sources/AddSupplierDialog';
 import { useFuelManagementSettings } from '@/hooks/useFuelManagementSettings';
 
 export const FuelSourcesTab: React.FC = () => {
   const { data: settings } = useFuelManagementSettings();
   const [activeSourceTab, setActiveSourceTab] = useState('retail');
+  const [showAddTank, setShowAddTank] = useState(false);
+  const [showAddSupplier, setShowAddSupplier] = useState(false);
 
   return (
     <div className="space-y-4">
@@ -47,6 +52,23 @@ export const FuelSourcesTab: React.FC = () => {
           )}
         </TabsList>
 
+        {/* Yard Tanks Action Buttons */}
+        {settings?.yard_tank_enabled && activeSourceTab === 'tanks' && (
+          <div className="flex justify-between items-center mt-6">
+            <h3 className="text-lg font-semibold">Fuel Tanks</h3>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setShowAddSupplier(true)}>
+                <Truck className="h-4 w-4 mr-2" />
+                Add Supplier
+              </Button>
+              <Button onClick={() => setShowAddTank(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Tank
+              </Button>
+            </div>
+          </div>
+        )}
+
         {settings?.retail_enabled && (
           <TabsContent value="retail" className="mt-6">
             <RetailStationsManager />
@@ -65,6 +87,9 @@ export const FuelSourcesTab: React.FC = () => {
           </TabsContent>
         )}
       </Tabs>
+
+      <AddFuelTankDialog open={showAddTank} onOpenChange={setShowAddTank} />
+      <AddSupplierDialog open={showAddSupplier} onOpenChange={setShowAddSupplier} />
     </div>
   );
 };

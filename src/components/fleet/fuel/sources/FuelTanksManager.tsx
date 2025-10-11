@@ -21,8 +21,6 @@ import { FUEL_TYPE_LABELS, FUEL_TYPE_COLORS } from '@/types/fuel';
 import { format } from 'date-fns';
 
 export const FuelTanksManager: React.FC = () => {
-  const [showAddTank, setShowAddTank] = useState(false);
-  const [showAddSupplier, setShowAddSupplier] = useState(false);
   const [showAddDelivery, setShowAddDelivery] = useState(false);
   const [selectedTankId, setSelectedTankId] = useState<string | undefined>();
   const [showSuppliers, setShowSuppliers] = useState(false);
@@ -237,21 +235,6 @@ export const FuelTanksManager: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Add Tank & Supplier Buttons */}
-      <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold">Fuel Tanks</h3>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setShowAddSupplier(true)}>
-            <Truck className="h-4 w-4 mr-2" />
-            Add Supplier
-          </Button>
-          <Button onClick={() => setShowAddTank(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            Add Tank
-          </Button>
-        </div>
-      </div>
-
       {/* Recent Deliveries */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
@@ -381,17 +364,14 @@ export const FuelTanksManager: React.FC = () => {
               <p className="text-sm text-muted-foreground mb-4">
                 Add your first on-site fuel tank to start tracking bulk deliveries
               </p>
-              <Button onClick={() => setShowAddTank(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Tank
-              </Button>
+              <p className="text-sm text-muted-foreground">
+                Use the "Add Tank" button above to get started
+              </p>
             </Card>
           )}
         </div>
       </div>
 
-      <AddFuelTankDialog open={showAddTank} onOpenChange={setShowAddTank} />
-      <AddSupplierDialog open={showAddSupplier} onOpenChange={setShowAddSupplier} />
       <AddTankDeliveryDialog 
         open={showAddDelivery} 
         onOpenChange={setShowAddDelivery}
