@@ -33,6 +33,22 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { FuelExportModal } from './FuelExportModal';
+import {
+  exportVendorPerformanceToCSV,
+  exportCostPerMileToCSV,
+  exportFleetMPGToCSV,
+  exportSourceComparisonToCSV,
+  exportAnalyticsSummaryToCSV
+} from '@/utils/fuelExport';
+import {
+  exportVendorPerformanceToPDF,
+  exportCostPerMileToPDF,
+  exportFleetMPGToPDF,
+  exportSourceComparisonToPDF,
+  exportAnalyticsSummaryToPDF,
+  exportTransactionsToPDF
+} from '@/utils/fuelPDFExport';
 
 interface FuelAnalyticsTabProps {
   filters?: UnifiedFuelFilters;
@@ -41,6 +57,7 @@ interface FuelAnalyticsTabProps {
 export const FuelAnalyticsTab: React.FC<FuelAnalyticsTabProps> = ({ filters }) => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('overview');
+  const [showExportModal, setShowExportModal] = useState(false);
 
   const { data: vendorPerformance, isLoading: vendorLoading } = useVendorPerformance(filters);
   const { data: costPerMile, isLoading: costLoading } = useCostPerMile(filters);
@@ -48,25 +65,139 @@ export const FuelAnalyticsTab: React.FC<FuelAnalyticsTabProps> = ({ filters }) =
   const { data: sourceComparison, isLoading: sourceLoading } = useSourceComparison(filters);
   const { data: unifiedData } = useUnifiedFuelConsumption(filters);
 
-  const handleExport = () => {
-    if (!unifiedData || unifiedData.length === 0) {
+  const handleExport = (format: 'csv' | 'pdf', dataType: string) => {
+    const dateRangeStr = formatDateRange(filters?.dateFrom, filters?.dateTo);
+    
+    try {
+      if (format === 'csv') {
+        switch (dataType) {
+          case 'transactions':
+            if (!unifiedData || unifiedData.length === 0) {
+              toast({ title: "No data", description: "No fuel transactions to export", variant: "destructive" });
+              return;
+            }
+            exportUnifiedFuelToCSV(unifiedData, `fuel-transactions_${dateRangeStr}.csv`);
+            break;
+          
+          case 'summary':
+            exportAnalyticsSummaryToCSV({
+              costPerMile: costPerMile?.cost_per_mile || 0,
+              totalMiles: costPerMile?.total_miles_driven || 0,
+              fleetMPG: fleetMPG?.fleet_avg_mpg || 0,
+              totalGallons: fleetMPG?.total_gallons || 0,
+              totalCost: sourceComparison?.reduce((sum, s) => sum + s.total_cost, 0) || 0,
+              sourceCount: sourceComparison?.length || 0
+            }, `analytics-summary_${dateRangeStr}.csv`);
+            break;
+          
+          case 'sources':
+            if (!sourceComparison || sourceComparison.length === 0) {
+              toast({ title: "No data", description: "No source comparison data to export", variant: "destructive" });
+              return;
+            }
+            exportSourceComparisonToCSV(sourceComparison, `source-comparison_${dateRangeStr}.csv`);
+            break;
+          
+          case 'vendors':
+            if (!vendorPerformance || vendorPerformance.length === 0) {
+              toast({ title: "No data", description: "No vendor data to export", variant: "destructive" });
+              return;
+            }
+            exportVendorPerformanceToCSV(vendorPerformance, `vendor-performance_${dateRangeStr}.csv`);
+            break;
+          
+          case 'cost-per-mile':
+            if (!costPerMile || costPerMile.by_vehicle.length === 0) {
+              toast({ title: "No data", description: "No cost per mile data to export", variant: "destructive" });
+              return;
+            }
+            exportCostPerMileToCSV(costPerMile, `cost-per-mile_${dateRangeStr}.csv`);
+            break;
+          
+          case 'fleet-mpg':
+            if (!fleetMPG || fleetMPG.by_vehicle.length === 0) {
+              toast({ title: "No data", description: "No MPG data to export", variant: "destructive" });
+              return;
+            }
+            exportFleetMPGToCSV(fleetMPG, `fleet-mpg_${dateRangeStr}.csv`);
+            break;
+        }
+      } else if (format === 'pdf') {
+        const pdfOptions = {
+          title: '',
+          subtitle: '',
+          dateRange: filters?.dateFrom || filters?.dateTo 
+            ? `Period: ${filters?.dateFrom?.toLocaleDateString() || 'Start'} - ${filters?.dateTo?.toLocaleDateString() || 'End'}`
+            : 'All Time',
+          companyName: 'PortaPro'
+        };
+
+        switch (dataType) {
+          case 'transactions':
+            if (!unifiedData || unifiedData.length === 0) {
+              toast({ title: "No data", description: "No fuel transactions to export", variant: "destructive" });
+              return;
+            }
+            exportTransactionsToPDF(unifiedData, pdfOptions);
+            break;
+          
+          case 'summary':
+            exportAnalyticsSummaryToPDF({
+              costPerMile: costPerMile?.cost_per_mile || 0,
+              totalMiles: costPerMile?.total_miles_driven || 0,
+              fleetMPG: fleetMPG?.fleet_avg_mpg || 0,
+              totalGallons: fleetMPG?.total_gallons || 0,
+              totalCost: sourceComparison?.reduce((sum, s) => sum + s.total_cost, 0) || 0,
+              sourceCount: sourceComparison?.length || 0
+            }, pdfOptions);
+            break;
+          
+          case 'sources':
+            if (!sourceComparison || sourceComparison.length === 0) {
+              toast({ title: "No data", description: "No source comparison data to export", variant: "destructive" });
+              return;
+            }
+            exportSourceComparisonToPDF(sourceComparison, pdfOptions);
+            break;
+          
+          case 'vendors':
+            if (!vendorPerformance || vendorPerformance.length === 0) {
+              toast({ title: "No data", description: "No vendor data to export", variant: "destructive" });
+              return;
+            }
+            exportVendorPerformanceToPDF(vendorPerformance, pdfOptions);
+            break;
+          
+          case 'cost-per-mile':
+            if (!costPerMile || costPerMile.by_vehicle.length === 0) {
+              toast({ title: "No data", description: "No cost per mile data to export", variant: "destructive" });
+              return;
+            }
+            exportCostPerMileToPDF(costPerMile, pdfOptions);
+            break;
+          
+          case 'fleet-mpg':
+            if (!fleetMPG || fleetMPG.by_vehicle.length === 0) {
+              toast({ title: "No data", description: "No MPG data to export", variant: "destructive" });
+              return;
+            }
+            exportFleetMPGToPDF(fleetMPG, pdfOptions);
+            break;
+        }
+      }
+
       toast({
-        title: "No data to export",
-        description: "There is no fuel data available for the selected filters.",
+        title: "Export successful",
+        description: `Downloaded ${format.toUpperCase()} file successfully`
+      });
+    } catch (error) {
+      console.error('Export error:', error);
+      toast({
+        title: "Export failed",
+        description: "An error occurred while exporting the data",
         variant: "destructive"
       });
-      return;
     }
-
-    const dateRangeStr = formatDateRange(filters?.dateFrom, filters?.dateTo);
-    const filename = `unified-fuel-data_${dateRangeStr}.csv`;
-    
-    exportUnifiedFuelToCSV(unifiedData, filename);
-    
-    toast({
-      title: "Export successful",
-      description: `Downloaded ${unifiedData.length} fuel records to ${filename}`
-    });
   };
 
   const getSourceBadge = (sourceType: string) => {
@@ -91,9 +222,9 @@ export const FuelAnalyticsTab: React.FC<FuelAnalyticsTabProps> = ({ filters }) =
           <h2 className="text-xl font-bold">Fuel Analytics & Reports</h2>
           <p className="text-muted-foreground">Advanced metrics and compliance tracking</p>
         </div>
-        <Button onClick={handleExport} variant="outline" className="gap-2">
+        <Button onClick={() => setShowExportModal(true)} variant="outline" className="gap-2">
           <Download className="h-4 w-4" />
-          Export to CSV
+          Export Data
         </Button>
       </div>
 
@@ -374,6 +505,20 @@ export const FuelAnalyticsTab: React.FC<FuelAnalyticsTabProps> = ({ filters }) =
           <FuelReportsTab />
         </TabsContent>
       </Tabs>
+
+      <FuelExportModal
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        activeTab={activeTab}
+        onExport={handleExport}
+        dataCount={{
+          transactions: unifiedData?.length || 0,
+          vendors: vendorPerformance?.length || 0,
+          vehicles: costPerMile?.by_vehicle.length || 0,
+          sources: sourceComparison?.length || 0,
+          alerts: 0 // Will be implemented when compliance alerts are available
+        }}
+      />
     </div>
   );
 };
