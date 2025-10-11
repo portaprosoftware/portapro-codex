@@ -65,13 +65,14 @@ interface CompanyMaintenanceSettings {
 export const EnhancedMaintenanceManagement: React.FC = () => {
   const [searchParams] = useSearchParams();
   const tabParam = searchParams.get('tab');
+  const vehicleParam = searchParams.get('vehicle');
   
   // Map tab parameter to actual tab values
   const getInitialTab = () => {
     if (tabParam === 'pm-schedules') return 'pm';
     if (tabParam === 'work-orders') return 'workorders';
     if (tabParam === 'dvir') return 'dvir';
-    if (tabParam === 'records') return 'records';
+    if (tabParam === 'records' || tabParam === 'all-records') return 'records';
     if (tabParam === 'settings') return 'settings';
     if (tabParam === 'parts') return 'parts';
     if (tabParam === 'calendar') return 'calendar';
@@ -425,7 +426,7 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
             </TabsContent>
 
         <TabsContent value="records">
-          <MaintenanceAllRecordsTab />
+          <MaintenanceAllRecordsTab vehicleId={vehicleParam || undefined} />
         </TabsContent>
 
         {/* DVIR Tab */}
