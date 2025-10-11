@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Plus, Container, AlertTriangle, CheckCircle, Calendar, Truck } from 'lucide-react';
 import { useFuelTanks, useSPCCTanks } from '@/hooks/useFuelTanks';
 import { useFuelTankDeliveries } from '@/hooks/useFuelTankDeliveries';
@@ -32,6 +36,55 @@ export const FuelTanksManager: React.FC = () => {
 
   const spccRequired = spccTanks.length > 0;
   const totalCapacity = tanks.reduce((sum, tank) => sum + Number(tank.capacity_gallons), 0);
+
+  // Calculate delivery vs consumption analytics over the last 30 days
+  const { data: analytics } = useQuery({
+    queryKey: ['fuel-supply-analytics'],
+    queryFn: async () => {
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      
+      const { data: deliveriesData, error: deliveriesError } = await supabase
+        .from('fuel_tank_deliveries')
+        .select('gallons_delivered, total_cost')
+        .gte('delivery_date', thirtyDaysAgo.toISOString().split('T')[0]);
+      
+      if (deliveriesError) throw deliveriesError;
+
+      const { data: drawsData, error: drawsError } = await supabase
+        .from('unified_fuel_consumption')
+        .select('gallons, cost')
+        .eq('source_type', 'yard_tank')
+        .gte('fuel_date', thirtyDaysAgo.toISOString().split('T')[0]);
+      
+      if (drawsError) throw drawsError;
+
+      const totalDelivered = deliveriesData?.reduce((sum, d) => sum + (d.gallons_delivered || 0), 0) || 0;
+      const totalDrawn = drawsData?.reduce((sum, d) => sum + (d.gallons || 0), 0) || 0;
+      const deliveryCost = deliveriesData?.reduce((sum, d) => sum + (d.total_cost || 0), 0) || 0;
+
+      return {
+        totalDelivered,
+        totalDrawn,
+        netChange: totalDelivered - totalDrawn,
+        deliveryCost,
+        deliveryCount: deliveriesData?.length || 0,
+      };
+    },
+  });
+
+  const getTankLevelPercentage = (currentLevel: number, capacity: number) => {
+    return (currentLevel / capacity) * 100;
+  };
+
+  const getTankStatus = (currentLevel: number, reorderThreshold: number) => {
+    if (currentLevel <= reorderThreshold) {
+      return { label: 'Low', color: 'bg-red-500' };
+    } else if (currentLevel <= reorderThreshold * 1.5) {
+      return { label: 'Reorder Soon', color: 'bg-yellow-500' };
+    }
+    return { label: 'Normal', color: 'bg-green-500' };
+  };
 
   const handleAddDelivery = (tankId: string) => {
     setSelectedTankId(tankId);
@@ -67,6 +120,43 @@ export const FuelTanksManager: React.FC = () => {
           </div>
         </Card>
       )}
+
+      {/* 30-Day Analytics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card className="p-4">
+          <div>
+            <p className="text-sm text-muted-foreground">Total Delivered</p>
+            <p className="text-2xl font-bold">{analytics?.totalDelivered.toFixed(0) || 0} gal</p>
+            <p className="text-xs text-muted-foreground mt-1">Last 30 days</p>
+          </div>
+        </Card>
+
+        <Card className="p-4">
+          <div>
+            <p className="text-sm text-muted-foreground">Total Consumed</p>
+            <p className="text-2xl font-bold">{analytics?.totalDrawn.toFixed(0) || 0} gal</p>
+            <p className="text-xs text-muted-foreground mt-1">Last 30 days</p>
+          </div>
+        </Card>
+
+        <Card className="p-4">
+          <div>
+            <p className="text-sm text-muted-foreground">Net Change</p>
+            <p className={`text-2xl font-bold ${(analytics?.netChange || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              {(analytics?.netChange || 0) >= 0 ? '+' : ''}{analytics?.netChange.toFixed(0) || 0} gal
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">Last 30 days</p>
+          </div>
+        </Card>
+
+        <Card className="p-4">
+          <div>
+            <p className="text-sm text-muted-foreground">Delivery Cost</p>
+            <p className="text-2xl font-bold">${analytics?.deliveryCost.toFixed(2) || '0.00'}</p>
+            <p className="text-xs text-muted-foreground mt-1">{analytics?.deliveryCount || 0} deliveries</p>
+          </div>
+        </Card>
+      </div>
 
       {/* Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -107,6 +197,46 @@ export const FuelTanksManager: React.FC = () => {
         </Card>
       </div>
 
+      {/* Tank Level Indicators with Progress Bars */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Tank Levels</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {tanks && tanks.length > 0 ? (
+              tanks.map((tank) => {
+                const percentage = getTankLevelPercentage(tank.current_level_gallons, tank.capacity_gallons);
+                const status = getTankStatus(tank.current_level_gallons, tank.reorder_threshold_gallons || 0);
+                
+                return (
+                  <div key={tank.id} className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium">{tank.tank_name} ({tank.tank_number})</p>
+                        <p className="text-sm text-muted-foreground">
+                          {tank.current_level_gallons.toFixed(0)} / {tank.capacity_gallons.toFixed(0)} gallons
+                        </p>
+                      </div>
+                      <Badge className={status.color}>{status.label}</Badge>
+                    </div>
+                    <Progress value={percentage} className="h-3" />
+                    {tank.current_level_gallons <= (tank.reorder_threshold_gallons || 0) && (
+                      <div className="flex items-center gap-2 text-sm text-red-600">
+                        <AlertTriangle className="h-4 w-4" />
+                        <span>Below reorder threshold</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            ) : (
+              <p className="text-center py-8 text-muted-foreground">No active fuel tanks found</p>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Add Tank & Supplier Buttons */}
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Fuel Tanks</h3>
@@ -121,6 +251,60 @@ export const FuelTanksManager: React.FC = () => {
           </Button>
         </div>
       </div>
+
+      {/* Recent Deliveries */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="text-lg">Recent Deliveries</CardTitle>
+          <Button onClick={() => setShowAddDelivery(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Delivery
+          </Button>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Tank</TableHead>
+                  <TableHead>Supplier</TableHead>
+                  <TableHead>Gallons</TableHead>
+                  <TableHead>Cost/Gal</TableHead>
+                  <TableHead>Total Cost</TableHead>
+                  <TableHead>Invoice</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {deliveries && deliveries.length > 0 ? (
+                  deliveries.slice(0, 10).map((delivery) => {
+                    const tank = tanks?.find(t => t.id === delivery.tank_id);
+                    return (
+                      <TableRow key={delivery.id}>
+                        <TableCell>{new Date(delivery.delivery_date).toLocaleDateString()}</TableCell>
+                        <TableCell>
+                          {tank ? `${tank.tank_name} (${tank.tank_number})` : 'Unknown Tank'}
+                        </TableCell>
+                        <TableCell>{delivery.supplier_name}</TableCell>
+                        <TableCell>{delivery.gallons_delivered.toFixed(1)}</TableCell>
+                        <TableCell>${delivery.cost_per_gallon.toFixed(3)}</TableCell>
+                        <TableCell className="font-semibold">${delivery.total_cost.toFixed(2)}</TableCell>
+                        <TableCell>{delivery.invoice_number || 'N/A'}</TableCell>
+                      </TableRow>
+                    );
+                  })
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                      No deliveries recorded yet
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Suppliers Toggle */}
       <Card className="p-4">
