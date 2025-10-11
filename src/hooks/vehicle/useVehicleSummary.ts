@@ -40,17 +40,132 @@ export interface VehicleSummaryData {
   };
 }
 
+async function computeFuelSummary(vehicleId: string) {
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+  // Get all fuel logs for this vehicle
+  const { data: fuelLogs } = await supabase
+    .from('unified_fuel_consumption')
+    .select('fuel_date, gallons, cost, odometer_reading, created_at')
+    .eq('vehicle_id', vehicleId)
+    .order('fuel_date', { ascending: false });
+
+  if (!fuelLogs || fuelLogs.length === 0) {
+    return {
+      last_fill_date: null,
+      last_fill_gallons: null,
+      avg_mpg_30d: null,
+      total_spent_30d: 0,
+    };
+  }
+
+  // Last fill (no date restriction)
+  const lastFill = fuelLogs[0];
+  const last_fill_date = lastFill.fuel_date || lastFill.created_at;
+  const last_fill_gallons = lastFill.gallons || 0;
+
+  // Filter logs from last 30 days
+  const recentLogs = fuelLogs.filter(log => {
+    const logDate = new Date(log.fuel_date || log.created_at);
+    return logDate >= thirtyDaysAgo;
+  });
+
+  // Total spent in last 30 days
+  const total_spent_30d = recentLogs.reduce((sum, log) => sum + (log.cost || 0), 0);
+
+  // Calculate MPG for last 30 days
+  let avg_mpg_30d: number | null = null;
+  if (recentLogs.length >= 2) {
+    const logsWithOdometer = [...recentLogs]
+      .filter(log => log.odometer_reading != null)
+      .sort((a, b) => new Date(a.fuel_date || a.created_at).getTime() - new Date(b.fuel_date || b.created_at).getTime());
+
+    let totalDistance = 0;
+    let totalGallons = 0;
+
+    for (let i = 1; i < logsWithOdometer.length; i++) {
+      const prev = logsWithOdometer[i - 1];
+      const curr = logsWithOdometer[i];
+      const distance = (curr.odometer_reading || 0) - (prev.odometer_reading || 0);
+      
+      if (distance > 0) {
+        totalDistance += distance;
+        totalGallons += curr.gallons || 0;
+      }
+    }
+
+    if (totalGallons > 0) {
+      avg_mpg_30d = totalDistance / totalGallons;
+    }
+  }
+
+  return {
+    last_fill_date,
+    last_fill_gallons,
+    avg_mpg_30d,
+    total_spent_30d,
+  };
+}
+
 export function useVehicleSummary(vehicleId: string | null) {
   return useQuery({
     queryKey: ['vehicle-summary', vehicleId],
     queryFn: async () => {
       if (!vehicleId) return null;
 
-      const { data, error } = await supabase
-        .rpc('get_vehicle_summary', { p_vehicle_id: vehicleId });
+      try {
+        const { data, error } = await supabase
+          .rpc('get_vehicle_summary', { p_vehicle_id: vehicleId });
 
-      if (error) throw error;
-      return data as unknown as VehicleSummaryData;
+        if (error) throw error;
+
+        const rpcData = data as unknown as VehicleSummaryData;
+
+        // Check if fuel data is missing or empty, compute fallback
+        if (!rpcData || !rpcData.fuel || !rpcData.fuel.last_fill_date) {
+          const fuelSummary = await computeFuelSummary(vehicleId);
+          
+          return {
+            ...rpcData,
+            fuel: fuelSummary,
+          } as VehicleSummaryData;
+        }
+
+        return rpcData;
+      } catch (error) {
+        console.error('RPC failed, using fallback fuel computation:', error);
+        
+        // If RPC completely fails, compute fuel summary as fallback
+        const fuelSummary = await computeFuelSummary(vehicleId);
+        
+        return {
+          maintenance: {
+            open_work_orders: 0,
+            dvirs_30d: 0,
+            last_dvir: null,
+            next_pm_due: null,
+          },
+          fuel: fuelSummary,
+          compliance: {
+            spill_kit_status: 'missing' as const,
+            last_kit_check: null,
+            incidents_30d: 0,
+            decon_logs_30d: 0,
+          },
+          documents: {
+            total_count: 0,
+            expiring_soon: 0,
+          },
+          stock: {
+            todays_load: 0,
+          },
+          assignments: {
+            active_count: 0,
+            upcoming_jobs: 0,
+          },
+        } as VehicleSummaryData;
+      }
     },
     enabled: !!vehicleId,
     staleTime: 2 * 60 * 1000, // 2 minutes
