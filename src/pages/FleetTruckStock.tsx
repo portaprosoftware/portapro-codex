@@ -98,16 +98,22 @@ const FleetTruckStock: React.FC = () => {
       qty: number;
       vehicle_id: string;
     }) => {
+      console.log("TruckStock loadUnloadMutation start", { action, consumable_id, qty, vehicle_id });
+      if (qty <= 0) {
+        throw new Error("Quantity must be greater than 0");
+      }
       // For unload, validate sufficient stock
       if (action === "unload") {
-        const { data: balanceData } = await supabase
+        const { data: balanceData, error: balErr } = await supabase
           .from("vehicle_consumable_balances")
           .select("balance_qty")
           .eq("vehicle_id", vehicle_id)
           .eq("consumable_id", consumable_id)
-          .single();
-        
-        if (!balanceData || balanceData.balance_qty < qty) {
+          .maybeSingle();
+        if (balErr) {
+          console.error("Balance check error", balErr);
+        }
+        if (!balanceData || (balanceData.balance_qty ?? 0) < qty) {
           throw new Error(`Insufficient stock. Available: ${balanceData?.balance_qty || 0}`);
         }
       }
@@ -124,16 +130,20 @@ const FleetTruckStock: React.FC = () => {
           occurred_at: new Date().toISOString()
         });
       
-      if (error) throw error;
+      if (error) {
+        console.error("Ledger insert error", error);
+        throw error;
+      }
     },
-    onSuccess: (_, variables) => {
-      const action = variables.action === "load" ? "loaded to" : "unloaded from";
-      toast({ title: "Success", description: `Stock ${action} vehicle successfully` });
-      qc.invalidateQueries({ queryKey: ["vehicle-inventory"] });
+    onSuccess: (_data, variables) => {
+      const actionText = variables.action === "load" ? "loaded to" : "unloaded from";
+      toast({ title: "Success", description: `Stock ${actionText} vehicle successfully` });
+      qc.invalidateQueries({ queryKey: ["vehicle-inventory", variables.vehicle_id] });
       setQuantity("");
       setConsumableId("");
     },
     onError: (error: any) => {
+      console.error("TruckStock loadUnloadMutation error", error);
       toast({ 
         title: "Error", 
         description: error.message || "Operation failed", 
@@ -150,15 +160,21 @@ const FleetTruckStock: React.FC = () => {
       from_vehicle_id: string;
       to_vehicle_id: string;
     }) => {
+      console.log("TruckStock transferMutation start", { consumable_id, qty, from_vehicle_id, to_vehicle_id });
+      if (qty <= 0) {
+        throw new Error("Quantity must be greater than 0");
+      }
       // Validate source vehicle has sufficient stock
-      const { data: balanceData } = await supabase
+      const { data: balanceData, error: balErr } = await supabase
         .from("vehicle_consumable_balances")
         .select("balance_qty")
         .eq("vehicle_id", from_vehicle_id)
         .eq("consumable_id", consumable_id)
-        .single();
-      
-      if (!balanceData || balanceData.balance_qty < qty) {
+        .maybeSingle();
+      if (balErr) {
+        console.error("Transfer balance check error", balErr);
+      }
+      if (!balanceData || (balanceData.balance_qty ?? 0) < qty) {
         throw new Error(`Insufficient stock in source vehicle. Available: ${balanceData?.balance_qty || 0}`);
       }
 
@@ -174,7 +190,10 @@ const FleetTruckStock: React.FC = () => {
           occurred_at: new Date().toISOString()
         });
       
-      if (unloadError) throw unloadError;
+      if (unloadError) {
+        console.error("Transfer unload insert error", unloadError);
+        throw unloadError;
+      }
 
       // Create load entry for destination vehicle
       const { error: loadError } = await supabase
@@ -188,16 +207,21 @@ const FleetTruckStock: React.FC = () => {
           occurred_at: new Date().toISOString()
         });
       
-      if (loadError) throw loadError;
+      if (loadError) {
+        console.error("Transfer load insert error", loadError);
+        throw loadError;
+      }
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       toast({ title: "Success", description: "Transfer completed successfully" });
-      qc.invalidateQueries({ queryKey: ["vehicle-inventory"] });
+      qc.invalidateQueries({ queryKey: ["vehicle-inventory", variables.from_vehicle_id] });
+      qc.invalidateQueries({ queryKey: ["vehicle-inventory", variables.to_vehicle_id] });
       setQuantity("");
       setDestVehicleId("");
       setConsumableId("");
     },
     onError: (error: any) => {
+      console.error("TruckStock transferMutation error", error);
       toast({ 
         title: "Error", 
         description: error.message || "Transfer failed", 
