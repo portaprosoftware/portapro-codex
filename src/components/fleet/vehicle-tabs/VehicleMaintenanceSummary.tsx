@@ -79,7 +79,7 @@ export function VehicleMaintenanceSummary({
           <Button
             size="sm"
             className="flex-1"
-            onClick={() => navigate(`/fleet/maintenance/work-orders/new?vehicle=${vehicleId}&returnTo=/fleet-management`)}
+            onClick={() => navigate(`/fleet/maintenance?tab=work-orders&vehicle=${vehicleId}&returnTo=/fleet-management`)}
           >
             <Plus className="w-3 h-3 mr-1" /> New Work Order
           </Button>
