@@ -230,6 +230,13 @@ const FleetTruckStock: React.FC = () => {
     }
   });
 
+  // Calculate available stock for selected consumable
+  const availableStock = useMemo(() => {
+    if (!consumableId || !inventoryData) return 0;
+    const item = inventoryData.find(inv => inv.consumable_id === consumableId);
+    return item?.balance_qty || 0;
+  }, [consumableId, inventoryData]);
+
   useEffect(() => {
     document.title = 'Truck Stock | PortaPro';
   }, []);
@@ -340,6 +347,11 @@ const FleetTruckStock: React.FC = () => {
                       <div>
                         <Label className="text-sm text-muted-foreground">Quantity</Label>
                         <Input type="number" min={0} value={quantity} onChange={(e) => setQuantity(e.target.value)} />
+                        {consumableId && availableStock > 0 && (
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Available on truck: {availableStock}
+                          </p>
+                        )}
                       </div>
                       <div className="flex gap-2">
                         <Button
@@ -351,13 +363,20 @@ const FleetTruckStock: React.FC = () => {
                         </Button>
                         <Button
                           variant="secondary"
-                          disabled={!vehicleId || !consumableId || !quantity || loadUnloadMutation.isPending}
+                          disabled={!vehicleId || !consumableId || !quantity || loadUnloadMutation.isPending || Number(quantity) > availableStock}
                           onClick={() => loadUnloadMutation.mutate({ action: "unload", consumable_id: consumableId, qty: Number(quantity), vehicle_id: vehicleId })}
                           className="gap-2"
                         >
                           <MinusCircle className="h-4 w-4"/> Unload
                         </Button>
                       </div>
+                      {consumableId && Number(quantity) > availableStock && quantity && (
+                        <Alert variant="destructive">
+                          <AlertDescription>
+                            Cannot unload {quantity} units. Only {availableStock} available on this vehicle.
+                          </AlertDescription>
+                        </Alert>
+                      )}
                     </CardContent>
                   </Card>
 
