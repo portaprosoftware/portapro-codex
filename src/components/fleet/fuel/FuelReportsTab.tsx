@@ -37,6 +37,7 @@ interface VehicleEfficiencyData {
 export const FuelReportsTab: React.FC = () => {
   const [reportPeriod, setReportPeriod] = useState('last_30_days');
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [selectedReport, setSelectedReport] = useState('fuel_usage');
 
   // Fetch fuel settings for unit preference
   const { data: fuelSettings } = useQuery({
@@ -221,6 +222,240 @@ export const FuelReportsTab: React.FC = () => {
     return <LoadingSpinner />;
   }
 
+  const renderSelectedReport = () => {
+    const emptyMessage = (
+      <div className="flex items-center justify-center h-96">
+        <p className="text-muted-foreground text-center">
+          No data to report for selected time period
+        </p>
+      </div>
+    );
+
+    switch (selectedReport) {
+      case 'fuel_usage':
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Fuel className="h-5 w-5" />
+                Fuel Usage Over Time
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-80">
+                {!trendData || trendData.length === 0 ? (
+                  <div className="flex items-center justify-center h-full">
+                    <p className="text-muted-foreground text-center">
+                      No data to report for selected time period
+                    </p>
+                  </div>
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={trendData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="month" />
+                      <YAxis label={{ value: fuelUnitLabel, angle: -90, position: 'insideLeft' }} />
+                      <Tooltip 
+                        formatter={(value, name) => [
+                          name === 'gallons' ? `${value} ${fuelUnitAbbrev}` : `$${Number(value).toFixed(2)}`,
+                          name === 'gallons' ? fuelUnitLabel : 'Cost'
+                        ]}
+                      />
+                      <Bar 
+                        dataKey="gallons" 
+                        fill="#3366FF" 
+                        radius={[8, 8, 0, 0]}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        );
+
+      case 'cost_trends':
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <DollarSign className="h-5 w-5" />
+                Cost Trends
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-80">
+                {!trendData || trendData.length === 0 ? (
+                  <div className="flex items-center justify-center h-full">
+                    <p className="text-muted-foreground text-center">
+                      No data to report for selected time period
+                    </p>
+                  </div>
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={trendData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="month" />
+                      <YAxis />
+                      <Tooltip 
+                        formatter={(value, name) => [
+                          `$${Number(value).toFixed(name === 'avg_cost_per_gallon' ? 3 : 2)}`,
+                          name === 'cost' ? 'Total Cost' : 'Avg Cost/Gallon'
+                        ]}
+                      />
+                      <Bar 
+                        dataKey="cost" 
+                        fill="#22C55E" 
+                        radius={[8, 8, 0, 0]}
+                      />
+                      <Bar 
+                        dataKey="avg_cost_per_gallon" 
+                        fill="#F59E0B" 
+                        radius={[8, 8, 0, 0]}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        );
+
+      case 'vehicle_efficiency':
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Gauge className="h-5 w-5" />
+                Vehicle Efficiency Report
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {!efficiencyData || efficiencyData.length === 0 ? (
+                <div className="flex items-center justify-center h-60">
+                  <p className="text-muted-foreground text-center">
+                    No data to report for selected time period
+                  </p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Vehicle</TableHead>
+                        <TableHead>Total Gallons</TableHead>
+                        <TableHead>Total Miles</TableHead>
+                        <TableHead>MPG</TableHead>
+                        <TableHead>Total Cost</TableHead>
+                        <TableHead>Cost/Mile</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {efficiencyData?.map((vehicle) => (
+                        <TableRow key={vehicle.vehicle_id}>
+                          <TableCell>
+                            <div className="flex flex-col gap-0.5">
+                              <span className="font-medium">
+                                {vehicle.make} {vehicle.model}
+                                {vehicle.nickname && ` - ${vehicle.nickname}`}
+                              </span>
+                              <span className="text-sm text-muted-foreground">
+                                {vehicle.license_plate}
+                              </span>
+                            </div>
+                          </TableCell>
+                          <TableCell>{vehicle.total_gallons?.toFixed(1)}</TableCell>
+                          <TableCell>{vehicle.total_miles?.toLocaleString()}</TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              {vehicle.mpg?.toFixed(1)}
+                              {vehicle.mpg > 20 ? (
+                                <TrendingUp className="h-4 w-4 text-green-500" />
+                              ) : (
+                                <TrendingDown className="h-4 w-4 text-red-500" />
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>${vehicle.total_cost?.toFixed(2)}</TableCell>
+                          <TableCell>${vehicle.cost_per_mile?.toFixed(3)}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        );
+
+      case 'station_performance':
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Fuel Station Performance</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {!stationData || stationData.length === 0 ? (
+                <div className="flex items-center justify-center h-60">
+                  <p className="text-muted-foreground text-center">
+                    No data to report for selected time period
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div className="h-80">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={stationData?.slice(0, 5)}
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={80}
+                          dataKey="cost"
+                          label={({ station, cost }) => `${station}: $${cost.toFixed(0)}`}
+                        >
+                          {stationData?.slice(0, 5).map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip formatter={(value) => [`$${Number(value).toFixed(2)}`, 'Total Cost']} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  <div>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Station</TableHead>
+                          <TableHead>Fill-ups</TableHead>
+                          <TableHead>Avg $/Gal</TableHead>
+                          <TableHead>Total Cost</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {stationData?.slice(0, 5).map((station, index) => (
+                          <TableRow key={station.station}>
+                            <TableCell className="font-medium">{station.station}</TableCell>
+                            <TableCell>{station.fill_ups}</TableCell>
+                            <TableCell>${station.avg_cost_per_gallon?.toFixed(3)}</TableCell>
+                            <TableCell>${station.cost?.toFixed(2)}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        );
+
+      default:
+        return emptyMessage;
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Report Controls */}
@@ -229,7 +464,22 @@ export const FuelReportsTab: React.FC = () => {
           <CardTitle className="text-lg">Report Settings</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">Report Type</label>
+              <Select value={selectedReport} onValueChange={setSelectedReport}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="fuel_usage">Fuel Usage Over Time</SelectItem>
+                  <SelectItem value="cost_trends">Cost Trends</SelectItem>
+                  <SelectItem value="vehicle_efficiency">Vehicle Efficiency</SelectItem>
+                  <SelectItem value="station_performance">Station Performance</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
             <div>
               <label className="block text-sm font-medium mb-2">Report Period</label>
               <Select value={reportPeriod} onValueChange={setReportPeriod}>
@@ -260,226 +510,8 @@ export const FuelReportsTab: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Fuel Usage Over Time */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Fuel className="h-5 w-5" />
-            Fuel Usage Over Time
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-80">
-            {!trendData || trendData.length === 0 ? (
-              <div className="flex items-center justify-center h-full">
-                <p className="text-muted-foreground text-center">
-                  No data to report for selected time period
-                </p>
-              </div>
-            ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={trendData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis label={{ value: fuelUnitLabel, angle: -90, position: 'insideLeft' }} />
-                  <Tooltip 
-                    formatter={(value, name) => [
-                      name === 'gallons' ? `${value} ${fuelUnitAbbrev}` : `$${Number(value).toFixed(2)}`,
-                      name === 'gallons' ? fuelUnitLabel : 'Cost'
-                    ]}
-                  />
-                  <Bar 
-                    dataKey="gallons" 
-                    fill="#3366FF" 
-                    radius={[8, 8, 0, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Cost Trends */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <DollarSign className="h-5 w-5" />
-            Cost Trends
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-80">
-            {!trendData || trendData.length === 0 ? (
-              <div className="flex items-center justify-center h-full">
-                <p className="text-muted-foreground text-center">
-                  No data to report for selected time period
-                </p>
-              </div>
-            ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={trendData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip 
-                    formatter={(value, name) => [
-                      `$${Number(value).toFixed(name === 'avg_cost_per_gallon' ? 3 : 2)}`,
-                      name === 'cost' ? 'Total Cost' : 'Avg Cost/Gallon'
-                    ]}
-                  />
-                  <Bar 
-                    dataKey="cost" 
-                    fill="#22C55E" 
-                    radius={[8, 8, 0, 0]}
-                  />
-                  <Bar 
-                    dataKey="avg_cost_per_gallon" 
-                    fill="#F59E0B" 
-                    radius={[8, 8, 0, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Vehicle Efficiency */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Gauge className="h-5 w-5" />
-            Vehicle Efficiency Report
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {!efficiencyData || efficiencyData.length === 0 ? (
-            <div className="flex items-center justify-center h-60">
-              <p className="text-muted-foreground text-center">
-                No data to report for selected time period
-              </p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Vehicle</TableHead>
-                    <TableHead>Total Gallons</TableHead>
-                    <TableHead>Total Miles</TableHead>
-                    <TableHead>MPG</TableHead>
-                    <TableHead>Total Cost</TableHead>
-                    <TableHead>Cost/Mile</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {efficiencyData?.map((vehicle) => (
-                    <TableRow key={vehicle.vehicle_id}>
-                      <TableCell>
-                        <div className="flex flex-col gap-0.5">
-                          <span className="font-medium">
-                            {vehicle.make} {vehicle.model}
-                            {vehicle.nickname && ` - ${vehicle.nickname}`}
-                          </span>
-                          <span className="text-sm text-muted-foreground">
-                            {vehicle.license_plate}
-                          </span>
-                        </div>
-                      </TableCell>
-                      <TableCell>{vehicle.total_gallons?.toFixed(1)}</TableCell>
-                      <TableCell>{vehicle.total_miles?.toLocaleString()}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          {vehicle.mpg?.toFixed(1)}
-                          {vehicle.mpg > 20 ? (
-                            <TrendingUp className="h-4 w-4 text-green-500" />
-                          ) : (
-                            <TrendingDown className="h-4 w-4 text-red-500" />
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>${vehicle.total_cost?.toFixed(2)}</TableCell>
-                      <TableCell>${vehicle.cost_per_mile?.toFixed(3)}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Station Performance */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Fuel Station Performance</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {!stationData || stationData.length === 0 ? (
-            <div className="flex items-center justify-center h-60">
-              <p className="text-muted-foreground text-center">
-                No data to report for selected time period
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Pie chart */}
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={stationData?.slice(0, 5)}
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={80}
-                      dataKey="cost"
-                      label={({ station, cost }) => `${station}: $${cost.toFixed(0)}`}
-                    >
-                      {stationData?.slice(0, 5).map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip formatter={(value) => [`$${Number(value).toFixed(2)}`, 'Total Cost']} />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-
-              {/* Station table */}
-              <div>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Station</TableHead>
-                      <TableHead>Fill-ups</TableHead>
-                      <TableHead>Avg $/Gal</TableHead>
-                      <TableHead>Total Cost</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {stationData?.slice(0, 5).map((station, index) => (
-                      <TableRow key={station.station}>
-                        <TableCell className="font-medium">{station.station}</TableCell>
-                        <TableCell>{station.fill_ups}</TableCell>
-                        <TableCell>${station.avg_cost_per_gallon?.toFixed(3)}</TableCell>
-                        <TableCell>${station.cost?.toFixed(2)}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Export Button */}
-      <div className="flex justify-end">
-        <Button variant="outline">
-          <Download className="h-4 w-4 mr-2" />
-          Export Reports
-        </Button>
-      </div>
+      {/* Selected Report Display */}
+      {renderSelectedReport()}
     </div>
   );
 };

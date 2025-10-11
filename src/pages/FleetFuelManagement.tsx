@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Download } from 'lucide-react';
 import { FleetLayout } from '@/components/fleet/FleetLayout';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { FuelOverviewTab } from '@/components/fleet/fuel/FuelOverviewTab';
@@ -71,9 +73,15 @@ export const FleetFuelManagement: React.FC = () => {
                 <TabsTrigger value="settings" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Settings</TabsTrigger>
               </TabsList>
               
-              {activeTab === 'logs' && (
-                <FuelLogsActions />
-              )}
+              <div className="flex items-center gap-2">
+                {activeTab === 'logs' && <FuelLogsActions />}
+                {activeTab === 'reports' && (
+                  <Button variant="outline">
+                    <Download className="h-4 w-4 mr-2" />
+                    Export Reports
+                  </Button>
+                )}
+              </div>
             </div>
           
             <div className="flex-1 overflow-auto">
