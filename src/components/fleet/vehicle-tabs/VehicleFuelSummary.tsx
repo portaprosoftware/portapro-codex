@@ -63,19 +63,11 @@ export function VehicleFuelSummary({
         {/* Action Buttons */}
         <div className="flex gap-2 pt-2 border-t">
           <Button
-            variant="outline"
             size="sm"
-            className="flex-1"
+            className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold hover:from-blue-600 hover:to-blue-700"
             onClick={() => navigate(`/fleet/fuel?tab=logs&vehicle=${vehicleId}&returnTo=/fleet-management`)}
           >
-            View History <ExternalLink className="w-3 h-3 ml-1" />
-          </Button>
-          <Button
-            size="sm"
-            className="flex-1"
-            onClick={() => navigate(`/fleet/fuel?action=log&vehicle=${vehicleId}&returnTo=/fleet-management`)}
-          >
-            <Plus className="w-3 h-3 mr-1" /> Log Fuel
+            <Plus className="w-3 h-3 mr-1" /> Log Fuel & View History
           </Button>
         </div>
       </CardContent>
