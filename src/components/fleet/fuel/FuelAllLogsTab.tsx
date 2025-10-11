@@ -392,7 +392,7 @@ export const FuelAllLogsTab: React.FC<{
                       <TableCell>{log.odometer_reading?.toLocaleString() || 'N/A'}</TableCell>
                       <TableCell>{log.gallons_purchased?.toFixed(1)}</TableCell>
                       <TableCell>${log.cost_per_gallon?.toFixed(3)}</TableCell>
-                      <TableCell className="font-semibold">${log.total_cost?.toFixed(2)}</TableCell>
+                      <TableCell className="font-semibold">${log.total_cost?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
                       <TableCell>{log.source_name || 'N/A'}</TableCell>
                       <TableCell>
                         <DropdownMenu>
