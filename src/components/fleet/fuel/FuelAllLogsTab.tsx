@@ -285,7 +285,6 @@ export const FuelAllLogsTab: React.FC<{
             <div>
               <Button
                 variant="outline"
-                size="sm"
                 onClick={() => setIsVehicleModalOpen(true)}
                 className="w-full justify-start h-9"
               >
@@ -299,7 +298,6 @@ export const FuelAllLogsTab: React.FC<{
             <div>
               <Button
                 variant="outline"
-                size="sm"
                 onClick={() => setIsDriverModalOpen(true)}
                 className="w-full justify-start h-9"
               >
