@@ -35,6 +35,27 @@ export const FleetNavigation: React.FC = () => {
     initialData: { total: 0, overdue: 0, critical: 0, warning: 0 }
   });
 
+  // Fetch past due maintenance count
+  const { data: pastDueMaintenanceCount } = useQuery({
+    queryKey: ["past-due-maintenance-count"],
+    queryFn: async () => {
+      const today = new Date().toISOString().split('T')[0];
+      const { count, error } = await supabase
+        .from('maintenance_records')
+        .select('id', { count: 'exact', head: true })
+        .lt('scheduled_date', today)
+        .in('status', ['scheduled', 'in_progress']);
+      
+      if (error) {
+        console.error("Error fetching past due maintenance count:", error);
+        return 0;
+      }
+      return count || 0;
+    },
+    refetchInterval: 30000, // Refresh every 30 seconds
+    initialData: 0
+  });
+
   const navigationItems = [
     {
       title: "Fleet",
@@ -62,7 +83,7 @@ export const FleetNavigation: React.FC = () => {
       title: "Maintenance",
       href: "/fleet/maintenance",
       icon: Wrench,
-      badge: "1"
+      badge: (pastDueMaintenanceCount && pastDueMaintenanceCount > 0) ? pastDueMaintenanceCount.toString() : undefined
     },
     {
       title: "Fuel",
