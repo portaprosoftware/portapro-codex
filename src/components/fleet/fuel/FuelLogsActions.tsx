@@ -17,7 +17,7 @@ export const FuelLogsActions: React.FC = () => {
           size="sm"
         >
           <Plus className="h-4 w-4 mr-2" />
-          Add Fuel Log
+          Add Retail Fuel Log
         </Button>
         <Button 
           onClick={() => setShowExportModal(true)}
