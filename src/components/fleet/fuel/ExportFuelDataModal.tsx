@@ -11,6 +11,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { MultiSelectVehicleFilter } from '../MultiSelectVehicleFilter';
 import { MultiSelectDriverFilter } from '../MultiSelectDriverFilter';
 import { supabase } from '@/integrations/supabase/client';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 interface Vehicle {
   id: string;
@@ -102,11 +104,6 @@ export const ExportFuelDataModal: React.FC<ExportFuelDataModalProps> = ({
         exportToPDF(data);
       }
 
-      toast({
-        title: 'Success',
-        description: `Data exported successfully as ${exportFormat.toUpperCase()}`
-      });
-
       onOpenChange(false);
     } catch (error) {
       toast({
@@ -158,11 +155,63 @@ export const ExportFuelDataModal: React.FC<ExportFuelDataModalProps> = ({
   };
 
   const exportToPDF = (data: any[]) => {
-    // For PDF export, you would typically use a library like jsPDF
-    // For now, we'll just show a placeholder
+    const doc = new jsPDF();
+    
+    // Add title
+    doc.setFontSize(18);
+    doc.text('Fuel Logs Export', 14, 20);
+    
+    // Add date range if specified
+    if (dateRange?.from || dateRange?.to) {
+      doc.setFontSize(10);
+      const dateText = `Date Range: ${dateRange?.from ? dateRange.from.toLocaleDateString() : 'Start'} - ${dateRange?.to ? dateRange.to.toLocaleDateString() : 'End'}`;
+      doc.text(dateText, 14, 28);
+    }
+    
+    // Prepare table headers based on selected columns
+    const headers = [];
+    if (includeColumns.date) headers.push('Date');
+    if (includeColumns.vehicle) headers.push('Vehicle');
+    if (includeColumns.driver) headers.push('Driver');
+    if (includeColumns.odometer) headers.push('Odometer');
+    if (includeColumns.gallons) headers.push('Gallons');
+    if (includeColumns.cost_per_gallon) headers.push('$/Gal');
+    if (includeColumns.total_cost) headers.push('Total Cost');
+    if (includeColumns.station) headers.push('Station');
+    if (includeColumns.notes) headers.push('Notes');
+    
+    // Prepare table rows
+    const rows = data.map(row => {
+      const rowData = [];
+      if (includeColumns.date) rowData.push(row.log_date);
+      if (includeColumns.vehicle) rowData.push(row.vehicle?.license_plate || 'N/A');
+      if (includeColumns.driver) rowData.push(row.driver ? `${row.driver.first_name} ${row.driver.last_name}` : 'N/A');
+      if (includeColumns.odometer) rowData.push(row.odometer_reading?.toString() || '0');
+      if (includeColumns.gallons) rowData.push(row.gallons_purchased?.toString() || '0');
+      if (includeColumns.cost_per_gallon) rowData.push(`$${parseFloat(row.cost_per_gallon || 0).toFixed(2)}`);
+      if (includeColumns.total_cost) rowData.push(`$${parseFloat(row.total_cost || 0).toFixed(2)}`);
+      if (includeColumns.station) rowData.push(row.fuel_station || 'N/A');
+      if (includeColumns.notes) rowData.push(row.notes || '');
+      return rowData;
+    });
+    
+    // Add table to PDF
+    (doc as any).autoTable({
+      head: [headers],
+      body: rows,
+      startY: dateRange?.from || dateRange?.to ? 32 : 25,
+      styles: { fontSize: 8 },
+      headStyles: { fillColor: [59, 130, 246] }, // Blue header
+      alternateRowStyles: { fillColor: [245, 245, 245] },
+    });
+    
+    // Save the PDF
+    const filename = `fuel_logs_export_${new Date().toISOString().split('T')[0]}.pdf`;
+    doc.save(filename);
+    
     toast({
-      title: 'PDF Export',
-      description: 'PDF export functionality would be implemented here',
+      title: 'Success',
+      description: 'PDF exported successfully'
     });
   };
 
