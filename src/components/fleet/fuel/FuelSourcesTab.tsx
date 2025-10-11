@@ -7,6 +7,7 @@ import { MobileFuelVendorsManager } from './sources/MobileFuelVendorsManager';
 import { RetailStationsManager } from './sources/RetailStationsManager';
 import { AddFuelTankDialog } from './sources/AddFuelTankDialog';
 import { AddSupplierDialog } from './sources/AddSupplierDialog';
+import { AddTankDeliveryDialog } from './sources/AddTankDeliveryDialog';
 import { useFuelManagementSettings } from '@/hooks/useFuelManagementSettings';
 
 export const FuelSourcesTab: React.FC = () => {
@@ -14,6 +15,7 @@ export const FuelSourcesTab: React.FC = () => {
   const [activeSourceTab, setActiveSourceTab] = useState('retail');
   const [showAddTank, setShowAddTank] = useState(false);
   const [showAddSupplier, setShowAddSupplier] = useState(false);
+  const [showAddDelivery, setShowAddDelivery] = useState(false);
 
   return (
     <div className="space-y-4">
@@ -61,6 +63,10 @@ export const FuelSourcesTab: React.FC = () => {
                 <Truck className="h-4 w-4 mr-2" />
                 Add Supplier
               </Button>
+              <Button variant="outline" onClick={() => setShowAddDelivery(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Delivery
+              </Button>
               <Button onClick={() => setShowAddTank(true)}>
                 <Plus className="h-4 w-4 mr-2" />
                 Add Tank
@@ -90,6 +96,7 @@ export const FuelSourcesTab: React.FC = () => {
 
       <AddFuelTankDialog open={showAddTank} onOpenChange={setShowAddTank} />
       <AddSupplierDialog open={showAddSupplier} onOpenChange={setShowAddSupplier} />
+      <AddTankDeliveryDialog open={showAddDelivery} onOpenChange={setShowAddDelivery} />
     </div>
   );
 };
