@@ -37,7 +37,7 @@ interface VehicleEfficiencyData {
 export const FuelReportsTab: React.FC = () => {
   const [reportPeriod, setReportPeriod] = useState('last_30_days');
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
-  const [selectedReport, setSelectedReport] = useState('fuel_usage');
+  const [selectedReport, setSelectedReport] = useState('vehicle_efficiency');
 
   // Fetch fuel settings for unit preference
   const { data: fuelSettings } = useQuery({
