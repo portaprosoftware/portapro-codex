@@ -25,6 +25,7 @@ interface StockVehicleSelectionModalProps {
   selectedDate: Date;
   selectedVehicle?: any;
   onVehicleSelect: (vehicle: any) => void;
+  excludeVehicleId?: string;
 }
 
 export const StockVehicleSelectionModal: React.FC<StockVehicleSelectionModalProps> = ({
@@ -33,6 +34,7 @@ export const StockVehicleSelectionModal: React.FC<StockVehicleSelectionModalProp
   selectedDate,
   selectedVehicle,
   onVehicleSelect,
+  excludeVehicleId,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -69,8 +71,13 @@ export const StockVehicleSelectionModal: React.FC<StockVehicleSelectionModalProp
     enabled: open, // Only fetch when modal is open
   });
 
-  // Filter vehicles based on search term only (no status filter)
+  // Filter vehicles based on search term and exclude specific vehicle if provided
   const filteredVehicles = vehicles.filter(vehicle => {
+    // Exclude the specified vehicle (e.g., source vehicle in transfers)
+    if (excludeVehicleId && vehicle.id === excludeVehicleId) {
+      return false;
+    }
+    
     const matchesSearch = 
       (vehicle.license_plate?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
       (vehicle.vehicle_type?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||

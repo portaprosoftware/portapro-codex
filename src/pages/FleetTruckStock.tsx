@@ -36,6 +36,7 @@ const FleetTruckStock: React.FC = () => {
   const [destVehicleId, setDestVehicleId] = useState<string>("");
   const [sourceLocationId, setSourceLocationId] = useState<string>("");
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState<boolean>(false);
+  const [isDestVehicleModalOpen, setIsDestVehicleModalOpen] = useState<boolean>(false);
   
   // Update vehicleId when URL parameter changes
   useEffect(() => {
@@ -389,16 +390,23 @@ const FleetTruckStock: React.FC = () => {
                     <CardContent className="space-y-3">
                       <div>
                         <Label className="text-sm text-muted-foreground">Destination Vehicle</Label>
-                        <Select value={destVehicleId} onValueChange={setDestVehicleId}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select destination vehicle" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {vehicles?.filter(v => v.id !== vehicleId).map(v => (
-                              <SelectItem key={v.id} value={v.id}>{v.license_plate || v.id}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <Button
+                          variant="outline"
+                          onClick={() => setIsDestVehicleModalOpen(true)}
+                          className="w-full justify-start h-10 px-3 font-normal bg-white"
+                        >
+                          <Truck className="h-4 w-4 mr-2 text-blue-600" />
+                          {destVehicleId ? (
+                            <>
+                              {vehicles.find(v => v.id === destVehicleId)?.license_plate || `Vehicle ${destVehicleId.slice(0, 8)}`}
+                              {vehicles.find(v => v.id === destVehicleId)?.vehicle_type && 
+                                ` (${vehicles.find(v => v.id === destVehicleId)?.vehicle_type})`
+                              }
+                            </>
+                          ) : (
+                            "Select destination vehicle"
+                          )}
+                        </Button>
                       </div>
                       <div className="flex gap-2">
                         <Button
@@ -417,13 +425,22 @@ const FleetTruckStock: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* Vehicle Selection Modal */}
+        {/* Vehicle Selection Modals */}
         <StockVehicleSelectionModal
           open={isVehicleModalOpen}
           onOpenChange={setIsVehicleModalOpen}
           selectedDate={new Date()}
           selectedVehicle={{ id: vehicleId }}
           onVehicleSelect={(vehicle) => setVehicleId(vehicle.id)}
+        />
+        
+        <StockVehicleSelectionModal
+          open={isDestVehicleModalOpen}
+          onOpenChange={setIsDestVehicleModalOpen}
+          selectedDate={new Date()}
+          selectedVehicle={{ id: destVehicleId }}
+          onVehicleSelect={(vehicle) => setDestVehicleId(vehicle.id)}
+          excludeVehicleId={vehicleId}
         />
       </div>
     </FleetLayout>
