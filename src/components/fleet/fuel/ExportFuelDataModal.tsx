@@ -12,7 +12,7 @@ import { MultiSelectVehicleFilter } from '../MultiSelectVehicleFilter';
 import { MultiSelectDriverFilter } from '../MultiSelectDriverFilter';
 import { supabase } from '@/integrations/supabase/client';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
 interface Vehicle {
   id: string;
@@ -195,8 +195,8 @@ export const ExportFuelDataModal: React.FC<ExportFuelDataModalProps> = ({
       return rowData;
     });
     
-    // Add table to PDF
-    (doc as any).autoTable({
+    // Add table to PDF using autoTable
+    autoTable(doc, {
       head: [headers],
       body: rows,
       startY: dateRange?.from || dateRange?.to ? 32 : 25,
