@@ -90,8 +90,9 @@ export const useUpdateFuelManagementSettings = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['fuel-management-settings'] });
       toast({
-        title: "Settings Updated",
-        description: "Fuel management settings have been saved successfully."
+        title: "✅ Settings Updated",
+        description: "Fuel management settings have been saved successfully.",
+        duration: 2000,
       });
     },
     onError: (error: Error) => {
