@@ -11935,6 +11935,10 @@ export type Database = {
         }
         Returns: string
       }
+      delete_user_everywhere: {
+        Args: { profile_identifier: string }
+        Returns: Json
+      }
       dismiss_overdue_invoice: {
         Args: { dismiss_reason?: string; invoice_uuid: string }
         Returns: boolean
@@ -12513,6 +12517,10 @@ export type Database = {
       preview_next_item_code: {
         Args: { category_prefix: string }
         Returns: string
+      }
+      purge_non_owner_users: {
+        Args: { owner_clerk_id: string }
+        Returns: Json
       }
       purge_users_except: {
         Args: { p_owner_clerk_id: string }
