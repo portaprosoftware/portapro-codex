@@ -42,10 +42,10 @@ const userFormSchema = z.object({
 
 type UserFormData = z.infer<typeof userFormSchema>;
 
-const roleColors = {
-  admin: "bg-gradient-primary",
-  dispatcher: "bg-gradient-secondary", 
-  driver: "bg-gradient-accent",
+const roleClasses = {
+  admin: "font-bold bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))]",
+  dispatcher: "font-bold bg-[hsl(var(--secondary))] text-[hsl(var(--secondary-foreground))]",
+  driver: "font-bold bg-[hsl(var(--accent))] text-[hsl(var(--accent-foreground))]",
 };
 
 const roleLabels = {
@@ -295,7 +295,18 @@ export function UserManagementSection() {
           duration: 10000,
         });
       } else {
-        toast.error(error.message || "Failed to delete user");
+        // Offer force delete for any other error as well
+        toast.error(error.message || "Failed to delete user", {
+          action: {
+            label: "Force Delete",
+            onClick: () => {
+              if (userToDelete) {
+                forceDeleteUser.mutate(userToDelete.id);
+              }
+            }
+          },
+          duration: 10000,
+        });
       }
     },
   });
@@ -571,7 +582,7 @@ export function UserManagementSection() {
                 <p className="font-semibold">{filteredCurrentUser.first_name} {filteredCurrentUser.last_name}</p>
                 <p className="text-sm text-muted-foreground">{filteredCurrentUser.email}</p>
               </div>
-              <Badge className={roleColors[filteredCurrentUser.current_role as keyof typeof roleColors] || 'bg-muted'}>
+              <Badge className={roleClasses[filteredCurrentUser.current_role as keyof typeof roleClasses] || 'bg-muted text-foreground'}>
                 {roleLabels[filteredCurrentUser.current_role as keyof typeof roleLabels] || filteredCurrentUser.current_role}
               </Badge>
             </div>
@@ -597,7 +608,7 @@ export function UserManagementSection() {
                   <TableCell>{user.first_name} {user.last_name}</TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>
-                    <Badge className={roleColors[user.current_role as keyof typeof roleColors] || 'bg-muted'}>
+                    <Badge className={roleClasses[user.current_role as keyof typeof roleClasses] || 'bg-muted text-foreground'}>
                       {roleLabels[user.current_role as keyof typeof roleLabels] || user.current_role || 'No Role'}
                     </Badge>
                   </TableCell>
@@ -626,6 +637,8 @@ export function UserManagementSection() {
         open={!!editingUser}
         onOpenChange={(open) => !open && setEditingUser(null)}
       />
+
+      <AddUserModal open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen} />
 
       {/* Delete confirmation dialog */}
       <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
