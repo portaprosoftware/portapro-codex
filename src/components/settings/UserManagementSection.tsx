@@ -75,6 +75,8 @@ export function UserManagementSection() {
   const [sortColumn, setSortColumn] = useState<SortColumn | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>('default');
   const [showInvitations, setShowInvitations] = useState(false);
+  const [showPurgeDialog, setShowPurgeDialog] = useState(false);
+  const [purgeConfirmText, setPurgeConfirmText] = useState('');
   const { isOwner } = useUserRole();
   const { user: clerkUser } = useUser();
   const queryClient = useQueryClient();
@@ -213,78 +215,59 @@ export function UserManagementSection() {
 
   const deleteUser = useMutation({
     mutationFn: async (userId: string) => {
-      console.log('🗑️ Starting deletion process for user:', userId);
+      console.log('🗑️ Starting deletion for user:', userId);
       
-      const userToDelete = users?.find(u => u.id === userId);
-      console.log('User to delete:', userToDelete);
-      
-      // Step 1: Check if user can be safely deleted
-      console.log('Step 1: Checking deletion blockers...');
-      const { data: canDeleteData, error: checkError } = await supabase
-        .rpc('can_delete_user', { user_uuid: userId });
-      
-      if (checkError) {
-        console.error('❌ Error checking deletion blockers:', checkError);
-        throw new Error(`Failed to check deletion status: ${checkError.message}`);
+      // Step 1: Check if user can be deleted
+      console.log('📋 Checking deletion blockers...');
+      const { data: canDeleteData, error: canDeleteError } = await supabase.rpc(
+        'can_delete_user',
+        { profile_identifier: userId }
+      );
+
+      if (canDeleteError) {
+        console.error('❌ Error checking deletion blockers:', canDeleteError);
+        // If pre-check fails, offer force delete instead
+        throw new Error(`BLOCKED: Unable to verify deletion status. Use Force Delete to proceed.`);
       }
-      
-      console.log('Deletion check result:', canDeleteData);
-      
-      // If there are blockers, throw error with details
-      if (canDeleteData && typeof canDeleteData === 'object' && 'can_delete' in canDeleteData) {
-        const result = canDeleteData as { can_delete: boolean; reason?: string };
-        if (!result.can_delete) {
-          const reason = result.reason || 'User has dependencies that must be removed first';
-          throw new Error(`BLOCKED: ${reason}`);
-        }
+
+      console.log('✅ Can delete check result:', canDeleteData);
+
+      const deleteCheck = canDeleteData as { can_delete: boolean; reason?: string } | null;
+      if (!deleteCheck?.can_delete) {
+        const reason = deleteCheck?.reason || 'User has active dependencies';
+        throw new Error(`BLOCKED: ${reason}`);
       }
-      
-      // Step 2: Try normal deletion (roles + profile)
-      console.log('Step 2: Attempting normal deletion...');
-      
-      // Delete from user_roles using profile id (uuid)
+
+      // Step 2: Delete from user_roles
+      console.log('🔑 Deleting user roles...');
       const { error: roleError } = await supabase
         .from('user_roles')
         .delete()
         .eq('user_id', userId);
-      
+
       if (roleError) {
-        console.error('❌ Failed to delete user roles:', roleError);
-        if (roleError.code === '23503') {
-          throw new Error('Cannot delete: User role has dependencies in other tables');
-        }
+        console.error('❌ Role deletion error:', roleError);
         throw new Error(`Failed to delete user role: ${roleError.message}`);
       }
-      
-      console.log('✅ User roles deleted successfully');
-      
-      // Delete from profiles
+      console.log('✅ User roles deleted');
+
+      // Step 3: Delete from profiles table
+      console.log('👤 Deleting user profile...');
       const { error: profileError } = await supabase
         .from('profiles')
         .delete()
         .eq('id', userId);
-      
+
       if (profileError) {
-        console.error('❌ Failed to delete profile:', profileError);
-        console.error('Profile error details:', {
-          code: profileError.code,
+        console.error('❌ Profile deletion error:', {
           message: profileError.message,
           details: profileError.details,
-          hint: profileError.hint
+          hint: profileError.hint,
+          code: profileError.code
         });
-        
-        if (profileError.code === '23503') {
-          throw new Error('Cannot delete: Profile has foreign key dependencies');
-        }
-        if (profileError.code === '42501') {
-          throw new Error('Permission denied: Missing RLS policy for profile deletion');
-        }
-        
-        throw new Error(`Failed to delete profile: ${profileError.message}`);
+        throw new Error(`Failed to delete user profile: ${profileError.message}`);
       }
-      
-      console.log('✅ Profile deleted successfully');
-      return { success: true };
+      console.log('✅ User profile deleted successfully');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users-with-roles"] });
@@ -295,7 +278,7 @@ export function UserManagementSection() {
       setUserToDelete(null);
     },
     onError: (error: Error) => {
-      console.error('Deletion error:', error);
+      console.log('Deletion error:', error);
       
       // Check if this is a blocker error that needs force delete
       if (error.message.startsWith('BLOCKED:')) {
@@ -321,15 +304,21 @@ export function UserManagementSection() {
     mutationFn: async (userId: string) => {
       console.log('💪 Force deleting user:', userId);
       
-      const { data, error } = await supabase
-        .rpc('force_delete_user', { p_profile_id: userId });
-      
+      const { data, error } = await supabase.rpc('force_delete_user', {
+        profile_identifier: userId
+      });
+
       if (error) {
         console.error('❌ Force delete error:', error);
-        throw new Error(`Force delete failed: ${error.message}`);
+        throw error;
       }
-      
-      console.log('✅ Force delete result:', data);
+
+      const result = data as { success: boolean; error?: string } | null;
+      if (!result?.success) {
+        throw new Error(result?.error || 'Force delete failed');
+      }
+
+      console.log('✅ Force delete completed:', data);
       return data;
     },
     onSuccess: (data) => {
@@ -342,12 +331,12 @@ export function UserManagementSection() {
         .map(([key, value]) => `${key}: ${value}`)
         .join(', ');
       
-      toast.success(`User force deleted successfully. ${summary}`);
+      toast.success(`User force deleted. ${summary}`);
       setDeleteConfirmOpen(false);
       setUserToDelete(null);
     },
     onError: (error: Error) => {
-      console.error('Force delete mutation error:', error);
+      console.error('Force delete error:', error);
       toast.error(error.message || "Force delete failed");
     },
   });
@@ -355,33 +344,38 @@ export function UserManagementSection() {
   const purgeAllUsers = useMutation({
     mutationFn: async () => {
       if (!clerkUser?.id) {
-        throw new Error('No authenticated user found');
+        throw new Error('Not authenticated');
       }
-      
+
       console.log('🧹 Purging all users except:', clerkUser.id);
       
-      const { data, error } = await supabase
-        .rpc('purge_users_except', { p_owner_clerk_id: clerkUser.id });
-      
+      const { data, error } = await supabase.rpc('purge_users_except', {
+        p_owner_clerk_id: clerkUser.id
+      });
+
       if (error) {
         console.error('❌ Purge error:', error);
-        throw new Error(`Purge failed: ${error.message}`);
+        throw error;
       }
-      
-      console.log('✅ Purge result:', data);
+
+      console.log('✅ Purge completed:', data);
       return data;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["users-with-roles"] });
       queryClient.invalidateQueries({ queryKey: ['drivers-with-hours'] });
       queryClient.invalidateQueries({ queryKey: ['drivers'] });
-      
+      setShowPurgeDialog(false);
+      setPurgeConfirmText('');
       const result = data as { processed: number; failures: number };
-      toast.success(`Purged ${result.processed} users successfully. ${result.failures} failures.`);
+      toast.success(
+        `Purge completed: ${result.processed} users deleted${
+          result.failures > 0 ? `, ${result.failures} failures` : ''
+        }`
+      );
     },
     onError: (error: Error) => {
-      console.error('Purge mutation error:', error);
-      toast.error(error.message || "Purge failed");
+      toast.error(error.message || "Failed to purge users");
     },
   });
 
@@ -482,266 +476,238 @@ export function UserManagementSection() {
   const filteredCurrentUser = filteredAndSortedUsers.find(user => user.clerk_user_id === clerkUser?.id);
   const filteredOtherUsers = filteredAndSortedUsers.filter(user => user.clerk_user_id !== clerkUser?.id);
 
-  // Combine for display
-  const allFilteredUsers = filteredAndSortedUsers;
-
-  if (!isOwner) {
+  if (isLoading) {
     return (
-      <Card>
-        <CardContent className="p-8 text-center">
-          <UserX className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-          <h3 className="text-lg font-semibold mb-2">Access Restricted</h3>
-          <p className="text-muted-foreground">
-            Only owners can access user management settings.
-          </p>
-        </CardContent>
-      </Card>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <Users className="w-12 h-12 mx-auto mb-4 text-muted-foreground animate-pulse" />
+          <p className="text-muted-foreground">Loading team members...</p>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center space-x-2">
-            <Users className="w-5 h-5" />
-            <span>User Management</span>
-            <Badge variant="secondary">{allFilteredUsers.length} users</Badge>
-          </CardTitle>
-          
-          <div className="flex gap-2">
-            {isOwner && (
-              <Button 
-                variant="destructive" 
-                onClick={() => {
-                  if (confirm('⚠️ WARNING: This will DELETE ALL USERS except you.\n\nThis will clear all driver assignments, jobs, and related data.\n\nThis action CANNOT be undone!\n\nType YES to confirm.')) {
-                    const confirmation = prompt('Type "DELETE ALL" to confirm this action:');
-                    if (confirmation === 'DELETE ALL') {
-                      purgeAllUsers.mutate();
-                    }
-                  }
-                }}
-                disabled={purgeAllUsers.isPending}
-              >
-                {purgeAllUsers.isPending ? 'Purging...' : '🧹 Purge All Test Users'}
-              </Button>
-            )}
-            <Button 
-              onClick={() => setIsCreateModalOpen(true)}
-              className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Invite User
-            </Button>
-          </div>
+    <div className="space-y-6">
+      {/* Header section */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-foreground">Team Management</h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            {users.length} total team {users.length === 1 ? 'member' : 'members'}
+          </p>
         </div>
-      </CardHeader>
-      <CardContent>
-        <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="bg-white rounded-full p-1 shadow-sm border w-fit overflow-x-auto">
-            <TabsTrigger value="overview" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Overview</TabsTrigger>
-            <TabsTrigger value="bulk-operations" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Bulk Operations</TabsTrigger>
-            <TabsTrigger value="compliance" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Compliance</TabsTrigger>
-            
-            
-          </TabsList>
-          
-          <TabsContent value="overview">
-            {/* Filters */}
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center space-x-4">
-                <div className="relative flex-1 max-w-sm">
-                  <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search users..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-                
-                <Select value={roleFilter} onValueChange={setRoleFilter}>
-                  <SelectTrigger className="w-40">
-                    <Filter className="w-4 h-4 mr-2" />
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Roles</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
-                    <SelectItem value="dispatcher">Dispatcher</SelectItem>
-                    <SelectItem value="driver">Driver</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+        <div className="flex gap-2">
+          {isOwner && (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => setShowPurgeDialog(true)}
+              disabled={purgeAllUsers.isPending}
+            >
+              {purgeAllUsers.isPending ? 'Purging...' : 'Purge All Test Users'}
+            </Button>
+          )}
+          <Button onClick={() => setIsCreateModalOpen(true)}>
+            <Plus className="w-4 h-4 mr-2" />
+            Add User
+          </Button>
+        </div>
+      </div>
 
-              {/* View Toggle */}
-              <div className="flex items-center space-x-1 border rounded-lg p-1">
-                <Button
-                  variant={viewMode === "list" ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => setViewMode("list")}
-                  className="h-8 px-3"
-                >
-                  <List className="w-4 h-4 mr-1" />
-                  List
-                </Button>
-                <Button
-                  variant={viewMode === "grid" ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => setViewMode("grid")}
-                  className="h-8 px-3"
-                >
-                  <Grid3X3 className="w-4 h-4 mr-1" />
-                  Grid
-                </Button>
-              </div>
-            </div>
-
-            {/* Users Display */}
-            {viewMode === "list" ? (
-              <div className="space-y-6">
-                {/* Current User Section */}
-                {filteredCurrentUser && (
-                  <div className="space-y-2">
-                    <h3 className="text-sm font-medium text-muted-foreground">Your Profile</h3>
-                    <UserListView
-                      users={[filteredCurrentUser]}
-                      onEdit={setEditingUser}
-                      onDelete={handleDeleteClick}
-                      onToggleStatus={(userId, isActive) => 
-                        toggleUserStatus.mutate({ userId, isActive })
-                      }
-                      isLoading={isLoading}
-                      canDeleteUser={canDeleteUser}
-                    />
-                  </div>
-                )}
-                
-                {/* Other Users Section */}
-                {filteredOtherUsers.length > 0 && (
-                  <div className="space-y-2">
-                    <h3 className="text-sm font-medium text-muted-foreground">Team Members</h3>
-                    <UserListView
-                      users={filteredOtherUsers}
-                      onEdit={setEditingUser}
-                      onDelete={handleDeleteClick}
-                      onToggleStatus={(userId, isActive) => 
-                        toggleUserStatus.mutate({ userId, isActive })
-                      }
-                      isLoading={isLoading}
-                      sortColumn={sortColumn}
-                      sortDirection={sortDirection}
-                      onSort={handleSort}
-                      canDeleteUser={canDeleteUser}
-                    />
-                  </div>
-                )}
-              </div>
-            ) : (
-              isLoading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {[...Array(6)].map((_, i) => (
-                    <div key={i} className="h-64 bg-muted animate-pulse rounded-lg" />
-                  ))}
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  {/* Current User Grid Section */}
-                  {filteredCurrentUser && (
-                    <div className="space-y-2">
-                      <h3 className="text-sm font-medium text-muted-foreground">Your Profile</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                         <EnhancedUserProfileCard
-                           key={filteredCurrentUser.id}
-                           user={filteredCurrentUser}
-                           onEdit={setEditingUser}
-                           onDelete={handleDeleteClick}
-                           onToggleStatus={(userId, isActive) => 
-                             toggleUserStatus.mutate({ userId, isActive })
-                           }
-                           canDeleteUser={canDeleteUser}
-                         />
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* Other Users Grid Section */}
-                  {filteredOtherUsers.length > 0 && (
-                    <div className="space-y-2">
-                      <h3 className="text-sm font-medium text-muted-foreground">Team Members</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {filteredOtherUsers.map((user) => (
-                           <EnhancedUserProfileCard
-                             key={user.id}
-                             user={user}
-                             onEdit={setEditingUser}
-                             onDelete={handleDeleteClick}
-                             onToggleStatus={(userId, isActive) => 
-                               toggleUserStatus.mutate({ userId, isActive })
-                             }
-                             canDeleteUser={canDeleteUser}
-                           />
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )
-            )}
-          </TabsContent>
-
-          <TabsContent value="bulk-operations">
-            <BulkTeamOperations />
-          </TabsContent>
-
-          <TabsContent value="compliance">
-            <ComplianceDashboard />
-          </TabsContent>
-
-
-
-        </Tabs>
-
-        {/* Add User Modal */}
-        <AddUserModal
-          open={isCreateModalOpen}
-          onOpenChange={setIsCreateModalOpen}
-        />
-
-        {/* Edit User Modal */}
-        {editingUser && (
-          <EditUserModal
-            user={editingUser}
-            open={!!editingUser}
-            onOpenChange={(open) => !open && setEditingUser(null)}
+      {/* Filters and view toggle */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+          <Input
+            placeholder="Search by name or email..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
           />
-        )}
+        </div>
+        <Select value={roleFilter} onValueChange={setRoleFilter}>
+          <SelectTrigger className="w-[180px]">
+            <Filter className="w-4 h-4 mr-2" />
+            <SelectValue placeholder="Filter by role" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Roles</SelectItem>
+            <SelectItem value="admin">Admin</SelectItem>
+            <SelectItem value="dispatcher">Dispatcher</SelectItem>
+            <SelectItem value="driver">Driver</SelectItem>
+          </SelectContent>
+        </Select>
+        <div className="flex gap-2">
+          <Button
+            variant={viewMode === 'list' ? 'default' : 'outline'}
+            size="icon"
+            onClick={() => setViewMode('list')}
+          >
+            <List className="w-4 h-4" />
+          </Button>
+          <Button
+            variant={viewMode === 'grid' ? 'default' : 'outline'}
+            size="icon"
+            onClick={() => setViewMode('grid')}
+          >
+            <Grid3X3 className="w-4 h-4" />
+          </Button>
+        </div>
+      </div>
 
-        {/* Delete Confirmation Dialog */}
-        <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete User</AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure you want to delete {userToDelete?.first_name} {userToDelete?.last_name}?
-                This action cannot be undone and will permanently remove this user from the system.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => setDeleteConfirmOpen(false)}>
-                Cancel
-              </AlertDialogCancel>
-              <AlertDialogAction
-                onClick={handleDeleteConfirm}
-                className="bg-red-600 hover:bg-red-700 text-white"
-              >
-                Delete
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+      {/* Current user card */}
+      {filteredCurrentUser && (
+        <Card className="border-primary/20 bg-primary/5">
+          <CardHeader>
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <User className="w-4 h-4" />
+              Your Profile
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between p-4 border rounded-lg">
+              <div>
+                <p className="font-semibold">{filteredCurrentUser.first_name} {filteredCurrentUser.last_name}</p>
+                <p className="text-sm text-muted-foreground">{filteredCurrentUser.email}</p>
+              </div>
+              <Badge className={roleColors[filteredCurrentUser.current_role as keyof typeof roleColors] || 'bg-muted'}>
+                {roleLabels[filteredCurrentUser.current_role as keyof typeof roleLabels] || filteredCurrentUser.current_role}
+              </Badge>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
-      </CardContent>
-    </Card>
+      {/* Other users */}
+      <Card>
+        <CardContent className="p-6">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Role</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredOtherUsers.map((user) => (
+                <TableRow key={user.id}>
+                  <TableCell>{user.first_name} {user.last_name}</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>
+                    <Badge className={roleColors[user.current_role as keyof typeof roleColors] || 'bg-muted'}>
+                      {roleLabels[user.current_role as keyof typeof roleLabels] || user.current_role || 'No Role'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="outline" onClick={() => setEditingUser(user)}>
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      {canDeleteUser(user) && (
+                        <Button size="sm" variant="destructive" onClick={() => handleDeleteClick(user)}>
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      {/* Edit user modal */}
+      <EditUserModal
+        user={editingUser}
+        open={!!editingUser}
+        onOpenChange={(open) => !open && setEditingUser(null)}
+      />
+
+      {/* Delete confirmation dialog */}
+      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete User</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete {userToDelete?.first_name} {userToDelete?.last_name}? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => {
+              setDeleteConfirmOpen(false);
+              setUserToDelete(null);
+            }}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Purge all users dialog */}
+      <AlertDialog open={showPurgeDialog} onOpenChange={setShowPurgeDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-red-600">⚠️ Danger Zone: Purge All Users</AlertDialogTitle>
+            <AlertDialogDescription className="space-y-4">
+              <p className="font-semibold">
+                This will permanently delete ALL users except you from the system.
+              </p>
+              <p>This includes:</p>
+              <ul className="list-disc list-inside space-y-1 text-sm">
+                <li>All user profiles and roles</li>
+                <li>All driver credentials and working hours</li>
+                <li>Unassigning jobs and vehicle assignments</li>
+              </ul>
+              <p className="text-red-600 font-semibold">
+                This action CANNOT be undone!
+              </p>
+              <div className="mt-4">
+                <label className="text-sm font-medium">
+                  Type <span className="font-mono bg-muted px-1">DELETE ALL</span> to confirm:
+                </label>
+                <Input
+                  type="text"
+                  value={purgeConfirmText}
+                  onChange={(e) => setPurgeConfirmText(e.target.value)}
+                  className="mt-2"
+                  placeholder="DELETE ALL"
+                />
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => {
+              setShowPurgeDialog(false);
+              setPurgeConfirmText('');
+            }}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (purgeConfirmText === 'DELETE ALL') {
+                  purgeAllUsers.mutate();
+                } else {
+                  toast.error('Please type "DELETE ALL" to confirm');
+                }
+              }}
+              disabled={purgeConfirmText !== 'DELETE ALL' || purgeAllUsers.isPending}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              {purgeAllUsers.isPending ? 'Purging...' : 'Purge All Users'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
   );
 }

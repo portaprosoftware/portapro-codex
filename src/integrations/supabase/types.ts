@@ -11857,7 +11857,7 @@ export type Database = {
         Returns: number
       }
       can_delete_user: {
-        Args: { user_uuid: string }
+        Args: { profile_identifier: string }
         Returns: Json
       }
       check_and_flag_overdue_jobs: {
@@ -11996,7 +11996,7 @@ export type Database = {
         Returns: Json
       }
       force_delete_user: {
-        Args: { p_profile_id: string }
+        Args: { profile_identifier: string }
         Returns: Json
       }
       generate_customer_portal_token: {
