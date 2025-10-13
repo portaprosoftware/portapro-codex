@@ -12,7 +12,7 @@ import { useJobWizard } from '@/contexts/JobWizardContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
-import { GPSPinDropper } from './GPSPinDropper';
+import { ReadOnlyPinsMap } from './ReadOnlyPinsMap';
 
 const US_STATES = [
   { value: 'AL', label: 'Alabama' },
@@ -166,7 +166,7 @@ export function LocationSelectionStep() {
           </TabsTrigger>
           <TabsTrigger value="pins" className="gap-2">
             <MapPin className="h-4 w-4" />
-            Drop Map Pins
+            Reference Pins
           </TabsTrigger>
         </TabsList>
 
@@ -382,14 +382,17 @@ export function LocationSelectionStep() {
           <div className="space-y-4">
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-sm text-blue-800">
-                <strong>Reference Only:</strong> GPS pins dropped here are for your reference and will not affect the job's service location or be used for routing.
+                <strong>Read-Only Reference:</strong> These are pre-saved GPS pins for this customer. They serve as reference points for drivers and do not affect job routing or service location. To manage pins, visit the Customer section.
               </p>
             </div>
             
-            <GPSPinDropper
-              pins={state.data.reference_gps_pins || []}
-              onPinsChange={(pins) => updateData({ reference_gps_pins: pins })}
-            />
+            {state.data.customer_id ? (
+              <ReadOnlyPinsMap customerId={state.data.customer_id} />
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                Select a customer first to view their reference pins.
+              </div>
+            )}
           </div>
         </TabsContent>
       </Tabs>
