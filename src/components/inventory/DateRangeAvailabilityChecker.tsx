@@ -187,7 +187,7 @@ export const DateRangeAvailabilityChecker: React.FC<DateRangeAvailabilityChecker
   };
 
   return (
-    <Card className={cn("w-full flex flex-col", className)}>
+    <Card className={cn("w-full h-full flex flex-col", className)}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <CalendarDays className="w-5 h-5 text-blue-600" />
