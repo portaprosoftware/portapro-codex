@@ -29,6 +29,7 @@ export function GPSPinDropper({ pins, onPinsChange, className }: GPSPinDropperPr
   const [searchAddress, setSearchAddress] = useState('');
   const [editingPinId, setEditingPinId] = useState<string | null>(null);
   const [editLabel, setEditLabel] = useState('');
+  const [mapLoaded, setMapLoaded] = useState(false);
 
   // Initialize map
   useEffect(() => {
@@ -47,6 +48,11 @@ export function GPSPinDropper({ pins, onPinsChange, className }: GPSPinDropperPr
     // Add navigation controls
     map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
+    // Wait for map to load before accessing canvas
+    map.current.on('load', () => {
+      setMapLoaded(true);
+    });
+
     // Add click handler for dropping pins
     map.current.on('click', (e) => {
       if (isDropMode) {
@@ -61,9 +67,6 @@ export function GPSPinDropper({ pins, onPinsChange, className }: GPSPinDropperPr
       }
     });
 
-    // Update cursor based on drop mode
-    map.current.getCanvas().style.cursor = isDropMode ? 'crosshair' : '';
-
     return () => {
       map.current?.remove();
     };
@@ -71,10 +74,13 @@ export function GPSPinDropper({ pins, onPinsChange, className }: GPSPinDropperPr
 
   // Update cursor when drop mode changes
   useEffect(() => {
-    if (map.current) {
-      map.current.getCanvas().style.cursor = isDropMode ? 'crosshair' : '';
+    if (map.current && mapLoaded) {
+      const canvas = map.current.getCanvas();
+      if (canvas) {
+        canvas.style.cursor = isDropMode ? 'crosshair' : '';
+      }
     }
-  }, [isDropMode]);
+  }, [isDropMode, mapLoaded]);
 
   // Update markers when pins change
   useEffect(() => {
