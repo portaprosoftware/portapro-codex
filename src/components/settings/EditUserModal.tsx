@@ -31,7 +31,7 @@ interface EditUserModalProps {
     phone?: string | null;
     profile_photo?: string | null;
     user_roles?: Array<{ role: string }>;
-  } | null;
+  };
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -42,17 +42,17 @@ export function EditUserModal({ user, open, onOpenChange }: EditUserModalProps) 
   const form = useForm<EditUserFormData>({
     resolver: zodResolver(editUserFormSchema),
     defaultValues: {
-      first_name: user?.first_name || "",
-      last_name: user?.last_name || "",
-      email: user?.email || "",
-      phone: user?.phone || "",
-      role: (user?.user_roles?.[0]?.role as any) || "driver",
+      first_name: user.first_name || "",
+      last_name: user.last_name || "",
+      email: user.email || "",
+      phone: user.phone || "",
+      role: (user.user_roles?.[0]?.role as any) || "driver",
     },
   });
 
   // Reset form when user prop changes or modal opens
   useEffect(() => {
-    if (open && user) {
+    if (open) {
       form.reset({
         first_name: user.first_name || "",
         last_name: user.last_name || "",
@@ -65,8 +65,6 @@ export function EditUserModal({ user, open, onOpenChange }: EditUserModalProps) 
 
   const updateUser = useMutation({
     mutationFn: async (data: EditUserFormData & { profile_photo?: string | null }) => {
-      if (!user) throw new Error('No user selected');
-      
       console.log('Updating user:', user.id, 'with data:', data);
       
       try {

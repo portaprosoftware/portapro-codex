@@ -11857,7 +11857,7 @@ export type Database = {
         Returns: number
       }
       can_delete_user: {
-        Args: { profile_identifier: string }
+        Args: { user_uuid: string }
         Returns: Json
       }
       check_and_flag_overdue_jobs: {
@@ -11935,10 +11935,6 @@ export type Database = {
         }
         Returns: string
       }
-      delete_user_everywhere: {
-        Args: { profile_identifier: string }
-        Returns: Json
-      }
       dismiss_overdue_invoice: {
         Args: { dismiss_reason?: string; invoice_uuid: string }
         Returns: boolean
@@ -11997,10 +11993,6 @@ export type Database = {
       }
       fix_orphaned_equipment_assignments: {
         Args: Record<PropertyKey, never>
-        Returns: Json
-      }
-      force_delete_user: {
-        Args: { profile_identifier: string }
         Returns: Json
       }
       generate_customer_portal_token: {
@@ -12517,14 +12509,6 @@ export type Database = {
       preview_next_item_code: {
         Args: { category_prefix: string }
         Returns: string
-      }
-      purge_non_owner_users: {
-        Args: { owner_clerk_id: string }
-        Returns: Json
-      }
-      purge_users_except: {
-        Args: { p_owner_clerk_id: string }
-        Returns: Json
       }
       quote_has_job: {
         Args: { quote_uuid: string }
