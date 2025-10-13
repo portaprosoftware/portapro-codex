@@ -106,13 +106,14 @@ export function DetailedDriverProfile() {
         <div className="flex items-center justify-between">
           <Button 
             variant="primary" 
+            size="sm"
             onClick={() => navigate('/team-management/users')}
           >
             <ArrowLeft className="w-4 h-4 mr-1" />
             Back to Team Management
           </Button>
           
-          <Button variant="outline" onClick={() => setIsEditDialogOpen(true)}>
+          <Button variant="outline" size="sm" onClick={() => setIsEditDialogOpen(true)}>
             <Edit className="w-4 h-4 mr-2" />
             Edit Profile
           </Button>
