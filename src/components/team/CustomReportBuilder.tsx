@@ -230,31 +230,33 @@ export function CustomReportBuilder() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold">Custom Report Builder</h2>
-          <p className="text-muted-foreground">
-            Create custom reports and analytics dashboards
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={exportReport} disabled={previewData.length === 0}>
-            <Download className="h-4 w-4 mr-2" />
-            Export
-          </Button>
-          <Button variant="outline" onClick={saveReport} disabled={!reportConfig.name}>
-            <Save className="h-4 w-4 mr-2" />
-            Save Report
-          </Button>
-        </div>
-      </div>
+    <Card className="rounded-2xl shadow-md">
+      <CardContent className="p-6">
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h2 className="text-2xl font-bold">Custom Report Builder</h2>
+              <p className="text-muted-foreground">
+                Create custom reports and analytics dashboards
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={exportReport} disabled={previewData.length === 0}>
+                <Download className="h-4 w-4 mr-2" />
+                Export
+              </Button>
+              <Button variant="outline" onClick={saveReport} disabled={!reportConfig.name}>
+                <Save className="h-4 w-4 mr-2" />
+                Save Report
+              </Button>
+            </div>
+          </div>
 
-      <Tabs defaultValue="create" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="create">Create Reports</TabsTrigger>
-          <TabsTrigger value="saved">Saved Reports</TabsTrigger>
-        </TabsList>
+          <Tabs defaultValue="create" className="space-y-4">
+            <TabsList>
+              <TabsTrigger value="create">Create Reports</TabsTrigger>
+              <TabsTrigger value="saved">Saved Reports</TabsTrigger>
+            </TabsList>
 
         <TabsContent value="create" className="space-y-4">
           <Card>
@@ -533,10 +535,12 @@ export function CustomReportBuilder() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="saved" className="space-y-4">
-          <SavedReportsManager onLoadReport={(report) => setReportConfig(report)} />
-        </TabsContent>
-      </Tabs>
-    </div>
+          <TabsContent value="saved" className="space-y-4">
+            <SavedReportsManager onLoadReport={(report) => setReportConfig(report)} />
+          </TabsContent>
+        </Tabs>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
