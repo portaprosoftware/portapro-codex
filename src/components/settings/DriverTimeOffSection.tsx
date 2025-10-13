@@ -127,12 +127,12 @@ export function DriverTimeOffSection({
               {/* Filters - only show on requests view */}
               {currentView === 'requests' && (
                 <div className="border-t pt-6">
-                  <div className="flex items-center space-x-2 mb-4">
-                    <Filter className="w-4 h-4" />
-                    <span className="text-sm font-medium">Filters</span>
-                  </div>
-                  
-                  <div className="flex flex-wrap gap-4">
+                  <div className="flex flex-wrap items-center gap-4">
+                    <div className="flex items-center space-x-2">
+                      <Filter className="w-4 h-4" />
+                      <span className="text-sm font-medium">Filters</span>
+                    </div>
+                    
                     <div className="flex items-center space-x-2">
                       <label className="text-sm font-medium">Status:</label>
                       <Select value={statusFilter} onValueChange={setStatusFilter}>
