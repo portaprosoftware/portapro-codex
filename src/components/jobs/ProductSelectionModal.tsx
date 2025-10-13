@@ -287,7 +287,7 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-full h-full max-w-none md:max-w-[76vw] md:min-w-[960px] md:h-auto md:max-h-[90vh] p-0 flex flex-col"
+      <DialogContent className="w-full h-full max-w-none md:max-w-[76vw] md:min-w-[960px] md:h-auto md:max-h-[95vh] p-0 flex flex-col"
         hideCloseButton={false}
       >
         <DialogHeader className="p-6 pb-4 border-b flex-shrink-0">
