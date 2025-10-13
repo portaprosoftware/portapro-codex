@@ -134,13 +134,13 @@ export function DriverComplianceStatus({ driverId }: DriverComplianceStatusProps
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'compliant':
-        return <Badge className="bg-green-100 text-green-800 border-green-200">Compliant</Badge>;
+        return <Badge className="bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold hover:from-green-700 hover:to-emerald-700">Compliant</Badge>;
       case 'expired':
-        return <Badge variant="destructive">Expired</Badge>;
+        return <Badge className="bg-gradient-to-r from-red-600 to-rose-600 text-white font-bold hover:from-red-700 hover:to-rose-700">Expired</Badge>;
       case 'missing':
-        return <Badge variant="secondary" className="bg-orange-100 text-orange-800 border-orange-200">Missing</Badge>;
+        return <Badge className="bg-gradient-to-r from-orange-600 to-amber-600 text-white font-bold hover:from-orange-700 hover:to-amber-700">Missing</Badge>;
       default:
-        return <Badge variant="secondary">Unknown</Badge>;
+        return <Badge className="bg-gradient-to-r from-gray-500 to-slate-500 text-white font-bold hover:from-gray-600 hover:to-slate-600">Unknown</Badge>;
     }
   };
 
