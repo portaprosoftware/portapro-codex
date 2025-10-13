@@ -341,7 +341,7 @@ export function TrainingCertificationsTab() {
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-3">
                           <Avatar className="h-12 w-12">
-                            <AvatarFallback className="bg-primary/10 text-primary">
+                            <AvatarFallback>
                               {employee.employeeName.split(' ').map((n: string) => n[0]).join('')}
                             </AvatarFallback>
                           </Avatar>
