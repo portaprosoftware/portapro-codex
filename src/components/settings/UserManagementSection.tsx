@@ -425,7 +425,7 @@ export function UserManagementSection() {
           <CardTitle className="flex items-center space-x-2">
             <Users className="w-5 h-5" />
             <span>User Management</span>
-            <Badge variant="secondary">{allFilteredUsers.length} users</Badge>
+            <Badge variant="secondary">{allFilteredUsers.length} Users</Badge>
           </CardTitle>
           
           <Button 
