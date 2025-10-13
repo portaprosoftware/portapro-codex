@@ -175,26 +175,20 @@ export function DriverComplianceStatus({ driverId }: DriverComplianceStatusProps
             <div className="space-y-3">
               <h4 className="font-medium text-gray-900">Status Breakdown</h4>
               <div className="space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="flex items-center space-x-2">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
-                    <span>Compliant</span>
-                  </span>
-                  <span className="font-medium">{complianceItems.filter(i => i.status === 'compliant').length}</span>
+                <div className="flex items-center gap-2 text-sm">
+                  <CheckCircle className="w-4 h-4 text-green-600" />
+                  <span>Compliant</span>
+                  <span className="font-medium ml-1">{complianceItems.filter(i => i.status === 'compliant').length}</span>
                 </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="flex items-center space-x-2">
-                    <XCircle className="w-4 h-4 text-red-600" />
-                    <span>Expired</span>
-                  </span>
-                  <span className="font-medium">{complianceItems.filter(i => i.status === 'expired').length}</span>
+                <div className="flex items-center gap-2 text-sm">
+                  <XCircle className="w-4 h-4 text-red-600" />
+                  <span>Expired</span>
+                  <span className="font-medium ml-1">{complianceItems.filter(i => i.status === 'expired').length}</span>
                 </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="flex items-center space-x-2">
-                    <AlertTriangle className="w-4 h-4 text-orange-600" />
-                    <span>Missing</span>
-                  </span>
-                  <span className="font-medium">{complianceItems.filter(i => i.status === 'missing').length}</span>
+                <div className="flex items-center gap-2 text-sm">
+                  <AlertTriangle className="w-4 h-4 text-orange-600" />
+                  <span>Missing</span>
+                  <span className="font-medium ml-1">{complianceItems.filter(i => i.status === 'missing').length}</span>
                 </div>
               </div>
             </div>
