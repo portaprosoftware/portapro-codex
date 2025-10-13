@@ -30,6 +30,12 @@ export interface JobWizardData {
   // Step 3: Location Selection
   special_instructions?: string;
   selected_coordinate_ids: string[];
+  reference_gps_pins?: Array<{
+    id: string;
+    label: string;
+    latitude: number;
+    longitude: number;
+  }>;
 
   // Step 4-5: Assignment & Items
   driver_id?: string | null;

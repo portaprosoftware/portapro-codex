@@ -7,10 +7,12 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useJobWizard } from '@/contexts/JobWizardContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
+import { GPSPinDropper } from './GPSPinDropper';
 
 const US_STATES = [
   { value: 'AL', label: 'Alabama' },
@@ -155,6 +157,20 @@ export function LocationSelectionStep() {
         </p>
       </div>
 
+      {/* Tab Interface */}
+      <Tabs defaultValue="addresses" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="addresses" className="gap-2">
+            <Building className="h-4 w-4" />
+            Physical Addresses
+          </TabsTrigger>
+          <TabsTrigger value="pins" className="gap-2">
+            <MapPin className="h-4 w-4" />
+            Drop Map Pins
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="addresses" className="space-y-6 mt-6">
       {/* Existing Locations */}
       {serviceLocations.length > 0 ? (
         <div className="space-y-4">
@@ -360,6 +376,23 @@ export function LocationSelectionStep() {
           </CardContent>
         </Card>
       )}
+        </TabsContent>
+
+        <TabsContent value="pins" className="mt-6">
+          <div className="space-y-4">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <p className="text-sm text-blue-800">
+                <strong>Reference Only:</strong> GPS pins dropped here are for your reference and will not affect the job's service location or be used for routing.
+              </p>
+            </div>
+            
+            <GPSPinDropper
+              pins={state.data.reference_gps_pins || []}
+              onPinsChange={(pins) => updateData({ reference_gps_pins: pins })}
+            />
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
