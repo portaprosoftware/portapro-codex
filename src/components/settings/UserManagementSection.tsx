@@ -43,9 +43,9 @@ const userFormSchema = z.object({
 type UserFormData = z.infer<typeof userFormSchema>;
 
 const roleColors = {
-  admin: "bg-gradient-primary",
+  admin: "bg-gradient-gold",
   dispatcher: "bg-gradient-secondary", 
-  driver: "bg-gradient-accent",
+  driver: "bg-gradient-green",
 };
 
 const roleLabels = {
