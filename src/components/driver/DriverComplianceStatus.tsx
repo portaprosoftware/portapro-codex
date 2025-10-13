@@ -159,10 +159,10 @@ export function DriverComplianceStatus({ driverId }: DriverComplianceStatusProps
             {/* Overall Score */}
             <div className="text-center">
               <div className="relative w-24 h-24 mx-auto mb-4">
-                <div className={`w-24 h-24 rounded-full flex items-center justify-center text-2xl font-bold ${
-                  complianceScore >= 80 ? 'bg-green-100 text-green-700' :
-                  complianceScore >= 60 ? 'bg-orange-100 text-orange-700' :
-                  'bg-red-100 text-red-700'
+                <div className={`w-24 h-24 rounded-full flex items-center justify-center text-2xl font-bold text-white ${
+                  complianceScore >= 80 ? 'bg-gradient-to-br from-green-600 to-emerald-600' :
+                  complianceScore >= 60 ? 'bg-gradient-to-br from-orange-600 to-amber-600' :
+                  'bg-gradient-to-br from-red-600 to-rose-600'
                 }`}>
                   {complianceScore}%
                 </div>
