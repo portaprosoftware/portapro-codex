@@ -454,7 +454,7 @@ export function UserManagementSection() {
                 <div className="relative flex-1 max-w-sm">
                   <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                   <Input
-                    placeholder="Search users..."
+                    placeholder="Search users"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10"
