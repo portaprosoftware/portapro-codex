@@ -99,72 +99,70 @@ export function DriverTimeOffSection({
   return <Card className="rounded-2xl shadow-md">
       <CardContent className="p-6">
         <div className="space-y-6 w-full">
-          <div className="space-y-6">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex-1">
-                  <h1 className="font-bold text-2xl">Driver Time Off Management</h1>
-                  <p className="text-muted-foreground">Review and manage driver time-off requests</p>
-                </div>
-                
-                {/* View Toggle */}
-                <div className="flex items-center space-x-2">
-                  <Button variant={currentView === 'form' ? 'default' : 'outline'} size="sm" onClick={() => setCurrentView('form')}>
-                    <PlusCircle className="w-4 h-4 mr-2" />
-                    New Request
-                  </Button>
-                  <Button variant={currentView === 'requests' ? 'default' : 'outline'} size="sm" onClick={() => setCurrentView('requests')}>
-                    <List className="w-4 h-4 mr-2" />
-                    All Requests
-                  </Button>
-                  <Button variant={currentView === 'calendar' ? 'default' : 'outline'} size="sm" onClick={() => setCurrentView('calendar')}>
-                    <Grid3X3 className="w-4 h-4 mr-2" />
-                    Calendar View
-                  </Button>
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex-1">
+                <h1 className="font-bold text-2xl">Driver Time Off Management</h1>
+                <p className="text-muted-foreground">Review and manage driver time-off requests</p>
+              </div>
+              
+              {/* View Toggle */}
+              <div className="flex items-center space-x-2">
+                <Button variant={currentView === 'form' ? 'default' : 'outline'} size="sm" onClick={() => setCurrentView('form')}>
+                  <PlusCircle className="w-4 h-4 mr-2" />
+                  New Request
+                </Button>
+                <Button variant={currentView === 'requests' ? 'default' : 'outline'} size="sm" onClick={() => setCurrentView('requests')}>
+                  <List className="w-4 h-4 mr-2" />
+                  All Requests
+                </Button>
+                <Button variant={currentView === 'calendar' ? 'default' : 'outline'} size="sm" onClick={() => setCurrentView('calendar')}>
+                  <Grid3X3 className="w-4 h-4 mr-2" />
+                  Calendar View
+                </Button>
+              </div>
+            </div>
+
+            {/* Filters - only show on requests view */}
+            {currentView === 'requests' && (
+              <div className="border-t pt-6">
+                <div className="flex flex-wrap items-center gap-4">
+                  <div className="flex items-center space-x-2">
+                    <Filter className="w-4 h-4" />
+                    <span className="text-sm font-medium">Filters</span>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <label className="text-sm font-medium">Status:</label>
+                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                      <SelectTrigger className="w-40">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Statuses</SelectItem>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="approved">Approved</SelectItem>
+                        <SelectItem value="denied">Denied</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <label className="text-sm font-medium">From Date:</label>
+                    <Input type="date" value={dateFilter} onChange={e => setDateFilter(e.target.value)} className="w-40" />
+                  </div>
+
+                  {(statusFilter !== 'all' || dateFilter) && (
+                    <Button variant="outline" size="sm" onClick={() => {
+                      setStatusFilter('all');
+                      setDateFilter('');
+                    }}>
+                      Clear Filters
+                    </Button>
+                  )}
                 </div>
               </div>
-
-              {/* Filters - only show on requests view */}
-              {currentView === 'requests' && (
-                <div className="border-t pt-6">
-                  <div className="flex flex-wrap items-center gap-4">
-                    <div className="flex items-center space-x-2">
-                      <Filter className="w-4 h-4" />
-                      <span className="text-sm font-medium">Filters</span>
-                    </div>
-                    
-                    <div className="flex items-center space-x-2">
-                      <label className="text-sm font-medium">Status:</label>
-                      <Select value={statusFilter} onValueChange={setStatusFilter}>
-                        <SelectTrigger className="w-40">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All Statuses</SelectItem>
-                          <SelectItem value="pending">Pending</SelectItem>
-                          <SelectItem value="approved">Approved</SelectItem>
-                          <SelectItem value="denied">Denied</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    
-                    <div className="flex items-center space-x-2">
-                      <label className="text-sm font-medium">From Date:</label>
-                      <Input type="date" value={dateFilter} onChange={e => setDateFilter(e.target.value)} className="w-40" />
-                    </div>
-
-                    {(statusFilter !== 'all' || dateFilter) && (
-                      <Button variant="outline" size="sm" onClick={() => {
-                        setStatusFilter('all');
-                        setDateFilter('');
-                      }}>
-                        Clear Filters
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
+            )}
           </div>
 
           {/* Conditional Content */}
