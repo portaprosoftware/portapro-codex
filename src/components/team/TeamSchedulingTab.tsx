@@ -130,81 +130,83 @@ export function TeamSchedulingTab() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header with View Controls */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-bold">Team Scheduling</h2>
-          <p className="text-muted-foreground">Manage shifts, assignments, and availability</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Select value={view} onValueChange={setView}>
-            <SelectTrigger className="w-32">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="week">Week View</SelectItem>
-              <SelectItem value="month">Month View</SelectItem>
-              <SelectItem value="template">Templates</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button onClick={() => setShiftTemplateModalOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            New Template
-          </Button>
-        </div>
-      </div>
+    <Card className="rounded-2xl shadow-md">
+      <CardContent className="p-6">
+        <div className="space-y-6">
+          {/* Header with View Controls */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <h2 className="text-2xl font-bold">Team Scheduling</h2>
+              <p className="text-muted-foreground">Manage shifts, assignments, and availability</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Select value={view} onValueChange={setView}>
+                <SelectTrigger className="w-32">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="week">Week View</SelectItem>
+                  <SelectItem value="month">Month View</SelectItem>
+                  <SelectItem value="template">Templates</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button onClick={() => setShiftTemplateModalOpen(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                New Template
+              </Button>
+            </div>
+          </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <CheckCircle className="h-5 w-5 text-green-600" />
-              <div>
-                <p className="text-sm font-medium">Confirmed Shifts</p>
-                <p className="text-2xl font-bold">{confirmedCount}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <Clock className="h-5 w-5 text-yellow-600" />
-              <div>
-                <p className="text-sm font-medium">Pending</p>
-                <p className="text-2xl font-bold">{pendingCount}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-red-600" />
-              <div>
-                <p className="text-sm font-medium">Conflicts</p>
-                <p className="text-2xl font-bold">{conflictCount}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-blue-600" />
-              <div>
-                <p className="text-sm font-medium">Available</p>
-                <p className="text-2xl font-bold">{availableCount}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+          {/* Quick Stats */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  <div>
+                    <p className="text-sm font-medium">Confirmed Shifts</p>
+                    <p className="text-2xl font-bold">{confirmedCount}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2">
+                  <Clock className="h-5 w-5 text-yellow-600" />
+                  <div>
+                    <p className="text-sm font-medium">Pending</p>
+                    <p className="text-2xl font-bold">{pendingCount}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5 text-red-600" />
+                  <div>
+                    <p className="text-sm font-medium">Conflicts</p>
+                    <p className="text-2xl font-bold">{conflictCount}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2">
+                  <Users className="h-5 w-5 text-blue-600" />
+                  <div>
+                    <p className="text-sm font-medium">Available</p>
+                    <p className="text-2xl font-bold">{availableCount}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
       {view === 'template' ? (
         // Shift Templates View
@@ -475,6 +477,8 @@ export function TeamSchedulingTab() {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
