@@ -96,134 +96,138 @@ export function DriverTimeOffSection({
         </div>
       </div>;
   }
-  return <div className="space-y-6 w-full">
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex-1">
-              <h1 className="font-bold text-2xl">Driver Time Off Management</h1>
-              <p className="text-muted-foreground">Review and manage driver time-off requests</p>
-            </div>
-            
-            {/* View Toggle */}
-            <div className="flex items-center space-x-2">
-              <Button variant={currentView === 'form' ? 'default' : 'outline'} size="sm" onClick={() => setCurrentView('form')}>
-                <PlusCircle className="w-4 h-4 mr-2" />
-                New Request
-              </Button>
-              <Button variant={currentView === 'requests' ? 'default' : 'outline'} size="sm" onClick={() => setCurrentView('requests')}>
-                <List className="w-4 h-4 mr-2" />
-                All Requests
-              </Button>
-              <Button variant={currentView === 'calendar' ? 'default' : 'outline'} size="sm" onClick={() => setCurrentView('calendar')}>
-                <Grid3X3 className="w-4 h-4 mr-2" />
-                Calendar View
-              </Button>
+  return <Card className="rounded-2xl shadow-md">
+      <CardContent className="p-6">
+        <div className="space-y-6 w-full">
+          <div className="space-y-6">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex-1">
+                  <h1 className="font-bold text-2xl">Driver Time Off Management</h1>
+                  <p className="text-muted-foreground">Review and manage driver time-off requests</p>
+                </div>
+                
+                {/* View Toggle */}
+                <div className="flex items-center space-x-2">
+                  <Button variant={currentView === 'form' ? 'default' : 'outline'} size="sm" onClick={() => setCurrentView('form')}>
+                    <PlusCircle className="w-4 h-4 mr-2" />
+                    New Request
+                  </Button>
+                  <Button variant={currentView === 'requests' ? 'default' : 'outline'} size="sm" onClick={() => setCurrentView('requests')}>
+                    <List className="w-4 h-4 mr-2" />
+                    All Requests
+                  </Button>
+                  <Button variant={currentView === 'calendar' ? 'default' : 'outline'} size="sm" onClick={() => setCurrentView('calendar')}>
+                    <Grid3X3 className="w-4 h-4 mr-2" />
+                    Calendar View
+                  </Button>
+                </div>
+              </div>
+
+              {/* Filters - only show on requests view */}
+              {currentView === 'requests' && (
+                <div className="border-t pt-6">
+                  <div className="flex items-center space-x-2 mb-4">
+                    <Filter className="w-4 h-4" />
+                    <span className="text-sm font-medium">Filters</span>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-4">
+                    <div className="flex items-center space-x-2">
+                      <label className="text-sm font-medium">Status:</label>
+                      <Select value={statusFilter} onValueChange={setStatusFilter}>
+                        <SelectTrigger className="w-40">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Statuses</SelectItem>
+                          <SelectItem value="pending">Pending</SelectItem>
+                          <SelectItem value="approved">Approved</SelectItem>
+                          <SelectItem value="denied">Denied</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <label className="text-sm font-medium">From Date:</label>
+                      <Input type="date" value={dateFilter} onChange={e => setDateFilter(e.target.value)} className="w-40" />
+                    </div>
+
+                    {(statusFilter !== 'all' || dateFilter) && (
+                      <Button variant="outline" size="sm" onClick={() => {
+                        setStatusFilter('all');
+                        setDateFilter('');
+                      }}>
+                        Clear Filters
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Filters - only show on requests view */}
+          {/* Conditional Content */}
+          {currentView === 'form' && <TimeOffRequestForm />}
+          
+          {currentView === 'calendar' && <TimeOffCalendarView />}
+          
           {currentView === 'requests' && (
-            <div className="border-t pt-6">
-              <div className="flex items-center space-x-2 mb-4">
-                <Filter className="w-4 h-4" />
-                <span className="text-sm font-medium">Filters</span>
-              </div>
-              
-              <div className="flex flex-wrap gap-4">
-                <div className="flex items-center space-x-2">
-                  <label className="text-sm font-medium">Status:</label>
-                  <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger className="w-40">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Statuses</SelectItem>
-                      <SelectItem value="pending">Pending</SelectItem>
-                      <SelectItem value="approved">Approved</SelectItem>
-                      <SelectItem value="denied">Denied</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <label className="text-sm font-medium">From Date:</label>
-                  <Input type="date" value={dateFilter} onChange={e => setDateFilter(e.target.value)} className="w-40" />
-                </div>
-
-                {(statusFilter !== 'all' || dateFilter) && (
-                  <Button variant="outline" size="sm" onClick={() => {
-                    setStatusFilter('all');
-                    setDateFilter('');
-                  }}>
-                    Clear Filters
-                  </Button>
-                )}
-              </div>
-            </div>
+            <>
+              {/* Time Off Requests */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Time Off Requests ({timeOffRequests?.length || 0})</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {timeOffRequests?.length === 0 ? <div className="text-center py-12">
+                      <CalendarOff className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+                      <h3 className="text-lg font-medium mb-2">No Time Off Requests</h3>
+                      <p className="text-muted-foreground mb-4">
+                        {statusFilter !== 'all' || dateFilter ? 'No requests match your current filters' : 'No time-off requests have been submitted yet'}
+                      </p>
+                      {(statusFilter !== 'all' || dateFilter) && <Button variant="outline" onClick={() => {
+                  setStatusFilter('all');
+                  setDateFilter('');
+                }}>
+                          Clear Filters
+                        </Button>}
+                    </div> : <div className="space-y-3">
+                      {timeOffRequests?.map(request => <div key={request.id} className="p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                          <div className="flex items-center justify-between">
+                            <div className="space-y-1">
+                              <div className="flex items-center space-x-3">
+                                <span className="font-medium">
+                                  {request.driver_name}
+                                </span>
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${request.status === 'approved' ? 'bg-green-100 text-green-800' : request.status === 'denied' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                                  {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
+                                </span>
+                              </div>
+                              <div className="text-sm text-muted-foreground">
+                                {new Date(request.request_date).toLocaleDateString()} | {request.start_time} - {request.end_time}
+                              </div>
+                              <div className="text-sm text-muted-foreground">
+                                Time Slot: {request.time_slot} | Reason: {request.reason || 'Not specified'}
+                              </div>
+                            </div>
+                            
+                            {request.status === 'pending' && <div className="space-x-2">
+                                <Button variant="outline" size="sm" onClick={() => approveRequest.mutate(request.id)}>
+                                  Approve
+                                </Button>
+                                <Button variant="outline" size="sm" onClick={() => denyRequest.mutate(request.id)}>
+                                  Deny
+                                </Button>
+                              </div>}
+                          </div>
+                        </div>)}
+                    </div>}
+                </CardContent>
+              </Card>
+            </>
           )}
-        </CardContent>
-      </Card>
-
-      {/* Conditional Content */}
-      {currentView === 'form' && <TimeOffRequestForm />}
-      
-      {currentView === 'calendar' && <TimeOffCalendarView />}
-      
-      {currentView === 'requests' && (
-        <>
-          {/* Time Off Requests */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Time Off Requests ({timeOffRequests?.length || 0})</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {timeOffRequests?.length === 0 ? <div className="text-center py-12">
-                  <CalendarOff className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-                  <h3 className="text-lg font-medium mb-2">No Time Off Requests</h3>
-                  <p className="text-muted-foreground mb-4">
-                    {statusFilter !== 'all' || dateFilter ? 'No requests match your current filters' : 'No time-off requests have been submitted yet'}
-                  </p>
-                  {(statusFilter !== 'all' || dateFilter) && <Button variant="outline" onClick={() => {
-              setStatusFilter('all');
-              setDateFilter('');
-            }}>
-                      Clear Filters
-                    </Button>}
-                </div> : <div className="space-y-3">
-                  {timeOffRequests?.map(request => <div key={request.id} className="p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-1">
-                          <div className="flex items-center space-x-3">
-                            <span className="font-medium">
-                              {request.driver_name}
-                            </span>
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${request.status === 'approved' ? 'bg-green-100 text-green-800' : request.status === 'denied' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                              {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
-                            </span>
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            {new Date(request.request_date).toLocaleDateString()} | {request.start_time} - {request.end_time}
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            Time Slot: {request.time_slot} | Reason: {request.reason || 'Not specified'}
-                          </div>
-                        </div>
-                        
-                        {request.status === 'pending' && <div className="space-x-2">
-                            <Button variant="outline" size="sm" onClick={() => approveRequest.mutate(request.id)}>
-                              Approve
-                            </Button>
-                            <Button variant="outline" size="sm" onClick={() => denyRequest.mutate(request.id)}>
-                              Deny
-                            </Button>
-                          </div>}
-                      </div>
-                    </div>)}
-                </div>}
-            </CardContent>
-          </Card>
-        </>
-      )}
-    </div>;
+        </div>
+      </CardContent>
+    </Card>;
 }
