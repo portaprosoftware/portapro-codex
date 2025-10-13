@@ -123,9 +123,9 @@ export function DetailedDriverProfile() {
         <Card className="border-l-4 border-l-primary">
           <CardContent className="p-6">
             <div className="flex items-start space-x-6">
-              <Avatar className="h-20 w-20">
+              <Avatar className="h-16 w-16">
                 <AvatarImage src={driver.profile_photo || undefined} />
-                <AvatarFallback className="text-xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+                <AvatarFallback className="text-lg font-bold bg-gradient-to-r from-blue-500 to-purple-600 text-white">
                   {initials}
                 </AvatarFallback>
               </Avatar>
@@ -133,7 +133,7 @@ export function DetailedDriverProfile() {
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h1 className="text-2xl font-bold text-gray-900">
+                    <h1 className="text-xl font-bold text-gray-900">
                       {driver.first_name} {driver.last_name}
                     </h1>
                     <p className="text-gray-600">{driver.email}</p>
