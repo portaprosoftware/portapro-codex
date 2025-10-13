@@ -141,38 +141,40 @@ export function TrainingCertificationsTab() {
   }, [individuals]);
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-bold">Training & Certifications</h2>
-          <p className="text-muted-foreground">Manage team training requirements and certification tracking</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => setUploadModalOpen(true)}>
-            <Upload className="h-4 w-4 mr-2" />
-            Upload Certificate
-          </Button>
-          <Button onClick={() => setAddCertModalOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            Add Certification
-          </Button>
-        </div>
-      </div>
-
-      {/* Stats Overview */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <CheckCircle className="h-5 w-5 text-green-600" />
-              <div>
-                <p className="text-sm font-medium">Active Certs</p>
-                <p className="text-2xl font-bold">{empCerts.length}</p>
-              </div>
+    <Card className="rounded-2xl shadow-md">
+      <CardContent className="p-6">
+        <div className="space-y-6">
+          {/* Header */}
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+            <div>
+              <h2 className="text-2xl font-bold">Training & Certifications</h2>
+              <p className="text-muted-foreground">Manage team training requirements and certification tracking</p>
             </div>
-          </CardContent>
-        </Card>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" onClick={() => setUploadModalOpen(true)}>
+                <Upload className="h-4 w-4 mr-2" />
+                Upload Certificate
+              </Button>
+              <Button onClick={() => setAddCertModalOpen(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Certification
+              </Button>
+            </div>
+          </div>
+
+          {/* Stats Overview */}
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  <div>
+                    <p className="text-sm font-medium">Active Certs</p>
+                    <p className="text-2xl font-bold">{empCerts.length}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
         <Card>
           <CardContent className="p-4">
@@ -630,6 +632,8 @@ export function TrainingCertificationsTab() {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
