@@ -19,7 +19,7 @@ import { Separator } from '@/components/ui/separator';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Loader2, Edit, Calendar, AlertTriangle, HelpCircle, Truck, FileText } from 'lucide-react';
+import { Loader2, Edit, Calendar, AlertTriangle, HelpCircle, CreditCard, FileText } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 
@@ -234,9 +234,7 @@ export function DriverCredentialsSection({ driverId }: DriverCredentialsSectionP
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="h-8 w-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                  <Truck className="h-4 w-4 text-primary" />
-                </div>
+                <CreditCard className="h-5 w-5" />
                 <div>
                   <CardTitle>Driver Credentials</CardTitle>
                   <CardDescription>Commercial and regular driver license information for portable sanitation operations</CardDescription>
