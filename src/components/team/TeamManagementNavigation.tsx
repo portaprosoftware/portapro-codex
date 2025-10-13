@@ -48,8 +48,17 @@ export const TeamManagementNavigation: React.FC = () => {
     }
   ];
 
-  // Extract current tab from URL
-  const currentTab = (location.pathname.split('/').pop() as TeamTab) || 'users';
+  // Extract current tab from URL - handle nested routes like /users/:id
+  const getActiveTab = (): TeamTab => {
+    if (location.pathname.includes('/team-management/users')) return 'users';
+    if (location.pathname.includes('/team-management/scheduling')) return 'scheduling';
+    if (location.pathname.includes('/team-management/time-off')) return 'time-off';
+    if (location.pathname.includes('/team-management/training')) return 'training';
+    if (location.pathname.includes('/team-management/custom-reports')) return 'custom-reports';
+    return 'users';
+  };
+  
+  const currentTab = getActiveTab();
 
   const handleNavigation = (value: TeamTab) => {
     navigate(`/team-management/${value}`);
