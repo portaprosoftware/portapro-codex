@@ -258,16 +258,18 @@ Bob,Johnson,bob.johnson@example.com,555-0125,admin,Main Office,2024-03-10`;
                           value={member.id}
                           disabled={isSelected}
                         >
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center justify-between gap-2 w-full">
                             <span>{member.firstName} {member.lastName}</span>
-                            <Badge 
-                              className="text-xs text-white border-0"
-                              style={getRoleColor(member.role)}
-                            >
-                              <RoleIcon className="h-3 w-3 mr-1" />
-                              {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
-                            </Badge>
-                            {isSelected && <CheckCircle className="h-3 w-3 text-green-600" />}
+                            <div className="flex items-center gap-1">
+                              <Badge 
+                                className="text-xs text-white border-0 font-bold"
+                                style={getRoleColor(member.role)}
+                              >
+                                <RoleIcon className="h-3 w-3 mr-1" />
+                                {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
+                              </Badge>
+                              {isSelected && <CheckCircle className="h-3 w-3 text-green-600" />}
+                            </div>
                           </div>
                         </SelectItem>
                       );
