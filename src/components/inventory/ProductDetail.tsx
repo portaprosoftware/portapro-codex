@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, Home, ChevronRight, Settings, Plus, QrCode, Search, Filter, Edit, Trash, Palette, Building, Wrench, ShieldCheck, ChevronDown } from "lucide-react";
+import { ArrowLeft, Home, ChevronRight, Settings, Plus, QrCode, Search, Filter, Edit, Trash, Palette, Building, Wrench, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -17,7 +17,6 @@ import { ProductAttributesTab } from "./ProductAttributesTab";
 import { ProductLocationStock } from "./ProductLocationStock";
 import { IndividualItemCreation } from "./IndividualItemCreation";
 import { MaintenanceTrackerTab } from "./MaintenanceTrackerTab";
-import { ProductComplianceTab } from "./ProductComplianceTab";
 
 interface ProductDetailProps {
   productId: string;
@@ -146,12 +145,6 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
       badge: individualUnitsCount
     },
     {
-      value: "compliance",
-      label: "Compliance",
-      icon: ShieldCheck,
-      badge: null
-    },
-    {
       value: "maintenance",
       label: "Maintenance",
       icon: Wrench,
@@ -276,10 +269,6 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
 
         <TabsContent value="maintenance" className="mt-6">
           <MaintenanceTrackerTab productId={productId} />
-        </TabsContent>
-
-        <TabsContent value="compliance" className="mt-6">
-          <ProductComplianceTab productId={productId} productName={product.name} />
         </TabsContent>
 
         <TabsContent value="attributes" className="mt-6">
