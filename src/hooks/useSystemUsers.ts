@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { useUser as useClerkUser } from '@clerk/clerk-react';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface SystemUser {
   id: string;
@@ -8,25 +8,28 @@ export interface SystemUser {
 }
 
 export function useSystemUsers() {
-  const { user: currentUser } = useClerkUser();
-
   return useQuery<SystemUser[]>({
     queryKey: ['system-users'],
     queryFn: async () => {
-      // For now, return the current user as an option
-      // In a full implementation, you would fetch all organization members from Clerk
-      const users: SystemUser[] = [];
+      // Fetch all users with their roles from profiles and user_roles
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, first_name, last_name, email, user_roles!inner(role)')
+        .order('first_name', { ascending: true });
       
-      if (currentUser) {
-        users.push({
-          id: currentUser.id,
-          name: `${currentUser.firstName || ''} ${currentUser.lastName || ''}`.trim() || currentUser.emailAddresses[0]?.emailAddress || 'Current User',
-          email: currentUser.emailAddresses[0]?.emailAddress,
-        });
+      if (error) {
+        console.error('Error fetching system users:', error);
+        return [];
       }
+      
+      // Transform the data into SystemUser format
+      const users: SystemUser[] = (data || []).map((user: any) => ({
+        id: user.id,
+        name: `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email || 'Unknown User',
+        email: user.email,
+      }));
       
       return users;
     },
-    enabled: !!currentUser,
   });
 }
