@@ -495,8 +495,6 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
         )}
       </div>
 
-      {/* Maintenance History Section */}
-      <MaintenanceHistorySection productId={productId} />
 
       {/* Modal */}
       {selectedItem && (

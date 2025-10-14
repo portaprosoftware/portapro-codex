@@ -19,6 +19,7 @@ import {
   Settings
 } from "lucide-react";
 import { MaintenanceTrackerTab } from "./MaintenanceTrackerTab";
+import { MaintenanceHistorySection } from "./MaintenanceHistorySection";
 
 export const InventoryMaintenanceOverview: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -137,21 +138,7 @@ export const InventoryMaintenanceOverview: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="history" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CheckCircle className="h-5 w-5" />
-                Maintenance History
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8 text-muted-foreground">
-                <CheckCircle className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>Maintenance history feature coming soon</p>
-                <p className="text-sm">View completed maintenance records and trends</p>
-              </div>
-            </CardContent>
-          </Card>
+          <MaintenanceHistorySection productId="all" />
         </TabsContent>
       </Tabs>
     </div>
