@@ -1,5 +1,11 @@
 project_id = "unpnuonbndubcuzxfnmg"
 
+[functions.stripe-payment-intent]
+verify_jwt = false
+
+[functions.stripe-webhook]
+verify_jwt = false
+
 [functions.fleet-docs]
 verify_jwt = false
 
