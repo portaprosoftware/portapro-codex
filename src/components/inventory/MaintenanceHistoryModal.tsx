@@ -107,17 +107,17 @@ export const MaintenanceHistoryModal: React.FC<MaintenanceHistoryModalProps> = (
   const getUpdateTypeColor = (type: string) => {
     switch (type) {
       case "progress":
-        return "bg-blue-100 text-blue-800";
+        return "bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold";
       case "repair":
-        return "bg-red-100 text-red-800";
+        return "bg-gradient-to-r from-red-600 to-red-500 text-white font-bold";
       case "parts":
-        return "bg-green-100 text-green-800";
+        return "bg-gradient-to-r from-green-600 to-green-500 text-white font-bold";
       case "inspection":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-gradient-to-r from-yellow-600 to-yellow-500 text-white font-bold";
       case "completion":
-        return "bg-green-100 text-green-800";
+        return "bg-gradient-to-r from-green-600 to-green-500 text-white font-bold";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gradient-to-r from-gray-600 to-gray-500 text-white font-bold";
     }
   };
 
@@ -127,8 +127,8 @@ export const MaintenanceHistoryModal: React.FC<MaintenanceHistoryModalProps> = (
   };
 
   const getSessionStatusColor = (status: string | null) => {
-    if (status === 'completed') return "bg-green-100 text-green-800";
-    return "bg-orange-100 text-orange-800";
+    if (status === 'completed') return "bg-gradient-to-r from-green-600 to-green-500 text-white font-bold";
+    return "bg-gradient-to-r from-orange-600 to-orange-500 text-white font-bold";
   };
 
   // Group updates by session
@@ -201,11 +201,7 @@ export const MaintenanceHistoryModal: React.FC<MaintenanceHistoryModalProps> = (
                       
                       {/* Session Header */}
                       <div className="flex gap-4">
-                        <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                          {getSessionIcon(session.status)}
-                        </div>
-                        
-                        <div className="flex-1 bg-white border-2 border-blue-200 rounded-lg p-4">
+                        <div className="flex-1 bg-white border border-gray-200 rounded-lg p-4">
                           <div className="flex items-start justify-between mb-4">
                             <div className="flex items-center gap-3">
                               <h3 className="text-lg font-semibold">Session #{session.session_number}</h3>
