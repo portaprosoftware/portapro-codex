@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,8 +12,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Clock, DollarSign, MapPin, Settings, Wrench, Trash2, Plus, X, CheckCircle2, Package, User, Calendar as CalendarIcon } from "lucide-react";
+import { Clock, DollarSign, MapPin, Settings, Wrench, Trash2, Plus, X, CheckCircle2, Package, User, Calendar as CalendarIcon, Edit, Camera, Upload } from "lucide-react";
 import { SimpleMaintenancePhotoUpload } from "./SimpleMaintenancePhotoUpload";
+import { MaintenanceUpdatePhotos } from "./MaintenanceUpdatePhotos";
 import { ImageViewerModal } from "./ImageViewerModal";
 import { useSystemUsers } from "@/hooks/useSystemUsers";
 
@@ -198,6 +200,20 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
   const [imageViewerOpen, setImageViewerOpen] = useState(false);
   const [selectedPhotos, setSelectedPhotos] = useState<any[]>([]);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
+  
+  // Update Work Order Modal State
+  const [updateWorkOrderModalOpen, setUpdateWorkOrderModalOpen] = useState(false);
+  const [selectedWorkOrder, setSelectedWorkOrder] = useState<any>(null);
+  const [updateWorkOrderForm, setUpdateWorkOrderForm] = useState({
+    technician_name: "",
+    labor_hours: "",
+    labor_cost: "",
+    labor_cost_type: "total",
+    parts: [{ parts_used: "", parts_cost: "" }],
+    status: "work_order_created",
+    update_notes: "",
+  });
+  const [workOrderUpdatePhotos, setWorkOrderUpdatePhotos] = useState<{ file: File; preview: string; caption: string }[]>([]);
 
   const saveWorkOrderMutation = useMutation({
     mutationFn: async (data: typeof workOrderForm) => {
@@ -285,6 +301,125 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
     e.preventDefault();
     updateItemMutation.mutate(formData);
   };
+
+  // Handle opening the update work order modal
+  const handleOpenUpdateWorkOrder = (workOrder: any) => {
+    setSelectedWorkOrder(workOrder);
+    
+    // Parse the description to extract technician and parts info
+    const descriptionLines = workOrder.description?.split('\n') || [];
+    const technicianLine = descriptionLines.find((line: string) => line.startsWith('Technician(s):'));
+    const partsLine = descriptionLines.find((line: string) => line.startsWith('Parts Used:'));
+    
+    const technicianName = technicianLine ? technicianLine.replace('Technician(s):', '').trim() : '';
+    const partsUsed = partsLine ? partsLine.replace('Parts Used:', '').trim() : '';
+    
+    // Calculate labor cost from total cost
+    const totalCost = workOrder.cost_amount || 0;
+    const laborCost = totalCost; // Simplified for now
+    
+    setUpdateWorkOrderForm({
+      technician_name: technicianName,
+      labor_hours: workOrder.labor_hours?.toString() || "",
+      labor_cost: laborCost.toString() || "",
+      labor_cost_type: "total",
+      parts: workOrder.parts_used && workOrder.parts_used.length > 0 
+        ? workOrder.parts_used.map((part: string) => ({ parts_used: part, parts_cost: "" }))
+        : [{ parts_used: "", parts_cost: "" }],
+      status: workOrder.status || "work_order_created",
+      update_notes: "",
+    });
+    setWorkOrderUpdatePhotos([]);
+    setUpdateWorkOrderModalOpen(true);
+  };
+
+  // Update Work Order Mutation
+  const updateWorkOrderMutation = useMutation({
+    mutationFn: async (data: typeof updateWorkOrderForm) => {
+      if (!selectedWorkOrder) throw new Error("No work order selected");
+      
+      // Upload photos first if any
+      let attachments: any[] = [...(selectedWorkOrder.attachments || [])];
+      if (workOrderUpdatePhotos.length > 0) {
+        const photoPromises = workOrderUpdatePhotos.map(async (photo, index) => {
+          const fileExt = photo.file.name.split('.').pop();
+          const fileName = `wo-update-${selectedWorkOrder.id}-${Date.now()}-${index}.${fileExt}`;
+          const filePath = `unit-photos/${fileName}`;
+
+          const { error: uploadError } = await supabase.storage
+            .from('unit-photos')
+            .upload(filePath, photo.file);
+
+          if (uploadError) throw uploadError;
+
+          const { data: { publicUrl } } = supabase.storage
+            .from('unit-photos')
+            .getPublicUrl(filePath);
+
+          return {
+            type: 'photo',
+            url: publicUrl,
+            caption: photo.caption || null,
+            filename: photo.file.name
+          };
+        });
+
+        const newPhotos = await Promise.all(photoPromises);
+        attachments = [...attachments, ...newPhotos];
+      }
+
+      // Calculate total cost
+      const laborCost = parseFloat(data.labor_cost) || 0;
+      const laborHours = parseFloat(data.labor_hours) || 0;
+      const actualLaborCost = data.labor_cost_type === "per_hour" 
+        ? laborCost * laborHours 
+        : laborCost;
+      
+      const totalPartsCost = data.parts.reduce((sum, part) => {
+        return sum + (parseFloat(part.parts_cost) || 0);
+      }, 0);
+      
+      const totalCost = actualLaborCost + totalPartsCost;
+
+      // Combine parts descriptions
+      const partsUsed = data.parts
+        .filter(p => p.parts_used.trim())
+        .map(p => p.parts_used.trim());
+
+      // Update description
+      const description = `Technician(s): ${data.technician_name}\nLabor Hours: ${laborHours}\nParts Used: ${partsUsed.join(', ') || 'None'}${data.update_notes ? '\n\nUpdate Notes:\n' + data.update_notes : ''}`;
+
+      // Update the work order
+      const { error } = await supabase
+        .from("maintenance_updates")
+        .update({
+          technician_name: data.technician_name,
+          labor_hours: laborHours,
+          cost_amount: totalCost,
+          parts_used: partsUsed,
+          status: data.status,
+          description: description,
+          attachments: attachments.length > 0 ? attachments : null,
+        })
+        .eq("id", selectedWorkOrder.id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Work order updated successfully", {
+        duration: 2000,
+        icon: <CheckCircle2 className="w-5 h-5 text-green-600" />,
+      });
+      queryClient.invalidateQueries({ queryKey: ["maintenance-updates", itemId] });
+      setUpdateWorkOrderModalOpen(false);
+      setSelectedWorkOrder(null);
+      setWorkOrderUpdatePhotos([]);
+    },
+    onError: (err: any) => {
+      console.error("Work order update error:", err);
+      toast.error(err.message || "Failed to update work order");
+    },
+  });
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
@@ -784,6 +919,14 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                             Created {new Date(workOrder.created_at).toLocaleDateString()} at {new Date(workOrder.created_at).toLocaleTimeString()}
                           </p>
                         </div>
+                        <Button
+                          size="sm"
+                          onClick={() => handleOpenUpdateWorkOrder(workOrder)}
+                          className="bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800"
+                        >
+                          <Edit className="w-4 h-4 mr-1" />
+                          Update
+                        </Button>
                       </div>
 
                       {/* Work Order Details */}
@@ -850,6 +993,206 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
         </div>
       </SheetContent>
       
+      {/* Update Work Order Modal */}
+      <Dialog open={updateWorkOrderModalOpen} onOpenChange={setUpdateWorkOrderModalOpen}>
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Update Work Order</DialogTitle>
+            <DialogDescription>
+              Edit work order details, add photos, and update notes
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            {/* Status */}
+            <div>
+              <Label>Status</Label>
+              <Select
+                value={updateWorkOrderForm.status}
+                onValueChange={(v) => setUpdateWorkOrderForm((p) => ({ ...p, status: v }))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="work_order_created">Work Order Created</SelectItem>
+                  <SelectItem value="in_progress">In Progress</SelectItem>
+                  <SelectItem value="waiting_on_parts">Waiting on Parts</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Technician */}
+            <div>
+              <Label>Technician Name</Label>
+              <Input
+                value={updateWorkOrderForm.technician_name}
+                onChange={(e) => setUpdateWorkOrderForm((p) => ({ ...p, technician_name: e.target.value }))}
+                placeholder="Who performed this work?"
+                list="update-technician-suggestions"
+              />
+              <datalist id="update-technician-suggestions">
+                {systemUsers.map((user) => (
+                  <option key={user.id} value={user.name} />
+                ))}
+              </datalist>
+            </div>
+
+            {/* Labor */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label>Labor Hours</Label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  value={updateWorkOrderForm.labor_hours}
+                  onChange={(e) => setUpdateWorkOrderForm((p) => ({ ...p, labor_hours: e.target.value }))}
+                  placeholder="0.0"
+                />
+              </div>
+              <div>
+                <Label>Labor Cost ($)</Label>
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={updateWorkOrderForm.labor_cost}
+                      onChange={(e) => setUpdateWorkOrderForm((p) => ({ ...p, labor_cost: e.target.value }))}
+                      placeholder="0.00"
+                      className="pl-7"
+                    />
+                  </div>
+                  <Select
+                    value={updateWorkOrderForm.labor_cost_type}
+                    onValueChange={(v) => setUpdateWorkOrderForm((p) => ({ ...p, labor_cost_type: v }))}
+                  >
+                    <SelectTrigger className="w-[130px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="total">Total</SelectItem>
+                      <SelectItem value="per_hour">Per Hour</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
+            {/* Parts Section */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <Label>Parts</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setUpdateWorkOrderForm((p) => ({ 
+                    ...p, 
+                    parts: [...p.parts, { parts_used: "", parts_cost: "" }] 
+                  }))}
+                  className="h-8 gap-1"
+                >
+                  <Plus className="w-3 h-3" />
+                  Add Part
+                </Button>
+              </div>
+              
+              {updateWorkOrderForm.parts.map((part, index) => (
+                <div key={index} className="flex gap-2 items-start">
+                  <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <Input
+                        value={part.parts_used}
+                        onChange={(e) => {
+                          const newParts = [...updateWorkOrderForm.parts];
+                          newParts[index].parts_used = e.target.value;
+                          setUpdateWorkOrderForm((p) => ({ ...p, parts: newParts }));
+                        }}
+                        placeholder="Part description"
+                      />
+                    </div>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={part.parts_cost}
+                        onChange={(e) => {
+                          const newParts = [...updateWorkOrderForm.parts];
+                          newParts[index].parts_cost = e.target.value;
+                          setUpdateWorkOrderForm((p) => ({ ...p, parts: newParts }));
+                        }}
+                        placeholder="0.00"
+                        className="pl-7"
+                      />
+                    </div>
+                  </div>
+                  {updateWorkOrderForm.parts.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        const newParts = updateWorkOrderForm.parts.filter((_, i) => i !== index);
+                        setUpdateWorkOrderForm((p) => ({ ...p, parts: newParts }));
+                      }}
+                      className="h-10 w-10 p-0 text-gray-400 hover:text-red-600"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Update Notes */}
+            <div>
+              <Label>Update Notes</Label>
+              <Textarea
+                rows={3}
+                value={updateWorkOrderForm.update_notes}
+                onChange={(e) => setUpdateWorkOrderForm((p) => ({ ...p, update_notes: e.target.value }))}
+                placeholder="Add notes about this update..."
+              />
+            </div>
+
+            {/* Photo Upload */}
+            <div className="pt-3 border-t">
+              <Label className="mb-2 block">Update Photos</Label>
+              <MaintenanceUpdatePhotos 
+                photos={workOrderUpdatePhotos}
+                onPhotosChange={setWorkOrderUpdatePhotos}
+                maxPhotos={5}
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => setUpdateWorkOrderModalOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button 
+              type="button"
+              className="bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800"
+              onClick={() => updateWorkOrderMutation.mutate(updateWorkOrderForm)}
+              disabled={updateWorkOrderMutation.isPending}
+            >
+              {updateWorkOrderMutation.isPending ? "Saving..." : "Save Changes"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Image Viewer Modal */}
       <ImageViewerModal
         isOpen={imageViewerOpen}
