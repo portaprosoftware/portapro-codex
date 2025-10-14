@@ -59,11 +59,18 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
   // Load radar frames - using your exact working pattern
   const loadRadarFrames = useCallback(async () => {
     if (!map || !enabled) {
-      console.log('SimpleWeatherRadar: Skipping load - map:', !!map, 'enabled:', enabled);
+      console.log('❌ SimpleWeatherRadar: EARLY RETURN TRIGGERED', {
+        hasMap: !!map,
+        mapIsValid: map ? 'yes' : 'NO',
+        enabled: enabled,
+        mapLoaded: map?.loaded(),
+        mapStyleLoaded: map?.isStyleLoaded()
+      });
       return;
     }
 
     try {
+      console.log('✅ MapTiler: Passed early checks, proceeding with load');
       console.log('MapTiler: Loading radar frames...');
       console.log('MapTiler: Map loaded state:', map.loaded());
       console.log('MapTiler: Map style loaded state:', map.isStyleLoaded());
