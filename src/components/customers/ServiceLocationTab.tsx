@@ -291,6 +291,22 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
             locationMarkersRef.current[location.id] = marker;
           }
         });
+        
+        // Auto-zoom to fit all pins if any exist
+        if (pins.length > 0 && map.current) {
+          const bounds = new mapboxgl.LngLatBounds();
+          
+          pins.forEach(pin => {
+            bounds.extend([pin.longitude, pin.latitude]);
+          });
+          
+          // Fit map to bounds with padding
+          map.current.fitBounds(bounds, {
+            padding: { top: 80, bottom: 80, left: 80, right: 80 },
+            maxZoom: 15,
+            duration: 1000
+          });
+        }
       } catch (error) {
         console.error('Error adding markers:', error);
       }
