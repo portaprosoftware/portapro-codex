@@ -300,12 +300,17 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
             bounds.extend([pin.longitude, pin.latitude]);
           });
           
-          // Fit map to bounds with padding
-          map.current.fitBounds(bounds, {
-            padding: { top: 80, bottom: 80, left: 80, right: 80 },
-            maxZoom: 18,
-            duration: 1000
-          });
+          // Use a slight delay to ensure the map is fully ready, especially after style changes
+          setTimeout(() => {
+            if (!map.current) return;
+            
+            // Fit map to bounds with padding
+            map.current.fitBounds(bounds, {
+              padding: { top: 50, bottom: 50, left: 50, right: 50 },
+              maxZoom: 17,
+              duration: 1500
+            });
+          }, 300);
         }
       } catch (error) {
         console.error('Error adding markers:', error);
