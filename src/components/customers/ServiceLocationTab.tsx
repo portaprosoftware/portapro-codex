@@ -819,6 +819,28 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
                 </div>
               </div>
             )}
+            
+            {/* Map Legend */}
+            <div className="mt-3 flex items-center justify-center gap-6 text-sm bg-muted/30 rounded-lg p-3">
+              <div className="flex items-center gap-2">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="9" fill="#3b82f6" stroke="#fff" strokeWidth="2"/>
+                  <circle cx="12" cy="12" r="3" fill="#fff"/>
+                  <line x1="12" y1="2" x2="12" y2="8" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
+                  <line x1="12" y1="16" x2="12" y2="22" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
+                  <line x1="2" y1="12" x2="8" y2="12" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
+                  <line x1="16" y1="12" x2="22" y2="12" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+                <span className="font-medium">Physical Service Address</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#ef4444" stroke="#fff" strokeWidth="2"/>
+                  <circle cx="12" cy="9" r="2.5" fill="#fff"/>
+                </svg>
+                <span className="font-medium">Dropped Pin</span>
+              </div>
+            </div>
           </div>
         </div>
 
