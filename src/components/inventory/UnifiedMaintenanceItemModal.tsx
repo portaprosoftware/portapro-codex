@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -433,16 +433,16 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-3xl max-h-[85vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Manage Unit • {item?.item_code}</DialogTitle>
-          <DialogDescription>
+    <Drawer open={isOpen} onOpenChange={onClose}>
+      <DrawerContent className="h-[90vh] flex flex-col">
+        <DrawerHeader className="border-b">
+          <DrawerTitle>Manage Unit • {item?.item_code}</DrawerTitle>
+          <DrawerDescription>
             Manage maintenance item details, location, and updates for this unit
-          </DialogDescription>
-        </DialogHeader>
+          </DrawerDescription>
+        </DrawerHeader>
 
-        <div className="space-y-6">
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {/* Summary strip */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div className="flex items-center gap-2 bg-white border rounded-lg p-3">
@@ -1144,7 +1144,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
             </TabsContent>
           </Tabs>
         </div>
-      </DialogContent>
+      </DrawerContent>
       
       {/* Image Viewer Modal */}
       <ImageViewerModal
@@ -1154,6 +1154,6 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
         initialIndex={selectedPhotoIndex}
       />
 
-    </Dialog>
+    </Drawer>
   );
 };
