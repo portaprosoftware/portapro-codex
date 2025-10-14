@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Wrench, Search, Settings, ChevronDown, ChevronRight, AlertTriangle, Clock, Calendar, MapPin, Filter } from "lucide-react";
+import { Wrench, Search, Settings, ChevronDown, ChevronRight, AlertTriangle, Clock, Calendar, MapPin, Filter, Undo2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -328,7 +328,7 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
           
           {selectedItems.length > 0 && (
             <div className="flex items-center gap-2">
-              <Badge className="bg-blue-100 text-blue-700">
+              <Badge className="bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold">
                 {selectedItems.length} selected
               </Badge>
               <Button 
@@ -336,7 +336,7 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
                 disabled={returnToServiceMutation.isPending}
                 className="bg-green-600 hover:bg-green-700 text-white"
               >
-                <Settings className="w-4 h-4 mr-2" />
+                <Undo2 className="w-4 h-4 mr-2" />
                 Return to Service
               </Button>
             </div>
