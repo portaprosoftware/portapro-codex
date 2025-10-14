@@ -11,7 +11,7 @@ import { X, Satellite, Map as MapIcon, Radar, Users, MapPin as MapPinIcon } from
 import { format } from 'date-fns';
 import { formatDateForQuery, isSameDayInTimeZone, getCurrentDateInCompanyTimezone } from '@/lib/dateUtils';
 import { getCompanyTimezone } from '@/lib/timezoneUtils';
-import { SimpleWeatherRadar, TimestampDisplay } from '@/components/jobs/SimpleWeatherRadar';
+import { SimpleWeatherRadar } from '@/components/jobs/SimpleWeatherRadar';
 import { MapLegend, getDriverColor, getJobTypeColor, getStatusBorderColor } from '@/components/maps/MapLegend';
 import { useDrivers } from '@/hooks/useDriverWorkingHours';
 import { isJobOverdue, isJobCompletedLate, shouldShowPriorityBadge } from '@/lib/jobStatusUtils';
@@ -452,14 +452,13 @@ export function SimpleJobsMapView({
     <div className="relative w-full h-full">
       <div ref={mapContainer} className="w-full h-full" />
       
-      {/* Weather Radar - Moved to root level, outside dialogs */}
+      {/* Weather Radar - Temporarily disabled */}
       {map.current && radarEnabled && selectedDateIsToday && (
         <SimpleWeatherRadar 
           map={map.current} 
           enabled={radarEnabled}
-          onFramesUpdate={(frames, currentFrame) => {
-            setRadarFrames(frames);
-            setCurrentRadarFrame(currentFrame);
+          onFramesUpdate={(count) => {
+            // Radar temporarily disabled
           }}
         />
       )}
@@ -489,14 +488,7 @@ export function SimpleJobsMapView({
             </Button>
           </div>
           
-          {/* Weather Radar Timestamp Display - Positioned to the right */}
-          {radarEnabled && selectedDateIsToday && radarFrames.length > 0 && (
-            <TimestampDisplay 
-              frames={radarFrames} 
-              currentFrame={currentRadarFrame} 
-              isActive={radarEnabled} 
-            />
-          )}
+          {/* Weather Radar Timestamp Display - Temporarily disabled */}
         </div>
 
 
