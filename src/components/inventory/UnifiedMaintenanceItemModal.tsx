@@ -615,31 +615,31 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                     onChange={(e) => setFormData((p) => ({ ...p, maintenance_notes: e.target.value }))}
                     placeholder="Additional notes..."
                   />
+                  
+                  {/* Save controls right after notes */}
+                  <div className="flex justify-end gap-2 mt-4 pt-4 border-t">
+                    <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+                    <Button 
+                      type="button" 
+                      className="bg-blue-600 hover:bg-blue-700 text-white" 
+                      disabled={updateItemMutation.isPending}
+                      onClick={() => {
+                        setShouldCloseOnSave(false);
+                        const formElement = document.querySelector('form') as HTMLFormElement;
+                        if (formElement) {
+                          formElement.requestSubmit();
+                        }
+                        setTimeout(() => setShouldCloseOnSave(true), 100);
+                      }}
+                    >
+                      {updateItemMutation.isPending ? "Saving..." : "Save Details"}
+                    </Button>
+                    <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white" disabled={updateItemMutation.isPending}>
+                      {updateItemMutation.isPending ? "Saving..." : "Save & Close"}
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-                
-            {/* Save controls at the bottom */}
-            <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
-              <Button 
-                type="button" 
-                className="bg-blue-600 hover:bg-blue-700 text-white" 
-                disabled={updateItemMutation.isPending}
-                onClick={() => {
-                  setShouldCloseOnSave(false);
-                  const formElement = document.querySelector('form') as HTMLFormElement;
-                  if (formElement) {
-                    formElement.requestSubmit();
-                  }
-                  setTimeout(() => setShouldCloseOnSave(true), 100);
-                }}
-              >
-                {updateItemMutation.isPending ? "Saving..." : "Save & Continue"}
-              </Button>
-              <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white" disabled={updateItemMutation.isPending}>
-                {updateItemMutation.isPending ? "Saving..." : "Save & Close"}
-              </Button>
             </div>
               </form>
             </TabsContent>
