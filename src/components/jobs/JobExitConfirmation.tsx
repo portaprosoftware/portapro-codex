@@ -64,7 +64,7 @@ export const JobExitConfirmation: React.FC<JobExitConfirmationProps> = ({
             disabled={!draftName.trim() || isSaving}
             className="bg-primary hover:bg-primary/90"
           >
-            {isSaving ? 'Saving...' : 'Save Draft - Job'}
+            {isSaving ? 'Saving...' : 'Save Job | Draft'}
           </AlertDialogAction>
           <AlertDialogCancel onClick={onClose} disabled={isSaving}>
             Continue Editing
