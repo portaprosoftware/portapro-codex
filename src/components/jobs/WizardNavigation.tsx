@@ -1,5 +1,5 @@
 import React from 'react';
-import { Check, Users, Calendar, MapPin, Truck, Boxes, ClipboardCheck, ListChecks } from 'lucide-react';
+import { Check, Users, Calendar, MapPin, Truck, Boxes, ClipboardCheck, ListChecks, DollarSign } from 'lucide-react';
 import { useJobWizard } from '@/contexts/JobWizardContext';
 import { cn } from '@/lib/utils';
 
@@ -36,6 +36,12 @@ const steps = [
   },
   {
     number: 6,
+    title: 'Deposit',
+    description: 'Payment options',
+    icon: DollarSign,
+  },
+  {
+    number: 7,
     title: 'Review',
     description: 'Confirm & create',
     icon: ListChecks,
@@ -66,26 +72,33 @@ export function WizardNavigation() {
       return 'upcoming';
     }
     
-    // For step 6 (Review), map to the actual step numbers
+    // For step 6 (Deposit), map to actual step numbers
     if (stepNumber === 6) {
-      // Service jobs: Review at step 7, but user is currently at step 6 (services)
-      if (state.data.job_type === 'service') {
-        if (state.currentStep === 7) return 'current'; // Review step
-        if (state.currentStep > 7) return 'completed';
-        if (state.currentStep === 6) return 'upcoming'; // Services step is active
+      // Pickup jobs: Deposit at step 6
+      if (state.data.job_type === 'pickup') {
+        if (state.currentStep === 6) return 'current';
+        if (state.currentStep > 6) return 'completed';
         return 'upcoming';
       }
       
-      // Survey and pickup jobs: Review at step 7 (skipped services step 6)
-      if (state.data.job_type === 'pickup' || state.data.job_type === 'on-site-survey') {
+      // Other jobs: Deposit at step 7
+      if (state.currentStep === 7) return 'current';
+      if (state.currentStep > 7) return 'completed';
+      return 'upcoming';
+    }
+    
+    // For step 7 (Review), map to the actual step numbers
+    if (stepNumber === 7) {
+      // Pickup jobs: Review at step 7
+      if (state.data.job_type === 'pickup') {
         if (state.currentStep === 7) return 'current';
         if (state.currentStep > 7) return 'completed';
         return 'upcoming';
       }
       
-      // Delivery jobs: Review at step 7
-      if (state.currentStep === 7) return 'current';
-      if (state.currentStep > 7) return 'completed';
+      // Other jobs: Review at step 8
+      if (state.currentStep === 8) return 'current';
+      if (state.currentStep > 8) return 'completed';
       return 'upcoming';
     }
     
@@ -103,10 +116,22 @@ export function WizardNavigation() {
       return stepNumber <= state.currentStep;
     }
     
-    // For step 6 (Review), handle different job types
+    // For step 6 (Deposit), handle different job types
     if (stepNumber === 6) {
-      // Review is accessible when we reach step 7 internally
+      // Deposit is accessible when we reach step 6 for pickup or step 7 for others
+      if (state.data.job_type === 'pickup') {
+        return state.currentStep >= 6;
+      }
       return state.currentStep >= 7;
+    }
+    
+    // For step 7 (Review), handle different job types
+    if (stepNumber === 7) {
+      // Review is accessible when we reach step 7 for pickup or step 8 for others
+      if (state.data.job_type === 'pickup') {
+        return state.currentStep >= 7;
+      }
+      return state.currentStep >= 8;
     }
     
     // Standard clickability logic
@@ -127,8 +152,17 @@ export function WizardNavigation() {
                 <button
                   onClick={() => {
                     if (isClickable) {
-                      // Handle clicking on step 6 (Review) - go to step 7
-                      const targetStep = step.number === 6 ? 7 : step.number;
+                      // Handle clicking on steps - map display numbers to actual wizard steps
+                      let targetStep = step.number;
+                      
+                      if (step.number === 6) {
+                        // Deposit step
+                        targetStep = state.data.job_type === 'pickup' ? 6 : 7;
+                      } else if (step.number === 7) {
+                        // Review step  
+                        targetStep = state.data.job_type === 'pickup' ? 7 : 8;
+                      }
+                      
                       goToStep(targetStep);
                     }
                   }}

@@ -18,6 +18,9 @@ import { ProductsServicesStep } from './steps/ProductsServicesStep';
 import { ServicesFrequencyOnlyStep } from './steps/ServicesFrequencyOnlyStep';
 import { ReviewConfirmationStep } from './steps/ReviewConfirmationStep';
 import { QuotePreviewStep, QuoteSendOptions } from './steps/QuotePreviewStep';
+import { DepositCollectionStep, DepositData } from '@/components/payments/DepositCollectionStep';
+import { StripePaymentModal } from '@/components/payments/StripePaymentModal';
+import { PaymentLinkGenerator } from '@/components/payments/PaymentLinkGenerator';
 import { supabase } from '@/integrations/supabase/client';
 import { JobExitConfirmation } from './JobExitConfirmation';
 import { QuoteExitConfirmation } from '@/components/quotes/QuoteExitConfirmation';
@@ -48,6 +51,56 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
   const [showExitConfirmation, setShowExitConfirmation] = useState(false);
   const [showInvoiceWizard, setShowInvoiceWizard] = useState(false);
   const [createdJobId, setCreatedJobId] = useState<string | null>(null);
+  const [depositData, setDepositData] = useState<DepositData>({
+    enabled: false,
+    type: 'flat',
+    amount: 0,
+    percentage: 25,
+    dueDate: null,
+  });
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showPaymentLinkModal, setShowPaymentLinkModal] = useState(false);
+  const [calculatedTotal, setCalculatedTotal] = useState(0);
+
+  // Calculate total amount from wizard data
+  React.useEffect(() => {
+    const calculateTotal = async () => {
+      const items = state.data.items || [];
+      const services = state.data.servicesData?.selectedServices || [];
+      
+      // Fetch product prices for items
+      let itemsTotal = 0;
+      if (items.length > 0) {
+        const productIds = [...new Set(items.map(item => item.product_id))];
+        const { data: products } = await supabase
+          .from('products')
+          .select('id, default_price_per_day')
+          .in('id', productIds);
+        
+        if (products) {
+          const priceMap = products.reduce((acc, p) => {
+            acc[p.id] = Number(p.default_price_per_day || 0);
+            return acc;
+          }, {} as Record<string, number>);
+          
+          itemsTotal = items.reduce((total, item) => {
+            const price = priceMap[item.product_id] || 0;
+            return total + (item.quantity * price);
+          }, 0);
+        }
+      }
+      
+      // Calculate services total
+      const servicesTotal = services.reduce((total, service: any) => {
+        return total + Number(service.calculated_cost || 0);
+      }, 0);
+      
+      setCalculatedTotal(itemsTotal + servicesTotal);
+    };
+    
+    calculateTotal();
+  }, [state.data.items, state.data.servicesData]);
+
   const handleSaveAndExit = async (draftName: string) => {
     try {
       const draftType = wizardMode === 'quote' ? 'quote' : 'job';
@@ -236,6 +289,7 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
     try {
       console.log('Creating quote with wizard data:', state.data);
       console.log('Send options:', sendOptions);
+      console.log('Deposit data:', depositData);
       
       let status = 'pending';
       if (sendOptions?.method === 'email' || sendOptions?.method === 'sms' || sendOptions?.method === 'email_sms') {
@@ -244,7 +298,8 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
       
       const quote = await createQuoteMutation.mutateAsync({
         wizardData: state.data,
-        status: status as 'pending' | 'sent' | 'accepted' | 'declined' | 'expired'
+        status: status as 'pending' | 'sent' | 'accepted' | 'declined' | 'expired',
+        depositData: depositData.enabled ? depositData : undefined
       });
 
       console.log('Quote created successfully:', quote);
@@ -577,6 +632,20 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
         }
         if (state.data.job_type === 'pickup') {
           return (
+            <DepositCollectionStep
+              totalAmount={calculatedTotal}
+              onDepositChange={setDepositData}
+              onCollectNow={() => setShowPaymentModal(true)}
+              onGenerateLink={() => setShowPaymentLinkModal(true)}
+            />
+          );
+        }
+        return <ServicesFrequencyOnlyStep />;
+      case 7:
+        // Deposit collection step for most job types
+        if (state.data.job_type === 'pickup') {
+          // For pickup jobs, show review at step 7
+          return (
             <ReviewConfirmationStep 
               onCreateJob={handleCreateJob} 
               onCreateQuote={handleCreateQuote}
@@ -588,9 +657,16 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
             />
           );
         }
-        return <ServicesFrequencyOnlyStep />;
-      case 7:
-        // For quotes, show preview step, otherwise show review
+        return (
+          <DepositCollectionStep
+            totalAmount={calculatedTotal}
+            onDepositChange={setDepositData}
+            onCollectNow={() => setShowPaymentModal(true)}
+            onGenerateLink={() => setShowPaymentLinkModal(true)}
+          />
+        );
+      case 8:
+        // Final review step - for quotes, show preview step, otherwise show review
         if (wizardMode === 'quote') {
           return (
             <QuotePreviewStep
@@ -616,7 +692,7 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
     }
   };
 
-  const isLastStep = state.currentStep === 7;
+  const isLastStep = state.currentStep === 8;
   const isFirstStep = state.currentStep === 1;
 
   return (
@@ -752,6 +828,24 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
           fromJobId={createdJobId}
         />
       )}
+
+      {/* Stripe Payment Modal */}
+      <StripePaymentModal
+        open={showPaymentModal}
+        onOpenChange={setShowPaymentModal}
+        amount={depositData.amount}
+        customerId={state.data.customer_id as string}
+        jobId={createdJobId || undefined}
+      />
+
+      {/* Payment Link Generator */}
+      <PaymentLinkGenerator
+        open={showPaymentLinkModal}
+        onOpenChange={setShowPaymentLinkModal}
+        amount={depositData.amount}
+        customerId={state.data.customer_id as string}
+        jobId={createdJobId || undefined}
+      />
     </div>
   );
 }
