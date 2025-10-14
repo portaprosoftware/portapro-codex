@@ -75,6 +75,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
     technician_name: "",
     labor_hours: "",
     labor_cost: "",
+    labor_cost_type: "total",
     parts_cost: "",
     parts_used: "",
     status: "work_order_created",
@@ -551,14 +552,29 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                     </div>
                     <div>
                       <Label>Labor Cost ($)</Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        value={workOrderForm.labor_cost}
-                        onChange={(e) => setWorkOrderForm((p) => ({ ...p, labor_cost: e.target.value }))}
-                        placeholder="0.00"
-                      />
+                      <div className="flex gap-2">
+                        <Input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={workOrderForm.labor_cost}
+                          onChange={(e) => setWorkOrderForm((p) => ({ ...p, labor_cost: e.target.value }))}
+                          placeholder="0.00"
+                          className="flex-1"
+                        />
+                        <Select
+                          value={workOrderForm.labor_cost_type}
+                          onValueChange={(v) => setWorkOrderForm((p) => ({ ...p, labor_cost_type: v }))}
+                        >
+                          <SelectTrigger className="w-[130px]">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="total">Total</SelectItem>
+                            <SelectItem value="per_hour">Per Hour</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
                   </div>
 
