@@ -555,9 +555,8 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
         rightContent={
           selectedItems.length > 0 ? (
             <Button
-              variant="outline"
+              variant="destructive"
               onClick={handleBulkDelete}
-              className="border-red-600 text-red-600 hover:bg-red-50"
             >
               <Trash className="w-4 h-4 mr-2" />
               Delete Selected ({selectedItems.length})
