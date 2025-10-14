@@ -598,24 +598,38 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
           value={selectedLocationId}
           onValueChange={(value) => {
             setSelectedLocationId(value);
-            // Fly to the selected location
+            // Auto-fill search bar and trigger search
             const location = serviceLocations.find(loc => loc.id === value);
-            if (location && map.current && location.gps_coordinates) {
-              const coords = location.gps_coordinates;
-              let lng, lat;
+            if (location) {
+              const fullAddress = `${location.street}, ${location.city}, ${location.state} ${location.zip || ''}`.trim();
+              setSearchQuery(fullAddress);
               
-              if ('x' in coords && 'y' in coords) {
-                lng = coords.x;
-                lat = coords.y;
-              }
-              
-              if (typeof lng === 'number' && typeof lat === 'number' && 
-                  !isNaN(lng) && !isNaN(lat) && 
-                  lng >= -180 && lng <= 180 && lat >= -90 && lat <= 90) {
-                map.current.flyTo({
-                  center: [lng, lat],
-                  zoom: 16,
-                  duration: 1500
+              // Trigger search automatically
+              if (map.current) {
+                setIsSearching(true);
+                supabase.functions.invoke('mapbox-geocoding', {
+                  body: { query: fullAddress, limit: 1 }
+                }).then(({ data, error: searchError }) => {
+                  if (searchError) {
+                    console.error('Geocoding error:', searchError);
+                    setIsSearching(false);
+                    return;
+                  }
+
+                  if (data?.suggestions && data.suggestions.length > 0) {
+                    const result = data.suggestions[0];
+                    if (result.coordinates?.longitude && result.coordinates?.latitude) {
+                      map.current?.flyTo({
+                        center: [result.coordinates.longitude, result.coordinates.latitude],
+                        zoom: 16,
+                        duration: 2000
+                      });
+                    }
+                  }
+                  setIsSearching(false);
+                }).catch(error => {
+                  console.error('Search error:', error);
+                  setIsSearching(false);
                 });
               }
             }
