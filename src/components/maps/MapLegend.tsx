@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Plus } from 'lucide-react';
 
 interface MapLegendProps {
-  isDriverMode: boolean;
+  mapMode: 'standard' | 'driver' | 'today';
   filteredJobsCount: number;
   availableDrivers?: any[];
 }
@@ -58,7 +58,7 @@ export const getStatusBorderColor = (status: string, isOverdue = false, isPriori
 };
 
 export const MapLegend: React.FC<MapLegendProps> = ({ 
-  isDriverMode, 
+  mapMode, 
   filteredJobsCount, 
   availableDrivers = [] 
 }) => {
@@ -70,33 +70,45 @@ export const MapLegend: React.FC<MapLegendProps> = ({
     { key: 'survey_estimate', label: 'Survey/Estimate', color: getJobTypeColor('survey_estimate') },
   ];
 
+  const todayStatuses = [
+    { key: 'completed', label: 'Completed Today', color: '#22C55E' },
+    { key: 'due', label: 'Due Today', color: '#F97316' },
+  ];
+
   return (
     <div className="bg-white rounded-lg border shadow-sm p-4">
       <div className="space-y-4">
         {/* Mode Explanation */}
         <div>
           <h3 className="text-sm font-semibold text-gray-900 mb-2">
-            {isDriverMode ? 'Driver Mode' : 'Standard Mode'}
+            {mapMode === 'driver' ? 'Driver Mode' : mapMode === 'today' ? 'Today Mode' : 'Standard Mode'}
           </h3>
           <p className="text-xs text-gray-600">
-            {isDriverMode 
+            {mapMode === 'driver' 
               ? 'Jobs are colored by driver assignment.'
+              : mapMode === 'today'
+              ? 'Jobs are colored by completion status for today.'
               : 'Jobs are colored by type.'
             }
           </p>
         </div>
 
-        {/* Job Types or Drivers */}
+        {/* Job Types or Drivers or Today Status */}
         <div>
           <h4 className="text-xs font-medium text-gray-700 mb-2">
-            {isDriverMode ? 'Drivers (fill colors)' : 'Job Types (fill colors)'}
+            {mapMode === 'driver' 
+              ? 'Drivers (fill colors)' 
+              : mapMode === 'today'
+              ? 'Status (fill colors)'
+              : 'Job Types (fill colors)'
+            }
           </h4>
           <div className="grid grid-cols-1 gap-1.5">
-            {isDriverMode ? (
+            {mapMode === 'driver' ? (
               availableDrivers.map((driver) => (
                 <div key={driver.id} className="flex items-center gap-2">
                   <div 
-                    className="w-3 h-3 rounded-full border border-white shadow-sm"
+                    className="w-3 h-3 rounded-full border border-white shadow-sm" 
                     style={{ backgroundColor: getDriverColor(driver.id, availableDrivers) }}
                   />
                   <span className="text-xs text-gray-700">
@@ -104,13 +116,17 @@ export const MapLegend: React.FC<MapLegendProps> = ({
                   </span>
                 </div>
               ))
+            ) : mapMode === 'today' ? (
+              todayStatuses.map((status) => (
+                <div key={status.key} className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full border border-white shadow-sm" style={{ backgroundColor: status.color }} />
+                  <span className="text-xs text-gray-700">{status.label}</span>
+                </div>
+              ))
             ) : (
               jobTypes.map((type) => (
                 <div key={type.key} className="flex items-center gap-2">
-                  <div 
-                    className="w-3 h-3 rounded-full border border-white shadow-sm"
-                    style={{ backgroundColor: type.color }}
-                  />
+                  <div className="w-3 h-3 rounded-full border border-white shadow-sm" style={{ backgroundColor: type.color }} />
                   <span className="text-xs text-gray-700">{type.label}</span>
                 </div>
               ))

@@ -25,8 +25,8 @@ interface SimpleJobsMapViewProps {
   jobType?: string;
   status?: string;
   selectedDate: Date;
-  isDriverMode: boolean;
-  onMapModeChange: (isDriverMode: boolean) => void;
+  mapMode: 'standard' | 'driver' | 'today';
+  onMapModeChange: (mode: 'standard' | 'driver' | 'today') => void;
 }
 
 export function SimpleJobsMapView({ 
@@ -35,7 +35,7 @@ export function SimpleJobsMapView({
   jobType, 
   status, 
   selectedDate,
-  isDriverMode,
+  mapMode,
   onMapModeChange
 }: SimpleJobsMapViewProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
@@ -197,7 +197,7 @@ export function SimpleJobsMapView({
         map.current = null;
       }
     };
-  }, [mapboxToken, isDriverMode]);
+  }, [mapboxToken, mapMode]);
 
   // Update map style when changed
   useEffect(() => {
@@ -314,18 +314,23 @@ export function SimpleJobsMapView({
       const pinElement = document.createElement('div');
       
       if (count === 1) {
-        // Single job pin - use job type color (Standard Mode) or driver color (Driver Mode)
+        // Single job pin
         const job = firstJob;
         
         // Determine fill color based on mode
         let fillColor: string;
         let displayLetter: string;
         
-        if (isDriverMode) {
+        if (mapMode === 'driver') {
           // Driver Mode: use driver color
           fillColor = getDriverColor(job.driver_id || '', drivers);
           const driverProfile = drivers.find(d => d.id === job.driver_id);
           displayLetter = driverProfile?.first_name?.charAt(0).toUpperCase() || 'U';
+        } else if (mapMode === 'today') {
+          // Today Mode: green if completed, orange if due but not completed
+          const isCompleted = job.status === 'completed';
+          fillColor = isCompleted ? '#22C55E' : '#F97316'; // green-500 : orange-500
+          displayLetter = isCompleted ? '✓' : '!';
         } else {
           // Standard Mode: use job type color
           fillColor = getJobTypeColor(job.job_type);
@@ -391,7 +396,7 @@ export function SimpleJobsMapView({
       markersRef.current.push(marker);
     });
 
-  }, [filteredJobs, mapStyle, isDriverMode, drivers]);
+  }, [filteredJobs, mapStyle, mapMode, drivers]);
 
   const getJobTypeBadgeColor = (type: string) => {
     const colors = {

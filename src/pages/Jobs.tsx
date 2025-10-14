@@ -80,7 +80,7 @@ const JobsPage: React.FC = () => {
   const [customSelectedStatus, setCustomSelectedStatus] = useState('all');
 
   // Map-specific state
-  const [isDriverMode, setIsDriverMode] = useState(false);
+  const [mapMode, setMapMode] = useState<'standard' | 'driver' | 'today'>('standard');
 
   // Job drafts
   const { drafts } = useJobDrafts();
@@ -961,18 +961,18 @@ const JobsPage: React.FC = () => {
                 <div className="bg-white rounded-lg border shadow-sm p-4">
                   <div className="space-y-3">
                     <MapModeToggle 
-                      isDriverMode={isDriverMode}
-                      onModeChange={setIsDriverMode}
+                      mode={mapMode}
+                      onModeChange={setMapMode}
                     />
                     <p className="text-sm text-gray-600">
-                      Toggle between job type and driver assignment views. Use the filters above to narrow your results further.
+                      Toggle between different map views. Use the filters above to narrow your results further.
                     </p>
                   </div>
                 </div>
                 
                 {/* Map Legend */}
                 <MapLegend 
-                  isDriverMode={isDriverMode}
+                  mapMode={mapMode}
                   filteredJobsCount={filterJobs(allJobs).length}
                   availableDrivers={drivers}
                 />
@@ -991,8 +991,8 @@ const JobsPage: React.FC = () => {
                     jobType={selectedJobType}
                     status={selectedStatus}
                     selectedDate={selectedDate}
-                    isDriverMode={isDriverMode}
-                    onMapModeChange={setIsDriverMode}
+                    mapMode={mapMode}
+                    onMapModeChange={setMapMode}
                   />
                 </JobsMapErrorBoundary>
               </div>

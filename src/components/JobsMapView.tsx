@@ -7,8 +7,8 @@ interface JobsMapViewProps {
   jobType?: string;
   status?: string;
   selectedDate: Date;
-  isDriverMode: boolean;
-  onMapModeChange: (isDriverMode: boolean) => void;
+  mapMode: 'standard' | 'driver' | 'today';
+  onMapModeChange: (mode: 'standard' | 'driver' | 'today') => void;
 }
 
 export function JobsMapView({ 
@@ -17,7 +17,7 @@ export function JobsMapView({
   jobType, 
   status, 
   selectedDate, 
-  isDriverMode, 
+  mapMode, 
   onMapModeChange 
 }: JobsMapViewProps) {
   return (
@@ -27,7 +27,7 @@ export function JobsMapView({
       jobType={jobType}
       status={status}
       selectedDate={selectedDate}
-      isDriverMode={isDriverMode}
+      mapMode={mapMode}
       onMapModeChange={onMapModeChange}
     />
   );
