@@ -41,10 +41,12 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
 }) => {
   const [frames, setFrames] = useState<RadarFrame[]>([]);
   const [currentFrame, setCurrentFrame] = useState(0);
+  const [apiKey, setApiKey] = useState<string>('');
   
   const mountedRef = useRef(true);
   const animationRef = useRef<NodeJS.Timeout | null>(null);
   const layerIds = useRef<string[]>([]);
+  const isStyleChanging = useRef(false);
 
   // 🔍 DEBUG: Log component mount
   useEffect(() => {
@@ -56,42 +58,106 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
     });
   }, []);
 
-  // Load radar frames - using your exact working pattern
+  // Add layers to map from stored frames/data
+  const addRadarLayers = useCallback(() => {
+    if (!map || !frames.length || !apiKey) return;
+    
+    console.log('MapTiler: Adding layers to map...');
+    
+    // Clear existing layers first
+    layerIds.current.forEach(layerId => {
+      try {
+        if (map.getLayer(layerId)) {
+          map.removeLayer(layerId);
+        }
+        if (map.getSource(layerId)) {
+          map.removeSource(layerId);
+        }
+      } catch (error) {
+        console.warn('MapTiler: Error removing layer:', layerId, error);
+      }
+    });
+    layerIds.current = [];
+    
+    // Add sources and layers for each frame
+    frames.forEach((frame, index) => {
+      const layerId = `radar-layer-${frame.time}-${index}`;
+      const tileUrl = mapTilerWeatherService.getRadarTileUrl(frame.time);
+
+      try {
+        if (!map.getSource(layerId)) {
+          map.addSource(layerId, {
+            type: 'raster',
+            tiles: [tileUrl],
+            tileSize: 256,
+            attribution: '© MapTiler'
+          });
+        }
+
+        if (!map.getLayer(layerId)) {
+          map.addLayer({
+            id: layerId,
+            type: 'raster',
+            source: layerId,
+            paint: {
+              'raster-opacity': 0,
+              'raster-fade-duration': RASTER_FADE_DURATION,
+              'raster-resampling': 'linear'
+            },
+            layout: {
+              'visibility': 'visible'
+            }
+          });
+        }
+
+        layerIds.current.push(layerId);
+      } catch (error) {
+        console.error('MapTiler: Error adding layer:', layerId, error);
+      }
+    });
+    
+    // Show first frame
+    if (layerIds.current.length > 0) {
+      const firstLayerId = layerIds.current[0];
+      if (firstLayerId && map.getLayer(firstLayerId)) {
+        map.setPaintProperty(firstLayerId, 'raster-opacity', RADAR_OPACITY);
+        console.log('MapTiler: ✓ Layers added, first frame visible');
+      }
+    }
+  }, [map, frames, apiKey]);
+
+  // Load radar frames - fetch data and API key
   const loadRadarFrames = useCallback(async () => {
     if (!map || !enabled) {
       console.log('❌ SimpleWeatherRadar: EARLY RETURN TRIGGERED', {
         hasMap: !!map,
-        mapIsValid: map ? 'yes' : 'NO',
-        enabled: enabled,
-        mapLoaded: map?.loaded(),
-        mapStyleLoaded: map?.isStyleLoaded()
+        enabled: enabled
       });
       return;
     }
 
     try {
-      console.log('✅ MapTiler: Passed early checks, proceeding with load');
-      console.log('MapTiler: Loading radar frames...');
-      console.log('MapTiler: Map loaded state:', map.loaded());
-      console.log('MapTiler: Map style loaded state:', map.isStyleLoaded());
+      console.log('✅ MapTiler: Loading radar data...');
       
-      // Fetch MapTiler API key from edge function
-      const { data, error } = await supabase.functions.invoke('get-maptiler-key');
-      
-      if (error || !data?.apiKey) {
-        console.error('MapTiler: Failed to get API key:', error);
-        if (onError) {
-          onError('Failed to get MapTiler API key');
+      // Fetch MapTiler API key from edge function (only if not cached)
+      if (!apiKey) {
+        const { data, error } = await supabase.functions.invoke('get-maptiler-key');
+        
+        if (error || !data?.apiKey) {
+          console.error('MapTiler: Failed to get API key:', error);
+          if (onError) {
+            onError('Failed to get MapTiler API key');
+          }
+          return;
         }
-        return;
+        
+        setApiKey(data.apiKey);
+        mapTilerWeatherService.setApiKey(data.apiKey);
       }
-      
-      // Set API key in service
-      mapTilerWeatherService.setApiKey(data.apiKey);
       
       const radarFrames = await mapTilerWeatherService.getRadarFrames();
       
-      if (!mountedRef.current) {
+      if (!mountedRef.current && !isStyleChanging.current) {
         console.log('MapTiler: Component unmounted, aborting');
         return;
       }
@@ -102,124 +168,15 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
         return;
       }
 
-      console.log('MapTiler: Processing', radarFrames.length, 'radar frames');
-
-      // Clear existing layers
-      console.log('MapTiler: Clearing', layerIds.current.length, 'existing layers');
-      layerIds.current.forEach(layerId => {
-        try {
-          if (map.getLayer(layerId)) {
-            map.removeLayer(layerId);
-            console.log('MapTiler: Removed layer:', layerId);
-          }
-          if (map.getSource(layerId)) {
-            map.removeSource(layerId);
-            console.log('MapTiler: Removed source:', layerId);
-          }
-        } catch (error) {
-          console.warn('MapTiler: Error removing layer:', layerId, error);
-        }
-      });
-      layerIds.current = [];
-
-      // Wait for map to be ready if needed
-      if (!map.isStyleLoaded()) {
-        console.log('MapTiler: Waiting for map style to load...');
-        await new Promise(resolve => {
-          if (map.isStyleLoaded()) {
-            resolve(true);
-          } else {
-            map.once('styledata', resolve);
-          }
-        });
-      }
-
-      console.log('MapTiler: Adding sources and layers...');
-      // Add sources and layers for each frame
-      radarFrames.forEach((frame, index) => {
-        const layerId = `radar-layer-${frame.time}-${index}`;
-        const tileUrl = mapTilerWeatherService.getRadarTileUrl(frame.time);
-
-        console.log(`MapTiler: Creating layer ${index + 1}/${radarFrames.length}:`, layerId);
-        console.log('MapTiler: Tile URL:', tileUrl);
-
-        try {
-          // Add source
-          if (!map.getSource(layerId)) {
-            console.log('MapTiler: Adding source for:', layerId);
-            map.addSource(layerId, {
-              type: 'raster',
-              tiles: [tileUrl],
-              tileSize: 256,
-              attribution: '© MapTiler'
-            });
-            console.log('MapTiler: ✓ Source added for:', layerId);
-          } else {
-            console.log('MapTiler: Source already exists for:', layerId);
-          }
-
-          // Raster layer configuration with clipping for smooth transitions
-          if (!map.getLayer(layerId)) {
-            console.log('MapTiler: Adding layer for:', layerId);
-            map.addLayer({
-              id: layerId,
-              type: 'raster',
-              source: layerId,
-              paint: {
-                'raster-opacity': 0,
-                'raster-fade-duration': RASTER_FADE_DURATION,  // Key: shorter than animation interval
-                'raster-resampling': 'linear' // Smoother rendering
-              },
-              layout: {
-                'visibility': 'visible'
-              }
-            });
-            console.log('MapTiler: ✓ Layer added for:', layerId);
-          } else {
-            console.log('MapTiler: Layer already exists for:', layerId);
-          }
-
-          layerIds.current.push(layerId);
-          console.log('MapTiler: ✓ Layer ID stored:', layerId);
-        } catch (error) {
-          console.error('MapTiler: ✗ Error adding layer:', layerId, error);
-        }
-      });
-
-      console.log('MapTiler: Created', layerIds.current.length, 'layers total');
+      console.log('MapTiler: ✓ Loaded', radarFrames.length, 'frames');
       setFrames(radarFrames);
       setCurrentFrame(0);
-      console.log('MapTiler: ✓ Loaded', radarFrames.length, 'frames');
-      
-      // CRITICAL FIX: Immediately show the first frame
-      if (layerIds.current.length > 0) {
-        console.log('MapTiler: Setting up initial frame display...');
-        
-        // Hide all layers first
-        layerIds.current.forEach((layerId, idx) => {
-          if (map.getLayer(layerId)) {
-            map.setPaintProperty(layerId, 'raster-opacity', 0);
-            console.log(`MapTiler: Hidden layer ${idx}:`, layerId);
-          }
-        });
-        
-        // Show first frame immediately
-        const firstLayerId = layerIds.current[0];
-        if (firstLayerId && map.getLayer(firstLayerId)) {
-          map.setPaintProperty(firstLayerId, 'raster-opacity', RADAR_OPACITY);
-          console.log('MapTiler: ✓ First frame visible:', firstLayerId, 'opacity:', RADAR_OPACITY);
-        } else {
-          console.error('MapTiler: ✗ Failed to show first frame - layer not found:', firstLayerId);
-        }
-      } else {
-        console.error('MapTiler: ✗ No layers created - cannot show radar');
-      }
       
     } catch (error) {
       console.error('MapTiler: ✗ Error loading radar frames:', error);
       setFrames([]);
     }
-  }, [map, enabled, onError]);
+  }, [map, enabled, onError, apiKey]);
 
   // Frame update logic - hide all, then show current
   const updateFrame = useCallback(() => {
@@ -279,47 +236,59 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
 
   // Load frames when enabled
   useEffect(() => {
-    console.log('🔍 SimpleWeatherRadar: Load frames effect triggered', {
-      enabled,
-      hasMap: !!map,
-      mapLoaded: map?.loaded(),
-      mapStyleLoaded: map?.isStyleLoaded(),
-      willLoad: enabled && !!map
-    });
-    
     if (enabled && map) {
-      console.log('✅ SimpleWeatherRadar: Conditions met, calling loadRadarFrames()');
+      console.log('✅ SimpleWeatherRadar: Loading radar data...');
       loadRadarFrames();
-    } else {
-      console.log('❌ SimpleWeatherRadar: Conditions NOT met for loading', {
-        enabled,
-        hasMap: !!map
-      });
     }
   }, [enabled, map, loadRadarFrames]);
+  
+  // Add layers when frames are loaded or map style changes
+  useEffect(() => {
+    if (!map || !frames.length || !apiKey) return;
+    
+    const handleStyleData = () => {
+      console.log('MapTiler: Map style changed, re-adding layers...');
+      isStyleChanging.current = true;
+      addRadarLayers();
+      isStyleChanging.current = false;
+    };
+    
+    // Add layers initially
+    addRadarLayers();
+    
+    // Re-add layers when map style changes
+    map.on('styledata', handleStyleData);
+    
+    return () => {
+      map.off('styledata', handleStyleData);
+    };
+  }, [map, frames, apiKey, addRadarLayers]);
 
-  // Cleanup on unmount
+  // Cleanup on unmount (only on true unmount, not style changes)
   useEffect(() => {
     return () => {
-      mountedRef.current = false;
-      if (animationRef.current) {
-        clearInterval(animationRef.current);
-      }
-      
-      // Clean up layers
-      if (map) {
-        layerIds.current.forEach(layerId => {
-          try {
-            if (map.getLayer(layerId)) {
-              map.removeLayer(layerId);
+      if (!isStyleChanging.current) {
+        console.log('MapTiler: Component unmounting, cleaning up...');
+        mountedRef.current = false;
+        if (animationRef.current) {
+          clearInterval(animationRef.current);
+        }
+        
+        // Clean up layers
+        if (map) {
+          layerIds.current.forEach(layerId => {
+            try {
+              if (map.getLayer(layerId)) {
+                map.removeLayer(layerId);
+              }
+              if (map.getSource(layerId)) {
+                map.removeSource(layerId);
+              }
+            } catch (error) {
+              console.warn('Error cleaning up layer:', error);
             }
-            if (map.getSource(layerId)) {
-              map.removeSource(layerId);
-            }
-          } catch (error) {
-            console.warn('Error cleaning up layer:', error);
-          }
-        });
+          });
+        }
       }
     };
   }, [map]);
