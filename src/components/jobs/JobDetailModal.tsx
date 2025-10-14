@@ -830,7 +830,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2">
+                        <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
                           {(() => {
                             // Group pins by service location
                             const groupedPins: Record<string, any[]> = {};
@@ -874,7 +874,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                                       {/* Pins for this location */}
                                       {locationPins.map((pin) => {
                                         return (
-                                          <div key={pin.id} className="pl-4 space-y-2 border-l-2 border-muted">
+                                          <div key={pin.id} className="pl-4 space-y-1 border-l-2 border-muted pb-3">
                                             {/* Pin Label */}
                                             <div className="flex items-start gap-2">
                                               <MapPin className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" />
@@ -883,6 +883,12 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                                                 <div className="text-xs text-muted-foreground">
                                                   ({pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)})
                                                 </div>
+                                                {/* Pin Notes/Description */}
+                                                {pin.notes && (
+                                                  <div className="text-xs text-foreground mt-1 bg-muted/30 p-2 rounded">
+                                                    {pin.notes}
+                                                  </div>
+                                                )}
                                               </div>
                                             </div>
                                           </div>
@@ -903,7 +909,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                                     
                                     {pinsWithoutLocation.map((pin) => {
                                       return (
-                                        <div key={pin.id} className="pl-4 space-y-2 border-l-2 border-muted">
+                                        <div key={pin.id} className="pl-4 space-y-1 border-l-2 border-muted pb-3">
                                           <div className="flex items-start gap-2">
                                             <MapPin className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" />
                                             <div className="flex-1">
@@ -911,6 +917,12 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                                               <div className="text-xs text-muted-foreground">
                                                 ({pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)})
                                               </div>
+                                              {/* Pin Notes/Description */}
+                                              {pin.notes && (
+                                                <div className="text-xs text-foreground mt-1 bg-muted/30 p-2 rounded">
+                                                  {pin.notes}
+                                                </div>
+                                              )}
                                             </div>
                                           </div>
                                         </div>
