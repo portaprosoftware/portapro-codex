@@ -4696,6 +4696,7 @@ export type Database = {
           notes: string | null
           parent_job_id: string | null
           partial_pickups: Json | null
+          pin_inventory_assignments: Json | null
           quote_id: string | null
           reference_pin_ids: Json | null
           rental_duration_days: number | null
@@ -4739,6 +4740,7 @@ export type Database = {
           notes?: string | null
           parent_job_id?: string | null
           partial_pickups?: Json | null
+          pin_inventory_assignments?: Json | null
           quote_id?: string | null
           reference_pin_ids?: Json | null
           rental_duration_days?: number | null
@@ -4782,6 +4784,7 @@ export type Database = {
           notes?: string | null
           parent_job_id?: string | null
           partial_pickups?: Json | null
+          pin_inventory_assignments?: Json | null
           quote_id?: string | null
           reference_pin_ids?: Json | null
           rental_duration_days?: number | null

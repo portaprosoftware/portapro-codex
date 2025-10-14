@@ -3,9 +3,10 @@ import { useJobWizard } from '@/contexts/JobWizardContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { FileText, BriefcaseIcon, Package, Receipt, MapPin, User, Phone } from 'lucide-react';
+import { FileText, BriefcaseIcon, Package, Receipt, MapPin, User, Phone, Plus, Minus } from 'lucide-react';
 import { ReadOnlyPinsMap } from './ReadOnlyPinsMap';
 
 interface ReviewConfirmationStepProps {
@@ -59,6 +60,12 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
     longitude: number;
     notes?: string;
   }>>([]);
+  const [itemsWithNames, setItemsWithNames] = useState<Array<any>>([]);
+  const [pinInventoryAssignments, setPinInventoryAssignments] = useState<Array<{
+    pin_id: string;
+    product_id: string;
+    quantity: number;
+  }>>(d.pin_inventory_assignments || []);
 
   const startDate = d.scheduled_date || '';
   const endDate = d.return_date || d.scheduled_date || '';
@@ -270,10 +277,24 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
           setSelectedReferencePins(pins);
         }
       }
+
+      // Fetch product names for items
+      if (items.length > 0) {
+        const itemsWithProductNames = await Promise.all(
+          items.map(async (item) => {
+            const product = productDetails[item.product_id];
+            return {
+              ...item,
+              product_name: product?.name || 'Unknown Product'
+            };
+          })
+        );
+        setItemsWithNames(itemsWithProductNames);
+      }
     };
 
     fetchNames();
-  }, [d.customer_id, d.contact_id, d.driver_id, d.vehicle_id, d.pickup_driver_id, d.pickup_vehicle_id, d.partial_pickup_assignments, d.partial_pickups, d.selected_coordinate_ids, d.reference_pin_ids, items]);
+  }, [d.customer_id, d.contact_id, d.driver_id, d.vehicle_id, d.pickup_driver_id, d.pickup_vehicle_id, d.partial_pickup_assignments, d.partial_pickups, d.selected_coordinate_ids, d.reference_pin_ids, items, productDetails]);
 
   // Fetch item codes for all specific item IDs
   useEffect(() => {
@@ -538,31 +559,163 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
           </div>
         )}
 
-        {/* Reference Pins List - Only show if pins are selected */}
+        {/* Reference Pins List with Inventory Assignment - Only show if pins are selected */}
         {selectedReferencePins.length > 0 && (
           <div className="rounded-lg border p-3 space-y-3">
             <h3 className="font-medium flex items-center gap-2">
               <MapPin className="h-4 w-4" />
-              Pin List
+              Pin List & Inventory Assignment
             </h3>
             
-            {/* Pin List */}
-            <ul className="space-y-2">
-              {selectedReferencePins.map((pin) => (
-                <li key={pin.id} className="text-sm flex items-start gap-2">
-                  <MapPin className="h-3 w-3 mt-0.5 text-primary flex-shrink-0" />
-                  <div>
-                    <span className="font-medium">{pin.label}</span>
-                    <span className="text-muted-foreground text-xs ml-2">
-                      ({pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)})
-                    </span>
-                    {pin.notes && (
-                      <div className="text-xs text-muted-foreground mt-0.5">{pin.notes}</div>
+            {/* Pin List with Inventory Assignment */}
+            <div className="space-y-3">
+              {selectedReferencePins.map((pin) => {
+                const getPinProductQuantity = (pinId: string, productId: string): number => {
+                  const assignment = pinInventoryAssignments.find(
+                    a => a.pin_id === pinId && a.product_id === productId
+                  );
+                  return assignment?.quantity || 0;
+                };
+
+                const updatePinProductQuantity = (pinId: string, productId: string, quantity: number) => {
+                  const newAssignments = [...pinInventoryAssignments];
+                  const existingIndex = newAssignments.findIndex(
+                    a => a.pin_id === pinId && a.product_id === productId
+                  );
+                  
+                  if (quantity > 0) {
+                    if (existingIndex >= 0) {
+                      newAssignments[existingIndex].quantity = quantity;
+                    } else {
+                      newAssignments.push({ pin_id: pinId, product_id: productId, quantity });
+                    }
+                  } else {
+                    if (existingIndex >= 0) {
+                      newAssignments.splice(existingIndex, 1);
+                    }
+                  }
+                  
+                  setPinInventoryAssignments(newAssignments);
+                  updateData({ pin_inventory_assignments: newAssignments });
+                };
+
+                const getTotalAssignedForProduct = (productId: string): number => {
+                  return pinInventoryAssignments
+                    .filter(a => a.product_id === productId)
+                    .reduce((sum, a) => sum + a.quantity, 0);
+                };
+
+                const getTotalAssignedToPin = (pinId: string): number => {
+                  return pinInventoryAssignments
+                    .filter(a => a.pin_id === pinId)
+                    .reduce((sum, a) => sum + a.quantity, 0);
+                };
+
+                const totalAtPin = getTotalAssignedToPin(pin.id);
+
+                return (
+                  <div key={pin.id} className="border rounded-lg p-3 space-y-2">
+                    {/* Pin Header */}
+                    <div className="flex items-start gap-2">
+                      <MapPin className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" />
+                      <div className="flex-1">
+                        <div className="font-medium">{pin.label}</div>
+                        <div className="text-xs text-muted-foreground">
+                          ({pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)})
+                        </div>
+                        {pin.notes && (
+                          <div className="text-xs text-muted-foreground mt-1">{pin.notes}</div>
+                        )}
+                        {totalAtPin > 0 && (
+                          <div className="text-xs font-medium text-primary mt-1">
+                            {totalAtPin} unit{totalAtPin !== 1 ? 's' : ''} assigned
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Inventory Assignment Section */}
+                    {itemsWithNames.length > 0 && (
+                      <div className="space-y-2 pl-6">
+                        <div className="text-xs font-medium text-muted-foreground">
+                          Assign Inventory:
+                        </div>
+                        
+                        {itemsWithNames.map((item) => {
+                          const currentQty = getPinProductQuantity(pin.id, item.product_id);
+                          const totalAvailable = item.quantity;
+                          const totalAssigned = getTotalAssignedForProduct(item.product_id);
+                          const remaining = totalAvailable - totalAssigned;
+                          
+                          return (
+                            <div key={item.product_id} className="flex items-center gap-2 text-sm">
+                              <div className="flex-1 min-w-0">
+                                <div className="truncate">{item.product_name || 'Product'}</div>
+                                <div className="text-xs text-muted-foreground">
+                                  {totalAssigned} of {totalAvailable} assigned
+                                  {remaining > 0 && (
+                                    <span className="text-orange-600 ml-1">
+                                      ({remaining} remaining)
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                              
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-7 w-7 p-0"
+                                  onClick={() => updatePinProductQuantity(
+                                    pin.id, 
+                                    item.product_id, 
+                                    Math.max(0, currentQty - 1)
+                                  )}
+                                  disabled={currentQty === 0}
+                                >
+                                  <Minus className="h-3 w-3" />
+                                </Button>
+                                
+                                <Input
+                                  type="number"
+                                  min="0"
+                                  max={currentQty + remaining}
+                                  value={currentQty}
+                                  onChange={(e) => {
+                                    const newQty = parseInt(e.target.value) || 0;
+                                    const maxAllowed = currentQty + remaining;
+                                    updatePinProductQuantity(
+                                      pin.id,
+                                      item.product_id,
+                                      Math.min(newQty, maxAllowed)
+                                    );
+                                  }}
+                                  className="w-16 h-7 text-center"
+                                />
+                                
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-7 w-7 p-0"
+                                  onClick={() => updatePinProductQuantity(
+                                    pin.id,
+                                    item.product_id,
+                                    Math.min(currentQty + 1, currentQty + remaining)
+                                  )}
+                                  disabled={remaining === 0}
+                                >
+                                  <Plus className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
                     )}
                   </div>
-                </li>
-              ))}
-            </ul>
+                );
+              })}
+            </div>
           </div>
         )}
 

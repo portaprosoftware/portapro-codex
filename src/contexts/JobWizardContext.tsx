@@ -109,6 +109,13 @@ export interface JobWizardData {
   
   // Reference GPS pins
   reference_pin_ids?: string[];
+  
+  // Pin inventory assignments
+  pin_inventory_assignments?: Array<{
+    pin_id: string;
+    product_id: string;
+    quantity: number;
+  }>;
 }
 
 interface JobWizardState {
@@ -161,6 +168,7 @@ const initialState: JobWizardState = {
     lock_notes: '',
     zip_tied_on_dropoff: false,
     reference_pin_ids: [],
+    pin_inventory_assignments: [],
   },
   errors: {},
   isLoading: false,
