@@ -332,18 +332,12 @@ export function SimpleJobsMapView({
           displayLetter = job.job_type.charAt(0).toUpperCase();
         }
         
-        // Determine border color based on status
-        const isOverdue = isJobOverdue(job);
-        const isCompletedLate = isJobCompletedLate(job);
-        const isPriority = shouldShowPriorityBadge(job);
-        const borderColor = getStatusBorderColor(job.status, isOverdue, isPriority, isCompletedLate);
-        
         pinElement.innerHTML = `
           <div style="
             width: 34px; 
             height: 34px; 
             background-color: ${fillColor}; 
-            border: 6px solid ${borderColor}; 
+            border: 3px solid white; 
             border-radius: 50%; 
             display: flex; 
             align-items: center; 

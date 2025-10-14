@@ -70,21 +70,6 @@ export const MapLegend: React.FC<MapLegendProps> = ({
     { key: 'survey_estimate', label: 'Survey/Estimate', color: getJobTypeColor('survey_estimate') },
   ];
 
-  const jobStatusesLeft = [
-    { key: 'assigned', label: 'Assigned', color: getStatusBorderColor('assigned') },
-    { key: 'unassigned', label: 'Unassigned', color: getStatusBorderColor('unassigned') },
-    { key: 'in_progress', label: 'In Progress', color: getStatusBorderColor('in_progress') },
-    { key: 'completed', label: 'Completed', color: getStatusBorderColor('completed') },
-    { key: 'cancelled', label: 'Cancelled', color: getStatusBorderColor('cancelled') },
-  ];
-
-  const jobStatusesRight = [
-    { key: 'priority', label: 'Priority', color: getStatusBorderColor('', false, true) },
-    { key: 'overdue_rescheduled', label: 'Overdue - Rescheduled', color: getStatusBorderColor('rescheduled') },
-    { key: 'overdue', label: 'Overdue', color: getStatusBorderColor('', true) },
-    { key: 'completed_late', label: 'Completed Late', color: getStatusBorderColor('', false, false, true) },
-  ];
-
   return (
     <div className="bg-white rounded-lg border shadow-sm p-4">
       <div className="space-y-4">
@@ -95,8 +80,8 @@ export const MapLegend: React.FC<MapLegendProps> = ({
           </h3>
           <p className="text-xs text-gray-600">
             {isDriverMode 
-              ? 'Jobs are colored by driver assignment, with status shown as border color.'
-              : 'Jobs are colored by type, with status shown as border color.'
+              ? 'Jobs are colored by driver assignment.'
+              : 'Jobs are colored by type.'
             }
           </p>
         </div>
@@ -130,39 +115,6 @@ export const MapLegend: React.FC<MapLegendProps> = ({
                 </div>
               ))
             )}
-          </div>
-        </div>
-
-        {/* Job Statuses */}
-        <div>
-          <h4 className="text-xs font-medium text-gray-700 mb-2">Job Status (border colors)</h4>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
-            {/* Left Column */}
-            {jobStatusesLeft.map((status) => (
-              <div key={status.key} className="flex items-center gap-2">
-                <div className="relative">
-                  <div className="w-3 h-3 bg-gray-300 rounded-full" />
-                  <div 
-                    className="absolute inset-0 rounded-full border-2"
-                    style={{ borderColor: status.color }}
-                  />
-                </div>
-                <span className="text-xs text-gray-700">{status.label}</span>
-              </div>
-            ))}
-            {/* Right Column */}
-            {jobStatusesRight.map((status) => (
-              <div key={status.key} className="flex items-center gap-2">
-                <div className="relative">
-                  <div className="w-3 h-3 bg-gray-300 rounded-full" />
-                  <div 
-                    className="absolute inset-0 rounded-full border-2"
-                    style={{ borderColor: status.color }}
-                  />
-                </div>
-                <span className="text-xs text-gray-700">{status.label}</span>
-              </div>
-            ))}
           </div>
         </div>
 
