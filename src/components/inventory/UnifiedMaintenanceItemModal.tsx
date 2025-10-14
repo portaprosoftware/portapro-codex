@@ -56,6 +56,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState(initialActiveTab);
   const { data: systemUsers = [] } = useSystemUsers();
+  const [shouldCloseOnSave, setShouldCloseOnSave] = useState(true);
 
   // Update active tab when initialActiveTab changes
   useEffect(() => {
@@ -185,7 +186,11 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
       queryClient.invalidateQueries({ queryKey: ["product-item", item.id] });
       queryClient.invalidateQueries({ queryKey: ["maintenance-photos", itemId] });
       setMaintenancePhotos([]);
-      onClose();
+      
+      // Only close if shouldCloseOnSave flag is true
+      if (shouldCloseOnSave) {
+        onClose();
+      }
     },
     onError: (err) => {
       console.error(err);
@@ -523,8 +528,23 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
             {/* Save controls at the bottom */}
             <div className="flex justify-end gap-2">
               <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+              <Button 
+                type="button" 
+                className="bg-blue-600 hover:bg-blue-700 text-white" 
+                disabled={updateItemMutation.isPending}
+                onClick={() => {
+                  setShouldCloseOnSave(false);
+                  const formElement = document.querySelector('form') as HTMLFormElement;
+                  if (formElement) {
+                    formElement.requestSubmit();
+                  }
+                  setTimeout(() => setShouldCloseOnSave(true), 100);
+                }}
+              >
+                {updateItemMutation.isPending ? "Saving..." : "Save & Continue"}
+              </Button>
               <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white" disabled={updateItemMutation.isPending}>
-                {updateItemMutation.isPending ? "Saving..." : "Save Changes"}
+                {updateItemMutation.isPending ? "Saving..." : "Save & Close"}
               </Button>
             </div>
               </form>
