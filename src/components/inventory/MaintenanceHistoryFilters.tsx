@@ -56,16 +56,7 @@ export const MaintenanceHistoryFilters: React.FC<MaintenanceHistoryFiltersProps>
     <div className="space-y-4">
       {/* Filters - Always Visible */}
       <div className="bg-gray-50 border rounded-lg p-4">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-gray-600" />
-            <span className="font-semibold text-gray-900">Filters</span>
-            {activeFilterCount > 0 && (
-              <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-2 py-0.5 rounded-full text-xs font-bold">
-                {activeFilterCount}
-              </span>
-            )}
-          </div>
+        <div className="flex items-center justify-end mb-4">
           {activeFilterCount > 0 && (
             <Button variant="ghost" size="sm" onClick={handleReset} className="gap-2">
               <X className="w-4 h-4" />
