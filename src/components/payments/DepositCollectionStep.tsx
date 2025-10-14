@@ -127,7 +127,7 @@ export const DepositCollectionStep: React.FC<DepositCollectionStepProps> = ({
                   {customer.custom_deposit_percentage ?? defaultDepositPercentage}%
                 </span>
                 <ModernBadge 
-                  variant={customer.custom_deposit_percentage !== null && customer.custom_deposit_percentage !== undefined ? "purple" : "default"}
+                  variant={customer.custom_deposit_percentage !== null && customer.custom_deposit_percentage !== undefined ? "outline" : "default"}
                   className="text-xs"
                 >
                   {customer.custom_deposit_percentage !== null && customer.custom_deposit_percentage !== undefined ? 'Custom Override' : 'Company Default'}
