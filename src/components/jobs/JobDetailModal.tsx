@@ -1085,28 +1085,6 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                   </CardContent>
                 </Card>
 
-                {/* Drop Pins Section */}
-                {job?.reference_pin_ids && job.reference_pin_ids.length > 0 && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2 text-base">
-                        <Navigation className="w-4 h-4" />
-                        Drop Pins & Service Locations
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      {/* Map with satellite view (default) */}
-                      <div className="rounded-lg overflow-hidden border">
-                        <ReadOnlyPinsMap 
-                          customerId={job.customer_id}
-                          selectedPinIds={job.reference_pin_ids}
-                          readOnly={true}
-                        />
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-
                 {/* Lock Options */}
                 <Card>
                   <CardHeader>
