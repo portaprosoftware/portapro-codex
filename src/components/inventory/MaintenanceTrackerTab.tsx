@@ -298,7 +298,7 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Information Banner */}
       <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
         <div>
@@ -315,10 +315,11 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
       </div>
 
       {/* Badge Below Card */}
-      <div>
-        <Badge className="bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold">
-          {maintenanceItems?.length || 0} {maintenanceItems?.length === 1 ? 'Unit' : 'Units'} Currently In Maintenance
+      <div className="flex items-center gap-2">
+        <Badge className="bg-gradient-to-r from-orange-600 to-orange-500 text-white font-bold">
+          {maintenanceItems?.length || 0} {maintenanceItems?.length === 1 ? 'Unit' : 'Units'}
         </Badge>
+        <span className="text-sm text-gray-900">currently in maintenance</span>
       </div>
 
       {/* Bulk Actions */}
