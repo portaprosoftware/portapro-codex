@@ -12,6 +12,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { CheckCircle2 } from 'lucide-react';
 
 const US_STATES = [
   { value: 'AL', label: 'Alabama' },
@@ -270,8 +271,13 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
       queryClient.invalidateQueries({ queryKey: ['customer', customer.id] });
       queryClient.invalidateQueries({ queryKey: ['customers'] });
       toast({
-        title: "Success",
-        description: "Customer updated successfully.",
+        description: (
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="h-5 w-5 text-green-500" />
+            <span className="font-semibold">Customer updated successfully.</span>
+          </div>
+        ),
+        duration: 2000,
       });
       onClose();
     },
