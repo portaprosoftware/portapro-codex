@@ -526,8 +526,6 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
             </div>
               </form>
             </TabsContent>
-              </form>
-            </TabsContent>
 
             <TabsContent value="workorders" className="mt-6">
               {/* Work Orders Tab */}
