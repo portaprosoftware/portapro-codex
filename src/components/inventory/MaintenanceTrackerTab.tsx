@@ -345,7 +345,7 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
       </div>
 
       {/* Search and Filters */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-end gap-4">
         <div className="flex-1 relative">
           <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <Input
@@ -357,19 +357,21 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
         </div>
         
         {productId === "all" && (
-          <Button
-            variant="outline"
-            onClick={() => setFilterModalOpen(true)}
-            className="gap-2 whitespace-nowrap"
-          >
-            <Filter className="w-4 h-4" />
-            Equipment
-            {selectedProductFilters.length > 0 && (
-              <Badge className="ml-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-2 py-0.5 rounded-full">
-                {selectedProductFilters.length}
-              </Badge>
-            )}
-          </Button>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs text-gray-600 font-medium">Filter</span>
+            <Button
+              variant="outline"
+              onClick={() => setFilterModalOpen(true)}
+              className="gap-2 whitespace-nowrap"
+            >
+              Equipment
+              {selectedProductFilters.length > 0 && (
+                <Badge className="ml-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-2 py-0.5 rounded-full">
+                  {selectedProductFilters.length}
+                </Badge>
+              )}
+            </Button>
+          </div>
         )}
       </div>
 
