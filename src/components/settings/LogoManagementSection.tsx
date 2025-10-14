@@ -28,7 +28,7 @@ export function LogoManagementSection() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
+          <CardTitle className="flex items-center space-x-2 text-lg">
             <Image className="w-5 h-5" />
             <span>Company Logo</span>
           </CardTitle>
@@ -45,7 +45,7 @@ export function LogoManagementSection() {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center space-x-2">
+            <CardTitle className="flex items-center space-x-2 text-lg">
               <Image className="w-5 h-5" />
               <span>Company Logo</span>
             </CardTitle>

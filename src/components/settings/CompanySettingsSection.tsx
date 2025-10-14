@@ -96,7 +96,7 @@ export function CompanySettingsSection() {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>Company Information</CardTitle>
+            <CardTitle className="text-lg">Company Information</CardTitle>
             <Button
               variant="outline" 
               size="sm"
@@ -122,7 +122,7 @@ export function CompanySettingsSection() {
             <div className="space-y-3">
               <h4 className="font-medium text-foreground flex items-center space-x-2">
                 <Mail className="w-4 h-4" />
-                <span>Contact Information</span>
+                <span>Contact Details</span>
               </h4>
               <div className="space-y-2 pl-6">
                 <div>
