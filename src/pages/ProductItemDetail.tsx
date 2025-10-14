@@ -15,6 +15,7 @@ import { SimpleQRCode } from "@/components/inventory/SimpleQRCode";
 import { UnitPhotoCapture } from "@/components/inventory/UnitPhotoCapture";
 import { UnitPhotoGallery } from "@/components/inventory/UnitPhotoGallery";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { snakeCaseToTitleCase } from "@/lib/categoryUtils";
 
 const ProductItemDetail: React.FC = () => {
   const { itemId } = useParams<{ itemId: string }>();
@@ -230,7 +231,7 @@ const ProductItemDetail: React.FC = () => {
             </Badge>
             {item.condition && (
               <Badge variant={getConditionVariant(item.condition)}>
-                {capitalizeFirstLetter(item.condition)}
+                {snakeCaseToTitleCase(item.condition)}
               </Badge>
             )}
           </div>
