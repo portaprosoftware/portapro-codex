@@ -852,7 +852,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                         (updates || []).map((update: any) => {
                           const isWorkOrder = update.title === "Work Order";
                           return (
-                          <div key={update.id} className={`border rounded-lg p-4 relative min-h-[200px] flex flex-col justify-between ${isWorkOrder ? 'border-blue-500 bg-blue-50' : ''}`}>
+                          <div key={update.id} className={`border rounded-lg p-4 relative flex flex-col ${isWorkOrder ? 'border-gray-300 bg-gray-100' : ''}`}>
                             <div>
                               <div className="flex items-center justify-between mb-3">
                                 <div className="flex items-center gap-2">
@@ -914,7 +914,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                              {update.title && !isWorkOrder && (
                                <div className="text-sm font-medium mb-2">{update.title}</div>
                              )}
-                             <div className="text-sm mb-3 line-clamp-2">{update.description}</div>
+                             <div className="text-sm mb-2 line-clamp-2">{update.description}</div>
                              
                               {/* Display attached photos */}
                               {update.attachments && Array.isArray(update.attachments) && update.attachments.length > 0 && (
@@ -942,13 +942,13 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                                 </div>
                               )}
                            </div>
-                           <div className="space-y-1">
+                           <div className="space-y-1 mt-2">
                              {update.technician_name && (
-                               <div className="text-xs text-muted-foreground">
+                               <div className="text-sm text-muted-foreground">
                                  Technician: {update.technician_name}
                                </div>
                              )}
-                             <div className="flex gap-4 text-xs text-muted-foreground">
+                             <div className="flex gap-4 text-sm text-muted-foreground">
                                {update.labor_hours > 0 && (
                                  <span>Labor: {update.labor_hours}h</span>
                                )}
