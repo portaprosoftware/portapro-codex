@@ -775,6 +775,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     onClick={(e) => {
+                                      e.preventDefault();
                                       const url = `https://www.google.com/maps?q=${encodedAddress}`;
                                       const w = window.open(url, '_blank', 'noopener,noreferrer');
                                       if (!w && window.parent) {
@@ -791,6 +792,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     onClick={(e) => {
+                                      e.preventDefault();
                                       const url = `https://maps.apple.com/place?address=${encodedAddress}&name=${encodeURIComponent(fullAddress)}`;
                                       const w = window.open(url, '_blank', 'noopener,noreferrer');
                                       if (!w && window.parent) {
