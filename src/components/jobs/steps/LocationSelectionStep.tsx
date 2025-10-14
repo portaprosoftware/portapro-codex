@@ -380,8 +380,8 @@ export function LocationSelectionStep() {
 
         <TabsContent value="pins" className="mt-6">
           <div className="space-y-4">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <p className="text-sm text-blue-800">
+            <div className="bg-muted border border-muted-foreground/30 rounded-lg p-4">
+              <p className="text-sm text-foreground">
                 <strong>Read-Only Reference:</strong> These are pre-saved GPS pins for this customer. They serve as reference points for drivers and do not affect job routing or service location. To manage pins, visit the Customer section.
               </p>
             </div>
