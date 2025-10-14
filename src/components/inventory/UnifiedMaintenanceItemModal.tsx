@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -278,14 +278,15 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-3xl max-h-[85vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Manage Unit • {item?.item_code}</DialogTitle>
-          <DialogDescription>
-            Manage maintenance item details, location, and updates for this unit
-          </DialogDescription>
-        </DialogHeader>
+    <Sheet open={isOpen} onOpenChange={onClose}>
+      <SheetContent side="bottom" className="h-[100vh] w-full max-w-full p-0 overflow-y-auto">
+        <div className="container max-w-6xl mx-auto p-6">
+          <SheetHeader>
+            <SheetTitle>Manage Unit • {item?.item_code}</SheetTitle>
+            <SheetDescription>
+              Manage maintenance item details, location, and updates for this unit
+            </SheetDescription>
+          </SheetHeader>
 
         <div className="space-y-6">
           {/* Summary strip */}
@@ -743,7 +744,8 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
             </TabsContent>
           </Tabs>
         </div>
-      </DialogContent>
+        </div>
+      </SheetContent>
       
       {/* Image Viewer Modal */}
       <ImageViewerModal
@@ -753,6 +755,6 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
         initialIndex={selectedPhotoIndex}
       />
 
-    </Dialog>
+    </Sheet>
   );
 };
