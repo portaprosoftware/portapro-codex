@@ -450,7 +450,7 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
           <p className="text-sm text-muted-foreground">
             {dropModeActive 
               ? "Drop mode active - use the crosshair to position and drop a pin at map center" 
-              : "Copy physical address and paste below to navigate. Then, activate drop mode to place pins, label and save pins."}
+              : "Paste a physical address below to navigate. Then activate drop mode to place, label, and save pins."}
           </p>
         </div>
         <div className="flex items-center gap-2">
