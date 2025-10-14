@@ -360,7 +360,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
               onClick={() => setShowCategoryModal(true)}
             >
               <Binary className="w-6 h-6 mr-1.5" />
-              Set Default Series
+              Set Number Series
             </Button>
             {product.default_item_code_category && (
               <Button 
