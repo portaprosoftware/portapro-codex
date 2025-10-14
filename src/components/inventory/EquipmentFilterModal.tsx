@@ -73,12 +73,12 @@ export const EquipmentFilterModal: React.FC<EquipmentFilterModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-xl bg-white">
+      <DialogContent className="sm:max-w-xl bg-white max-h-[95vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>Filter by Equipment</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
+        <div className="space-y-4 py-4 flex-1 overflow-hidden flex flex-col">
           {/* Search */}
           <div className="relative">
             <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -119,7 +119,7 @@ export const EquipmentFilterModal: React.FC<EquipmentFilterModalProps> = ({
           </div>
 
           {/* Products Grid */}
-          <div className="max-h-[500px] overflow-y-auto pr-2">
+          <div className="flex-1 overflow-y-auto pr-2">
             {filteredProducts.length > 0 ? (
               <div className="grid grid-cols-2 gap-3">
                 {filteredProducts.map((product) => {
