@@ -20,6 +20,45 @@ interface RealTimeInventorySelectorProps {
   onChange?: (items: JobItemSelection[]) => void;
 }
 
+// Helper function to merge duplicate product selections
+const mergeJobItems = (
+  existing: JobItemSelection[],
+  incoming: JobItemSelection[]
+): JobItemSelection[] => {
+  const merged = [...existing];
+  
+  incoming.forEach(newItem => {
+    // Find existing item for same product with same strategy
+    const existingIndex = merged.findIndex(
+      item => item.product_id === newItem.product_id && 
+              item.strategy === newItem.strategy &&
+              item.strategy === 'specific'
+    );
+    
+    if (existingIndex !== -1 && newItem.strategy === 'specific') {
+      // Merge specific units
+      const existingItem = merged[existingIndex];
+      const combinedIds = [
+        ...(existingItem.specific_item_ids || []),
+        ...(newItem.specific_item_ids || [])
+      ];
+      // Remove duplicates
+      const uniqueIds = Array.from(new Set(combinedIds));
+      
+      merged[existingIndex] = {
+        ...existingItem,
+        specific_item_ids: uniqueIds,
+        quantity: uniqueIds.length + (existingItem.bulk_additional || 0),
+      };
+    } else {
+      // Add as new item (different product or different strategy)
+      merged.push(newItem);
+    }
+  });
+  
+  return merged;
+};
+
 export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps> = ({
   startDate,
   endDate,
@@ -216,9 +255,9 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
         endDate={endDate}
         existingJobItems={value || []}
         onProductSelect={(jobItems) => {
-          // Merge new selections with existing items instead of replacing
-          const updatedItems = [...(value || []), ...jobItems];
-          onChange?.(updatedItems);
+          // Merge new selections with existing items intelligently
+          const mergedItems = mergeJobItems(value || [], jobItems);
+          onChange?.(mergedItems);
         }}
       />
     </div>
