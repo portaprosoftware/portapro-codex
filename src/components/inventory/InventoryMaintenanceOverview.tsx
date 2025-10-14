@@ -105,9 +105,8 @@ export const InventoryMaintenanceOverview: React.FC = () => {
 
       {/* Tabbed Views */}
       <Tabs defaultValue="tracker" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="tracker">Maintenance Tracker</TabsTrigger>
-          <TabsTrigger value="schedule">Scheduled Maintenance</TabsTrigger>
           <TabsTrigger value="history">Maintenance History</TabsTrigger>
         </TabsList>
 
@@ -115,24 +114,6 @@ export const InventoryMaintenanceOverview: React.FC = () => {
           <Card>
             <CardContent className="p-6">
               <MaintenanceTrackerTab productId="all" />
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="schedule" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Calendar className="h-5 w-5" />
-                Scheduled Equipment Maintenance
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8 text-muted-foreground">
-                <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>Scheduled maintenance feature coming soon</p>
-                <p className="text-sm">Track preventive maintenance schedules and reminders</p>
-              </div>
             </CardContent>
           </Card>
         </TabsContent>
