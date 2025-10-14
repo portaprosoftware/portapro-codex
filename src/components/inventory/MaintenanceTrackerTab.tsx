@@ -528,16 +528,26 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
             <p className="text-gray-600 mb-4">
               {searchQuery 
                 ? "No items match your search criteria."
+                : selectedProductFilters.length > 0
+                ? "No items in maintenance match your selected filters."
                 : "All units are currently available or in service."
               }
             </p>
-            {searchQuery && (
+            {(searchQuery || selectedProductFilters.length > 0) && (
               <Button 
                 variant="outline" 
-                onClick={() => setSearchQuery("")}
+                onClick={() => {
+                  setSearchQuery("");
+                  setSelectedProductFilters([]);
+                }}
                 className="text-blue-600 border-blue-600 hover:bg-blue-50"
               >
-                Clear Search
+                {searchQuery && selectedProductFilters.length > 0 
+                  ? "Clear Search & Filters" 
+                  : searchQuery 
+                  ? "Clear Search" 
+                  : "Clear Filters"
+                }
               </Button>
             )}
           </div>
