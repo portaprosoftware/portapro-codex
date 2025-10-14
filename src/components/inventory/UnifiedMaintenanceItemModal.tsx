@@ -510,16 +510,16 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-
-                {/* Save controls */}
+                
+                {/* Save controls right after Unit Details */}
                 <div className="flex justify-end gap-2">
                   <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
                   <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white" disabled={updateItemMutation.isPending}>
                     {updateItemMutation.isPending ? "Saving..." : "Save Changes"}
                   </Button>
                 </div>
+              </div>
+            </div>
               </form>
             </TabsContent>
 
