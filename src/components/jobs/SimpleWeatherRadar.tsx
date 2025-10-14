@@ -252,10 +252,17 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
     }
   }, [enabled, map, loadRadarFrames]);
 
-  // Cleanup on unmount
+  // Mount/unmount tracking
   useEffect(() => {
+    mountedRef.current = true;
     return () => {
       mountedRef.current = false;
+    };
+  }, []);
+
+  // Cleanup on unmount only
+  useEffect(() => {
+    return () => {
       if (animationRef.current) {
         clearInterval(animationRef.current);
       }
@@ -276,7 +283,7 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
         });
       }
     };
-  }, [map]);
+  }, []);
 
   return null; // This component doesn't render anything visible
 };
