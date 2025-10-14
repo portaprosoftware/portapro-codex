@@ -65,6 +65,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
   const [selectedUnitForNavigation, setSelectedUnitForNavigation] = useState<{id: string, code: string} | null>(null);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [showClearCategoryModal, setShowClearCategoryModal] = useState(false);
   
   const { categories } = useItemCodeCategories();
   
@@ -277,6 +278,28 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
     onError: (error) => {
       console.error('Error updating category:', error);
       toast.error('Failed to update default category');
+    }
+  });
+
+  // Clear category mutation
+  const clearCategoryMutation = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from('products')
+        .update({ default_item_code_category: null })
+        .eq('id', productId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success('Default category cleared successfully');
+      queryClient.invalidateQueries({ queryKey: ["product", productId] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      setShowClearCategoryModal(false);
+    },
+    onError: (error) => {
+      console.error('Error clearing category:', error);
+      toast.error('Failed to clear default category');
     }
   });
 
@@ -538,9 +561,19 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
                 setShowCategoryModal(true);
               }}
             >
-              <Binary className="w-4 h-4 mr-2" />
+              <Binary className="w-5 h-5 mr-2" />
               Set Default Series
             </Button>
+            {product?.default_item_code_category && (
+              <Button 
+                variant="ghost" 
+                size="sm"
+                className="text-gray-600 hover:text-gray-900"
+                onClick={() => setShowClearCategoryModal(true)}
+              >
+                Clear Series
+              </Button>
+            )}
           </div>
         </div>
       </div>
@@ -904,6 +937,34 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
                 disabled={updateCategoryMutation.isPending || !selectedCategory}
               >
                 {updateCategoryMutation.isPending ? "Updating..." : "Set Category"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Clear Category Confirmation Modal */}
+      <Dialog open={showClearCategoryModal} onOpenChange={setShowClearCategoryModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Clear Default Series?</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <p className="text-sm text-gray-600">
+              Are you sure you want to clear the default item code category? New individual items will no longer have a default category assigned.
+            </p>
+
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setShowClearCategoryModal(false)}>
+                Cancel
+              </Button>
+              <Button 
+                variant="destructive"
+                onClick={() => clearCategoryMutation.mutate()}
+                disabled={clearCategoryMutation.isPending}
+              >
+                {clearCategoryMutation.isPending ? "Clearing..." : "Clear Series"}
               </Button>
             </div>
           </div>
