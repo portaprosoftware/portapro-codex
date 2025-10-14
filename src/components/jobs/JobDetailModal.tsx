@@ -17,7 +17,7 @@ import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { TimePicker } from '@/components/ui/time-picker';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Switch } from '@/components/ui/switch';
-import { CalendarDays, Clock, User, MapPin, FileText, RotateCcw, Edit2, Save, X, Star, Package, Truck, Wrench, Ban, Navigation } from 'lucide-react';
+import { CalendarDays, Clock, User, MapPin, FileText, RotateCcw, Edit2, Save, X, Star, Package, Truck, Wrench, Ban, Navigation, Copy } from 'lucide-react';
 import { JobLengthControl } from './JobLengthControl';
 import { toast } from 'sonner';
 import { getJobStatusInfo } from '@/lib/jobStatusUtils';
@@ -734,7 +734,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                               )}
                             </p>
                           </div>
-                          <div className="flex items-center gap-1 flex-shrink-0">
+                          <div className="flex items-center gap-1 flex-shrink-0 flex-wrap">
                             {(() => {
                               const fullAddress = [
                                 job?.customer?.service_street,
@@ -747,8 +747,23 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                               
                               const encodedAddress = encodeURIComponent(fullAddress);
                               
+                              const handleCopyAddress = () => {
+                                navigator.clipboard.writeText(fullAddress);
+                                toast.success('Address copied to clipboard');
+                              };
+                              
                               return (
                                 <>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="h-8 px-2 text-xs"
+                                    onClick={handleCopyAddress}
+                                    title="Copy Address"
+                                  >
+                                    <Copy className="h-3 w-3 mr-1" />
+                                    Copy
+                                  </Button>
                                   <Button
                                     size="sm"
                                     variant="outline"
