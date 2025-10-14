@@ -363,11 +363,11 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
             className="gap-2 whitespace-nowrap text-sm"
           >
             Filter Equipment
-            {selectedProductFilters.length > 0 && (
-              <Badge className="ml-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-2 py-0.5 rounded-full">
-                {selectedProductFilters.length}
-              </Badge>
-            )}
+              {selectedProductFilters.length > 0 && (
+                <Badge className="ml-1 bg-gradient-to-r from-blue-600 to-blue-500 text-white px-2 py-0.5 rounded-full">
+                  {selectedProductFilters.length}
+                </Badge>
+              )}
           </Button>
         )}
       </div>
