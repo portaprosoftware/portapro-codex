@@ -718,7 +718,36 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                     {/* Service Address */}
                     {(job?.customer?.service_street || job?.customer?.service_city) && (
                       <div>
-                        <label className="text-sm font-medium text-muted-foreground">Service Address</label>
+                        <div className="flex items-center justify-between mb-1">
+                          <label className="text-sm font-medium text-muted-foreground">Service Address</label>
+                          {(() => {
+                            const fullAddress = [
+                              job?.customer?.service_street,
+                              job?.customer?.service_city,
+                              job?.customer?.service_state,
+                              job?.customer?.service_zip
+                            ].filter(Boolean).join(', ');
+                            
+                            if (!fullAddress) return null;
+                            
+                            const handleCopyAddress = () => {
+                              navigator.clipboard.writeText(fullAddress);
+                              toast.success('Address copied to clipboard');
+                            };
+                            
+                            return (
+                              <button
+                                type="button"
+                                onClick={handleCopyAddress}
+                                className="flex items-center gap-1 text-xs text-primary hover:underline cursor-pointer"
+                                title="Copy address to clipboard"
+                              >
+                                <Copy className="h-3 w-3" />
+                                Copy Address
+                              </button>
+                            );
+                          })()}
+                        </div>
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex-1">
                             <p className="text-sm select-text">
