@@ -840,7 +840,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
               {/* Add Update & history */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="bg-white border rounded-xl p-4">
-              <h4 className="font-medium mb-3">Add Maintenance Update</h4>
+              <h4 className="font-medium mb-3">Add Work Order Update</h4>
               <div className="space-y-3">
                 <div>
                   <Label>Update Type</Label>
@@ -911,7 +911,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
 
                 {/* Recent updates timeline */}
                 <div className="bg-white border rounded-xl p-4">
-                  <h4 className="font-medium mb-3">Recent Updates</h4>
+                  <h4 className="font-medium mb-3">Open Work Orders</h4>
                   <div className="space-y-4 max-h-[600px] overflow-y-auto">
                     {(updates || []).length === 0 ? (
                       <div className="text-sm text-muted-foreground text-center py-8">
@@ -947,16 +947,30 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                                        update.update_type === 'parts' ? 'Parts' : 
                                        update.update_type}
                                     </Badge>
-                                  )}
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => handleDeleteUpdate(update.id)}
-                                    className="h-6 px-2 text-xs hover:bg-destructive hover:text-destructive-foreground"
-                                  >
-                                    Delete
-                                  </Button>
-                                </div>
+                                   )}
+                                   {isWorkOrder && (
+                                     <Button
+                                       variant="outline"
+                                       size="sm"
+                                       onClick={() => {
+                                         // Handle complete work order
+                                         toast.success("Work order completed");
+                                       }}
+                                       className="h-6 px-2 text-xs bg-gradient-to-r from-green-600 to-green-700 text-white font-bold hover:from-green-700 hover:to-green-800 border-green-600"
+                                     >
+                                       <CheckCircle2 className="w-3 h-3 mr-1" />
+                                       Complete
+                                     </Button>
+                                   )}
+                                   <Button
+                                     variant="outline"
+                                     size="sm"
+                                     onClick={() => handleDeleteUpdate(update.id)}
+                                     className="h-6 px-2 text-xs hover:bg-destructive hover:text-destructive-foreground"
+                                   >
+                                     Delete
+                                   </Button>
+                                 </div>
                                <div className="text-xs text-muted-foreground">
                                  {new Date(update.created_at).toLocaleDateString()}
                                </div>
