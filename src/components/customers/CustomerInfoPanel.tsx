@@ -248,9 +248,10 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
                 variant="ghost"
                 size="sm"
                 onClick={() => copyToClipboard(serviceAddress, 'Service address')}
-                className="h-8 w-8 p-0 ml-2"
+                className="flex items-center gap-1"
               >
                 <Copy className="w-4 h-4" />
+                <span className="text-sm">Copy Address</span>
               </Button>
             </div>
             {customer.service_street && (
@@ -300,9 +301,10 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
               variant="ghost"
               size="sm"
               onClick={() => copyToClipboard(billingAddress, 'Billing address')}
-              className="h-8 w-8 p-0 ml-2"
+              className="flex items-center gap-1"
             >
               <Copy className="w-4 h-4" />
+              <span className="text-sm">Copy Address</span>
             </Button>
           </div>
         </CardContent>
