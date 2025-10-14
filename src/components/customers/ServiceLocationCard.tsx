@@ -8,7 +8,8 @@ import {
   Trash2, 
   ExternalLink,
   Lock,
-  Star
+  Star,
+  Copy
 } from 'lucide-react';
 import { EditServiceLocationModal } from './EditServiceLocationModal';
 import { supabase } from '@/integrations/supabase/client';
@@ -106,6 +107,22 @@ export function ServiceLocationCard({ location, onUpdate, onDelete }: ServiceLoc
     document.body.removeChild(link);
   };
 
+  const copyAddress = () => {
+    navigator.clipboard.writeText(fullAddress).then(() => {
+      toast({
+        title: "Address Copied",
+        description: "Address copied to clipboard",
+      });
+    }).catch((error) => {
+      console.error('Failed to copy address:', error);
+      toast({
+        title: "Error",
+        description: "Failed to copy address",
+        variant: "destructive",
+      });
+    });
+  };
+
   return (
     <Card className="hover:shadow-md transition-shadow">
       <CardContent className="p-6">
@@ -148,6 +165,15 @@ export function ServiceLocationCard({ location, onUpdate, onDelete }: ServiceLoc
             </div>
 
             <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={copyAddress}
+                className="text-xs"
+              >
+                <Copy className="w-3 h-3 mr-1" />
+                Copy
+              </Button>
               <Button
                 variant="outline"
                 size="sm"
