@@ -134,30 +134,40 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
     return () => {
       map.current?.remove();
     };
-  }, [mapboxToken, mapStyle]);
+  }, [mapboxToken]);
 
   // Effect to update map style when toggled
   const toggleMapStyle = () => {
+    if (!map.current) return; // Add safety check
+    
     const newStyle = mapStyle === 'mapbox://styles/mapbox/streets-v12' 
       ? 'mapbox://styles/mapbox/satellite-streets-v12' 
       : 'mapbox://styles/mapbox/streets-v12';
     
     setMapStyle(newStyle);
     
-    if (map.current) {
-      // Store current markers data before style change
-      const currentPins = [...pins];
+    // Store current markers data before style change
+    const currentPins = [...pins];
+    
+    map.current.setStyle(newStyle);
+    
+    // Re-add markers after style loads
+    map.current.once('style.load', () => {
+      // Add safety check before re-adding markers
+      if (!map.current) {
+        console.error('Map instance lost during style change');
+        return;
+      }
       
-      map.current.setStyle(newStyle);
-      
-      // Re-add markers after style loads
-      map.current.once('style.load', () => {
+      try {
         // Clear existing marker refs
         Object.values(markersRef.current).forEach(marker => marker.remove());
         markersRef.current = {};
         
         // Re-add all markers
         currentPins.forEach(pin => {
+          if (!map.current) return; // Double check map still exists
+          
           const marker = new mapboxgl.Marker({
             color: '#3b82f6',
             draggable: false
@@ -167,31 +177,52 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
               new mapboxgl.Popup({ offset: 25 })
                 .setHTML(`<div style="padding: 4px;"><strong>${pin.label}</strong><br/>Lat: ${pin.latitude.toFixed(6)}<br/>Lng: ${pin.longitude.toFixed(6)}${pin.notes ? '<br/>Notes: ' + pin.notes : ''}</div>`)
             )
-            .addTo(map.current!);
+            .addTo(map.current);
           
           markersRef.current[pin.id] = marker;
         });
-      });
-    }
+      } catch (error) {
+        console.error('Error re-adding markers after style change:', error);
+      }
+    });
   };
 
   // Re-add markers when pins are loaded from database
   useEffect(() => {
     if (pins.length > 0 && map.current && Object.keys(markersRef.current).length === 0) {
-      pins.forEach(pin => {
-        const marker = new mapboxgl.Marker({
-          color: '#3b82f6',
-          draggable: false
-        })
-          .setLngLat([pin.longitude, pin.latitude])
-          .setPopup(
-            new mapboxgl.Popup({ offset: 25 })
-              .setHTML(`<div style="padding: 4px;"><strong>${pin.label}</strong><br/>Lat: ${pin.latitude.toFixed(6)}<br/>Lng: ${pin.longitude.toFixed(6)}${pin.notes ? '<br/>Notes: ' + pin.notes : ''}</div>`)
-          )
-          .addTo(map.current);
+      // Add check to ensure map is loaded
+      const addMarkers = () => {
+        if (!map.current) return;
         
-        markersRef.current[pin.id] = marker;
-      });
+        try {
+          pins.forEach(pin => {
+            if (!map.current) return;
+            
+            const marker = new mapboxgl.Marker({
+              color: '#3b82f6',
+              draggable: false
+            })
+              .setLngLat([pin.longitude, pin.latitude])
+              .setPopup(
+                new mapboxgl.Popup({ offset: 25 })
+                  .setHTML(`<div style="padding: 4px;"><strong>${pin.label}</strong><br/>Lat: ${pin.latitude.toFixed(6)}<br/>Lng: ${pin.longitude.toFixed(6)}${pin.notes ? '<br/>Notes: ' + pin.notes : ''}</div>`)
+              )
+              .addTo(map.current);
+            
+            markersRef.current[pin.id] = marker;
+          });
+        } catch (error) {
+          console.error('Error adding initial markers:', error);
+        }
+      };
+      
+      // If map is already loaded, add markers immediately
+      if (map.current.loaded()) {
+        addMarkers();
+      } else {
+        // Otherwise wait for load event
+        map.current.once('load', addMarkers);
+      }
     }
   }, [pins, mapboxToken]);
 
