@@ -651,15 +651,18 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                     <div>
                       <Label>Labor Cost ($)</Label>
                       <div className="flex gap-2">
-                        <Input
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          value={workOrderForm.labor_cost}
-                          onChange={(e) => setWorkOrderForm((p) => ({ ...p, labor_cost: e.target.value }))}
-                          placeholder="0.00"
-                          className="flex-1"
-                        />
+                        <div className="relative flex-1">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            value={workOrderForm.labor_cost}
+                            onChange={(e) => setWorkOrderForm((p) => ({ ...p, labor_cost: e.target.value }))}
+                            placeholder="0.00"
+                            className="pl-7"
+                          />
+                        </div>
                         <Select
                           value={workOrderForm.labor_cost_type}
                           onValueChange={(v) => setWorkOrderForm((p) => ({ ...p, labor_cost_type: v }))}
@@ -709,7 +712,8 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                               placeholder="List parts used"
                             />
                           </div>
-                          <div>
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
                             <Input
                               type="number"
                               step="0.01"
@@ -721,6 +725,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                                 setWorkOrderForm((p) => ({ ...p, parts: newParts }));
                               }}
                               placeholder="0.00"
+                              className="pl-7"
                             />
                           </div>
                         </div>
