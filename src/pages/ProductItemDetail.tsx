@@ -25,7 +25,7 @@ const ProductItemDetail: React.FC = () => {
   
   // Modal states
   const [showMaintenanceModal, setShowMaintenanceModal] = useState(false);
-  const [maintenanceModalTab, setMaintenanceModalTab] = useState<"details" | "update">("details");
+  const [maintenanceModalTab, setMaintenanceModalTab] = useState<"details" | "workorders">("details");
   const [showEditModal, setShowEditModal] = useState(false);
   const [showPhotoCapture, setShowPhotoCapture] = useState(false);
   const [showPhotoGallery, setShowPhotoGallery] = useState(false);

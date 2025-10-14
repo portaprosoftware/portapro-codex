@@ -11,9 +11,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Clock, DollarSign, MapPin, Settings, Wrench, Trash2, Plus, X, CheckCircle2, Trash } from "lucide-react";
+import { Clock, DollarSign, MapPin, Settings, Wrench, Trash2, Plus, X, CheckCircle2 } from "lucide-react";
 import { SimpleMaintenancePhotoUpload } from "./SimpleMaintenancePhotoUpload";
-import { MaintenanceUpdatePhotos } from "./MaintenanceUpdatePhotos";
 import { ImageViewerModal } from "./ImageViewerModal";
 import { useSystemUsers } from "@/hooks/useSystemUsers";
 
@@ -26,25 +25,9 @@ interface UnifiedMaintenanceItemModalProps {
   item: any;
   productId: string;
   storageLocations: StorageLocation[] | undefined;
-  activeTab?: "details" | "workorders" | "update";
+  activeTab?: "details" | "workorders";
 }
 
-interface MaintenanceUpdateForm {
-  update_type: "progress" | "repair" | "parts" | "inspection";
-  title: string;
-  description: string;
-  labor_hours: string;
-  labor_cost: string;
-  parts_cost: string;
-  parts_used: string;
-  technician_name: string;
-}
-
-interface UpdatePhoto {
-  file: File;
-  preview: string;
-  caption: string;
-}
 
 export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalProps> = ({
   isOpen,
@@ -202,19 +185,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
     },
   });
 
-  const [updateForm, setUpdateForm] = useState<MaintenanceUpdateForm>({
-    update_type: "progress",
-    title: "",
-    description: "",
-    labor_hours: "",
-    labor_cost: "",
-    parts_cost: "",
-    parts_used: "",
-    technician_name: "",
-  });
-
-  const [updatePhotos, setUpdatePhotos] = useState<UpdatePhoto[]>([]);
-  const [maintenancePhotos, setMaintenancePhotos] = useState<UpdatePhoto[]>([]);
+  const [maintenancePhotos, setMaintenancePhotos] = useState<{ file: File; preview: string; caption: string }[]>([]);
   const [imageViewerOpen, setImageViewerOpen] = useState(false);
   const [selectedPhotos, setSelectedPhotos] = useState<any[]>([]);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
@@ -300,109 +271,6 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
     },
   });
 
-  const addUpdateMutation = useMutation({
-    mutationFn: async (data: MaintenanceUpdateForm) => {
-      if (!itemId) return;
-      
-      // Upload photos first if any
-      let attachments: any[] = [];
-      if (updatePhotos.length > 0) {
-        const photoPromises = updatePhotos.map(async (photo, index) => {
-          const fileExt = photo.file.name.split('.').pop();
-          const fileName = `update-${itemId}-${Date.now()}-${index}.${fileExt}`;
-          const filePath = `unit-photos/${fileName}`;
-
-          const { error: uploadError } = await supabase.storage
-            .from('unit-photos')
-            .upload(filePath, photo.file);
-
-          if (uploadError) throw uploadError;
-
-          const { data: { publicUrl } } = supabase.storage
-            .from('unit-photos')
-            .getPublicUrl(filePath);
-
-          return {
-            type: 'photo',
-            url: publicUrl,
-            caption: photo.caption || null,
-            filename: photo.file.name
-          };
-        });
-
-        attachments = await Promise.all(photoPromises);
-      }
-      
-      // Calculate total cost from labor + parts
-      const laborCost = data.labor_cost ? parseFloat(data.labor_cost) : 0;
-      const partsCost = data.parts_cost ? parseFloat(data.parts_cost) : 0;
-      const totalCost = laborCost + partsCost;
-      
-      // Convert parts_used string to JSONB array
-      const partsUsedArray = data.parts_used ? 
-        data.parts_used.split(',').map(part => part.trim()).filter(part => part) : 
-        [];
-      
-      const { error } = await (supabase as any)
-        .from("maintenance_updates")
-        .insert({
-          item_id: itemId,
-          update_type: data.update_type,
-          title: data.title,
-          description: data.description,
-          labor_hours: data.labor_hours ? parseFloat(data.labor_hours) : 0,
-          cost_amount: totalCost,
-          parts_used: partsUsedArray,
-          technician_name: data.technician_name || null,
-          attachments: attachments.length > 0 ? attachments : null,
-        });
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      toast.success("Update added");
-      queryClient.invalidateQueries({ queryKey: ["maintenance-updates", itemId] });
-      queryClient.invalidateQueries({ queryKey: ["maintenance-items", productId] });
-      setUpdateForm({
-        update_type: "progress",
-        title: "",
-        description: "",
-        labor_hours: "",
-        labor_cost: "",
-        parts_cost: "",
-        parts_used: "",
-        technician_name: "",
-      });
-      setUpdatePhotos([]);
-    },
-    onError: (err) => {
-      console.error(err);
-      toast.error("Failed to add update");
-    },
-  });
-
-  // Delete update mutation
-  const deleteUpdateMutation = useMutation({
-    mutationFn: async (updateId: string) => {
-      const { error } = await supabase
-        .from("maintenance_updates")
-        .delete()
-        .eq("id", updateId);
-      
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      toast.success("Maintenance update deleted successfully");
-      queryClient.invalidateQueries({ queryKey: ["maintenance-updates", itemId] });
-    },
-    onError: (error) => {
-      console.error("Error deleting maintenance update:", error);
-      toast.error("Failed to delete maintenance update");
-    },
-  });
-
-  const handleDeleteUpdate = (updateId: string) => {
-    deleteUpdateMutation.mutate(updateId);
-  };
 
   const handleItemSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -446,11 +314,10 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
           </div>
 
           {/* Tab Navigation */}
-          <Tabs value={activeTab} onValueChange={(value: string) => setActiveTab(value as "details" | "workorders" | "update")} className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
+          <Tabs value={activeTab} onValueChange={(value: string) => setActiveTab(value as "details" | "workorders")} className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="details">Unit Details</TabsTrigger>
               <TabsTrigger value="workorders">Work Orders</TabsTrigger>
-              <TabsTrigger value="update">Progress Updates</TabsTrigger>
             </TabsList>
 
             <TabsContent value="details" className="mt-6">
@@ -863,200 +730,6 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                     </Button>
                   </div>
                 </div>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="update" className="mt-6">
-              {/* Add Update & history */}
-              <div className="space-y-5">
-                {/* Recent updates timeline */}
-                <div className="bg-white border rounded-xl p-4">
-                  <h4 className="font-medium mb-3">Open Work Orders</h4>
-                  <div className="space-y-4 max-h-[600px] overflow-y-auto">
-                    {(updates || []).length === 0 ? (
-                      <div className="text-sm text-muted-foreground text-center py-8">
-                        No maintenance updates yet
-                      </div>
-                     ) : (
-                        (updates || []).map((update: any) => {
-                          const isWorkOrder = update.title === "Work Order";
-                          return (
-                          <div key={update.id} className={`border rounded-lg p-4 relative flex flex-col ${isWorkOrder ? 'border-gray-300 bg-gray-100' : ''}`}>
-                            <div>
-                              <div className="flex items-center justify-between mb-3">
-                                <div className="flex items-center gap-2">
-                                  {!isWorkOrder && (
-                                    <Badge 
-                                      variant="outline" 
-                                      className={`text-xs font-bold ${
-                                        update.update_type === 'progress' 
-                                          ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white border-orange-600' 
-                                          : update.update_type === 'repair'
-                                          ? 'bg-gradient-to-r from-red-600 to-red-700 text-white border-red-600'
-                                          : update.update_type === 'parts'
-                                          ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white border-purple-600'
-                                          : 'bg-gradient-to-r from-green-600 to-green-700 text-white border-green-600'
-                                      }`}
-                                    >
-                                      {update.update_type === 'progress' ? 'Progress' : 
-                                       update.update_type === 'repair' ? 'Repair' :
-                                       update.update_type === 'parts' ? 'Parts' : 
-                                       update.update_type}
-                                    </Badge>
-                                  )}
-                                  {isWorkOrder && (
-                                    <Select
-                                      value={update.status || "work_order_created"}
-                                      onValueChange={(v) => {
-                                        // TODO: Update status in database
-                                        toast.success("Status updated");
-                                      }}
-                                    >
-                                      <SelectTrigger className="h-7 w-[180px] text-xs">
-                                        <SelectValue />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="work_order_created">Work Order Created</SelectItem>
-                                        <SelectItem value="in_progress">In Progress</SelectItem>
-                                        <SelectItem value="waiting_on_parts">Waiting on Parts</SelectItem>
-                                        <SelectItem value="completed">Completed</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                  )}
-                                </div>
-                               <div className="text-xs text-muted-foreground">
-                                 {new Date(update.created_at).toLocaleDateString()}
-                               </div>
-                             </div>
-                             {update.title && !isWorkOrder && (
-                               <div className="text-sm font-medium mb-2">{update.title}</div>
-                             )}
-                             {!isWorkOrder && (
-                               <div className="text-sm mb-2 line-clamp-2">{update.description}</div>
-                             )}
-                             
-                              {/* Display attached photos */}
-                              {update.attachments && Array.isArray(update.attachments) && update.attachments.length > 0 && (
-                                <div className="flex gap-2 mb-3">
-                                  {update.attachments.filter((att: any) => att.type === 'photo').map((photo: any, index: number) => (
-                                    <div key={index} className="relative">
-                                      <img
-                                        src={photo.url}
-                                        alt={photo.caption || `Update photo ${index + 1}`}
-                                        className="w-16 h-16 object-cover rounded border cursor-pointer hover:opacity-80 transition-opacity"
-                                        onClick={() => {
-                                          const photos = update.attachments.filter((att: any) => att.type === 'photo');
-                                          setSelectedPhotos(photos);
-                                          setSelectedPhotoIndex(index);
-                                          setImageViewerOpen(true);
-                                        }}
-                                      />
-                                      {photo.caption && (
-                                        <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-75 text-white text-xs p-1 rounded-b truncate">
-                                          {photo.caption}
-                                        </div>
-                                      )}
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-                           </div>
-                           <div className="space-y-1 mt-2">
-                             {update.technician_name && (
-                               <div className="text-sm text-muted-foreground">
-                                 Technician: {update.technician_name}
-                               </div>
-                             )}
-                             <div className="flex gap-4 text-sm text-muted-foreground">
-                               {update.labor_hours > 0 && (
-                                 <span>Labor: {update.labor_hours}h</span>
-                               )}
-                               {update.cost_amount > 0 && (
-                                 <span>Total Cost: ${update.cost_amount}</span>
-                               )}
-                               {update.parts_used && Array.isArray(update.parts_used) && update.parts_used.length > 0 && (
-                                 <span>Parts: {update.parts_used.join(', ')}</span>
-                               )}
-                             </div>
-                           </div>
-                        </div>
-                        );
-                      })
-                    )}
-                  </div>
-                </div>
-
-                {/* Add Update Form - Moved Below */}
-                <div className="bg-white border rounded-xl p-4">
-                  <h4 className="font-medium mb-3">Add Work Order Update</h4>
-                  <div className="space-y-3">
-                    <div>
-                      <Label>Update Type</Label>
-                      <Select
-                        value={updateForm.update_type}
-                        onValueChange={(v) => setUpdateForm((p) => ({ ...p, update_type: v as any }))}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="progress">Progress Update</SelectItem>
-                          <SelectItem value="repair">Repair Work</SelectItem>
-                          <SelectItem value="parts">Parts Replacement</SelectItem>
-                          <SelectItem value="inspection">Inspection</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label>Title *</Label>
-                      <Input
-                        value={updateForm.title}
-                        onChange={(e) => setUpdateForm((p) => ({ ...p, title: e.target.value }))}
-                        placeholder="Brief title for this update"
-                      />
-                    </div>
-                    <div>
-                      <Label>Description *</Label>
-                      <Textarea
-                        rows={3}
-                        value={updateForm.description}
-                        onChange={(e) => setUpdateForm((p) => ({ ...p, description: e.target.value }))}
-                        placeholder="Describe what was done or current status"
-                      />
-                    </div>
-                    
-                    {/* Photo Upload Section */}
-                    <div className="pt-3 border-t">
-                      <MaintenanceUpdatePhotos 
-                        photos={updatePhotos}
-                        onPhotosChange={setUpdatePhotos}
-                        maxPhotos={2}
-                      />
-                    </div>
-
-                    <div className="flex justify-end pt-3">
-                      <Button
-                        onClick={() => {
-                          console.log("Add Update button clicked", updateForm); // Debug log
-                          if (!updateForm.title.trim()) {
-                            toast.error("Title is required");
-                            return;
-                          }
-                          if (!updateForm.description.trim()) {
-                            toast.error("Description is required");
-                            return;
-                          }
-                          addUpdateMutation.mutate(updateForm);
-                        }}
-                        disabled={addUpdateMutation.isPending}
-                        className="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold hover:from-blue-700 hover:to-blue-800"
-                      >
-                        {addUpdateMutation.isPending ? "Adding..." : "Add Maintenance Update"}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-
               </div>
             </TabsContent>
           </Tabs>
