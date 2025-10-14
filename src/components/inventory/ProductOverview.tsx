@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Edit, Settings, Wrench, Plus, Minus, History, AlertTriangle, RefreshCw, Loader2, Box } from "lucide-react";
+import { Edit, Binary, Wrench, Plus, Minus, History, AlertTriangle, RefreshCw, Loader2, Box } from "lucide-react";
 import { EditProductModal } from "./EditProductModal";
 import { TrackedOperationsPanel } from "./TrackedOperationsPanel";
 
@@ -352,25 +352,26 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-gray-900">Unit ID - Number Series Selection</h2>
           <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="text-gray-900 border-gray-200 hover:bg-gray-50"
+              onClick={() => setShowCategoryModal(true)}
+            >
+              <Binary className="w-5 h-5 mr-2" />
+              Set Default Series
+            </Button>
             {product.default_item_code_category && (
               <Button 
-                variant="outline" 
-                className="text-red-600 border-red-600 hover:bg-red-50"
+                variant="ghost" 
+                size="sm"
+                className="text-gray-600 hover:text-gray-900"
                 onClick={clearDefaultCategory}
                 disabled={updateCategoryMutation.isPending}
               >
-                <Minus className="w-4 h-4 mr-2" />
-                Clear Default
+                Clear Series
               </Button>
             )}
-            <Button 
-              variant="outline" 
-              className="text-blue-600 border-blue-600 hover:bg-blue-50"
-              onClick={() => setShowCategoryModal(true)}
-            >
-              <Settings className="w-4 h-4 mr-2" />
-              Set Default Series
-            </Button>
           </div>
         </div>
         
