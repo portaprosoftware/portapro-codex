@@ -73,7 +73,7 @@ export const EquipmentFilterModal: React.FC<EquipmentFilterModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md bg-white">
+      <DialogContent className="sm:max-w-xl bg-white">
         <DialogHeader>
           <DialogTitle>Filter by Equipment</DialogTitle>
         </DialogHeader>
@@ -119,7 +119,7 @@ export const EquipmentFilterModal: React.FC<EquipmentFilterModalProps> = ({
           </div>
 
           {/* Products Grid */}
-          <div className="max-h-96 overflow-y-auto pr-2">
+          <div className="max-h-[500px] overflow-y-auto pr-2">
             {filteredProducts.length > 0 ? (
               <div className="grid grid-cols-2 gap-3">
                 {filteredProducts.map((product) => {
@@ -144,7 +144,7 @@ export const EquipmentFilterModal: React.FC<EquipmentFilterModalProps> = ({
                       </div>
 
                       {/* Product Image */}
-                      <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden border border-gray-200 mb-3">
+                      <div className="w-24 h-24 bg-gray-100 rounded-lg overflow-hidden border border-gray-200 mb-3">
                         {product.image_url ? (
                           <img
                             src={product.image_url}
