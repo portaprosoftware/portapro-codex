@@ -174,7 +174,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
         <Button
           variant="ghost"
           onClick={onBack}
-          className="px-3 py-2 h-auto bg-blue-600 text-white hover:bg-blue-700 rounded-md"
+          className="px-3 py-2 h-auto bg-blue-600 text-white hover:bg-blue-700 hover:text-white rounded-md"
         >
           <ArrowLeft className="w-4 h-4 mr-1" />
           Inventory
