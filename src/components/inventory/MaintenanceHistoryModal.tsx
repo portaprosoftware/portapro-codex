@@ -203,13 +203,7 @@ export const MaintenanceHistoryModal: React.FC<MaintenanceHistoryModalProps> = (
                       <div className="flex gap-4">
                         <div className="flex-1 bg-white border border-gray-200 rounded-lg p-4">
                           <div className="flex items-start justify-between mb-4">
-                            <div className="flex items-center gap-3">
-                              <h3 className="text-lg font-semibold">Session #{session.session_number}</h3>
-                              <Badge className={getSessionStatusColor(session.status)}>
-                                {session.status === 'completed' ? 'Completed' : 'Active'}
-                              </Badge>
-                            </div>
-                            <div className="text-right text-sm text-gray-600">
+                            <div className="text-right text-sm text-gray-600 ml-auto">
                               <div>Started: {formatDate(session.started_at)}</div>
                               {session.completed_at && (
                                 <div>Completed: {formatDate(session.completed_at)} ({sessionDays} day{sessionDays !== 1 ? 's' : ''})</div>
