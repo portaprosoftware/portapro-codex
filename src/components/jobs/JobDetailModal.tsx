@@ -721,7 +721,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                         <label className="text-sm font-medium text-muted-foreground">Service Address</label>
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex-1">
-                            <p className="text-sm">
+                            <p className="text-sm select-text">
                               {job?.customer?.service_street && (
                                 <>{job.customer.service_street}<br /></>
                               )}
@@ -747,23 +747,8 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                               
                               const encodedAddress = encodeURIComponent(fullAddress);
                               
-                              const handleCopyAddress = () => {
-                                navigator.clipboard.writeText(fullAddress);
-                                toast.success('Address copied to clipboard');
-                              };
-                              
                               return (
                                 <>
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    className="h-8 px-2 text-xs"
-                                    onClick={handleCopyAddress}
-                                    title="Copy Address"
-                                  >
-                                    <Copy className="h-3 w-3 mr-1" />
-                                    Copy
-                                  </Button>
                                   <Button
                                     size="sm"
                                     variant="outline"
@@ -802,11 +787,11 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="text-sm font-medium text-muted-foreground">Email</label>
-                        <p className="text-sm">{job?.customer?.email || 'Not provided'}</p>
+                        <p className="text-sm select-text">{job?.customer?.email || 'Not provided'}</p>
                       </div>
                       <div>
                         <label className="text-sm font-medium text-muted-foreground">Phone</label>
-                        <p className="text-sm">{job?.customer?.phone || 'Not provided'}</p>
+                        <p className="text-sm select-text">{job?.customer?.phone || 'Not provided'}</p>
                       </div>
                     </div>
                   </CardContent>
