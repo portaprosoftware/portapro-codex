@@ -69,7 +69,7 @@ export function ServiceAddressesSection({ customerId }: ServiceAddressesSectionP
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <p className="text-sm text-muted-foreground">
-          Manage physical addresses for service locations
+          Manage physical addresses for customers with multiple service locations.
         </p>
         <Button 
           onClick={() => setIsAddModalOpen(true)}
