@@ -391,6 +391,7 @@ export function LocationSelectionStep() {
                 customerId={state.data.customer_id}
                 selectedPinIds={state.data.reference_pin_ids || []}
                 onPinSelectionChange={(pinIds) => dispatch({ type: 'UPDATE_DATA', payload: { reference_pin_ids: pinIds } })}
+                hideExpandButton={true}
               />
             ) : (
               <div className="text-center py-8 text-muted-foreground">

@@ -23,6 +23,7 @@ interface ReadOnlyPinsMapProps {
   onPinSelectionChange?: (pinIds: string[]) => void;
   readOnly?: boolean;
   className?: string;
+  hideExpandButton?: boolean;
 }
 
 export function ReadOnlyPinsMap({ 
@@ -30,7 +31,8 @@ export function ReadOnlyPinsMap({
   selectedPinIds = [], 
   onPinSelectionChange,
   readOnly = false,
-  className = '' 
+  className = '',
+  hideExpandButton = false
 }: ReadOnlyPinsMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
@@ -75,7 +77,17 @@ export function ReadOnlyPinsMap({
       style: 'mapbox://styles/mapbox/streets-v12',
       center: [-98.5795, 39.8283], // Center of US as default
       zoom: 3,
+      attributionControl: false, // Disable default attribution
     });
+
+    // Add custom minimal attribution control
+    map.current.addControl(
+      new mapboxgl.AttributionControl({
+        compact: true,
+        customAttribution: ''
+      }),
+      'bottom-right'
+    );
 
     map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
@@ -230,20 +242,22 @@ export function ReadOnlyPinsMap({
           )}>
             <div ref={mapContainer} className="w-full h-full" />
             
-            {/* Expand/Collapse Button */}
-            <Button
-              variant="secondary"
-              size="icon"
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="absolute bottom-4 right-4 z-10 rounded-full h-10 w-10 bg-white hover:bg-gray-100 shadow-lg"
-              title={isExpanded ? "Minimize map" : "Maximize map"}
-            >
-              {isExpanded ? (
-                <Minimize2 className="h-4 w-4" />
-              ) : (
-                <Maximize2 className="h-4 w-4" />
-              )}
-            </Button>
+            {/* Expand/Collapse Button - Hidden if hideExpandButton prop is true */}
+            {!hideExpandButton && (
+              <Button
+                variant="secondary"
+                size="icon"
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="absolute bottom-4 right-4 z-10 rounded-full h-10 w-10 bg-white hover:bg-gray-100 shadow-lg"
+                title={isExpanded ? "Minimize map" : "Maximize map"}
+              >
+                {isExpanded ? (
+                  <Minimize2 className="h-4 w-4" />
+                ) : (
+                  <Maximize2 className="h-4 w-4" />
+                )}
+              </Button>
+            )}
           </div>
         </div>
 
