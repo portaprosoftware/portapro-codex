@@ -883,6 +883,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                                         const newCompleted = new Set(completedWorkOrders);
                                         if (newCompleted.has(update.id)) {
                                           newCompleted.delete(update.id);
+                                          toast.success("Work order reverted to pending");
                                         } else {
                                           newCompleted.add(update.id);
                                           toast.success("Work order marked as complete");
@@ -892,7 +893,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                                       className={`h-7 px-3 text-xs font-bold ${
                                         completedWorkOrders.has(update.id)
                                           ? 'bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800 border-green-600'
-                                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300 border-gray-300'
+                                          : 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 border-blue-600'
                                       }`}
                                     >
                                       {completedWorkOrders.has(update.id) ? 'Completed' : 'Mark Complete'}
