@@ -476,7 +476,7 @@ export function ReadOnlyPinsMap({
                                 "p-3 rounded-lg transition-all ml-3",
                                 !readOnly && "cursor-pointer",
                                 isSelected 
-                                  ? "bg-gradient-to-br from-green-100 to-green-200 border-2 border-green-500 dark:from-green-900/40 dark:to-green-950/40" 
+                                  ? "bg-gradient-to-r from-green-500 to-green-600 text-white border-2 border-green-700" 
                                   : "bg-muted/30 hover:bg-muted/50"
                               )}
                             >
@@ -492,16 +492,16 @@ export function ReadOnlyPinsMap({
                                 )}
                                 <div className="flex-1">
                                   <div className="flex items-center gap-2">
-                                    <MapPin className="h-3 w-3 text-destructive" />
-                                    <h4 className="font-medium text-sm">
+                                    <MapPin className={cn("h-3 w-3", isSelected ? "text-white" : "text-destructive")} />
+                                    <h4 className={cn("font-medium text-sm", isSelected && "text-white font-bold")}>
                                       {pin.label}
                                     </h4>
                                   </div>
-                                  <p className="text-xs text-muted-foreground mt-1">
+                                  <p className={cn("text-xs mt-1", isSelected ? "text-white/90" : "text-muted-foreground")}>
                                     {pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)}
                                   </p>
                                   {pin.notes && (
-                                    <p className="text-xs text-muted-foreground mt-2">{pin.notes}</p>
+                                    <p className={cn("text-xs mt-2", isSelected ? "text-white/80" : "text-muted-foreground")}>{pin.notes}</p>
                                   )}
                                 </div>
                               </div>
@@ -538,7 +538,7 @@ export function ReadOnlyPinsMap({
                               "p-3 rounded-lg transition-all ml-3",
                               !readOnly && "cursor-pointer",
                               isSelected 
-                                ? "bg-gradient-to-br from-green-100 to-green-200 border-2 border-green-500 dark:from-green-900/40 dark:to-green-950/40" 
+                                ? "bg-gradient-to-r from-green-500 to-green-600 text-white border-2 border-green-700" 
                                 : "bg-muted/30 hover:bg-muted/50"
                             )}
                           >
@@ -554,16 +554,16 @@ export function ReadOnlyPinsMap({
                               )}
                               <div className="flex-1">
                                 <div className="flex items-center gap-2">
-                                  <MapPin className="h-3 w-3 text-destructive" />
-                                  <h4 className="font-medium text-sm">
+                                  <MapPin className={cn("h-3 w-3", isSelected ? "text-white" : "text-destructive")} />
+                                  <h4 className={cn("font-medium text-sm", isSelected && "text-white font-bold")}>
                                     {pin.label}
                                   </h4>
                                 </div>
-                                <p className="text-xs text-muted-foreground mt-1">
+                                <p className={cn("text-xs mt-1", isSelected ? "text-white/90" : "text-muted-foreground")}>
                                   {pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)}
                                 </p>
                                 {pin.notes && (
-                                  <p className="text-xs text-muted-foreground mt-2">{pin.notes}</p>
+                                  <p className={cn("text-xs mt-2", isSelected ? "text-white/80" : "text-muted-foreground")}>{pin.notes}</p>
                                 )}
                               </div>
                             </div>
