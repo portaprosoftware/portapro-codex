@@ -44,15 +44,26 @@ export const ReturnedToServiceSection: React.FC<ReturnedToServiceSectionProps> =
     switch (condition?.toLowerCase()) {
       case "excellent":
       case "good":
-        return "bg-green-100 text-green-800";
+        return "bg-gradient-to-r from-green-600 to-green-500 text-white font-bold";
       case "fair":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-gradient-to-r from-yellow-600 to-yellow-500 text-white font-bold";
       case "poor":
       case "needs_repair":
-        return "bg-red-100 text-red-800";
+      case "needs repair":
+        return "bg-gradient-to-r from-red-600 to-red-500 text-white font-bold";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gradient-to-r from-gray-600 to-gray-500 text-white font-bold";
     }
+  };
+
+  const capitalizeWords = (text: string) => {
+    if (!text) return text;
+    return text
+      .toLowerCase()
+      .replace(/_/g, ' ')
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
   };
 
   if (units.length === 0) {
@@ -86,13 +97,9 @@ export const ReturnedToServiceSection: React.FC<ReturnedToServiceSectionProps> =
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-3">
                   <span className="font-bold text-blue-600 text-lg">{unit.item_code}</span>
-                  <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                    <CheckCircle className="w-3 h-3 mr-1" />
-                    Session #{unit.session_number}
-                  </Badge>
                   <Badge variant="secondary" className="text-xs">{unit.product_name}</Badge>
                   {unit.returned_to_maintenance && (
-                    <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+                    <Badge className="bg-gradient-to-r from-red-600 to-red-500 text-white font-bold">
                       <AlertCircle className="w-3 h-3 mr-1" />
                       Repeat Issue
                     </Badge>
@@ -103,12 +110,12 @@ export const ReturnedToServiceSection: React.FC<ReturnedToServiceSectionProps> =
                   <div>
                     <div className="text-xs text-gray-600 mb-1">Condition Change</div>
                     <div className="flex items-center gap-2">
-                      <Badge className={getConditionColor(unit.condition_before)} variant="secondary">
-                        {unit.condition_before || "Unknown"}
+                      <Badge className={getConditionColor(unit.condition_before)}>
+                        {capitalizeWords(unit.condition_before) || "Unknown"}
                       </Badge>
                       <span className="text-gray-400">→</span>
-                      <Badge className={getConditionColor(unit.condition_after)} variant="secondary">
-                        {unit.condition_after || "Unknown"}
+                      <Badge className={getConditionColor(unit.condition_after)}>
+                        {capitalizeWords(unit.condition_after) || "Unknown"}
                       </Badge>
                     </div>
                   </div>
