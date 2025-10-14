@@ -60,6 +60,13 @@ export const DepositCollectionStep: React.FC<DepositCollectionStepProps> = ({
     enabled: !!customerId,
   });
 
+  // Auto-enable deposit if customer requires it
+  useEffect(() => {
+    if (customer?.deposit_required) {
+      setDepositEnabled(true);
+    }
+  }, [customer?.deposit_required]);
+
   const calculatedDepositAmount = depositType === 'flat' 
     ? flatAmount 
     : (totalAmount * percentage) / 100;
