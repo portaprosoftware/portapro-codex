@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Clock, DollarSign, MapPin, Settings, Wrench, Trash2, Plus, X, CheckCircle2, Trash } from "lucide-react";
+import { Clock, DollarSign, MapPin, Settings, Wrench, Trash2, Plus, X, CheckCircle2, Trash, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SimpleMaintenancePhotoUpload } from "./SimpleMaintenancePhotoUpload";
 import { MaintenanceUpdatePhotos } from "./MaintenanceUpdatePhotos";
@@ -109,6 +109,14 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
     status: "work_order_created",
   });
 
+  const [progressUpdateForm, setProgressUpdateForm] = useState({
+    parentWorkOrderId: "",
+    title: "",
+    description: "",
+  });
+
+  const [expandedWorkOrders, setExpandedWorkOrders] = useState<Record<string, boolean>>({});
+
   useEffect(() => {
     if (item) {
       setFormData({
@@ -137,12 +145,35 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
         .from("maintenance_updates")
         .select("*")
         .eq("item_id", itemId)
-        .order("created_at", { ascending: false })
-        .limit(5);
+        .order("created_at", { ascending: false });
       if (error) throw error;
       return data || [];
     },
   });
+
+  // Separate work orders (parents) from progress updates (children)
+  const workOrders = useMemo(() => {
+    return (updates || []).filter((u: any) => !u.parent_work_order_id && u.status);
+  }, [updates]);
+
+  const openWorkOrders = useMemo(() => {
+    return workOrders.filter((wo: any) => wo.status !== 'completed');
+  }, [workOrders]);
+
+  const getProgressUpdatesForWorkOrder = (workOrderId: string) => {
+    return (updates || []).filter((u: any) => u.parent_work_order_id === workOrderId);
+  };
+
+  // Auto-expand work orders that are not completed
+  useEffect(() => {
+    const initialExpanded: Record<string, boolean> = {};
+    workOrders.forEach((wo: any) => {
+      if (wo.status !== 'completed') {
+        initialExpanded[wo.id] = true;
+      }
+    });
+    setExpandedWorkOrders(initialExpanded);
+  }, [workOrders]);
 
   const totalCost = useMemo(() => {
     return (updates || []).reduce((sum: number, u: any) => sum + (u.cost_amount || 0), 0);
@@ -320,6 +351,69 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
     onError: (err: any) => {
       console.error("Work order save error:", err);
       toast.error(err.message || "Failed to save work order");
+    },
+  });
+
+  const addProgressUpdateMutation = useMutation({
+    mutationFn: async () => {
+      if (!itemId) throw new Error("Item ID is required");
+      if (!progressUpdateForm.parentWorkOrderId) throw new Error("Work order selection is required");
+      
+      // Upload photos first if any
+      let attachments: any[] = [];
+      if (updatePhotos.length > 0) {
+        const photoPromises = updatePhotos.map(async (photo, index) => {
+          const fileExt = photo.file.name.split('.').pop();
+          const fileName = `update-${itemId}-${Date.now()}-${index}.${fileExt}`;
+          const filePath = `unit-photos/${fileName}`;
+
+          const { error: uploadError } = await supabase.storage
+            .from('unit-photos')
+            .upload(filePath, photo.file);
+
+          if (uploadError) throw uploadError;
+
+          const { data: { publicUrl } } = supabase.storage
+            .from('unit-photos')
+            .getPublicUrl(filePath);
+
+          return {
+            type: 'photo',
+            url: publicUrl,
+            caption: photo.caption || null,
+            filename: photo.file.name
+          };
+        });
+
+        attachments = await Promise.all(photoPromises);
+      }
+      
+      const { error } = await (supabase as any)
+        .from("maintenance_updates")
+        .insert({
+          item_id: itemId,
+          parent_work_order_id: progressUpdateForm.parentWorkOrderId,
+          update_type: 'progress_update',
+          title: progressUpdateForm.title,
+          description: progressUpdateForm.description,
+          attachments: attachments.length > 0 ? attachments : null,
+          cost_amount: 0,
+        });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Progress update added successfully");
+      queryClient.invalidateQueries({ queryKey: ["maintenance-updates", itemId] });
+      setProgressUpdateForm({
+        parentWorkOrderId: "",
+        title: "",
+        description: "",
+      });
+      setUpdatePhotos([]);
+    },
+    onError: (err) => {
+      console.error(err);
+      toast.error("Failed to add progress update");
     },
   });
 
