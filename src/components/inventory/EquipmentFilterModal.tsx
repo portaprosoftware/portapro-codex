@@ -4,11 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, X } from "lucide-react";
+import { Search, X, Package } from "lucide-react";
 
 interface Product {
   id: string;
   name: string;
+  image_url?: string | null;
 }
 
 interface EquipmentFilterModalProps {
@@ -131,6 +132,22 @@ export const EquipmentFilterModal: React.FC<EquipmentFilterModalProps> = ({
                     onCheckedChange={() => handleToggle(product.id)}
                     onClick={(e) => e.stopPropagation()}
                   />
+                  
+                  {/* Product Image */}
+                  <div className="flex-shrink-0 w-12 h-12 bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
+                    {product.image_url ? (
+                      <img
+                        src={product.image_url}
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Package className="w-6 h-6 text-gray-400" />
+                      </div>
+                    )}
+                  </div>
+                  
                   <label className="flex-1 cursor-pointer font-medium text-gray-900">
                     {product.name}
                   </label>
@@ -154,7 +171,7 @@ export const EquipmentFilterModal: React.FC<EquipmentFilterModalProps> = ({
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button onClick={handleApply} className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+          <Button onClick={handleApply} className="bg-blue-600 hover:bg-blue-700 text-white">
             Apply Filters
           </Button>
         </DialogFooter>

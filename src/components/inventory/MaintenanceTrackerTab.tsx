@@ -44,7 +44,7 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("id, name")
+        .select("id, name, image_url")
         .order("name");
       if (error) throw error;
       return data || [];
