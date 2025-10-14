@@ -650,7 +650,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                 {/* Header with Create Work Order Button */}
                 <div className="flex justify-between items-center">
                   <h3 className="text-lg font-semibold">All Work Orders</h3>
-                  <Button onClick={() => setCreateWorkOrderModalOpen(true)}>
+                  <Button size="sm" onClick={() => setCreateWorkOrderModalOpen(true)}>
                     <Plus className="h-4 w-4 mr-2" />
                     Create Work Order
                   </Button>
