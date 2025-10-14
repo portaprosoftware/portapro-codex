@@ -366,19 +366,17 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
                 >
                   {/* Title Column */}
                   <div className="col-span-4 space-y-1">
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => handleViewNote(note)}
-                        className="text-sm font-medium text-foreground hover:text-primary cursor-pointer text-left"
-                      >
-                        {note.title || 'Customer Note'}
-                      </button>
-                      {note.is_important && (
-                        <Badge variant="destructive" className="text-xs">
-                          Important
-                        </Badge>
-                      )}
-                    </div>
+                    <button
+                      onClick={() => handleViewNote(note)}
+                      className="text-sm font-medium text-foreground hover:text-primary cursor-pointer text-left"
+                    >
+                      {note.title || 'Customer Note'}
+                    </button>
+                    {note.is_important && (
+                      <Badge variant="destructive" className="text-xs">
+                        Important
+                      </Badge>
+                    )}
                     {note.tags && note.tags.length > 0 && (
                       <div className="flex flex-wrap gap-1">
                         {note.tags.slice(0, 2).map((tag, index) => (
