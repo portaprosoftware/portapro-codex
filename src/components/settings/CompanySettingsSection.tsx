@@ -124,6 +124,7 @@ export function CompanySettingsSection() {
 
           {/* Contact Information & Business Settings */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Left Column - Contact Information */}
             <div className="space-y-3">
               <h4 className="font-medium text-foreground flex items-center space-x-2">
                 <Mail className="w-4 h-4" />
@@ -145,47 +146,50 @@ export function CompanySettingsSection() {
               </div>
             </div>
 
-            <div className="space-y-3">
-              <h4 className="font-medium text-foreground flex items-center space-x-2">
-                <MapPin className="w-4 h-4" />
-                <span>Address</span>
-              </h4>
-              <div className="pl-6">
-                <p className="text-sm text-muted-foreground whitespace-pre-line">
-                  {formatAddress()}
-                </p>
+            {/* Right Column - Address, Timezone, Deposit */}
+            <div className="space-y-4">
+              {/* Address */}
+              <div className="space-y-3">
+                <h4 className="font-medium text-foreground flex items-center space-x-2">
+                  <MapPin className="w-4 h-4" />
+                  <span>Address</span>
+                </h4>
+                <div className="pl-6">
+                  <p className="text-sm text-muted-foreground whitespace-pre-line">
+                    {formatAddress()}
+                  </p>
+                </div>
               </div>
-            </div>
-          </div>
 
-          {/* Business Settings */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-3">
-              <h4 className="font-medium text-foreground flex items-center space-x-2">
-                <Clock className="w-4 h-4" />
-                <span>Timezone</span>
-              </h4>
-              <div className="pl-6">
-                <p className="text-sm text-muted-foreground">
-                  {getTimezoneLabel(companySettings?.company_timezone)}
-                </p>
+              {/* Timezone */}
+              <div className="space-y-3">
+                <h4 className="font-medium text-foreground flex items-center space-x-2">
+                  <Clock className="w-4 h-4" />
+                  <span>Timezone</span>
+                </h4>
+                <div className="pl-6">
+                  <p className="text-sm text-muted-foreground">
+                    {getTimezoneLabel(companySettings?.company_timezone)}
+                  </p>
+                </div>
               </div>
-            </div>
 
-            <div className="space-y-3">
-              <h4 className="font-medium text-foreground flex items-center space-x-2">
-                <Percent className="w-4 h-4" />
-                <span>Default Deposit Percentage</span>
-              </h4>
-              <div className="pl-6 space-y-1">
-                <p className="text-sm text-muted-foreground">
-                  {companySettings?.default_deposit_percentage !== undefined
-                    ? `${companySettings.default_deposit_percentage}%`
-                    : "25% (default)"}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Default percentage used for deposit collection on quotes and jobs
-                </p>
+              {/* Default Deposit Percentage */}
+              <div className="space-y-3">
+                <h4 className="font-medium text-foreground flex items-center space-x-2">
+                  <Percent className="w-4 h-4" />
+                  <span>Default Deposit Percentage</span>
+                </h4>
+                <div className="pl-6 space-y-1">
+                  <p className="text-sm text-muted-foreground">
+                    {companySettings?.default_deposit_percentage !== undefined
+                      ? `${companySettings.default_deposit_percentage}%`
+                      : "25% (default)"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Default percentage used for deposit collection on quotes and jobs
+                  </p>
+                </div>
               </div>
             </div>
           </div>
