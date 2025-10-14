@@ -704,10 +704,36 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
                 const locationPins = pins.filter(p => p.service_location_id === location.id);
                 const isExpanded = expandedLocations[location.id] !== false;
                 
+                const handleLocationClick = () => {
+                  // Toggle expansion
+                  setExpandedLocations(prev => ({ ...prev, [location.id]: !isExpanded }));
+                  
+                  // Fly to location if it has coordinates
+                  if (map.current && location.gps_coordinates) {
+                    const coords = location.gps_coordinates;
+                    let lng, lat;
+                    
+                    if ('x' in coords && 'y' in coords) {
+                      lng = coords.x;
+                      lat = coords.y;
+                    }
+                    
+                    if (typeof lng === 'number' && typeof lat === 'number' && 
+                        !isNaN(lng) && !isNaN(lat) && 
+                        lng >= -180 && lng <= 180 && lat >= -90 && lat <= 90) {
+                      map.current.flyTo({
+                        center: [lng, lat],
+                        zoom: 16,
+                        duration: 1500
+                      });
+                    }
+                  }
+                };
+                
                 return (
                   <div key={location.id} className="border rounded-lg bg-background">
                     <button
-                      onClick={() => setExpandedLocations(prev => ({ ...prev, [location.id]: !isExpanded }))}
+                      onClick={handleLocationClick}
                       className="w-full flex items-center justify-between p-3 text-left hover:bg-muted/50 transition-colors rounded-t-lg"
                     >
                       <div className="flex items-center gap-2 flex-1 min-w-0">
