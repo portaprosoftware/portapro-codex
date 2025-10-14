@@ -104,20 +104,23 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
 
   const autoAssignUnits = async (product: Product, quantity: number) => {
     try {
-      // Build exclusion list of unit IDs already selected for this product in this session
+      // Build exclusion list combining units already selected in this session AND units already on the job
       const selectedIdsForProduct = selectedUnitsCollection
         .filter(s => s.productId === product.id && s.unitId !== 'bulk')
         .map(s => s.unitId);
 
-      // Get available units for this product excluding already selected ones
+      const alreadyOnJobIds = currentSelections[product.id]?.specific || [];
+      const exclusionIds = Array.from(new Set([...selectedIdsForProduct, ...alreadyOnJobIds]));
+
+      // Get available units for this product excluding any already selected/assigned ones
       let query = supabase
         .from('product_items')
         .select('id, item_code')
         .eq('product_id', product.id)
         .eq('status', 'available');
 
-      if (selectedIdsForProduct.length > 0) {
-        const idList = selectedIdsForProduct.map(id => `"${id}"`).join(',');
+      if (exclusionIds.length > 0) {
+        const idList = exclusionIds.map(id => `"${id}"`).join(',');
         query = query.not('id', 'in', `(${idList})`);
       }
 
