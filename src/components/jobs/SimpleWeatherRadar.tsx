@@ -50,6 +50,7 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
 
   // 🔍 DEBUG: Log component mount
   useEffect(() => {
+    mountedRef.current = true; // Reset mounted state for Strict Mode
     console.log('🚀 SimpleWeatherRadar: Component MOUNTED', {
       enabled,
       hasMap: !!map,

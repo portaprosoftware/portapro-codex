@@ -197,7 +197,7 @@ export function SimpleJobsMapView({
         map.current = null;
       }
     };
-  }, [mapboxToken, isDriverMode]);
+  }, [mapboxToken]); // Removed isDriverMode to prevent unnecessary map resets
 
   // Update map style when changed
   useEffect(() => {
