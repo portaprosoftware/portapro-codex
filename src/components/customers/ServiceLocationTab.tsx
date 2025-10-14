@@ -946,12 +946,12 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
             </div>
             <div>
               <Label htmlFor="pin-location">Assign to Physical Address (Optional)</Label>
-              <Select value={selectedLocationId} onValueChange={setSelectedLocationId}>
+              <Select value={selectedLocationId || "none"} onValueChange={(value) => setSelectedLocationId(value === "none" ? "" : value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="None - Standalone pin" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">None - Standalone pin</SelectItem>
+                  <SelectItem value="none">None - Standalone pin</SelectItem>
                   {serviceLocations.map(loc => (
                     <SelectItem key={loc.id} value={loc.id}>
                       {loc.location_name}
@@ -1009,12 +1009,12 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
             </div>
             <div>
               <Label htmlFor="edit-pin-location">Assign to Physical Address (Optional)</Label>
-              <Select value={selectedLocationId} onValueChange={setSelectedLocationId}>
+              <Select value={selectedLocationId || "none"} onValueChange={(value) => setSelectedLocationId(value === "none" ? "" : value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="None - Standalone pin" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">None - Standalone pin</SelectItem>
+                  <SelectItem value="none">None - Standalone pin</SelectItem>
                   {serviceLocations.map(loc => (
                     <SelectItem key={loc.id} value={loc.id}>
                       {loc.location_name}
