@@ -7828,6 +7828,13 @@ export type Database = {
           customer_id: string
           deleted_at: string | null
           deleted_by: string | null
+          deposit_amount: number | null
+          deposit_due_date: string | null
+          deposit_paid_at: string | null
+          deposit_percentage: number | null
+          deposit_required: boolean | null
+          deposit_status: string | null
+          deposit_type: string | null
           discount_type: string | null
           discount_value: number | null
           expiration_date: string | null
@@ -7850,6 +7857,13 @@ export type Database = {
           customer_id: string
           deleted_at?: string | null
           deleted_by?: string | null
+          deposit_amount?: number | null
+          deposit_due_date?: string | null
+          deposit_paid_at?: string | null
+          deposit_percentage?: number | null
+          deposit_required?: boolean | null
+          deposit_status?: string | null
+          deposit_type?: string | null
           discount_type?: string | null
           discount_value?: number | null
           expiration_date?: string | null
@@ -7872,6 +7886,13 @@ export type Database = {
           customer_id?: string
           deleted_at?: string | null
           deleted_by?: string | null
+          deposit_amount?: number | null
+          deposit_due_date?: string | null
+          deposit_paid_at?: string | null
+          deposit_percentage?: number | null
+          deposit_required?: boolean | null
+          deposit_status?: string | null
+          deposit_type?: string | null
           discount_type?: string | null
           discount_value?: number | null
           expiration_date?: string | null

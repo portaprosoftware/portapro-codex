@@ -6,6 +6,7 @@ import { StatCard } from '@/components/ui/StatCard';
 import { TrendChart } from './TrendChart';
 import { DonutChart } from './DonutChart';
 import { ActivityFeed } from './ActivityFeed';
+import { DepositAnalyticsCard } from './DepositAnalyticsCard';
 import { Briefcase, DollarSign, Truck, Users } from 'lucide-react';
 import { format } from 'date-fns';
 import type { AnalyticsOverview } from '@/types/analytics';
@@ -231,13 +232,18 @@ export const OverviewSection: React.FC<OverviewSectionProps> = ({ dateRange }) =
         />
       </div>
 
-      {/* Job Volume Trend - Full Width Above */}
-      <div className="mb-6">
-        <TrendChart 
-          data={trendData}
-          title="Job Volume Over Time"
-          height={300}
-        />
+      {/* Job Volume Trend and Deposit Analytics */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <div className="lg:col-span-2">
+          <TrendChart 
+            data={trendData}
+            title="Job Volume Over Time"
+            height={300}
+          />
+        </div>
+        <div>
+          <DepositAnalyticsCard dateRange={dateRange} />
+        </div>
       </div>
       
       {/* Recent Activity - Full Width Below Chart */}

@@ -13,6 +13,7 @@ import { RevenueSection } from '@/components/analytics/RevenueSection';
 import { OperationsSection } from '@/components/analytics/OperationsSection';
 import { CustomersSection } from '@/components/analytics/CustomersSection';
 import { DriversSection } from '@/components/analytics/DriversSection';
+import { DepositsSection } from '@/components/analytics/DepositsSection';
 import { ReportBuilder } from '@/components/analytics/ReportBuilder';
 
 const Analytics = () => {
@@ -40,6 +41,7 @@ const Analytics = () => {
   const tabs = [
     { id: 'overview', label: 'Overview', icon: BarChart4 },
     { id: 'revenue', label: 'Revenue', icon: DollarSign },
+    { id: 'deposits', label: 'Deposits', icon: DollarSign },
     { id: 'operations', label: 'Operations', icon: ClipboardList },
     { id: 'customers', label: 'Customers', icon: Users2 },
     { id: 'drivers', label: 'Drivers', icon: Gauge },
@@ -61,6 +63,8 @@ const Analytics = () => {
         return <OverviewSection dateRange={dateRange} />;
       case 'revenue':
         return <RevenueSection dateRange={dateRange} />;
+      case 'deposits':
+        return <DepositsSection dateRange={dateRange} />;
       case 'operations':
         return <OperationsSection dateRange={dateRange} />;
       case 'customers':
