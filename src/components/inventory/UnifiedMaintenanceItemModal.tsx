@@ -294,8 +294,9 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
   });
 
 
-  const handleItemSave = (e: React.FormEvent) => {
+  const handleItemSave = (e: React.FormEvent, closeAfterSave: boolean = true) => {
     e.preventDefault();
+    setShouldCloseOnSave(closeAfterSave);
     updateItemMutation.mutate(formData);
   };
 
@@ -464,7 +465,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
 
             <TabsContent value="details" className="mt-6">
               {/* Edit form */}
-              <form onSubmit={handleItemSave} className="space-y-5">
+              <form onSubmit={(e) => handleItemSave(e, true)} className="space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {/* Repair Details */}
               <div className="bg-white border rounded-xl p-4">
@@ -623,14 +624,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                       type="button" 
                       className="bg-blue-600 hover:bg-blue-700 text-white" 
                       disabled={updateItemMutation.isPending}
-                      onClick={() => {
-                        setShouldCloseOnSave(false);
-                        const formElement = document.querySelector('form') as HTMLFormElement;
-                        if (formElement) {
-                          formElement.requestSubmit();
-                        }
-                        setTimeout(() => setShouldCloseOnSave(true), 100);
-                      }}
+                      onClick={(e) => handleItemSave(e as any, false)}
                     >
                       {updateItemMutation.isPending ? "Saving..." : "Save Details"}
                     </Button>
