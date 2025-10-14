@@ -59,6 +59,14 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
     latitude: number;
     longitude: number;
     notes?: string;
+    service_location?: {
+      id: string;
+      location_name: string;
+      street?: string;
+      city?: string;
+      state?: string;
+      zip?: string;
+    };
   }>>([]);
   const [itemsWithNames, setItemsWithNames] = useState<Array<any>>([]);
   const [pinInventoryAssignments, setPinInventoryAssignments] = useState<Array<{
@@ -266,11 +274,21 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
         }
       }
 
-      // Fetch reference pin details
+      // Fetch reference pin details with service locations
       if (d.reference_pin_ids && d.reference_pin_ids.length > 0) {
         const { data: pins } = await supabase
           .from('customer_map_pins')
-          .select('*')
+          .select(`
+            *,
+            service_location:customer_service_locations(
+              id,
+              location_name,
+              street,
+              city,
+              state,
+              zip
+            )
+          `)
           .in('id', d.reference_pin_ids);
         
         if (pins) {
@@ -579,154 +597,349 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
               Pin List & Inventory Assignment
             </h3>
             
-            {/* Pin List with Inventory Assignment */}
-            <div className="space-y-3">
-              {selectedReferencePins.map((pin) => {
-                const getPinProductQuantity = (pinId: string, productId: string): number => {
-                  const assignment = pinInventoryAssignments.find(
-                    a => a.pin_id === pinId && a.product_id === productId
-                  );
-                  return assignment?.quantity || 0;
-                };
-
-                const updatePinProductQuantity = (pinId: string, productId: string, quantity: number) => {
-                  const newAssignments = [...pinInventoryAssignments];
-                  const existingIndex = newAssignments.findIndex(
-                    a => a.pin_id === pinId && a.product_id === productId
-                  );
-                  
-                  if (quantity > 0) {
-                    if (existingIndex >= 0) {
-                      newAssignments[existingIndex].quantity = quantity;
-                    } else {
-                      newAssignments.push({ pin_id: pinId, product_id: productId, quantity });
+            {/* Pin List with Inventory Assignment - Grouped by Service Location */}
+            <div className="space-y-4">
+              {(() => {
+                // Group pins by service location
+                const groupedPins: Record<string, any[]> = {};
+                const pinsWithoutLocation: any[] = [];
+                
+                selectedReferencePins.forEach(pin => {
+                  if (pin.service_location) {
+                    const locationId = pin.service_location.id;
+                    if (!groupedPins[locationId]) {
+                      groupedPins[locationId] = [];
                     }
+                    groupedPins[locationId].push(pin);
                   } else {
-                    if (existingIndex >= 0) {
-                      newAssignments.splice(existingIndex, 1);
-                    }
+                    pinsWithoutLocation.push(pin);
                   }
-                  
-                  setPinInventoryAssignments(newAssignments);
-                  updateData({ pin_inventory_assignments: newAssignments });
-                };
-
-                const getTotalAssignedForProduct = (productId: string): number => {
-                  return pinInventoryAssignments
-                    .filter(a => a.product_id === productId)
-                    .reduce((sum, a) => sum + a.quantity, 0);
-                };
-
-                const getTotalAssignedToPin = (pinId: string): number => {
-                  return pinInventoryAssignments
-                    .filter(a => a.pin_id === pinId)
-                    .reduce((sum, a) => sum + a.quantity, 0);
-                };
-
-                const totalAtPin = getTotalAssignedToPin(pin.id);
+                });
 
                 return (
-                  <div key={pin.id} className="border rounded-lg p-3 space-y-2">
-                    {/* Pin Header */}
-                    <div className="flex items-start gap-2">
-                      <MapPin className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" />
-                      <div className="flex-1">
-                        <div className="font-medium">{pin.label}</div>
-                        <div className="text-xs text-muted-foreground">
-                          ({pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)})
-                        </div>
-                        {pin.notes && (
-                          <div className="text-xs text-muted-foreground mt-1">{pin.notes}</div>
-                        )}
-                        {totalAtPin > 0 && (
-                          <div className="text-xs font-medium text-primary mt-1">
-                            {totalAtPin} unit{totalAtPin !== 1 ? 's' : ''} assigned
+                  <>
+                    {/* Render pins grouped by location */}
+                    {Object.values(groupedPins).map((locationPins, groupIdx) => {
+                      const location = locationPins[0].service_location;
+                      const fullAddress = [location.street, location.city, location.state, location.zip]
+                        .filter(Boolean)
+                        .join(', ');
+                      
+                      return (
+                        <div key={groupIdx} className="space-y-3">
+                          {/* Service Location Header */}
+                          <div className="border-b pb-2">
+                            <div className="text-sm font-semibold text-foreground">
+                              {location.location_name}
+                            </div>
+                            {fullAddress && (
+                              <div className="text-xs text-muted-foreground">
+                                {fullAddress}
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
-                    </div>
-                    
-                    {/* Inventory Assignment Section */}
-                    {itemsWithNames.length > 0 && (
-                      <div className="space-y-2 pl-6">
-                        <div className="text-xs font-medium text-muted-foreground">
-                          Assign Inventory:
-                        </div>
-                        
-                        {itemsWithNames.map((item) => {
-                          const currentQty = getPinProductQuantity(pin.id, item.product_id);
-                          const totalAvailable = item.quantity;
-                          const totalAssigned = getTotalAssignedForProduct(item.product_id);
-                          const remaining = totalAvailable - totalAssigned;
                           
-                          return (
-                            <div key={item.product_id} className="flex items-center gap-2 text-sm">
-                              <div className="flex-1 min-w-0">
-                                <div className="truncate">{item.product_name || 'Product'}</div>
-                                <div className="text-xs text-muted-foreground">
-                                  {totalAssigned} of {totalAvailable} assigned
-                                  {remaining > 0 && (
-                                    <span className="text-orange-600 ml-1">
-                                      ({remaining} remaining)
-                                    </span>
-                                  )}
+                          {/* Pins for this location */}
+                          {locationPins.map((pin) => {
+                            const getPinProductQuantity = (pinId: string, productId: string): number => {
+                              const assignment = pinInventoryAssignments.find(
+                                a => a.pin_id === pinId && a.product_id === productId
+                              );
+                              return assignment?.quantity || 0;
+                            };
+
+                            const updatePinProductQuantity = (pinId: string, productId: string, quantity: number) => {
+                              const newAssignments = [...pinInventoryAssignments];
+                              const existingIndex = newAssignments.findIndex(
+                                a => a.pin_id === pinId && a.product_id === productId
+                              );
+                              
+                              if (quantity > 0) {
+                                if (existingIndex >= 0) {
+                                  newAssignments[existingIndex].quantity = quantity;
+                                } else {
+                                  newAssignments.push({ pin_id: pinId, product_id: productId, quantity });
+                                }
+                              } else {
+                                if (existingIndex >= 0) {
+                                  newAssignments.splice(existingIndex, 1);
+                                }
+                              }
+                              
+                              setPinInventoryAssignments(newAssignments);
+                              updateData({ pin_inventory_assignments: newAssignments });
+                            };
+
+                            const getTotalAssignedForProduct = (productId: string): number => {
+                              return pinInventoryAssignments
+                                .filter(a => a.product_id === productId)
+                                .reduce((sum, a) => sum + a.quantity, 0);
+                            };
+
+                            const getTotalAssignedToPin = (pinId: string): number => {
+                              return pinInventoryAssignments
+                                .filter(a => a.pin_id === pinId)
+                                .reduce((sum, a) => sum + a.quantity, 0);
+                            };
+
+                            const totalAtPin = getTotalAssignedToPin(pin.id);
+
+                            return (
+                              <div key={pin.id} className="border rounded-lg p-3 space-y-2">
+                                {/* Pin Header */}
+                                <div className="flex items-start gap-2">
+                                  <MapPin className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" />
+                                  <div className="flex-1">
+                                    <div className="font-medium">{pin.label}</div>
+                                    <div className="text-xs text-muted-foreground">
+                                      ({pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)})
+                                    </div>
+                                    {pin.notes && (
+                                      <div className="text-xs text-muted-foreground mt-1">{pin.notes}</div>
+                                    )}
+                                    {totalAtPin > 0 && (
+                                      <div className="text-xs font-medium text-primary mt-1">
+                                        {totalAtPin} unit{totalAtPin !== 1 ? 's' : ''} assigned
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
+                                
+                                {/* Inventory Assignment Section */}
+                                {itemsWithNames.length > 0 && (
+                                  <div className="space-y-2 pl-6">
+                                    <div className="text-xs font-medium text-muted-foreground">
+                                      Assign Inventory:
+                                    </div>
+                                    
+                                    {itemsWithNames.map((item) => {
+                                      const currentQty = getPinProductQuantity(pin.id, item.product_id);
+                                      const totalAvailable = item.quantity;
+                                      const totalAssigned = getTotalAssignedForProduct(item.product_id);
+                                      const remaining = totalAvailable - totalAssigned;
+                                      
+                                      return (
+                                        <div key={item.product_id} className="flex items-center gap-2 text-sm">
+                                          <div className="flex-1 min-w-0">
+                                            <div className="truncate">{item.product_name || 'Product'}</div>
+                                            <div className="text-xs text-muted-foreground">
+                                              {totalAssigned} of {totalAvailable} assigned
+                                              {remaining > 0 && (
+                                                <span className="text-orange-600 ml-1">
+                                                  ({remaining} remaining)
+                                                </span>
+                                              )}
+                                            </div>
+                                          </div>
+                                          
+                                          <div className="flex items-center gap-2">
+                                            <Button
+                                              size="sm"
+                                              variant="outline"
+                                              className="h-7 w-7 p-0"
+                                              onClick={() => updatePinProductQuantity(
+                                                pin.id, 
+                                                item.product_id, 
+                                                Math.max(0, currentQty - 1)
+                                              )}
+                                              disabled={currentQty === 0}
+                                            >
+                                              <Minus className="h-3 w-3" />
+                                            </Button>
+                                            
+                                            <Input
+                                              type="number"
+                                              min="0"
+                                              max={currentQty + remaining}
+                                              value={currentQty}
+                                              onChange={(e) => {
+                                                const newQty = parseInt(e.target.value) || 0;
+                                                const maxAllowed = currentQty + remaining;
+                                                updatePinProductQuantity(
+                                                  pin.id,
+                                                  item.product_id,
+                                                  Math.min(newQty, maxAllowed)
+                                                );
+                                              }}
+                                              className="w-16 h-7 text-center"
+                                            />
+                                            
+                                            <Button
+                                              size="sm"
+                                              variant="outline"
+                                              className="h-7 w-7 p-0"
+                                              onClick={() => updatePinProductQuantity(
+                                                pin.id,
+                                                item.product_id,
+                                                Math.min(currentQty + 1, currentQty + remaining)
+                                              )}
+                                              disabled={remaining === 0}
+                                            >
+                                              <Plus className="h-3 w-3" />
+                                            </Button>
+                                          </div>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })}
+
+                    {/* Render pins without location */}
+                    {pinsWithoutLocation.map((pin) => {
+                      const getPinProductQuantity = (pinId: string, productId: string): number => {
+                        const assignment = pinInventoryAssignments.find(
+                          a => a.pin_id === pinId && a.product_id === productId
+                        );
+                        return assignment?.quantity || 0;
+                      };
+
+                      const updatePinProductQuantity = (pinId: string, productId: string, quantity: number) => {
+                        const newAssignments = [...pinInventoryAssignments];
+                        const existingIndex = newAssignments.findIndex(
+                          a => a.pin_id === pinId && a.product_id === productId
+                        );
+                        
+                        if (quantity > 0) {
+                          if (existingIndex >= 0) {
+                            newAssignments[existingIndex].quantity = quantity;
+                          } else {
+                            newAssignments.push({ pin_id: pinId, product_id: productId, quantity });
+                          }
+                        } else {
+                          if (existingIndex >= 0) {
+                            newAssignments.splice(existingIndex, 1);
+                          }
+                        }
+                        
+                        setPinInventoryAssignments(newAssignments);
+                        updateData({ pin_inventory_assignments: newAssignments });
+                      };
+
+                      const getTotalAssignedForProduct = (productId: string): number => {
+                        return pinInventoryAssignments
+                          .filter(a => a.product_id === productId)
+                          .reduce((sum, a) => sum + a.quantity, 0);
+                      };
+
+                      const getTotalAssignedToPin = (pinId: string): number => {
+                        return pinInventoryAssignments
+                          .filter(a => a.pin_id === pinId)
+                          .reduce((sum, a) => sum + a.quantity, 0);
+                      };
+
+                      const totalAtPin = getTotalAssignedToPin(pin.id);
+
+                      return (
+                        <div key={pin.id} className="border rounded-lg p-3 space-y-2">
+                          {/* Pin Header */}
+                          <div className="flex items-start gap-2">
+                            <MapPin className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" />
+                            <div className="flex-1">
+                              <div className="font-medium">{pin.label}</div>
+                              <div className="text-xs text-muted-foreground">
+                                ({pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)})
+                              </div>
+                              {pin.notes && (
+                                <div className="text-xs text-muted-foreground mt-1">{pin.notes}</div>
+                              )}
+                              {totalAtPin > 0 && (
+                                <div className="text-xs font-medium text-primary mt-1">
+                                  {totalAtPin} unit{totalAtPin !== 1 ? 's' : ''} assigned
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          
+                          {/* Inventory Assignment Section */}
+                          {itemsWithNames.length > 0 && (
+                            <div className="space-y-2 pl-6">
+                              <div className="text-xs font-medium text-muted-foreground">
+                                Assign Inventory:
                               </div>
                               
-                              <div className="flex items-center gap-2">
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="h-7 w-7 p-0"
-                                  onClick={() => updatePinProductQuantity(
-                                    pin.id, 
-                                    item.product_id, 
-                                    Math.max(0, currentQty - 1)
-                                  )}
-                                  disabled={currentQty === 0}
-                                >
-                                  <Minus className="h-3 w-3" />
-                                </Button>
+                              {itemsWithNames.map((item) => {
+                                const currentQty = getPinProductQuantity(pin.id, item.product_id);
+                                const totalAvailable = item.quantity;
+                                const totalAssigned = getTotalAssignedForProduct(item.product_id);
+                                const remaining = totalAvailable - totalAssigned;
                                 
-                                <Input
-                                  type="number"
-                                  min="0"
-                                  max={currentQty + remaining}
-                                  value={currentQty}
-                                  onChange={(e) => {
-                                    const newQty = parseInt(e.target.value) || 0;
-                                    const maxAllowed = currentQty + remaining;
-                                    updatePinProductQuantity(
-                                      pin.id,
-                                      item.product_id,
-                                      Math.min(newQty, maxAllowed)
-                                    );
-                                  }}
-                                  className="w-16 h-7 text-center"
-                                />
-                                
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="h-7 w-7 p-0"
-                                  onClick={() => updatePinProductQuantity(
-                                    pin.id,
-                                    item.product_id,
-                                    Math.min(currentQty + 1, currentQty + remaining)
-                                  )}
-                                  disabled={remaining === 0}
-                                >
-                                  <Plus className="h-3 w-3" />
-                                </Button>
-                              </div>
+                                return (
+                                  <div key={item.product_id} className="flex items-center gap-2 text-sm">
+                                    <div className="flex-1 min-w-0">
+                                      <div className="truncate">{item.product_name || 'Product'}</div>
+                                      <div className="text-xs text-muted-foreground">
+                                        {totalAssigned} of {totalAvailable} assigned
+                                        {remaining > 0 && (
+                                          <span className="text-orange-600 ml-1">
+                                            ({remaining} remaining)
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
+                                    
+                                    <div className="flex items-center gap-2">
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        className="h-7 w-7 p-0"
+                                        onClick={() => updatePinProductQuantity(
+                                          pin.id, 
+                                          item.product_id, 
+                                          Math.max(0, currentQty - 1)
+                                        )}
+                                        disabled={currentQty === 0}
+                                      >
+                                        <Minus className="h-3 w-3" />
+                                      </Button>
+                                      
+                                      <Input
+                                        type="number"
+                                        min="0"
+                                        max={currentQty + remaining}
+                                        value={currentQty}
+                                        onChange={(e) => {
+                                          const newQty = parseInt(e.target.value) || 0;
+                                          const maxAllowed = currentQty + remaining;
+                                          updatePinProductQuantity(
+                                            pin.id,
+                                            item.product_id,
+                                            Math.min(newQty, maxAllowed)
+                                          );
+                                        }}
+                                        className="w-16 h-7 text-center"
+                                      />
+                                      
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        className="h-7 w-7 p-0"
+                                        onClick={() => updatePinProductQuantity(
+                                          pin.id,
+                                          item.product_id,
+                                          Math.min(currentQty + 1, currentQty + remaining)
+                                        )}
+                                        disabled={remaining === 0}
+                                      >
+                                        <Plus className="h-3 w-3" />
+                                      </Button>
+                                    </div>
+                                  </div>
+                                );
+                              })}
                             </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </>
                 );
-              })}
+              })()}
             </div>
           </div>
         )}
