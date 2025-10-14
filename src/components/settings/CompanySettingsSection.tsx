@@ -65,6 +65,18 @@ export function CompanySettingsSection() {
     return parts.length > 0 ? parts.join(", ") : "No address set";
   };
 
+  const formatPhoneNumber = (phone: string | null | undefined) => {
+    if (!phone) return "Not set";
+    // Remove all non-numeric characters
+    const cleaned = phone.replace(/\D/g, '');
+    // Format as (555) 123-4567
+    if (cleaned.length === 10) {
+      return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
+    }
+    // Return original if not 10 digits
+    return phone;
+  };
+
   const getTimezoneLabel = (tz: string | null | undefined) => {
     if (!tz) return "Not set";
     const timezones: { [key: string]: string } = {
@@ -124,7 +136,7 @@ export function CompanySettingsSection() {
                 </div>
                 <div>
                   <span className="text-sm text-muted-foreground">Phone:</span>
-                  <p className="text-sm">{companySettings?.company_phone || "Not set"}</p>
+                  <p className="text-sm">{formatPhoneNumber(companySettings?.company_phone)}</p>
                 </div>
                 <div>
                   <span className="text-sm text-muted-foreground">Support Email:</span>
@@ -165,11 +177,14 @@ export function CompanySettingsSection() {
                 <Percent className="w-4 h-4" />
                 <span>Default Deposit Percentage</span>
               </h4>
-              <div className="pl-6">
+              <div className="pl-6 space-y-1">
                 <p className="text-sm text-muted-foreground">
                   {companySettings?.default_deposit_percentage !== undefined
                     ? `${companySettings.default_deposit_percentage}%`
                     : "25% (default)"}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Default percentage used for deposit collection on quotes and jobs
                 </p>
               </div>
             </div>
