@@ -6,7 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
   AlertDialog, 
   AlertDialogAction, 
   AlertDialogCancel, 
@@ -24,7 +25,7 @@ import { useItemCodeCategories } from "@/hooks/useCompanySettings";
 export const CodeCategoriesView: React.FC = () => {
   const queryClient = useQueryClient();
   const { categories, isLoading } = useItemCodeCategories();
-  const [showAddForm, setShowAddForm] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState<{ prefix: string; name: string } | null>(null);
   const [newPrefix, setNewPrefix] = useState("");
   const [newName, setNewName] = useState("");
@@ -43,8 +44,8 @@ export const CodeCategoriesView: React.FC = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['company-settings'] });
-      toast.success('Categories updated successfully');
-      setShowAddForm(false);
+      toast.success('Categories updated successfully', { duration: 2000 });
+      setShowAddModal(false);
       setEditingCategory(null);
       setNewPrefix("");
       setNewName("");
@@ -136,7 +137,7 @@ export const CodeCategoriesView: React.FC = () => {
                 Manage global item ID categories used across all products
               </p>
             </div>
-            <Button variant="outline" size="sm" onClick={() => setShowAddForm(true)}>
+            <Button variant="outline" size="sm" onClick={() => setShowAddModal(true)}>
               <Plus className="w-4 h-4 mr-2" />
               Add Category
             </Button>
@@ -239,54 +240,59 @@ export const CodeCategoriesView: React.FC = () => {
                   );
                 })}
               </div>
-
-              {showAddForm && (
-                <div className="border-t pt-4 space-y-3">
-                  <h4 className="font-medium">Add New Category</h4>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <Label htmlFor="prefix">Category Prefix</Label>
-                      <Select value={newPrefix} onValueChange={setNewPrefix}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a category range" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="1000">1 - 1000-1999 Range</SelectItem>
-                          <SelectItem value="2000">2 - 2000-2999 Range</SelectItem>
-                          <SelectItem value="3000">3 - 3000-3999 Range</SelectItem>
-                          <SelectItem value="4000">4 - 4000-4999 Range</SelectItem>
-                          <SelectItem value="5000">5 - 5000-5999 Range</SelectItem>
-                          <SelectItem value="6000">6 - 6000-6999 Range</SelectItem>
-                          <SelectItem value="7000">7 - 7000-7999 Range</SelectItem>
-                          <SelectItem value="8000">8 - 8000-8999 Range</SelectItem>
-                          <SelectItem value="9000">9 - 9000-9999 Range</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label htmlFor="name">Category Name</Label>
-                      <Input
-                        id="name"
-                        value={newName}
-                        onChange={(e) => setNewName(e.target.value)}
-                        placeholder="Custom Units"
-                      />
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button onClick={handleAddCategory} size="sm">
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add Category
-                    </Button>
-                    <Button variant="outline" onClick={() => setShowAddForm(false)} size="sm">
-                      Cancel
-                    </Button>
-                  </div>
-                </div>
-              )}
             </>
           )}
         </div>
+
+        {/* Add Category Modal */}
+        <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Add New Category</DialogTitle>
+            </DialogHeader>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="modal-prefix">Category Prefix</Label>
+                <Select value={newPrefix} onValueChange={setNewPrefix}>
+                  <SelectTrigger id="modal-prefix">
+                    <SelectValue placeholder="Select a category range" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1000">1 - 1000-1999 Range</SelectItem>
+                    <SelectItem value="2000">2 - 2000-2999 Range</SelectItem>
+                    <SelectItem value="3000">3 - 3000-3999 Range</SelectItem>
+                    <SelectItem value="4000">4 - 4000-4999 Range</SelectItem>
+                    <SelectItem value="5000">5 - 5000-5999 Range</SelectItem>
+                    <SelectItem value="6000">6 - 6000-6999 Range</SelectItem>
+                    <SelectItem value="7000">7 - 7000-7999 Range</SelectItem>
+                    <SelectItem value="8000">8 - 8000-8999 Range</SelectItem>
+                    <SelectItem value="9000">9 - 9000-9999 Range</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="modal-name">Category Name</Label>
+                <Input
+                  id="modal-name"
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  placeholder="Custom Units"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-start gap-2 mt-4">
+              <Button onClick={handleAddCategory} disabled={updateCategoriesMutation.isPending}>
+                <Plus className="w-4 h-4 mr-2" />
+                {updateCategoriesMutation.isPending ? "Adding..." : "Add Category"}
+              </Button>
+              <Button variant="outline" onClick={() => setShowAddModal(false)}>
+                Cancel
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
           <AlertDialogContent>
