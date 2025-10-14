@@ -910,6 +910,11 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                                   >
                                     <Trash className="w-4 h-4" />
                                   </Button>
+                                  {isWorkOrder && (
+                                    <span className="text-xs text-muted-foreground ml-2">
+                                      Select completed button again to revert work order back to an incomplete status
+                                    </span>
+                                  )}
                                 </div>
                                <div className="text-xs text-muted-foreground">
                                  {new Date(update.created_at).toLocaleDateString()}
