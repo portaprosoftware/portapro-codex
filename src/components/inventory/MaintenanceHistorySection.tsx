@@ -374,12 +374,10 @@ export const MaintenanceHistorySection: React.FC<MaintenanceHistorySectionProps>
       {/* Header */}
       <div className="flex items-center gap-3">
         <History className="w-6 h-6 text-gray-900" />
-        <div>
-          <h3 className="text-lg font-bold text-gray-900">Maintenance History</h3>
-          <p className="text-sm text-gray-600">
-            Complete maintenance analytics and unit outcomes
-          </p>
-        </div>
+        <h3 className="text-lg font-bold text-gray-900">Maintenance History</h3>
+        <p className="text-sm text-gray-600">
+          Complete maintenance analytics and unit outcomes
+        </p>
       </div>
 
       {/* Advanced Statistics */}
