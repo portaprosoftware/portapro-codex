@@ -324,9 +324,6 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
               <div className="flex flex-col items-end">
                 <span className="text-muted-foreground text-sm mb-1">Default Deposit Percentage</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-xl font-bold text-foreground">
-                    {customer.custom_deposit_percentage ?? companySettings?.default_deposit_percentage ?? 25}%
-                  </span>
                   {customer.custom_deposit_percentage !== null && customer.custom_deposit_percentage !== undefined ? (
                     <Badge variant="outline" className="text-xs">
                       Custom Override
@@ -336,6 +333,9 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
                       Company Default
                     </Badge>
                   )}
+                  <span className="text-xl font-bold text-foreground">
+                    {customer.custom_deposit_percentage ?? companySettings?.default_deposit_percentage ?? 25}%
+                  </span>
                   <Button
                     variant="ghost"
                     size="sm"
