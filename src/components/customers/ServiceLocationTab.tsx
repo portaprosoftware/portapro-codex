@@ -118,11 +118,13 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
         container: mapContainer.current,
         style: mapStyle,
         center: [-95.7129, 37.0902], // Center of US
-        zoom: 4
+        zoom: 4,
+        attributionControl: false
       });
 
       // Add navigation controls
       map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+      map.current.addControl(new mapboxgl.AttributionControl({ compact: true }), 'bottom-right');
 
       // Remove the automatic click handler - we'll use controlled pin dropping instead
 
