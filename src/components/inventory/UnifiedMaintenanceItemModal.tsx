@@ -80,7 +80,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
   });
 
   const [workOrderForm, setWorkOrderForm] = useState({
-    work_order_type: "progress",
+    work_order_type: "repair",
     technicians: [{ name: "" }],
     labor_hours: "",
     labor_cost: "",
@@ -286,7 +286,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
       
       // Reset work order form
       setWorkOrderForm({
-        work_order_type: "progress",
+        work_order_type: "repair",
         technicians: [{ name: "" }],
         labor_hours: "",
         labor_cost: "",
@@ -651,7 +651,6 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="progress">Progress Update</SelectItem>
                         <SelectItem value="repair">Repair Work</SelectItem>
                         <SelectItem value="parts">Parts Replacement</SelectItem>
                         <SelectItem value="inspection">Inspection</SelectItem>
