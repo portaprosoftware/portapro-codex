@@ -25,7 +25,7 @@ interface UnifiedMaintenanceItemModalProps {
   item: any;
   productId: string;
   storageLocations: StorageLocation[] | undefined;
-  activeTab?: "details" | "workorders";
+  activeTab?: "details" | "create-workorder" | "open-workorders";
 }
 
 
@@ -314,10 +314,11 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
           </div>
 
           {/* Tab Navigation */}
-          <Tabs value={activeTab} onValueChange={(value: string) => setActiveTab(value as "details" | "workorders")} className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+          <Tabs value={activeTab} onValueChange={(value: string) => setActiveTab(value as "details" | "create-workorder" | "open-workorders")} className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="details">Unit Details</TabsTrigger>
-              <TabsTrigger value="workorders">Work Orders</TabsTrigger>
+              <TabsTrigger value="create-workorder">Create Work Order</TabsTrigger>
+              <TabsTrigger value="open-workorders">Open Work Orders</TabsTrigger>
             </TabsList>
 
             <TabsContent value="details" className="mt-6">
@@ -502,7 +503,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
               </form>
             </TabsContent>
 
-            <TabsContent value="workorders" className="mt-6">
+            <TabsContent value="create-workorder" className="mt-6">
               {/* Work Orders Tab */}
               <div className="bg-white border rounded-xl p-6">
                 <h4 className="font-medium mb-4">Work Order Details</h4>
@@ -709,12 +710,11 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="work_order_created">Work Order Created</SelectItem>
-                        <SelectItem value="in_progress">In Progress</SelectItem>
-                        <SelectItem value="waiting_on_parts">Waiting on Parts</SelectItem>
-                        <SelectItem value="completed">Completed</SelectItem>
-                      </SelectContent>
+                        <SelectContent>
+                          <SelectItem value="work_order_created">Work Order Created</SelectItem>
+                          <SelectItem value="in_progress">In Progress</SelectItem>
+                          <SelectItem value="waiting_on_parts">Waiting on Parts</SelectItem>
+                        </SelectContent>
                     </Select>
                   </div>
 
@@ -729,6 +729,15 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                       {saveWorkOrderMutation.isPending ? "Saving..." : "Save Work Order"}
                     </Button>
                   </div>
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="open-workorders" className="mt-6">
+              {/* Open Work Orders Tab - To be implemented */}
+              <div className="bg-white border rounded-xl p-6">
+                <div className="text-center py-8 text-muted-foreground">
+                  <p>Open Work Orders view coming soon</p>
                 </div>
               </div>
             </TabsContent>
