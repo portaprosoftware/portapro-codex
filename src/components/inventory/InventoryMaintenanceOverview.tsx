@@ -103,7 +103,7 @@ export const InventoryMaintenanceOverview: React.FC = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
@@ -116,67 +116,30 @@ export const InventoryMaintenanceOverview: React.FC = () => {
           </CardContent>
         </Card>
 
+        {/* Maintenance by Product Type */}
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Overdue</p>
-                <p className="text-2xl font-bold text-red-600">{maintenanceStats?.overdue || 0}</p>
-              </div>
-              <AlertTriangle className="h-8 w-8 text-red-500" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Due This Week</p>
-                <p className="text-2xl font-bold text-yellow-600">{maintenanceStats?.dueThisWeek || 0}</p>
-              </div>
-              <Clock className="h-8 w-8 text-yellow-500" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Critical Priority</p>
-                <p className="text-2xl font-bold text-red-600">{maintenanceStats?.critical || 0}</p>
-              </div>
-              <AlertTriangle className="h-8 w-8 text-red-500" />
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">
+              Maintenance by Product Type
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 gap-2">
+              {maintenanceByProduct?.map((item, index) => (
+                <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                  <span className="font-medium">{item.product}</span>
+                  <Badge variant="outline">{item.count} units</Badge>
+                </div>
+              ))}
+              {(!maintenanceByProduct || maintenanceByProduct.length === 0) && (
+                <p className="text-muted-foreground text-center py-4">
+                  No items currently in maintenance
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>
       </div>
-
-      {/* Maintenance by Product Type */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Settings className="h-5 w-5" />
-            Maintenance by Product Type
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {maintenanceByProduct?.map((item, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                <span className="font-medium">{item.product}</span>
-                <Badge variant="outline">{item.count} units</Badge>
-              </div>
-            ))}
-            {(!maintenanceByProduct || maintenanceByProduct.length === 0) && (
-              <p className="text-muted-foreground col-span-full text-center py-4">
-                No items currently in maintenance
-              </p>
-            )}
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Tabbed Views */}
       <Tabs defaultValue="tracker" className="w-full">
