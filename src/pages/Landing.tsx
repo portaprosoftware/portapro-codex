@@ -2135,10 +2135,10 @@ export const Landing: React.FC = () => {
       {questionsFormOpen && <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col">
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b">
+            <div className="flex items-center justify-between p-4 border-b">
               <div>
-                <h2 className="text-2xl font-bold text-foreground">Have Questions?</h2>
-                <p className="text-muted-foreground">Tell us about your needs and we'll get in touch</p>
+                <h2 className="text-xl font-bold text-foreground">Have Questions?</h2>
+                <p className="text-sm text-muted-foreground">Tell us about your needs and we'll get in touch</p>
               </div>
               <button onClick={() => setQuestionsFormOpen(false)} className="p-2 rounded-lg hover:bg-muted">
                 <X className="w-5 h-5" />
@@ -2146,53 +2146,53 @@ export const Landing: React.FC = () => {
             </div>
             
             {/* Content */}
-            <div className="flex-1 overflow-y-auto p-6">
-              <form className="space-y-4" onSubmit={e => {
+            <div className="flex-1 overflow-y-auto p-4">
+              <form className="space-y-3" onSubmit={e => {
             e.preventDefault();
             alert('Thank you for your interest! We\'ll be in touch within 24 hours.');
             setQuestionsFormOpen(false);
           }}>
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid md:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">
+                    <label className="block text-xs font-medium text-foreground mb-1">
                       First Name *
                     </label>
-                    <input type="text" required className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="John" />
+                    <input type="text" required className="w-full px-3 py-1.5 text-sm border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="John" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">
+                    <label className="block text-xs font-medium text-foreground mb-1">
                       Last Name *
                     </label>
-                    <input type="text" required className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Doe" />
+                    <input type="text" required className="w-full px-3 py-1.5 text-sm border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Doe" />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
+                  <label className="block text-xs font-medium text-foreground mb-1">
                     Email *
                   </label>
-                  <input type="email" required className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="john@company.com" />
+                  <input type="email" required className="w-full px-3 py-1.5 text-sm border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="john@company.com" />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
+                  <label className="block text-xs font-medium text-foreground mb-1">
                     Phone Number (Optional)
                   </label>
-                  <input type="tel" className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="(555) 123-4567" />
+                  <input type="tel" className="w-full px-3 py-1.5 text-sm border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="(555) 123-4567" />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
+                  <label className="block text-xs font-medium text-foreground mb-1">
                     Company Name *
                   </label>
-                  <input type="text" required className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Your Company Name" />
+                  <input type="text" required className="w-full px-3 py-1.5 text-sm border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Your Company Name" />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
+                  <label className="block text-xs font-medium text-foreground mb-1">
                     How many units are in your fleet?
                   </label>
-                  <select className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                  <select className="w-full px-3 py-1.5 text-sm border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
                     <option value="">Select fleet size</option>
                     <option value="1-25">1-25 units</option>
                     <option value="26-50">26-50 units</option>
@@ -2204,10 +2204,10 @@ export const Landing: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
+                  <label className="block text-xs font-medium text-foreground mb-1">
                     What's your biggest challenge right now?
                   </label>
-                  <select className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                  <select className="w-full px-3 py-1.5 text-sm border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
                     <option value="">Select your main challenge</option>
                     <option value="scheduling">Scheduling and dispatching</option>
                     <option value="inventory">Inventory tracking</option>
@@ -2221,10 +2221,10 @@ export const Landing: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
+                  <label className="block text-xs font-medium text-foreground mb-1">
                     Preferred contact method
                   </label>
-                  <div className="flex gap-4">
+                  <div className="flex gap-4 text-sm">
                     <label className="flex items-center">
                       <input type="radio" name="contact" value="email" className="mr-2" defaultChecked />
                       Email
@@ -2240,9 +2240,9 @@ export const Landing: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="bg-muted/30 border border-border rounded-lg p-4">
-                  <h4 className="font-semibold text-foreground mb-2">What's next? 🚀</h4>
-                  <ul className="text-sm text-muted-foreground space-y-1">
+                <div className="bg-muted/30 border border-border rounded-lg p-3">
+                  <h4 className="font-semibold text-sm text-foreground mb-1.5">What's next? 🚀</h4>
+                  <ul className="text-xs text-muted-foreground space-y-0.5">
                     <li>• We'll review your information and reach out within 24 hours</li>
                     <li>• Schedule a personalized demo based on your fleet size</li>
                     <li>• Discuss your specific challenges and how PortaPro can help</li>
@@ -2250,7 +2250,7 @@ export const Landing: React.FC = () => {
                   </ul>
                 </div>
 
-                <div className="flex gap-3 pt-4">
+                <div className="flex gap-3 pt-2">
                   <Button type="button" variant="outline" onClick={() => setQuestionsFormOpen(false)} className="flex-1">
                     Maybe Later
                   </Button>
