@@ -310,7 +310,7 @@ const ProductItemDetail: React.FC = () => {
                 <div>
                   <label className="text-sm font-medium text-gray-500 mb-2 block">Condition</label>
                   <Badge variant={getConditionVariant(item.condition)}>
-                    {capitalizeFirstLetter(item.condition || "Unknown")}
+                    {snakeCaseToTitleCase(item.condition || "Unknown")}
                   </Badge>
                 </div>
               </div>
