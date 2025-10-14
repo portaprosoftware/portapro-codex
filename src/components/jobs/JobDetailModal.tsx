@@ -756,7 +756,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                               
                               const handleCopyAddress = () => {
                                 navigator.clipboard.writeText(fullAddress);
-                                toast.success('Address copied to clipboard');
+                                toast.success('Address copied to clipboard', { duration: 2000 });
                               };
                               
                               return (
@@ -770,33 +770,33 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                                     <Copy className="h-3 w-3" />
                                     Copy Address
                                   </button>
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    className="h-8 px-2 text-xs"
-                                    onClick={() => window.open(`https://maps.google.com/?q=${encodedAddress}`, '_blank')}
+                                  <a
+                                    href={`https://maps.google.com/?q=${encodedAddress}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center justify-center h-8 px-2 text-xs rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-colors"
                                     title="Open in Google Maps"
                                   >
                                     Google
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    className="h-8 px-2 text-xs"
-                                    onClick={() => window.open(`https://maps.apple.com/?q=${encodedAddress}`, '_blank')}
+                                  </a>
+                                  <a
+                                    href={`https://maps.apple.com/?q=${encodedAddress}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center justify-center h-8 px-2 text-xs rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-colors"
                                     title="Open in Apple Maps"
                                   >
                                     Apple
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    className="h-8 px-2 text-xs"
-                                    onClick={() => window.open(`https://waze.com/ul?q=${encodedAddress}`, '_blank')}
+                                  </a>
+                                  <a
+                                    href={`https://waze.com/ul?q=${encodedAddress}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center justify-center h-8 px-2 text-xs rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-colors"
                                     title="Open in Waze"
                                   >
                                     Waze
-                                  </Button>
+                                  </a>
                                 </>
                               );
                             })()}
