@@ -112,6 +112,7 @@ export function ServiceLocationCard({ location, onUpdate, onDelete }: ServiceLoc
       toast({
         title: "Address Copied",
         description: "Address copied to clipboard",
+        duration: 2000,
       });
     }).catch((error) => {
       console.error('Failed to copy address:', error);
