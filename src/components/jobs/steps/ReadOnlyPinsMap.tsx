@@ -487,9 +487,9 @@ export function ReadOnlyPinsMap({
                                     checked={isSelected}
                                     onChange={() => handlePinToggle(pin.id)}
                                     className={cn(
-                                      "mt-0.5 h-4 w-4 rounded border-2",
+                                      "mt-0.5 h-5 w-5 rounded border-2",
                                       isSelected 
-                                        ? "bg-white border-white checked:bg-white [&:checked]:bg-white appearance-none checked:border-white relative checked:after:content-['✓'] checked:after:absolute checked:after:text-green-600 checked:after:font-bold checked:after:text-sm checked:after:left-0 checked:after:top-[-2px] checked:after:w-full checked:after:text-center"
+                                        ? "bg-white border-white checked:bg-white [&:checked]:bg-white appearance-none checked:border-white relative checked:after:content-['✓'] checked:after:absolute checked:after:text-green-600 checked:after:font-bold checked:after:text-base checked:after:left-0 checked:after:top-[-3px] checked:after:w-full checked:after:text-center"
                                         : "border-gray-300 bg-white"
                                     )}
                                     onClick={(e) => e.stopPropagation()}
@@ -555,9 +555,9 @@ export function ReadOnlyPinsMap({
                                   checked={isSelected}
                                   onChange={() => handlePinToggle(pin.id)}
                                   className={cn(
-                                    "mt-0.5 h-4 w-4 rounded border-2",
+                                    "mt-0.5 h-5 w-5 rounded border-2",
                                     isSelected 
-                                      ? "bg-white border-white checked:bg-white [&:checked]:bg-white appearance-none checked:border-white relative checked:after:content-['✓'] checked:after:absolute checked:after:text-green-600 checked:after:font-bold checked:after:text-sm checked:after:left-0 checked:after:top-[-2px] checked:after:w-full checked:after:text-center"
+                                      ? "bg-white border-white checked:bg-white [&:checked]:bg-white appearance-none checked:border-white relative checked:after:content-['✓'] checked:after:absolute checked:after:text-green-600 checked:after:font-bold checked:after:text-base checked:after:left-0 checked:after:top-[-3px] checked:after:w-full checked:after:text-center"
                                       : "border-gray-300 bg-white"
                                   )}
                                   onClick={(e) => e.stopPropagation()}
