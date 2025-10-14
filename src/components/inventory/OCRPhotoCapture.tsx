@@ -243,12 +243,7 @@ export const OCRPhotoCapture: React.FC<OCRPhotoCaptureProps> = ({
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center justify-between">
-            <span>OCR Tool Tracking - {itemCode}</span>
-            <Button variant="ghost" size="sm" onClick={handleClose}>
-              <X className="h-4 w-4" />
-            </Button>
-          </DialogTitle>
+          <DialogTitle>OCR Tool Tracking - {itemCode}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
