@@ -28,7 +28,7 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl h-[95vh] my-[2.5vh] overflow-hidden flex flex-col">
+      <DialogContent className="max-w-4xl h-[95vh] overflow-hidden flex flex-col !top-1/2 !-translate-y-1/2">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Package className="h-5 w-5 text-primary" />
