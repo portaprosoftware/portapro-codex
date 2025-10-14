@@ -40,6 +40,7 @@ export function ReadOnlyPinsMap({
   const map = useRef<mapboxgl.Map | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [mapStyle, setMapStyle] = useState<'streets' | 'satellite'>('streets');
   const markersRef = useRef<mapboxgl.Marker[]>([]);
 
   // Fetch Mapbox token
@@ -76,7 +77,9 @@ export function ReadOnlyPinsMap({
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/streets-v12',
+      style: mapStyle === 'satellite' 
+        ? 'mapbox://styles/mapbox/satellite-v9'
+        : 'mapbox://styles/mapbox/streets-v12',
       center: [-98.5795, 39.8283], // Center of US as default
       zoom: 3,
       attributionControl: false, // Disable default attribution
@@ -102,6 +105,64 @@ export function ReadOnlyPinsMap({
       map.current = null;
     };
   }, [tokenData]);
+
+  // Update map style when toggle changes
+  useEffect(() => {
+    if (!map.current || !mapLoaded) return;
+
+    const newStyle = mapStyle === 'satellite'
+      ? 'mapbox://styles/mapbox/satellite-v9'
+      : 'mapbox://styles/mapbox/streets-v12';
+
+    // Store current markers before style change
+    const currentPins = savedPins;
+    const currentSelectedPinIds = selectedPinIds;
+
+    map.current.setStyle(newStyle);
+
+    // Re-add markers after style loads
+    map.current.once('styledata', () => {
+      // Clear existing markers
+      markersRef.current.forEach(marker => marker.remove());
+      markersRef.current = [];
+
+      // Re-add markers
+      const bounds = new mapboxgl.LngLatBounds();
+
+      currentPins.forEach((pin) => {
+        const isSelected = currentSelectedPinIds.includes(pin.id);
+
+        const el = document.createElement('div');
+        el.className = 'custom-marker';
+        el.style.width = '30px';
+        el.style.height = '30px';
+        el.style.borderRadius = '50%';
+        el.style.backgroundColor = isSelected ? '#22c55e' : '#3b82f6';
+        el.style.border = '3px solid white';
+        el.style.boxShadow = '0 2px 8px rgba(0,0,0,0.3)';
+        el.style.cursor = readOnly ? 'default' : 'pointer';
+
+        if (!readOnly) {
+          el.addEventListener('click', () => handlePinToggle(pin.id));
+        }
+
+        const marker = new mapboxgl.Marker({ element: el })
+          .setLngLat([pin.longitude, pin.latitude])
+          .setPopup(
+            new mapboxgl.Popup({ offset: 25 })
+              .setHTML(`<strong>${pin.label}</strong>${pin.notes ? `<br/><small>${pin.notes}</small>` : ''}`)
+          )
+          .addTo(map.current!);
+
+        markersRef.current.push(marker);
+        bounds.extend([pin.longitude, pin.latitude]);
+      });
+
+      if (currentPins.length > 0 && map.current) {
+        map.current.fitBounds(bounds, { padding: 50 });
+      }
+    });
+  }, [mapStyle]);
 
   const handlePinToggle = (pinId: string) => {
     if (readOnly || !onPinSelectionChange) return;
@@ -243,6 +304,30 @@ export function ReadOnlyPinsMap({
             isExpanded ? "h-[600px]" : "h-[400px]"
           )}>
             <div ref={mapContainer} className="w-full h-full" />
+            
+            {/* Streets/Satellite Toggle */}
+            <div className="absolute top-4 left-4 z-10 flex gap-0 bg-white rounded-md shadow-lg overflow-hidden">
+              <button
+                onClick={() => setMapStyle('streets')}
+                className={`px-3 py-1.5 text-sm font-medium transition-all ${
+                  mapStyle === 'streets'
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Streets
+              </button>
+              <button
+                onClick={() => setMapStyle('satellite')}
+                className={`px-3 py-1.5 text-sm font-medium transition-all ${
+                  mapStyle === 'satellite'
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Satellite
+              </button>
+            </div>
             
             {/* Expand/Collapse Button - Hidden if hideExpandButton prop is true */}
             {!hideExpandButton && (
