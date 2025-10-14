@@ -291,7 +291,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
       <SheetContent side="bottom" className="h-[100vh] w-full max-w-full p-0 overflow-y-auto">
         <div className="container max-w-6xl mx-auto p-6">
           <SheetHeader>
-            <SheetTitle>Manage Unit • {item?.item_code}</SheetTitle>
+            <SheetTitle>Maintenance • Manage Unit • {item?.item_code}</SheetTitle>
             <SheetDescription>
               Manage maintenance item details, location, and updates for this unit
             </SheetDescription>
