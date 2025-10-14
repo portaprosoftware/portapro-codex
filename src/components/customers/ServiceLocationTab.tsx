@@ -59,7 +59,7 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
   const [pinName, setPinName] = useState('');
   const [pinNotes, setPinNotes] = useState('');
   const [selectedLocationId, setSelectedLocationId] = useState<string>('');
-  const [mapStyle, setMapStyle] = useState('mapbox://styles/mapbox/streets-v12');
+  const [mapStyle, setMapStyle] = useState('mapbox://styles/mapbox/satellite-streets-v12');
 
   // Load existing pins and service locations from database
   useEffect(() => {
@@ -821,7 +821,7 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
                                 {pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)}
                               </div>
                               {pin.notes && (
-                                <div className="text-muted-foreground text-xs mt-1 line-clamp-1">
+                                <div className="text-muted-foreground text-xs mt-1 break-words">
                                   {pin.notes}
                                 </div>
                               )}
@@ -879,7 +879,7 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
                               {pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)}
                             </div>
                             {pin.notes && (
-                              <div className="text-muted-foreground text-xs mt-1 line-clamp-1">
+                              <div className="text-muted-foreground text-xs mt-1 break-words">
                                 {pin.notes}
                               </div>
                             )}
