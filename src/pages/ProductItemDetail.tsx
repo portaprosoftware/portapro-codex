@@ -183,7 +183,7 @@ const ProductItemDetail: React.FC = () => {
             <Button 
               variant="outline" 
               size="sm"
-              onClick={() => navigate(`/inventory?selectedProduct=${item.product_id}&tab=units&toolNumberToFind=${item.tool_number || item.item_code}`)}
+              onClick={() => navigate(`/inventory?selectedProduct=${item.product_id}&tab=units`)}
             >
               <ArrowLeft className="w-4 h-4 mr-1" />
               Back to Units
