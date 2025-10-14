@@ -368,29 +368,31 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
                   <div className="col-span-4 space-y-1">
                     <button
                       onClick={() => handleViewNote(note)}
-                      className="text-sm font-medium text-foreground hover:text-primary cursor-pointer text-left"
+                      className="text-sm font-medium text-foreground hover:text-primary cursor-pointer text-left block"
                     >
                       {note.title || 'Customer Note'}
                     </button>
-                    {note.is_important && (
-                      <Badge variant="destructive" className="text-xs">
-                        Important
-                      </Badge>
-                    )}
-                    {note.tags && note.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1">
-                        {note.tags.slice(0, 2).map((tag, index) => (
-                          <Badge key={index} variant="outline" className="text-xs h-5">
-                            {tag}
-                          </Badge>
-                        ))}
-                        {note.tags.length > 2 && (
-                          <Badge variant="outline" className="text-xs h-5">
-                            +{note.tags.length - 2} more
-                          </Badge>
-                        )}
-                      </div>
-                    )}
+                    <div className="flex flex-wrap gap-1">
+                      {note.is_important && (
+                        <Badge variant="destructive" className="text-xs">
+                          Important
+                        </Badge>
+                      )}
+                      {note.tags && note.tags.length > 0 && (
+                        <>
+                          {note.tags.slice(0, 2).map((tag, index) => (
+                            <Badge key={index} variant="outline" className="text-xs h-5">
+                              {tag}
+                            </Badge>
+                          ))}
+                          {note.tags.length > 2 && (
+                            <Badge variant="outline" className="text-xs h-5">
+                              +{note.tags.length - 2} more
+                            </Badge>
+                          )}
+                        </>
+                      )}
+                    </div>
                   </div>
                   
                   {/* Content Preview Column */}
