@@ -6,22 +6,14 @@ import { resolveTaxRate, normalizeZip } from '@/lib/tax';
 interface CreateQuoteParams {
   wizardData: JobWizardData;
   status?: 'draft' | 'pending' | 'sent' | 'accepted' | 'declined' | 'expired';
-  depositData?: {
-    enabled: boolean;
-    type: 'flat' | 'percentage';
-    amount: number;
-    percentage: number;
-    dueDate: Date | null;
-  };
 }
 
 export function useCreateQuote() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async ({ wizardData, status = 'pending', depositData }: CreateQuoteParams) => {
+    mutationFn: async ({ wizardData, status = 'pending' }: CreateQuoteParams) => {
       console.log('Creating quote with data:', wizardData);
-      console.log('Deposit data:', depositData);
 
       // Get next quote number
       const { data: companySettings } = await supabase
@@ -121,7 +113,7 @@ export function useCreateQuote() {
       const tax_amount = subtotal * taxRate;
       const total_amount = subtotal + tax_amount;
 
-      // Create the quote with deposit information
+      // Create the quote with deposit information from wizard data
       const { data: quote, error: quoteError } = await supabase
         .from('quotes')
         .insert({
@@ -137,11 +129,12 @@ export function useCreateQuote() {
           notes: wizardData.notes || '',
           terms: 'Payment due within 7 days of acceptance.',
           expiration_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 7 days from now
-          deposit_required: depositData?.enabled || false,
-          deposit_amount: depositData?.enabled ? depositData.amount : null,
-          deposit_type: depositData?.enabled ? depositData.type : null,
-          deposit_percentage: depositData?.enabled && depositData.type === 'percentage' ? depositData.percentage : null,
-          deposit_due_date: depositData?.enabled && depositData.dueDate ? depositData.dueDate.toISOString().split('T')[0] : null,
+          deposit_required: wizardData.depositEnabled || false,
+          deposit_amount: wizardData.depositEnabled ? wizardData.depositAmount : null,
+          deposit_type: wizardData.depositEnabled ? wizardData.depositType : null,
+          deposit_percentage: wizardData.depositEnabled && wizardData.depositType === 'percentage' ? wizardData.depositPercentage : null,
+          deposit_status: wizardData.depositEnabled ? 'pending' : null,
+          deposit_due_date: wizardData.depositEnabled && wizardData.depositDueDate ? wizardData.depositDueDate : null,
         })
         .select()
         .single();

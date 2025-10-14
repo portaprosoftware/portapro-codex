@@ -298,8 +298,7 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
       
       const quote = await createQuoteMutation.mutateAsync({
         wizardData: state.data,
-        status: status as 'pending' | 'sent' | 'accepted' | 'declined' | 'expired',
-        depositData: depositData.enabled ? depositData : undefined
+        status: status as 'pending' | 'sent' | 'accepted' | 'declined' | 'expired'
       });
 
       console.log('Quote created successfully:', quote);
