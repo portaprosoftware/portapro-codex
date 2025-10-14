@@ -838,77 +838,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
 
             <TabsContent value="update" className="mt-6">
               {/* Add Update & history */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="bg-white border rounded-xl p-4">
-              <h4 className="font-medium mb-3">Add Work Order Update</h4>
-              <div className="space-y-3">
-                <div>
-                  <Label>Update Type</Label>
-                  <Select
-                    value={updateForm.update_type}
-                    onValueChange={(v) => setUpdateForm((p) => ({ ...p, update_type: v as any }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="progress">Progress Update</SelectItem>
-                      <SelectItem value="repair">Repair Work</SelectItem>
-                      <SelectItem value="parts">Parts Replacement</SelectItem>
-                      <SelectItem value="inspection">Inspection</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>Title *</Label>
-                  <Input
-                    value={updateForm.title}
-                    onChange={(e) => setUpdateForm((p) => ({ ...p, title: e.target.value }))}
-                    placeholder="Brief title for this update"
-                  />
-                </div>
-                <div>
-                  <Label>Description *</Label>
-                  <Textarea
-                    rows={3}
-                    value={updateForm.description}
-                    onChange={(e) => setUpdateForm((p) => ({ ...p, description: e.target.value }))}
-                    placeholder="Describe what was done or current status"
-                  />
-                </div>
-                
-                {/* Photo Upload Section */}
-                <div className="pt-3 border-t">
-                  <MaintenanceUpdatePhotos 
-                    photos={updatePhotos}
-                    onPhotosChange={setUpdatePhotos}
-                    maxPhotos={2}
-                  />
-                </div>
-
-                <div className="flex justify-end pt-3">
-                  <Button
-                    onClick={() => {
-                      console.log("Add Update button clicked", updateForm); // Debug log
-                      if (!updateForm.title.trim()) {
-                        toast.error("Title is required");
-                        return;
-                      }
-                      if (!updateForm.description.trim()) {
-                        toast.error("Description is required");
-                        return;
-                      }
-                      addUpdateMutation.mutate(updateForm);
-                    }}
-                    disabled={addUpdateMutation.isPending}
-                    className="bg-gradient-to-r from-orange-600 to-orange-700 text-white font-bold hover:from-orange-700 hover:to-orange-800"
-                  >
-                    {addUpdateMutation.isPending ? "Adding..." : "Add Maintenance Update"}
-                  </Button>
-                </div>
-              </div>
-            </div>
-
+              <div className="space-y-5">
                 {/* Recent updates timeline */}
                 <div className="bg-white border rounded-xl p-4">
                   <h4 className="font-medium mb-3">Open Work Orders</h4>
@@ -947,30 +877,30 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                                        update.update_type === 'parts' ? 'Parts' : 
                                        update.update_type}
                                     </Badge>
-                                   )}
-                                   {isWorkOrder && (
-                                     <Button
-                                       variant="outline"
-                                       size="sm"
-                                       onClick={() => {
-                                         // Handle complete work order
-                                         toast.success("Work order completed");
-                                       }}
-                                       className="h-6 px-2 text-xs bg-gradient-to-r from-green-600 to-green-700 text-white font-bold hover:from-green-700 hover:to-green-800 border-green-600"
-                                     >
-                                       <CheckCircle2 className="w-3 h-3 mr-1" />
-                                       Complete
-                                     </Button>
-                                   )}
-                                   <Button
-                                     variant="outline"
-                                     size="sm"
-                                     onClick={() => handleDeleteUpdate(update.id)}
-                                     className="h-6 px-2 text-xs hover:bg-destructive hover:text-destructive-foreground"
-                                   >
-                                     Delete
-                                   </Button>
-                                 </div>
+                                  )}
+                                  {isWorkOrder && (
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => {
+                                        // Handle complete work order
+                                        toast.success("Work order completed");
+                                      }}
+                                      className="h-6 px-2 text-xs bg-gradient-to-r from-green-600 to-green-700 text-white font-bold hover:from-green-700 hover:to-green-800 border-green-600"
+                                    >
+                                      <CheckCircle2 className="w-3 h-3 mr-1" />
+                                      Complete
+                                    </Button>
+                                  )}
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleDeleteUpdate(update.id)}
+                                    className="h-6 px-2 text-xs hover:bg-destructive hover:text-destructive-foreground"
+                                  >
+                                    Delete
+                                  </Button>
+                                </div>
                                <div className="text-xs text-muted-foreground">
                                  {new Date(update.created_at).toLocaleDateString()}
                                </div>
@@ -1030,6 +960,78 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                     )}
                   </div>
                 </div>
+
+                {/* Add Update Form - Moved Below */}
+                <div className="bg-white border rounded-xl p-4">
+                  <h4 className="font-medium mb-3">Add Work Order Update</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <Label>Update Type</Label>
+                      <Select
+                        value={updateForm.update_type}
+                        onValueChange={(v) => setUpdateForm((p) => ({ ...p, update_type: v as any }))}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="progress">Progress Update</SelectItem>
+                          <SelectItem value="repair">Repair Work</SelectItem>
+                          <SelectItem value="parts">Parts Replacement</SelectItem>
+                          <SelectItem value="inspection">Inspection</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Title *</Label>
+                      <Input
+                        value={updateForm.title}
+                        onChange={(e) => setUpdateForm((p) => ({ ...p, title: e.target.value }))}
+                        placeholder="Brief title for this update"
+                      />
+                    </div>
+                    <div>
+                      <Label>Description *</Label>
+                      <Textarea
+                        rows={3}
+                        value={updateForm.description}
+                        onChange={(e) => setUpdateForm((p) => ({ ...p, description: e.target.value }))}
+                        placeholder="Describe what was done or current status"
+                      />
+                    </div>
+                    
+                    {/* Photo Upload Section */}
+                    <div className="pt-3 border-t">
+                      <MaintenanceUpdatePhotos 
+                        photos={updatePhotos}
+                        onPhotosChange={setUpdatePhotos}
+                        maxPhotos={2}
+                      />
+                    </div>
+
+                    <div className="flex justify-end pt-3">
+                      <Button
+                        onClick={() => {
+                          console.log("Add Update button clicked", updateForm); // Debug log
+                          if (!updateForm.title.trim()) {
+                            toast.error("Title is required");
+                            return;
+                          }
+                          if (!updateForm.description.trim()) {
+                            toast.error("Description is required");
+                            return;
+                          }
+                          addUpdateMutation.mutate(updateForm);
+                        }}
+                        disabled={addUpdateMutation.isPending}
+                        className="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold hover:from-blue-700 hover:to-blue-800"
+                      >
+                        {addUpdateMutation.isPending ? "Adding..." : "Add Maintenance Update"}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </TabsContent>
           </Tabs>
