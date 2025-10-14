@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from "@/components/ui/drawer";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,8 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Clock, DollarSign, MapPin, Settings, Wrench, Trash2, Plus, X, CheckCircle2, Trash, ChevronDown } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Clock, DollarSign, MapPin, Settings, Wrench, Trash2, Plus, X, CheckCircle2, Trash } from "lucide-react";
 import { SimpleMaintenancePhotoUpload } from "./SimpleMaintenancePhotoUpload";
 import { MaintenanceUpdatePhotos } from "./MaintenanceUpdatePhotos";
 import { ImageViewerModal } from "./ImageViewerModal";
@@ -59,33 +58,12 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
   const [activeTab, setActiveTab] = useState(initialActiveTab);
   const { data: systemUsers = [] } = useSystemUsers();
   const [shouldCloseOnSave, setShouldCloseOnSave] = useState(true);
-  const [workOrderFilter, setWorkOrderFilter] = useState<string>("all");
 
 
   // Update active tab when initialActiveTab changes
   useEffect(() => {
     setActiveTab(initialActiveTab);
   }, [initialActiveTab]);
-
-  // Mutation to update work order status
-  const updateWorkOrderStatus = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      const { error } = await supabase
-        .from('maintenance_updates')
-        .update({ status })
-        .eq('id', id);
-      
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['maintenance-updates', itemId] });
-      toast.success('Work order status updated');
-    },
-    onError: (error) => {
-      toast.error('Failed to update status');
-      console.error(error);
-    }
-  });
 
   const [formData, setFormData] = useState({
     maintenance_reason: "",
@@ -108,14 +86,6 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
     parts: [{ parts_used: "", parts_cost: "" }],
     status: "work_order_created",
   });
-
-  const [progressUpdateForm, setProgressUpdateForm] = useState({
-    parentWorkOrderId: "",
-    title: "",
-    description: "",
-  });
-
-  const [expandedWorkOrders, setExpandedWorkOrders] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     if (item) {
@@ -145,35 +115,12 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
         .from("maintenance_updates")
         .select("*")
         .eq("item_id", itemId)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(5);
       if (error) throw error;
       return data || [];
     },
   });
-
-  // Separate work orders (parents) from progress updates (children)
-  const workOrders = useMemo(() => {
-    return (updates || []).filter((u: any) => !u.parent_work_order_id && u.status);
-  }, [updates]);
-
-  const openWorkOrders = useMemo(() => {
-    return workOrders.filter((wo: any) => wo.status !== 'completed');
-  }, [workOrders]);
-
-  const getProgressUpdatesForWorkOrder = (workOrderId: string) => {
-    return (updates || []).filter((u: any) => u.parent_work_order_id === workOrderId);
-  };
-
-  // Auto-expand work orders that are not completed
-  useEffect(() => {
-    const initialExpanded: Record<string, boolean> = {};
-    workOrders.forEach((wo: any) => {
-      if (wo.status !== 'completed') {
-        initialExpanded[wo.id] = true;
-      }
-    });
-    setExpandedWorkOrders(initialExpanded);
-  }, [workOrders]);
 
   const totalCost = useMemo(() => {
     return (updates || []).reduce((sum: number, u: any) => sum + (u.cost_amount || 0), 0);
@@ -311,20 +258,19 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
         .filter((p) => p.parts_used.trim())
         .map((p) => p.parts_used.trim());
 
-      // Insert work order as a maintenance update with proper fields
+      // Insert work order as a maintenance update
       const { error } = await supabase
         .from("maintenance_updates")
         .insert({
           item_id: itemId,
-          update_type: data.work_order_type, // Save work order type
-          title: data.work_order_name || "Work Order", // Save work order name
+          update_type: "repair",
+          title: "Work Order",
           description: `Technician(s): ${technicianNames}\nLabor Hours: ${laborHours}\nParts Used: ${partsUsed || "None"}`,
           technician_name: technicianNames,
           labor_hours: laborHours,
           cost_amount: totalCost,
           parts_used: partsUsedArray,
           attachments: null,
-          status: "work_order_created", // Set initial status
         });
 
       if (error) throw error;
@@ -351,69 +297,6 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
     onError: (err: any) => {
       console.error("Work order save error:", err);
       toast.error(err.message || "Failed to save work order");
-    },
-  });
-
-  const addProgressUpdateMutation = useMutation({
-    mutationFn: async () => {
-      if (!itemId) throw new Error("Item ID is required");
-      if (!progressUpdateForm.parentWorkOrderId) throw new Error("Work order selection is required");
-      
-      // Upload photos first if any
-      let attachments: any[] = [];
-      if (updatePhotos.length > 0) {
-        const photoPromises = updatePhotos.map(async (photo, index) => {
-          const fileExt = photo.file.name.split('.').pop();
-          const fileName = `update-${itemId}-${Date.now()}-${index}.${fileExt}`;
-          const filePath = `unit-photos/${fileName}`;
-
-          const { error: uploadError } = await supabase.storage
-            .from('unit-photos')
-            .upload(filePath, photo.file);
-
-          if (uploadError) throw uploadError;
-
-          const { data: { publicUrl } } = supabase.storage
-            .from('unit-photos')
-            .getPublicUrl(filePath);
-
-          return {
-            type: 'photo',
-            url: publicUrl,
-            caption: photo.caption || null,
-            filename: photo.file.name
-          };
-        });
-
-        attachments = await Promise.all(photoPromises);
-      }
-      
-      const { error } = await (supabase as any)
-        .from("maintenance_updates")
-        .insert({
-          item_id: itemId,
-          parent_work_order_id: progressUpdateForm.parentWorkOrderId,
-          update_type: 'progress_update',
-          title: progressUpdateForm.title,
-          description: progressUpdateForm.description,
-          attachments: attachments.length > 0 ? attachments : null,
-          cost_amount: 0,
-        });
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      toast.success("Progress update added successfully");
-      queryClient.invalidateQueries({ queryKey: ["maintenance-updates", itemId] });
-      setProgressUpdateForm({
-        parentWorkOrderId: "",
-        title: "",
-        description: "",
-      });
-      setUpdatePhotos([]);
-    },
-    onError: (err) => {
-      console.error(err);
-      toast.error("Failed to add progress update");
     },
   });
 
@@ -527,16 +410,16 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
   };
 
   return (
-    <Drawer open={isOpen} onOpenChange={onClose}>
-      <DrawerContent className="h-[90vh] flex flex-col">
-        <DrawerHeader className="border-b">
-          <DrawerTitle>Manage Unit • {item?.item_code}</DrawerTitle>
-          <DrawerDescription>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-3xl max-h-[85vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Manage Unit • {item?.item_code}</DialogTitle>
+          <DialogDescription>
             Manage maintenance item details, location, and updates for this unit
-          </DrawerDescription>
-        </DrawerHeader>
+          </DialogDescription>
+        </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="space-y-6">
           {/* Summary strip */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div className="flex items-center gap-2 bg-white border rounded-lg p-3">
@@ -988,119 +871,69 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
               <div className="space-y-5">
                 {/* Recent updates timeline */}
                 <div className="bg-white border rounded-xl p-4">
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="font-medium">Work Orders</h4>
-                    <Select value={workOrderFilter} onValueChange={setWorkOrderFilter}>
-                      <SelectTrigger className="w-[180px] h-8 text-xs">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Work Orders</SelectItem>
-                        <SelectItem value="active">Active Only</SelectItem>
-                        <SelectItem value="work_order_created">Created</SelectItem>
-                        <SelectItem value="in_progress">In Progress</SelectItem>
-                        <SelectItem value="waiting_on_parts">Waiting on Parts</SelectItem>
-                        <SelectItem value="completed">Completed</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  <h4 className="font-medium mb-3">Open Work Orders</h4>
                   <div className="space-y-4 max-h-[600px] overflow-y-auto">
-                     {(updates || []).length === 0 ? (
-                       <div className="text-sm text-muted-foreground text-center py-8">
-                         No maintenance updates yet
-                       </div>
-                      ) : (
-                        (updates || [])
-                          .filter((update: any) => {
-                            // Check if it's a work order (has status field or title includes work order info)
-                            const isWorkOrder = update.status || update.title?.toLowerCase().includes('work order');
-                            if (!isWorkOrder) return false;
-                            
-                            // Apply status filter
-                            if (workOrderFilter === "all") return true;
-                            if (workOrderFilter === "active") return update.status !== "completed";
-                            return update.status === workOrderFilter;
-                          })
-                          .map((update: any) => {
-                          const isWorkOrder = true; // All items in this list are work orders now
+                    {(updates || []).length === 0 ? (
+                      <div className="text-sm text-muted-foreground text-center py-8">
+                        No maintenance updates yet
+                      </div>
+                     ) : (
+                        (updates || []).map((update: any) => {
+                          const isWorkOrder = update.title === "Work Order";
                           return (
-                           <div
-                                key={update.id}
-                                className={cn(
-                                  "p-4 rounded-lg border-2",
-                                  "bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800",
-                                  update.status === "work_order_created" && "border-l-4 border-l-blue-500 border-gray-200 dark:border-gray-700",
-                                  update.status === "in_progress" && "border-l-4 border-l-orange-500 border-gray-200 dark:border-gray-700",
-                                  update.status === "waiting_on_parts" && "border-l-4 border-l-purple-500 border-gray-200 dark:border-gray-700",
-                                  update.status === "completed" && "border-l-4 border-l-green-500 border-gray-200 dark:border-gray-700",
-                                  !update.status && "border-l-4 border-l-blue-500 border-gray-200 dark:border-gray-700"
-                                )}
-                              >
-                             <div>
-                               {/* Header: Name and Status */}
-                               <div className="flex items-start justify-between mb-3 gap-4">
-                                 <div className="flex-1 min-w-0">
-                                   <h5 className="font-semibold text-sm mb-1 truncate">
-                                     {update.title || "Work Order"}
-                                   </h5>
-                                   <Badge 
-                                     variant="outline" 
-                                     className="text-xs font-medium capitalize"
-                                   >
-                                     {update.update_type === 'repair' && '🔧 Repair'}
-                                     {update.update_type === 'parts' && '⚙️ Parts'}
-                                     {update.update_type === 'inspection' && '🔍 Inspection'}
-                                   </Badge>
-                                 </div>
-                                 <div className="flex flex-col items-end gap-2">
-                                   <Select
-                                     value={update.status || "work_order_created"}
-                                     onValueChange={(newStatus) => {
-                                       updateWorkOrderStatus.mutate({
-                                         id: update.id,
-                                         status: newStatus
-                                       });
-                                     }}
-                                   >
-                                     <SelectTrigger className="h-7 w-[180px] text-xs font-medium">
-                                       <SelectValue />
-                                     </SelectTrigger>
-                                     <SelectContent>
-                                       <SelectItem value="work_order_created">
-                                         <span className="flex items-center gap-2">
-                                           <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                                           Work Order Created
-                                         </span>
-                                       </SelectItem>
-                                       <SelectItem value="in_progress">
-                                         <span className="flex items-center gap-2">
-                                           <span className="w-2 h-2 rounded-full bg-orange-500"></span>
-                                           In Progress
-                                         </span>
-                                       </SelectItem>
-                                       <SelectItem value="waiting_on_parts">
-                                         <span className="flex items-center gap-2">
-                                           <span className="w-2 h-2 rounded-full bg-purple-500"></span>
-                                           Waiting on Parts
-                                         </span>
-                                       </SelectItem>
-                                       <SelectItem value="completed">
-                                         <span className="flex items-center gap-2">
-                                           <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                                           Completed
-                                         </span>
-                                       </SelectItem>
-                                     </SelectContent>
-                                   </Select>
-                                   <div className="text-xs text-muted-foreground">
-                                     {new Date(update.created_at).toLocaleDateString('en-US', { 
-                                       month: 'short', 
-                                       day: 'numeric', 
-                                       year: 'numeric' 
-                                     })}
-                                   </div>
-                                 </div>
-                              </div>
+                          <div key={update.id} className={`border rounded-lg p-4 relative flex flex-col ${isWorkOrder ? 'border-gray-300 bg-gray-100' : ''}`}>
+                            <div>
+                              <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center gap-2">
+                                  {!isWorkOrder && (
+                                    <Badge 
+                                      variant="outline" 
+                                      className={`text-xs font-bold ${
+                                        update.update_type === 'progress' 
+                                          ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white border-orange-600' 
+                                          : update.update_type === 'repair'
+                                          ? 'bg-gradient-to-r from-red-600 to-red-700 text-white border-red-600'
+                                          : update.update_type === 'parts'
+                                          ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white border-purple-600'
+                                          : 'bg-gradient-to-r from-green-600 to-green-700 text-white border-green-600'
+                                      }`}
+                                    >
+                                      {update.update_type === 'progress' ? 'Progress' : 
+                                       update.update_type === 'repair' ? 'Repair' :
+                                       update.update_type === 'parts' ? 'Parts' : 
+                                       update.update_type}
+                                    </Badge>
+                                  )}
+                                  {isWorkOrder && (
+                                    <Select
+                                      value={update.status || "work_order_created"}
+                                      onValueChange={(v) => {
+                                        // TODO: Update status in database
+                                        toast.success("Status updated");
+                                      }}
+                                    >
+                                      <SelectTrigger className="h-7 w-[180px] text-xs">
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="work_order_created">Work Order Created</SelectItem>
+                                        <SelectItem value="in_progress">In Progress</SelectItem>
+                                        <SelectItem value="waiting_on_parts">Waiting on Parts</SelectItem>
+                                        <SelectItem value="completed">Completed</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  )}
+                                </div>
+                               <div className="text-xs text-muted-foreground">
+                                 {new Date(update.created_at).toLocaleDateString()}
+                               </div>
+                             </div>
+                             {update.title && !isWorkOrder && (
+                               <div className="text-sm font-medium mb-2">{update.title}</div>
+                             )}
+                             {!isWorkOrder && (
+                               <div className="text-sm mb-2 line-clamp-2">{update.description}</div>
+                             )}
                              
                               {/* Display attached photos */}
                               {update.attachments && Array.isArray(update.attachments) && update.attachments.length > 0 && (
@@ -1128,127 +961,107 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                                 </div>
                               )}
                            </div>
-                            
-                            {/* Work Order Details Grid */}
-                            <div className="grid grid-cols-2 gap-3 mt-3 pt-3 border-t border-gray-200">
-                              {update.technician_name && (
-                                <div>
-                                  <div className="text-xs text-muted-foreground mb-1">👷 Technician(s)</div>
-                                  <div className="text-sm font-medium">{update.technician_name}</div>
-                                </div>
-                              )}
-                              {update.labor_hours > 0 && (
-                                <div>
-                                  <div className="text-xs text-muted-foreground mb-1">⏱️ Labor Hours</div>
-                                  <div className="text-sm font-medium">{update.labor_hours}h</div>
-                                </div>
-                              )}
-                              {update.cost_amount > 0 && (
-                                <div>
-                                  <div className="text-xs text-muted-foreground mb-1">💰 Total Cost</div>
-                                  <div className="text-sm font-bold text-green-600">${Number(update.cost_amount).toFixed(2)}</div>
-                                </div>
-                              )}
-                              {update.parts_used && Array.isArray(update.parts_used) && update.parts_used.length > 0 && (
-                                <div className="col-span-2">
-                                  <div className="text-xs text-muted-foreground mb-1">🔩 Parts Used</div>
-                                  <div className="text-sm">{update.parts_used.join(', ')}</div>
-                                </div>
-                              )}
-                            </div>
-                         </div>
-                         );
+                           <div className="space-y-1 mt-2">
+                             {update.technician_name && (
+                               <div className="text-sm text-muted-foreground">
+                                 Technician: {update.technician_name}
+                               </div>
+                             )}
+                             <div className="flex gap-4 text-sm text-muted-foreground">
+                               {update.labor_hours > 0 && (
+                                 <span>Labor: {update.labor_hours}h</span>
+                               )}
+                               {update.cost_amount > 0 && (
+                                 <span>Total Cost: ${update.cost_amount}</span>
+                               )}
+                               {update.parts_used && Array.isArray(update.parts_used) && update.parts_used.length > 0 && (
+                                 <span>Parts: {update.parts_used.join(', ')}</span>
+                               )}
+                             </div>
+                           </div>
+                        </div>
+                        );
                       })
                     )}
                   </div>
                 </div>
 
-                {/* Add Progress Update Form */}
+                {/* Add Update Form - Moved Below */}
                 <div className="bg-white border rounded-xl p-4">
-                  <h4 className="font-medium mb-3">Add Progress Update</h4>
-                  {openWorkOrders.length === 0 ? (
-                    <div className="text-center py-6 text-muted-foreground">
-                      <p>No open work orders available.</p>
-                      <p className="text-sm mt-1">Create a work order first in the Work Orders tab.</p>
+                  <h4 className="font-medium mb-3">Add Work Order Update</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <Label>Update Type</Label>
+                      <Select
+                        value={updateForm.update_type}
+                        onValueChange={(v) => setUpdateForm((p) => ({ ...p, update_type: v as any }))}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="progress">Progress Update</SelectItem>
+                          <SelectItem value="repair">Repair Work</SelectItem>
+                          <SelectItem value="parts">Parts Replacement</SelectItem>
+                          <SelectItem value="inspection">Inspection</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
-                  ) : (
-                    <div className="space-y-3">
-                      <div>
-                        <Label>Select Work Order *</Label>
-                        <Select
-                          value={progressUpdateForm.parentWorkOrderId}
-                          onValueChange={(v) => setProgressUpdateForm((p) => ({ ...p, parentWorkOrderId: v }))}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select an open work order" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {openWorkOrders.map((wo: any) => (
-                              <SelectItem key={wo.id} value={wo.id}>
-                                <div className="flex items-center gap-2">
-                                  <span>{wo.title || 'Work Order'}</span>
-                                  <Badge variant="outline" className="text-xs">
-                                    {wo.status}
-                                  </Badge>
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div>
-                        <Label>Update Title *</Label>
-                        <Input
-                          value={progressUpdateForm.title}
-                          onChange={(e) => setProgressUpdateForm((p) => ({ ...p, title: e.target.value }))}
-                          placeholder="Brief description of this update"
-                        />
-                      </div>
-
-                      <div>
-                        <Label>Description *</Label>
-                        <Textarea
-                          rows={3}
-                          value={progressUpdateForm.description}
-                          onChange={(e) => setProgressUpdateForm((p) => ({ ...p, description: e.target.value }))}
-                          placeholder="What was done in this update..."
-                        />
-                      </div>
-
-                      <div className="pt-3 border-t">
-                        <MaintenanceUpdatePhotos 
-                          photos={updatePhotos}
-                          onPhotosChange={setUpdatePhotos}
-                          maxPhotos={2}
-                        />
-                      </div>
-
-                      <div className="flex justify-end pt-3">
-                        <Button
-                          onClick={() => {
-                            if (!progressUpdateForm.parentWorkOrderId || !progressUpdateForm.title || !progressUpdateForm.description) {
-                              toast.error("Please fill in all required fields");
-                              return;
-                            }
-                            addProgressUpdateMutation.mutate();
-                          }}
-                          disabled={addProgressUpdateMutation.isPending || openWorkOrders.length === 0}
-                          className="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold hover:from-blue-700 hover:to-blue-800"
-                        >
-                          {addProgressUpdateMutation.isPending ? "Adding..." : "Add Progress Update"}
-                        </Button>
-                      </div>
+                    <div>
+                      <Label>Title *</Label>
+                      <Input
+                        value={updateForm.title}
+                        onChange={(e) => setUpdateForm((p) => ({ ...p, title: e.target.value }))}
+                        placeholder="Brief title for this update"
+                      />
                     </div>
-                  )}
+                    <div>
+                      <Label>Description *</Label>
+                      <Textarea
+                        rows={3}
+                        value={updateForm.description}
+                        onChange={(e) => setUpdateForm((p) => ({ ...p, description: e.target.value }))}
+                        placeholder="Describe what was done or current status"
+                      />
+                    </div>
+                    
+                    {/* Photo Upload Section */}
+                    <div className="pt-3 border-t">
+                      <MaintenanceUpdatePhotos 
+                        photos={updatePhotos}
+                        onPhotosChange={setUpdatePhotos}
+                        maxPhotos={2}
+                      />
+                    </div>
+
+                    <div className="flex justify-end pt-3">
+                      <Button
+                        onClick={() => {
+                          console.log("Add Update button clicked", updateForm); // Debug log
+                          if (!updateForm.title.trim()) {
+                            toast.error("Title is required");
+                            return;
+                          }
+                          if (!updateForm.description.trim()) {
+                            toast.error("Description is required");
+                            return;
+                          }
+                          addUpdateMutation.mutate(updateForm);
+                        }}
+                        disabled={addUpdateMutation.isPending}
+                        className="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold hover:from-blue-700 hover:to-blue-800"
+                      >
+                        {addUpdateMutation.isPending ? "Adding..." : "Add Maintenance Update"}
+                      </Button>
+                    </div>
+                  </div>
                 </div>
-
 
               </div>
             </TabsContent>
           </Tabs>
         </div>
-      </DrawerContent>
+      </DialogContent>
       
       {/* Image Viewer Modal */}
       <ImageViewerModal
@@ -1258,6 +1071,6 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
         initialIndex={selectedPhotoIndex}
       />
 
-    </Drawer>
+    </Dialog>
   );
 };
