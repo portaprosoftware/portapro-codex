@@ -788,7 +788,7 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
                 }`}
               >
                 <Target className="w-4 h-4" />
-                {dropModeActive ? "Exit Drop Mode" : "Activate Drop Mode"}
+                {dropModeActive ? "Exit Drop Mode" : "Activate Pin Drop Mode"}
               </Button>
               
               {/* Drop Pin Here Button - shown when drop mode is active */}
