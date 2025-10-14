@@ -3,7 +3,7 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
-import { MapPin, Loader2, Maximize2, Minimize2 } from 'lucide-react';
+import { MapPin, Loader2, Maximize2, Minimize2, Search } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -51,6 +51,7 @@ export function ReadOnlyPinsMap({
   const [mapLoaded, setMapLoaded] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [mapStyle, setMapStyle] = useState<'streets' | 'satellite'>('satellite');
+  const [searchQuery, setSearchQuery] = useState('');
   const markersRef = useRef<mapboxgl.Marker[]>([]);
 
   // Fetch Mapbox token
@@ -414,11 +415,39 @@ export function ReadOnlyPinsMap({
                     </div>
                   )}
                 </div>
-                <div className="space-y-3 max-h-[324px] overflow-y-auto pr-2">
+                
+                {/* Search Bar */}
+                <div className="relative mb-3">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <input
+                    type="text"
+                    placeholder="Search by location or pin label..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-9 pr-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20 bg-background"
+                  />
+                </div>
+
+                <div className="space-y-3 max-h-[280px] overflow-y-auto pr-2">
                   {/* Group pins by service location */}
                   {serviceLocations.map((location) => {
                     const locationPins = savedPins.filter(pin => pin.service_location_id === location.id);
                     if (locationPins.length === 0) return null;
+
+                    // Filter by search query
+                    const filteredPins = searchQuery.trim()
+                      ? locationPins.filter(pin => 
+                          pin.label.toLowerCase().includes(searchQuery.toLowerCase())
+                        )
+                      : locationPins;
+
+                    // Check if location name matches search
+                    const locationMatches = searchQuery.trim()
+                      ? location.location_name.toLowerCase().includes(searchQuery.toLowerCase())
+                      : true;
+
+                    // Show location if it matches OR if any of its pins match
+                    if (!locationMatches && filteredPins.length === 0) return null;
 
                     const fullAddress = [location.street, location.city, location.state, location.zip]
                       .filter(Boolean)
@@ -437,7 +466,7 @@ export function ReadOnlyPinsMap({
                         )}
 
                         {/* Pins for this location */}
-                        {locationPins.map((pin) => {
+                        {filteredPins.map((pin) => {
                           const isSelected = selectedPinIds.includes(pin.id);
                           return (
                             <div
