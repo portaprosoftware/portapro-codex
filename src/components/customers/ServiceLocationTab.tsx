@@ -311,7 +311,7 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
           
           const el = document.createElement('div');
           el.className = 'service-location-marker';
-          el.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="#3b82f6" stroke="#fff" stroke-width="2"/><polyline points="9 22 9 12 15 12 15 22" stroke="#fff" stroke-width="2"/></svg>';
+          el.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="2" width="16" height="20" rx="2" fill="#3b82f6" stroke="#fff" stroke-width="2"/><path d="M9 22v-10h6v10M9 6h.01M9 10h.01M15 6h.01M15 10h.01" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>';
           el.style.width = '32px';
           el.style.height = '32px';
           el.style.cursor = 'pointer';
