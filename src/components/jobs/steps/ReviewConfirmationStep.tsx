@@ -518,44 +518,51 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
           </div>
         )}
 
-        {/* Reference Pins Section - Only show if pins are selected */}
+        {/* Reference Pins Map - Only show if pins are selected */}
         {selectedReferencePins.length > 0 && (
-          <div className="rounded-lg border p-3 space-y-3 md:col-span-2">
+          <div className="rounded-lg border p-3 space-y-3">
             <h3 className="font-medium flex items-center gap-2">
               <MapPin className="h-4 w-4" />
-              Reference Pins ({selectedReferencePins.length} selected)
+              Reference Pins ({selectedReferencePins.length})
             </h3>
             
-            {/* Compact Map */}
+            {/* Map */}
             <div className="rounded-lg overflow-hidden border">
               <ReadOnlyPinsMap 
                 customerId={d.customer_id || ''}
                 selectedPinIds={d.reference_pin_ids || []}
                 readOnly={true}
-                className="h-[200px]"
+                className="h-[300px]"
               />
             </div>
+          </div>
+        )}
+
+        {/* Reference Pins List - Only show if pins are selected */}
+        {selectedReferencePins.length > 0 && (
+          <div className="rounded-lg border p-3 space-y-3">
+            <h3 className="font-medium flex items-center gap-2">
+              <MapPin className="h-4 w-4" />
+              Pin List
+            </h3>
             
             {/* Pin List */}
-            <div className="space-y-1">
-              <div className="text-xs font-medium text-muted-foreground">Pin List:</div>
-              <ul className="space-y-1">
-                {selectedReferencePins.map((pin) => (
-                  <li key={pin.id} className="text-sm flex items-start gap-2">
-                    <MapPin className="h-3 w-3 mt-0.5 text-primary flex-shrink-0" />
-                    <div>
-                      <span className="font-medium">{pin.label}</span>
-                      <span className="text-muted-foreground text-xs ml-2">
-                        ({pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)})
-                      </span>
-                      {pin.notes && (
-                        <div className="text-xs text-muted-foreground mt-0.5">{pin.notes}</div>
-                      )}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <ul className="space-y-2">
+              {selectedReferencePins.map((pin) => (
+                <li key={pin.id} className="text-sm flex items-start gap-2">
+                  <MapPin className="h-3 w-3 mt-0.5 text-primary flex-shrink-0" />
+                  <div>
+                    <span className="font-medium">{pin.label}</span>
+                    <span className="text-muted-foreground text-xs ml-2">
+                      ({pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)})
+                    </span>
+                    {pin.notes && (
+                      <div className="text-xs text-muted-foreground mt-0.5">{pin.notes}</div>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
           </div>
         )}
 
