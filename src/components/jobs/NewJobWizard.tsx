@@ -633,6 +633,7 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
           return (
             <DepositCollectionStep
               totalAmount={calculatedTotal}
+              customerId={state.data.customer_id}
               onDepositChange={setDepositData}
               onCollectNow={() => setShowPaymentModal(true)}
               onGenerateLink={() => setShowPaymentLinkModal(true)}
@@ -659,6 +660,7 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
         return (
           <DepositCollectionStep
             totalAmount={calculatedTotal}
+            customerId={state.data.customer_id}
             onDepositChange={setDepositData}
             onCollectNow={() => setShowPaymentModal(true)}
             onGenerateLink={() => setShowPaymentLinkModal(true)}

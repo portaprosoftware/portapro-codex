@@ -7,12 +7,16 @@ import { Switch } from '@/components/ui/switch';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, CreditCard, Link2, Percent, DollarSign } from 'lucide-react';
+import { CalendarIcon, CreditCard, Link2, Percent, DollarSign, User } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { ModernBadge } from '@/components/ui/modern-badge';
 
 interface DepositCollectionStepProps {
   totalAmount: number;
+  customerId?: string;
   onDepositChange: (depositData: DepositData) => void;
   onCollectNow?: () => void;
   onGenerateLink?: () => void;
@@ -28,6 +32,7 @@ export interface DepositData {
 
 export const DepositCollectionStep: React.FC<DepositCollectionStepProps> = ({
   totalAmount,
+  customerId,
   onDepositChange,
   onCollectNow,
   onGenerateLink,
@@ -37,6 +42,23 @@ export const DepositCollectionStep: React.FC<DepositCollectionStepProps> = ({
   const [flatAmount, setFlatAmount] = useState(0);
   const [percentage, setPercentage] = useState(25);
   const [dueDate, setDueDate] = useState<Date | null>(null);
+
+  // Fetch customer data to get deposit requirement status
+  const { data: customer } = useQuery({
+    queryKey: ['customer', customerId],
+    queryFn: async () => {
+      if (!customerId) return null;
+      const { data, error } = await supabase
+        .from('customers')
+        .select('name, deposit_required')
+        .eq('id', customerId)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!customerId,
+  });
 
   const calculatedDepositAmount = depositType === 'flat' 
     ? flatAmount 
@@ -56,6 +78,34 @@ export const DepositCollectionStep: React.FC<DepositCollectionStepProps> = ({
 
   return (
     <div className="space-y-6">
+      {/* Customer Deposit Status Card */}
+      {customer && (
+        <Card>
+          <CardHeader className="pb-4">
+            <CardTitle className="text-base flex items-center gap-2">
+              <User className="h-5 w-5 text-primary" />
+              Customer Deposit Status
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Customer Name</span>
+              <span className="font-medium">{customer.name}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Deposit Required by Default</span>
+              <ModernBadge 
+                variant={customer.deposit_required ? "danger" : "default"}
+                className="font-bold"
+              >
+                {customer.deposit_required ? 'Deposit Required' : 'No Deposit Required'}
+              </ModernBadge>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Deposit Collection Card */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
