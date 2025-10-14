@@ -64,7 +64,7 @@ export const QuoteExitConfirmation: React.FC<QuoteExitConfirmationProps> = ({
             disabled={!draftName.trim() || isSaving}
             className="bg-primary hover:bg-primary/90"
           >
-            {isSaving ? 'Saving...' : 'Save Quote | Draft'}
+            {isSaving ? 'Saving...' : 'Save Quote'}
           </AlertDialogAction>
           <AlertDialogCancel onClick={onClose} disabled={isSaving}>
             Continue Editing
