@@ -12,6 +12,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Clock, DollarSign, MapPin, Settings, Wrench, Trash2, Plus, X, CheckCircle2, Trash } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { SimpleMaintenancePhotoUpload } from "./SimpleMaintenancePhotoUpload";
 import { MaintenanceUpdatePhotos } from "./MaintenanceUpdatePhotos";
 import { ImageViewerModal } from "./ImageViewerModal";
@@ -58,6 +59,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
   const [activeTab, setActiveTab] = useState(initialActiveTab);
   const { data: systemUsers = [] } = useSystemUsers();
   const [shouldCloseOnSave, setShouldCloseOnSave] = useState(true);
+  const [workOrderFilter, setWorkOrderFilter] = useState<string>("all");
 
 
   // Update active tab when initialActiveTab changes
@@ -278,19 +280,20 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
         .filter((p) => p.parts_used.trim())
         .map((p) => p.parts_used.trim());
 
-      // Insert work order as a maintenance update
+      // Insert work order as a maintenance update with proper fields
       const { error } = await supabase
         .from("maintenance_updates")
         .insert({
           item_id: itemId,
-          update_type: "repair",
-          title: "Work Order",
+          update_type: data.work_order_type, // Save work order type
+          title: data.work_order_name || "Work Order", // Save work order name
           description: `Technician(s): ${technicianNames}\nLabor Hours: ${laborHours}\nParts Used: ${partsUsed || "None"}`,
           technician_name: technicianNames,
           labor_hours: laborHours,
           cost_amount: totalCost,
           parts_used: partsUsedArray,
           attachments: null,
+          status: "work_order_created", // Set initial status
         });
 
       if (error) throw error;
@@ -891,91 +894,119 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
               <div className="space-y-5">
                 {/* Recent updates timeline */}
                 <div className="bg-white border rounded-xl p-4">
-                  <h4 className="font-medium mb-3">Open Work Orders</h4>
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="font-medium">Work Orders</h4>
+                    <Select value={workOrderFilter} onValueChange={setWorkOrderFilter}>
+                      <SelectTrigger className="w-[180px] h-8 text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Work Orders</SelectItem>
+                        <SelectItem value="active">Active Only</SelectItem>
+                        <SelectItem value="work_order_created">Created</SelectItem>
+                        <SelectItem value="in_progress">In Progress</SelectItem>
+                        <SelectItem value="waiting_on_parts">Waiting on Parts</SelectItem>
+                        <SelectItem value="completed">Completed</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                   <div className="space-y-4 max-h-[600px] overflow-y-auto">
-                    {(updates || []).length === 0 ? (
-                      <div className="text-sm text-muted-foreground text-center py-8">
-                        No maintenance updates yet
-                      </div>
-                     ) : (
-                        (updates || []).map((update: any) => {
-                          const isWorkOrder = update.title === "Work Order";
+                     {(updates || []).length === 0 ? (
+                       <div className="text-sm text-muted-foreground text-center py-8">
+                         No maintenance updates yet
+                       </div>
+                      ) : (
+                        (updates || [])
+                          .filter((update: any) => {
+                            // Check if it's a work order (has status field or title includes work order info)
+                            const isWorkOrder = update.status || update.title?.toLowerCase().includes('work order');
+                            if (!isWorkOrder) return false;
+                            
+                            // Apply status filter
+                            if (workOrderFilter === "all") return true;
+                            if (workOrderFilter === "active") return update.status !== "completed";
+                            return update.status === workOrderFilter;
+                          })
+                          .map((update: any) => {
+                          const isWorkOrder = true; // All items in this list are work orders now
                           return (
-                          <div key={update.id} className={`border rounded-lg p-4 relative flex flex-col ${isWorkOrder ? 'border-gray-300 bg-gray-100' : ''}`}>
-                            <div>
-                              <div className="flex items-center justify-between mb-3">
-                                <div className="flex items-center gap-2">
-                                  {!isWorkOrder && (
-                                    <Badge 
-                                      variant="outline" 
-                                      className={`text-xs font-bold ${
-                                        update.update_type === 'progress' 
-                                          ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white border-orange-600' 
-                                          : update.update_type === 'repair'
-                                          ? 'bg-gradient-to-r from-red-600 to-red-700 text-white border-red-600'
-                                          : update.update_type === 'parts'
-                                          ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white border-purple-600'
-                                          : 'bg-gradient-to-r from-green-600 to-green-700 text-white border-green-600'
-                                      }`}
-                                    >
-                                      {update.update_type === 'progress' ? 'Progress' : 
-                                       update.update_type === 'repair' ? 'Repair' :
-                                       update.update_type === 'parts' ? 'Parts' : 
-                                       update.update_type}
-                                    </Badge>
-                                  )}
-                                  {isWorkOrder && (
-                                    <Select
-                                      value={update.status || "work_order_created"}
-                                      onValueChange={(newStatus) => {
-                                        updateWorkOrderStatus.mutate({
-                                          id: update.id,
-                                          status: newStatus
-                                        });
-                                      }}
-                                    >
-                                      <SelectTrigger className="h-7 w-full text-xs font-medium">
-                                        <SelectValue />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="work_order_created">
-                                          <span className="flex items-center gap-2">
-                                            <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                                            Work Order Created
-                                          </span>
-                                        </SelectItem>
-                                        <SelectItem value="in_progress">
-                                          <span className="flex items-center gap-2">
-                                            <span className="w-2 h-2 rounded-full bg-orange-500"></span>
-                                            In Progress
-                                          </span>
-                                        </SelectItem>
-                                        <SelectItem value="waiting_on_parts">
-                                          <span className="flex items-center gap-2">
-                                            <span className="w-2 h-2 rounded-full bg-purple-500"></span>
-                                            Waiting on Parts
-                                          </span>
-                                        </SelectItem>
-                                        <SelectItem value="completed">
-                                          <span className="flex items-center gap-2">
-                                            <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                                            Completed
-                                          </span>
-                                        </SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                  )}
-                                </div>
-                               <div className="text-xs text-muted-foreground">
-                                 {new Date(update.created_at).toLocaleDateString()}
-                               </div>
-                             </div>
-                             {update.title && !isWorkOrder && (
-                               <div className="text-sm font-medium mb-2">{update.title}</div>
-                             )}
-                             {!isWorkOrder && (
-                               <div className="text-sm mb-2 line-clamp-2">{update.description}</div>
-                             )}
+                           <div
+                                key={update.id}
+                                className={cn(
+                                  "p-4 rounded-lg border-2",
+                                  "bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800",
+                                  update.status === "work_order_created" && "border-l-4 border-l-blue-500 border-gray-200 dark:border-gray-700",
+                                  update.status === "in_progress" && "border-l-4 border-l-orange-500 border-gray-200 dark:border-gray-700",
+                                  update.status === "waiting_on_parts" && "border-l-4 border-l-purple-500 border-gray-200 dark:border-gray-700",
+                                  update.status === "completed" && "border-l-4 border-l-green-500 border-gray-200 dark:border-gray-700",
+                                  !update.status && "border-l-4 border-l-blue-500 border-gray-200 dark:border-gray-700"
+                                )}
+                              >
+                             <div>
+                               {/* Header: Name and Status */}
+                               <div className="flex items-start justify-between mb-3 gap-4">
+                                 <div className="flex-1 min-w-0">
+                                   <h5 className="font-semibold text-sm mb-1 truncate">
+                                     {update.title || "Work Order"}
+                                   </h5>
+                                   <Badge 
+                                     variant="outline" 
+                                     className="text-xs font-medium capitalize"
+                                   >
+                                     {update.update_type === 'repair' && '🔧 Repair'}
+                                     {update.update_type === 'parts' && '⚙️ Parts'}
+                                     {update.update_type === 'inspection' && '🔍 Inspection'}
+                                   </Badge>
+                                 </div>
+                                 <div className="flex flex-col items-end gap-2">
+                                   <Select
+                                     value={update.status || "work_order_created"}
+                                     onValueChange={(newStatus) => {
+                                       updateWorkOrderStatus.mutate({
+                                         id: update.id,
+                                         status: newStatus
+                                       });
+                                     }}
+                                   >
+                                     <SelectTrigger className="h-7 w-[180px] text-xs font-medium">
+                                       <SelectValue />
+                                     </SelectTrigger>
+                                     <SelectContent>
+                                       <SelectItem value="work_order_created">
+                                         <span className="flex items-center gap-2">
+                                           <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                                           Work Order Created
+                                         </span>
+                                       </SelectItem>
+                                       <SelectItem value="in_progress">
+                                         <span className="flex items-center gap-2">
+                                           <span className="w-2 h-2 rounded-full bg-orange-500"></span>
+                                           In Progress
+                                         </span>
+                                       </SelectItem>
+                                       <SelectItem value="waiting_on_parts">
+                                         <span className="flex items-center gap-2">
+                                           <span className="w-2 h-2 rounded-full bg-purple-500"></span>
+                                           Waiting on Parts
+                                         </span>
+                                       </SelectItem>
+                                       <SelectItem value="completed">
+                                         <span className="flex items-center gap-2">
+                                           <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                                           Completed
+                                         </span>
+                                       </SelectItem>
+                                     </SelectContent>
+                                   </Select>
+                                   <div className="text-xs text-muted-foreground">
+                                     {new Date(update.created_at).toLocaleDateString('en-US', { 
+                                       month: 'short', 
+                                       day: 'numeric', 
+                                       year: 'numeric' 
+                                     })}
+                                   </div>
+                                 </div>
+                              </div>
                              
                               {/* Display attached photos */}
                               {update.attachments && Array.isArray(update.attachments) && update.attachments.length > 0 && (
@@ -1003,26 +1034,36 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                                 </div>
                               )}
                            </div>
-                           <div className="space-y-1 mt-2">
-                             {update.technician_name && (
-                               <div className="text-sm text-muted-foreground">
-                                 Technician: {update.technician_name}
-                               </div>
-                             )}
-                             <div className="flex gap-4 text-sm text-muted-foreground">
-                               {update.labor_hours > 0 && (
-                                 <span>Labor: {update.labor_hours}h</span>
-                               )}
-                               {update.cost_amount > 0 && (
-                                 <span>Total Cost: ${update.cost_amount}</span>
-                               )}
-                               {update.parts_used && Array.isArray(update.parts_used) && update.parts_used.length > 0 && (
-                                 <span>Parts: {update.parts_used.join(', ')}</span>
-                               )}
-                             </div>
-                           </div>
-                        </div>
-                        );
+                            
+                            {/* Work Order Details Grid */}
+                            <div className="grid grid-cols-2 gap-3 mt-3 pt-3 border-t border-gray-200">
+                              {update.technician_name && (
+                                <div>
+                                  <div className="text-xs text-muted-foreground mb-1">👷 Technician(s)</div>
+                                  <div className="text-sm font-medium">{update.technician_name}</div>
+                                </div>
+                              )}
+                              {update.labor_hours > 0 && (
+                                <div>
+                                  <div className="text-xs text-muted-foreground mb-1">⏱️ Labor Hours</div>
+                                  <div className="text-sm font-medium">{update.labor_hours}h</div>
+                                </div>
+                              )}
+                              {update.cost_amount > 0 && (
+                                <div>
+                                  <div className="text-xs text-muted-foreground mb-1">💰 Total Cost</div>
+                                  <div className="text-sm font-bold text-green-600">${Number(update.cost_amount).toFixed(2)}</div>
+                                </div>
+                              )}
+                              {update.parts_used && Array.isArray(update.parts_used) && update.parts_used.length > 0 && (
+                                <div className="col-span-2">
+                                  <div className="text-xs text-muted-foreground mb-1">🔩 Parts Used</div>
+                                  <div className="text-sm">{update.parts_used.join(', ')}</div>
+                                </div>
+                              )}
+                            </div>
+                         </div>
+                         );
                       })
                     )}
                   </div>
