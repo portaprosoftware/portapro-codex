@@ -725,36 +725,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                     {/* Service Address */}
                     {(job?.customer?.service_street || job?.customer?.service_city) && (
                       <div>
-                        <div className="flex items-center justify-between mb-1">
-                          <label className="text-sm font-medium text-muted-foreground">Service Address</label>
-                          {(() => {
-                            const fullAddress = [
-                              job?.customer?.service_street,
-                              job?.customer?.service_city,
-                              job?.customer?.service_state,
-                              job?.customer?.service_zip
-                            ].filter(Boolean).join(', ');
-                            
-                            if (!fullAddress) return null;
-                            
-                            const handleCopyAddress = () => {
-                              navigator.clipboard.writeText(fullAddress);
-                              toast.success('Address copied to clipboard');
-                            };
-                            
-                            return (
-                              <button
-                                type="button"
-                                onClick={handleCopyAddress}
-                                className="flex items-center gap-1 text-xs text-primary hover:underline cursor-pointer"
-                                title="Copy address to clipboard"
-                              >
-                                <Copy className="h-3 w-3" />
-                                Copy Address
-                              </button>
-                            );
-                          })()}
-                        </div>
+                        <label className="text-sm font-medium text-muted-foreground">Service Address</label>
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex-1">
                             <p className="text-sm select-text">
@@ -783,8 +754,22 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                               
                               const encodedAddress = encodeURIComponent(fullAddress);
                               
+                              const handleCopyAddress = () => {
+                                navigator.clipboard.writeText(fullAddress);
+                                toast.success('Address copied to clipboard');
+                              };
+                              
                               return (
                                 <>
+                                  <button
+                                    type="button"
+                                    onClick={handleCopyAddress}
+                                    className="flex items-center gap-1 h-8 px-2 text-xs text-muted-foreground hover:text-foreground cursor-pointer border border-input rounded-md hover:bg-accent transition-colors"
+                                    title="Copy address to clipboard"
+                                  >
+                                    <Copy className="h-3 w-3" />
+                                    Copy Address
+                                  </button>
                                   <Button
                                     size="sm"
                                     variant="outline"
@@ -823,11 +808,23 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="text-sm font-medium text-muted-foreground">Email</label>
-                        <p className="text-sm select-text">{job?.customer?.email || 'Not provided'}</p>
+                        <p className="text-sm select-text cursor-text">{job?.customer?.email || 'Not provided'}</p>
                       </div>
                       <div>
                         <label className="text-sm font-medium text-muted-foreground">Phone</label>
-                        <p className="text-sm select-text">{job?.customer?.phone || 'Not provided'}</p>
+                        <p className="text-sm select-text cursor-text">
+                          {(() => {
+                            const phone = job?.customer?.phone;
+                            if (!phone) return 'Not provided';
+                            
+                            // Format phone number as (555) 123-9876
+                            const cleaned = phone.replace(/\D/g, '');
+                            if (cleaned.length === 10) {
+                              return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
+                            }
+                            return phone; // Return as-is if not 10 digits
+                          })()}
+                        </p>
                       </div>
                     </div>
                   </CardContent>
