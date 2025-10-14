@@ -101,8 +101,7 @@ export const DepositCollectionStep: React.FC<DepositCollectionStepProps> = ({
       {customer && (
         <Card>
           <CardHeader className="pb-4">
-            <CardTitle className="text-base flex items-center gap-2">
-              <User className="h-5 w-5 text-primary" />
+            <CardTitle className="text-base">
               Customer Deposit Status
             </CardTitle>
           </CardHeader>
@@ -143,7 +142,7 @@ export const DepositCollectionStep: React.FC<DepositCollectionStepProps> = ({
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="space-y-1">
-              <span>Deposit Collection</span>
+              <span className="text-base">Deposit Collection</span>
               <p className="text-sm font-normal text-muted-foreground">
                 Deposit percentages are based on the equipment rental cost only.
               </p>
