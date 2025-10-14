@@ -31,8 +31,6 @@ export const MaintenanceHistoryFilters: React.FC<MaintenanceHistoryFiltersProps>
   productTypes,
   technicians,
 }) => {
-  const [showFilters, setShowFilters] = React.useState(false);
-
   const handleReset = () => {
     onFilterChange({
       dateRange: { from: undefined, to: undefined },
@@ -56,38 +54,27 @@ export const MaintenanceHistoryFilters: React.FC<MaintenanceHistoryFiltersProps>
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-3">
-        <div className="flex-1">
-          <Input
-            placeholder="Search by item code, summary, or technician..."
-            value={filters.searchTerm}
-            onChange={(e) => onFilterChange({ ...filters, searchTerm: e.target.value })}
-            className="max-w-md"
-          />
-        </div>
-        <Button
-          variant="outline"
-          onClick={() => setShowFilters(!showFilters)}
-          className="gap-2"
-        >
-          <Filter className="w-4 h-4" />
-          Filters
+      {/* Filters - Always Visible */}
+      <div className="bg-gray-50 border rounded-lg p-4">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Filter className="w-4 h-4 text-gray-600" />
+            <span className="font-semibold text-gray-900">Filters</span>
+            {activeFilterCount > 0 && (
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-2 py-0.5 rounded-full text-xs font-bold">
+                {activeFilterCount}
+              </span>
+            )}
+          </div>
           {activeFilterCount > 0 && (
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-2 py-0.5 rounded-full text-xs font-bold">
-              {activeFilterCount}
-            </span>
+            <Button variant="ghost" size="sm" onClick={handleReset} className="gap-2">
+              <X className="w-4 h-4" />
+              Clear All
+            </Button>
           )}
-        </Button>
-        {activeFilterCount > 0 && (
-          <Button variant="ghost" size="sm" onClick={handleReset} className="gap-2">
-            <X className="w-4 h-4" />
-            Clear
-          </Button>
-        )}
-      </div>
+        </div>
 
-      {showFilters && (
-        <div className="bg-gray-50 border rounded-lg p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* Date Range */}
           <div className="space-y-2">
             <Label>Date Range</Label>
@@ -206,7 +193,17 @@ export const MaintenanceHistoryFilters: React.FC<MaintenanceHistoryFiltersProps>
             </Select>
           </div>
         </div>
-      )}
+      </div>
+
+      {/* Search Bar - Below Filters */}
+      <div className="flex-1">
+        <Input
+          placeholder="Search by item code, summary, or technician..."
+          value={filters.searchTerm}
+          onChange={(e) => onFilterChange({ ...filters, searchTerm: e.target.value })}
+          className="max-w-md"
+        />
+      </div>
     </div>
   );
 };

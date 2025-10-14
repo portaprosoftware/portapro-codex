@@ -396,7 +396,7 @@ export const MaintenanceHistorySection: React.FC<MaintenanceHistorySectionProps>
       {/* Advanced Statistics */}
       <MaintenanceStatsAdvanced stats={advancedStats} />
 
-      {/* Filters */}
+      {/* Filters - Always Visible */}
       <MaintenanceHistoryFilters
         filters={filters}
         onFilterChange={setFilters}
