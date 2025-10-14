@@ -333,9 +333,6 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
                       Company Default
                     </Badge>
                   )}
-                  <span className="text-xl font-bold text-foreground">
-                    {customer.custom_deposit_percentage ?? companySettings?.default_deposit_percentage ?? 25}%
-                  </span>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -344,6 +341,9 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
                   >
                     <Edit className="w-4 h-4" />
                   </Button>
+                  <span className="text-xl font-bold text-foreground">
+                    {customer.custom_deposit_percentage ?? companySettings?.default_deposit_percentage ?? 25}%
+                  </span>
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
                   {customer.custom_deposit_percentage !== null && customer.custom_deposit_percentage !== undefined
