@@ -463,18 +463,6 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
             <Target className="w-4 h-4" />
             {dropModeActive ? "Exit Drop Mode" : "Activate Drop Mode"}
           </Button>
-          
-          {pins.length > 0 && (
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={clearAllPins}
-              className="flex items-center gap-2"
-            >
-              <Trash2 className="w-4 h-4" />
-              Clear Pins ({pins.length})
-            </Button>
-          )}
         </div>
       </div>
 
@@ -482,7 +470,7 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
-            placeholder="Search for an address..."
+            placeholder="Search or paste a physical service address"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10"
