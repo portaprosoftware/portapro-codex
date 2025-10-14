@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, MoreVertical, Search, ArrowUpDown, ArrowUp, ArrowDown, AlertTriangle, ChevronRight, ChevronDown, Eye, ScanLine, Info, Package, DollarSign } from 'lucide-react';
+import { Plus, Edit, Trash2, MoreVertical, Search, ArrowUpDown, ArrowUp, ArrowDown, AlertTriangle, ChevronRight, ChevronDown, Eye, ScanLine, Info, Package, DollarSign, Droplet, BarChart3 } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
@@ -358,6 +358,7 @@ export const SimpleConsumablesInventory: React.FC = () => {
                 isActive={activeTab === 'inventory'}
                 onClick={() => setActiveTab('inventory')}
               >
+                <Droplet className="h-4 w-4" />
                 Inventory
               </TabNav.Item>
               <TabNav.Item
@@ -365,6 +366,7 @@ export const SimpleConsumablesInventory: React.FC = () => {
                 isActive={activeTab === 'analytics'}
                 onClick={() => setActiveTab('analytics')}
               >
+                <BarChart3 className="h-4 w-4" />
                 Analytics
               </TabNav.Item>
             </TabNav>
