@@ -383,11 +383,6 @@ export const MaintenanceHistorySection: React.FC<MaintenanceHistorySectionProps>
       {/* Advanced Statistics */}
       <MaintenanceStatsAdvanced stats={advancedStats} />
 
-      {/* Info Text */}
-      <p className="text-sm text-gray-500 italic">
-        Card details are based on year-to-date data
-      </p>
-
       {/* Filters - Always Visible */}
       <MaintenanceHistoryFilters
         filters={filters}
