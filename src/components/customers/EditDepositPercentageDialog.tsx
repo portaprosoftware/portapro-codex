@@ -117,7 +117,7 @@ export function EditDepositPercentageDialog({
 
           <div className="rounded-lg bg-muted p-3 space-y-1">
             <p className="text-sm font-medium">Company Default</p>
-            <p className="text-2xl font-bold">{companyDefaultPercentage}%</p>
+            <p className="text-xl font-bold">{companyDefaultPercentage}%</p>
           </div>
         </div>
 
