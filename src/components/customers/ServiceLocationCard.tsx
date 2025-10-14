@@ -203,7 +203,7 @@ export function ServiceLocationCard({ location, onUpdate, onDelete }: ServiceLoc
               className="flex items-center gap-1.5"
             >
               <Copy className="w-3.5 h-3.5" />
-              Copy
+              Copy Address
             </Button>
             {!location.is_locked && (
               <>
