@@ -914,7 +914,9 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                              {update.title && !isWorkOrder && (
                                <div className="text-sm font-medium mb-2">{update.title}</div>
                              )}
-                             <div className="text-sm mb-2 line-clamp-2">{update.description}</div>
+                             {!isWorkOrder && (
+                               <div className="text-sm mb-2 line-clamp-2">{update.description}</div>
+                             )}
                              
                               {/* Display attached photos */}
                               {update.attachments && Array.isArray(update.attachments) && update.attachments.length > 0 && (
