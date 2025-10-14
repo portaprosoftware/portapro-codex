@@ -111,6 +111,34 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
     enabled: !!jobId && open
   });
 
+  // Fetch reference pins with service location details
+  const { data: referencePins = [] } = useQuery({
+    queryKey: ['reference-pins', job?.reference_pin_ids],
+    queryFn: async () => {
+      if (!job?.reference_pin_ids || job.reference_pin_ids.length === 0) return [];
+      
+      const { data, error } = await supabase
+        .from('customer_map_pins')
+        .select(`
+          *,
+          service_location:customer_service_locations(
+            id,
+            location_name,
+            street,
+            city,
+            state,
+            zip
+          )
+        `)
+        .in('id', job.reference_pin_ids);
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!job?.reference_pin_ids && job.reference_pin_ids.length > 0 && open
+  });
+
+
   // Fetch drivers for dropdown
   const { data: drivers = [] } = useQuery({
     queryKey: ['drivers'],
@@ -771,24 +799,132 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
 
                 {/* Drop Pins Section */}
                 {job?.reference_pin_ids && job.reference_pin_ids.length > 0 && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2 text-base">
-                        <Navigation className="w-4 h-4" />
-                        Drop Pins & Service Locations
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      {/* Map with satellite view (default) */}
-                      <div className="rounded-lg overflow-hidden border">
-                        <ReadOnlyPinsMap 
-                          customerId={job.customer_id}
-                          selectedPinIds={job.reference_pin_ids}
-                          readOnly={true}
-                        />
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <div className="space-y-4">
+                    {/* Reference Pins Map */}
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-base">
+                          <MapPin className="w-4 h-4" />
+                          Reference Pins ({referencePins.length})
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="rounded-lg overflow-hidden border">
+                          <ReadOnlyPinsMap 
+                            customerId={job.customer_id}
+                            selectedPinIds={job.reference_pin_ids}
+                            readOnly={true}
+                            className="h-[300px]"
+                            hidePinsList={true}
+                          />
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    {/* Pin List & Inventory Assignment */}
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-base">
+                          <MapPin className="w-4 h-4" />
+                          Pin List & Inventory Assignment
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2">
+                          {(() => {
+                            // Group pins by service location
+                            const groupedPins: Record<string, any[]> = {};
+                            const pinsWithoutLocation: any[] = [];
+                            
+                            referencePins.forEach(pin => {
+                              if (pin.service_location) {
+                                const locationId = pin.service_location.id;
+                                if (!groupedPins[locationId]) {
+                                  groupedPins[locationId] = [];
+                                }
+                                groupedPins[locationId].push(pin);
+                              } else {
+                                pinsWithoutLocation.push(pin);
+                              }
+                            });
+
+                            return (
+                              <>
+                                {/* Render pins grouped by location */}
+                                {Object.values(groupedPins).map((locationPins, groupIdx) => {
+                                  const location = locationPins[0].service_location;
+                                  const fullAddress = [location.street, location.city, location.state, location.zip]
+                                    .filter(Boolean)
+                                    .join(', ');
+                                  
+                                  return (
+                                    <div key={groupIdx} className="space-y-3">
+                                      {/* Service Location Header */}
+                                      <div className="border-b pb-2">
+                                        <div className="text-sm font-semibold text-foreground">
+                                          {location.location_name}
+                                        </div>
+                                        {fullAddress && (
+                                          <div className="text-xs text-muted-foreground">
+                                            {fullAddress}
+                                          </div>
+                                        )}
+                                      </div>
+                                      
+                                      {/* Pins for this location */}
+                                      {locationPins.map((pin) => {
+                                        return (
+                                          <div key={pin.id} className="pl-4 space-y-2 border-l-2 border-muted">
+                                            {/* Pin Label */}
+                                            <div className="flex items-start gap-2">
+                                              <MapPin className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" />
+                                              <div className="flex-1">
+                                                <div className="font-medium text-sm">{pin.label}</div>
+                                                <div className="text-xs text-muted-foreground">
+                                                  ({pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)})
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  );
+                                })}
+                                
+                                {/* Render pins without location */}
+                                {pinsWithoutLocation.length > 0 && (
+                                  <div className="space-y-3">
+                                    <div className="border-b pb-2">
+                                      <div className="text-sm font-semibold text-foreground">
+                                        Other Pins
+                                      </div>
+                                    </div>
+                                    
+                                    {pinsWithoutLocation.map((pin) => {
+                                      return (
+                                        <div key={pin.id} className="pl-4 space-y-2 border-l-2 border-muted">
+                                          <div className="flex items-start gap-2">
+                                            <MapPin className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" />
+                                            <div className="flex-1">
+                                              <div className="font-medium text-sm">{pin.label}</div>
+                                              <div className="text-xs text-muted-foreground">
+                                                ({pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)})
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                )}
+                              </>
+                            );
+                          })()}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
                 )}
 
                 {/* Assignment Information */}
