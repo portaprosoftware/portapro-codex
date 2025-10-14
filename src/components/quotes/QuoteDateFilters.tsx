@@ -81,7 +81,6 @@ export const QuoteDateFilters: React.FC<QuoteDateFiltersProps> = ({
           date={dateRange}
           onDateChange={onDateRangeChange}
           placeholder="Select date range"
-          className="w-80"
         />
         
         {dateRange && (
