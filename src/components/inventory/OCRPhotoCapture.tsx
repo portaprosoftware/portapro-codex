@@ -150,11 +150,13 @@ export const OCRPhotoCapture: React.FC<OCRPhotoCaptureProps> = ({
 
       const { results, confidence: ocrConfidence } = response.data;
       
-      // Apply confidence threshold - only populate fields with high confidence
+      // Apply confidence threshold - but always keep tool number and vendor ID
       const CONFIDENCE_THRESHOLD = 0.75;
       const filteredResults = {
-        toolNumber: ocrConfidence >= CONFIDENCE_THRESHOLD ? results.toolNumber : null,
-        vendorId: ocrConfidence >= CONFIDENCE_THRESHOLD ? results.vendorId : null,
+        // Always populate tool number and vendor ID if detected
+        toolNumber: results.toolNumber,
+        vendorId: results.vendorId,
+        // Filter other fields based on confidence
         plasticCode: ocrConfidence >= CONFIDENCE_THRESHOLD ? results.plasticCode : null,
         manufacturingDate: ocrConfidence >= CONFIDENCE_THRESHOLD ? results.manufacturingDate : null,
         moldCavity: ocrConfidence >= CONFIDENCE_THRESHOLD ? results.moldCavity : null,
@@ -168,7 +170,7 @@ export const OCRPhotoCapture: React.FC<OCRPhotoCaptureProps> = ({
         title: "OCR Processing Complete",
         description: ocrConfidence >= CONFIDENCE_THRESHOLD 
           ? "High confidence results detected" 
-          : "Low confidence - please verify values manually",
+          : "Tool info detected - please verify other fields",
       });
 
     } catch (error) {
