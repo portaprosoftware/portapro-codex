@@ -109,17 +109,11 @@ export function CompanySettingsSection() {
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Company Name and Basic Info Section */}
+          {/* Company Name */}
           <div>
             <h3 className="text-xl font-semibold text-foreground">
               {companySettings?.company_name || "Company Name Not Set"}
             </h3>
-            <p className="text-sm text-muted-foreground">
-              {companySettings?.company_timezone ? 
-                `Timezone: ${companySettings.company_timezone.replace("America/", "").replace("_", " ")}` : 
-                "Timezone not set"
-              }
-            </p>
           </div>
 
           {/* Contact Information & Business Settings */}
