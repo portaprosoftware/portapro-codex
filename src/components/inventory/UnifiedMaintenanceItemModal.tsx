@@ -16,6 +16,8 @@ import { SimpleMaintenancePhotoUpload } from "./SimpleMaintenancePhotoUpload";
 import { MaintenanceUpdatePhotos } from "./MaintenanceUpdatePhotos";
 import { ImageViewerModal } from "./ImageViewerModal";
 import { useSystemUsers } from "@/hooks/useSystemUsers";
+import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
+
 
 interface StorageLocation { id: string; name: string }
 
@@ -58,6 +60,8 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
   const { data: systemUsers = [] } = useSystemUsers();
   const [shouldCloseOnSave, setShouldCloseOnSave] = useState(true);
   const [completedWorkOrders, setCompletedWorkOrders] = useState<Set<string>>(new Set());
+  const [deleteUpdateId, setDeleteUpdateId] = useState<string | null>(null);
+
 
   // Update active tab when initialActiveTab changes
   useEffect(() => {
@@ -901,7 +905,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    onClick={() => handleDeleteUpdate(update.id)}
+                                    onClick={() => setDeleteUpdateId(update.id)}
                                     className="h-7 w-7 p-0 hover:bg-destructive hover:text-destructive-foreground"
                                   >
                                     <Trash className="w-4 h-4" />
@@ -1052,6 +1056,21 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
         onClose={() => setImageViewerOpen(false)}
         photos={selectedPhotos}
         initialIndex={selectedPhotoIndex}
+      />
+
+      <DeleteConfirmationModal
+        isOpen={!!deleteUpdateId}
+        onClose={() => setDeleteUpdateId(null)}
+        onConfirm={() => {
+          if (deleteUpdateId) {
+            handleDeleteUpdate(deleteUpdateId);
+            setDeleteUpdateId(null);
+          }
+        }}
+        title="Delete Work Order Update?"
+        description="Are you sure you want to delete this work order update? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
       />
     </Dialog>
   );
