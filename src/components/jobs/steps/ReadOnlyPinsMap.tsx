@@ -326,10 +326,7 @@ export function ReadOnlyPinsMap({
                             />
                           )}
                           <div className="flex-1">
-                            <h4 className={cn(
-                              "font-medium text-sm",
-                              isSelected && "text-green-700 dark:text-green-300"
-                            )}>
+                            <h4 className="font-medium text-sm">
                               {pin.label}
                             </h4>
                             <p className="text-xs text-muted-foreground mt-1">
