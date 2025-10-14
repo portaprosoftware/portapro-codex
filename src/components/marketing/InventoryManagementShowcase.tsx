@@ -7,6 +7,7 @@ import { getCustomerTypeColor, getCustomerTypeIcon } from '@/lib/customerTypeIco
 import { useIsMobile } from '@/hooks/use-mobile';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import standardToiletUnit from '@/assets/standard-toilet-unit.png';
 import { 
   Package, 
   MapPin, 
@@ -372,7 +373,7 @@ export function InventoryManagementShowcase() {
               {/* Image - Full width on mobile, left column on desktop */}
               <div className="flex justify-center lg:h-64">
                 <img 
-                  src="/assets/standard-unit.png" 
+                  src={standardToiletUnit} 
                   alt="Standard Portable Toilet" 
                   className="w-full max-w-48 sm:max-w-60 h-48 sm:h-64 lg:h-full object-contain rounded-lg"
                 />
