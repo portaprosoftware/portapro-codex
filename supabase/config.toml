@@ -1,8 +1,5 @@
 project_id = "unpnuonbndubcuzxfnmg"
 
-[functions.get-maptiler-key]
-verify_jwt = false
-
 [functions.stripe-payment-intent]
 verify_jwt = false
 
