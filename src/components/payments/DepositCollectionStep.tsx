@@ -116,7 +116,12 @@ export const DepositCollectionStep: React.FC<DepositCollectionStepProps> = ({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
-            <span>Deposit Collection</span>
+            <div className="space-y-1">
+              <span>Deposit Collection</span>
+              <p className="text-sm font-normal text-muted-foreground">
+                Deposit percentages are based on the equipment rental cost only.
+              </p>
+            </div>
             <div className="flex items-center gap-2">
               <Label htmlFor="deposit-enabled" className="text-sm font-normal">
                 Require Deposit
