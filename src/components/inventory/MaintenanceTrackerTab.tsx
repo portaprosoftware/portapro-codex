@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Wrench, Search, Settings, ChevronDown, ChevronRight, AlertTriangle, Clock, Calendar, MapPin } from "lucide-react";
+import { Wrench, Search, Settings, ChevronDown, ChevronRight, AlertTriangle, Clock, Calendar, MapPin, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -15,6 +15,7 @@ import { UnifiedMaintenanceItemModal } from "./UnifiedMaintenanceItemModal";
 import { ReturnToServiceModal, type ItemCondition } from "./ReturnToServiceModal";
 import { UnitNavigationDialog } from "./UnitNavigationDialog";
 import { MaintenanceHistorySection } from "./MaintenanceHistorySection";
+import { EquipmentFilterModal } from "./EquipmentFilterModal";
 
 interface MaintenanceTrackerTabProps {
   productId: string;
@@ -26,6 +27,8 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [expandedRows, setExpandedRows] = useState<string[]>([]);
+  const [selectedProductFilters, setSelectedProductFilters] = useState<string[]>([]);
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
   
   // Modal states
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -35,17 +38,34 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
   const [showNavigationDialog, setShowNavigationDialog] = useState(false);
   const [selectedUnitForNavigation, setSelectedUnitForNavigation] = useState<{id: string, code: string} | null>(null);
 
+  // Fetch all products for filter modal
+  const { data: allProducts } = useQuery({
+    queryKey: ["all-products"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("products")
+        .select("id, name")
+        .order("name");
+      if (error) throw error;
+      return data || [];
+    }
+  });
+
   // Fetch items in maintenance for this product or all products
   const { data: maintenanceItems, isLoading } = useQuery({
-    queryKey: ["maintenance-items", productId, searchQuery],
+    queryKey: ["maintenance-items", productId, searchQuery, selectedProductFilters],
     queryFn: async () => {
       let query = supabase
         .from("product_items")
         .select("*, tool_number, vendor_id, maintenance_start_date, maintenance_reason, expected_return_date, maintenance_notes, products(name)")
         .eq("status", "maintenance");
 
-      // If productId is "all", don't filter by product_id
-      if (productId !== "all") {
+      // If productId is "all", apply product filters if any
+      if (productId === "all") {
+        if (selectedProductFilters.length > 0) {
+          query = query.in("product_id", selectedProductFilters);
+        }
+      } else {
         query = query.eq("product_id", productId);
       }
 
@@ -335,6 +355,22 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
             className="pl-10"
           />
         </div>
+        
+        {productId === "all" && (
+          <Button
+            variant="outline"
+            onClick={() => setFilterModalOpen(true)}
+            className="gap-2 whitespace-nowrap"
+          >
+            <Filter className="w-4 h-4" />
+            Equipment
+            {selectedProductFilters.length > 0 && (
+              <Badge className="ml-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-2 py-0.5 rounded-full">
+                {selectedProductFilters.length}
+              </Badge>
+            )}
+          </Button>
+        )}
       </div>
 
       {/* Maintenance Items Table */}
@@ -531,6 +567,15 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
             setEditModalOpen(true);
           }
         }}
+      />
+
+      {/* Equipment Filter Modal */}
+      <EquipmentFilterModal
+        isOpen={filterModalOpen}
+        onClose={() => setFilterModalOpen(false)}
+        products={allProducts || []}
+        selectedProductIds={selectedProductFilters}
+        onApplyFilters={setSelectedProductFilters}
       />
     </div>
   );
