@@ -142,9 +142,8 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
       }));
       
       setSelectedUnitsCollection(prev => {
-        // Remove any existing selections for this product
-        const filtered = prev.filter(s => s.productId !== product.id);
-        return [...filtered, ...selections];
+        // Add new selections to existing ones (additive behavior)
+        return [...prev, ...selections];
       });
       
       toast.success(`Auto-assigned ${quantity} specific units for ${product.name}`);
