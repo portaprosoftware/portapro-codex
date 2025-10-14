@@ -51,7 +51,7 @@ export default function Settings() {
   }
 
   const settingsSections = [
-    { key: 'company' as const, label: 'Company Settings', icon: Building2 },
+    { key: 'company' as const, label: 'Company Settings', icon: Settings2 },
     { key: 'notifications' as const, label: 'Notifications', icon: Bell },
     { key: 'pricing-rules' as const, label: 'Pricing Rules', icon: DollarSign },
     { key: 'business-hours' as const, label: 'Business Hours', icon: Clock },
