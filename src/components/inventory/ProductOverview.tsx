@@ -510,7 +510,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
       <Dialog open={showCategoryModal} onOpenChange={setShowCategoryModal}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Set Default Item Code Category</DialogTitle>
+            <DialogTitle>Select Series Assignment</DialogTitle>
           </DialogHeader>
           
           <div className="space-y-4">
@@ -534,7 +534,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
                 onClick={handleCategoryUpdate}
                 disabled={updateCategoryMutation.isPending || !selectedCategory}
               >
-                {updateCategoryMutation.isPending ? "Updating..." : "Set Category"}
+                {updateCategoryMutation.isPending ? "Assigning..." : "Assign"}
               </Button>
             </div>
           </div>
