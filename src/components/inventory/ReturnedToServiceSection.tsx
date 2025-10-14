@@ -143,13 +143,6 @@ export const ReturnedToServiceSection: React.FC<ReturnedToServiceSectionProps> =
                     </div>
                   </div>
                 </div>
-
-                <div className="flex items-center gap-2 text-xs text-gray-500">
-                  <TrendingUp className="w-3 h-3" />
-                  <span>
-                    Repair effectiveness: {unit.returned_to_maintenance ? "Needs monitoring" : "Good"}
-                  </span>
-                </div>
               </div>
 
               <Button
