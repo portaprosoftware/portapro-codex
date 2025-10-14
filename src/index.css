@@ -773,3 +773,21 @@
 .mapboxgl-control-container {
   z-index: 200;
 }
+
+/* Custom popup styling */
+.custom-popup .mapboxgl-popup-close-button {
+  font-size: 28px;
+  width: 32px;
+  height: 32px;
+  line-height: 28px;
+  padding: 0;
+  right: 8px;
+  top: 8px;
+  color: #666;
+  font-weight: 300;
+}
+
+.custom-popup .mapboxgl-popup-close-button:hover {
+  background-color: #f3f4f6;
+  color: #111;
+}

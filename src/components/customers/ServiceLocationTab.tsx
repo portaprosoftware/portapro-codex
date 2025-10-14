@@ -326,8 +326,11 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
           const marker = new mapboxgl.Marker(el)
             .setLngLat([lng, lat])
             .setPopup(
-              new mapboxgl.Popup({ offset: 25 })
-                .setHTML(`<div style="padding: 8px;"><strong>${location.location_name}</strong><br/><span style="font-size: 11px; color: #666;">Physical Address</span><br/>${fullAddress}</div>`)
+              new mapboxgl.Popup({ 
+                offset: 25,
+                className: 'custom-popup'
+              })
+                .setHTML(`<div style="padding: 12px;"><strong style="font-size: 16px;">${location.location_name}</strong><br/><span style="font-size: 13px; color: #666; margin-top: 4px; display: block;">Physical Address</span><br/><span style="font-size: 14px; margin-top: 4px; display: block;">${fullAddress}</span></div>`)
             )
             .addTo(map.current);
           
