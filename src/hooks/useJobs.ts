@@ -225,6 +225,7 @@ export function useCreateJob() {
           deposit_percentage: jobData.depositPercentage || null,
           deposit_status: jobData.depositEnabled ? 'pending' : null,
           deposit_due_date: jobData.depositDueDate || null,
+          reference_pin_ids: jobData.reference_pin_ids || [],
         })
         .select()
         .single();
