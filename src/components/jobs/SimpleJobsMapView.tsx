@@ -343,7 +343,7 @@ export function SimpleJobsMapView({
             width: 34px; 
             height: 34px; 
             background-color: ${fillColor}; 
-            border: 4px solid ${borderColor}; 
+            border: 6px solid ${borderColor}; 
             border-radius: 50%; 
             display: flex; 
             align-items: center; 
