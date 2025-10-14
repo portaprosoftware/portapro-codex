@@ -769,24 +769,68 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
           <div className="space-y-6">
             {/* Work Order Form */}
             <div className="space-y-4">
-              {/* Technician */}
-              <div>
-                <Label htmlFor="technician">Technician / Assigned To</Label>
-                <Input
-                  id="technician"
-                  placeholder="Enter technician name"
-                  value={workOrderForm.technicians[0]?.name || ""}
-                  onChange={(e) => setWorkOrderForm({ 
-                    ...workOrderForm, 
-                    technicians: [{ name: e.target.value }]
-                  })}
-                  list="technician-suggestions"
-                />
-                <datalist id="technician-suggestions">
-                  {systemUsers.map((user) => (
-                    <option key={user.id} value={user.name} />
-                  ))}
-                </datalist>
+              {/* Technician Section */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-medium">Technicians</h4>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setWorkOrderForm({
+                        ...workOrderForm,
+                        technicians: [...workOrderForm.technicians, { name: '' }],
+                      });
+                    }}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Technician
+                  </Button>
+                </div>
+                {workOrderForm.technicians.map((tech, index) => (
+                  <div key={index} className="grid grid-cols-[1fr,auto] gap-4">
+                    <div>
+                      <Label htmlFor={`technician-${index}`}>
+                        Technician {index + 1}
+                      </Label>
+                      <Input
+                        id={`technician-${index}`}
+                        placeholder="Enter technician name"
+                        value={tech.name}
+                        onChange={(e) => {
+                          const newTechnicians = [...workOrderForm.technicians];
+                          newTechnicians[index].name = e.target.value;
+                          setWorkOrderForm({ 
+                            ...workOrderForm, 
+                            technicians: newTechnicians
+                          });
+                        }}
+                        list={`technician-suggestions-${index}`}
+                      />
+                      <datalist id={`technician-suggestions-${index}`}>
+                        {systemUsers.map((user) => (
+                          <option key={user.id} value={user.name} />
+                        ))}
+                      </datalist>
+                    </div>
+                    <div className="flex items-end">
+                      {workOrderForm.technicians.length > 1 && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            const newTechnicians = workOrderForm.technicians.filter((_, i) => i !== index);
+                            setWorkOrderForm({ ...workOrderForm, technicians: newTechnicians });
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
 
               {/* Labor Section */}
