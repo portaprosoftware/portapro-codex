@@ -117,6 +117,8 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
     queryFn: async () => {
       if (!job?.reference_pin_ids || job.reference_pin_ids.length === 0) return [];
       
+      console.log('🔍 Fetching reference pins for IDs:', job.reference_pin_ids);
+      
       const { data, error } = await supabase
         .from('customer_map_pins')
         .select(`
@@ -132,7 +134,12 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
         `)
         .in('id', job.reference_pin_ids);
       
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Error fetching reference pins:', error);
+        throw error;
+      }
+      
+      console.log('✅ Fetched reference pins:', data);
       return data || [];
     },
     enabled: !!job?.reference_pin_ids && job.reference_pin_ids.length > 0 && open
@@ -861,11 +868,14 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                       <CardContent>
                         <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
                           {(() => {
+                            console.log('📍 Rendering pins. Total referencePins:', referencePins.length, referencePins);
+                            
                             // Group pins by service location
                             const groupedPins: Record<string, any[]> = {};
                             const pinsWithoutLocation: any[] = [];
                             
                             referencePins.forEach(pin => {
+                              console.log('Processing pin:', pin.label, 'Has location:', !!pin.service_location);
                               if (pin.service_location) {
                                 const locationId = pin.service_location.id;
                                 if (!groupedPins[locationId]) {
@@ -876,6 +886,9 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                                 pinsWithoutLocation.push(pin);
                               }
                             });
+
+                            console.log('📦 Grouped pins:', Object.keys(groupedPins).length, 'locations');
+                            console.log('📦 Pins without location:', pinsWithoutLocation.length);
 
                             return (
                               <>
