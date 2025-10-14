@@ -303,7 +303,7 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
           // Fit map to bounds with padding
           map.current.fitBounds(bounds, {
             padding: { top: 80, bottom: 80, left: 80, right: 80 },
-            maxZoom: 15,
+            maxZoom: 18,
             duration: 1000
           });
         }
