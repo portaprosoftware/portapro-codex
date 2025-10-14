@@ -918,21 +918,36 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                         No maintenance updates yet
                       </div>
                      ) : (
-                        (updates || []).map((update: any) => (
-                          <div key={update.id} className="border rounded-lg p-4 relative min-h-[200px] flex flex-col justify-between">
+                        (updates || []).map((update: any) => {
+                          const isWorkOrder = update.title === "Work Order";
+                          return (
+                          <div key={update.id} className={`border rounded-lg p-4 relative min-h-[200px] flex flex-col justify-between ${isWorkOrder ? 'border-blue-500 bg-blue-50' : ''}`}>
                             <div>
                               <div className="flex items-center justify-between mb-3">
                                 <div className="flex items-center gap-2">
-                                  <Badge 
-                                    variant="outline" 
-                                    className={`text-xs ${
-                                      update.update_type === 'progress' 
-                                        ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white border-orange-600' 
-                                        : ''
-                                    }`}
-                                  >
-                                    {update.update_type === 'progress' ? 'Progress' : update.update_type}
-                                  </Badge>
+                                  {isWorkOrder ? (
+                                    <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold text-xs">
+                                      Work Order
+                                    </Badge>
+                                  ) : (
+                                    <Badge 
+                                      variant="outline" 
+                                      className={`text-xs font-bold ${
+                                        update.update_type === 'progress' 
+                                          ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white border-orange-600' 
+                                          : update.update_type === 'repair'
+                                          ? 'bg-gradient-to-r from-red-600 to-red-700 text-white border-red-600'
+                                          : update.update_type === 'parts'
+                                          ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white border-purple-600'
+                                          : 'bg-gradient-to-r from-green-600 to-green-700 text-white border-green-600'
+                                      }`}
+                                    >
+                                      {update.update_type === 'progress' ? 'Progress' : 
+                                       update.update_type === 'repair' ? 'Repair' :
+                                       update.update_type === 'parts' ? 'Parts' : 
+                                       update.update_type}
+                                    </Badge>
+                                  )}
                                   <Button
                                     variant="outline"
                                     size="sm"
@@ -946,7 +961,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                                  {new Date(update.created_at).toLocaleDateString()}
                                </div>
                              </div>
-                             {update.title && (
+                             {update.title && !isWorkOrder && (
                                <div className="text-sm font-medium mb-2">{update.title}</div>
                              )}
                              <div className="text-sm mb-3 line-clamp-2">{update.description}</div>
@@ -996,7 +1011,8 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                              </div>
                            </div>
                         </div>
-                      ))
+                        );
+                      })
                     )}
                   </div>
                 </div>
