@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Wrench, Search, Settings, ChevronDown, ChevronRight, AlertTriangle, Clock, Calendar, MapPin, Filter, Undo2 } from "lucide-react";
+import { Wrench, Search, Settings, ChevronDown, ChevronRight, AlertTriangle, Clock, Calendar, MapPin, Filter, Undo2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -357,18 +357,32 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
         </div>
         
         {productId === "all" && (
-          <Button
-            variant="outline"
-            onClick={() => setFilterModalOpen(true)}
-            className="gap-2 whitespace-nowrap text-sm"
-          >
-            Filter Equipment
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setFilterModalOpen(true)}
+              className="gap-2 whitespace-nowrap text-sm"
+            >
+              Filter Equipment
               {selectedProductFilters.length > 0 && (
                 <Badge className="ml-1 bg-gradient-to-r from-blue-600 to-blue-500 text-white px-2 py-0.5 rounded-full">
                   {selectedProductFilters.length}
                 </Badge>
               )}
-          </Button>
+            </Button>
+            
+            {selectedProductFilters.length > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedProductFilters([])}
+                className="h-10 px-3 text-sm text-gray-600 hover:text-gray-900"
+              >
+                <X className="w-4 h-4 mr-1" />
+                Clear
+              </Button>
+            )}
+          </div>
         )}
       </div>
 
