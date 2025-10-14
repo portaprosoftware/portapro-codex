@@ -14,7 +14,8 @@ serve(async (req) => {
   try {
     console.log('Fetching MapTiler API key...');
     
-    const mapTilerKey = Deno.env.get('MAPTILER_API_KEY');
+    const rawKey = Deno.env.get('MAPTILER_API_KEY') || '';
+    const mapTilerKey = rawKey.trim(); // Sanitize key to remove whitespace
     
     if (!mapTilerKey) {
       console.error('MapTiler API key not configured in secrets');

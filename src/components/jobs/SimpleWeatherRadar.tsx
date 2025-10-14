@@ -57,7 +57,19 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
       mapLoaded: map?.loaded(),
       mapStyleLoaded: map?.isStyleLoaded()
     });
-  }, []);
+    
+    // Add global map error listener for diagnostics
+    if (map) {
+      const handleMapError = (e: any) => {
+        console.error('Mapbox map error:', e.error || e);
+      };
+      map.on('error', handleMapError);
+      
+      return () => {
+        map.off('error', handleMapError);
+      };
+    }
+  }, [map]);
 
   // Add layers to map from stored frames/data
   const addRadarLayers = useCallback(() => {
@@ -80,6 +92,10 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
     });
     layerIds.current = [];
     
+    // Find first symbol layer to insert radar below labels
+    const layers = map.getStyle()?.layers || [];
+    const firstSymbolLayer = layers.find(l => l.type === 'symbol')?.id;
+    
     // Add sources and layers for each frame
     frames.forEach((frame, index) => {
       const layerId = `radar-layer-${frame.time}-${index}`;
@@ -91,6 +107,8 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
             type: 'raster',
             tiles: [tileUrl],
             tileSize: 256,
+            minzoom: 0,
+            maxzoom: 12,
             attribution: '© MapTiler'
           });
         }
@@ -108,7 +126,7 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
             layout: {
               'visibility': 'visible'
             }
-          });
+          }, firstSymbolLayer); // Insert below labels
         }
 
         layerIds.current.push(layerId);
@@ -116,6 +134,12 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
         console.error('MapTiler: Error adding layer:', layerId, error);
       }
     });
+    
+    // Log sample tile URL for first frame (diagnostic)
+    if (frames.length > 0) {
+      const sampleUrl = mapTilerWeatherService.getRadarTileUrl(frames[0].time);
+      console.log('MapTiler: Sample tile URL:', sampleUrl.replace(/{z}.*/, '4/3/5.png'));
+    }
     
     // Show first frame
     if (layerIds.current.length > 0) {
@@ -152,8 +176,9 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
           return;
         }
         
-        setApiKey(data.apiKey);
-        mapTilerWeatherService.setApiKey(data.apiKey);
+        const trimmedKey = (data.apiKey || '').trim();
+        setApiKey(trimmedKey);
+        mapTilerWeatherService.setApiKey(trimmedKey);
       }
       
       const radarFrames = await mapTilerWeatherService.getRadarFrames();
