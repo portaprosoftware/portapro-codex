@@ -355,7 +355,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="details">Unit Details</TabsTrigger>
               <TabsTrigger value="workorders">Work Orders</TabsTrigger>
-              <TabsTrigger value="update">Add / View Progress Updates</TabsTrigger>
+              <TabsTrigger value="update">Progress Updates</TabsTrigger>
             </TabsList>
 
             <TabsContent value="details" className="mt-6">
@@ -651,59 +651,6 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                     onChange={(e) => setUpdateForm((p) => ({ ...p, description: e.target.value }))}
                     placeholder="Describe what was done or current status"
                   />
-                </div>
-                <div>
-                  <Label>Technician Name</Label>
-                  <Input
-                    value={updateForm.technician_name}
-                    onChange={(e) => setUpdateForm((p) => ({ ...p, technician_name: e.target.value }))}
-                    placeholder="Who performed this work?"
-                  />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div>
-                    <Label>Labor Hours</Label>
-                    <Input
-                      type="number"
-                      step="0.5"
-                      min="0"
-                      value={updateForm.labor_hours}
-                      onChange={(e) => setUpdateForm((p) => ({ ...p, labor_hours: e.target.value }))}
-                      placeholder="0.0"
-                    />
-                  </div>
-                  <div>
-                    <Label>Labor Cost ($)</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={updateForm.labor_cost}
-                      onChange={(e) => setUpdateForm((p) => ({ ...p, labor_cost: e.target.value }))}
-                      placeholder="0.00"
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div>
-                    <Label>Parts Cost ($)</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={updateForm.parts_cost}
-                      onChange={(e) => setUpdateForm((p) => ({ ...p, parts_cost: e.target.value }))}
-                      placeholder="0.00"
-                    />
-                  </div>
-                  <div>
-                    <Label>Parts Used</Label>
-                    <Input
-                      value={updateForm.parts_used}
-                      onChange={(e) => setUpdateForm((p) => ({ ...p, parts_used: e.target.value }))}
-                      placeholder="List parts used"
-                    />
-                  </div>
                 </div>
                 
                 {/* Photo Upload Section */}
