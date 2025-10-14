@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { User, Edit3, Wrench } from "lucide-react";
+import { Eye, SquarePen, Wrench } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface UnitNavigationDialogProps {
@@ -61,13 +61,13 @@ export const UnitNavigationDialog: React.FC<UnitNavigationDialogProps> = ({
         <div className="space-y-3 pt-4">
           <Button
             onClick={handleViewProfile}
-            className="w-full justify-start h-auto p-4 bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200"
+            className="w-full justify-start h-auto p-4 bg-gray-50 hover:bg-gray-100 text-gray-900 border border-gray-200"
             variant="outline"
           >
-            <User className="w-5 h-5 mr-3" />
+            <Eye className="w-5 h-5 mr-3" />
             <div className="text-left">
               <div className="font-medium">View Unit Profile</div>
-              <div className="text-sm text-blue-700 opacity-80">
+              <div className="text-sm text-gray-700 opacity-80">
                 View detailed information and history
               </div>
             </div>
@@ -77,13 +77,13 @@ export const UnitNavigationDialog: React.FC<UnitNavigationDialogProps> = ({
           {!showManageOption && (
             <Button
               onClick={handleEditDetails}
-              className="w-full justify-start h-auto p-4 bg-green-50 hover:bg-green-100 text-green-900 border border-green-200"
+              className="w-full justify-start h-auto p-4 bg-gray-50 hover:bg-gray-100 text-gray-900 border border-gray-200"
               variant="outline"
             >
-              <Edit3 className="w-5 h-5 mr-3" />
+              <SquarePen className="w-5 h-5 mr-3" />
               <div className="text-left">
                 <div className="font-medium">Edit Unit Details</div>
-                <div className="text-sm text-green-700 opacity-80">
+                <div className="text-sm text-gray-700 opacity-80">
                   Modify status, condition, and location
                 </div>
               </div>
