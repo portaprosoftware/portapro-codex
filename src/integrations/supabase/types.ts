@@ -4911,6 +4911,54 @@ export type Database = {
           },
         ]
       }
+      leads: {
+        Row: {
+          company: string
+          contacted_at: string | null
+          converted_at: string | null
+          created_at: string
+          email: string
+          fleet_size: string
+          id: string
+          name: string
+          notes: string | null
+          phone: string
+          source: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          company: string
+          contacted_at?: string | null
+          converted_at?: string | null
+          created_at?: string
+          email: string
+          fleet_size: string
+          id?: string
+          name: string
+          notes?: string | null
+          phone: string
+          source?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          company?: string
+          contacted_at?: string | null
+          converted_at?: string | null
+          created_at?: string
+          email?: string
+          fleet_size?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          phone?: string
+          source?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       load_compliance_reports: {
         Row: {
           capacity_violations: number | null

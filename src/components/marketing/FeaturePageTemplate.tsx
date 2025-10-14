@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { ArrowRight, CheckCircle, ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -7,24 +7,63 @@ import { Badge } from '@/components/ui/badge'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { LandingLogo } from '@/components/ui/landing-logo'
 import { FeaturePageContent } from '@/data/featuresContent'
+import { LeadForm } from './LeadForm'
+import { useAnalytics } from '@/hooks/useAnalytics'
 
 interface FeaturePageTemplateProps {
   content: FeaturePageContent
 }
 
 export const FeaturePageTemplate: React.FC<FeaturePageTemplateProps> = ({ content }) => {
-  const { hero, problemOutcome, capabilities, howItWorks, proof, integrations, faqs, stickyCTA, relatedFeatures } = content
+  const { hero, problemOutcome, capabilities, howItWorks, proof, integrations, faqs, stickyCTA, relatedFeatures, slug } = content
+  const location = useLocation()
+  const { trackEvent } = useAnalytics()
 
   useEffect(() => {
+    // Track page view
+    trackEvent('feature_page_viewed', {
+      featureSlug: slug,
+      featureName: hero.title,
+      utmSource: new URLSearchParams(location.search).get('utm_source') || undefined,
+      utmMedium: new URLSearchParams(location.search).get('utm_medium') || undefined,
+      utmCampaign: new URLSearchParams(location.search).get('utm_campaign') || undefined
+    })
+
     // SEO: Set page title and meta description
     document.title = `PortaPro — ${hero.title} for Portable Toilet Operators`
+    
     const metaDescription = document.querySelector('meta[name="description"]') || (() => {
       const m = document.createElement('meta')
       m.setAttribute('name', 'description')
       document.head.appendChild(m)
       return m
     })()
-    metaDescription.setAttribute('content', hero.subtitle)
+    metaDescription.setAttribute('content', hero.subtitle.substring(0, 155))
+    
+    // Add OpenGraph tags
+    const addMetaTag = (property: string, content: string) => {
+      let tag = document.querySelector(`meta[property="${property}"]`) as HTMLMetaElement
+      if (!tag) {
+        tag = document.createElement('meta')
+        tag.setAttribute('property', property)
+        document.head.appendChild(tag)
+      }
+      tag.setAttribute('content', content)
+    }
+    
+    addMetaTag('og:title', `PortaPro — ${hero.title}`)
+    addMetaTag('og:description', hero.subtitle.substring(0, 155))
+    addMetaTag('og:type', 'website')
+    addMetaTag('og:url', `https://portapro.com/features/${slug}`)
+    
+    // Add canonical URL
+    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement
+    if (!canonical) {
+      canonical = document.createElement('link')
+      canonical.setAttribute('rel', 'canonical')
+      document.head.appendChild(canonical)
+    }
+    canonical.setAttribute('href', `https://portapro.com/features/${slug}`)
 
     // Add FAQPage schema
     const script = document.createElement('script')
@@ -46,7 +85,19 @@ export const FeaturePageTemplate: React.FC<FeaturePageTemplateProps> = ({ conten
     return () => {
       document.head.removeChild(script)
     }
-  }, [hero.title, hero.subtitle, faqs])
+  }, [hero.title, hero.subtitle, faqs, slug, location.search, trackEvent])
+  
+  const handleCTAClick = (ctaType: string, ctaLocation: string) => {
+    trackEvent('feature_cta_clicked', {
+      featureSlug: slug,
+      featureName: hero.title,
+      ctaType,
+      ctaLocation,
+      utmSource: new URLSearchParams(location.search).get('utm_source') || undefined,
+      utmMedium: new URLSearchParams(location.search).get('utm_medium') || undefined,
+      utmCampaign: new URLSearchParams(location.search).get('utm_campaign') || undefined
+    })
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -77,14 +128,26 @@ export const FeaturePageTemplate: React.FC<FeaturePageTemplateProps> = ({ conten
             <h1 className="mb-4 text-4xl font-bold tracking-tight sm:text-5xl">{hero.title}</h1>
             <p className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground">{hero.subtitle}</p>
             <div className="flex flex-wrap items-center justify-center gap-3">
-              <Link to="/auth">
-                <Button size="lg" className="gap-2">
+              <Link to={`/auth?utm_source=feature-page&utm_medium=${slug}&utm_campaign=hero-cta`}>
+                <Button 
+                  size="lg" 
+                  className="gap-2"
+                  onClick={() => handleCTAClick(hero.primaryCTA, 'hero')}
+                >
                   {hero.primaryCTA}
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
               {hero.secondaryCTA && (
-                <Button size="lg" variant="outline" className="gap-2">
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="gap-2"
+                  onClick={() => {
+                    handleCTAClick(hero.secondaryCTA!, 'hero')
+                    trackEvent('feature_video_played', { featureSlug: slug, featureName: hero.title })
+                  }}
+                >
                   {hero.secondaryCTA}
                 </Button>
               )}
@@ -223,16 +286,36 @@ export const FeaturePageTemplate: React.FC<FeaturePageTemplateProps> = ({ conten
         </div>
       </section>
 
+      {/* Lead Form Section */}
+      <section className="border-b bg-muted/20 py-16">
+        <div className="container mx-auto max-w-xl px-6">
+          <LeadForm 
+            source={`feature-page-${slug}`}
+            onSuccess={() => {
+              trackEvent('lead_form_submitted', {
+                featureSlug: slug,
+                featureName: hero.title,
+                source: `feature-page-${slug}`
+              })
+              trackEvent('feature_demo_requested', {
+                featureSlug: slug,
+                featureName: hero.title
+              })
+            }}
+          />
+        </div>
+      </section>
+
       {/* Related Features Section */}
       {relatedFeatures && relatedFeatures.length > 0 && (
-        <section className="border-b bg-muted/20 py-16">
+        <section className="border-b py-16">
           <div className="container mx-auto max-w-5xl px-6">
             <h2 className="mb-6 text-center text-2xl font-bold">Related Features</h2>
             <div className="flex flex-wrap justify-center gap-3">
-              {relatedFeatures.map((slug, idx) => (
-                <Link key={idx} to={`/features/${slug}`}>
+              {relatedFeatures.map((relatedSlug, idx) => (
+                <Link key={idx} to={`/features/${relatedSlug}`}>
                   <Button variant="outline" className="gap-2">
-                    View {slug.replace(/-/g, ' ')}
+                    View {relatedSlug.replace(/-/g, ' ')}
                     <ExternalLink className="h-4 w-4" />
                   </Button>
                 </Link>
@@ -244,8 +327,12 @@ export const FeaturePageTemplate: React.FC<FeaturePageTemplateProps> = ({ conten
 
       {/* Sticky CTA */}
       <div className="fixed bottom-6 right-6 z-40">
-        <Link to={stickyCTA.action}>
-          <Button size="lg" className="gap-2 shadow-lg">
+        <Link to={`${stickyCTA.action}?utm_source=feature-page&utm_medium=${slug}&utm_campaign=sticky-cta`}>
+          <Button 
+            size="lg" 
+            className="gap-2 shadow-lg"
+            onClick={() => handleCTAClick(stickyCTA.text, 'sticky-bottom')}
+          >
             {stickyCTA.text}
             <ArrowRight className="h-4 w-4" />
           </Button>

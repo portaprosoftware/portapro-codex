@@ -11,13 +11,26 @@ export type AnalyticsEvent =
   | 'vehicle_decon_logged'
   | 'vehicle_view_all_clicked'
   | 'vehicle_context_filter_applied'
-  | 'vehicle_context_filter_cleared';
+  | 'vehicle_context_filter_cleared'
+  | 'feature_page_viewed'
+  | 'feature_cta_clicked'
+  | 'feature_demo_requested'
+  | 'feature_trial_started'
+  | 'feature_video_played'
+  | 'lead_form_submitted';
 
 interface AnalyticsEventData {
   vehicleId?: string;
   vehicleName?: string;
   tab?: string;
   context?: string;
+  featureSlug?: string;
+  featureName?: string;
+  ctaType?: string;
+  ctaLocation?: string;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
   [key: string]: any;
 }
 

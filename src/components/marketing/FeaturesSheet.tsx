@@ -64,7 +64,7 @@ export function FeaturesSheet({ open, onOpenChange }: Props) {
                     {group.items.map((item) => (
                       <li key={item.key}>
                         <a
-                          href={item.href.startsWith('#') ? item.href : `/features#${item.key}`}
+                          href={item.href}
                           className="flex items-center gap-3 py-3"
                           aria-label={`${item.label} — ${item.description}`}
                           onClick={() => onOpenChange(false)}
