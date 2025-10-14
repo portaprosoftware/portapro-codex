@@ -405,15 +405,6 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                       onChange={(e) => setFormData((p) => ({ ...p, expected_return_date: e.target.value }))}
                     />
                   </div>
-                  <div>
-                    <Label>Notes</Label>
-                    <Textarea
-                      rows={3}
-                      value={formData.maintenance_notes}
-                      onChange={(e) => setFormData((p) => ({ ...p, maintenance_notes: e.target.value }))}
-                      placeholder="Additional notes..."
-                    />
-                  </div>
 
                   {/* Maintenance Photos Section */}
                   <div className="mt-4 pt-4 border-t">
@@ -512,16 +503,29 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                     </div>
                   </div>
                 </div>
-                
-                {/* Save controls right after Unit Details */}
-                <div className="flex justify-end gap-2">
-                  <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
-                  <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white" disabled={updateItemMutation.isPending}>
-                    {updateItemMutation.isPending ? "Saving..." : "Save Changes"}
-                  </Button>
-                </div>
               </div>
             </div>
+
+            {/* Notes Card - Full Width */}
+            <div className="bg-white border rounded-xl p-4">
+              <h4 className="font-medium mb-3">Notes</h4>
+              <Textarea
+                rows={3}
+                value={formData.maintenance_notes}
+                onChange={(e) => setFormData((p) => ({ ...p, maintenance_notes: e.target.value }))}
+                placeholder="Additional notes..."
+              />
+            </div>
+                
+            {/* Save controls at the bottom */}
+            <div className="flex justify-end gap-2">
+              <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+              <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white" disabled={updateItemMutation.isPending}>
+                {updateItemMutation.isPending ? "Saving..." : "Save Changes"}
+              </Button>
+            </div>
+              </form>
+            </TabsContent>
               </form>
             </TabsContent>
 
