@@ -1,4 +1,4 @@
-import { LucideIcon, Package, Droplets, ClipboardCheck, ClipboardList, DollarSign, Smartphone, Truck, Users, BarChart3, Camera, Megaphone, MapPin, Shield, Eye, CloudOff } from 'lucide-react'
+import { LucideIcon, Package, Droplets, ClipboardCheck, ClipboardList, DollarSign, Smartphone, Truck, Users, BarChart3, Camera, Megaphone, MapPin, Shield, Eye, CloudOff, FileText, Bell, Wrench, AlertTriangle, Activity } from 'lucide-react'
 
 export interface FeaturePageContent {
   slug: string
