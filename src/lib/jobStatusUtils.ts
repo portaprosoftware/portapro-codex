@@ -14,6 +14,7 @@ export interface Job {
   actual_completion_time?: string;
   was_overdue?: boolean;
   is_priority?: boolean;
+  driver_id?: string | null;
 }
 
 /**
@@ -54,6 +55,11 @@ export const isJobCompletedLate = (job: Job): boolean => {
  * Get the display status for a job, handling overdue and completed late logic
  */
 export const getDisplayStatus = (job: Job): string => {
+  // If job has no driver, always show as unassigned (regardless of status field)
+  if (!job.driver_id && job.status !== 'completed' && job.status !== 'cancelled') {
+    return isJobOverdue(job) ? 'overdue' : 'unassigned';
+  }
+  
   // If job is completed, check if it was completed late
   if (job.status === 'completed') {
     return isJobCompletedLate(job) ? 'completed_late' : 'completed';
@@ -160,6 +166,25 @@ export const getJobStatusInfo = (job: Job) => {
  */
 export const getDualJobStatusInfo = (job: Job) => {
   const statusConfig = getJobStatusConfig();
+  
+  // If job has no driver, always show as unassigned (regardless of status field)
+  if (!job.driver_id && job.status !== 'completed' && job.status !== 'cancelled') {
+    const isOverdue = isJobOverdue(job);
+    if (isOverdue) {
+      return {
+        primary: statusConfig.overdue,
+        secondary: statusConfig.unassigned,
+        wasOverdue: null,
+        priority: shouldShowPriorityBadge(job) ? statusConfig.priority : null
+      };
+    }
+    return {
+      primary: statusConfig.unassigned,
+      secondary: null,
+      wasOverdue: shouldShowWasOverdueBadge(job) ? statusConfig.was_overdue : null,
+      priority: shouldShowPriorityBadge(job) ? statusConfig.priority : null
+    };
+  }
   
   // If job is completed, only show completion status
   if (job.status === 'completed') {
