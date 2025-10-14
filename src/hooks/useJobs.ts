@@ -219,6 +219,12 @@ export function useCreateJob() {
           locks_count: jobData.locks_count || 0,
           lock_notes: jobData.lock_notes || '',
           zip_tied_on_dropoff: jobData.zip_tied_on_dropoff || false,
+          deposit_required: jobData.depositEnabled || false,
+          deposit_amount: jobData.depositAmount || null,
+          deposit_type: jobData.depositType || null,
+          deposit_percentage: jobData.depositPercentage || null,
+          deposit_status: jobData.depositEnabled ? 'pending' : null,
+          deposit_due_date: jobData.depositDueDate || null,
         })
         .select()
         .single();

@@ -149,7 +149,13 @@ export function useCreateInvoiceFromJob() {
           billing_address: job.customers?.billing_differs_from_service 
             ? [job.customers?.billing_street, job.customers?.billing_street2, job.customers?.billing_city, job.customers?.billing_state, job.customers?.billing_zip].filter(Boolean).join(', ')
             : [job.customers?.service_street || job.customers?.default_service_street, job.customers?.service_street2, job.customers?.service_city || job.customers?.default_service_city, job.customers?.service_state || job.customers?.default_service_state, job.customers?.service_zip || job.customers?.default_service_zip].filter(Boolean).join(', '),
-          service_address: [job.customers?.service_street || job.customers?.default_service_street, job.customers?.service_street2, job.customers?.service_city || job.customers?.default_service_city, job.customers?.service_state || job.customers?.default_service_state, job.customers?.service_zip || job.customers?.default_service_zip].filter(Boolean).join(', ')
+          service_address: [job.customers?.service_street || job.customers?.default_service_street, job.customers?.service_street2, job.customers?.service_city || job.customers?.default_service_city, job.customers?.service_state || job.customers?.default_service_state, job.customers?.service_zip || job.customers?.default_service_zip].filter(Boolean).join(', '),
+          // Deposit fields from job
+          deposit_required: job.deposit_required || false,
+          deposit_amount: job.deposit_amount || null,
+          deposit_type: job.deposit_type || null,
+          deposit_percentage: job.deposit_percentage || null,
+          deposit_status: job.deposit_required ? 'pending' : null,
         })
         .select()
         .single();

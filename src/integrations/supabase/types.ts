@@ -4190,6 +4190,12 @@ export type Database = {
           customer_id: string
           customer_name: string | null
           customer_phone: string | null
+          deposit_amount: number | null
+          deposit_payment_id: string | null
+          deposit_percentage: number | null
+          deposit_required: boolean | null
+          deposit_status: string | null
+          deposit_type: string | null
           discount_type: string | null
           discount_value: number | null
           due_date: string
@@ -4218,6 +4224,12 @@ export type Database = {
           customer_id: string
           customer_name?: string | null
           customer_phone?: string | null
+          deposit_amount?: number | null
+          deposit_payment_id?: string | null
+          deposit_percentage?: number | null
+          deposit_required?: boolean | null
+          deposit_status?: string | null
+          deposit_type?: string | null
           discount_type?: string | null
           discount_value?: number | null
           due_date: string
@@ -4246,6 +4258,12 @@ export type Database = {
           customer_id?: string
           customer_name?: string | null
           customer_phone?: string | null
+          deposit_amount?: number | null
+          deposit_payment_id?: string | null
+          deposit_percentage?: number | null
+          deposit_required?: boolean | null
+          deposit_status?: string | null
+          deposit_type?: string | null
           discount_type?: string | null
           discount_value?: number | null
           due_date?: string
@@ -4270,6 +4288,13 @@ export type Database = {
             columns: ["customer_id"]
             isOneToOne: false
             referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_deposit_payment_id_fkey"
+            columns: ["deposit_payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
             referencedColumns: ["id"]
           },
           {
@@ -4683,6 +4708,13 @@ export type Database = {
           customer_id: string
           date_returned: string | null
           default_template_id: string | null
+          deposit_amount: number | null
+          deposit_due_date: string | null
+          deposit_paid_at: string | null
+          deposit_percentage: number | null
+          deposit_required: boolean | null
+          deposit_status: string | null
+          deposit_type: string | null
           driver_id: string | null
           id: string
           invoiced_at: string | null
@@ -4727,6 +4759,13 @@ export type Database = {
           customer_id: string
           date_returned?: string | null
           default_template_id?: string | null
+          deposit_amount?: number | null
+          deposit_due_date?: string | null
+          deposit_paid_at?: string | null
+          deposit_percentage?: number | null
+          deposit_required?: boolean | null
+          deposit_status?: string | null
+          deposit_type?: string | null
           driver_id?: string | null
           id?: string
           invoiced_at?: string | null
@@ -4771,6 +4810,13 @@ export type Database = {
           customer_id?: string
           date_returned?: string | null
           default_template_id?: string | null
+          deposit_amount?: number | null
+          deposit_due_date?: string | null
+          deposit_paid_at?: string | null
+          deposit_percentage?: number | null
+          deposit_required?: boolean | null
+          deposit_status?: string | null
+          deposit_type?: string | null
           driver_id?: string | null
           id?: string
           invoiced_at?: string | null

@@ -116,6 +116,14 @@ export interface JobWizardData {
     product_id: string;
     quantity: number;
   }>;
+  
+  // Deposit collection
+  depositEnabled?: boolean;
+  depositType?: 'flat' | 'percentage';
+  depositAmount?: number;
+  depositPercentage?: number;
+  depositDueDate?: string | null;
+  collectImmediately?: boolean;
 }
 
 interface JobWizardState {
@@ -169,6 +177,12 @@ const initialState: JobWizardState = {
     zip_tied_on_dropoff: false,
     reference_pin_ids: [],
     pin_inventory_assignments: [],
+    depositEnabled: false,
+    depositType: 'flat',
+    depositAmount: 0,
+    depositPercentage: 0,
+    depositDueDate: null,
+    collectImmediately: false,
   },
   errors: {},
   isLoading: false,

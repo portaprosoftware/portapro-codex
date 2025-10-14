@@ -355,6 +355,17 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
   }, [items, productDetails, rentalDays]);
 
   const jobTotal = itemsTotal + servicesSubtotal;
+  
+  // Calculate deposit amounts
+  const depositAmount = useMemo(() => {
+    if (!d.depositEnabled) return 0;
+    if (d.depositType === 'percentage') {
+      return (jobTotal * (d.depositPercentage || 0)) / 100;
+    }
+    return d.depositAmount || 0;
+  }, [d.depositEnabled, d.depositType, d.depositAmount, d.depositPercentage, jobTotal]);
+  
+  const remainingBalance = jobTotal - depositAmount;
 
   useEffect(() => {
     const runChecks = async () => {
@@ -880,6 +891,37 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
           <div className="text-lg font-bold">{formatCurrency(jobTotal)}</div>
         </div>
       </div>
+
+      {/* Deposit Summary */}
+      {d.depositEnabled && depositAmount > 0 && (
+        <Card className="border-primary/20 bg-primary/5">
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <Receipt className="h-5 w-5" />
+              Deposit Required
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <div className="flex justify-between">
+              <span className="font-medium">Total Amount:</span>
+              <span className="font-bold">{formatCurrency(jobTotal)}</span>
+            </div>
+            <div className="flex justify-between text-primary">
+              <span className="font-medium">Deposit Required:</span>
+              <span className="font-bold">{formatCurrency(depositAmount)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="font-medium">Remaining Balance:</span>
+              <span className="font-semibold">{formatCurrency(remainingBalance)}</span>
+            </div>
+            {d.depositDueDate && (
+              <div className="text-sm text-muted-foreground pt-2 border-t">
+                Due by: {new Date(d.depositDueDate).toLocaleDateString()}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Action Buttons - Different based on wizard mode */}
       {isQuoteMode ? (
