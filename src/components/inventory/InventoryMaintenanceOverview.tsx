@@ -102,45 +102,6 @@ export const InventoryMaintenanceOverview: React.FC = () => {
         </p>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Total in Maintenance</p>
-                <p className="text-2xl font-bold">{maintenanceStats?.total || 0}</p>
-              </div>
-              <Wrench className="h-8 w-8 text-blue-500" />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Maintenance by Product Type */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">
-              Maintenance by Product Type
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 gap-2">
-              {maintenanceByProduct?.map((item, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                  <span className="font-medium">{item.product}</span>
-                  <Badge variant="outline">{item.count} units</Badge>
-                </div>
-              ))}
-              {(!maintenanceByProduct || maintenanceByProduct.length === 0) && (
-                <p className="text-muted-foreground text-center py-4">
-                  No items currently in maintenance
-                </p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Tabbed Views */}
       <Tabs defaultValue="tracker" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
