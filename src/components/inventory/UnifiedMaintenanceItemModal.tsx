@@ -80,6 +80,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
   });
 
   const [workOrderForm, setWorkOrderForm] = useState({
+    work_order_type: "progress",
     technicians: [{ name: "" }],
     labor_hours: "",
     labor_cost: "",
@@ -285,6 +286,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
       
       // Reset work order form
       setWorkOrderForm({
+        work_order_type: "progress",
         technicians: [{ name: "" }],
         labor_hours: "",
         labor_cost: "",
@@ -639,6 +641,23 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
               <div className="bg-white border rounded-xl p-6">
                 <h4 className="font-medium mb-4">Work Order Details</h4>
                 <div className="space-y-4">
+                  <div>
+                    <Label>Work Order Type</Label>
+                    <Select
+                      value={workOrderForm.work_order_type}
+                      onValueChange={(v) => setWorkOrderForm((p) => ({ ...p, work_order_type: v }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="progress">Progress Update</SelectItem>
+                        <SelectItem value="repair">Repair Work</SelectItem>
+                        <SelectItem value="parts">Parts Replacement</SelectItem>
+                        <SelectItem value="inspection">Inspection</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <Label>Technician Name(s)</Label>
