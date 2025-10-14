@@ -1,13 +1,14 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { ServiceAddressesSection } from './ServiceAddressesSection';
-import { MapPin, Navigation, Trash2, Search, Target, Plus, Edit, Layers, Home, ChevronDown, ChevronRight } from 'lucide-react';
+import { MapPin, Navigation, Trash2, Search, Target, Plus, Edit, Layers, Home, ChevronDown, ChevronRight, MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { supabase } from '@/integrations/supabase/client';
@@ -821,7 +822,7 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
                           </div>
                         </div>
                         <div className="flex items-center gap-2 flex-shrink-0">
-                          <span className="text-xs bg-blue-500/10 text-blue-600 px-2 py-0.5 rounded-full font-medium">
+                          <span className="text-xs bg-gradient-to-r from-blue-500 to-blue-600 text-white px-2.5 py-1 rounded-full font-bold">
                             {locationPins.length} {locationPins.length === 1 ? 'pin' : 'pins'}
                           </span>
                           {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
@@ -834,8 +835,8 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
                         {locationPins.map((pin) => (
                           <div key={pin.id} className="flex items-start justify-between text-sm p-2 bg-muted/30 rounded">
                             <div className="flex-1 min-w-0">
-                              <div className="font-medium text-xs truncate flex items-center gap-1">
-                                <MapPin className="w-3 h-3 text-red-500 flex-shrink-0" />
+                              <div className="font-medium text-xs truncate flex items-center gap-1.5">
+                                <MapPin className="w-4 h-4 text-red-500 flex-shrink-0" />
                                 {pin.label}
                               </div>
                               <div className="text-muted-foreground font-mono text-xs mt-0.5">
@@ -847,24 +848,30 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
                                 </div>
                               )}
                             </div>
-                            <div className="flex items-center gap-1 ml-2 flex-shrink-0">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => editPin(pin)}
-                                className="h-6 w-6 p-0"
-                              >
-                                <Edit className="w-3 h-3" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => confirmDeletePin(pin)}
-                                className="h-6 w-6 p-0 text-destructive hover:text-destructive"
-                              >
-                                <Trash2 className="w-3 h-3" />
-                              </Button>
-                            </div>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-7 w-7 p-0 flex-shrink-0"
+                                >
+                                  <MoreVertical className="w-4 h-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => editPin(pin)}>
+                                  <Edit className="w-4 h-4 mr-2" />
+                                  Edit Pin
+                                </DropdownMenuItem>
+                                <DropdownMenuItem 
+                                  onClick={() => confirmDeletePin(pin)}
+                                  className="text-destructive focus:text-destructive"
+                                >
+                                  <Trash2 className="w-4 h-4 mr-2" />
+                                  Delete Pin
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </div>
                         ))}
                       </div>
@@ -883,7 +890,7 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
                     <div className="flex items-center gap-2 flex-1">
                       <MapPin className="w-4 h-4 text-gray-500 flex-shrink-0" />
                       <span className="font-medium text-sm">Unassigned Pins</span>
-                      <span className="text-xs bg-gray-500/10 text-gray-600 px-2 py-0.5 rounded-full font-medium">
+                      <span className="text-xs bg-gradient-to-r from-gray-500 to-gray-600 text-white px-2.5 py-1 rounded-full font-bold">
                         {pins.filter(p => !p.service_location_id).length}
                       </span>
                     </div>
@@ -895,7 +902,10 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
                       {pins.filter(p => !p.service_location_id).map((pin) => (
                         <div key={pin.id} className="flex items-start justify-between text-sm p-2 bg-muted/30 rounded">
                           <div className="flex-1 min-w-0">
-                            <div className="font-medium text-xs truncate">{pin.label}</div>
+                            <div className="font-medium text-xs truncate flex items-center gap-1.5">
+                              <MapPin className="w-4 h-4 text-red-500 flex-shrink-0" />
+                              {pin.label}
+                            </div>
                             <div className="text-muted-foreground font-mono text-xs mt-0.5">
                               {pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)}
                             </div>
@@ -905,24 +915,30 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
                               </div>
                             )}
                           </div>
-                          <div className="flex items-center gap-1 ml-2 flex-shrink-0">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => editPin(pin)}
-                              className="h-6 w-6 p-0"
-                            >
-                              <Edit className="w-3 h-3" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => confirmDeletePin(pin)}
-                              className="h-6 w-6 p-0 text-destructive hover:text-destructive"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </Button>
-                          </div>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 w-7 p-0 flex-shrink-0"
+                              >
+                                <MoreVertical className="w-4 h-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => editPin(pin)}>
+                                <Edit className="w-4 h-4 mr-2" />
+                                Edit Pin
+                              </DropdownMenuItem>
+                              <DropdownMenuItem 
+                                onClick={() => confirmDeletePin(pin)}
+                                className="text-destructive focus:text-destructive"
+                              >
+                                <Trash2 className="w-4 h-4 mr-2" />
+                                Delete Pin
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </div>
                       ))}
                     </div>
