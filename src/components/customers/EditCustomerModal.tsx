@@ -245,11 +245,22 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
         .update(updateData)
         .eq('id', customer.id)
         .select()
-        .maybeSingle();
+        .single();
 
       if (error) {
-        console.error('Update error details:', error);
-        throw error;
+        console.error('Supabase update error:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code,
+          customerId: customer.id,
+          updateData: updateData
+        });
+        throw new Error(`Failed to update customer: ${error.message}`);
+      }
+      
+      if (!result) {
+        throw new Error('No customer data returned after update');
       }
       
       console.log('Update successful:', result);
