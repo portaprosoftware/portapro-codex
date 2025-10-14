@@ -35,7 +35,7 @@ export const WizardPreviewSummary: React.FC = () => {
     fetchProductNames();
   }, [items]);
 
-  // Fetch reference pin details
+  // Fetch reference pin details with service locations
   useEffect(() => {
     const fetchReferencePins = async () => {
       if (!state.data.reference_pin_ids || state.data.reference_pin_ids.length === 0) {
@@ -45,7 +45,17 @@ export const WizardPreviewSummary: React.FC = () => {
       
       const { data: pins } = await supabase
         .from('customer_map_pins')
-        .select('*')
+        .select(`
+          *,
+          service_location:customer_service_locations(
+            id,
+            location_name,
+            street,
+            city,
+            state,
+            zip
+          )
+        `)
         .in('id', state.data.reference_pin_ids);
       
       if (pins) {
@@ -104,18 +114,73 @@ export const WizardPreviewSummary: React.FC = () => {
           <div className="rounded-lg border p-3">
             <div className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
               <MapPin className="h-3 w-3" />
-              Reference Pins
+              Reference Pins ({referencePins.length})
             </div>
-            <ul className="space-y-1">
-              {referencePins.slice(0, 3).map((pin, idx) => (
-                <li key={idx} className="text-sm text-foreground">
-                  {pin.label}
-                </li>
-              ))}
-              {referencePins.length > 3 && (
-                <li className="text-xs text-muted-foreground">+ {referencePins.length - 3} more…</li>
-              )}
-            </ul>
+            <div className="space-y-3">
+              {/* Group pins by service location */}
+              {(() => {
+                // Group pins by service location
+                const groupedPins: Record<string, any[]> = {};
+                const pinsWithoutLocation: any[] = [];
+                
+                referencePins.forEach(pin => {
+                  if (pin.service_location) {
+                    const locationId = pin.service_location.id;
+                    if (!groupedPins[locationId]) {
+                      groupedPins[locationId] = [];
+                    }
+                    groupedPins[locationId].push(pin);
+                  } else {
+                    pinsWithoutLocation.push(pin);
+                  }
+                });
+
+                return (
+                  <>
+                    {/* Render pins grouped by location */}
+                    {Object.values(groupedPins).map((locationPins, groupIdx) => {
+                      const location = locationPins[0].service_location;
+                      const fullAddress = [location.street, location.city, location.state, location.zip]
+                        .filter(Boolean)
+                        .join(', ');
+                      
+                      return (
+                        <div key={groupIdx} className="space-y-1">
+                          <div className="text-sm font-medium text-foreground">
+                            {location.location_name}
+                          </div>
+                          {fullAddress && (
+                            <div className="text-xs text-muted-foreground mb-1">
+                              {fullAddress}
+                            </div>
+                          )}
+                          <ul className="space-y-1 ml-2">
+                            {locationPins.map((pin, pinIdx) => (
+                              <li key={pinIdx} className="text-sm text-foreground flex items-center gap-1">
+                                <MapPin className="h-3 w-3 text-destructive flex-shrink-0" />
+                                {pin.label}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      );
+                    })}
+
+                    {/* Render pins without location */}
+                    {pinsWithoutLocation.length > 0 && (
+                      <ul className="space-y-1">
+                        {pinsWithoutLocation.map((pin, idx) => (
+                          <li key={idx} className="text-sm text-foreground flex items-center gap-1">
+                            <MapPin className="h-3 w-3 text-destructive flex-shrink-0" />
+                            {pin.label}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </>
+                );
+              })()}
+            </div>
           </div>
         )}
 
