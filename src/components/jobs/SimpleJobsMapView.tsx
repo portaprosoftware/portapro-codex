@@ -466,7 +466,7 @@ export function SimpleJobsMapView({
       
       {/* Control Panel - Top Left */}
       <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
-        {/* Map Style Toggle and Radar Timestamp in horizontal layout */}
+        {/* Map Style Toggle, Weather Radar, and Radar Timestamp in horizontal layout */}
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-0.5 bg-white p-1 rounded-lg shadow-lg border">
             <Button
@@ -488,6 +488,21 @@ export function SimpleJobsMapView({
               Satellite
             </Button>
           </div>
+
+          {/* Weather Radar Toggle - Fixed height */}
+          <div className="bg-white h-8 px-3 rounded-lg shadow-lg border inline-flex items-center gap-2 whitespace-nowrap">
+            <Radar className="w-4 h-4 text-gray-600" />
+            <span className="text-sm font-medium text-gray-700">Weather Radar</span>
+            <Switch
+              checked={radarEnabled}
+              onCheckedChange={(checked) => {
+                if (selectedDateIsToday) {
+                  setRadarEnabled(checked);
+                }
+              }}
+              disabled={!selectedDateIsToday}
+            />
+          </div>
           
           {/* Weather Radar Timestamp Display - Positioned to the right */}
           {radarEnabled && selectedDateIsToday && radarFrames.length > 0 && (
@@ -507,27 +522,6 @@ export function SimpleJobsMapView({
           </div>
         )}
 
-        {/* Radar Toggle - Fixed height */}
-        <div className="bg-white px-3 py-2 rounded-lg shadow-lg border h-[44px] flex items-center">
-          <div className="flex items-center gap-2">
-            <Radar className="w-4 h-4 text-gray-600" />
-            <span className="text-sm font-medium text-gray-700">Weather Radar</span>
-            <Switch
-              checked={radarEnabled}
-              onCheckedChange={(checked) => {
-                if (selectedDateIsToday) {
-                  setRadarEnabled(checked);
-                }
-              }}
-              disabled={!selectedDateIsToday}
-            />
-          </div>
-          {!selectedDateIsToday && (
-            <div className="text-xs text-gray-500 ml-2">
-              (Today only)
-            </div>
-          )}
-        </div>
 
       </div>
 
