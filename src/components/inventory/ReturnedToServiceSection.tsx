@@ -91,11 +91,11 @@ export const ReturnedToServiceSection: React.FC<ReturnedToServiceSectionProps> =
         {units.map((unit) => (
           <div
             key={unit.id}
-            className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow"
+            className="bg-white rounded-lg border border-gray-200 p-3 hover:shadow-md transition-shadow"
           >
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <div className="flex items-center gap-3 mb-3">
+                <div className="flex items-center gap-3 mb-2">
                   <span className="font-bold text-blue-600 text-lg">{unit.item_code}</span>
                   <Badge variant="secondary" className="text-xs">{unit.product_name}</Badge>
                   {unit.returned_to_maintenance && (
@@ -106,7 +106,7 @@ export const ReturnedToServiceSection: React.FC<ReturnedToServiceSectionProps> =
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div>
                     <div className="text-xs text-gray-600 mb-1">Condition Change</div>
                     <div className="flex items-center gap-2">
