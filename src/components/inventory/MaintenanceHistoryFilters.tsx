@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,6 +7,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon, Filter, X, Download } from "lucide-react";
 import { format } from "date-fns";
+import { Badge } from "@/components/ui/badge";
+import { EquipmentFilterModal } from "./EquipmentFilterModal";
 
 export interface MaintenanceFilters {
   dateRange: { from: Date | undefined; to: Date | undefined };
@@ -35,6 +37,8 @@ export const MaintenanceHistoryFilters: React.FC<MaintenanceHistoryFiltersProps>
   onExport,
   exportDisabled,
 }) => {
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
+  
   const handleReset = () => {
     onFilterChange({
       dateRange: { from: undefined, to: undefined },
@@ -107,25 +111,24 @@ export const MaintenanceHistoryFilters: React.FC<MaintenanceHistoryFiltersProps>
             </Popover>
           </div>
 
-          {/* Product Type */}
+          {/* Product Type - Filter by Equipment Button */}
           <div className="space-y-2">
             <Label>Product Type</Label>
-            <Select
-              value={filters.productType}
-              onValueChange={(value) => onFilterChange({ ...filters, productType: value })}
+            <Button
+              variant="outline"
+              onClick={() => setFilterModalOpen(true)}
+              className="w-full justify-start text-left font-normal"
             >
-              <SelectTrigger>
-                <SelectValue placeholder="All Products" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Products</SelectItem>
-                {productTypes.map((type) => (
-                  <SelectItem key={type.id} value={type.id}>
-                    {type.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              <Filter className="mr-2 h-4 w-4" />
+              {filters.productType === "all" 
+                ? "All Products" 
+                : productTypes.find(p => p.id === filters.productType)?.name || "Select products"}
+              {filters.productType !== "all" && (
+                <Badge className="ml-auto bg-gradient-to-r from-blue-600 to-blue-500 text-white px-2 py-0.5 rounded-full">
+                  1
+                </Badge>
+              )}
+            </Button>
           </div>
 
           {/* Technician */}
@@ -184,6 +187,7 @@ export const MaintenanceHistoryFilters: React.FC<MaintenanceHistoryFiltersProps>
                 <SelectItem value="all">All Outcomes</SelectItem>
                 <SelectItem value="returned">Returned to Service</SelectItem>
                 <SelectItem value="retired">Retired</SelectItem>
+                <SelectItem value="work_order_completed">Work Order Completed</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -210,6 +214,21 @@ export const MaintenanceHistoryFilters: React.FC<MaintenanceHistoryFiltersProps>
           Export
         </Button>
       </div>
+
+      {/* Equipment Filter Modal */}
+      <EquipmentFilterModal
+        isOpen={filterModalOpen}
+        onClose={() => setFilterModalOpen(false)}
+        products={productTypes}
+        selectedProductIds={filters.productType !== "all" ? [filters.productType] : []}
+        onApplyFilters={(selectedIds) => {
+          onFilterChange({ 
+            ...filters, 
+            productType: selectedIds.length === 1 ? selectedIds[0] : "all" 
+          });
+          setFilterModalOpen(false);
+        }}
+      />
     </div>
   );
 };
