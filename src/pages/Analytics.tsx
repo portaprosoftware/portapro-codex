@@ -5,7 +5,7 @@ import { useUserRole } from '@/hooks/useUserRole';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, ChevronDown, Filter, X, BarChart3, BarChart4, DollarSign, Clipboard, Users2, Gauge, FileText } from 'lucide-react';
+import { Calendar, ChevronDown, Filter, X, BarChart3, BarChart4, DollarSign, ClipboardList, Users2, Gauge, FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { GlobalFilters } from '@/components/analytics/GlobalFilters';
 import { OverviewSection } from '@/components/analytics/OverviewSection';
@@ -40,7 +40,7 @@ const Analytics = () => {
   const tabs = [
     { id: 'overview', label: 'Overview', icon: BarChart4 },
     { id: 'revenue', label: 'Revenue', icon: DollarSign },
-    { id: 'operations', label: 'Operations', icon: Clipboard },
+    { id: 'operations', label: 'Operations', icon: ClipboardList },
     { id: 'customers', label: 'Customers', icon: Users2 },
     { id: 'drivers', label: 'Drivers', icon: Gauge },
     { id: 'reports', label: 'Reports', icon: FileText }
