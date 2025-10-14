@@ -249,6 +249,11 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
         : laborCost;
       const totalCost = actualLaborCost + totalPartsCost;
 
+      // Normalize parts used to array for DB
+      const partsUsedArray = data.parts
+        .filter((p) => p.parts_used.trim())
+        .map((p) => p.parts_used.trim());
+
       // Insert work order as a maintenance update
       const { error } = await supabase
         .from("maintenance_updates")
@@ -259,10 +264,9 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
           description: `Technician(s): ${technicianNames}\nLabor Hours: ${laborHours}\nParts Used: ${partsUsed || "None"}`,
           technician_name: technicianNames,
           labor_hours: laborHours,
-          parts_cost: totalPartsCost,
-          parts_used: partsUsed || null,
           cost_amount: totalCost,
-          attachments: [],
+          parts_used: partsUsedArray,
+          attachments: null,
         });
 
       if (error) throw error;
