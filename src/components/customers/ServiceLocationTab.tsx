@@ -523,126 +523,141 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
         </Button>
       </form>
       
-      <div className="border rounded-lg overflow-hidden relative">
-        <style>{`
-          .mapboxgl-ctrl-logo {
-            width: 65px !important;
-            height: 20px !important;
-            margin: 0 0 -4px -4px !important;
-          }
-          .mapboxgl-ctrl-attrib {
-            font-size: 9px !important;
-          }
-        `}</style>
-        {/* Map Style Toggle Switch */}
-        <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
-          <div className="bg-background/90 backdrop-blur-sm rounded-lg p-1 shadow-md border">
-            <div className="flex">
-              <button
-                onClick={() => mapStyle !== 'mapbox://styles/mapbox/streets-v12' && toggleMapStyle()}
-                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
-                  mapStyle === 'mapbox://styles/mapbox/streets-v12'
-                    ? 'bg-primary text-primary-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                Streets
-              </button>
-              <button
-                onClick={() => mapStyle !== 'mapbox://styles/mapbox/satellite-streets-v12' && toggleMapStyle()}
-                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
-                  mapStyle === 'mapbox://styles/mapbox/satellite-streets-v12'
-                    ? 'bg-primary text-primary-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                Satellite
-              </button>
-            </div>
-          </div>
-          
-          {/* Activate Drop Mode Button */}
-          <Button
-            onClick={toggleDropMode}
-            size="sm"
-            className={`flex items-center gap-2 ${
-              dropModeActive 
-                ? 'bg-gray-500 hover:bg-gray-600 text-white' 
-                : 'bg-blue-600 hover:bg-blue-700 text-white'
-            }`}
-          >
-            <Target className="w-4 h-4" />
-            {dropModeActive ? "Exit Drop Mode" : "Activate Drop Mode"}
-          </Button>
-          
-          {/* Drop Pin Here Button - shown when drop mode is active */}
-          {dropModeActive && (
-            <Button
-              onClick={dropPinAtCenter}
-              size="sm"
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              <Plus className="w-4 h-4" />
-              Drop Pin Here
-            </Button>
-          )}
-        </div>
-        
-        <div 
-          ref={mapContainer} 
-          className="w-full h-96"
-          style={{ minHeight: '400px' }}
-        />
-        {dropModeActive && (
-          <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-            <div className="w-8 h-8 flex items-center justify-center">
-              <div className="w-1 h-8 bg-red-500"></div>
-              <div className="w-8 h-1 bg-red-500 absolute"></div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {pins.length > 0 && (
-        <div className="bg-muted/50 rounded-lg p-4">
-          <h4 className="font-medium mb-2">Dropped Pins ({pins.length})</h4>
-          <div className="grid gap-2 max-h-32 overflow-y-auto">
-            {pins.map((pin) => (
-              <div key={pin.id} className="flex items-center justify-between text-sm p-2 bg-background rounded border">
-                <div className="flex-1">
-                  <div className="font-medium">{pin.label}</div>
-                  <div className="text-muted-foreground font-mono text-xs">
-                    {pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)}
-                  </div>
-                  {pin.notes && (
-                    <div className="text-muted-foreground text-xs mt-1">
-                      Notes: {pin.notes}
-                    </div>
-                  )}
-                </div>
-                <div className="flex items-center gap-1 ml-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => editPin(pin)}
-                    className="h-8 w-8 p-0"
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Map Container - Takes 2 columns */}
+        <div className="lg:col-span-2">
+          <div className="border rounded-lg overflow-hidden relative">
+            <style>{`
+              .mapboxgl-ctrl-logo {
+                width: 65px !important;
+                height: 20px !important;
+                margin: 0 0 -4px -4px !important;
+              }
+              .mapboxgl-ctrl-attrib {
+                font-size: 9px !important;
+              }
+            `}</style>
+            {/* Map Style Toggle Switch */}
+            <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
+              <div className="bg-background/90 backdrop-blur-sm rounded-lg p-1 shadow-md border">
+                <div className="flex">
+                  <button
+                    onClick={() => mapStyle !== 'mapbox://styles/mapbox/streets-v12' && toggleMapStyle()}
+                    className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+                      mapStyle === 'mapbox://styles/mapbox/streets-v12'
+                        ? 'bg-primary text-primary-foreground shadow-sm'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
                   >
-                    <Edit className="w-3 h-3" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => confirmDeletePin(pin)}
-                    className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                    Streets
+                  </button>
+                  <button
+                    onClick={() => mapStyle !== 'mapbox://styles/mapbox/satellite-streets-v12' && toggleMapStyle()}
+                    className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+                      mapStyle === 'mapbox://styles/mapbox/satellite-streets-v12'
+                        ? 'bg-primary text-primary-foreground shadow-sm'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
                   >
-                    <Trash2 className="w-3 h-3" />
-                  </Button>
+                    Satellite
+                  </button>
                 </div>
               </div>
-            ))}
+              
+              {/* Activate Drop Mode Button */}
+              <Button
+                onClick={toggleDropMode}
+                size="sm"
+                className={`flex items-center gap-2 ${
+                  dropModeActive 
+                    ? 'bg-gray-500 hover:bg-gray-600 text-white' 
+                    : 'bg-blue-600 hover:bg-blue-700 text-white'
+                }`}
+              >
+                <Target className="w-4 h-4" />
+                {dropModeActive ? "Exit Drop Mode" : "Activate Drop Mode"}
+              </Button>
+              
+              {/* Drop Pin Here Button - shown when drop mode is active */}
+              {dropModeActive && (
+                <Button
+                  onClick={dropPinAtCenter}
+                  size="sm"
+                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  <Plus className="w-4 h-4" />
+                  Drop Pin Here
+                </Button>
+              )}
+            </div>
+            
+            <div 
+              ref={mapContainer} 
+              className="w-full h-[500px]"
+            />
+            {dropModeActive && (
+              <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+                <div className="w-8 h-8 flex items-center justify-center">
+                  <div className="w-1 h-8 bg-red-500"></div>
+                  <div className="w-8 h-1 bg-red-500 absolute"></div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
-      )}
+
+        {/* Dropped Pins Card - Takes 1 column */}
+        <div className="lg:col-span-1">
+          {pins.length > 0 ? (
+            <div className="bg-muted/50 rounded-lg p-4 h-full">
+              <h4 className="font-medium mb-4">Dropped Pins ({pins.length})</h4>
+              <div className="grid gap-2 max-h-[430px] overflow-y-auto pr-2">
+                {pins.map((pin) => (
+                  <div key={pin.id} className="flex items-start justify-between text-sm p-3 bg-background rounded border">
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium truncate">{pin.label}</div>
+                      <div className="text-muted-foreground font-mono text-xs mt-1">
+                        {pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)}
+                      </div>
+                      {pin.notes && (
+                        <div className="text-muted-foreground text-xs mt-2 line-clamp-2">
+                          Notes: {pin.notes}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1 ml-2 flex-shrink-0">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => editPin(pin)}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Edit className="w-3 h-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => confirmDeletePin(pin)}
+                        className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="bg-muted/50 rounded-lg p-4 h-full flex flex-col items-center justify-center text-center">
+              <MapPin className="w-12 h-12 text-muted-foreground mb-3" />
+              <h4 className="font-medium mb-2">No Pins Dropped</h4>
+              <p className="text-sm text-muted-foreground">
+                Activate drop mode and drop pins to see them here
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
 
       <Dialog open={showNameDialog} onOpenChange={setShowNameDialog}>
         <DialogContent>
