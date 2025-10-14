@@ -5,7 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { FileText, BriefcaseIcon, Package, Receipt } from 'lucide-react';
+import { FileText, BriefcaseIcon, Package, Receipt, MapPin, User, Phone } from 'lucide-react';
+import { ReadOnlyPinsMap } from './ReadOnlyPinsMap';
 
 interface ReviewConfirmationStepProps {
   onCreateJob: () => void;
@@ -49,6 +50,15 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
   const [partialPickupAssignments, setPartialPickupAssignments] = useState<Record<string, { driver: string; vehicle: string }>>({});
   const [productDetails, setProductDetails] = useState<Record<string, { name: string; price_per_day: number }>>({});
   const [itemCodes, setItemCodes] = useState<Record<string, string>>({});
+  const [serviceLocationDetails, setServiceLocationDetails] = useState<any | null>(null);
+  const [selectedReferencePins, setSelectedReferencePins] = useState<Array<{
+    id: string;
+    pin_id: string;
+    label: string;
+    latitude: number;
+    longitude: number;
+    notes?: string;
+  }>>([]);
 
   const startDate = d.scheduled_date || '';
   const endDate = d.return_date || d.scheduled_date || '';
@@ -231,10 +241,39 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
           setProductDetails(productMap);
         }
       }
+
+      // Fetch service location details
+      if (d.selected_coordinate_ids && d.selected_coordinate_ids.length > 0) {
+        const locationId = d.selected_coordinate_ids[0];
+        
+        if (locationId !== 'new') {
+          const { data: location } = await supabase
+            .from('customer_service_locations')
+            .select('*')
+            .eq('id', locationId)
+            .maybeSingle();
+          
+          if (location) {
+            setServiceLocationDetails(location);
+          }
+        }
+      }
+
+      // Fetch reference pin details
+      if (d.reference_pin_ids && d.reference_pin_ids.length > 0) {
+        const { data: pins } = await supabase
+          .from('customer_map_pins')
+          .select('*')
+          .in('id', d.reference_pin_ids);
+        
+        if (pins) {
+          setSelectedReferencePins(pins);
+        }
+      }
     };
 
     fetchNames();
-  }, [d.customer_id, d.contact_id, d.driver_id, d.vehicle_id, d.pickup_driver_id, d.pickup_vehicle_id, d.partial_pickup_assignments, d.partial_pickups, items]);
+  }, [d.customer_id, d.contact_id, d.driver_id, d.vehicle_id, d.pickup_driver_id, d.pickup_vehicle_id, d.partial_pickup_assignments, d.partial_pickups, d.selected_coordinate_ids, d.reference_pin_ids, items]);
 
   // Fetch item codes for all specific item IDs
   useEffect(() => {
@@ -431,6 +470,95 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
           <div>Vehicle: {vehicleDetails || d.vehicle_id || '—'}</div>
           {vehicleConflict && <div className="text-xs text-red-600">{vehicleConflict}</div>}
         </div>
+
+        {/* Service Address Section */}
+        {serviceLocationDetails && (
+          <div className="rounded-lg border p-3 space-y-2 md:col-span-2">
+            <h3 className="font-medium flex items-center gap-2">
+              <MapPin className="h-4 w-4" />
+              Service Location
+            </h3>
+            
+            <div className="space-y-1">
+              <div className="font-medium">{serviceLocationDetails.location_name}</div>
+              
+              {serviceLocationDetails.street && (
+                <div className="text-sm">
+                  {serviceLocationDetails.street}
+                  {serviceLocationDetails.street2 && `, ${serviceLocationDetails.street2}`}
+                </div>
+              )}
+              
+              {serviceLocationDetails.city && serviceLocationDetails.state && (
+                <div className="text-sm">
+                  {serviceLocationDetails.city}, {serviceLocationDetails.state} {serviceLocationDetails.zip || ''}
+                </div>
+              )}
+              
+              {serviceLocationDetails.contact_person && (
+                <div className="text-sm text-muted-foreground flex items-center gap-2">
+                  <User className="h-3 w-3" />
+                  {serviceLocationDetails.contact_person}
+                  {serviceLocationDetails.contact_phone && (
+                    <>
+                      <Phone className="h-3 w-3 ml-2" />
+                      {serviceLocationDetails.contact_phone}
+                    </>
+                  )}
+                </div>
+              )}
+              
+              {serviceLocationDetails.access_instructions && (
+                <div className="text-sm text-muted-foreground bg-muted/30 p-2 rounded">
+                  <span className="font-medium">Access: </span>
+                  {serviceLocationDetails.access_instructions}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Reference Pins Section - Only show if pins are selected */}
+        {selectedReferencePins.length > 0 && (
+          <div className="rounded-lg border p-3 space-y-3 md:col-span-2">
+            <h3 className="font-medium flex items-center gap-2">
+              <MapPin className="h-4 w-4" />
+              Reference Pins ({selectedReferencePins.length} selected)
+            </h3>
+            
+            {/* Compact Map */}
+            <div className="rounded-lg overflow-hidden border">
+              <ReadOnlyPinsMap 
+                customerId={d.customer_id || ''}
+                selectedPinIds={d.reference_pin_ids || []}
+                readOnly={true}
+                className="h-[200px]"
+              />
+            </div>
+            
+            {/* Pin List */}
+            <div className="space-y-1">
+              <div className="text-xs font-medium text-muted-foreground">Pin List:</div>
+              <ul className="space-y-1">
+                {selectedReferencePins.map((pin) => (
+                  <li key={pin.id} className="text-sm flex items-start gap-2">
+                    <MapPin className="h-3 w-3 mt-0.5 text-primary flex-shrink-0" />
+                    <div>
+                      <span className="font-medium">{pin.label}</span>
+                      <span className="text-muted-foreground text-xs ml-2">
+                        ({pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)})
+                      </span>
+                      {pin.notes && (
+                        <div className="text-xs text-muted-foreground mt-0.5">{pin.notes}</div>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
+
         <div className="rounded-lg border p-3 space-y-2 md:col-span-2">
           <div className="flex items-center justify-between">
             <h3 className="font-medium">Items</h3>
