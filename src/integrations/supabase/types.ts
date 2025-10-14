@@ -1575,6 +1575,7 @@ export type Database = {
           clerk_user_id: string | null
           created_at: string
           credit_not_approved: boolean | null
+          custom_deposit_percentage: number | null
           customer_type: Database["public"]["Enums"]["customer_type"] | null
           default_service_city: string | null
           default_service_differs_from_main: boolean | null
@@ -1611,6 +1612,7 @@ export type Database = {
           clerk_user_id?: string | null
           created_at?: string
           credit_not_approved?: boolean | null
+          custom_deposit_percentage?: number | null
           customer_type?: Database["public"]["Enums"]["customer_type"] | null
           default_service_city?: string | null
           default_service_differs_from_main?: boolean | null
@@ -1647,6 +1649,7 @@ export type Database = {
           clerk_user_id?: string | null
           created_at?: string
           credit_not_approved?: boolean | null
+          custom_deposit_percentage?: number | null
           customer_type?: Database["public"]["Enums"]["customer_type"] | null
           default_service_city?: string | null
           default_service_differs_from_main?: boolean | null

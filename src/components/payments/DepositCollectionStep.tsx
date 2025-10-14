@@ -48,14 +48,14 @@ export const DepositCollectionStep: React.FC<DepositCollectionStepProps> = ({
   const [percentage, setPercentage] = useState(defaultDepositPercentage);
   const [dueDate, setDueDate] = useState<Date | null>(null);
 
-  // Fetch customer data to get deposit requirement status
+  // Fetch customer data to get deposit requirement status and custom percentage
   const { data: customer } = useQuery({
     queryKey: ['customer', customerId],
     queryFn: async () => {
       if (!customerId) return null;
       const { data, error } = await supabase
         .from('customers')
-        .select('name, deposit_required')
+        .select('name, deposit_required, custom_deposit_percentage')
         .eq('id', customerId)
         .single();
       
@@ -72,12 +72,12 @@ export const DepositCollectionStep: React.FC<DepositCollectionStepProps> = ({
     }
   }, [customer?.deposit_required]);
 
-  // Update percentage when company settings change
+  // Update percentage when customer or company settings change
   useEffect(() => {
-    if (companySettings?.default_deposit_percentage !== undefined) {
-      setPercentage(companySettings.default_deposit_percentage);
-    }
-  }, [companySettings?.default_deposit_percentage]);
+    // Priority: customer custom percentage > company default
+    const effectivePercentage = customer?.custom_deposit_percentage ?? companySettings?.default_deposit_percentage ?? 25;
+    setPercentage(effectivePercentage);
+  }, [customer?.custom_deposit_percentage, companySettings?.default_deposit_percentage]);
 
   const calculatedDepositAmount = depositType === 'flat' 
     ? flatAmount 
@@ -119,6 +119,20 @@ export const DepositCollectionStep: React.FC<DepositCollectionStepProps> = ({
               >
                 {customer.deposit_required ? 'Deposit Required' : 'No Deposit Required'}
               </ModernBadge>
+            </div>
+            <div className="flex items-center justify-between border-t pt-3">
+              <span className="text-sm text-muted-foreground">Default Deposit Percentage</span>
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-lg">
+                  {customer.custom_deposit_percentage ?? defaultDepositPercentage}%
+                </span>
+                <ModernBadge 
+                  variant={customer.custom_deposit_percentage !== null && customer.custom_deposit_percentage !== undefined ? "purple" : "default"}
+                  className="text-xs"
+                >
+                  {customer.custom_deposit_percentage !== null && customer.custom_deposit_percentage !== undefined ? 'Custom Override' : 'Company Default'}
+                </ModernBadge>
+              </div>
             </div>
           </CardContent>
         </Card>

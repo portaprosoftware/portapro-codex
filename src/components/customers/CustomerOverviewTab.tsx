@@ -27,6 +27,7 @@ interface Customer {
   default_service_state?: string;
   default_service_zip?: string;
   deposit_required?: boolean;
+  custom_deposit_percentage?: number | null;
   created_at: string;
   updated_at: string;
   // Legacy fields for backward compatibility

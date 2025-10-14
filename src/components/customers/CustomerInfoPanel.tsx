@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Edit, MapPin, ExternalLink, Navigation, Copy, FileText, Trash2, AlertTriangle } from 'lucide-react';
+import { Edit, MapPin, ExternalLink, Navigation, Copy, FileText, Trash2, AlertTriangle, Percent } from 'lucide-react';
 import { EditCustomerModal } from './EditCustomerModal';
 import { DeleteCustomerDrawer } from './DeleteCustomerDrawer';
+import { EditDepositPercentageDialog } from './EditDepositPercentageDialog';
 import { toast } from '@/hooks/use-toast';
 import { formatCategoryDisplay } from '@/lib/categoryUtils';
 import { formatPhoneNumber } from '@/lib/utils';
+import { useCompanySettings } from '@/hooks/useCompanySettings';
 import {
   Dialog,
   DialogContent,
@@ -39,6 +41,7 @@ interface Customer {
   default_service_state?: string;
   default_service_zip?: string;
   deposit_required?: boolean;
+  custom_deposit_percentage?: number | null;
   created_at: string;
   updated_at: string;
   // Legacy fields for backward compatibility
@@ -55,6 +58,8 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showNotesModal, setShowNotesModal] = useState(false);
   const [showDeleteDrawer, setShowDeleteDrawer] = useState(false);
+  const [showDepositPercentageDialog, setShowDepositPercentageDialog] = useState(false);
+  const { data: companySettings } = useCompanySettings();
 
   const copyToClipboard = async (text: string, label: string) => {
     try {
@@ -309,6 +314,40 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
               <span className="text-muted-foreground block mb-2">Deposit Status</span>
               {getDepositStatusBadge()}
             </div>
+            <div className="border-t pt-3">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <span className="text-muted-foreground block mb-1">Default Deposit Percentage</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl font-bold text-foreground">
+                      {customer.custom_deposit_percentage ?? companySettings?.default_deposit_percentage ?? 25}%
+                    </span>
+                    {customer.custom_deposit_percentage !== null && customer.custom_deposit_percentage !== undefined ? (
+                      <Badge variant="outline" className="text-xs">
+                        Custom Override
+                      </Badge>
+                    ) : (
+                      <Badge variant="secondary" className="text-xs">
+                        Company Default
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {customer.custom_deposit_percentage !== null && customer.custom_deposit_percentage !== undefined
+                      ? `Overrides company default of ${companySettings?.default_deposit_percentage ?? 25}%`
+                      : 'Using company default percentage'}
+                  </p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowDepositPercentageDialog(true)}
+                  className="h-8 w-8 p-0"
+                >
+                  <Edit className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-muted-foreground">Customer Since</span>
@@ -377,6 +416,14 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
         isOpen={showDeleteDrawer}
         onClose={() => setShowDeleteDrawer(false)}
         customer={customer}
+      />
+
+      <EditDepositPercentageDialog
+        isOpen={showDepositPercentageDialog}
+        onClose={() => setShowDepositPercentageDialog(false)}
+        customerId={customer.id}
+        currentCustomPercentage={customer.custom_deposit_percentage}
+        companyDefaultPercentage={companySettings?.default_deposit_percentage ?? 25}
       />
     </div>
   );
