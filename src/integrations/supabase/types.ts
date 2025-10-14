@@ -1288,6 +1288,7 @@ export type Database = {
           longitude: number
           notes: string | null
           pin_id: string
+          service_location_id: string | null
           updated_at: string
         }
         Insert: {
@@ -1299,6 +1300,7 @@ export type Database = {
           longitude: number
           notes?: string | null
           pin_id: string
+          service_location_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -1310,6 +1312,7 @@ export type Database = {
           longitude?: number
           notes?: string | null
           pin_id?: string
+          service_location_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -1318,6 +1321,13 @@ export type Database = {
             columns: ["customer_id"]
             isOneToOne: false
             referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_map_pins_service_location_id_fkey"
+            columns: ["service_location_id"]
+            isOneToOne: false
+            referencedRelation: "customer_service_locations"
             referencedColumns: ["id"]
           },
         ]

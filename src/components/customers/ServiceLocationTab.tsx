@@ -1,12 +1,13 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { ServiceAddressesSection } from './ServiceAddressesSection';
-import { MapPin, Navigation, Trash2, Search, Target, Plus, Edit, Layers } from 'lucide-react';
+import { MapPin, Navigation, Trash2, Search, Target, Plus, Edit, Layers, Home, ChevronDown, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { supabase } from '@/integrations/supabase/client';
@@ -21,14 +22,29 @@ interface DropPin {
   latitude: number;
   label: string;
   notes?: string;
+  service_location_id?: string | null;
+}
+
+interface ServiceLocation {
+  id: string;
+  location_name: string;
+  street?: string;
+  street2?: string;
+  city?: string;
+  state?: string;
+  zip?: string;
+  gps_coordinates?: { x: number; y: number } | null;
 }
 
 const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<{ [key: string]: mapboxgl.Marker }>({});
+  const locationMarkersRef = useRef<{ [key: string]: mapboxgl.Marker }>({});
   const [mapboxToken, setMapboxToken] = useState('');
   const [pins, setPins] = useState<DropPin[]>([]);
+  const [serviceLocations, setServiceLocations] = useState<ServiceLocation[]>([]);
+  const [expandedLocations, setExpandedLocations] = useState<{ [key: string]: boolean }>({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -42,41 +58,54 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
   const [pendingPin, setPendingPin] = useState<{ longitude: number; latitude: number } | null>(null);
   const [pinName, setPinName] = useState('');
   const [pinNotes, setPinNotes] = useState('');
+  const [selectedLocationId, setSelectedLocationId] = useState<string>('');
   const [mapStyle, setMapStyle] = useState('mapbox://styles/mapbox/streets-v12');
 
-  // Load existing pins from database
+  // Load existing pins and service locations from database
   useEffect(() => {
-    const loadExistingPins = async () => {
+    const loadData = async () => {
       try {
-        const { data: existingPins, error } = await supabase
+        // Load pins
+        const { data: existingPins, error: pinsError } = await supabase
           .from('customer_map_pins')
           .select('*')
           .eq('customer_id', customerId)
           .order('created_at', { ascending: true });
 
-        if (error) {
-          console.error('Error loading existing pins:', error);
-          return;
-        }
-
-        if (existingPins && existingPins.length > 0) {
+        if (pinsError) {
+          console.error('Error loading existing pins:', pinsError);
+        } else if (existingPins && existingPins.length > 0) {
           const loadedPins: DropPin[] = existingPins.map(pin => ({
             id: pin.pin_id,
             longitude: Number(pin.longitude),
             latitude: Number(pin.latitude),
             label: pin.label,
-            notes: pin.notes
+            notes: pin.notes,
+            service_location_id: pin.service_location_id
           }));
-          
           setPins(loadedPins);
         }
+
+        // Load service locations
+        const { data: locations, error: locationsError } = await supabase
+          .from('customer_service_locations')
+          .select('*')
+          .eq('customer_id', customerId)
+          .eq('is_active', true)
+          .order('location_name', { ascending: true });
+
+        if (locationsError) {
+          console.error('Error loading service locations:', locationsError);
+        } else if (locations) {
+          setServiceLocations(locations as ServiceLocation[]);
+        }
       } catch (error) {
-        console.error('Error loading pins:', error);
+        console.error('Error loading data:', error);
       }
     };
 
     if (customerId) {
-      loadExistingPins();
+      loadData();
     }
   }, [customerId]);
 
@@ -189,44 +218,92 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
     });
   };
 
-  // Re-add markers when pins are loaded from database
+  // Re-add markers when pins or service locations change
   useEffect(() => {
-    if (pins.length > 0 && map.current && Object.keys(markersRef.current).length === 0) {
-      // Add check to ensure map is loaded
-      const addMarkers = () => {
-        if (!map.current) return;
+    if (!map.current) return;
+    
+    const addMarkers = () => {
+      if (!map.current) return;
+      
+      try {
+        // Clear existing markers
+        Object.values(markersRef.current).forEach(marker => marker.remove());
+        markersRef.current = {};
+        Object.values(locationMarkersRef.current).forEach(marker => marker.remove());
+        locationMarkersRef.current = {};
         
-        try {
-          pins.forEach(pin => {
-            if (!map.current) return;
+        // Add pin markers (red)
+        pins.forEach(pin => {
+          if (!map.current) return;
+          
+          const marker = new mapboxgl.Marker({
+            color: '#ef4444',
+            draggable: false
+          })
+            .setLngLat([pin.longitude, pin.latitude])
+            .setPopup(
+              new mapboxgl.Popup({ offset: 25 })
+                .setHTML(`<div style="padding: 4px;"><strong>${pin.label}</strong><br/>Lat: ${pin.latitude.toFixed(6)}<br/>Lng: ${pin.longitude.toFixed(6)}${pin.notes ? '<br/>Notes: ' + pin.notes : ''}</div>`)
+            )
+            .addTo(map.current);
+          
+          markersRef.current[pin.id] = marker;
+        });
+        
+        // Add service location markers (blue with home icon)
+        serviceLocations.forEach(location => {
+          if (!map.current || !location.gps_coordinates) return;
+          
+          const coords = location.gps_coordinates;
+          let lng, lat;
+          
+          if ('x' in coords && 'y' in coords) {
+            lng = coords.x;
+            lat = coords.y;
+          }
+          
+          if (typeof lng === 'number' && typeof lat === 'number' && 
+              !isNaN(lng) && !isNaN(lat) && 
+              lng >= -180 && lng <= 180 && lat >= -90 && lat <= 90) {
             
-            const marker = new mapboxgl.Marker({
-              color: '#3b82f6',
-              draggable: false
-            })
-              .setLngLat([pin.longitude, pin.latitude])
+            const el = document.createElement('div');
+            el.className = 'service-location-marker';
+            el.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="#3b82f6" stroke="#fff" stroke-width="2"/><polyline points="9 22 9 12 15 12 15 22" stroke="#fff" stroke-width="2"/></svg>';
+            el.style.width = '32px';
+            el.style.height = '32px';
+            el.style.cursor = 'pointer';
+            
+            const fullAddress = [
+              location.street,
+              location.city,
+              location.state,
+              location.zip
+            ].filter(Boolean).join(', ');
+            
+            const marker = new mapboxgl.Marker(el)
+              .setLngLat([lng, lat])
               .setPopup(
                 new mapboxgl.Popup({ offset: 25 })
-                  .setHTML(`<div style="padding: 4px;"><strong>${pin.label}</strong><br/>Lat: ${pin.latitude.toFixed(6)}<br/>Lng: ${pin.longitude.toFixed(6)}${pin.notes ? '<br/>Notes: ' + pin.notes : ''}</div>`)
+                  .setHTML(`<div style="padding: 8px;"><strong>${location.location_name}</strong><br/><span style="font-size: 11px; color: #666;">Physical Address</span><br/>${fullAddress}</div>`)
               )
               .addTo(map.current);
             
-            markersRef.current[pin.id] = marker;
-          });
-        } catch (error) {
-          console.error('Error adding initial markers:', error);
-        }
-      };
-      
-      // If map is already loaded, add markers immediately
-      if (map.current.loaded()) {
-        addMarkers();
-      } else {
-        // Otherwise wait for load event
-        map.current.once('load', addMarkers);
+            locationMarkersRef.current[location.id] = marker;
+          }
+        });
+      } catch (error) {
+        console.error('Error adding markers:', error);
       }
+    };
+    
+    // If map is already loaded, add markers immediately
+    if (map.current.loaded()) {
+      addMarkers();
+    } else {
+      // Otherwise wait for load event
+      map.current.once('load', addMarkers);
     }
-  }, [pins, mapboxToken]);
+  }, [pins, serviceLocations, mapboxToken]);
 
   const clearAllPins = async () => {
     try {
@@ -297,6 +374,7 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
     setEditingPin(pin);
     setPinName(pin.label);
     setPinNotes(pin.notes || '');
+    setSelectedLocationId(pin.service_location_id || '');
     setShowEditDialog(true);
   };
 
@@ -320,7 +398,8 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
       longitude: pendingPin.longitude,
       latitude: pendingPin.latitude,
       label: pinName || `Pin ${pins.length + 1}`,
-      notes: pinNotes
+      notes: pinNotes,
+      service_location_id: selectedLocationId || null
     };
 
     try {
@@ -333,7 +412,8 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
           longitude: newPin.longitude,
           latitude: newPin.latitude,
           label: newPin.label,
-          notes: newPin.notes
+          notes: newPin.notes,
+          service_location_id: newPin.service_location_id
         });
 
       if (error) {
@@ -363,6 +443,7 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
       setPendingPin(null);
       setPinName('');
       setPinNotes('');
+      setSelectedLocationId('');
       setDropModeActive(false);
     } catch (error) {
       console.error('Error creating pin:', error);
@@ -375,7 +456,8 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
     const updatedPin = {
       ...editingPin,
       label: pinName,
-      notes: pinNotes
+      notes: pinNotes,
+      service_location_id: selectedLocationId || null
     };
 
     try {
@@ -384,7 +466,8 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
         .from('customer_map_pins')
         .update({
           label: updatedPin.label,
-          notes: updatedPin.notes
+          notes: updatedPin.notes,
+          service_location_id: updatedPin.service_location_id
         })
         .eq('customer_id', customerId)
         .eq('pin_id', editingPin.id);
@@ -411,6 +494,7 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
       setEditingPin(null);
       setPinName('');
       setPinNotes('');
+      setSelectedLocationId('');
     } catch (error) {
       console.error('Error editing pin:', error);
     }
@@ -421,6 +505,7 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
     setPendingPin(null);
     setPinName('');
     setPinNotes('');
+    setSelectedLocationId('');
   };
 
   const cancelPinEdit = () => {
@@ -428,6 +513,7 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
     setEditingPin(null);
     setPinName('');
     setPinNotes('');
+    setSelectedLocationId('');
   };
 
   const searchAddress = async () => {
@@ -608,56 +694,151 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
           </div>
         </div>
 
-        {/* Dropped Pins Card - Takes 1 column */}
+        {/* Grouped Pins by Location - Takes 1 column */}
         <div className="lg:col-span-1">
-          {pins.length > 0 ? (
-            <div className="bg-muted/50 rounded-lg p-4 h-full">
-              <h4 className="font-medium mb-4">Dropped Pins ({pins.length})</h4>
-              <div className="grid gap-2 max-h-[430px] overflow-y-auto pr-2">
-                {pins.map((pin) => (
-                  <div key={pin.id} className="flex items-start justify-between text-sm p-3 bg-background rounded border">
-                    <div className="flex-1 min-w-0">
-                      <div className="font-medium truncate">{pin.label}</div>
-                      <div className="text-muted-foreground font-mono text-xs mt-1">
-                        {pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)}
-                      </div>
-                      {pin.notes && (
-                        <div className="text-muted-foreground text-xs mt-2 line-clamp-2">
-                          Notes: {pin.notes}
+          <div className="bg-muted/50 rounded-lg p-4 h-full max-h-[530px] overflow-y-auto">
+            <h4 className="font-medium mb-4">Locations & Pins ({pins.length})</h4>
+            <div className="space-y-3">
+              {/* Physical Service Locations with their pins */}
+              {serviceLocations.map((location) => {
+                const locationPins = pins.filter(p => p.service_location_id === location.id);
+                const isExpanded = expandedLocations[location.id] !== false;
+                
+                return (
+                  <div key={location.id} className="border rounded-lg bg-background">
+                    <button
+                      onClick={() => setExpandedLocations(prev => ({ ...prev, [location.id]: !isExpanded }))}
+                      className="w-full flex items-center justify-between p-3 text-left hover:bg-muted/50 transition-colors rounded-t-lg"
+                    >
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        <Home className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <div className="font-medium text-sm truncate">{location.location_name}</div>
+                          <div className="text-xs text-muted-foreground truncate">
+                            {[location.street, location.city, location.state].filter(Boolean).join(', ')}
+                          </div>
                         </div>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-1 ml-2 flex-shrink-0">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => editPin(pin)}
-                        className="h-8 w-8 p-0"
-                      >
-                        <Edit className="w-3 h-3" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => confirmDeletePin(pin)}
-                        className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </Button>
-                    </div>
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <span className="text-xs bg-blue-500/10 text-blue-600 px-2 py-0.5 rounded-full font-medium">
+                            {locationPins.length} {locationPins.length === 1 ? 'pin' : 'pins'}
+                          </span>
+                          {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                        </div>
+                      </div>
+                    </button>
+                    
+                    {isExpanded && locationPins.length > 0 && (
+                      <div className="border-t p-2 space-y-2">
+                        {locationPins.map((pin) => (
+                          <div key={pin.id} className="flex items-start justify-between text-sm p-2 bg-muted/30 rounded">
+                            <div className="flex-1 min-w-0">
+                              <div className="font-medium text-xs truncate flex items-center gap-1">
+                                <MapPin className="w-3 h-3 text-red-500 flex-shrink-0" />
+                                {pin.label}
+                              </div>
+                              <div className="text-muted-foreground font-mono text-xs mt-0.5">
+                                {pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)}
+                              </div>
+                              {pin.notes && (
+                                <div className="text-muted-foreground text-xs mt-1 line-clamp-1">
+                                  {pin.notes}
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-1 ml-2 flex-shrink-0">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => editPin(pin)}
+                                className="h-6 w-6 p-0"
+                              >
+                                <Edit className="w-3 h-3" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => confirmDeletePin(pin)}
+                                className="h-6 w-6 p-0 text-destructive hover:text-destructive"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                ))}
-              </div>
+                );
+              })}
+              
+              {/* Unassigned Pins */}
+              {pins.filter(p => !p.service_location_id).length > 0 && (
+                <div className="border rounded-lg bg-background">
+                  <button
+                    onClick={() => setExpandedLocations(prev => ({ ...prev, 'unassigned': !prev['unassigned'] }))}
+                    className="w-full flex items-center justify-between p-3 text-left hover:bg-muted/50 transition-colors rounded-t-lg"
+                  >
+                    <div className="flex items-center gap-2 flex-1">
+                      <MapPin className="w-4 h-4 text-gray-500 flex-shrink-0" />
+                      <span className="font-medium text-sm">Unassigned Pins</span>
+                      <span className="text-xs bg-gray-500/10 text-gray-600 px-2 py-0.5 rounded-full font-medium">
+                        {pins.filter(p => !p.service_location_id).length}
+                      </span>
+                    </div>
+                    {expandedLocations['unassigned'] !== false ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                  </button>
+                  
+                  {expandedLocations['unassigned'] !== false && (
+                    <div className="border-t p-2 space-y-2">
+                      {pins.filter(p => !p.service_location_id).map((pin) => (
+                        <div key={pin.id} className="flex items-start justify-between text-sm p-2 bg-muted/30 rounded">
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium text-xs truncate">{pin.label}</div>
+                            <div className="text-muted-foreground font-mono text-xs mt-0.5">
+                              {pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)}
+                            </div>
+                            {pin.notes && (
+                              <div className="text-muted-foreground text-xs mt-1 line-clamp-1">
+                                {pin.notes}
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-1 ml-2 flex-shrink-0">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => editPin(pin)}
+                              className="h-6 w-6 p-0"
+                            >
+                              <Edit className="w-3 h-3" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => confirmDeletePin(pin)}
+                              className="h-6 w-6 p-0 text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+              
+              {pins.length === 0 && serviceLocations.length === 0 && (
+                <div className="flex flex-col items-center justify-center text-center py-8">
+                  <MapPin className="w-12 h-12 text-muted-foreground mb-3" />
+                  <h4 className="font-medium mb-2">No Pins or Locations</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Add physical addresses or drop pins to see them here
+                  </p>
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="bg-muted/50 rounded-lg p-4 h-full flex flex-col items-center justify-center text-center">
-              <MapPin className="w-12 h-12 text-muted-foreground mb-3" />
-              <h4 className="font-medium mb-2">No Pins Dropped</h4>
-              <p className="text-sm text-muted-foreground">
-                Activate drop mode and drop pins to see them here
-              </p>
-            </div>
-          )}
+          </div>
         </div>
       </div>
 
@@ -680,6 +861,22 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
                   }
                 }}
               />
+            </div>
+            <div>
+              <Label htmlFor="pin-location">Assign to Physical Address (Optional)</Label>
+              <Select value={selectedLocationId} onValueChange={setSelectedLocationId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="None - Standalone pin" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">None - Standalone pin</SelectItem>
+                  {serviceLocations.map(loc => (
+                    <SelectItem key={loc.id} value={loc.id}>
+                      {loc.location_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label htmlFor="pin-notes">Inventory Guide / Notes</Label>
@@ -727,6 +924,22 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
                   }
                 }}
               />
+            </div>
+            <div>
+              <Label htmlFor="edit-pin-location">Assign to Physical Address (Optional)</Label>
+              <Select value={selectedLocationId} onValueChange={setSelectedLocationId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="None - Standalone pin" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">None - Standalone pin</SelectItem>
+                  {serviceLocations.map(loc => (
+                    <SelectItem key={loc.id} value={loc.id}>
+                      {loc.location_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label htmlFor="edit-pin-notes">Inventory Guide / Notes</Label>
