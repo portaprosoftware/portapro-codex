@@ -80,6 +80,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
   });
 
   const [workOrderForm, setWorkOrderForm] = useState({
+    work_order_name: "",
     work_order_type: "repair",
     technicians: [{ name: "" }],
     labor_hours: "",
@@ -286,6 +287,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
       
       // Reset work order form
       setWorkOrderForm({
+        work_order_name: "",
         work_order_type: "repair",
         technicians: [{ name: "" }],
         labor_hours: "",
@@ -641,6 +643,14 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
               <div className="bg-white border rounded-xl p-6">
                 <h4 className="font-medium mb-4">Work Order Details</h4>
                 <div className="space-y-4">
+                  <div>
+                    <Label>Work Order Name</Label>
+                    <Input
+                      value={workOrderForm.work_order_name}
+                      onChange={(e) => setWorkOrderForm((p) => ({ ...p, work_order_name: e.target.value }))}
+                      placeholder="Enter work order name"
+                    />
+                  </div>
                   <div>
                     <Label>Work Order Type</Label>
                     <Select
