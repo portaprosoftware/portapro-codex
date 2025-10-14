@@ -329,7 +329,7 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
           {selectedItems.length > 0 && (
             <div className="flex items-center gap-2">
               <Badge className="bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold">
-                {selectedItems.length} selected
+                {selectedItems.length} Selected
               </Badge>
               <Button 
                 onClick={handleReturnToService}
