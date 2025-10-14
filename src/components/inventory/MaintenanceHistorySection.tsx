@@ -64,7 +64,8 @@ export const MaintenanceHistorySection: React.FC<MaintenanceHistorySectionProps>
         .from("maintenance_sessions")
         .select(`
           *,
-          product_items!inner(item_code, product_id, status, products(name))
+          product_items!inner(item_code, product_id, status, products(name)),
+          work_orders(total_cost)
         `)
         .eq("status", "completed")
         .gte("completed_at", ytdStartDate.toISOString())
@@ -79,7 +80,7 @@ export const MaintenanceHistorySection: React.FC<MaintenanceHistorySectionProps>
         session_number: session.session_number,
         started_at: session.started_at,
         completed_at: session.completed_at,
-        total_cost: session.total_cost || 0,
+        total_cost: session.work_orders?.total_cost || session.total_cost || 0,
         total_labor_hours: session.total_labor_hours || 0,
         session_summary: session.session_summary,
         primary_technician: session.primary_technician,
