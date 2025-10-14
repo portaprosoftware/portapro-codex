@@ -51,6 +51,7 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
       return data;
     },
     enabled: !!productId,
+    staleTime: 0,
   });
 
   // Fetch preview unit codes when quantity > 0 and we have a category

@@ -139,6 +139,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
     },
     onSuccess: (_, category) => {
       queryClient.invalidateQueries({ queryKey: ["product", product.id] });
+      queryClient.invalidateQueries({ queryKey: ["product-details", product.id] });
       if (category === null) {
         toast.success("Default category cleared");
       } else {
