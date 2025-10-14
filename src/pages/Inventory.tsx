@@ -347,8 +347,8 @@ const Inventory: React.FC = () => {
 
         {/* Content based on active tab */}
         {activeTab === 'products' && (
-          <>
-            {/* Card 2: Search and Filters */}
+          <div className="bg-background rounded-2xl shadow-md p-6 space-y-6">
+            {/* Search and Filters */}
             <InventoryFilters 
               searchQuery={searchQuery}
               onSearchChange={setSearchQuery}
@@ -358,8 +358,8 @@ const Inventory: React.FC = () => {
               onProductTypeChange={setSelectedProductType}
             />
 
-            {/* Card 3: Status Filters and Controls */}
-            <div className="bg-background rounded-2xl shadow-md p-6 space-y-6">
+            {/* Action Buttons and Controls */}
+            <div className="space-y-6">
               {/* Top Row: Action Buttons on left, View Toggle and Add Product on right */}
               <div className="flex justify-between items-center">
                 <div className="flex flex-wrap gap-2">
@@ -486,24 +486,22 @@ const Inventory: React.FC = () => {
               </div>
             </div>
 
-            {/* Card 4: Product Grid */}
-            <div className="bg-background rounded-2xl shadow-md p-6">
-              <ProductsView
-                filter={activeFilter}
-                viewType={viewType}
-                hideInactive={hideInactive}
-                searchQuery={searchQuery}
-                selectedLocationId={selectedLocationId}
-                selectedProductType={selectedProductType}
-                onProductSelect={(productId) => setSelectedProduct(productId)}
-              />
-            </div>
-          </>
+            {/* Product Grid */}
+            <ProductsView
+              filter={activeFilter}
+              viewType={viewType}
+              hideInactive={hideInactive}
+              searchQuery={searchQuery}
+              selectedLocationId={selectedLocationId}
+              selectedProductType={selectedProductType}
+              onProductSelect={(productId) => setSelectedProduct(productId)}
+            />
+          </div>
         )}
 
         {activeTab === 'location-map' && (
-          <>
-            {/* Card 2: Search and Filters for Location Map */}
+          <div className="bg-background rounded-2xl shadow-md p-6 space-y-6">
+            {/* Search and Filters */}
             <InventoryFilters
               searchQuery={searchQuery}
               onSearchChange={setSearchQuery}
@@ -513,8 +511,8 @@ const Inventory: React.FC = () => {
               onProductTypeChange={setSelectedProductType}
             />
             
-            {/* Card 3: Current Deployed Inventory Map */}
-            <div className="bg-background rounded-2xl shadow-md p-6 h-[600px]">
+            {/* Map Section */}
+            <div className="h-[600px]">
               <div className="mb-4">
                 <h3 className="text-lg font-semibold">Current Deployed Inventory</h3>
                 <p className="text-sm text-muted-foreground">View equipment currently deployed in the field</p>
@@ -526,7 +524,7 @@ const Inventory: React.FC = () => {
                 selectedProductType={selectedProductType}
               />
             </div>
-          </>
+          </div>
         )}
 
 
