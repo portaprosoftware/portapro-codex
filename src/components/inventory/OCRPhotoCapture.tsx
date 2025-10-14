@@ -149,12 +149,26 @@ export const OCRPhotoCapture: React.FC<OCRPhotoCaptureProps> = ({
       }
 
       const { results, confidence: ocrConfidence } = response.data;
-      setOcrResults(results);
+      
+      // Apply confidence threshold - only populate fields with high confidence
+      const CONFIDENCE_THRESHOLD = 0.75;
+      const filteredResults = {
+        toolNumber: ocrConfidence >= CONFIDENCE_THRESHOLD ? results.toolNumber : null,
+        vendorId: ocrConfidence >= CONFIDENCE_THRESHOLD ? results.vendorId : null,
+        plasticCode: ocrConfidence >= CONFIDENCE_THRESHOLD ? results.plasticCode : null,
+        manufacturingDate: ocrConfidence >= CONFIDENCE_THRESHOLD ? results.manufacturingDate : null,
+        moldCavity: ocrConfidence >= CONFIDENCE_THRESHOLD ? results.moldCavity : null,
+        rawData: results.rawData
+      };
+      
+      setOcrResults(filteredResults);
       setConfidence(ocrConfidence);
       
       toast({
         title: "OCR Processing Complete",
-        description: `Processed with ${Math.round(ocrConfidence * 100)}% confidence`,
+        description: ocrConfidence >= CONFIDENCE_THRESHOLD 
+          ? "High confidence results detected" 
+          : "Low confidence - please verify values manually",
       });
 
     } catch (error) {
@@ -318,7 +332,6 @@ export const OCRPhotoCapture: React.FC<OCRPhotoCaptureProps> = ({
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-medium">Tool Tracking Data</h3>
-                  {ocrEnabled && confidence > 0 && getConfidenceBadge(confidence)}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -390,16 +403,6 @@ export const OCRPhotoCapture: React.FC<OCRPhotoCaptureProps> = ({
                     />
                   </div>
                 </div>
-
-                {ocrEnabled && confidence < 0.6 && (
-                  <div className="flex items-start space-x-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                    <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5" />
-                    <div className="text-sm">
-                      <p className="font-medium text-yellow-800">Low Confidence Detection</p>
-                      <p className="text-yellow-700">Please verify and correct the detected values manually.</p>
-                    </div>
-                  </div>
-                )}
 
                 <div className="flex space-x-2">
                   <Button

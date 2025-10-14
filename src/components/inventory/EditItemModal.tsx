@@ -542,15 +542,6 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
                   placeholder="e.g., CAV 1"
                 />
               </div>
-
-              {item?.ocr_confidence_score && (
-                <div className="space-y-2">
-                  <Label>OCR Confidence</Label>
-                  <div className="px-3 py-2 bg-white border rounded-md text-sm font-mono">
-                    {Math.round(item.ocr_confidence_score * 100)}%
-                  </div>
-                </div>
-              )}
             </div>
           </div>
 
