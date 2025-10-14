@@ -76,6 +76,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(product.default_item_code_category || "");
   const [showAvailabilityTracker, setShowAvailabilityTracker] = useState(false);
+  const [showClearCategoryModal, setShowClearCategoryModal] = useState(false);
 
   const { categories } = useItemCodeCategories();
 
@@ -366,7 +367,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
                 variant="ghost" 
                 size="sm"
                 className="text-gray-600 hover:text-gray-900"
-                onClick={clearDefaultCategory}
+                onClick={() => setShowClearCategoryModal(true)}
                 disabled={updateCategoryMutation.isPending}
               >
                 Clear Series
@@ -532,6 +533,37 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
                 disabled={updateCategoryMutation.isPending || !selectedCategory}
               >
                 {updateCategoryMutation.isPending ? "Updating..." : "Set Category"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Clear Category Confirmation Modal */}
+      <Dialog open={showClearCategoryModal} onOpenChange={setShowClearCategoryModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Clear Default Series?</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <p className="text-gray-600">
+              Are you sure you want to clear the default item code category? New individual items will no longer have a default category assigned.
+            </p>
+
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setShowClearCategoryModal(false)}>
+                Cancel
+              </Button>
+              <Button 
+                variant="destructive"
+                onClick={() => {
+                  clearDefaultCategory();
+                  setShowClearCategoryModal(false);
+                }}
+                disabled={updateCategoryMutation.isPending}
+              >
+                Clear Series
               </Button>
             </div>
           </div>
