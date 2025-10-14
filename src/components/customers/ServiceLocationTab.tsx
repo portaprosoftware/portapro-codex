@@ -517,11 +517,27 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
             onClick={toggleDropMode}
             variant={dropModeActive ? "default" : "outline"}
             size="sm"
-            className="flex items-center gap-2 bg-background/90 backdrop-blur-sm"
+            className={`flex items-center gap-2 backdrop-blur-sm ${
+              dropModeActive 
+                ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                : 'bg-background/90'
+            }`}
           >
             <Target className="w-4 h-4" />
             {dropModeActive ? "Exit Drop Mode" : "Activate Drop Mode"}
           </Button>
+          
+          {/* Drop Pin Here Button - shown when drop mode is active */}
+          {dropModeActive && (
+            <Button
+              onClick={dropPinAtCenter}
+              size="sm"
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              <Plus className="w-4 h-4" />
+              Drop Pin Here
+            </Button>
+          )}
         </div>
         
         <div 
@@ -539,18 +555,6 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
         )}
       </div>
 
-      {dropModeActive && (
-        <div className="flex items-center justify-center gap-4 p-4 bg-muted/30 rounded-lg">
-          <Button
-            onClick={dropPinAtCenter}
-            className="flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            Drop Pin Here
-          </Button>
-        </div>
-      )}
-      
       {pins.length > 0 && (
         <div className="bg-muted/50 rounded-lg p-4">
           <h4 className="font-medium mb-2">Dropped Pins ({pins.length})</h4>
