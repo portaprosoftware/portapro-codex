@@ -577,45 +577,22 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                     <div className="space-y-2">
                       {workOrderForm.technicians.map((tech, index) => (
                         <div key={index} className="flex gap-2">
-                          <div className="flex-1">
-                            <Select
+                          <div className="flex-1 space-y-2">
+                            <Input
                               value={tech.name}
-                              onValueChange={(v) => {
+                              onChange={(e) => {
                                 const newTechs = [...workOrderForm.technicians];
-                                if (v === "__custom__") {
-                                  newTechs[index] = { name: "" };
-                                } else {
-                                  newTechs[index] = { name: v };
-                                }
+                                newTechs[index] = { name: e.target.value };
                                 setWorkOrderForm((p) => ({ ...p, technicians: newTechs }));
                               }}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select technician or type custom name" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {systemUsers.map((user) => (
-                                  <SelectItem key={user.id} value={user.name}>
-                                    {user.name}
-                                  </SelectItem>
-                                ))}
-                                <SelectItem value="__custom__">
-                                  <span className="text-blue-600">+ Type custom name</span>
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                            {!tech.name && (
-                              <Input
-                                value={tech.name}
-                                onChange={(e) => {
-                                  const newTechs = [...workOrderForm.technicians];
-                                  newTechs[index] = { name: e.target.value };
-                                  setWorkOrderForm((p) => ({ ...p, technicians: newTechs }));
-                                }}
-                                placeholder="Who performed this work?"
-                                className="mt-2"
-                              />
-                            )}
+                              placeholder="Who performed this work?"
+                              list={`technician-suggestions-${index}`}
+                            />
+                            <datalist id={`technician-suggestions-${index}`}>
+                              {systemUsers.map((user) => (
+                                <option key={user.id} value={user.name} />
+                              ))}
+                            </datalist>
                           </div>
                           {workOrderForm.technicians.length > 1 && (
                             <Button
