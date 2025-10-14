@@ -621,13 +621,24 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
 
   return (
     <div className="w-full h-screen overflow-hidden flex flex-col">
-      <DrawerHeader className="flex flex-row items-center justify-start space-y-0 pb-2 border-b">
+      <DrawerHeader className="flex flex-row items-center justify-between space-y-0 pb-2 border-b">
         <DrawerTitle className="text-xl font-semibold flex items-center gap-2">
           <Plus className="h-5 w-5" />
           {state.wizardMode === 'quote' ? 'Create New Quote' : 
            state.wizardMode === 'job_and_quote' ? 'Create Job & Quote' : 
            'Create New Job'}
         </DrawerTitle>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => {
+            console.log('X icon clicked, current data:', state.data);
+            setShowExitConfirmation(true);
+          }}
+          className="h-8 w-8"
+        >
+          <X className="h-4 w-4" />
+        </Button>
       </DrawerHeader>
 
       <div className="flex-1 flex flex-col overflow-hidden">
