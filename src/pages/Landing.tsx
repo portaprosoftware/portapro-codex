@@ -2133,66 +2133,66 @@ export const Landing: React.FC = () => {
 
       {/* Questions Form Popup */}
       {questionsFormOpen && <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[72vh] flex flex-col">
             {/* Header */}
-            <div className="flex items-center justify-between p-3 border-b">
+            <div className="flex items-center justify-between p-4 border-b">
               <div>
-                <h2 className="text-lg font-bold text-foreground">Have Questions?</h2>
-                <p className="text-xs text-muted-foreground">Tell us about your needs and we'll get in touch</p>
+                <h2 className="text-xl font-bold text-foreground">Have Questions?</h2>
+                <p className="text-sm text-muted-foreground">Tell us about your needs and we'll get in touch</p>
               </div>
-              <button onClick={() => setQuestionsFormOpen(false)} className="p-1.5 rounded-lg hover:bg-muted">
-                <X className="w-4 h-4" />
+              <button onClick={() => setQuestionsFormOpen(false)} className="p-2 rounded-lg hover:bg-muted">
+                <X className="w-5 h-5" />
               </button>
             </div>
             
             {/* Content */}
-            <div className="flex-1 overflow-y-auto p-3">
-              <form className="space-y-2" onSubmit={e => {
+            <div className="flex-1 overflow-y-auto p-4">
+              <form className="space-y-4" onSubmit={e => {
             e.preventDefault();
             alert('Thank you for your interest! We\'ll be in touch within 24 hours.');
             setQuestionsFormOpen(false);
           }}>
-                <div className="grid md:grid-cols-2 gap-2">
+                <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[10px] font-medium text-foreground mb-0.5">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       First Name *
                     </label>
-                    <input type="text" required className="w-full px-2 py-1 text-xs border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="John" />
+                    <input type="text" required className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="John" />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-medium text-foreground mb-0.5">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Last Name *
                     </label>
-                    <input type="text" required className="w-full px-2 py-1 text-xs border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Doe" />
+                    <input type="text" required className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Doe" />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-medium text-foreground mb-0.5">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Email *
                   </label>
-                  <input type="email" required className="w-full px-2 py-1 text-xs border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="john@company.com" />
+                  <input type="email" required className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="john@company.com" />
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-medium text-foreground mb-0.5">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Phone Number (Optional)
                   </label>
-                  <input type="tel" className="w-full px-2 py-1 text-xs border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="(555) 123-4567" />
+                  <input type="tel" className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="(555) 123-4567" />
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-medium text-foreground mb-0.5">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Company Name *
                   </label>
-                  <input type="text" required className="w-full px-2 py-1 text-xs border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Your Company Name" />
+                  <input type="text" required className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Your Company Name" />
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-medium text-foreground mb-0.5">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     How many units are in your fleet?
                   </label>
-                  <select className="w-full px-2 py-1 text-xs border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                  <select className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
                     <option value="">Select fleet size</option>
                     <option value="1-25">1-25 units</option>
                     <option value="26-50">26-50 units</option>
@@ -2204,10 +2204,10 @@ export const Landing: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-medium text-foreground mb-0.5">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     What's your biggest challenge right now?
                   </label>
-                  <select className="w-full px-2 py-1 text-xs border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                  <select className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
                     <option value="">Select your main challenge</option>
                     <option value="scheduling">Scheduling and dispatching</option>
                     <option value="inventory">Inventory tracking</option>
@@ -2221,39 +2221,40 @@ export const Landing: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-medium text-foreground mb-0.5">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Preferred contact method
                   </label>
-                  <div className="flex gap-3 text-xs">
+                  <div className="flex gap-4">
                     <label className="flex items-center">
-                      <input type="radio" name="contact" value="email" className="mr-1.5" defaultChecked />
+                      <input type="radio" name="contact" value="email" className="mr-2" defaultChecked />
                       Email
                     </label>
                     <label className="flex items-center">
-                      <input type="radio" name="contact" value="phone" className="mr-1.5" />
+                      <input type="radio" name="contact" value="phone" className="mr-2" />
                       Phone
                     </label>
                     <label className="flex items-center">
-                      <input type="radio" name="contact" value="either" className="mr-1.5" />
+                      <input type="radio" name="contact" value="either" className="mr-2" />
                       Either
                     </label>
                   </div>
                 </div>
 
-                <div className="bg-muted/30 border border-border rounded-lg p-2">
-                  <h4 className="font-semibold text-xs text-foreground mb-1">What's next? 🚀</h4>
-                  <ul className="text-[10px] text-muted-foreground space-y-0">
-                    <li>• Review your info & reach out in 24 hrs</li>
-                    <li>• Schedule personalized demo</li>
-                    <li>• Answer questions about features & pricing</li>
+                <div className="bg-muted/30 border border-border rounded-lg p-4">
+                  <h4 className="font-semibold text-foreground mb-2">What's next? 🚀</h4>
+                  <ul className="text-sm text-muted-foreground space-y-1">
+                    <li>• We'll review your information and reach out within 24 hours</li>
+                    <li>• Schedule a personalized demo based on your fleet size</li>
+                    <li>• Discuss your specific challenges and how PortaPro can help</li>
+                    <li>• Answer all your questions about features, pricing, and implementation</li>
                   </ul>
                 </div>
 
-                <div className="flex gap-2 pt-1">
-                  <Button type="button" variant="outline" onClick={() => setQuestionsFormOpen(false)} className="flex-1 h-8 text-xs">
+                <div className="flex gap-3 pt-4">
+                  <Button type="button" variant="outline" onClick={() => setQuestionsFormOpen(false)} className="flex-1">
                     Maybe Later
                   </Button>
-                  <Button type="submit" className="flex-1 h-8 text-xs bg-primary hover:bg-primary/90">
+                  <Button type="submit" className="flex-1 bg-primary hover:bg-primary/90">
                     Send My Questions
                   </Button>
                 </div>
