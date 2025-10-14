@@ -15,6 +15,7 @@ import { Clock, DollarSign, MapPin, Settings, Wrench, Trash2, Plus, X } from "lu
 import { SimpleMaintenancePhotoUpload } from "./SimpleMaintenancePhotoUpload";
 import { MaintenanceUpdatePhotos } from "./MaintenanceUpdatePhotos";
 import { ImageViewerModal } from "./ImageViewerModal";
+import { useSystemUsers } from "@/hooks/useSystemUsers";
 
 interface StorageLocation { id: string; name: string }
 
@@ -54,6 +55,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
 }) => {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState(initialActiveTab);
+  const { data: systemUsers = [] } = useSystemUsers();
 
   // Update active tab when initialActiveTab changes
   useEffect(() => {
@@ -530,11 +532,41 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                 <div className="space-y-4">
                   <div>
                     <Label>Technician Name</Label>
-                    <Input
-                      value={workOrderForm.technician_name}
-                      onChange={(e) => setWorkOrderForm((p) => ({ ...p, technician_name: e.target.value }))}
-                      placeholder="Who performed this work?"
-                    />
+                    <div className="relative">
+                      <Select
+                        value={workOrderForm.technician_name}
+                        onValueChange={(v) => {
+                          if (v === "__custom__") {
+                            // User wants to type custom name
+                            setWorkOrderForm((p) => ({ ...p, technician_name: "" }));
+                          } else {
+                            setWorkOrderForm((p) => ({ ...p, technician_name: v }));
+                          }
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select technician or type custom name" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {systemUsers.map((user) => (
+                            <SelectItem key={user.id} value={user.name}>
+                              {user.name}
+                            </SelectItem>
+                          ))}
+                          <SelectItem value="__custom__">
+                            <span className="text-blue-600">+ Type custom name</span>
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {(!workOrderForm.technician_name || workOrderForm.technician_name === "__custom__") && (
+                        <Input
+                          value={workOrderForm.technician_name === "__custom__" ? "" : workOrderForm.technician_name}
+                          onChange={(e) => setWorkOrderForm((p) => ({ ...p, technician_name: e.target.value }))}
+                          placeholder="Who performed this work?"
+                          className="mt-2"
+                        />
+                      )}
+                    </div>
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
