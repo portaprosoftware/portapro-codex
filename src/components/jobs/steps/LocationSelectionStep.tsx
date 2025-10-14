@@ -166,7 +166,7 @@ export function LocationSelectionStep() {
           </TabsTrigger>
           <TabsTrigger value="pins" className="gap-2">
             <MapPin className="h-4 w-4" />
-            Reference Pins
+            GPS Dropped Reference Pins
           </TabsTrigger>
         </TabsList>
 
