@@ -118,46 +118,54 @@ export const EquipmentFilterModal: React.FC<EquipmentFilterModalProps> = ({
             </Button>
           </div>
 
-          {/* Products List */}
-          <div className="max-h-96 overflow-y-auto space-y-2 pr-2">
+          {/* Products Grid */}
+          <div className="max-h-96 overflow-y-auto pr-2">
             {filteredProducts.length > 0 ? (
-              filteredProducts.map((product) => (
-                <div
-                  key={product.id}
-                  className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer border border-gray-200 transition-colors"
-                  onClick={() => handleToggle(product.id)}
-                >
-                  <Checkbox
-                    checked={tempSelectedIds.includes(product.id)}
-                    onCheckedChange={() => handleToggle(product.id)}
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                  
-                  {/* Product Image */}
-                  <div className="flex-shrink-0 w-12 h-12 bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
-                    {product.image_url ? (
-                      <img
-                        src={product.image_url}
-                        alt={product.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Package className="w-6 h-6 text-gray-400" />
+              <div className="grid grid-cols-2 gap-3">
+                {filteredProducts.map((product) => {
+                  const isSelected = tempSelectedIds.includes(product.id);
+                  return (
+                    <div
+                      key={product.id}
+                      className={`relative flex flex-col items-center p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                        isSelected
+                          ? 'border-blue-500 bg-blue-50'
+                          : 'border-gray-200 hover:border-gray-300 bg-white'
+                      }`}
+                      onClick={() => handleToggle(product.id)}
+                    >
+                      {/* Checkbox in top-left corner */}
+                      <div className="absolute top-2 left-2">
+                        <Checkbox
+                          checked={isSelected}
+                          onCheckedChange={() => handleToggle(product.id)}
+                          onClick={(e) => e.stopPropagation()}
+                        />
                       </div>
-                    )}
-                  </div>
-                  
-                  <label className="flex-1 cursor-pointer font-medium text-gray-900">
-                    {product.name}
-                  </label>
-                  {tempSelectedIds.includes(product.id) && (
-                    <Badge className="bg-blue-100 text-blue-700 border-blue-200">
-                      Selected
-                    </Badge>
-                  )}
-                </div>
-              ))
+
+                      {/* Product Image */}
+                      <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden border border-gray-200 mb-3">
+                        {product.image_url ? (
+                          <img
+                            src={product.image_url}
+                            alt={product.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <Package className="w-10 h-10 text-gray-400" />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Product Name */}
+                      <div className="text-center text-sm font-medium text-gray-900 line-clamp-2">
+                        {product.name}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             ) : (
               <div className="text-center py-8 text-gray-500">
                 <Search className="w-12 h-12 text-gray-300 mx-auto mb-3" />
