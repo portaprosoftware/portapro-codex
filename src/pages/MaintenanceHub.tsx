@@ -7,7 +7,7 @@ import { ServiceCatalogTab } from "@/components/maintenance/ServiceCatalogTab";
 import { ReportTemplatesTab } from "@/components/maintenance/ReportTemplatesTab";
 import { ServiceRecordsTab } from "@/components/maintenance/ServiceRecordsTab";
 import { LogPastServiceModal } from "@/components/maintenance/LogPastServiceModal";
-import { Calendar } from "lucide-react";
+import { Calendar, ClipboardList, CheckCircle, FileText } from "lucide-react";
 
 export default function MaintenanceHub() {
   const location = useLocation();
@@ -55,6 +55,7 @@ export default function MaintenanceHub() {
                   isActive={activeTab === 'catalog'}
                   onClick={() => setActiveTab('catalog')}
                 >
+                  <ClipboardList className="h-4 w-4" />
                   Service Catalog
                 </TabNav.Item>
                 <TabNav.Item 
@@ -62,6 +63,7 @@ export default function MaintenanceHub() {
                   isActive={activeTab === 'records'}
                   onClick={() => setActiveTab('records')}
                 >
+                  <CheckCircle className="h-4 w-4" />
                   Completed Records & Reports
                 </TabNav.Item>
                 <TabNav.Item 
@@ -69,6 +71,7 @@ export default function MaintenanceHub() {
                   isActive={activeTab === 'templates'}
                   onClick={() => setActiveTab('templates')}
                 >
+                  <FileText className="h-4 w-4" />
                   Report Templates
                 </TabNav.Item>
               </TabNav>
