@@ -96,9 +96,9 @@ export const InventoryMaintenanceOverview: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h2 className="text-xl font-bold text-foreground mb-2">Inventory Maintenance</h2>
-        <p className="text-muted-foreground">
+      <div className="flex items-center gap-3">
+        <h2 className="text-xl font-bold text-foreground">Inventory Maintenance</h2>
+        <p className="text-muted-foreground text-sm">
           Manage and track maintenance across your entire inventory
         </p>
       </div>
