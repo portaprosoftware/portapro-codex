@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { SignInButton, SignUpButton } from '@clerk/clerk-react';
 import { ArrowRight, Play, CheckCircle, Truck, Users, BarChart3, ClipboardList, MapPin, Calendar, DollarSign, Zap, Building2, FileText, Smartphone, Heart, Phone, Mail, Menu, X, Camera, Eye, Compass, Database, Shield, Clock, BellRing, Wrench, CalendarClock, Gauge, HardHat, Route, CloudOff, QrCode, Laptop, RefreshCcw } from 'lucide-react';
+import standardToiletUnit from '@/assets/standard-toilet-unit.png';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -631,7 +632,7 @@ export const Landing: React.FC = () => {
                 <div className="grid md:grid-cols-2 gap-6 items-center">
                   <div className="flex flex-col items-center space-y-4">
                     <div className="rounded-lg overflow-hidden">
-                      <img src="/lovable-uploads/4ba172a8-8093-4d4e-9143-53090809b31e.png" alt="Phone scanning embossed plastic text on portable toilet unit" className="w-full max-w-sm h-auto" />
+                      <img src={standardToiletUnit} alt="Standard portable toilet unit" className="w-full max-w-sm h-auto" />
                     </div>
                   </div>
                   
