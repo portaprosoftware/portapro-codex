@@ -65,6 +65,26 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
     setActiveTab(initialActiveTab);
   }, [initialActiveTab]);
 
+  // Mutation to update work order status
+  const updateWorkOrderStatus = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+      const { error } = await supabase
+        .from('maintenance_updates')
+        .update({ status })
+        .eq('id', id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['maintenance-updates', itemId] });
+      toast.success('Work order status updated');
+    },
+    onError: (error) => {
+      toast.error('Failed to update status');
+      console.error(error);
+    }
+  });
+
   const [formData, setFormData] = useState({
     maintenance_reason: "",
     maintenance_notes: "",
@@ -907,19 +927,41 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                                   {isWorkOrder && (
                                     <Select
                                       value={update.status || "work_order_created"}
-                                      onValueChange={(v) => {
-                                        // TODO: Update status in database
-                                        toast.success("Status updated");
+                                      onValueChange={(newStatus) => {
+                                        updateWorkOrderStatus.mutate({
+                                          id: update.id,
+                                          status: newStatus
+                                        });
                                       }}
                                     >
-                                      <SelectTrigger className="h-7 w-[180px] text-xs">
+                                      <SelectTrigger className="h-7 w-full text-xs font-medium">
                                         <SelectValue />
                                       </SelectTrigger>
                                       <SelectContent>
-                                        <SelectItem value="work_order_created">Work Order Created</SelectItem>
-                                        <SelectItem value="in_progress">In Progress</SelectItem>
-                                        <SelectItem value="waiting_on_parts">Waiting on Parts</SelectItem>
-                                        <SelectItem value="completed">Completed</SelectItem>
+                                        <SelectItem value="work_order_created">
+                                          <span className="flex items-center gap-2">
+                                            <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                                            Work Order Created
+                                          </span>
+                                        </SelectItem>
+                                        <SelectItem value="in_progress">
+                                          <span className="flex items-center gap-2">
+                                            <span className="w-2 h-2 rounded-full bg-orange-500"></span>
+                                            In Progress
+                                          </span>
+                                        </SelectItem>
+                                        <SelectItem value="waiting_on_parts">
+                                          <span className="flex items-center gap-2">
+                                            <span className="w-2 h-2 rounded-full bg-purple-500"></span>
+                                            Waiting on Parts
+                                          </span>
+                                        </SelectItem>
+                                        <SelectItem value="completed">
+                                          <span className="flex items-center gap-2">
+                                            <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                                            Completed
+                                          </span>
+                                        </SelectItem>
                                       </SelectContent>
                                     </Select>
                                   )}

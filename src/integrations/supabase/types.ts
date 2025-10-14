@@ -5789,6 +5789,7 @@ export type Database = {
           maintenance_session_id: string | null
           parts_used: Json | null
           session_status: string | null
+          status: string | null
           status_change_from: string | null
           status_change_to: string | null
           technician_name: string | null
@@ -5810,6 +5811,7 @@ export type Database = {
           maintenance_session_id?: string | null
           parts_used?: Json | null
           session_status?: string | null
+          status?: string | null
           status_change_from?: string | null
           status_change_to?: string | null
           technician_name?: string | null
@@ -5831,6 +5833,7 @@ export type Database = {
           maintenance_session_id?: string | null
           parts_used?: Json | null
           session_status?: string | null
+          status?: string | null
           status_change_from?: string | null
           status_change_to?: string | null
           technician_name?: string | null
