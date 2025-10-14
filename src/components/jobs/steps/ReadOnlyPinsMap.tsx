@@ -513,13 +513,23 @@ export function ReadOnlyPinsMap({
                   })}
 
                   {/* Pins without service location */}
-                  {savedPins.filter(pin => !pin.service_location_id).length > 0 && (
-                    <div className="space-y-2">
-                      <div className="text-sm font-medium text-muted-foreground">
-                        Unassigned Pins
-                      </div>
-                      {savedPins.filter(pin => !pin.service_location_id).map((pin) => {
-                        const isSelected = selectedPinIds.includes(pin.id);
+                  {(() => {
+                    const unassignedPins = savedPins.filter(pin => !pin.service_location_id);
+                    const filteredUnassigned = searchQuery.trim()
+                      ? unassignedPins.filter(pin => 
+                          pin.label.toLowerCase().includes(searchQuery.toLowerCase())
+                        )
+                      : unassignedPins;
+                    
+                    if (filteredUnassigned.length === 0) return null;
+                    
+                    return (
+                      <div className="space-y-2">
+                        <div className="text-sm font-medium text-foreground">
+                          Unassigned Pins
+                        </div>
+                        {filteredUnassigned.map((pin) => {
+                          const isSelected = selectedPinIds.includes(pin.id);
                         return (
                           <div
                             key={pin.id}
@@ -558,10 +568,11 @@ export function ReadOnlyPinsMap({
                               </div>
                             </div>
                           </div>
-                        );
-                      })}
-                    </div>
-                  )}
+                          );
+                        })}
+                      </div>
+                    );
+                  })()}
                 </div>
               </CardContent>
             </Card>
