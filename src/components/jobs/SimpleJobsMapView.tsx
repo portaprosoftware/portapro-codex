@@ -507,8 +507,8 @@ export function SimpleJobsMapView({
           </div>
         )}
 
-        {/* Radar Toggle */}
-        <div className="bg-white px-3 py-2 rounded-lg shadow-lg border">
+        {/* Radar Toggle - Fixed height */}
+        <div className="bg-white px-3 py-2 rounded-lg shadow-lg border h-[44px] flex items-center">
           <div className="flex items-center gap-2">
             <Radar className="w-4 h-4 text-gray-600" />
             <span className="text-sm font-medium text-gray-700">Weather Radar</span>
@@ -523,8 +523,8 @@ export function SimpleJobsMapView({
             />
           </div>
           {!selectedDateIsToday && (
-            <div className="text-xs text-gray-500 mt-1">
-              Radar only available for today's date
+            <div className="text-xs text-gray-500 ml-2">
+              (Today only)
             </div>
           )}
         </div>
