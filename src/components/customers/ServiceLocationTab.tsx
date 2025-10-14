@@ -36,7 +36,9 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
   const [dropModeActive, setDropModeActive] = useState(false);
   const [showNameDialog, setShowNameDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [editingPin, setEditingPin] = useState<DropPin | null>(null);
+  const [deletingPin, setDeletingPin] = useState<DropPin | null>(null);
   const [pendingPin, setPendingPin] = useState<{ longitude: number; latitude: number } | null>(null);
   const [pinName, setPinName] = useState('');
   const [pinNotes, setPinNotes] = useState('');
@@ -217,14 +219,21 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
     }
   };
 
-  const deletePin = async (pinId: string) => {
+  const confirmDeletePin = (pin: DropPin) => {
+    setDeletingPin(pin);
+    setShowDeleteDialog(true);
+  };
+
+  const deletePin = async () => {
+    if (!deletingPin) return;
+
     try {
       // Remove from database
       const { error } = await supabase
         .from('customer_map_pins')
         .delete()
         .eq('customer_id', customerId)
-        .eq('pin_id', pinId);
+        .eq('pin_id', deletingPin.id);
 
       if (error) {
         console.error('Error deleting pin from database:', error);
@@ -232,14 +241,23 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
       }
 
       // Remove from map
-      if (markersRef.current[pinId]) {
-        markersRef.current[pinId].remove();
-        delete markersRef.current[pinId];
+      if (markersRef.current[deletingPin.id]) {
+        markersRef.current[deletingPin.id].remove();
+        delete markersRef.current[deletingPin.id];
       }
-      setPins(prev => prev.filter(pin => pin.id !== pinId));
+      setPins(prev => prev.filter(pin => pin.id !== deletingPin.id));
+      
+      // Close dialog and reset state
+      setShowDeleteDialog(false);
+      setDeletingPin(null);
     } catch (error) {
       console.error('Error deleting pin:', error);
     }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteDialog(false);
+    setDeletingPin(null);
   };
 
   const editPin = (pin: DropPin) => {
@@ -579,7 +597,7 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => deletePin(pin.id)}
+                    onClick={() => confirmDeletePin(pin)}
                     className="h-8 w-8 p-0 text-destructive hover:text-destructive"
                   >
                     <X className="w-3 h-3" />
@@ -680,6 +698,41 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
             </Button>
             <Button onClick={confirmPinEdit}>
               Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Pin</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Are you sure you want to delete this pin? This action cannot be undone.
+            </p>
+            {deletingPin && (
+              <div className="bg-muted/50 p-3 rounded-lg">
+                <div className="font-medium text-sm">{deletingPin.label}</div>
+                <div className="text-xs text-muted-foreground font-mono mt-1">
+                  {deletingPin.latitude.toFixed(6)}, {deletingPin.longitude.toFixed(6)}
+                </div>
+                {deletingPin.notes && (
+                  <div className="text-xs text-muted-foreground mt-1">
+                    Notes: {deletingPin.notes}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={cancelDelete}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={deletePin}>
+              Delete Pin
             </Button>
           </DialogFooter>
         </DialogContent>
