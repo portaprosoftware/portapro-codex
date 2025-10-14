@@ -395,7 +395,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ itemId, onClose })
               <Label htmlFor="condition">
                 Condition 
                 {formData.status === "maintenance" && (
-                  <Badge variant="secondary" className="ml-2 text-xs">Auto-set for maintenance</Badge>
+                  <Badge className="ml-2 text-xs bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold border-0">Auto-set for maintenance</Badge>
                 )}
               </Label>
               <Select 
