@@ -598,7 +598,7 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
             </h3>
             
             {/* Pin List with Inventory Assignment - Grouped by Service Location */}
-            <div className="space-y-4">
+            <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2">
               {(() => {
                 // Group pins by service location
                 const groupedPins: Record<string, any[]> = {};
