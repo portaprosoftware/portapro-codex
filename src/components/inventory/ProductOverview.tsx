@@ -120,7 +120,9 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
     },
     onSuccess: (_, trackInventory) => {
       queryClient.invalidateQueries({ queryKey: ["product", product.id] });
-      toast.success(`Inventory tracking ${trackInventory ? "enabled" : "disabled"}`);
+      toast.success(`Inventory tracking ${trackInventory ? "enabled" : "disabled"}`, {
+        duration: 2000,
+      });
     },
     onError: (error) => {
       toast.error("Failed to update tracking setting");
@@ -412,7 +414,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
           <Switch
             checked={!product.track_inventory}
             onCheckedChange={handleTrackingToggle}
-            className="data-[state=checked]:bg-gray-600"
+            className="data-[state=checked]:bg-red-600"
             disabled={updateTrackingMutation.isPending}
           />
         </div>
