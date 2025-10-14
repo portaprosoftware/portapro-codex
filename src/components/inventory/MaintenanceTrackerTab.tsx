@@ -467,10 +467,6 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
                               <span className="font-medium text-gray-700">Storage Location:</span>
                               <span className="text-gray-600 ml-2">{getStorageLocationName(item.current_storage_location_id)}</span>
                             </div>
-                            <div>
-                              <span className="font-medium text-gray-700">Last Location:</span>
-                              <span className="text-gray-600 ml-2">{item.location || "Not specified"}</span>
-                            </div>
                           </div>
                         </div>
                       </div>

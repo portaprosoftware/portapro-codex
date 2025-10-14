@@ -696,10 +696,6 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
                             <p className="text-gray-600 mt-1">{new Date(item.updated_at).toLocaleDateString()}</p>
                           </div>
                           <div>
-                            <span className="font-medium text-gray-700">Last Location:</span>
-                            <p className="text-gray-600 mt-1">{item.last_known_location ? String(item.last_known_location) : "Not set"}</p>
-                          </div>
-                          <div>
                             <span className="font-medium text-gray-700">Storage Location:</span>
                             <p className="text-gray-600 mt-1">{getStorageLocationName(item.current_storage_location_id)}</p>
                           </div>
