@@ -677,10 +677,13 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                         </div>
                         <div className="flex items-center gap-2">
                           <Badge className={
-                            workOrder.status === 'completed' ? 'bg-green-100 text-green-800' :
-                            workOrder.status === 'in_progress' ? 'bg-blue-100 text-blue-800' :
-                            workOrder.status === 'waiting_on_parts' ? 'bg-yellow-100 text-yellow-800' :
-                            'bg-gray-100 text-gray-800'
+                            workOrder.status === 'completed' 
+                              ? 'bg-gradient-to-r from-green-600 to-green-700 text-white font-bold border-0' :
+                            workOrder.status === 'in_progress' 
+                              ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold border-0' :
+                            workOrder.status === 'waiting_on_parts' 
+                              ? 'bg-gradient-to-r from-yellow-600 to-yellow-700 text-white font-bold border-0' :
+                            'bg-gradient-to-r from-gray-600 to-gray-700 text-white font-bold border-0'
                           }>
                             {workOrder.status?.replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()) || 'Created'}
                           </Badge>
