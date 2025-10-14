@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Edit3, Plus, History, CheckCircle, MoreHorizontal } from "lucide-react";
+import { Wrench, Plus, History, CheckCircle, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -34,8 +34,8 @@ export const MaintenanceItemActions: React.FC<MaintenanceItemActionsProps> = ({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56 z-[10050] bg-popover bg-background">
         <DropdownMenuItem onClick={onEditMaintenance}>
-          <Edit3 className="mr-2 h-4 w-4" />
-          Manage Unit
+          <Wrench className="mr-2 h-4 w-4" />
+          Update Maintenance
         </DropdownMenuItem>
         <DropdownMenuItem onClick={onReturnToService}>
           <CheckCircle className="mr-2 h-4 w-4" />
