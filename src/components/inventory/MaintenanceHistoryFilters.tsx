@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, Filter, X } from "lucide-react";
+import { CalendarIcon, Filter, X, Download } from "lucide-react";
 import { format } from "date-fns";
 
 export interface MaintenanceFilters {
@@ -23,6 +23,8 @@ interface MaintenanceHistoryFiltersProps {
   onFilterChange: (filters: MaintenanceFilters) => void;
   productTypes: { id: string; name: string }[];
   technicians: string[];
+  onExport: () => void;
+  exportDisabled: boolean;
 }
 
 export const MaintenanceHistoryFilters: React.FC<MaintenanceHistoryFiltersProps> = ({
@@ -30,6 +32,8 @@ export const MaintenanceHistoryFilters: React.FC<MaintenanceHistoryFiltersProps>
   onFilterChange,
   productTypes,
   technicians,
+  onExport,
+  exportDisabled,
 }) => {
   const handleReset = () => {
     onFilterChange({
@@ -186,14 +190,25 @@ export const MaintenanceHistoryFilters: React.FC<MaintenanceHistoryFiltersProps>
         </div>
       </div>
 
-      {/* Search Bar - Below Filters */}
-      <div className="flex-1">
-        <Input
-          placeholder="Search by item code, summary, or technician..."
-          value={filters.searchTerm}
-          onChange={(e) => onFilterChange({ ...filters, searchTerm: e.target.value })}
-          className="max-w-md"
-        />
+      {/* Search Bar with Export Button */}
+      <div className="flex items-center gap-3">
+        <div className="flex-1">
+          <Input
+            placeholder="Search by item code, summary, or technician..."
+            value={filters.searchTerm}
+            onChange={(e) => onFilterChange({ ...filters, searchTerm: e.target.value })}
+            className="max-w-md"
+          />
+        </div>
+        <Button
+          onClick={onExport}
+          variant="outline"
+          className="gap-2"
+          disabled={exportDisabled}
+        >
+          <Download className="w-4 h-4" />
+          Export
+        </Button>
       </div>
     </div>
   );

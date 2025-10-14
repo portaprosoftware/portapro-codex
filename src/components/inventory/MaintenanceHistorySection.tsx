@@ -371,26 +371,15 @@ export const MaintenanceHistorySection: React.FC<MaintenanceHistorySectionProps>
 
   return (
     <div className="space-y-4">
-      {/* Header with Export */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <History className="w-6 h-6 text-gray-900" />
-          <div>
-            <h3 className="text-lg font-bold text-gray-900">Maintenance History</h3>
-            <p className="text-sm text-gray-600">
-              Complete maintenance analytics and unit outcomes
-            </p>
-          </div>
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <History className="w-6 h-6 text-gray-900" />
+        <div>
+          <h3 className="text-lg font-bold text-gray-900">Maintenance History</h3>
+          <p className="text-sm text-gray-600">
+            Complete maintenance analytics and unit outcomes
+          </p>
         </div>
-        <Button
-          onClick={() => setExportDialogOpen(true)}
-          variant="outline"
-          className="gap-2"
-          disabled={filteredSessions.length === 0}
-        >
-          <Download className="w-4 h-4" />
-          Export
-        </Button>
       </div>
 
       {/* Advanced Statistics */}
@@ -402,6 +391,8 @@ export const MaintenanceHistorySection: React.FC<MaintenanceHistorySectionProps>
         onFilterChange={setFilters}
         productTypes={products || []}
         technicians={technicians}
+        onExport={() => setExportDialogOpen(true)}
+        exportDisabled={filteredSessions.length === 0}
       />
 
       {/* Tabbed Content */}
