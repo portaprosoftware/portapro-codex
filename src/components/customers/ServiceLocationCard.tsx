@@ -168,15 +168,6 @@ export function ServiceLocationCard({ location, onUpdate, onDelete }: ServiceLoc
               <Button
                 variant="outline"
                 size="sm"
-                onClick={copyAddress}
-                className="text-xs"
-              >
-                <Copy className="w-3 h-3 mr-1" />
-                Copy
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
                 onClick={openInGoogleMaps}
                 className="text-xs"
               >
@@ -204,7 +195,16 @@ export function ServiceLocationCard({ location, onUpdate, onDelete }: ServiceLoc
             </div>
           </div>
 
-          <div className="flex gap-2 ml-4">
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={copyAddress}
+              className="h-8 w-8 p-0"
+              title="Copy address"
+            >
+              <Copy className="w-4 h-4" />
+            </Button>
             {!location.is_locked && (
               <>
                 <Button
