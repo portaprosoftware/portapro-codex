@@ -12,6 +12,9 @@ import { format } from 'date-fns';
 import { formatDateForQuery, isSameDayInTimeZone, getCurrentDateInCompanyTimezone } from '@/lib/dateUtils';
 import { getCompanyTimezone } from '@/lib/timezoneUtils';
 import { SimpleWeatherRadar, TimestampDisplay } from '@/components/jobs/SimpleWeatherRadar';
+import { MapLegend, getDriverColor, getJobTypeColor, getStatusBorderColor } from '@/components/maps/MapLegend';
+import { useDrivers } from '@/hooks/useDriverWorkingHours';
+import { isJobOverdue, isJobCompletedLate, shouldShowPriorityBadge } from '@/lib/jobStatusUtils';
 
 
 
@@ -66,6 +69,9 @@ export function SimpleJobsMapView({
     status: status !== 'all' ? status : undefined,
     driver_id: selectedDriver !== 'all' ? selectedDriver : undefined
   });
+
+  // Get drivers data for Driver Mode
+  const { data: drivers = [] } = useDrivers();
 
   // Deduplicate jobs and prioritize entries with GPS coordinates
   const deduplicateJobs = (jobs: any[]) => {
@@ -308,44 +314,64 @@ export function SimpleJobsMapView({
       const pinElement = document.createElement('div');
       
       if (count === 1) {
-        // Single job pin
-        const jobTypeCode = firstJob.job_type.charAt(0).toUpperCase();
-        const statusColor = getStatusColor(firstJob.status);
+        // Single job pin - use job type color (Standard Mode) or driver color (Driver Mode)
+        const job = firstJob;
+        
+        // Determine fill color based on mode
+        let fillColor: string;
+        let displayLetter: string;
+        
+        if (isDriverMode) {
+          // Driver Mode: use driver color
+          fillColor = getDriverColor(job.driver_id || '', drivers);
+          const driverProfile = drivers.find(d => d.id === job.driver_id);
+          displayLetter = driverProfile?.first_name?.charAt(0).toUpperCase() || 'U';
+        } else {
+          // Standard Mode: use job type color
+          fillColor = getJobTypeColor(job.job_type);
+          displayLetter = job.job_type.charAt(0).toUpperCase();
+        }
+        
+        // Determine border color based on status
+        const isOverdue = isJobOverdue(job);
+        const isCompletedLate = isJobCompletedLate(job);
+        const isPriority = shouldShowPriorityBadge(job);
+        const borderColor = getStatusBorderColor(job.status, isOverdue, isPriority, isCompletedLate);
         
         pinElement.innerHTML = `
           <div style="
-            width: 32px; 
-            height: 32px; 
-            background-color: ${statusColor}; 
-            border: 3px solid #ffffff; 
+            width: 34px; 
+            height: 34px; 
+            background-color: ${fillColor}; 
+            border: 4px solid ${borderColor}; 
             border-radius: 50%; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
             color: white; 
             font-weight: bold; 
-            font-size: 12px; 
+            font-size: 14px; 
             cursor: pointer; 
-            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-          ">${jobTypeCode}</div>
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+          ">${displayLetter}</div>
         `;
       } else {
-        // Multiple jobs cluster
+        // Multiple jobs cluster - dark gray with white border and count
         pinElement.innerHTML = `
           <div style="
-            width: 36px; 
-            height: 36px; 
+            width: 40px; 
+            height: 40px; 
             background-color: #374151; 
-            border: 3px solid #ffffff; 
+            border: 4px solid #ffffff; 
             border-radius: 50%; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
             color: white; 
             font-weight: bold; 
-            font-size: 13px; 
+            font-size: 15px; 
             cursor: pointer; 
-            box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.35);
           ">${count}</div>
         `;
       }
@@ -371,20 +397,9 @@ export function SimpleJobsMapView({
       markersRef.current.push(marker);
     });
 
-  }, [filteredJobs, mapStyle]);
+  }, [filteredJobs, mapStyle, isDriverMode, drivers]);
 
-  const getStatusColor = (status: string) => {
-    const colors = {
-      assigned: '#3B82F6',    // blue-500
-      in_progress: '#F59E0B', // amber-500  
-      completed: '#10B981',   // emerald-500
-      cancelled: '#EF4444',   // red-500
-      unassigned: '#6B7280'   // gray-500
-    };
-    return colors[status] || '#6B7280';
-  };
-
-  const getJobTypeColor = (type: string) => {
+  const getJobTypeBadgeColor = (type: string) => {
     const colors = {
       delivery: 'bg-blue-500',
       pickup: 'bg-red-500', 
@@ -514,6 +529,13 @@ export function SimpleJobsMapView({
           )}
         </div>
 
+        {/* Map Legend */}
+        <MapLegend 
+          isDriverMode={isDriverMode}
+          filteredJobsCount={filteredJobs.length}
+          availableDrivers={drivers}
+        />
+
       </div>
 
       {/* Multiple Jobs Dialog */}
@@ -544,7 +566,7 @@ export function SimpleJobsMapView({
                 <div className="flex items-center justify-between mb-2">
                   <div className="font-medium">{job.job_number}</div>
                   <div className="flex gap-2">
-                    <Badge className={getJobTypeColor(job.job_type) + " text-white"}>
+                    <Badge className={getJobTypeBadgeColor(job.job_type) + " text-white"}>
                       {job.job_type}
                     </Badge>
                     <Badge className={getStatusBadgeColor(job.status)}>
