@@ -189,6 +189,12 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
               <p className="text-foreground">{formatPhoneNumber(customer.phone) || 'Not provided'}</p>
             </div>
           </div>
+          <div className="flex justify-between items-center border-t pt-4">
+            <span className="text-muted-foreground">Customer Since</span>
+            <span className="text-foreground">
+              {new Date(customer.created_at).toLocaleDateString()}
+            </span>
+          </div>
         </CardContent>
       </Card>
 
@@ -346,12 +352,6 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
                 </p>
               </div>
             </div>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">Customer Since</span>
-            <span className="text-foreground">
-              {new Date(customer.created_at).toLocaleDateString()}
-            </span>
           </div>
           {customer.important_information && (
             <div className="border-t pt-3 mt-3">
