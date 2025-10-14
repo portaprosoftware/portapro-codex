@@ -366,17 +366,6 @@ const ProductItemDetail: React.FC = () => {
                     </div>
                   )}
                 </div>
-                
-                {item.ocr_confidence_score && (
-                  <div className="mt-4 pt-4 border-t border-gray-200">
-                    <div className="flex items-center gap-2">
-                      <label className="text-sm font-medium text-gray-500">OCR Confidence:</label>
-                      <Badge variant={item.ocr_confidence_score >= 80 ? "completed" : item.ocr_confidence_score >= 60 ? "warning" : "pending"}>
-                        {item.ocr_confidence_score}%
-                      </Badge>
-                    </div>
-                  </div>
-                )}
               </CardContent>
             </Card>
           )}
