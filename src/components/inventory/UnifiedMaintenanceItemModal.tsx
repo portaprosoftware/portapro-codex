@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Clock, DollarSign, MapPin, Settings, Wrench, Trash2, Plus, X } from "lucide-react";
+import { Clock, DollarSign, MapPin, Settings, Wrench, Trash2, Plus, X, CheckCircle2 } from "lucide-react";
 import { SimpleMaintenancePhotoUpload } from "./SimpleMaintenancePhotoUpload";
 import { MaintenanceUpdatePhotos } from "./MaintenanceUpdatePhotos";
 import { ImageViewerModal } from "./ImageViewerModal";
@@ -176,7 +176,10 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Item updated");
+      toast.success("Item updated", {
+        duration: 2000,
+        icon: <CheckCircle2 className="w-5 h-5 text-green-600" />,
+      });
       queryClient.invalidateQueries({ queryKey: ["maintenance-items", productId] });
       queryClient.invalidateQueries({ queryKey: ["product-items", productId] });
       queryClient.invalidateQueries({ queryKey: ["product-item", item.id] });
@@ -503,18 +506,18 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                     </div>
                   </div>
                 </div>
+                
+                {/* Notes Card - In Right Column */}
+                <div className="bg-white border rounded-xl p-4">
+                  <h4 className="font-medium mb-3">Notes</h4>
+                  <Textarea
+                    rows={3}
+                    value={formData.maintenance_notes}
+                    onChange={(e) => setFormData((p) => ({ ...p, maintenance_notes: e.target.value }))}
+                    placeholder="Additional notes..."
+                  />
+                </div>
               </div>
-            </div>
-
-            {/* Notes Card - Full Width */}
-            <div className="bg-white border rounded-xl p-4">
-              <h4 className="font-medium mb-3">Notes</h4>
-              <Textarea
-                rows={3}
-                value={formData.maintenance_notes}
-                onChange={(e) => setFormData((p) => ({ ...p, maintenance_notes: e.target.value }))}
-                placeholder="Additional notes..."
-              />
             </div>
                 
             {/* Save controls at the bottom */}
