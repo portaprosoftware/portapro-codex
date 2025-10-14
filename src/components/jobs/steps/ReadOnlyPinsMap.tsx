@@ -311,7 +311,7 @@ export function ReadOnlyPinsMap({
                           "p-3 rounded-lg transition-all",
                           !readOnly && "cursor-pointer",
                           isSelected 
-                            ? "bg-green-50 border-2 border-green-500 dark:bg-green-950/30" 
+                            ? "bg-gradient-to-br from-green-100 to-green-200 border-2 border-green-500 dark:from-green-900/40 dark:to-green-950/40" 
                             : "bg-muted/30 hover:bg-muted/50"
                         )}
                       >
