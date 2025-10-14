@@ -95,6 +95,7 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [pinsSearchQuery, setPinsSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [dropModeActive, setDropModeActive] = useState(false);
   const [showNameDialog, setShowNameDialog] = useState(false);
@@ -847,11 +848,39 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
         {/* Grouped Pins by Location - Takes 1 column */}
         <div className="lg:col-span-1">
           <div className="bg-muted/50 rounded-lg p-4 h-full max-h-[530px] overflow-y-auto">
-            <h4 className="font-medium mb-4">Locations & Pins ({pins.length})</h4>
+            <h4 className="font-medium mb-3">Locations & Pins ({pins.length})</h4>
+            
+            {/* Search Bar */}
+            <div className="relative mb-3">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Search by location or pin label..."
+                value={pinsSearchQuery}
+                onChange={(e) => setPinsSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20 bg-background"
+              />
+            </div>
+
             <div className="space-y-3">
               {/* Physical Service Locations with their pins */}
               {serviceLocations.map((location) => {
                 const locationPins = pins.filter(p => p.service_location_id === location.id);
+                
+                // Filter by search query
+                const filteredPins = pinsSearchQuery.trim()
+                  ? locationPins.filter(pin => 
+                      pin.label.toLowerCase().includes(pinsSearchQuery.toLowerCase())
+                    )
+                  : locationPins;
+
+                // Check if location name matches search
+                const locationMatches = pinsSearchQuery.trim()
+                  ? location.location_name.toLowerCase().includes(pinsSearchQuery.toLowerCase())
+                  : true;
+
+                // Show location if it matches OR if any of its pins match
+                if (!locationMatches && filteredPins.length === 0) return null;
                 const isExpanded = expandedLocations[location.id] !== false;
                 
                 const handleLocationClick = () => {
@@ -895,16 +924,16 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
                         </div>
                         <div className="flex items-center gap-2 flex-shrink-0">
                           <span className="text-xs bg-gradient-to-r from-blue-500 to-blue-600 text-white px-2.5 py-1 rounded-full font-bold">
-                            {locationPins.length} {locationPins.length === 1 ? 'pin' : 'pins'}
+                            {filteredPins.length} {filteredPins.length === 1 ? 'pin' : 'pins'}
                           </span>
                           {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                         </div>
                       </div>
                     </button>
                     
-                    {isExpanded && locationPins.length > 0 && (
+                    {isExpanded && filteredPins.length > 0 && (
                       <div className="border-t p-2 space-y-2">
-                        {locationPins.map((pin) => (
+                        {filteredPins.map((pin) => (
                           <div key={pin.id} className="flex items-start justify-between text-sm p-2 bg-muted/30 rounded">
                             <div className="flex-1 min-w-0">
                               <div className="font-medium text-xs truncate flex items-center gap-1.5">
@@ -953,25 +982,35 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
               })}
               
               {/* Unassigned Pins */}
-              {pins.filter(p => !p.service_location_id).length > 0 && (
-                <div className="border rounded-lg bg-background">
-                  <button
-                    onClick={() => setExpandedLocations(prev => ({ ...prev, 'unassigned': !prev['unassigned'] }))}
-                    className="w-full flex items-center justify-between p-3 text-left hover:bg-muted/50 transition-colors rounded-t-lg"
-                  >
-                    <div className="flex items-center gap-2 flex-1">
-                      <MapPin className="w-4 h-4 text-gray-500 flex-shrink-0" />
-                      <span className="font-medium text-sm">Unassigned Pins</span>
-                      <span className="text-xs bg-gradient-to-r from-gray-500 to-gray-600 text-white px-2.5 py-1 rounded-full font-bold">
-                        {pins.filter(p => !p.service_location_id).length}
-                      </span>
-                    </div>
-                    {expandedLocations['unassigned'] !== false ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                  </button>
-                  
-                  {expandedLocations['unassigned'] !== false && (
-                    <div className="border-t p-2 space-y-2">
-                      {pins.filter(p => !p.service_location_id).map((pin) => (
+              {(() => {
+                const unassignedPins = pins.filter(p => !p.service_location_id);
+                const filteredUnassigned = pinsSearchQuery.trim()
+                  ? unassignedPins.filter(pin => 
+                      pin.label.toLowerCase().includes(pinsSearchQuery.toLowerCase())
+                    )
+                  : unassignedPins;
+                
+                if (filteredUnassigned.length === 0) return null;
+                
+                return (
+                  <div className="border rounded-lg bg-background">
+                    <button
+                      onClick={() => setExpandedLocations(prev => ({ ...prev, 'unassigned': !prev['unassigned'] }))}
+                      className="w-full flex items-center justify-between p-3 text-left hover:bg-muted/50 transition-colors rounded-t-lg"
+                    >
+                      <div className="flex items-center gap-2 flex-1">
+                        <MapPin className="w-4 h-4 text-gray-500 flex-shrink-0" />
+                        <span className="font-medium text-sm">Unassigned Pins</span>
+                        <span className="text-xs bg-gradient-to-r from-gray-500 to-gray-600 text-white px-2.5 py-1 rounded-full font-bold">
+                          {filteredUnassigned.length}
+                        </span>
+                      </div>
+                      {expandedLocations['unassigned'] !== false ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                    </button>
+                    
+                    {expandedLocations['unassigned'] !== false && (
+                      <div className="border-t p-2 space-y-2">
+                        {filteredUnassigned.map((pin) => (
                         <div key={pin.id} className="flex items-start justify-between text-sm p-2 bg-muted/30 rounded">
                           <div className="flex-1 min-w-0">
                             <div className="font-medium text-xs truncate flex items-center gap-1.5">
@@ -1016,7 +1055,8 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
                     </div>
                   )}
                 </div>
-              )}
+              );
+            })()}
               
               {pins.length === 0 && serviceLocations.length === 0 && (
                 <div className="flex flex-col items-center justify-center text-center py-8">
