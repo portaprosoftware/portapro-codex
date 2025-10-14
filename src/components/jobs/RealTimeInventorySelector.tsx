@@ -25,6 +25,7 @@ const mergeJobItems = (
   existing: JobItemSelection[],
   incoming: JobItemSelection[]
 ): JobItemSelection[] => {
+  console.log('🔄 Merging items:', { existing, incoming });
   const merged = [...existing];
   
   incoming.forEach(newItem => {
@@ -34,6 +35,12 @@ const mergeJobItems = (
               item.strategy === newItem.strategy &&
               item.strategy === 'specific'
     );
+    
+    console.log('🔍 Looking for match:', { 
+      productId: newItem.product_id, 
+      strategy: newItem.strategy, 
+      existingIndex 
+    });
     
     if (existingIndex !== -1 && newItem.strategy === 'specific') {
       // Merge specific units
@@ -45,17 +52,27 @@ const mergeJobItems = (
       // Remove duplicates
       const uniqueIds = Array.from(new Set(combinedIds));
       
+      console.log('✅ Merging:', { 
+        existingIds: existingItem.specific_item_ids, 
+        newIds: newItem.specific_item_ids,
+        combinedIds,
+        uniqueIds,
+        newQuantity: uniqueIds.length 
+      });
+      
       merged[existingIndex] = {
         ...existingItem,
         specific_item_ids: uniqueIds,
         quantity: uniqueIds.length + (existingItem.bulk_additional || 0),
       };
     } else {
+      console.log('➕ Adding new item');
       // Add as new item (different product or different strategy)
       merged.push(newItem);
     }
   });
   
+  console.log('✨ Final merged result:', merged);
   return merged;
 };
 
