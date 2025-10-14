@@ -313,7 +313,7 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
       {/* Deposit Status */}
       <Card className="rounded-2xl">
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
             <CardTitle className="text-lg font-semibold">Deposit Status</CardTitle>
             <p className="text-xs text-muted-foreground">Deposit required by default</p>
           </div>
