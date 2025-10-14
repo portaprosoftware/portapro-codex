@@ -5,6 +5,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { MapPin, Loader2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface SavedPin {
   id: string;
@@ -17,10 +19,19 @@ interface SavedPin {
 
 interface ReadOnlyPinsMapProps {
   customerId: string;
+  selectedPinIds?: string[];
+  onPinSelectionChange?: (pinIds: string[]) => void;
+  readOnly?: boolean;
   className?: string;
 }
 
-export function ReadOnlyPinsMap({ customerId, className = '' }: ReadOnlyPinsMapProps) {
+export function ReadOnlyPinsMap({ 
+  customerId, 
+  selectedPinIds = [], 
+  onPinSelectionChange,
+  readOnly = false,
+  className = '' 
+}: ReadOnlyPinsMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -77,7 +88,28 @@ export function ReadOnlyPinsMap({ customerId, className = '' }: ReadOnlyPinsMapP
     };
   }, [tokenData]);
 
-  // Update markers when pins change
+  const handlePinToggle = (pinId: string) => {
+    if (readOnly || !onPinSelectionChange) return;
+    
+    const isSelected = selectedPinIds.includes(pinId);
+    const newSelection = isSelected
+      ? selectedPinIds.filter(id => id !== pinId)
+      : [...selectedPinIds, pinId];
+    
+    onPinSelectionChange(newSelection);
+  };
+
+  const handleSelectAll = () => {
+    if (readOnly || !onPinSelectionChange) return;
+    onPinSelectionChange(savedPins.map(pin => pin.id));
+  };
+
+  const handleClearSelection = () => {
+    if (readOnly || !onPinSelectionChange) return;
+    onPinSelectionChange([]);
+  };
+
+  // Update markers when pins or selection changes
   useEffect(() => {
     if (!map.current || !mapLoaded || !savedPins.length) return;
 
@@ -89,24 +121,39 @@ export function ReadOnlyPinsMap({ customerId, className = '' }: ReadOnlyPinsMapP
     const bounds = new mapboxgl.LngLatBounds();
 
     savedPins.forEach((pin) => {
+      const isSelected = selectedPinIds.includes(pin.id);
+      
       const el = document.createElement('div');
       el.className = 'custom-marker';
-      el.style.backgroundColor = '#3b82f6';
+      el.style.backgroundColor = isSelected ? '#10b981' : '#3b82f6';
       el.style.width = '30px';
       el.style.height = '30px';
       el.style.borderRadius = '50%';
       el.style.border = '3px solid white';
       el.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
-      el.style.cursor = 'pointer';
+      el.style.cursor = readOnly ? 'pointer' : 'pointer';
       el.style.display = 'flex';
       el.style.alignItems = 'center';
       el.style.justifyContent = 'center';
+      el.style.transition = 'all 0.2s ease';
+
+      // Add click handler for selection (only if not read-only)
+      if (!readOnly && onPinSelectionChange) {
+        el.addEventListener('click', () => handlePinToggle(pin.id));
+        el.style.cursor = 'pointer';
+      }
 
       const icon = document.createElement('div');
-      icon.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-        <circle cx="12" cy="10" r="3"></circle>
-      </svg>`;
+      if (isSelected) {
+        icon.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+          <path d="M20 6L9 17l-5-5"></path>
+        </svg>`;
+      } else {
+        icon.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+          <circle cx="12" cy="10" r="3"></circle>
+        </svg>`;
+      }
       el.appendChild(icon);
 
       const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
@@ -116,6 +163,7 @@ export function ReadOnlyPinsMap({ customerId, className = '' }: ReadOnlyPinsMapP
             ${pin.latitude.toFixed(6)}, ${pin.longitude.toFixed(6)}
           </p>
           ${pin.notes ? `<p style="font-size: 12px; margin-top: 8px;">${pin.notes}</p>` : ''}
+          ${!readOnly ? `<p style="font-size: 11px; margin-top: 8px; color: #3b82f6; font-weight: 500;">Click marker to ${isSelected ? 'deselect' : 'select'}</p>` : ''}
         </div>
       `);
 
@@ -135,7 +183,7 @@ export function ReadOnlyPinsMap({ customerId, className = '' }: ReadOnlyPinsMapP
         maxZoom: 15,
       });
     }
-  }, [savedPins, mapLoaded]);
+  }, [savedPins, mapLoaded, selectedPinIds, readOnly]);
 
   if (isLoading) {
     return (
@@ -174,29 +222,83 @@ export function ReadOnlyPinsMap({ customerId, className = '' }: ReadOnlyPinsMapP
       {/* Pin List */}
       <Card>
         <CardContent className="p-4">
-          <h3 className="font-medium mb-3 flex items-center gap-2">
-            <MapPin className="h-4 w-4" />
-            Saved Reference Pins ({savedPins.length})
-          </h3>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-medium flex items-center gap-2">
+              <MapPin className="h-4 w-4" />
+              Saved Reference Pins ({savedPins.length})
+              {!readOnly && selectedPinIds.length > 0 && (
+                <span className="text-xs text-muted-foreground">
+                  ({selectedPinIds.length} selected)
+                </span>
+              )}
+            </h3>
+            {!readOnly && onPinSelectionChange && savedPins.length > 0 && (
+              <div className="flex gap-2">
+                {selectedPinIds.length === savedPins.length ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleClearSelection}
+                    className="text-xs h-7"
+                  >
+                    Clear All
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleSelectAll}
+                    className="text-xs h-7"
+                  >
+                    Select All
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
           <div className="space-y-2">
-            {savedPins.map((pin) => (
-              <div
-                key={pin.id}
-                className="p-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h4 className="font-medium text-sm">{pin.label}</h4>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)}
-                    </p>
-                    {pin.notes && (
-                      <p className="text-xs text-muted-foreground mt-2">{pin.notes}</p>
+            {savedPins.map((pin) => {
+              const isSelected = selectedPinIds.includes(pin.id);
+              return (
+                <div
+                  key={pin.id}
+                  onClick={() => !readOnly && handlePinToggle(pin.id)}
+                  className={cn(
+                    "p-3 rounded-lg transition-all",
+                    !readOnly && "cursor-pointer",
+                    isSelected 
+                      ? "bg-green-50 border-2 border-green-500 dark:bg-green-950/30" 
+                      : "bg-muted/30 hover:bg-muted/50"
+                  )}
+                >
+                  <div className="flex items-start gap-3">
+                    {!readOnly && (
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => handlePinToggle(pin.id)}
+                        className="mt-0.5 h-4 w-4 rounded border-gray-300"
+                        onClick={(e) => e.stopPropagation()}
+                      />
                     )}
+                    <div className="flex-1">
+                      <h4 className={cn(
+                        "font-medium text-sm",
+                        isSelected && "text-green-700 dark:text-green-300"
+                      )}>
+                        {pin.label}
+                      </h4>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)}
+                      </p>
+                      {pin.notes && (
+                        <p className="text-xs text-muted-foreground mt-2">{pin.notes}</p>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </CardContent>
       </Card>

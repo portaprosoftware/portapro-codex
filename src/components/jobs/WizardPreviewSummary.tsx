@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useJobWizard } from '@/contexts/JobWizardContext';
 import { supabase } from '@/integrations/supabase/client';
+import { MapPin } from 'lucide-react';
 
 export const WizardPreviewSummary: React.FC = () => {
   const { state } = useJobWizard();
@@ -9,6 +10,7 @@ export const WizardPreviewSummary: React.FC = () => {
   const totalUnits = items.reduce((sum, i) => sum + (i.quantity || 0), 0);
   const services = state.data.servicesData || { selectedServices: [], servicesSubtotal: 0 };
   const [productNames, setProductNames] = useState<Record<string, string>>({});
+  const [referencePins, setReferencePins] = useState<any[]>([]);
 
   // Fetch product names for display
   useEffect(() => {
@@ -32,6 +34,27 @@ export const WizardPreviewSummary: React.FC = () => {
 
     fetchProductNames();
   }, [items]);
+
+  // Fetch reference pin details
+  useEffect(() => {
+    const fetchReferencePins = async () => {
+      if (!state.data.reference_pin_ids || state.data.reference_pin_ids.length === 0) {
+        setReferencePins([]);
+        return;
+      }
+      
+      const { data: pins } = await supabase
+        .from('customer_map_pins')
+        .select('*')
+        .in('id', state.data.reference_pin_ids);
+      
+      if (pins) {
+        setReferencePins(pins);
+      }
+    };
+
+    fetchReferencePins();
+  }, [state.data.reference_pin_ids]);
 
   return (
     <Card>
@@ -72,6 +95,25 @@ export const WizardPreviewSummary: React.FC = () => {
               ))}
               {items.length > 4 && (
                 <li className="text-xs text-muted-foreground">+ {items.length - 4} more…</li>
+              )}
+            </ul>
+          </div>
+        )}
+
+        {referencePins.length > 0 && (
+          <div className="rounded-lg border p-3">
+            <div className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+              <MapPin className="h-3 w-3" />
+              Reference Pins
+            </div>
+            <ul className="space-y-1">
+              {referencePins.slice(0, 3).map((pin, idx) => (
+                <li key={idx} className="text-sm text-foreground">
+                  {pin.label}
+                </li>
+              ))}
+              {referencePins.length > 3 && (
+                <li className="text-xs text-muted-foreground">+ {referencePins.length - 3} more…</li>
               )}
             </ul>
           </div>

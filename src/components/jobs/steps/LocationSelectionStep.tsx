@@ -83,7 +83,7 @@ interface ServiceLocation {
 }
 
 export function LocationSelectionStep() {
-  const { state, updateData } = useJobWizard();
+  const { state, updateData, dispatch } = useJobWizard();
   const [isAddressFormOpen, setIsAddressFormOpen] = useState(false);
   const [newLocation, setNewLocation] = useState({
     street: '',
@@ -382,12 +382,16 @@ export function LocationSelectionStep() {
           <div className="space-y-4">
             <div className="bg-muted border border-muted-foreground/30 rounded-lg p-4">
               <p className="text-sm text-foreground">
-                <strong>Read-Only Reference:</strong> These are pre-saved GPS pins for this customer. They serve as reference points for drivers and do not affect job routing or service location. To manage pins, visit the Customer section.
+                <strong>Selectable Reference Pins:</strong> These are pre-saved GPS pins for this customer. Select relevant pins to add them to the job for driver reference. Selected pins will appear in job details and do not affect routing or service location.
               </p>
             </div>
             
             {state.data.customer_id ? (
-              <ReadOnlyPinsMap customerId={state.data.customer_id} />
+              <ReadOnlyPinsMap 
+                customerId={state.data.customer_id}
+                selectedPinIds={state.data.reference_pin_ids || []}
+                onPinSelectionChange={(pinIds) => dispatch({ type: 'UPDATE_DATA', payload: { reference_pin_ids: pinIds } })}
+              />
             ) : (
               <div className="text-center py-8 text-muted-foreground">
                 Select a customer first to view their reference pins.

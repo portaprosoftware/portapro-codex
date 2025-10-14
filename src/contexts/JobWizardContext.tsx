@@ -106,6 +106,9 @@ export interface JobWizardData {
   locks_count?: number;
   lock_notes?: string;
   zip_tied_on_dropoff?: boolean;
+  
+  // Reference GPS pins
+  reference_pin_ids?: string[];
 }
 
 interface JobWizardState {
@@ -157,6 +160,7 @@ const initialState: JobWizardState = {
     locks_count: 0,
     lock_notes: '',
     zip_tied_on_dropoff: false,
+    reference_pin_ids: [],
   },
   errors: {},
   isLoading: false,

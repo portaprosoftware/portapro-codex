@@ -37,6 +37,7 @@ import { useToast } from '@/hooks/use-toast';
 import { getDualJobStatusInfo } from '@/lib/jobStatusUtils';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
+import { ReadOnlyPinsMap } from '../jobs/steps/ReadOnlyPinsMap';
 
 interface Job {
   id: string;
@@ -58,6 +59,7 @@ interface Job {
   locks_count?: number;
   lock_notes?: string;
   zip_tied_on_dropoff?: boolean;
+  reference_pin_ids?: string[];
   customers: {
     id?: string;
     name?: string;
@@ -699,6 +701,25 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm bg-amber-50 p-3 rounded border border-amber-200">{job.special_instructions}</p>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Reference Pins */}
+              {job.reference_pin_ids && job.reference_pin_ids.length > 0 && (
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-base">
+                      <MapPin className="w-4 h-4 text-primary" />
+                      Reference Pins ({job.reference_pin_ids.length})
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ReadOnlyPinsMap 
+                      customerId={job.customer_id}
+                      selectedPinIds={job.reference_pin_ids}
+                      readOnly={true}
+                    />
                   </CardContent>
                 </Card>
               )}

@@ -25,6 +25,7 @@ import { formatDateForQuery, formatDateSafe } from '@/lib/dateUtils';
 import { cn } from '@/lib/utils';
 import { CancelJobModal } from './CancelJobModal';
 import { useUser } from '@clerk/clerk-react';
+import { ReadOnlyPinsMap } from './steps/ReadOnlyPinsMap';
 
 
 // Job types from wizard for consistency
@@ -84,7 +85,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
         .single();
 
       if (error) throw error;
-      return data;
+      return data as any;
     },
     enabled: !!jobId && open,
   });
@@ -884,6 +885,25 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                     )}
                   </CardContent>
                 </Card>
+
+                {/* Reference Pins */}
+                {job?.reference_pin_ids && job.reference_pin_ids.length > 0 && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-base">
+                        <MapPin className="w-4 h-4" />
+                        Reference Pins ({job.reference_pin_ids.length})
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ReadOnlyPinsMap 
+                        customerId={job.customer_id}
+                        selectedPinIds={job.reference_pin_ids}
+                        readOnly={true}
+                      />
+                    </CardContent>
+                  </Card>
+                )}
 
                 {/* Lock Options */}
                 <Card>

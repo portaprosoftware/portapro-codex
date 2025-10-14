@@ -4697,6 +4697,7 @@ export type Database = {
           parent_job_id: string | null
           partial_pickups: Json | null
           quote_id: string | null
+          reference_pin_ids: Json | null
           rental_duration_days: number | null
           scheduled_date: string
           scheduled_time: string | null
@@ -4739,6 +4740,7 @@ export type Database = {
           parent_job_id?: string | null
           partial_pickups?: Json | null
           quote_id?: string | null
+          reference_pin_ids?: Json | null
           rental_duration_days?: number | null
           scheduled_date: string
           scheduled_time?: string | null
@@ -4781,6 +4783,7 @@ export type Database = {
           parent_job_id?: string | null
           partial_pickups?: Json | null
           quote_id?: string | null
+          reference_pin_ids?: Json | null
           rental_duration_days?: number | null
           scheduled_date?: string
           scheduled_time?: string | null
@@ -11857,7 +11860,7 @@ export type Database = {
         Returns: number
       }
       can_delete_user: {
-        Args: { user_uuid: string }
+        Args: { profile_identifier: string }
         Returns: Json
       }
       check_and_flag_overdue_jobs: {
@@ -11935,6 +11938,10 @@ export type Database = {
         }
         Returns: string
       }
+      delete_user_everywhere: {
+        Args: { profile_identifier: string }
+        Returns: Json
+      }
       dismiss_overdue_invoice: {
         Args: { dismiss_reason?: string; invoice_uuid: string }
         Returns: boolean
@@ -11993,6 +12000,10 @@ export type Database = {
       }
       fix_orphaned_equipment_assignments: {
         Args: Record<PropertyKey, never>
+        Returns: Json
+      }
+      force_delete_user: {
+        Args: { profile_identifier: string }
         Returns: Json
       }
       generate_customer_portal_token: {
@@ -12510,6 +12521,14 @@ export type Database = {
         Args: { category_prefix: string }
         Returns: string
       }
+      purge_non_owner_users: {
+        Args: { owner_clerk_id: string }
+        Returns: Json
+      }
+      purge_users_except: {
+        Args: { p_owner_clerk_id: string }
+        Returns: Json
+      }
       quote_has_job: {
         Args: { quote_uuid: string }
         Returns: boolean
@@ -12614,7 +12633,7 @@ export type Database = {
               user_uuid?: string
             }
           | { template_uuid: string }
-        Returns: boolean
+        Returns: undefined
       }
       transition_report_status: {
         Args: {
