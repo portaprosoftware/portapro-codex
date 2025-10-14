@@ -771,18 +771,32 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                                     Copy Address
                                   </button>
                                   <a
-                                    href={`https://maps.google.com/?q=${encodedAddress}`}
+                                    href={`https://www.google.com/maps?q=${encodedAddress}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
+                                    onClick={(e) => {
+                                      const url = `https://www.google.com/maps?q=${encodedAddress}`;
+                                      const w = window.open(url, '_blank', 'noopener,noreferrer');
+                                      if (!w && window.parent) {
+                                        window.parent.open(url, '_blank', 'noopener,noreferrer');
+                                      }
+                                    }}
                                     className="inline-flex items-center justify-center h-8 px-2 text-xs rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-colors"
                                     title="Open in Google Maps"
                                   >
                                     Google
                                   </a>
                                   <a
-                                    href={`https://maps.apple.com/?q=${encodedAddress}`}
+                                    href={`https://maps.apple.com/place?address=${encodedAddress}&name=${encodeURIComponent(fullAddress)}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
+                                    onClick={(e) => {
+                                      const url = `https://maps.apple.com/place?address=${encodedAddress}&name=${encodeURIComponent(fullAddress)}`;
+                                      const w = window.open(url, '_blank', 'noopener,noreferrer');
+                                      if (!w && window.parent) {
+                                        window.parent.open(url, '_blank', 'noopener,noreferrer');
+                                      }
+                                    }}
                                     className="inline-flex items-center justify-center h-8 px-2 text-xs rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-colors"
                                     title="Open in Apple Maps"
                                   >
