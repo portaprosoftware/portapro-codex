@@ -587,10 +587,52 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
           <p className="text-sm text-muted-foreground">
             {dropModeActive 
               ? "Drop mode active - use the crosshair to position and drop a pin at map center" 
-              : "Paste a physical address below to navigate. Then activate drop mode to place, label, and save pins."}
+              : "Select a physical address or paste an address below to navigate. Then activate drop mode to place, label, and save pins."}
           </p>
         </div>
       </div>
+
+      {/* Physical Addresses Dropdown */}
+      {serviceLocations.length > 0 && (
+        <Select
+          value={selectedLocationId}
+          onValueChange={(value) => {
+            setSelectedLocationId(value);
+            // Fly to the selected location
+            const location = serviceLocations.find(loc => loc.id === value);
+            if (location && map.current && location.gps_coordinates) {
+              const coords = location.gps_coordinates;
+              let lng, lat;
+              
+              if ('x' in coords && 'y' in coords) {
+                lng = coords.x;
+                lat = coords.y;
+              }
+              
+              if (typeof lng === 'number' && typeof lat === 'number' && 
+                  !isNaN(lng) && !isNaN(lat) && 
+                  lng >= -180 && lng <= 180 && lat >= -90 && lat <= 90) {
+                map.current.flyTo({
+                  center: [lng, lat],
+                  zoom: 16,
+                  duration: 1500
+                });
+              }
+            }
+          }}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select a physical address to navigate" />
+          </SelectTrigger>
+          <SelectContent>
+            {serviceLocations.map((location) => (
+              <SelectItem key={location.id} value={location.id}>
+                {location.location_name} - {location.street}, {location.city}, {location.state}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
 
       <form onSubmit={handleSearchSubmit} className="flex gap-2">
         <div className="relative flex-1">
