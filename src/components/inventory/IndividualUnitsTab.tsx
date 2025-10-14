@@ -658,20 +658,20 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
                                 <p className="text-gray-600 mt-1 font-mono">{item.tool_number || "—"}</p>
                               </div>
                               <div>
-                                <span className="font-medium text-blue-700">Vendor ID:</span>
-                                <p className="text-blue-600 mt-1 font-mono">{item.vendor_id || "—"}</p>
+                                <span className="font-medium text-gray-700">Vendor ID:</span>
+                                <p className="text-gray-600 mt-1 font-mono">{item.vendor_id || "—"}</p>
                               </div>
                               <div>
-                                <span className="font-medium text-blue-700">Plastic Code:</span>
-                                <p className="text-blue-600 mt-1">{item.plastic_code || "—"}</p>
+                                <span className="font-medium text-gray-700">Plastic Code:</span>
+                                <p className="text-gray-600 mt-1">{item.plastic_code || "—"}</p>
                               </div>
                               <div>
-                                <span className="font-medium text-blue-700">Mfg Date:</span>
-                                <p className="text-blue-600 mt-1">{item.manufacturing_date || "—"}</p>
+                                <span className="font-medium text-gray-700">Mfg Date:</span>
+                                <p className="text-gray-600 mt-1">{item.manufacturing_date || "—"}</p>
                               </div>
                               <div>
-                                <span className="font-medium text-blue-700">Mold Cavity:</span>
-                                <p className="text-blue-600 mt-1">{item.mold_cavity || "—"}</p>
+                                <span className="font-medium text-gray-700">Mold Cavity:</span>
+                                <p className="text-gray-600 mt-1">{item.mold_cavity || "—"}</p>
                               </div>
                             </div>
                           </div>
