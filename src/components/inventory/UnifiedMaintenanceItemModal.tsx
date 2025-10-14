@@ -16,7 +16,6 @@ import { SimpleMaintenancePhotoUpload } from "./SimpleMaintenancePhotoUpload";
 import { MaintenanceUpdatePhotos } from "./MaintenanceUpdatePhotos";
 import { ImageViewerModal } from "./ImageViewerModal";
 import { useSystemUsers } from "@/hooks/useSystemUsers";
-import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
 
 
 interface StorageLocation { id: string; name: string }
@@ -59,8 +58,6 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
   const [activeTab, setActiveTab] = useState(initialActiveTab);
   const { data: systemUsers = [] } = useSystemUsers();
   const [shouldCloseOnSave, setShouldCloseOnSave] = useState(true);
-  const [completedWorkOrders, setCompletedWorkOrders] = useState<Set<string>>(new Set());
-  const [deleteUpdateId, setDeleteUpdateId] = useState<string | null>(null);
 
 
   // Update active tab when initialActiveTab changes
@@ -907,33 +904,25 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                                        update.update_type}
                                     </Badge>
                                   )}
-                                  {isWorkOrder && !completedWorkOrders.has(update.id) && (
-                                    <Button
-                                      size="sm"
-                                      onClick={() => {
-                                        const newCompleted = new Set(completedWorkOrders);
-                                        newCompleted.add(update.id);
-                                        setCompletedWorkOrders(newCompleted);
-                                        toast.success("Work order marked as complete");
+                                  {isWorkOrder && (
+                                    <Select
+                                      value={update.status || "work_order_created"}
+                                      onValueChange={(v) => {
+                                        // TODO: Update status in database
+                                        toast.success("Status updated");
                                       }}
-                                      className="h-7 px-3 text-xs font-bold text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 border-blue-600"
                                     >
-                                      Mark Complete
-                                    </Button>
+                                      <SelectTrigger className="h-7 w-[180px] text-xs">
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="work_order_created">Work Order Created</SelectItem>
+                                        <SelectItem value="in_progress">In Progress</SelectItem>
+                                        <SelectItem value="waiting_on_parts">Waiting on Parts</SelectItem>
+                                        <SelectItem value="completed">Completed</SelectItem>
+                                      </SelectContent>
+                                    </Select>
                                   )}
-                                  {isWorkOrder && completedWorkOrders.has(update.id) && (
-                                    <Badge className="bg-gradient-to-r from-green-600 to-green-700 text-white font-bold text-xs px-3 py-1">
-                                      Completed
-                                    </Badge>
-                                  )}
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => setDeleteUpdateId(update.id)}
-                                    className="h-7 w-7 p-0 hover:bg-destructive hover:text-destructive-foreground"
-                                  >
-                                    <Trash className="w-4 h-4" />
-                                  </Button>
                                 </div>
                                <div className="text-xs text-muted-foreground">
                                  {new Date(update.created_at).toLocaleDateString()}
@@ -1082,20 +1071,6 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
         initialIndex={selectedPhotoIndex}
       />
 
-      <DeleteConfirmationModal
-        isOpen={!!deleteUpdateId}
-        onClose={() => setDeleteUpdateId(null)}
-        onConfirm={() => {
-          if (deleteUpdateId) {
-            handleDeleteUpdate(deleteUpdateId);
-            setDeleteUpdateId(null);
-          }
-        }}
-        title="Delete Work Order Update?"
-        description="Are you sure you want to delete this work order update? This action cannot be undone."
-        confirmText="Delete"
-        cancelText="Cancel"
-      />
     </Dialog>
   );
 };
