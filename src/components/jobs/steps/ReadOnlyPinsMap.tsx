@@ -24,6 +24,7 @@ interface ReadOnlyPinsMapProps {
   readOnly?: boolean;
   className?: string;
   hideExpandButton?: boolean;
+  hidePinsList?: boolean;
 }
 
 export function ReadOnlyPinsMap({ 
@@ -32,7 +33,8 @@ export function ReadOnlyPinsMap({
   onPinSelectionChange,
   readOnly = false,
   className = '',
-  hideExpandButton = false
+  hideExpandButton = false,
+  hidePinsList = false
 }: ReadOnlyPinsMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
@@ -229,12 +231,12 @@ export function ReadOnlyPinsMap({
     <div className={`${className}`}>
       <div className={cn(
         "grid gap-4 transition-all duration-300",
-        isExpanded ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-3"
+        isExpanded || hidePinsList ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-3"
       )}>
-        {/* Map Display - Takes 2 columns or full width when expanded */}
+        {/* Map Display - Takes 2 columns or full width when expanded or pins list is hidden */}
         <div className={cn(
           "relative",
-          isExpanded ? "lg:col-span-1" : "lg:col-span-2"
+          isExpanded || hidePinsList ? "lg:col-span-1" : "lg:col-span-2"
         )}>
           <div className={cn(
             "rounded-lg overflow-hidden border shadow-sm transition-all duration-300",
@@ -261,8 +263,8 @@ export function ReadOnlyPinsMap({
           </div>
         </div>
 
-        {/* Saved Reference Pins Card - Takes 1 column or hidden when expanded */}
-        {!isExpanded && (
+        {/* Saved Reference Pins Card - Takes 1 column or hidden when expanded or hidePinsList is true */}
+        {!isExpanded && !hidePinsList && (
           <div className="lg:col-span-1">
             <Card className="h-full">
               <CardContent className="p-4">

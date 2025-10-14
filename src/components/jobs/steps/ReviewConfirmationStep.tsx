@@ -558,13 +558,14 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
               Reference Pins ({selectedReferencePins.length})
             </h3>
             
-            {/* Map */}
+            {/* Map - Hide pins list since it's already shown in inventory assignments card */}
             <div className="rounded-lg overflow-hidden border">
               <ReadOnlyPinsMap 
                 customerId={d.customer_id || ''}
                 selectedPinIds={d.reference_pin_ids || []}
                 readOnly={true}
                 className="h-[300px]"
+                hidePinsList={true}
               />
             </div>
           </div>
