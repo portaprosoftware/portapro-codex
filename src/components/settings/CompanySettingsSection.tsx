@@ -169,21 +169,21 @@ export function CompanySettingsSection() {
               </div>
 
               {/* Default Deposit Percentage */}
-              <div className="space-y-3">
-                <h4 className="font-medium text-foreground flex items-center space-x-2">
-                  <Percent className="w-4 h-4" />
-                  <span>Default Deposit Percentage</span>
-                </h4>
-                <div className="pl-6 space-y-1">
-                  <p className="text-sm text-muted-foreground">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-medium text-foreground flex items-center space-x-2">
+                    <Percent className="w-4 h-4" />
+                    <span>Default Deposit Percentage</span>
+                  </h4>
+                  <span className="text-sm text-muted-foreground">
                     {companySettings?.default_deposit_percentage !== undefined
                       ? `${companySettings.default_deposit_percentage}%`
-                      : "25% (default)"}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Default percentage used for deposit collection on quotes and jobs
-                  </p>
+                      : "25%"}
+                  </span>
                 </div>
+                <p className="text-xs text-muted-foreground pl-6">
+                  Default percentage used for deposit collection on quotes and jobs
+                </p>
               </div>
             </div>
           </div>
