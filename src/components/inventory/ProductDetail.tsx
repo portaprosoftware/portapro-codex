@@ -179,12 +179,10 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onBack,
           <ArrowLeft className="w-4 h-4 mr-1" />
           Inventory
         </Button>
-        <Home className="w-4 h-4 text-gray-400" />
-        <span className="text-gray-600">Home</span>
         <ChevronRight className="w-4 h-4 text-gray-400" />
         <span className="text-gray-600">Inventory</span>
         <ChevronRight className="w-4 h-4 text-gray-400" />
-        <span className="text-gray-900 font-medium">{product.name}</span>
+        <span className="text-gray-900 font-bold text-lg">{product.name}</span>
       </div>
 
       {/* Navigation */}
