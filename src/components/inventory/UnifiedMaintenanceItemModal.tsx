@@ -119,6 +119,9 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
 
   const updateItemMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
+      // Start timer for minimum 1 second loading state
+      const startTime = Date.now();
+      
       // Validate that storage location is provided for maintenance items
       if (!data.current_storage_location_id) {
         throw new Error("Storage location is required for maintenance items");
@@ -170,6 +173,12 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
         })
         .eq("id", item.id);
       if (error) throw error;
+      
+      // Ensure minimum 1 second has passed
+      const elapsed = Date.now() - startTime;
+      if (elapsed < 1000) {
+        await new Promise(resolve => setTimeout(resolve, 1000 - elapsed));
+      }
     },
     onSuccess: () => {
       toast.success("Item updated", {
@@ -421,7 +430,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent side="bottom" className="h-[100vh] w-full max-w-full p-0 overflow-y-auto">
+      <SheetContent side="bottom" className="h-[95vh] w-full max-w-full p-0 overflow-y-auto">
         <div className="container max-w-6xl mx-auto p-6">
           <SheetHeader>
             <SheetTitle>Maintenance • Manage Unit • {item?.item_code}</SheetTitle>
