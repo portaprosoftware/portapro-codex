@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { ServiceAddressesSection } from './ServiceAddressesSection';
-import { MapPin, Navigation, Trash2, Search, Target, Plus, Edit2, X, Layers } from 'lucide-react';
+import { MapPin, Navigation, Trash2, Search, Target, Plus, Edit, Layers } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -592,7 +592,7 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
                     onClick={() => editPin(pin)}
                     className="h-8 w-8 p-0"
                   >
-                    <Edit2 className="w-3 h-3" />
+                    <Edit className="w-3 h-3" />
                   </Button>
                   <Button
                     variant="ghost"
@@ -600,7 +600,7 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
                     onClick={() => confirmDeletePin(pin)}
                     className="h-8 w-8 p-0 text-destructive hover:text-destructive"
                   >
-                    <X className="w-3 h-3" />
+                    <Trash2 className="w-3 h-3" />
                   </Button>
                 </div>
               </div>
