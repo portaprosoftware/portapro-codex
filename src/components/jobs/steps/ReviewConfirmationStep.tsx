@@ -914,7 +914,7 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
                 <Button
                   onClick={onCreateInvoice}
                   disabled={creating}
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                  className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white"
                 >
                   {creating ? 'Creating...' : 'Job + Invoice'}
                 </Button>
