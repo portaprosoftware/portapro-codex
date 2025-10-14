@@ -907,28 +907,24 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                                        update.update_type}
                                     </Badge>
                                   )}
-                                  {isWorkOrder && (
+                                  {isWorkOrder && !completedWorkOrders.has(update.id) && (
                                     <Button
                                       size="sm"
                                       onClick={() => {
                                         const newCompleted = new Set(completedWorkOrders);
-                                        if (newCompleted.has(update.id)) {
-                                          newCompleted.delete(update.id);
-                                          toast.success("Work order reverted to pending");
-                                        } else {
-                                          newCompleted.add(update.id);
-                                          toast.success("Work order marked as complete");
-                                        }
+                                        newCompleted.add(update.id);
                                         setCompletedWorkOrders(newCompleted);
+                                        toast.success("Work order marked as complete");
                                       }}
-                                      className={`h-7 px-3 text-xs font-bold text-white ${
-                                        completedWorkOrders.has(update.id)
-                                          ? 'bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 border-green-600'
-                                          : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 border-blue-600'
-                                      }`}
+                                      className="h-7 px-3 text-xs font-bold text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 border-blue-600"
                                     >
-                                      {completedWorkOrders.has(update.id) ? 'Completed' : 'Mark Complete'}
+                                      Mark Complete
                                     </Button>
+                                  )}
+                                  {isWorkOrder && completedWorkOrders.has(update.id) && (
+                                    <Badge className="bg-gradient-to-r from-green-600 to-green-700 text-white font-bold text-xs px-3 py-1">
+                                      Completed
+                                    </Badge>
                                   )}
                                   <Button
                                     variant="ghost"
@@ -938,11 +934,6 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                                   >
                                     <Trash className="w-4 h-4" />
                                   </Button>
-                                  {isWorkOrder && (
-                                    <span className="text-xs text-muted-foreground ml-2">
-                                      Select button again to revert back to incomplete status
-                                    </span>
-                                  )}
                                 </div>
                                <div className="text-xs text-muted-foreground">
                                  {new Date(update.created_at).toLocaleDateString()}
