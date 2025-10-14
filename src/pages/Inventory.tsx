@@ -11,7 +11,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Grid3X3, List, QrCode, Camera, Plus, MapPin, BarChart3, Settings, Info, Bath, Hash, Sliders, Wrench, Fingerprint } from 'lucide-react';
+import { Grid3X3, List, QrCode, Camera, Plus, MapPin, BarChart3, Settings, Info, Toilet, Hash, Sliders, Wrench, Fingerprint } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ProductsView } from '@/components/inventory/ProductsView';
 import { LocationMapView } from '@/components/inventory/LocationMapView';
@@ -315,7 +315,7 @@ const Inventory: React.FC = () => {
               isActive={activeTab === 'products'}
               onClick={() => navigateToTab('products')}
             >
-              <Bath className="h-4 w-4" />
+              <Toilet className="h-4 w-4" />
               Equipment
             </TabNav.Item>
             <TabNav.Item
