@@ -215,6 +215,81 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
   const [selectedPhotos, setSelectedPhotos] = useState<any[]>([]);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
 
+  const saveWorkOrderMutation = useMutation({
+    mutationFn: async (data: typeof workOrderForm) => {
+      if (!itemId) throw new Error("Item ID is required");
+      
+      // Validate required fields
+      if (data.technicians.length === 0 || !data.technicians[0].name) {
+        throw new Error("At least one technician is required");
+      }
+
+      // Combine technician names
+      const technicianNames = data.technicians
+        .filter(t => t.name.trim())
+        .map(t => t.name.trim())
+        .join(", ");
+
+      // Calculate total parts cost
+      const totalPartsCost = data.parts.reduce((sum, part) => {
+        return sum + (parseFloat(part.parts_cost) || 0);
+      }, 0);
+
+      // Combine parts descriptions
+      const partsUsed = data.parts
+        .filter(p => p.parts_used.trim())
+        .map(p => p.parts_used.trim())
+        .join(", ");
+
+      // Calculate total cost
+      const laborCost = parseFloat(data.labor_cost) || 0;
+      const laborHours = parseFloat(data.labor_hours) || 0;
+      const actualLaborCost = data.labor_cost_type === "per_hour" 
+        ? laborCost * laborHours 
+        : laborCost;
+      const totalCost = actualLaborCost + totalPartsCost;
+
+      // Insert work order as a maintenance update
+      const { error } = await supabase
+        .from("maintenance_updates")
+        .insert({
+          item_id: itemId,
+          update_type: "repair",
+          title: "Work Order",
+          description: `Technician(s): ${technicianNames}\nLabor Hours: ${laborHours}\nParts Used: ${partsUsed || "None"}`,
+          technician_name: technicianNames,
+          labor_hours: laborHours,
+          parts_cost: totalPartsCost,
+          parts_used: partsUsed || null,
+          cost_amount: totalCost,
+          attachments: [],
+        });
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Work order saved", {
+        duration: 2000,
+        icon: <CheckCircle2 className="w-5 h-5 text-green-600" />,
+      });
+      queryClient.invalidateQueries({ queryKey: ["maintenance-updates", itemId] });
+      
+      // Reset work order form
+      setWorkOrderForm({
+        technicians: [{ name: "" }],
+        labor_hours: "",
+        labor_cost: "",
+        labor_cost_type: "total",
+        parts: [{ parts_used: "", parts_cost: "" }],
+        status: "work_order_created",
+      });
+    },
+    onError: (err: any) => {
+      console.error("Work order save error:", err);
+      toast.error(err.message || "Failed to save work order");
+    },
+  });
+
   const addUpdateMutation = useMutation({
     mutationFn: async (data: MaintenanceUpdateForm) => {
       if (!itemId) return;
@@ -744,8 +819,13 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
 
                   <div className="flex justify-end gap-2 pt-4">
                     <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
-                    <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                      Save Work Order
+                    <Button 
+                      type="button"
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                      onClick={() => saveWorkOrderMutation.mutate(workOrderForm)}
+                      disabled={saveWorkOrderMutation.isPending}
+                    >
+                      {saveWorkOrderMutation.isPending ? "Saving..." : "Save Work Order"}
                     </Button>
                   </div>
                 </div>
