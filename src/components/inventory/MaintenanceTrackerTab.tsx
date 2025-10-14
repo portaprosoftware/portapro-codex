@@ -318,12 +318,12 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div>
-              <h3 className="text-lg font-bold text-gray-900">Maintenance</h3>
-              <p className="text-sm text-gray-600">
+            <h3 className="text-lg font-bold text-gray-900">
+              Maintenance
+              <span className="ml-3 text-sm font-normal text-gray-600">
                 {maintenanceItems?.length || 0} unit(s) currently in maintenance
-              </p>
-            </div>
+              </span>
+            </h3>
           </div>
           
           {selectedItems.length > 0 && (
