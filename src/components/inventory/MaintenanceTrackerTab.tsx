@@ -311,38 +311,32 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
             <li>The unit will now appear on the Maintenance list and be excluded from active inventory counts</li>
             <li>You can add updates, photos, track labor hours/costs, parts and more as maintenance progresses</li>
           </ul>
+          <div className="mt-3">
+            <Badge className="bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold">
+              {maintenanceItems?.length || 0} {maintenanceItems?.length === 1 ? 'Unit' : 'Units'} Currently In Maintenance
+            </Badge>
+          </div>
         </div>
       </div>
 
-      {/* Header Stats */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div>
-              <h3 className="text-lg font-bold text-gray-900">Maintenance</h3>
-              <p className="text-sm text-gray-600">
-                {maintenanceItems?.length || 0} unit(s) currently in maintenance
-              </p>
-            </div>
+      {/* Bulk Actions */}
+      {selectedItems.length > 0 && (
+        <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="flex items-center justify-between">
+            <Badge className="bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold">
+              {selectedItems.length} Selected
+            </Badge>
+            <Button 
+              onClick={handleReturnToService}
+              disabled={returnToServiceMutation.isPending}
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
+              <Undo2 className="w-4 h-4 mr-2" />
+              Return to Service
+            </Button>
           </div>
-          
-          {selectedItems.length > 0 && (
-            <div className="flex items-center gap-2">
-              <Badge className="bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold">
-                {selectedItems.length} Selected
-              </Badge>
-              <Button 
-                onClick={handleReturnToService}
-                disabled={returnToServiceMutation.isPending}
-                className="bg-green-600 hover:bg-green-700 text-white"
-              >
-                <Undo2 className="w-4 h-4 mr-2" />
-                Return to Service
-              </Button>
-            </div>
-          )}
         </div>
-      </div>
+      )}
 
       {/* Search and Filters */}
       <div className="flex items-center gap-4">
