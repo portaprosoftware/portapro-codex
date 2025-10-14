@@ -84,11 +84,8 @@ export function CompanySettingsSection() {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center space-x-2">
-              <Building2 className="w-5 h-5" />
-              <span>Company Information</span>
-            </CardTitle>
-            <Button 
+            <CardTitle>Company Information</CardTitle>
+            <Button
               variant="outline" 
               size="sm"
               onClick={() => setShowEditModal(true)}
@@ -101,21 +98,16 @@ export function CompanySettingsSection() {
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Company Name and Basic Info Section */}
-          <div className="flex items-start space-x-4">
-            <div className="w-16 h-16 flex items-center justify-center bg-muted rounded-lg">
-              <Building2 className="w-8 h-8 text-muted-foreground" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-xl font-semibold text-foreground">
-                {companySettings?.company_name || "Company Name Not Set"}
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                {companySettings?.company_timezone ? 
-                  `Timezone: ${companySettings.company_timezone.replace("America/", "").replace("_", " ")}` : 
-                  "Timezone not set"
-                }
-              </p>
-            </div>
+          <div>
+            <h3 className="text-xl font-semibold text-foreground">
+              {companySettings?.company_name || "Company Name Not Set"}
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              {companySettings?.company_timezone ? 
+                `Timezone: ${companySettings.company_timezone.replace("America/", "").replace("_", " ")}` : 
+                "Timezone not set"
+              }
+            </p>
           </div>
 
           {/* Contact Information & Business Settings */}
