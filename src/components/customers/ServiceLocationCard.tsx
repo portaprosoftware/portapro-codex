@@ -154,8 +154,8 @@ export function ServiceLocationCard({ location, onUpdate, onDelete }: ServiceLoc
 
             <div className="flex items-start gap-2 mb-4">
               <MapPin className="w-4 h-4 text-muted-foreground mt-0.5" />
-              <div>
-                <p className="text-sm text-foreground">{fullAddress}</p>
+              <div className="flex-1">
+                <p className="text-sm text-foreground select-text">{fullAddress}</p>
                 {location.access_instructions && (
                   <p className="text-xs text-muted-foreground mt-1">
                     <strong>Access:</strong> {location.access_instructions}
@@ -196,15 +196,14 @@ export function ServiceLocationCard({ location, onUpdate, onDelete }: ServiceLoc
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Copy Address</span>
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
               onClick={copyAddress}
-              className="h-8 w-8 p-0"
-              title="Copy address"
+              className="flex items-center gap-1.5"
             >
-              <Copy className="w-4 h-4" />
+              <Copy className="w-3.5 h-3.5" />
+              Copy
             </Button>
             {!location.is_locked && (
               <>
