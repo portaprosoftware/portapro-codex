@@ -444,7 +444,7 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div>
         <div>
           <h3 className="text-lg font-medium text-foreground">Interactive Map</h3>
           <p className="text-sm text-muted-foreground">
@@ -452,17 +452,6 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
               ? "Drop mode active - use the crosshair to position and drop a pin at map center" 
               : "Paste a physical address below to navigate. Then activate drop mode to place, label, and save pins."}
           </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            onClick={toggleDropMode}
-            variant={dropModeActive ? "default" : "outline"}
-            size="sm"
-            className="flex items-center gap-2"
-          >
-            <Target className="w-4 h-4" />
-            {dropModeActive ? "Exit Drop Mode" : "Activate Drop Mode"}
-          </Button>
         </div>
       </div>
 
@@ -497,7 +486,7 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
           }
         `}</style>
         {/* Map Style Toggle Switch */}
-        <div className="absolute top-4 left-4 z-10">
+        <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
           <div className="bg-background/90 backdrop-blur-sm rounded-lg p-1 shadow-md border">
             <div className="flex">
               <button
@@ -522,6 +511,17 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
               </button>
             </div>
           </div>
+          
+          {/* Activate Drop Mode Button */}
+          <Button
+            onClick={toggleDropMode}
+            variant={dropModeActive ? "default" : "outline"}
+            size="sm"
+            className="flex items-center gap-2 bg-background/90 backdrop-blur-sm"
+          >
+            <Target className="w-4 h-4" />
+            {dropModeActive ? "Exit Drop Mode" : "Activate Drop Mode"}
+          </Button>
         </div>
         
         <div 
