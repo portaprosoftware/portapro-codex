@@ -653,8 +653,9 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
             <Button
               variant="destructive"
               onClick={handleBulkDelete}
+              className="font-bold"
             >
-              <Trash className="w-4 h-4 mr-2" />
+              <Trash className="w-4 h-4 mr-2 font-bold" />
               Delete Selected ({selectedItems.length})
             </Button>
           ) : null
