@@ -43,7 +43,7 @@ export const DepositCollectionStep: React.FC<DepositCollectionStepProps> = ({
   const defaultDepositPercentage = companySettings?.default_deposit_percentage || 25;
 
   const [depositEnabled, setDepositEnabled] = useState(false);
-  const [depositType, setDepositType] = useState<'flat' | 'percentage'>('flat');
+  const [depositType, setDepositType] = useState<'flat' | 'percentage'>('percentage');
   const [flatAmount, setFlatAmount] = useState(0);
   const [percentage, setPercentage] = useState(defaultDepositPercentage);
   const [dueDate, setDueDate] = useState<Date | null>(null);
@@ -171,17 +171,17 @@ export const DepositCollectionStep: React.FC<DepositCollectionStepProps> = ({
                 className="flex gap-4"
               >
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="flat" id="flat" />
-                  <Label htmlFor="flat" className="flex items-center gap-2 cursor-pointer">
-                    <DollarSign className="h-4 w-4" />
-                    Flat Amount
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
                   <RadioGroupItem value="percentage" id="percentage" />
                   <Label htmlFor="percentage" className="flex items-center gap-2 cursor-pointer">
                     <Percent className="h-4 w-4" />
                     Percentage
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="flat" id="flat" />
+                  <Label htmlFor="flat" className="flex items-center gap-2 cursor-pointer">
+                    <DollarSign className="h-4 w-4" />
+                    Flat Amount
                   </Label>
                 </div>
               </RadioGroup>
