@@ -534,7 +534,11 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
           <Button
             onClick={toggleDropMode}
             size="sm"
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+            className={`flex items-center gap-2 ${
+              dropModeActive 
+                ? 'bg-gray-500 hover:bg-gray-600 text-white' 
+                : 'bg-blue-600 hover:bg-blue-700 text-white'
+            }`}
           >
             <Target className="w-4 h-4" />
             {dropModeActive ? "Exit Drop Mode" : "Activate Drop Mode"}
