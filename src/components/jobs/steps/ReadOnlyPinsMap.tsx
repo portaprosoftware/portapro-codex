@@ -486,22 +486,25 @@ export function ReadOnlyPinsMap({
                                     type="checkbox"
                                     checked={isSelected}
                                     onChange={() => handlePinToggle(pin.id)}
-                                    className="mt-0.5 h-4 w-4 rounded border-gray-300"
+                                    className={cn(
+                                      "mt-0.5 h-4 w-4 rounded border-gray-300",
+                                      isSelected && "bg-white border-white accent-green-600"
+                                    )}
                                     onClick={(e) => e.stopPropagation()}
                                   />
                                 )}
                                 <div className="flex-1">
                                   <div className="flex items-center gap-2">
-                                    <MapPin className={cn("h-3 w-3", isSelected ? "text-white" : "text-destructive")} />
-                                    <h4 className={cn("font-medium text-sm", isSelected && "text-white font-bold")}>
+                                    <MapPin className={cn("h-3 w-3", isSelected ? "text-white stroke-[3]" : "text-destructive")} />
+                                    <h4 className={cn("text-sm", isSelected ? "text-white font-bold" : "font-medium")}>
                                       {pin.label}
                                     </h4>
                                   </div>
-                                  <p className={cn("text-xs mt-1", isSelected ? "text-white/90" : "text-muted-foreground")}>
+                                  <p className={cn("text-xs mt-1", isSelected ? "text-white font-bold" : "text-muted-foreground")}>
                                     {pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)}
                                   </p>
                                   {pin.notes && (
-                                    <p className={cn("text-xs mt-2", isSelected ? "text-white/80" : "text-muted-foreground")}>{pin.notes}</p>
+                                    <p className={cn("text-xs mt-2", isSelected ? "text-white font-bold" : "text-muted-foreground")}>{pin.notes}</p>
                                   )}
                                 </div>
                               </div>
@@ -548,22 +551,25 @@ export function ReadOnlyPinsMap({
                                   type="checkbox"
                                   checked={isSelected}
                                   onChange={() => handlePinToggle(pin.id)}
-                                  className="mt-0.5 h-4 w-4 rounded border-gray-300"
+                                  className={cn(
+                                    "mt-0.5 h-4 w-4 rounded border-gray-300",
+                                    isSelected && "bg-white border-white accent-green-600"
+                                  )}
                                   onClick={(e) => e.stopPropagation()}
                                 />
                               )}
                               <div className="flex-1">
                                 <div className="flex items-center gap-2">
-                                  <MapPin className={cn("h-3 w-3", isSelected ? "text-white" : "text-destructive")} />
-                                  <h4 className={cn("font-medium text-sm", isSelected && "text-white font-bold")}>
+                                  <MapPin className={cn("h-3 w-3", isSelected ? "text-white stroke-[3]" : "text-destructive")} />
+                                  <h4 className={cn("text-sm", isSelected ? "text-white font-bold" : "font-medium")}>
                                     {pin.label}
                                   </h4>
                                 </div>
-                                <p className={cn("text-xs mt-1", isSelected ? "text-white/90" : "text-muted-foreground")}>
+                                <p className={cn("text-xs mt-1", isSelected ? "text-white font-bold" : "text-muted-foreground")}>
                                   {pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)}
                                 </p>
                                 {pin.notes && (
-                                  <p className={cn("text-xs mt-2", isSelected ? "text-white/80" : "text-muted-foreground")}>{pin.notes}</p>
+                                  <p className={cn("text-xs mt-2", isSelected ? "text-white font-bold" : "text-muted-foreground")}>{pin.notes}</p>
                                 )}
                               </div>
                             </div>
