@@ -5,7 +5,7 @@ import { useUserRole } from '@/hooks/useUserRole';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, ChevronDown, Filter, X, BarChart3 } from 'lucide-react';
+import { Calendar, ChevronDown, Filter, X, BarChart3, Hash, DollarSign, Clipboard, Users2, Gauge, FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { GlobalFilters } from '@/components/analytics/GlobalFilters';
 import { OverviewSection } from '@/components/analytics/OverviewSection';
@@ -38,12 +38,12 @@ const Analytics = () => {
   }
 
   const tabs = [
-    { id: 'overview', label: 'Overview' },
-    { id: 'revenue', label: 'Revenue' },
-    { id: 'operations', label: 'Operations' },
-    { id: 'customers', label: 'Customers' },
-    { id: 'drivers', label: 'Drivers' },
-    { id: 'reports', label: 'Reports' }
+    { id: 'overview', label: 'Overview', icon: Hash },
+    { id: 'revenue', label: 'Revenue', icon: DollarSign },
+    { id: 'operations', label: 'Operations', icon: Clipboard },
+    { id: 'customers', label: 'Customers', icon: Users2 },
+    { id: 'drivers', label: 'Drivers', icon: Gauge },
+    { id: 'reports', label: 'Reports', icon: FileText }
   ];
 
   const handleTabClick = (tabId: string) => {
@@ -106,6 +106,7 @@ const Analytics = () => {
                   : "bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
               )}
             >
+              <tab.icon className="h-4 w-4" />
               {tab.label}
             </button>
           ))}
