@@ -931,7 +931,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                                   </Button>
                                   {isWorkOrder && (
                                     <span className="text-xs text-muted-foreground ml-2">
-                                      Select completed button again to revert work order back to an incomplete status
+                                      Select button again to revert back to incomplete status
                                     </span>
                                   )}
                                 </div>
