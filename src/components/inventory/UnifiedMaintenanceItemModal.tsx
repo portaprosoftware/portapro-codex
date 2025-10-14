@@ -877,7 +877,6 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                                   )}
                                   {isWorkOrder && (
                                     <Button
-                                      variant="outline"
                                       size="sm"
                                       onClick={() => {
                                         const newCompleted = new Set(completedWorkOrders);
@@ -890,10 +889,10 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                                         }
                                         setCompletedWorkOrders(newCompleted);
                                       }}
-                                      className={`h-7 px-3 text-xs font-bold ${
+                                      className={`h-7 px-3 text-xs font-bold text-white ${
                                         completedWorkOrders.has(update.id)
-                                          ? 'bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800 border-green-600'
-                                          : 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 border-blue-600'
+                                          ? 'bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 border-green-600'
+                                          : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 border-blue-600'
                                       }`}
                                     >
                                       {completedWorkOrders.has(update.id) ? 'Completed' : 'Mark Complete'}
