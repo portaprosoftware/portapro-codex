@@ -243,14 +243,6 @@ export const RealTimeInventorySelector: React.FC<RealTimeInventorySelectorProps>
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => setShowProductModal(true)}
-                      className="text-muted-foreground hover:text-foreground"
-                    >
-                      <Edit3 className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
                       onClick={() => handleDeleteItem(index)}
                       className="text-muted-foreground hover:text-destructive"
                     >
