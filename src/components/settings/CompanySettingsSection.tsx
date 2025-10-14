@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Building2, Edit, Mail, MapPin, Phone } from "lucide-react";
+import { Building2, Edit, Mail, MapPin, Phone, Clock, Percent } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { CompanySettingsModal } from "@/components/settings/CompanySettingsModal";
 
@@ -65,6 +65,20 @@ export function CompanySettingsSection() {
     return parts.length > 0 ? parts.join(", ") : "No address set";
   };
 
+  const getTimezoneLabel = (tz: string | null | undefined) => {
+    if (!tz) return "Not set";
+    const timezones: { [key: string]: string } = {
+      "America/New_York": "Eastern Time (ET)",
+      "America/Chicago": "Central Time (CT)",
+      "America/Denver": "Mountain Time (MT)",
+      "America/Los_Angeles": "Pacific Time (PT)",
+      "America/Phoenix": "Arizona Time",
+      "America/Anchorage": "Alaska Time",
+      "Pacific/Honolulu": "Hawaii Time",
+    };
+    return timezones[tz] || tz;
+  };
+
   return (
     <>
       <Card>
@@ -104,7 +118,7 @@ export function CompanySettingsSection() {
             </div>
           </div>
 
-          {/* Contact Information */}
+          {/* Contact Information & Business Settings */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-3">
               <h4 className="font-medium text-foreground flex items-center space-x-2">
@@ -135,6 +149,35 @@ export function CompanySettingsSection() {
               <div className="pl-6">
                 <p className="text-sm text-muted-foreground whitespace-pre-line">
                   {formatAddress()}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Business Settings */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-3">
+              <h4 className="font-medium text-foreground flex items-center space-x-2">
+                <Clock className="w-4 h-4" />
+                <span>Timezone</span>
+              </h4>
+              <div className="pl-6">
+                <p className="text-sm text-muted-foreground">
+                  {getTimezoneLabel(companySettings?.company_timezone)}
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <h4 className="font-medium text-foreground flex items-center space-x-2">
+                <Percent className="w-4 h-4" />
+                <span>Default Deposit Percentage</span>
+              </h4>
+              <div className="pl-6">
+                <p className="text-sm text-muted-foreground">
+                  {companySettings?.default_deposit_percentage !== undefined
+                    ? `${companySettings.default_deposit_percentage}%`
+                    : "25% (default)"}
                 </p>
               </div>
             </div>
