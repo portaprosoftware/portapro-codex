@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Plus, QrCode, Search, Filter, Edit, Trash, ChevronDown, ChevronRight, Settings, Camera, Shield, AlertTriangle, Settings2, ArrowLeftRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -30,6 +31,8 @@ import { UnitNavigationDialog } from "./UnitNavigationDialog";
 import { TrackedOperationsPanel } from "./TrackedOperationsPanel";
 import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
 import { BulkLocationTransferModal } from "./BulkLocationTransferModal";
+import { ItemCodeCategorySelect } from "@/components/ui/ItemCodeCategorySelect";
+import { useItemCodeCategories } from "@/hooks/useCompanySettings";
 
 
 interface IndividualUnitsTabProps {
@@ -60,6 +63,10 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
   const [bulkTransferDialogOpen, setBulkTransferDialogOpen] = useState(false);
   const [showNavigationDialog, setShowNavigationDialog] = useState(false);
   const [selectedUnitForNavigation, setSelectedUnitForNavigation] = useState<{id: string, code: string} | null>(null);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  
+  const { categories } = useItemCodeCategories();
   
   const [attributeFilters, setAttributeFilters] = useState<{
     color?: string;
@@ -251,6 +258,28 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
     }
   });
 
+  // Update category mutation
+  const updateCategoryMutation = useMutation({
+    mutationFn: async (category: string) => {
+      const { error } = await supabase
+        .from('products')
+        .update({ default_item_code_category: category })
+        .eq('id', productId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success('Default category updated successfully');
+      queryClient.invalidateQueries({ queryKey: ["product", productId] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      setShowCategoryModal(false);
+    },
+    onError: (error) => {
+      console.error('Error updating category:', error);
+      toast.error('Failed to update default category');
+    }
+  });
+
   // Fetch storage locations for name lookup
   const { data: storageLocations } = useQuery({
     queryKey: ["storage-locations"],
@@ -392,6 +421,15 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
     }
   };
 
+  const handleCategoryUpdate = () => {
+    updateCategoryMutation.mutate(selectedCategory);
+  };
+
+  const getCategoryName = (categoryValue: string) => {
+    const category = categories?.find(cat => cat.value === categoryValue);
+    return category ? category.label : categoryValue;
+  };
+
   const handleUnitCodeClick = (itemId: string, itemCode: string) => {
     setSelectedUnitForNavigation({ id: itemId, code: itemCode });
     setShowNavigationDialog(true);
@@ -464,23 +502,48 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
   return (
     <div className="space-y-6">
       {/* Category Info Banner */}
-      {product?.default_item_code_category && (
-        <div className="bg-white border border-gray-200 rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium text-gray-900">
-                {product.name} items use: <span className="font-bold">{product.default_item_code_category}s</span> category
-              </p>
-              <p className="text-sm text-gray-600 mt-1">
-                New individual items will automatically use this category for item codes.
-              </p>
-            </div>
-            <Badge className="bg-blue-600 text-white font-medium">
-              {product.default_item_code_category}s
-            </Badge>
+      <div className="bg-white border border-gray-200 rounded-lg p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            {product?.default_item_code_category ? (
+              <>
+                <p className="font-medium text-gray-900">
+                  {product.name} items use: <span className="font-bold">{getCategoryName(product.default_item_code_category)}</span> category
+                </p>
+                <p className="text-sm text-gray-600 mt-1">
+                  New individual items will automatically use this category for item codes.
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="font-medium text-gray-900">No default category set</p>
+                <p className="text-sm text-gray-600 mt-1">
+                  Set a default item code category to streamline individual item creation.
+                </p>
+              </>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            {product?.default_item_code_category && (
+              <Badge className="bg-blue-600 text-white font-medium">
+                {product.default_item_code_category}s
+              </Badge>
+            )}
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="text-gray-900 border-gray-200 hover:bg-gray-50"
+              onClick={() => {
+                setSelectedCategory(product?.default_item_code_category || "");
+                setShowCategoryModal(true);
+              }}
+            >
+              <Settings className="w-4 h-4 mr-2" />
+              Set Default Series
+            </Button>
           </div>
         </div>
-      )}
+      </div>
 
       {/* Header Controls */}
       <div className="space-y-4">
@@ -811,6 +874,41 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
         selectedItemIds={selectedItems}
         productName={product?.name || "Product"}
       />
+
+      {/* Category Settings Modal */}
+      <Dialog open={showCategoryModal} onOpenChange={setShowCategoryModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Set Default Item Code Category</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="category-select">Item Code Category</Label>
+              <ItemCodeCategorySelect
+                value={selectedCategory}
+                onValueChange={setSelectedCategory}
+                placeholder="Select default category"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                This category will be used automatically when creating new individual items.
+              </p>
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setShowCategoryModal(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleCategoryUpdate}
+                disabled={updateCategoryMutation.isPending || !selectedCategory}
+              >
+                {updateCategoryMutation.isPending ? "Updating..." : "Set Category"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
