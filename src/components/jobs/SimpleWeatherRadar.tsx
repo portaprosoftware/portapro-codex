@@ -46,6 +46,16 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
   const animationRef = useRef<NodeJS.Timeout | null>(null);
   const layerIds = useRef<string[]>([]);
 
+  // 🔍 DEBUG: Log component mount
+  useEffect(() => {
+    console.log('🚀 SimpleWeatherRadar: Component MOUNTED', {
+      enabled,
+      hasMap: !!map,
+      mapLoaded: map?.loaded(),
+      mapStyleLoaded: map?.isStyleLoaded()
+    });
+  }, []);
+
   // Load radar frames - using your exact working pattern
   const loadRadarFrames = useCallback(async () => {
     if (!map || !enabled) {
@@ -262,8 +272,22 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
 
   // Load frames when enabled
   useEffect(() => {
+    console.log('🔍 SimpleWeatherRadar: Load frames effect triggered', {
+      enabled,
+      hasMap: !!map,
+      mapLoaded: map?.loaded(),
+      mapStyleLoaded: map?.isStyleLoaded(),
+      willLoad: enabled && !!map
+    });
+    
     if (enabled && map) {
+      console.log('✅ SimpleWeatherRadar: Conditions met, calling loadRadarFrames()');
       loadRadarFrames();
+    } else {
+      console.log('❌ SimpleWeatherRadar: Conditions NOT met for loading', {
+        enabled,
+        hasMap: !!map
+      });
     }
   }, [enabled, map, loadRadarFrames]);
 
