@@ -60,14 +60,14 @@ export const MaintenanceHistoryFilters: React.FC<MaintenanceHistoryFiltersProps>
     <div className="space-y-4">
       {/* Filters - Always Visible */}
       <div className="bg-gray-50 border rounded-lg p-4">
-        <div className="flex items-center justify-end mb-4">
-          {activeFilterCount > 0 && (
+        {activeFilterCount > 0 && (
+          <div className="flex items-center justify-end mb-3">
             <Button variant="ghost" size="sm" onClick={handleReset} className="gap-2">
               <X className="w-4 h-4" />
               Clear All
             </Button>
-          )}
-        </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* Date Range */}

@@ -370,7 +370,7 @@ export const MaintenanceHistorySection: React.FC<MaintenanceHistorySectionProps>
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* Header */}
       <div className="flex items-center gap-3">
         <History className="w-6 h-6 text-gray-900" />
