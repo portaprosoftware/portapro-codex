@@ -674,12 +674,6 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
                                 <span className="font-medium text-blue-700">Mold Cavity:</span>
                                 <p className="text-blue-600 mt-1">{item.mold_cavity || "—"}</p>
                               </div>
-                              {item.ocr_confidence_score && (
-                                <div>
-                                  <span className="font-medium text-blue-700">OCR Confidence:</span>
-                                  <p className="text-blue-600 mt-1">{Math.round(item.ocr_confidence_score * 100)}%</p>
-                                </div>
-                              )}
                             </div>
                           </div>
                         )}
