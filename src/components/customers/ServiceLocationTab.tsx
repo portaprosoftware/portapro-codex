@@ -311,7 +311,7 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
           
           const el = document.createElement('div');
           el.className = 'service-location-marker';
-          el.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="2" width="16" height="20" rx="2" fill="#3b82f6" stroke="#fff" stroke-width="2"/><path d="M9 22v-10h6v10M9 6h.01M9 10h.01M15 6h.01M15 10h.01" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>';
+          el.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" fill="#3b82f6" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="#fff"/><line x1="12" y1="2" x2="12" y2="8" stroke="#fff" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="16" x2="12" y2="22" stroke="#fff" stroke-width="2" stroke-linecap="round"/><line x1="2" y1="12" x2="8" y2="12" stroke="#fff" stroke-width="2" stroke-linecap="round"/><line x1="16" y1="12" x2="22" y2="12" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>';
           el.style.width = '32px';
           el.style.height = '32px';
           el.style.cursor = 'pointer';
