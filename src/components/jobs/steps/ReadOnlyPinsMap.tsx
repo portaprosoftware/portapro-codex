@@ -3,7 +3,7 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
-import { MapPin, Loader2 } from 'lucide-react';
+import { MapPin, Loader2, Maximize2, Minimize2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -35,6 +35,7 @@ export function ReadOnlyPinsMap({
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
 
   // Fetch Mapbox token
@@ -214,99 +215,125 @@ export function ReadOnlyPinsMap({
 
   return (
     <div className={`${className}`}>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Map Display - Takes 2 columns */}
-        <div className="lg:col-span-2">
-          <div className="h-[400px] rounded-lg overflow-hidden border shadow-sm">
+      <div className={cn(
+        "grid gap-4 transition-all duration-300",
+        isExpanded ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-3"
+      )}>
+        {/* Map Display - Takes 2 columns or full width when expanded */}
+        <div className={cn(
+          "relative",
+          isExpanded ? "lg:col-span-1" : "lg:col-span-2"
+        )}>
+          <div className={cn(
+            "rounded-lg overflow-hidden border shadow-sm transition-all duration-300",
+            isExpanded ? "h-[600px]" : "h-[400px]"
+          )}>
             <div ref={mapContainer} className="w-full h-full" />
+            
+            {/* Expand/Collapse Button */}
+            <Button
+              variant="secondary"
+              size="icon"
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="absolute bottom-4 right-4 z-10 rounded-full h-10 w-10 bg-white hover:bg-gray-100 shadow-lg"
+              title={isExpanded ? "Minimize map" : "Maximize map"}
+            >
+              {isExpanded ? (
+                <Minimize2 className="h-4 w-4" />
+              ) : (
+                <Maximize2 className="h-4 w-4" />
+              )}
+            </Button>
           </div>
         </div>
 
-        {/* Saved Reference Pins Card - Takes 1 column */}
-        <div className="lg:col-span-1">
-          <Card className="h-full">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="font-medium flex items-center gap-2">
-                  <MapPin className="h-4 w-4" />
-                  Saved Reference Pins ({savedPins.length})
-                  {!readOnly && selectedPinIds.length > 0 && (
-                    <span className="text-xs text-muted-foreground">
-                      ({selectedPinIds.length} selected)
-                    </span>
-                  )}
-                </h3>
-                {!readOnly && onPinSelectionChange && savedPins.length > 0 && (
-                  <div className="flex gap-2">
-                    {selectedPinIds.length === savedPins.length ? (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleClearSelection}
-                        className="text-xs h-7"
-                      >
-                        Clear All
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleSelectAll}
-                        className="text-xs h-7"
-                      >
-                        Select All
-                      </Button>
+        {/* Saved Reference Pins Card - Takes 1 column or hidden when expanded */}
+        {!isExpanded && (
+          <div className="lg:col-span-1">
+            <Card className="h-full">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-medium flex items-center gap-2">
+                    <MapPin className="h-4 w-4" />
+                    Saved Reference Pins ({savedPins.length})
+                    {!readOnly && selectedPinIds.length > 0 && (
+                      <span className="text-xs text-muted-foreground">
+                        ({selectedPinIds.length} selected)
+                      </span>
                     )}
-                  </div>
-                )}
-              </div>
-              <div className="space-y-2 max-h-[324px] overflow-y-auto pr-2">
-                {savedPins.map((pin) => {
-                  const isSelected = selectedPinIds.includes(pin.id);
-                  return (
-                    <div
-                      key={pin.id}
-                      onClick={() => !readOnly && handlePinToggle(pin.id)}
-                      className={cn(
-                        "p-3 rounded-lg transition-all",
-                        !readOnly && "cursor-pointer",
-                        isSelected 
-                          ? "bg-green-50 border-2 border-green-500 dark:bg-green-950/30" 
-                          : "bg-muted/30 hover:bg-muted/50"
+                  </h3>
+                  {!readOnly && onPinSelectionChange && savedPins.length > 0 && (
+                    <div className="flex gap-2">
+                      {selectedPinIds.length === savedPins.length ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleClearSelection}
+                          className="text-xs h-7"
+                        >
+                          Clear All
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleSelectAll}
+                          className="text-xs h-7"
+                        >
+                          Select All
+                        </Button>
                       )}
-                    >
-                      <div className="flex items-start gap-3">
-                        {!readOnly && (
-                          <input
-                            type="checkbox"
-                            checked={isSelected}
-                            onChange={() => handlePinToggle(pin.id)}
-                            className="mt-0.5 h-4 w-4 rounded border-gray-300"
-                            onClick={(e) => e.stopPropagation()}
-                          />
+                    </div>
+                  )}
+                </div>
+                <div className="space-y-2 max-h-[324px] overflow-y-auto pr-2">
+                  {savedPins.map((pin) => {
+                    const isSelected = selectedPinIds.includes(pin.id);
+                    return (
+                      <div
+                        key={pin.id}
+                        onClick={() => !readOnly && handlePinToggle(pin.id)}
+                        className={cn(
+                          "p-3 rounded-lg transition-all",
+                          !readOnly && "cursor-pointer",
+                          isSelected 
+                            ? "bg-green-50 border-2 border-green-500 dark:bg-green-950/30" 
+                            : "bg-muted/30 hover:bg-muted/50"
                         )}
-                        <div className="flex-1">
-                          <h4 className={cn(
-                            "font-medium text-sm",
-                            isSelected && "text-green-700 dark:text-green-300"
-                          )}>
-                            {pin.label}
-                          </h4>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)}
-                          </p>
-                          {pin.notes && (
-                            <p className="text-xs text-muted-foreground mt-2">{pin.notes}</p>
+                      >
+                        <div className="flex items-start gap-3">
+                          {!readOnly && (
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() => handlePinToggle(pin.id)}
+                              className="mt-0.5 h-4 w-4 rounded border-gray-300"
+                              onClick={(e) => e.stopPropagation()}
+                            />
                           )}
+                          <div className="flex-1">
+                            <h4 className={cn(
+                              "font-medium text-sm",
+                              isSelected && "text-green-700 dark:text-green-300"
+                            )}>
+                              {pin.label}
+                            </h4>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)}
+                            </p>
+                            {pin.notes && (
+                              <p className="text-xs text-muted-foreground mt-2">{pin.notes}</p>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
     </div>
   );
