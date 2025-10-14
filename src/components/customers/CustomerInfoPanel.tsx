@@ -310,42 +310,40 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="space-y-3">
-            <div>
-              <span className="text-muted-foreground block mb-2">Deposit Status</span>
-              {getDepositStatusBadge()}
-            </div>
-            <div className="border-t pt-3">
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <span className="text-muted-foreground block mb-1">Default Deposit Percentage</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl font-bold text-foreground">
-                      {customer.custom_deposit_percentage ?? companySettings?.default_deposit_percentage ?? 25}%
-                    </span>
-                    {customer.custom_deposit_percentage !== null && customer.custom_deposit_percentage !== undefined ? (
-                      <Badge variant="outline" className="text-xs">
-                        Custom Override
-                      </Badge>
-                    ) : (
-                      <Badge variant="secondary" className="text-xs">
-                        Company Default
-                      </Badge>
-                    )}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {customer.custom_deposit_percentage !== null && customer.custom_deposit_percentage !== undefined
-                      ? `Overrides company default of ${companySettings?.default_deposit_percentage ?? 25}%`
-                      : 'Using company default percentage'}
-                  </p>
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="text-muted-foreground block mb-2">Deposit Status</span>
+                {getDepositStatusBadge()}
+              </div>
+              <div className="flex flex-col items-end">
+                <span className="text-muted-foreground text-sm mb-1">Default Deposit Percentage</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xl font-bold text-foreground">
+                    {customer.custom_deposit_percentage ?? companySettings?.default_deposit_percentage ?? 25}%
+                  </span>
+                  {customer.custom_deposit_percentage !== null && customer.custom_deposit_percentage !== undefined ? (
+                    <Badge variant="outline" className="text-xs">
+                      Custom Override
+                    </Badge>
+                  ) : (
+                    <Badge variant="secondary" className="text-xs">
+                      Company Default
+                    </Badge>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowDepositPercentageDialog(true)}
+                    className="h-8 w-8 p-0"
+                  >
+                    <Edit className="w-4 h-4" />
+                  </Button>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowDepositPercentageDialog(true)}
-                  className="h-8 w-8 p-0"
-                >
-                  <Edit className="w-4 h-4" />
-                </Button>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {customer.custom_deposit_percentage !== null && customer.custom_deposit_percentage !== undefined
+                    ? `Overrides company default of ${companySettings?.default_deposit_percentage ?? 25}%`
+                    : 'Using company default percentage'}
+                </p>
               </div>
             </div>
           </div>
