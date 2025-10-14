@@ -529,13 +529,6 @@ export function SimpleJobsMapView({
           )}
         </div>
 
-        {/* Map Legend */}
-        <MapLegend 
-          isDriverMode={isDriverMode}
-          filteredJobsCount={filteredJobs.length}
-          availableDrivers={drivers}
-        />
-
       </div>
 
       {/* Multiple Jobs Dialog */}
