@@ -5,6 +5,9 @@ import { useUserRole } from './hooks/useUserRole';
 import { Layout } from './components/layout/Layout';
 import { ErrorBoundary } from './components/ui/error-boundary';
 import { Landing } from './pages/Landing';
+import PublicPayment from './pages/PublicPayment';
+import PaymentSuccess from './pages/PaymentSuccess';
+import CustomerPortal from './pages/CustomerPortal';
 
 import Auth from './pages/Auth';
 import Dashboard from './pages/Dashboard';
@@ -70,6 +73,11 @@ const App = () => {
           {/* Public QR Scan Routes */}
           <Route path="/scan/:unitId" element={<ScanFeedback />} />
           <Route path="/consumable-request/:consumableId" element={<ConsumableRequestPage />} />
+          
+          {/* Public Payment Routes */}
+          <Route path="/payment/:paymentLinkId" element={<PublicPayment />} />
+          <Route path="/payment/:paymentId/success" element={<PaymentSuccess />} />
+          <Route path="/portal/:token" element={<CustomerPortal />} />
           
           {/* Landing Page Route - should be accessible without auth */}
           <Route path="/landing" element={<Landing />} />
