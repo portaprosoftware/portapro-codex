@@ -15,6 +15,16 @@ interface SavedPin {
   longitude: number;
   label: string;
   notes?: string;
+  service_location_id?: string | null;
+}
+
+interface ServiceLocation {
+  id: string;
+  location_name: string;
+  street?: string;
+  city?: string;
+  state?: string;
+  zip?: string;
 }
 
 interface ReadOnlyPinsMapProps {
@@ -65,6 +75,23 @@ export function ReadOnlyPinsMap({
       
       if (error) throw error;
       return data as SavedPin[];
+    },
+    enabled: !!customerId,
+  });
+
+  // Fetch service locations for this customer
+  const { data: serviceLocations = [] } = useQuery({
+    queryKey: ['customerServiceLocations', customerId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('customer_service_locations')
+        .select('id, location_name, street, city, state, zip')
+        .eq('customer_id', customerId)
+        .eq('is_active', true)
+        .order('is_default', { ascending: false });
+      
+      if (error) throw error;
+      return data as ServiceLocation[];
     },
     enabled: !!customerId,
   });
@@ -387,46 +414,125 @@ export function ReadOnlyPinsMap({
                     </div>
                   )}
                 </div>
-                <div className="space-y-2 max-h-[324px] overflow-y-auto pr-2">
-                  {savedPins.map((pin) => {
-                    const isSelected = selectedPinIds.includes(pin.id);
+                <div className="space-y-3 max-h-[324px] overflow-y-auto pr-2">
+                  {/* Group pins by service location */}
+                  {serviceLocations.map((location) => {
+                    const locationPins = savedPins.filter(pin => pin.service_location_id === location.id);
+                    if (locationPins.length === 0) return null;
+
+                    const fullAddress = [location.street, location.city, location.state, location.zip]
+                      .filter(Boolean)
+                      .join(', ');
+
                     return (
-                      <div
-                        key={pin.id}
-                        onClick={() => !readOnly && handlePinToggle(pin.id)}
-                        className={cn(
-                          "p-3 rounded-lg transition-all",
-                          !readOnly && "cursor-pointer",
-                          isSelected 
-                            ? "bg-gradient-to-br from-green-100 to-green-200 border-2 border-green-500 dark:from-green-900/40 dark:to-green-950/40" 
-                            : "bg-muted/30 hover:bg-muted/50"
-                        )}
-                      >
-                        <div className="flex items-start gap-3">
-                          {!readOnly && (
-                            <input
-                              type="checkbox"
-                              checked={isSelected}
-                              onChange={() => handlePinToggle(pin.id)}
-                              className="mt-0.5 h-4 w-4 rounded border-gray-300"
-                              onClick={(e) => e.stopPropagation()}
-                            />
-                          )}
-                          <div className="flex-1">
-                            <h4 className="font-medium text-sm">
-                              {pin.label}
-                            </h4>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              {pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)}
-                            </p>
-                            {pin.notes && (
-                              <p className="text-xs text-muted-foreground mt-2">{pin.notes}</p>
-                            )}
-                          </div>
+                      <div key={location.id} className="space-y-2">
+                        {/* Service Location Header */}
+                        <div className="text-sm font-medium text-foreground">
+                          {location.location_name}
                         </div>
+                        {fullAddress && (
+                          <div className="text-xs text-muted-foreground mb-2">
+                            {fullAddress}
+                          </div>
+                        )}
+
+                        {/* Pins for this location */}
+                        {locationPins.map((pin) => {
+                          const isSelected = selectedPinIds.includes(pin.id);
+                          return (
+                            <div
+                              key={pin.id}
+                              onClick={() => !readOnly && handlePinToggle(pin.id)}
+                              className={cn(
+                                "p-3 rounded-lg transition-all ml-3",
+                                !readOnly && "cursor-pointer",
+                                isSelected 
+                                  ? "bg-gradient-to-br from-green-100 to-green-200 border-2 border-green-500 dark:from-green-900/40 dark:to-green-950/40" 
+                                  : "bg-muted/30 hover:bg-muted/50"
+                              )}
+                            >
+                              <div className="flex items-start gap-3">
+                                {!readOnly && (
+                                  <input
+                                    type="checkbox"
+                                    checked={isSelected}
+                                    onChange={() => handlePinToggle(pin.id)}
+                                    className="mt-0.5 h-4 w-4 rounded border-gray-300"
+                                    onClick={(e) => e.stopPropagation()}
+                                  />
+                                )}
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2">
+                                    <MapPin className="h-3 w-3 text-destructive" />
+                                    <h4 className="font-medium text-sm">
+                                      {pin.label}
+                                    </h4>
+                                  </div>
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    {pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)}
+                                  </p>
+                                  {pin.notes && (
+                                    <p className="text-xs text-muted-foreground mt-2">{pin.notes}</p>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
                     );
                   })}
+
+                  {/* Pins without service location */}
+                  {savedPins.filter(pin => !pin.service_location_id).length > 0 && (
+                    <div className="space-y-2">
+                      <div className="text-sm font-medium text-muted-foreground">
+                        Unassigned Pins
+                      </div>
+                      {savedPins.filter(pin => !pin.service_location_id).map((pin) => {
+                        const isSelected = selectedPinIds.includes(pin.id);
+                        return (
+                          <div
+                            key={pin.id}
+                            onClick={() => !readOnly && handlePinToggle(pin.id)}
+                            className={cn(
+                              "p-3 rounded-lg transition-all ml-3",
+                              !readOnly && "cursor-pointer",
+                              isSelected 
+                                ? "bg-gradient-to-br from-green-100 to-green-200 border-2 border-green-500 dark:from-green-900/40 dark:to-green-950/40" 
+                                : "bg-muted/30 hover:bg-muted/50"
+                            )}
+                          >
+                            <div className="flex items-start gap-3">
+                              {!readOnly && (
+                                <input
+                                  type="checkbox"
+                                  checked={isSelected}
+                                  onChange={() => handlePinToggle(pin.id)}
+                                  className="mt-0.5 h-4 w-4 rounded border-gray-300"
+                                  onClick={(e) => e.stopPropagation()}
+                                />
+                              )}
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2">
+                                  <MapPin className="h-3 w-3 text-destructive" />
+                                  <h4 className="font-medium text-sm">
+                                    {pin.label}
+                                  </h4>
+                                </div>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  {pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)}
+                                </p>
+                                {pin.notes && (
+                                  <p className="text-xs text-muted-foreground mt-2">{pin.notes}</p>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
