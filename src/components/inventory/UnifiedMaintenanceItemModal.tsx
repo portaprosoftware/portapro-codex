@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Clock, DollarSign, MapPin, Settings, Wrench, Trash2, Plus, X, CheckCircle2 } from "lucide-react";
+import { Clock, DollarSign, MapPin, Settings, Wrench, Trash2, Plus, X, CheckCircle2, Trash } from "lucide-react";
 import { SimpleMaintenancePhotoUpload } from "./SimpleMaintenancePhotoUpload";
 import { MaintenanceUpdatePhotos } from "./MaintenanceUpdatePhotos";
 import { ImageViewerModal } from "./ImageViewerModal";
@@ -57,6 +57,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
   const [activeTab, setActiveTab] = useState(initialActiveTab);
   const { data: systemUsers = [] } = useSystemUsers();
   const [shouldCloseOnSave, setShouldCloseOnSave] = useState(true);
+  const [completedWorkOrders, setCompletedWorkOrders] = useState<Set<string>>(new Set());
 
   // Update active tab when initialActiveTab changes
   useEffect(() => {
@@ -855,11 +856,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                             <div>
                               <div className="flex items-center justify-between mb-3">
                                 <div className="flex items-center gap-2">
-                                  {isWorkOrder ? (
-                                    <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold text-xs">
-                                      Work Order
-                                    </Badge>
-                                  ) : (
+                                  {!isWorkOrder && (
                                     <Badge 
                                       variant="outline" 
                                       className={`text-xs font-bold ${
@@ -883,22 +880,31 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                                       variant="outline"
                                       size="sm"
                                       onClick={() => {
-                                        // Handle complete work order
-                                        toast.success("Work order completed");
+                                        const newCompleted = new Set(completedWorkOrders);
+                                        if (newCompleted.has(update.id)) {
+                                          newCompleted.delete(update.id);
+                                        } else {
+                                          newCompleted.add(update.id);
+                                          toast.success("Work order marked as complete");
+                                        }
+                                        setCompletedWorkOrders(newCompleted);
                                       }}
-                                      className="h-6 px-2 text-xs bg-gradient-to-r from-green-600 to-green-700 text-white font-bold hover:from-green-700 hover:to-green-800 border-green-600"
+                                      className={`h-7 px-3 text-xs font-bold ${
+                                        completedWorkOrders.has(update.id)
+                                          ? 'bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800 border-green-600'
+                                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300 border-gray-300'
+                                      }`}
                                     >
-                                      <CheckCircle2 className="w-3 h-3 mr-1" />
-                                      Complete
+                                      {completedWorkOrders.has(update.id) ? 'Completed' : 'Mark Complete'}
                                     </Button>
                                   )}
                                   <Button
-                                    variant="outline"
+                                    variant="ghost"
                                     size="sm"
                                     onClick={() => handleDeleteUpdate(update.id)}
-                                    className="h-6 px-2 text-xs hover:bg-destructive hover:text-destructive-foreground"
+                                    className="h-7 w-7 p-0 hover:bg-destructive hover:text-destructive-foreground"
                                   >
-                                    Delete
+                                    <Trash className="w-4 h-4" />
                                   </Button>
                                 </div>
                                <div className="text-xs text-muted-foreground">
