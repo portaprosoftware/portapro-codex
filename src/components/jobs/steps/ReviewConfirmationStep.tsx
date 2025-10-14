@@ -924,15 +924,15 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
             <Card className="cursor-pointer hover:shadow-md transition-shadow">
               <CardContent className="p-4 text-center">
                 <div className="flex justify-center mb-2">
-                  <FileText className="h-6 w-6 text-green-600" />
-                  <BriefcaseIcon className="h-6 w-6 text-green-600 -ml-2" />
+                  <FileText className="h-6 w-6 text-blue-600" />
+                  <BriefcaseIcon className="h-6 w-6 text-blue-600 -ml-2" />
                 </div>
                 <h3 className="font-medium mb-1">Create Job + Quote</h3>
                 <p className="text-xs text-muted-foreground mb-3">Create both a job and quote simultaneously</p>
                 <Button
                   onClick={onCreateJobAndQuote}
                   disabled={creatingJobAndQuote}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white"
+                  className="w-full bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white"
                 >
                   {creatingJobAndQuote ? 'Creating...' : 'Quote + Job'}
                 </Button>
