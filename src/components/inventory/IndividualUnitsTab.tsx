@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, QrCode, Search, Filter, Edit, Trash, ChevronDown, ChevronRight, ListOrdered, Camera, Shield, AlertTriangle, Settings2, ArrowLeftRight } from "lucide-react";
+import { Plus, QrCode, Search, Filter, Edit, Trash, ChevronDown, ChevronRight, FileDigit, Camera, Shield, AlertTriangle, Settings2, ArrowLeftRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -561,7 +561,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
                 setShowCategoryModal(true);
               }}
             >
-              <ListOrdered className="w-6 h-6 mr-1.5" />
+              <FileDigit className="w-6 h-6 mr-1.5" />
               Set Number Series
             </Button>
             {product?.default_item_code_category && (

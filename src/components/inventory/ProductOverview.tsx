@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Edit, ListOrdered, Wrench, Plus, Minus, History, AlertTriangle, RefreshCw, Loader2, Box } from "lucide-react";
+import { Edit, FileDigit, Wrench, Plus, Minus, History, AlertTriangle, RefreshCw, Loader2, Box } from "lucide-react";
 import { EditProductModal } from "./EditProductModal";
 import { TrackedOperationsPanel } from "./TrackedOperationsPanel";
 
@@ -361,7 +361,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
               className="text-gray-900 border-gray-200 hover:bg-gray-50"
               onClick={() => setShowCategoryModal(true)}
             >
-              <ListOrdered className="w-6 h-6 mr-1.5" />
+              <FileDigit className="w-6 h-6 mr-1.5" />
               Set Number Series
             </Button>
             {product.default_item_code_category && (
