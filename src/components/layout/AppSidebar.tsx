@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { 
   LayoutDashboard, 
   CalendarDays, 
-  Package, 
+  Bath, 
   Users2, 
   Truck, 
   ClipboardCheck,
@@ -88,7 +88,7 @@ const inventoryItems: NavigationItem[] = [
   { 
     title: 'Equipment', 
     url: '/inventory', 
-    icon: Package,
+    icon: Bath,
     permission: 'staff'
   },
   { 
