@@ -30,6 +30,7 @@ export function GPSPinDropper({ pins, onPinsChange, className }: GPSPinDropperPr
   const [editingPinId, setEditingPinId] = useState<string | null>(null);
   const [editLabel, setEditLabel] = useState('');
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [mapStyle, setMapStyle] = useState<'streets' | 'satellite'>('satellite');
 
   // Initialize map
   useEffect(() => {
@@ -40,7 +41,7 @@ export function GPSPinDropper({ pins, onPinsChange, className }: GPSPinDropperPr
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/streets-v12',
+      style: 'mapbox://styles/mapbox/satellite-streets-v12',
       center: [-98.5795, 39.8283], // Center of USA
       zoom: 4,
     });
@@ -207,16 +208,30 @@ export function GPSPinDropper({ pins, onPinsChange, className }: GPSPinDropperPr
           <div className="relative rounded-lg overflow-hidden border mb-4">
             <div ref={mapContainer} className="h-96 w-full" />
             {/* Map Type Toggle */}
-            <div className="absolute top-3 left-3 bg-white rounded shadow-md overflow-hidden">
+            <div className="absolute top-3 left-3 bg-white rounded shadow-md overflow-hidden flex">
               <button
-                onClick={() => map.current?.setStyle('mapbox://styles/mapbox/streets-v12')}
-                className="px-3 py-2 text-sm hover:bg-gray-100 border-r"
+                onClick={() => {
+                  setMapStyle('streets');
+                  map.current?.setStyle('mapbox://styles/mapbox/streets-v12');
+                }}
+                className={`px-3 py-2 text-sm font-medium transition-all ${
+                  mapStyle === 'streets'
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
               >
                 Streets
               </button>
               <button
-                onClick={() => map.current?.setStyle('mapbox://styles/mapbox/satellite-streets-v12')}
-                className="px-3 py-2 text-sm hover:bg-gray-100"
+                onClick={() => {
+                  setMapStyle('satellite');
+                  map.current?.setStyle('mapbox://styles/mapbox/satellite-streets-v12');
+                }}
+                className={`px-3 py-2 text-sm font-medium transition-all ${
+                  mapStyle === 'satellite'
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
               >
                 Satellite
               </button>
