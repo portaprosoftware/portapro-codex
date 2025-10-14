@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Clock, DollarSign, MapPin, Settings, Wrench, Trash2, Plus, X, CheckCircle2 } from "lucide-react";
+import { Clock, DollarSign, MapPin, Settings, Wrench, Trash2, Plus, X, CheckCircle2, Package, User, Calendar as CalendarIcon } from "lucide-react";
 import { SimpleMaintenancePhotoUpload } from "./SimpleMaintenancePhotoUpload";
 import { ImageViewerModal } from "./ImageViewerModal";
 import { useSystemUsers } from "@/hooks/useSystemUsers";
@@ -98,12 +98,21 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
         .from("maintenance_updates")
         .select("*")
         .eq("item_id", itemId)
-        .order("created_at", { ascending: false })
-        .limit(5);
+        .order("created_at", { ascending: false });
       if (error) throw error;
       return data || [];
     },
   });
+
+  // Filter work orders (open and all)
+  const workOrders = React.useMemo(() => {
+    if (!updates) return { open: [], all: [] };
+    const allWorkOrders = updates.filter((u: any) => u.title === "Work Order");
+    const openWorkOrders = allWorkOrders.filter((u: any) => 
+      u.status !== 'completed'
+    );
+    return { open: openWorkOrders, all: allWorkOrders };
+  }, [updates]);
 
   const totalCost = useMemo(() => {
     return (updates || []).reduce((sum: number, u: any) => sum + (u.cost_amount || 0), 0);
@@ -735,11 +744,105 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
             </TabsContent>
 
             <TabsContent value="open-workorders" className="mt-6">
-              {/* Open Work Orders Tab - To be implemented */}
-              <div className="bg-white border rounded-xl p-6">
-                <div className="text-center py-8 text-muted-foreground">
-                  <p>Open Work Orders view coming soon</p>
-                </div>
+              {/* Open Work Orders Tab */}
+              <div className="space-y-4">
+                {workOrders.open.length === 0 ? (
+                  <div className="bg-white border rounded-xl p-8">
+                    <div className="text-center text-muted-foreground">
+                      <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                      <p className="font-medium">No Open Work Orders</p>
+                      <p className="text-sm">Create a work order in the "Create Work Order" tab to get started</p>
+                    </div>
+                  </div>
+                ) : (
+                  workOrders.open.map((workOrder: any) => (
+                    <div key={workOrder.id} className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
+                      {/* Header */}
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <Wrench className="w-4 h-4 text-blue-600" />
+                            <h4 className="font-semibold text-gray-900">Work Order</h4>
+                            <Badge 
+                              className={`ml-2 font-bold text-white ${
+                                workOrder.status === 'work_order_created' 
+                                  ? 'bg-gradient-to-r from-blue-600 to-blue-700' 
+                                  : workOrder.status === 'in_progress'
+                                  ? 'bg-gradient-to-r from-orange-600 to-orange-700'
+                                  : workOrder.status === 'waiting_on_parts'
+                                  ? 'bg-gradient-to-r from-yellow-600 to-yellow-700'
+                                  : 'bg-gradient-to-r from-green-600 to-green-700'
+                              }`}
+                            >
+                              {workOrder.status === 'work_order_created' ? 'Created' : 
+                               workOrder.status === 'in_progress' ? 'In Progress' :
+                               workOrder.status === 'waiting_on_parts' ? 'Waiting on Parts' : 
+                               workOrder.status}
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            Created {new Date(workOrder.created_at).toLocaleDateString()} at {new Date(workOrder.created_at).toLocaleTimeString()}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Work Order Details */}
+                      <div className="space-y-3">
+                        {/* Technician */}
+                        {workOrder.technician_name && (
+                          <div className="flex items-start gap-3">
+                            <User className="w-4 h-4 text-gray-500 mt-0.5" />
+                            <div className="flex-1">
+                              <p className="text-xs font-medium text-gray-500 mb-0.5">Technician(s)</p>
+                              <p className="text-sm text-gray-900">{workOrder.technician_name}</p>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Labor Hours */}
+                        {workOrder.labor_hours > 0 && (
+                          <div className="flex items-start gap-3">
+                            <Clock className="w-4 h-4 text-gray-500 mt-0.5" />
+                            <div className="flex-1">
+                              <p className="text-xs font-medium text-gray-500 mb-0.5">Labor Hours</p>
+                              <p className="text-sm text-gray-900">{workOrder.labor_hours} hours</p>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Parts Used */}
+                        {workOrder.parts_used && Array.isArray(workOrder.parts_used) && workOrder.parts_used.length > 0 && (
+                          <div className="flex items-start gap-3">
+                            <Package className="w-4 h-4 text-gray-500 mt-0.5" />
+                            <div className="flex-1">
+                              <p className="text-xs font-medium text-gray-500 mb-0.5">Parts Used</p>
+                              <p className="text-sm text-gray-900">{workOrder.parts_used.join(', ')}</p>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Cost */}
+                        {workOrder.cost_amount > 0 && (
+                          <div className="flex items-start gap-3">
+                            <DollarSign className="w-4 h-4 text-gray-500 mt-0.5" />
+                            <div className="flex-1">
+                              <p className="text-xs font-medium text-gray-500 mb-0.5">Total Cost</p>
+                              <p className="text-sm font-semibold text-gray-900">${workOrder.cost_amount.toFixed(2)}</p>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Description */}
+                        {workOrder.description && (
+                          <div className="pt-3 border-t">
+                            <p className="text-xs font-medium text-gray-500 mb-1">Details</p>
+                            <p className="text-sm text-gray-700 whitespace-pre-line">{workOrder.description}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </TabsContent>
           </Tabs>
