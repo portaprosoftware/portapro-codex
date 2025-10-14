@@ -24,7 +24,7 @@ interface UnifiedMaintenanceItemModalProps {
   item: any;
   productId: string;
   storageLocations: StorageLocation[] | undefined;
-  activeTab?: "details" | "update";
+  activeTab?: "details" | "workorders" | "update";
 }
 
 interface MaintenanceUpdateForm {
@@ -69,6 +69,15 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
     tool_number: "",
     vendor_id: "",
     condition: "",
+  });
+
+  const [workOrderForm, setWorkOrderForm] = useState({
+    technician_name: "",
+    labor_hours: "",
+    labor_cost: "",
+    parts_cost: "",
+    parts_used: "",
+    status: "work_order_created",
   });
 
   useEffect(() => {
@@ -342,9 +351,10 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
           </div>
 
           {/* Tab Navigation */}
-          <Tabs value={activeTab} onValueChange={(value: string) => setActiveTab(value as "details" | "update")} className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+          <Tabs value={activeTab} onValueChange={(value: string) => setActiveTab(value as "details" | "workorders" | "update")} className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="details">Unit Details</TabsTrigger>
+              <TabsTrigger value="workorders">Work Orders</TabsTrigger>
               <TabsTrigger value="update">Add / View Progress Updates</TabsTrigger>
             </TabsList>
 
@@ -511,6 +521,95 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                   </Button>
                 </div>
               </form>
+            </TabsContent>
+
+            <TabsContent value="workorders" className="mt-6">
+              {/* Work Orders Tab */}
+              <div className="bg-white border rounded-xl p-6">
+                <h4 className="font-medium mb-4">Work Order Details</h4>
+                <div className="space-y-4">
+                  <div>
+                    <Label>Technician Name</Label>
+                    <Input
+                      value={workOrderForm.technician_name}
+                      onChange={(e) => setWorkOrderForm((p) => ({ ...p, technician_name: e.target.value }))}
+                      placeholder="Who performed this work?"
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label>Labor Hours</Label>
+                      <Input
+                        type="number"
+                        step="0.1"
+                        min="0"
+                        value={workOrderForm.labor_hours}
+                        onChange={(e) => setWorkOrderForm((p) => ({ ...p, labor_hours: e.target.value }))}
+                        placeholder="0.0"
+                      />
+                    </div>
+                    <div>
+                      <Label>Labor Cost ($)</Label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={workOrderForm.labor_cost}
+                        onChange={(e) => setWorkOrderForm((p) => ({ ...p, labor_cost: e.target.value }))}
+                        placeholder="0.00"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label>Parts Cost ($)</Label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={workOrderForm.parts_cost}
+                        onChange={(e) => setWorkOrderForm((p) => ({ ...p, parts_cost: e.target.value }))}
+                        placeholder="0.00"
+                      />
+                    </div>
+                    <div>
+                      <Label>Parts Used</Label>
+                      <Input
+                        value={workOrderForm.parts_used}
+                        onChange={(e) => setWorkOrderForm((p) => ({ ...p, parts_used: e.target.value }))}
+                        placeholder="List parts used"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label>Status</Label>
+                    <Select
+                      value={workOrderForm.status}
+                      onValueChange={(v) => setWorkOrderForm((p) => ({ ...p, status: v }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="work_order_created">Work Order Created</SelectItem>
+                        <SelectItem value="in_progress">In Progress</SelectItem>
+                        <SelectItem value="waiting_on_parts">Waiting on Parts</SelectItem>
+                        <SelectItem value="completed">Completed</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex justify-end gap-2 pt-4">
+                    <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+                    <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                      Save Work Order
+                    </Button>
+                  </div>
+                </div>
+              </div>
             </TabsContent>
 
             <TabsContent value="update" className="mt-6">
