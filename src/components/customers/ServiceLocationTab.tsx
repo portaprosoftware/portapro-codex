@@ -486,6 +486,16 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
       </form>
       
       <div className="border rounded-lg overflow-hidden relative">
+        <style>{`
+          .mapboxgl-ctrl-logo {
+            width: 65px !important;
+            height: 20px !important;
+            margin: 0 0 -4px -4px !important;
+          }
+          .mapboxgl-ctrl-attrib {
+            font-size: 9px !important;
+          }
+        `}</style>
         {/* Map Style Toggle Switch */}
         <div className="absolute top-4 left-4 z-10">
           <div className="bg-background/90 backdrop-blur-sm rounded-lg p-1 shadow-md border">
