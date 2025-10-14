@@ -135,11 +135,6 @@ export const SimpleWeatherRadar: React.FC<SimpleWeatherRadarProps> = ({
       }
     });
     
-    // Log sample tile URL for first frame (diagnostic)
-    if (frames.length > 0) {
-      const sampleUrl = mapTilerWeatherService.getRadarTileUrl(frames[0].time);
-      console.log('MapTiler: Sample tile URL:', sampleUrl.replace(/{z}.*/, '4/3/5.png'));
-    }
     
     // Show first frame
     if (layerIds.current.length > 0) {

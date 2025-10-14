@@ -19,11 +19,11 @@ class MapTilerWeatherService {
     this.apiKey = key.trim(); // Ensure no whitespace
   }
   
-  // Get radar tile URL with time as query parameter
+  // Get radar tile URL with timestamp path segment (correct format)
   public getRadarTileUrl(timestamp: number): string {
-    // MapTiler Weather radar tiles format
-    // https://api.maptiler.com/tiles/weather/radar/{z}/{x}/{y}.png?time=TIMESTAMP&key=KEY
-    return `https://api.maptiler.com/tiles/weather/radar/{z}/{x}/{y}.png?time=${timestamp}&key=${this.apiKey}`;
+    // MapTiler Weather radar tiles format:
+    // https://api.maptiler.com/tiles/radar/{timestamp}/{z}/{x}/{y}.png?key=KEY
+    return `https://api.maptiler.com/tiles/radar/${timestamp}/{z}/{x}/{y}.png?key=${this.apiKey}`;
   }
   
   // Validate timestamps by probing actual tile availability
@@ -39,10 +39,10 @@ class MapTilerWeatherService {
     
     // Test each timestamp with a sample tile
     for (const ts of timestamps) {
-      const probeUrl = `https://api.maptiler.com/tiles/weather/radar/${zoom}/${tile.x}/${tile.y}.png?time=${ts}&key=${this.apiKey}`;
+      const probeUrl = `https://api.maptiler.com/tiles/radar/${ts}/${zoom}/${tile.x}/${tile.y}.png?key=${this.apiKey}`;
       
       try {
-        const response = await fetch(probeUrl, { method: 'HEAD' });
+        const response = await fetch(probeUrl, { method: 'GET', cache: 'no-store' });
         if (response.ok) {
           validTimestamps.push(ts);
         }
@@ -61,33 +61,20 @@ class MapTilerWeatherService {
   // Get available radar timestamps
   public async getRadarFrames(): Promise<RadarFrame[]> {
     try {
-      console.log('MapTiler: Fetching radar frames...');
+      console.log('MapTiler: Generating radar frames (aligned to 5-min grid)...');
       
-      // Generate timestamps for last 2 hours at 5-minute intervals
       const now = Math.floor(Date.now() / 1000);
+      const roundedNow = Math.floor(now / 300) * 300; // align to 5-min boundary
       const timestamps: number[] = [];
       
-      // Generate 24 frames (2 hours at 5-min intervals)
-      for (let i = 23; i >= 0; i--) {
-        const timestamp = now - (i * 5 * 60); // 5 minutes in seconds
+      // Generate 12 frames (1 hour at 5-min intervals) for smoother animation
+      for (let i = 11; i >= 0; i--) {
+        const timestamp = roundedNow - (i * 5 * 60);
         timestamps.push(timestamp);
       }
       
-      // Validate timestamps by probing tile availability
-      const validTimestamps = await this.validateTimestampsWithProbe(timestamps);
-      
-      if (validTimestamps.length === 0) {
-        console.warn('MapTiler: No valid radar frames available (after validation)');
-        return [];
-      }
-      
-      // Convert to RadarFrame format
-      const frames: RadarFrame[] = validTimestamps.map(time => ({
-        time,
-        path: '' // Not used for MapTiler
-      }));
-      
-      console.log('MapTiler: ✓ Loaded', frames.length, 'validated frames');
+      const frames: RadarFrame[] = timestamps.map(time => ({ time, path: '' }));
+      console.log('MapTiler: ✓ Generated', frames.length, 'frames');
       return frames;
       
     } catch (error) {
