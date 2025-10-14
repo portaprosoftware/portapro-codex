@@ -86,7 +86,7 @@ const dayToDayItems: NavigationItem[] = [
 
 const inventoryItems: NavigationItem[] = [
   { 
-    title: 'Products', 
+    title: 'Equipment', 
     url: '/inventory', 
     icon: Package,
     permission: 'staff'

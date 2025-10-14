@@ -316,7 +316,7 @@ const Inventory: React.FC = () => {
               onClick={() => navigateToTab('products')}
             >
               <Package className="h-4 w-4" />
-              Products
+              Equipment
             </TabNav.Item>
             <TabNav.Item
               to="/inventory/location-map"
