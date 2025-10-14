@@ -96,7 +96,7 @@ export const InventoryMaintenanceOverview: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold text-foreground mb-2">Inventory Maintenance</h2>
+        <h2 className="text-xl font-bold text-foreground mb-2">Inventory Maintenance</h2>
         <p className="text-muted-foreground">
           Manage and track maintenance across your entire inventory
         </p>
@@ -121,9 +121,9 @@ export const InventoryMaintenanceOverview: React.FC = () => {
         <TabsContent value="schedule" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-lg">
                 <Calendar className="h-5 w-5" />
-                Scheduled Maintenance
+                Scheduled Equipment Maintenance
               </CardTitle>
             </CardHeader>
             <CardContent>
