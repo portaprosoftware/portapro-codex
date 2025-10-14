@@ -37,6 +37,52 @@ interface ServiceLocation {
   gps_coordinates?: { x: number; y: number } | null;
 }
 
+// Helper function to normalize coordinates from various formats
+const normalizeToLngLat = (value: any): [number, number] | null => {
+  if (!value) return null;
+
+  // Array [lng, lat]
+  if (Array.isArray(value) && value.length >= 2) {
+    const lng = Number(value[0]);
+    const lat = Number(value[1]);
+    return Number.isFinite(lng) && Number.isFinite(lat) ? [lng, lat] : null;
+  }
+
+  // Object with lng/lat or x/y
+  if (typeof value === 'object') {
+    if ('lng' in value && 'lat' in value) {
+      const lng = Number((value as any).lng);
+      const lat = Number((value as any).lat);
+      return Number.isFinite(lng) && Number.isFinite(lat) ? [lng, lat] : null;
+    }
+    if ('x' in value && 'y' in value) {
+      const lng = Number((value as any).x);
+      const lat = Number((value as any).y);
+      return Number.isFinite(lng) && Number.isFinite(lat) ? [lng, lat] : null;
+    }
+  }
+
+  // String formats: "(-81.81659,41.36749)" or "POINT(-81.81659 41.36749)"
+  if (typeof value === 'string') {
+    // Try POINT(lng lat)
+    const mPoint = value.match(/POINT\s*\(\s*(-?\d+(\.\d+)?)\s+(-?\d+(\.\d+)?)\s*\)/i);
+    if (mPoint) {
+      const lng = parseFloat(mPoint[1]);
+      const lat = parseFloat(mPoint[3]);
+      return Number.isFinite(lng) && Number.isFinite(lat) ? [lng, lat] : null;
+    }
+    // Try generic number extraction
+    const nums = value.match(/-?\d+(\.\d+)?/g);
+    if (nums && nums.length >= 2) {
+      const lng = parseFloat(nums[0]);
+      const lat = parseFloat(nums[1]);
+      return Number.isFinite(lng) && Number.isFinite(lat) ? [lng, lat] : null;
+    }
+  }
+
+  return null;
+};
+
 const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
@@ -252,66 +298,67 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
         });
         
         // Add service location markers (blue with home icon)
+        const allPoints: [number, number][] = [];
+        
         serviceLocations.forEach(location => {
-          if (!map.current || !location.gps_coordinates) return;
+          if (!map.current) return;
           
-          const coords = location.gps_coordinates;
-          let lng, lat;
+          const normalized = normalizeToLngLat(location.gps_coordinates);
+          if (!normalized) return;
           
-          if ('x' in coords && 'y' in coords) {
-            lng = coords.x;
-            lat = coords.y;
-          }
+          const [lng, lat] = normalized;
+          allPoints.push([lng, lat]);
           
-          if (typeof lng === 'number' && typeof lat === 'number' && 
-              !isNaN(lng) && !isNaN(lat) && 
-              lng >= -180 && lng <= 180 && lat >= -90 && lat <= 90) {
-            
-            const el = document.createElement('div');
-            el.className = 'service-location-marker';
-            el.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="#3b82f6" stroke="#fff" stroke-width="2"/><polyline points="9 22 9 12 15 12 15 22" stroke="#fff" stroke-width="2"/></svg>';
-            el.style.width = '32px';
-            el.style.height = '32px';
-            el.style.cursor = 'pointer';
-            
-            const fullAddress = [
-              location.street,
-              location.city,
-              location.state,
-              location.zip
-            ].filter(Boolean).join(', ');
-            
-            const marker = new mapboxgl.Marker(el)
-              .setLngLat([lng, lat])
-              .setPopup(
-                new mapboxgl.Popup({ offset: 25 })
-                  .setHTML(`<div style="padding: 8px;"><strong>${location.location_name}</strong><br/><span style="font-size: 11px; color: #666;">Physical Address</span><br/>${fullAddress}</div>`)
-              )
-              .addTo(map.current);
-            
-            locationMarkersRef.current[location.id] = marker;
-          }
+          const el = document.createElement('div');
+          el.className = 'service-location-marker';
+          el.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="#3b82f6" stroke="#fff" stroke-width="2"/><polyline points="9 22 9 12 15 12 15 22" stroke="#fff" stroke-width="2"/></svg>';
+          el.style.width = '32px';
+          el.style.height = '32px';
+          el.style.cursor = 'pointer';
+          
+          const fullAddress = [
+            location.street,
+            location.city,
+            location.state,
+            location.zip
+          ].filter(Boolean).join(', ');
+          
+          const marker = new mapboxgl.Marker(el)
+            .setLngLat([lng, lat])
+            .setPopup(
+              new mapboxgl.Popup({ offset: 25 })
+                .setHTML(`<div style="padding: 8px;"><strong>${location.location_name}</strong><br/><span style="font-size: 11px; color: #666;">Physical Address</span><br/>${fullAddress}</div>`)
+            )
+            .addTo(map.current);
+          
+          locationMarkersRef.current[location.id] = marker;
         });
         
-        // Auto-zoom to fit all pins if any exist
-        if (pins.length > 0 && map.current) {
-          const bounds = new mapboxgl.LngLatBounds();
-          
-          pins.forEach(pin => {
-            bounds.extend([pin.longitude, pin.latitude]);
-          });
-          
-          // Use a slight delay to ensure the map is fully ready, especially after style changes
-          setTimeout(() => {
-            if (!map.current) return;
-            
-            // Fit map to bounds with padding
-            map.current.fitBounds(bounds, {
-              padding: { top: 50, bottom: 50, left: 50, right: 50 },
-              maxZoom: 17,
-              duration: 1500
+        // Add pin coordinates to allPoints
+        pins.forEach(pin => {
+          allPoints.push([pin.longitude, pin.latitude]);
+        });
+        
+        // Auto-zoom to fit all points
+        if (allPoints.length > 0 && map.current) {
+          if (allPoints.length === 1) {
+            // Single point: fly to it with a close zoom
+            map.current.flyTo({
+              center: allPoints[0],
+              zoom: 15,
+              duration: 600
             });
-          }, 300);
+          } else {
+            // Multiple points: fit bounds
+            const bounds = new mapboxgl.LngLatBounds();
+            allPoints.forEach(point => bounds.extend(point));
+            
+            map.current.fitBounds(bounds, {
+              padding: 80,
+              maxZoom: 18,
+              duration: 800
+            });
+          }
         }
       } catch (error) {
         console.error('Error adding markers:', error);
