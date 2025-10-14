@@ -42,7 +42,7 @@ export const FeaturesMegaMenu = forwardRef<FeaturesMegaMenuRef>((props, ref) => 
                 {group.items.map((item, idx) => (
                   <li key={item.key}>
                     <a
-                      href={item.href}
+                      href={item.href.startsWith('#') ? item.href : `/features#${item.key}`}
                       className={cn(
                         'group flex items-start gap-3 rounded-lg p-2 transition-colors',
                         'hover:bg-muted focus:bg-muted focus:outline-none'

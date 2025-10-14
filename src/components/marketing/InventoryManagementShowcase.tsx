@@ -372,7 +372,7 @@ export function InventoryManagementShowcase() {
               {/* Image - Full width on mobile, left column on desktop */}
               <div className="flex justify-center lg:h-64">
                 <img 
-                  src="/src/assets/standard-toilet-unit.png" 
+                  src="/assets/standard-unit.png" 
                   alt="Standard Portable Toilet" 
                   className="w-full max-w-48 sm:max-w-60 h-48 sm:h-64 lg:h-full object-contain rounded-lg"
                 />

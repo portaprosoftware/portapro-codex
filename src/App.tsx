@@ -56,7 +56,6 @@ import { Help } from './pages/Help';
 import CustomerPortalPage from './pages/CustomerPortalPage';
 
 import Features from './pages/Features';
-import FeatureDetailPage from './pages/FeatureDetailPage';
 import About from './pages/About';
 import Blog from './pages/Blog';
 import Community from './pages/Community';
@@ -84,7 +83,6 @@ const App = () => {
           <Route path="/landing" element={<Landing />} />
           <Route path="/help" element={<Help />} />
           <Route path="/features" element={<Features />} />
-          <Route path="/features/:featureSlug" element={<FeatureDetailPage />} />
           {/* Footer Pages */}
           <Route path="/about" element={<About />} />
           <Route path="/blog" element={<Blog />} />
