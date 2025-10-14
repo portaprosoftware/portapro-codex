@@ -326,7 +326,7 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
             </div>
             <div className="flex flex-col items-start">
               <span className="text-muted-foreground text-sm mb-2">Default Deposit Percentage</span>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 -ml-2">
                 <Button
                   variant="ghost"
                   size="sm"
