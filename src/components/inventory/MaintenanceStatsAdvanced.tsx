@@ -35,12 +35,12 @@ export const MaintenanceStatsAdvanced: React.FC<MaintenanceStatsAdvancedProps> =
 
   return (
     <div className="space-y-6">
-      {/* Key Metrics */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      {/* Key Metrics - YTD */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         <div className="bg-white rounded-lg border border-gray-200 p-4">
           <div className="flex items-center gap-2 mb-2">
             <TrendingUp className="w-4 h-4 text-blue-600" />
-            <span className="text-xs text-gray-600">Total Sessions</span>
+            <span className="text-xs text-gray-600">Total Work Orders (YTD)</span>
           </div>
           <div className="text-2xl font-bold text-gray-900">{stats.totalSessions}</div>
         </div>
@@ -48,7 +48,7 @@ export const MaintenanceStatsAdvanced: React.FC<MaintenanceStatsAdvancedProps> =
         <div className="bg-white rounded-lg border border-gray-200 p-4">
           <div className="flex items-center gap-2 mb-2">
             <DollarSign className="w-4 h-4 text-green-600" />
-            <span className="text-xs text-gray-600">Total Cost</span>
+            <span className="text-xs text-gray-600">Total Cost (YTD)</span>
           </div>
           <div className="text-2xl font-bold text-gray-900">{formatCurrency(stats.totalCost)}</div>
         </div>
@@ -56,7 +56,7 @@ export const MaintenanceStatsAdvanced: React.FC<MaintenanceStatsAdvancedProps> =
         <div className="bg-white rounded-lg border border-gray-200 p-4">
           <div className="flex items-center gap-2 mb-2">
             <Clock className="w-4 h-4 text-orange-600" />
-            <span className="text-xs text-gray-600">Avg Duration</span>
+            <span className="text-xs text-gray-600">Avg Duration (YTD)</span>
           </div>
           <div className="text-2xl font-bold text-gray-900">{stats.avgDuration} days</div>
         </div>
@@ -64,7 +64,7 @@ export const MaintenanceStatsAdvanced: React.FC<MaintenanceStatsAdvancedProps> =
         <div className="bg-white rounded-lg border border-gray-200 p-4">
           <div className="flex items-center gap-2 mb-2">
             <CheckCircle className="w-4 h-4 text-green-600" />
-            <span className="text-xs text-gray-600">Returned</span>
+            <span className="text-xs text-gray-600">Returned to Service (YTD)</span>
           </div>
           <div className="text-2xl font-bold text-green-600">{stats.returnedToService}</div>
         </div>
@@ -72,17 +72,9 @@ export const MaintenanceStatsAdvanced: React.FC<MaintenanceStatsAdvancedProps> =
         <div className="bg-white rounded-lg border border-gray-200 p-4">
           <div className="flex items-center gap-2 mb-2">
             <XCircle className="w-4 h-4 text-red-600" />
-            <span className="text-xs text-gray-600">Retired</span>
+            <span className="text-xs text-gray-600">Retired (YTD)</span>
           </div>
           <div className="text-2xl font-bold text-red-600">{stats.retired}</div>
-        </div>
-
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <Award className="w-4 h-4 text-purple-600" />
-            <span className="text-xs text-gray-600">Success Rate</span>
-          </div>
-          <div className="text-2xl font-bold text-purple-600">{stats.completionRate}%</div>
         </div>
       </div>
 

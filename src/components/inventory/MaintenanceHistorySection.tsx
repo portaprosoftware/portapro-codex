@@ -50,7 +50,13 @@ export const MaintenanceHistorySection: React.FC<MaintenanceHistorySectionProps>
     searchTerm: "",
   });
 
-  // Fetch all completed maintenance sessions
+  // Calculate YTD start date (January 1 of current year)
+  const ytdStartDate = useMemo(() => {
+    const now = new Date();
+    return new Date(now.getFullYear(), 0, 1); // January 1 of current year
+  }, []);
+
+  // Fetch all completed maintenance sessions (YTD)
   const { data: allSessions, isLoading } = useQuery<CompletedSession[]>({
     queryKey: ["all-completed-maintenance-sessions"],
     queryFn: async () => {
@@ -61,6 +67,7 @@ export const MaintenanceHistorySection: React.FC<MaintenanceHistorySectionProps>
           product_items!inner(item_code, product_id, status, products(name))
         `)
         .eq("status", "completed")
+        .gte("completed_at", ytdStartDate.toISOString())
         .order("completed_at", { ascending: false });
 
       if (error) throw error;
@@ -190,9 +197,9 @@ export const MaintenanceHistorySection: React.FC<MaintenanceHistorySectionProps>
     return Array.from(unique) as string[];
   }, [allSessions]);
 
-  // Calculate advanced statistics
+  // Calculate advanced statistics (YTD data only)
   const advancedStats = useMemo(() => {
-    if (!filteredSessions || !productItems) {
+    if (!allSessions || !productItems) {
       return {
         totalSessions: 0,
         totalCost: 0,
@@ -206,11 +213,14 @@ export const MaintenanceHistorySection: React.FC<MaintenanceHistorySectionProps>
       };
     }
 
-    const totalSessions = filteredSessions.length;
-    const totalCost = filteredSessions.reduce((sum, s) => sum + s.total_cost, 0);
+    // Use YTD sessions for stats (not filtered sessions)
+    const ytdSessions = allSessions;
+
+    const totalSessions = ytdSessions.length;
+    const totalCost = ytdSessions.reduce((sum, s) => sum + s.total_cost, 0);
 
     const avgDuration =
-      filteredSessions.reduce((sum, s) => {
+      ytdSessions.reduce((sum, s) => {
         const days = Math.ceil(
           (new Date(s.completed_at).getTime() - new Date(s.started_at).getTime()) /
             (1000 * 60 * 60 * 24)
@@ -218,22 +228,23 @@ export const MaintenanceHistorySection: React.FC<MaintenanceHistorySectionProps>
         return sum + days;
       }, 0) / totalSessions || 0;
 
-    // Count outcomes
-    const returnedToService = filteredSessions.filter((s) => {
-      const item = productItems.find((i) => i.id === s.item_id);
-      return item && ["available", "assigned", "in_service"].includes(item.status);
+    // Count units returned to service (YTD) - those with status available/in_service/assigned
+    const returnedToService = productItems.filter((item) => {
+      return ["available", "assigned", "in_service"].includes(item.status) &&
+        ytdSessions.some((s) => s.item_id === item.id);
     }).length;
 
-    const retired = filteredSessions.filter((s) => {
-      const item = productItems.find((i) => i.id === s.item_id);
-      return item && item.status === "retired";
+    // Count retired units (YTD) - those with status retired
+    const retired = productItems.filter((item) => {
+      return item.status === "retired" &&
+        ytdSessions.some((s) => s.item_id === item.id);
     }).length;
 
     const completionRate = totalSessions > 0 ? Math.round((returnedToService / totalSessions) * 100) : 0;
 
     // Cost by product type
     const costByProduct: Record<string, number> = {};
-    filteredSessions.forEach((s) => {
+    ytdSessions.forEach((s) => {
       costByProduct[s.product_name] = (costByProduct[s.product_name] || 0) + s.total_cost;
     });
     const costByProductType = Object.entries(costByProduct)
@@ -242,7 +253,7 @@ export const MaintenanceHistorySection: React.FC<MaintenanceHistorySectionProps>
 
     // Top technicians
     const techStats: Record<string, { sessions: number; totalCost: number }> = {};
-    filteredSessions.forEach((s) => {
+    ytdSessions.forEach((s) => {
       if (s.primary_technician) {
         if (!techStats[s.primary_technician]) {
           techStats[s.primary_technician] = { sessions: 0, totalCost: 0 };
@@ -270,7 +281,7 @@ export const MaintenanceHistorySection: React.FC<MaintenanceHistorySectionProps>
       topTechnicians,
       monthlyTrends: [],
     };
-  }, [filteredSessions, productItems]);
+  }, [allSessions, productItems]);
 
   // Get returned and retired units
   const returnedUnits = useMemo(() => {

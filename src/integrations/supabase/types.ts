@@ -5607,6 +5607,7 @@ export type Database = {
           total_cost: number | null
           total_labor_hours: number | null
           updated_at: string
+          work_order_id: string | null
         }
         Insert: {
           completed_at?: string | null
@@ -5625,6 +5626,7 @@ export type Database = {
           total_cost?: number | null
           total_labor_hours?: number | null
           updated_at?: string
+          work_order_id?: string | null
         }
         Update: {
           completed_at?: string | null
@@ -5643,6 +5645,7 @@ export type Database = {
           total_cost?: number | null
           total_labor_hours?: number | null
           updated_at?: string
+          work_order_id?: string | null
         }
         Relationships: [
           {
@@ -5650,6 +5653,13 @@ export type Database = {
             columns: ["item_id"]
             isOneToOne: false
             referencedRelation: "product_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maintenance_sessions_work_order_id_fkey"
+            columns: ["work_order_id"]
+            isOneToOne: true
+            referencedRelation: "work_orders"
             referencedColumns: ["id"]
           },
         ]
@@ -5787,8 +5797,10 @@ export type Database = {
           item_id: string
           labor_hours: number | null
           maintenance_session_id: string | null
+          parent_work_order_id: string | null
           parts_used: Json | null
           session_status: string | null
+          status: string | null
           status_change_from: string | null
           status_change_to: string | null
           technician_name: string | null
@@ -5808,8 +5820,10 @@ export type Database = {
           item_id: string
           labor_hours?: number | null
           maintenance_session_id?: string | null
+          parent_work_order_id?: string | null
           parts_used?: Json | null
           session_status?: string | null
+          status?: string | null
           status_change_from?: string | null
           status_change_to?: string | null
           technician_name?: string | null
@@ -5829,8 +5843,10 @@ export type Database = {
           item_id?: string
           labor_hours?: number | null
           maintenance_session_id?: string | null
+          parent_work_order_id?: string | null
           parts_used?: Json | null
           session_status?: string | null
+          status?: string | null
           status_change_from?: string | null
           status_change_to?: string | null
           technician_name?: string | null
@@ -5844,6 +5860,13 @@ export type Database = {
             columns: ["item_id"]
             isOneToOne: false
             referencedRelation: "product_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maintenance_updates_parent_work_order_id_fkey"
+            columns: ["parent_work_order_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_updates"
             referencedColumns: ["id"]
           },
         ]
