@@ -27,7 +27,7 @@ interface UnifiedMaintenanceItemModalProps {
   item: any;
   productId: string;
   storageLocations: StorageLocation[] | undefined;
-  activeTab?: "details" | "create-workorder" | "open-workorders";
+  activeTab?: "details" | "create-workorder" | "workorders";
 }
 
 
@@ -106,14 +106,10 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
     },
   });
 
-  // Filter work orders (open and all)
+  // Filter work orders (all work orders, both open and completed)
   const workOrders = React.useMemo(() => {
-    if (!updates) return { open: [], all: [] };
-    const allWorkOrders = updates.filter((u: any) => u.title === "Work Order");
-    const openWorkOrders = allWorkOrders.filter((u: any) => 
-      u.status !== 'completed'
-    );
-    return { open: openWorkOrders, all: allWorkOrders };
+    if (!updates) return [];
+    return updates.filter((u: any) => u.title === "Work Order");
   }, [updates]);
 
   const totalCost = useMemo(() => {
@@ -459,11 +455,11 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
           </div>
 
           {/* Tab Navigation */}
-          <Tabs value={activeTab} onValueChange={(value: string) => setActiveTab(value as "details" | "create-workorder" | "open-workorders")} className="w-full">
+          <Tabs value={activeTab} onValueChange={(value: string) => setActiveTab(value as "details" | "create-workorder" | "workorders")} className="w-full">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="details">Unit Details</TabsTrigger>
               <TabsTrigger value="create-workorder">Create Work Order</TabsTrigger>
-              <TabsTrigger value="open-workorders">Open Work Orders</TabsTrigger>
+              <TabsTrigger value="workorders">Work Orders</TabsTrigger>
             </TabsList>
 
             <TabsContent value="details" className="mt-6">
@@ -878,19 +874,19 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
               </div>
             </TabsContent>
 
-            <TabsContent value="open-workorders" className="mt-6">
-              {/* Open Work Orders Tab */}
+            <TabsContent value="workorders" className="mt-6">
+              {/* Work Orders Tab */}
               <div className="space-y-4">
-                {workOrders.open.length === 0 ? (
+                {workOrders.length === 0 ? (
                   <div className="bg-white border rounded-xl p-8">
                     <div className="text-center text-muted-foreground">
                       <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <p className="font-medium">No Open Work Orders</p>
+                      <p className="font-medium">No Work Orders</p>
                       <p className="text-sm">Create a work order in the "Create Work Order" tab to get started</p>
                     </div>
                   </div>
                 ) : (
-                  workOrders.open.map((workOrder: any) => (
+                  workOrders.map((workOrder: any) => (
                     <div key={workOrder.id} className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
                       {/* Header */}
                       <div className="flex items-start justify-between mb-4">
