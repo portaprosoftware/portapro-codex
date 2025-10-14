@@ -311,12 +311,14 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
             <li>The unit will now appear on the Maintenance list and be excluded from active inventory counts</li>
             <li>You can add updates, photos, track labor hours/costs, parts and more as maintenance progresses</li>
           </ul>
-          <div className="mt-3">
-            <Badge className="bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold">
-              {maintenanceItems?.length || 0} {maintenanceItems?.length === 1 ? 'Unit' : 'Units'} Currently In Maintenance
-            </Badge>
-          </div>
         </div>
+      </div>
+
+      {/* Badge Below Card */}
+      <div>
+        <Badge className="bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold">
+          {maintenanceItems?.length || 0} {maintenanceItems?.length === 1 ? 'Unit' : 'Units'} Currently In Maintenance
+        </Badge>
       </div>
 
       {/* Bulk Actions */}
