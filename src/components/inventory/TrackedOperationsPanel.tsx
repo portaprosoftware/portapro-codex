@@ -102,6 +102,10 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
             onSuccess: () => {
               toast.success(`Successfully added ${quantity} tracked unit${quantity > 1 ? 's' : ''} to inventory`, {
                 duration: 3000,
+                className: 'toast-success',
+                style: {
+                  '--toast-icon-color': '#10b981',
+                } as React.CSSProperties,
               });
               // Close drawer and reset state after successful mutation
               onOpenChange?.(false);
