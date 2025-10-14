@@ -75,7 +75,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
   });
 
   const [workOrderForm, setWorkOrderForm] = useState({
-    technician_name: "",
+    technicians: [{ name: "" }],
     labor_hours: "",
     labor_cost: "",
     labor_cost_type: "total",
@@ -556,41 +556,83 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                 <h4 className="font-medium mb-4">Work Order Details</h4>
                 <div className="space-y-4">
                   <div>
-                    <Label>Technician Name</Label>
-                    <div className="relative">
-                      <Select
-                        value={workOrderForm.technician_name}
-                        onValueChange={(v) => {
-                          if (v === "__custom__") {
-                            // User wants to type custom name
-                            setWorkOrderForm((p) => ({ ...p, technician_name: "" }));
-                          } else {
-                            setWorkOrderForm((p) => ({ ...p, technician_name: v }));
-                          }
+                    <div className="flex items-center justify-between mb-2">
+                      <Label>Technician Name(s)</Label>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => {
+                          setWorkOrderForm((p) => ({
+                            ...p,
+                            technicians: [...p.technicians, { name: "" }],
+                          }));
                         }}
+                        className="h-8 px-2"
                       >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select technician or type custom name" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {systemUsers.map((user) => (
-                            <SelectItem key={user.id} value={user.name}>
-                              {user.name}
-                            </SelectItem>
-                          ))}
-                          <SelectItem value="__custom__">
-                            <span className="text-blue-600">+ Type custom name</span>
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                      {(!workOrderForm.technician_name || workOrderForm.technician_name === "__custom__") && (
-                        <Input
-                          value={workOrderForm.technician_name === "__custom__" ? "" : workOrderForm.technician_name}
-                          onChange={(e) => setWorkOrderForm((p) => ({ ...p, technician_name: e.target.value }))}
-                          placeholder="Who performed this work?"
-                          className="mt-2"
-                        />
-                      )}
+                        <Plus className="w-4 h-4 mr-1" />
+                        Add Technician
+                      </Button>
+                    </div>
+                    <div className="space-y-2">
+                      {workOrderForm.technicians.map((tech, index) => (
+                        <div key={index} className="flex gap-2">
+                          <div className="flex-1">
+                            <Select
+                              value={tech.name}
+                              onValueChange={(v) => {
+                                const newTechs = [...workOrderForm.technicians];
+                                if (v === "__custom__") {
+                                  newTechs[index] = { name: "" };
+                                } else {
+                                  newTechs[index] = { name: v };
+                                }
+                                setWorkOrderForm((p) => ({ ...p, technicians: newTechs }));
+                              }}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select technician or type custom name" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {systemUsers.map((user) => (
+                                  <SelectItem key={user.id} value={user.name}>
+                                    {user.name}
+                                  </SelectItem>
+                                ))}
+                                <SelectItem value="__custom__">
+                                  <span className="text-blue-600">+ Type custom name</span>
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                            {!tech.name && (
+                              <Input
+                                value={tech.name}
+                                onChange={(e) => {
+                                  const newTechs = [...workOrderForm.technicians];
+                                  newTechs[index] = { name: e.target.value };
+                                  setWorkOrderForm((p) => ({ ...p, technicians: newTechs }));
+                                }}
+                                placeholder="Who performed this work?"
+                                className="mt-2"
+                              />
+                            )}
+                          </div>
+                          {workOrderForm.technicians.length > 1 && (
+                            <Button
+                              type="button"
+                              size="icon"
+                              variant="ghost"
+                              onClick={() => {
+                                const newTechs = workOrderForm.technicians.filter((_, i) => i !== index);
+                                setWorkOrderForm((p) => ({ ...p, technicians: newTechs }));
+                              }}
+                              className="h-10 w-10 mt-0"
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
+                      ))}
                     </div>
                   </div>
                   
