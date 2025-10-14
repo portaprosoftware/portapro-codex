@@ -24,7 +24,7 @@ const JOB_STATUSES = {
 const JOB_TYPES = {
   delivery: { label: 'Delivery', icon: '📦' },
   pickup: { label: 'Pickup', icon: '🚚' },
-  service: { label: 'Service', icon: '🔧' },
+  service: { label: 'Service', icon: '🪣' },
   return: { label: 'Partial Pickup', icon: '↩️' },
 } as const;
 
