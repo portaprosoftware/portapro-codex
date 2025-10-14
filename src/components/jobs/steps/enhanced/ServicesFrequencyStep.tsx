@@ -1693,11 +1693,12 @@ export const ServicesFrequencyStep: React.FC<ServicesFrequencyStepProps> = ({
                           type="number"
                           min="0"
                           step="0.01"
-                          value={data.package_override.amount || 0}
+                          value={data.package_override.amount ?? ''}
                           onChange={(e) => {
-                            const newAmount = parseFloat(e.target.value) || 0;
+                            const newAmount = e.target.value === '' ? 0 : parseFloat(e.target.value) || 0;
                             updatePackageOverride(true, newAmount);
                           }}
+                          placeholder="0.00"
                           className="flex-1"
                         />
                       </div>
