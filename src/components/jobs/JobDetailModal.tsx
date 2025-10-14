@@ -781,7 +781,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                                         window.parent.open(url, '_blank', 'noopener,noreferrer');
                                       }
                                     }}
-                                    className="inline-flex items-center justify-center h-8 px-2 text-xs rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-colors"
+                                    className="inline-flex items-center justify-center h-8 px-2 text-xs rounded-md border border-input bg-muted hover:bg-muted/80 transition-colors"
                                     title="Open in Google Maps"
                                   >
                                     Google
@@ -797,7 +797,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                                         window.parent.open(url, '_blank', 'noopener,noreferrer');
                                       }
                                     }}
-                                    className="inline-flex items-center justify-center h-8 px-2 text-xs rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-colors"
+                                    className="inline-flex items-center justify-center h-8 px-2 text-xs rounded-md border border-input bg-muted hover:bg-muted/80 transition-colors"
                                     title="Open in Apple Maps"
                                   >
                                     Apple
@@ -806,7 +806,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
                                     href={`https://waze.com/ul?q=${encodedAddress}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center justify-center h-8 px-2 text-xs rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-colors"
+                                    className="inline-flex items-center justify-center h-8 px-2 text-xs rounded-md border border-input bg-muted hover:bg-muted/80 transition-colors"
                                     title="Open in Waze"
                                   >
                                     Waze
