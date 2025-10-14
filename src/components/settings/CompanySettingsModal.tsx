@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Upload, Save, Mail, MapPin } from "lucide-react";
+import { Upload, Save, Mail, MapPin, Percent } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 // LogoUploadModal import removed - logo management separated
@@ -25,6 +25,11 @@ const companySettingsSchema = z.object({
   company_zipcode: z.string().min(1, "Zipcode is required"),
   company_timezone: z.string().min(1, "Timezone is required"),
   support_email: z.string().email("Invalid email address").optional().or(z.literal("")),
+  default_deposit_percentage: z.number()
+    .min(0, "Percentage must be at least 0")
+    .max(100, "Percentage cannot exceed 100")
+    .optional()
+    .default(25),
 });
 
 type CompanySettingsFormData = z.infer<typeof companySettingsSchema>;
@@ -115,6 +120,7 @@ export function CompanySettingsModal({ isOpen, onClose, companySettings }: Compa
       company_zipcode: companySettings?.company_zipcode || "",
       company_timezone: companySettings?.company_timezone || "America/New_York",
       support_email: companySettings?.support_email || "",
+      default_deposit_percentage: companySettings?.default_deposit_percentage || 25,
     },
   });
 
@@ -132,6 +138,7 @@ export function CompanySettingsModal({ isOpen, onClose, companySettings }: Compa
         company_zipcode: companySettings.company_zipcode || "",
         company_timezone: companySettings.company_timezone || "America/New_York",
         support_email: companySettings.support_email || "",
+        default_deposit_percentage: companySettings.default_deposit_percentage || 25,
       };
       console.log("Resetting form with data:", formData);
       form.reset(formData);
@@ -373,26 +380,57 @@ export function CompanySettingsModal({ isOpen, onClose, companySettings }: Compa
                   </div>
                 </div>
 
-                <FormField
-                  control={form.control}
-                  name="support_email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Support Email</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Mail className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                          <Input 
-                            placeholder="support@example.com" 
-                            className="pl-10"
-                            {...field} 
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField
+                    control={form.control}
+                    name="support_email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Support Email</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Mail className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                            <Input 
+                              placeholder="support@example.com" 
+                              className="pl-10"
+                              {...field} 
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="default_deposit_percentage"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Default Deposit Percentage</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Percent className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                            <Input 
+                              type="number"
+                              min="0"
+                              max="100"
+                              step="1"
+                              placeholder="25" 
+                              className="pl-10"
+                              {...field}
+                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                        <p className="text-xs text-muted-foreground">
+                          Default percentage used for deposit collection on quotes and jobs
+                        </p>
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
                 <div className="flex justify-end space-x-4 pt-4">
                   <Button type="button" variant="outline" onClick={onClose}>

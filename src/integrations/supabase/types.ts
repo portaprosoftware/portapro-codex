@@ -312,6 +312,7 @@ export type Database = {
           company_zipcode: string | null
           consumable_categories: Json
           created_at: string | null
+          default_deposit_percentage: number | null
           default_logo_in_marketing: boolean | null
           default_payment_terms_days: number | null
           default_quote_expiration_days: number | null
@@ -363,6 +364,7 @@ export type Database = {
           company_zipcode?: string | null
           consumable_categories?: Json
           created_at?: string | null
+          default_deposit_percentage?: number | null
           default_logo_in_marketing?: boolean | null
           default_payment_terms_days?: number | null
           default_quote_expiration_days?: number | null
@@ -414,6 +416,7 @@ export type Database = {
           company_zipcode?: string | null
           consumable_categories?: Json
           created_at?: string | null
+          default_deposit_percentage?: number | null
           default_logo_in_marketing?: boolean | null
           default_payment_terms_days?: number | null
           default_quote_expiration_days?: number | null
@@ -4910,6 +4913,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      leads: {
+        Row: {
+          company: string
+          contacted_at: string | null
+          converted_at: string | null
+          created_at: string
+          email: string
+          fleet_size: string
+          id: string
+          name: string
+          notes: string | null
+          phone: string
+          source: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          company: string
+          contacted_at?: string | null
+          converted_at?: string | null
+          created_at?: string
+          email: string
+          fleet_size: string
+          id?: string
+          name: string
+          notes?: string | null
+          phone: string
+          source?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          company?: string
+          contacted_at?: string | null
+          converted_at?: string | null
+          created_at?: string
+          email?: string
+          fleet_size?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          phone?: string
+          source?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       load_compliance_reports: {
         Row: {

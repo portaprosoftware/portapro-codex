@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ModernBadge } from '@/components/ui/modern-badge';
+import { useCompanySettings } from '@/hooks/useCompanySettings';
 
 interface DepositCollectionStepProps {
   totalAmount: number;
@@ -37,10 +38,14 @@ export const DepositCollectionStep: React.FC<DepositCollectionStepProps> = ({
   onCollectNow,
   onGenerateLink,
 }) => {
+  // Fetch company settings to get default deposit percentage
+  const { data: companySettings } = useCompanySettings();
+  const defaultDepositPercentage = companySettings?.default_deposit_percentage || 25;
+
   const [depositEnabled, setDepositEnabled] = useState(false);
   const [depositType, setDepositType] = useState<'flat' | 'percentage'>('flat');
   const [flatAmount, setFlatAmount] = useState(0);
-  const [percentage, setPercentage] = useState(25);
+  const [percentage, setPercentage] = useState(defaultDepositPercentage);
   const [dueDate, setDueDate] = useState<Date | null>(null);
 
   // Fetch customer data to get deposit requirement status
@@ -66,6 +71,13 @@ export const DepositCollectionStep: React.FC<DepositCollectionStepProps> = ({
       setDepositEnabled(true);
     }
   }, [customer?.deposit_required]);
+
+  // Update percentage when company settings change
+  useEffect(() => {
+    if (companySettings?.default_deposit_percentage !== undefined) {
+      setPercentage(companySettings.default_deposit_percentage);
+    }
+  }, [companySettings?.default_deposit_percentage]);
 
   const calculatedDepositAmount = depositType === 'flat' 
     ? flatAmount 

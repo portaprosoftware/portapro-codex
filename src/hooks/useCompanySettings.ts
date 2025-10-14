@@ -14,6 +14,7 @@ export interface CompanySettings {
   company_timezone?: string;
   // Dynamic consumable categories array lives here
   consumable_categories?: ConsumableCategory[];
+  default_deposit_percentage?: number;
   // ... other company settings fields
 }
 
