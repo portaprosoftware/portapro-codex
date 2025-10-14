@@ -195,7 +195,7 @@ export const MaintenanceExportDialog: React.FC<MaintenanceExportDialogProps> = (
           </div>
 
           {/* Info */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
+          <div className="bg-gray-100 border border-gray-200 rounded-lg p-3 text-sm text-gray-900">
             Exporting {data.length} maintenance session{data.length !== 1 ? 's' : ''}
           </div>
         </div>
