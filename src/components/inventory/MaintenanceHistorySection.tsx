@@ -110,9 +110,7 @@ export const MaintenanceHistorySection: React.FC<MaintenanceHistorySectionProps>
     <div className="bg-white rounded-lg border border-gray-200 p-6">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="flex-shrink-0 w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
-            <History className="w-4 h-4 text-white" />
-          </div>
+          <History className="w-6 h-6 text-gray-900" />
           <div>
             <h3 className="text-lg font-bold text-gray-900">Maintenance History</h3>
             <p className="text-sm text-gray-600">
