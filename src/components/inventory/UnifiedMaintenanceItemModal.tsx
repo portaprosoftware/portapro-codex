@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Clock, DollarSign, MapPin, Settings, Wrench, Trash2 } from "lucide-react";
+import { Clock, DollarSign, MapPin, Settings, Wrench, Trash2, Plus, X } from "lucide-react";
 import { SimpleMaintenancePhotoUpload } from "./SimpleMaintenancePhotoUpload";
 import { MaintenanceUpdatePhotos } from "./MaintenanceUpdatePhotos";
 import { ImageViewerModal } from "./ImageViewerModal";
@@ -76,8 +76,7 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
     labor_hours: "",
     labor_cost: "",
     labor_cost_type: "total",
-    parts_cost: "",
-    parts_used: "",
+    parts: [{ parts_used: "", parts_cost: "" }],
     status: "work_order_created",
   });
 
@@ -578,26 +577,70 @@ export const UnifiedMaintenanceItemModal: React.FC<UnifiedMaintenanceItemModalPr
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label>Parts Cost ($)</Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        value={workOrderForm.parts_cost}
-                        onChange={(e) => setWorkOrderForm((p) => ({ ...p, parts_cost: e.target.value }))}
-                        placeholder="0.00"
-                      />
+                  {/* Parts Section */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label>Parts</Label>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setWorkOrderForm((p) => ({ 
+                          ...p, 
+                          parts: [...p.parts, { parts_used: "", parts_cost: "" }] 
+                        }))}
+                        className="h-8 gap-1"
+                      >
+                        <Plus className="w-3 h-3" />
+                        Add Part
+                      </Button>
                     </div>
-                    <div>
-                      <Label>Parts Used</Label>
-                      <Input
-                        value={workOrderForm.parts_used}
-                        onChange={(e) => setWorkOrderForm((p) => ({ ...p, parts_used: e.target.value }))}
-                        placeholder="List parts used"
-                      />
-                    </div>
+                    
+                    {workOrderForm.parts.map((part, index) => (
+                      <div key={index} className="flex gap-2 items-start">
+                        <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <div>
+                            <Input
+                              value={part.parts_used}
+                              onChange={(e) => {
+                                const newParts = [...workOrderForm.parts];
+                                newParts[index].parts_used = e.target.value;
+                                setWorkOrderForm((p) => ({ ...p, parts: newParts }));
+                              }}
+                              placeholder="List parts used"
+                            />
+                          </div>
+                          <div>
+                            <Input
+                              type="number"
+                              step="0.01"
+                              min="0"
+                              value={part.parts_cost}
+                              onChange={(e) => {
+                                const newParts = [...workOrderForm.parts];
+                                newParts[index].parts_cost = e.target.value;
+                                setWorkOrderForm((p) => ({ ...p, parts: newParts }));
+                              }}
+                              placeholder="0.00"
+                            />
+                          </div>
+                        </div>
+                        {workOrderForm.parts.length > 1 && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              const newParts = workOrderForm.parts.filter((_, i) => i !== index);
+                              setWorkOrderForm((p) => ({ ...p, parts: newParts }));
+                            }}
+                            className="h-10 w-10 p-0 text-gray-400 hover:text-red-600"
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
+                    ))}
                   </div>
 
                   <div>
