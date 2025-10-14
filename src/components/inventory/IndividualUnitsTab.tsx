@@ -561,7 +561,7 @@ export const IndividualUnitsTab: React.FC<IndividualUnitsTabProps> = ({ productI
                 setShowCategoryModal(true);
               }}
             >
-              <Binary className="w-5 h-5 mr-2" />
+              <Binary className="w-6 h-6 mr-1.5" />
               Set Default Series
             </Button>
             {product?.default_item_code_category && (
