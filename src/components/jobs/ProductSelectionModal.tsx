@@ -330,7 +330,7 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
                     </TabsList>
                   </div>
                   
-                  <TabsContent value="products" className="flex-1 m-0 overflow-y-auto">
+                  <TabsContent value="products" className="flex-1 m-0 overflow-y-auto min-h-[500px]">
                     <ProductListPage
                       startDate={startDate}
                       endDate={endDate}
@@ -341,7 +341,7 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
                     />
                   </TabsContent>
                   
-                  <TabsContent value="availability" className="flex-1 m-0 p-4 overflow-y-auto">
+                  <TabsContent value="availability" className="flex-1 m-0 p-4 overflow-y-auto min-h-[500px]">
                     <DateRangeAvailabilityChecker
                       requestedQuantity={1}
                       className="h-full"
