@@ -50,7 +50,7 @@ export function ReadOnlyPinsMap({
   const map = useRef<mapboxgl.Map | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [mapStyle, setMapStyle] = useState<'streets' | 'satellite'>('streets');
+  const [mapStyle, setMapStyle] = useState<'streets' | 'satellite'>('satellite');
   const markersRef = useRef<mapboxgl.Marker[]>([]);
 
   // Fetch Mapbox token
@@ -105,7 +105,7 @@ export function ReadOnlyPinsMap({
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: mapStyle === 'satellite' 
-        ? 'mapbox://styles/mapbox/satellite-v9'
+        ? 'mapbox://styles/mapbox/satellite-streets-v12'
         : 'mapbox://styles/mapbox/streets-v12',
       center: [-98.5795, 39.8283], // Center of US as default
       zoom: 3,
@@ -138,7 +138,7 @@ export function ReadOnlyPinsMap({
     if (!map.current || !mapLoaded) return;
 
     const newStyle = mapStyle === 'satellite'
-      ? 'mapbox://styles/mapbox/satellite-v9'
+      ? 'mapbox://styles/mapbox/satellite-streets-v12'
       : 'mapbox://styles/mapbox/streets-v12';
 
     // Store current markers before style change
