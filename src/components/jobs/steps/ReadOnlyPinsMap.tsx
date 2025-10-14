@@ -476,7 +476,7 @@ export function ReadOnlyPinsMap({
                                 "p-3 rounded-lg transition-all ml-3",
                                 !readOnly && "cursor-pointer",
                                 isSelected 
-                                  ? "bg-gradient-to-r from-green-500 to-green-600 text-white border-2 border-green-700" 
+                                  ? "bg-muted/30 border-2 border-green-600" 
                                   : "bg-muted/30 hover:bg-muted/50"
                               )}
                             >
@@ -489,7 +489,7 @@ export function ReadOnlyPinsMap({
                                     className={cn(
                                       "mt-0.5 h-5 w-5 rounded border-2",
                                       isSelected 
-                                        ? "bg-white border-white checked:bg-white [&:checked]:bg-white appearance-none checked:border-white relative checked:after:content-['✓'] checked:after:absolute checked:after:text-green-600 checked:after:font-bold checked:after:text-base checked:after:left-0 checked:after:top-[-3px] checked:after:w-full checked:after:text-center"
+                                        ? "bg-white border-green-600 checked:bg-white [&:checked]:bg-white appearance-none checked:border-green-600 relative checked:after:content-['✓'] checked:after:absolute checked:after:text-green-600 checked:after:font-bold checked:after:text-base checked:after:left-0 checked:after:top-[-3px] checked:after:w-full checked:after:text-center"
                                         : "border-gray-300 bg-white"
                                     )}
                                     onClick={(e) => e.stopPropagation()}
@@ -498,16 +498,16 @@ export function ReadOnlyPinsMap({
                                 )}
                                 <div className="flex-1">
                                   <div className="flex items-center gap-2">
-                                    <MapPin className={cn("h-3 w-3", isSelected ? "text-white stroke-[3]" : "text-destructive")} />
-                                    <h4 className={cn("text-sm", isSelected ? "text-white font-bold" : "font-medium")}>
+                                    <MapPin className={cn("h-3 w-3", isSelected ? "text-destructive" : "text-destructive")} />
+                                    <h4 className="text-sm font-medium">
                                       {pin.label}
                                     </h4>
                                   </div>
-                                  <p className={cn("text-xs mt-1", isSelected ? "text-white font-bold" : "text-muted-foreground")}>
+                                  <p className="text-xs mt-1 text-muted-foreground">
                                     {pin.latitude.toFixed(6)}, {pin.longitude.toFixed(6)}
                                   </p>
                                   {pin.notes && (
-                                    <p className={cn("text-xs mt-2", isSelected ? "text-white font-bold" : "text-muted-foreground")}>{pin.notes}</p>
+                                    <p className="text-xs mt-2 text-muted-foreground">{pin.notes}</p>
                                   )}
                                 </div>
                               </div>
