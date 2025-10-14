@@ -312,13 +312,13 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
 
       {/* Deposit Status */}
       <Card className="rounded-2xl">
-        <CardHeader>
+        <CardHeader className="pb-3">
           <div className="flex items-center gap-2">
             <CardTitle className="text-lg font-semibold">Deposit Status</CardTitle>
             <p className="text-xs text-muted-foreground">Deposit required by default</p>
           </div>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-3 pt-0">
           <div className="flex items-center justify-between">
             <div>
               <span className="text-muted-foreground text-sm block mb-2">Deposit Status</span>
@@ -327,6 +327,14 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
             <div className="flex flex-col items-start">
               <span className="text-muted-foreground text-sm mb-2">Default Deposit Percentage</span>
               <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowDepositPercentageDialog(true)}
+                  className="h-8 w-8 p-0"
+                >
+                  <Edit className="w-4 h-4" />
+                </Button>
                 {customer.custom_deposit_percentage !== null && customer.custom_deposit_percentage !== undefined ? (
                   <Badge variant="outline" className="text-xs">
                     Custom Override
@@ -339,14 +347,6 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
                 <span className="text-xl font-bold text-foreground">
                   {customer.custom_deposit_percentage ?? companySettings?.default_deposit_percentage ?? 25}%
                 </span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowDepositPercentageDialog(true)}
-                  className="h-8 w-8 p-0"
-                >
-                  <Edit className="w-4 h-4" />
-                </Button>
               </div>
               <p className="text-xs text-muted-foreground mt-1">
                 {customer.custom_deposit_percentage !== null && customer.custom_deposit_percentage !== undefined
