@@ -4730,6 +4730,7 @@ export type Database = {
           customer_id: string
           date_returned: string | null
           default_template_id: string | null
+          delivery_fee: number | null
           deposit_amount: number | null
           deposit_due_date: string | null
           deposit_paid_at: string | null
@@ -4781,6 +4782,7 @@ export type Database = {
           customer_id: string
           date_returned?: string | null
           default_template_id?: string | null
+          delivery_fee?: number | null
           deposit_amount?: number | null
           deposit_due_date?: string | null
           deposit_paid_at?: string | null
@@ -4832,6 +4834,7 @@ export type Database = {
           customer_id?: string
           date_returned?: string | null
           default_template_id?: string | null
+          delivery_fee?: number | null
           deposit_amount?: number | null
           deposit_due_date?: string | null
           deposit_paid_at?: string | null
@@ -7967,6 +7970,7 @@ export type Database = {
           customer_id: string
           deleted_at: string | null
           deleted_by: string | null
+          delivery_fee: number | null
           deposit_amount: number | null
           deposit_due_date: string | null
           deposit_paid_at: string | null
@@ -7996,6 +8000,7 @@ export type Database = {
           customer_id: string
           deleted_at?: string | null
           deleted_by?: string | null
+          delivery_fee?: number | null
           deposit_amount?: number | null
           deposit_due_date?: string | null
           deposit_paid_at?: string | null
@@ -8025,6 +8030,7 @@ export type Database = {
           customer_id?: string
           deleted_at?: string | null
           deleted_by?: string | null
+          delivery_fee?: number | null
           deposit_amount?: number | null
           deposit_due_date?: string | null
           deposit_paid_at?: string | null
