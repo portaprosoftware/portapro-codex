@@ -98,11 +98,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
       
       const { data, error } = await supabase
         .from('job_items')
-        .select(`
-          *,
-          products(name, category),
-          routine_maintenance_services(name, description)
-        `)
+        .select('*')
         .eq('job_id', jobId);
       
       if (error) throw error;

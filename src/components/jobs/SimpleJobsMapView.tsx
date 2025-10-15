@@ -124,9 +124,10 @@ export function SimpleJobsMapView({
   // Filter jobs based on search term
   const filterJobs = (jobs: any[]) => {
     return jobs.filter(job => {
-      const matchesSearch = searchTerm === '' || 
-        job.job_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        job.customers?.name.toLowerCase().includes(searchTerm.toLowerCase());
+      const term = (searchTerm || '').trim().toLowerCase();
+      const matchesSearch = term === '' || 
+        job.job_number.toLowerCase().includes(term) ||
+        job.customers?.name.toLowerCase().includes(term);
       
       return matchesSearch;
     });
@@ -197,7 +198,7 @@ export function SimpleJobsMapView({
         map.current = null;
       }
     };
-  }, [mapboxToken, mapMode]);
+  }, [mapboxToken]);
 
   // Update map style when changed
   useEffect(() => {
@@ -212,11 +213,14 @@ export function SimpleJobsMapView({
 
   // Create static pins - simple approach
   useEffect(() => {
-    if (!map.current || !filteredJobs.length) return;
+    if (!map.current) return;
 
-    // Clear existing markers
+    // Always clear existing markers
     markersRef.current.forEach(marker => marker.remove());
     markersRef.current = [];
+
+    // Exit if no jobs to render
+    if (!filteredJobs.length) return;
 
     const bounds = new mapboxgl.LngLatBounds();
     let hasCoordinates = false;
@@ -395,6 +399,15 @@ export function SimpleJobsMapView({
 
       markersRef.current.push(marker);
     });
+
+    // Fit map to markers
+    if (hasCoordinates) {
+      try {
+        map.current!.fitBounds(bounds, { padding: 60, maxZoom: 13 });
+      } catch (e) {
+        console.warn('fitBounds failed (style not ready yet), skipping', e);
+      }
+    }
 
   }, [filteredJobs, mapStyle, mapMode, drivers]);
 
