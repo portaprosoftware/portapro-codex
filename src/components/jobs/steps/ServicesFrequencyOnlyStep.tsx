@@ -3,6 +3,7 @@ import { useJobWizard } from '@/contexts/JobWizardContext';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ClipboardCheck } from 'lucide-react';
 import { ServicesFrequencyStep } from '@/components/jobs/steps/enhanced/ServicesFrequencyStep';
+import { DeliveryFeeCard } from './DeliveryFeeCard';
 
 export const ServicesFrequencyOnlyStep: React.FC = () => {
   const { state, updateData, previousStep } = useJobWizard();
@@ -41,6 +42,14 @@ export const ServicesFrequencyOnlyStep: React.FC = () => {
           package_override: state.data.servicesData?.package_override
         }}
         onUpdate={(svc) => updateData({ servicesData: svc })}
+      />
+
+      {/* Delivery Fee Card */}
+      <DeliveryFeeCard
+        enabled={state.data.delivery_fee_enabled || false}
+        amount={state.data.delivery_fee_amount || 0}
+        onEnabledChange={(enabled) => updateData({ delivery_fee_enabled: enabled })}
+        onAmountChange={(amount) => updateData({ delivery_fee_amount: amount })}
       />
     </div>
   );

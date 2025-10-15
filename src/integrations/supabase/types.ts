@@ -298,6 +298,7 @@ export type Database = {
       }
       company_settings: {
         Row: {
+          auto_enable_delivery_fee: boolean | null
           cleaning_prefix: string | null
           company_address: string | null
           company_city: string | null
@@ -312,6 +313,7 @@ export type Database = {
           company_zipcode: string | null
           consumable_categories: Json
           created_at: string | null
+          default_delivery_fee: number | null
           default_deposit_percentage: number | null
           default_logo_in_marketing: boolean | null
           default_payment_terms_days: number | null
@@ -350,6 +352,7 @@ export type Database = {
           zip_tax_overrides: Json | null
         }
         Insert: {
+          auto_enable_delivery_fee?: boolean | null
           cleaning_prefix?: string | null
           company_address?: string | null
           company_city?: string | null
@@ -364,6 +367,7 @@ export type Database = {
           company_zipcode?: string | null
           consumable_categories?: Json
           created_at?: string | null
+          default_delivery_fee?: number | null
           default_deposit_percentage?: number | null
           default_logo_in_marketing?: boolean | null
           default_payment_terms_days?: number | null
@@ -402,6 +406,7 @@ export type Database = {
           zip_tax_overrides?: Json | null
         }
         Update: {
+          auto_enable_delivery_fee?: boolean | null
           cleaning_prefix?: string | null
           company_address?: string | null
           company_city?: string | null
@@ -416,6 +421,7 @@ export type Database = {
           company_zipcode?: string | null
           consumable_categories?: Json
           created_at?: string | null
+          default_delivery_fee?: number | null
           default_deposit_percentage?: number | null
           default_logo_in_marketing?: boolean | null
           default_payment_terms_days?: number | null

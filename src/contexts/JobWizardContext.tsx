@@ -124,6 +124,10 @@ export interface JobWizardData {
   depositPercentage?: number;
   depositDueDate?: string | null;
   collectImmediately?: boolean;
+  
+  // Delivery & Additional Fees
+  delivery_fee_enabled?: boolean;
+  delivery_fee_amount?: number;
 }
 
 interface JobWizardState {
@@ -183,6 +187,8 @@ const initialState: JobWizardState = {
     depositPercentage: 0,
     depositDueDate: null,
     collectImmediately: false,
+    delivery_fee_enabled: false,
+    delivery_fee_amount: 0,
   },
   errors: {},
   isLoading: false,

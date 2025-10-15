@@ -1100,9 +1100,17 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
           </div>
         )}
 
+        {/* Delivery Fee */}
+        {d.delivery_fee_enabled && d.delivery_fee_amount > 0 && (
+          <div className="rounded-lg border p-3 space-y-1">
+            <h3 className="font-medium text-green-600">Delivery Fee</h3>
+            <div className="text-lg font-bold">{formatCurrency(d.delivery_fee_amount)}</div>
+          </div>
+        )}
+
         <div className="rounded-lg border p-3 space-y-1 md:col-span-2">
           <h3 className="font-medium">Total</h3>
-          <div className="text-lg font-bold">{formatCurrency(jobTotal)}</div>
+          <div className="text-lg font-bold">{formatCurrency(jobTotal + (d.delivery_fee_enabled ? (d.delivery_fee_amount || 0) : 0))}</div>
         </div>
       </div>
 

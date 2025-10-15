@@ -257,6 +257,12 @@ export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
                 <span>Subtotal</span>
                 <span>${subtotal.toFixed(2)}</span>
               </div>
+              {state.data.delivery_fee_enabled && state.data.delivery_fee_amount > 0 && (
+                <div className="flex justify-between text-sm text-green-600">
+                  <span>Delivery Fee</span>
+                  <span>${state.data.delivery_fee_amount.toFixed(2)}</span>
+                </div>
+              )}
               <div className="flex justify-between text-sm">
                 <div className="flex flex-col">
                   <span>Tax ({(taxRate * 100).toFixed(2)}%)</span>
@@ -277,7 +283,7 @@ export const QuotePreviewStep: React.FC<QuotePreviewStepProps> = ({
               <Separator />
               <div className="flex justify-between font-medium">
                 <span>Total</span>
-                <span>${total.toFixed(2)}</span>
+                <span>${(total + (state.data.delivery_fee_enabled ? (state.data.delivery_fee_amount || 0) : 0)).toFixed(2)}</span>
               </div>
             </div>
           </CardContent>

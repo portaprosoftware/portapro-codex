@@ -15,6 +15,8 @@ export interface CompanySettings {
   // Dynamic consumable categories array lives here
   consumable_categories?: ConsumableCategory[];
   default_deposit_percentage?: number;
+  default_delivery_fee?: number;
+  auto_enable_delivery_fee?: boolean;
   // ... other company settings fields
 }
 

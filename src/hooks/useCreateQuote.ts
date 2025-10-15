@@ -65,7 +65,8 @@ export function useCreateQuote() {
       }
 
       const servicesSubtotal = Number(wizardData.servicesData?.servicesSubtotal || 0);
-      const subtotal = itemsSubtotal + servicesSubtotal;
+      const deliveryFee = wizardData.delivery_fee_enabled ? (wizardData.delivery_fee_amount || 0) : 0;
+      const subtotal = itemsSubtotal + servicesSubtotal + deliveryFee;
       
       // For now, use simple calculations
       const discount_value = 0;

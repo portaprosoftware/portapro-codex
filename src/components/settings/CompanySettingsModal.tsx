@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Upload, Save, Mail, MapPin, Percent } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -30,6 +31,13 @@ const companySettingsSchema = z.object({
     .max(100, "Percentage cannot exceed 100")
     .optional()
     .default(25),
+  default_delivery_fee: z.number()
+    .min(0, "Fee must be at least 0")
+    .optional()
+    .default(0),
+  auto_enable_delivery_fee: z.boolean()
+    .optional()
+    .default(false),
 });
 
 type CompanySettingsFormData = z.infer<typeof companySettingsSchema>;
@@ -121,6 +129,8 @@ export function CompanySettingsModal({ isOpen, onClose, companySettings }: Compa
       company_timezone: companySettings?.company_timezone || "America/New_York",
       support_email: companySettings?.support_email || "",
       default_deposit_percentage: companySettings?.default_deposit_percentage || 25,
+      default_delivery_fee: companySettings?.default_delivery_fee || 0,
+      auto_enable_delivery_fee: companySettings?.auto_enable_delivery_fee || false,
     },
   });
 
@@ -139,6 +149,8 @@ export function CompanySettingsModal({ isOpen, onClose, companySettings }: Compa
         company_timezone: companySettings.company_timezone || "America/New_York",
         support_email: companySettings.support_email || "",
         default_deposit_percentage: companySettings.default_deposit_percentage || 25,
+        default_delivery_fee: companySettings.default_delivery_fee || 0,
+        auto_enable_delivery_fee: companySettings.auto_enable_delivery_fee || false,
       };
       console.log("Resetting form with data:", formData);
       form.reset(formData);
@@ -430,6 +442,57 @@ export function CompanySettingsModal({ isOpen, onClose, companySettings }: Compa
                       </FormItem>
                     )}
                   />
+                </div>
+
+                {/* Delivery Fee Settings */}
+                <div className="space-y-6 pt-6 border-t">
+                  <h3 className="text-lg font-medium text-foreground">Delivery Fee Settings</h3>
+                  <p className="text-sm text-muted-foreground -mt-4">
+                    Configure default delivery fee behavior for job and quote creation
+                  </p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="default_delivery_fee">Default Delivery Fee</Label>
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg font-semibold">$</span>
+                        <Input
+                          id="default_delivery_fee"
+                          type="number"
+                          min="0"
+                          max="9999"
+                          step="0.01"
+                          value={form.watch('default_delivery_fee') || 0}
+                          onChange={(e) => {
+                            const value = parseFloat(e.target.value) || 0;
+                            form.setValue('default_delivery_fee' as any, value);
+                          }}
+                          className="flex-1"
+                        />
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        This amount will be used as the default delivery fee when creating jobs or quotes
+                      </p>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-6">
+                      <div className="space-y-0.5">
+                        <Label htmlFor="auto_enable_delivery_fee">
+                          Auto-Enable Delivery Fee
+                        </Label>
+                        <p className="text-xs text-muted-foreground">
+                          Automatically turn on delivery fee when users reach the services step
+                        </p>
+                      </div>
+                      <Switch
+                        id="auto_enable_delivery_fee"
+                        checked={form.watch('auto_enable_delivery_fee') || false}
+                        onCheckedChange={(checked) => 
+                          form.setValue('auto_enable_delivery_fee' as any, checked)
+                        }
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 <div className="flex justify-end space-x-4 pt-4">

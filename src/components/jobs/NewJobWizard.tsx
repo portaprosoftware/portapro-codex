@@ -95,11 +95,16 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
         return total + Number(service.calculated_cost || 0);
       }, 0);
       
-      setCalculatedTotal(itemsTotal + servicesTotal);
+      // Add delivery fee if enabled
+      const deliveryFee = state.data.delivery_fee_enabled 
+        ? (state.data.delivery_fee_amount || 0) 
+        : 0;
+      
+      setCalculatedTotal(itemsTotal + servicesTotal + deliveryFee);
     };
     
     calculateTotal();
-  }, [state.data.items, state.data.servicesData]);
+  }, [state.data.items, state.data.servicesData, state.data.delivery_fee_enabled, state.data.delivery_fee_amount]);
 
   const handleSaveAndExit = async (draftName: string) => {
     try {
