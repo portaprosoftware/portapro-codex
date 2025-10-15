@@ -8,6 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { NumberInput } from '@/components/ui/number-input';
 
 export const ProductsServicesStep: React.FC = () => {
   const { state, updateData } = useJobWizard();
@@ -105,16 +106,17 @@ export const ProductsServicesStep: React.FC = () => {
               <Label htmlFor="locks_count" className="text-sm font-medium">
                 Number of Locks
               </Label>
-              <Input
-                id="locks_count"
-                type="number"
-                min="1"
-                max="99"
-                value={state.data.locks_count || 1}
-                onChange={(e) => updateData({ locks_count: parseInt(e.target.value) || 1 })}
-                className="w-24"
-                placeholder="1"
-              />
+                  <NumberInput
+                    id="locks_count"
+                    value={state.data.locks_count || 1}
+                    onChange={(value) => updateData({ locks_count: value })}
+                    min={1}
+                    max={99}
+                    step={1}
+                    showControls={true}
+                    size="sm"
+                    className="w-32"
+                  />
             </div>
           )}
 

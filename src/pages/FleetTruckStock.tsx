@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { NumberInput } from "@/components/ui/number-input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
@@ -347,7 +348,15 @@ const FleetTruckStock: React.FC = () => {
                       </div>
                       <div>
                         <Label className="text-sm text-muted-foreground">Quantity</Label>
-                        <Input type="number" min={0} value={quantity} onChange={(e) => setQuantity(e.target.value)} />
+                        <NumberInput
+                          value={parseInt(quantity) || 0}
+                          onChange={(value) => setQuantity(value.toString())}
+                          min={0}
+                          max={9999}
+                          step={1}
+                          showControls={true}
+                          size="sm"
+                        />
                         {consumableId && availableStock > 0 && (
                           <p className="text-xs text-muted-foreground mt-1">
                             Available on truck: {availableStock}
