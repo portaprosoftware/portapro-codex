@@ -1,11 +1,8 @@
-import React, { useState } from 'react';
-import { BarcodeScanner, BarcodeFormat } from '@capacitor-mlkit/barcode-scanning';
-import { Capacitor } from '@capacitor/core';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { ScanLine, QrCode, Barcode, X, Camera } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
 
 interface BarcodeScannerModalProps {
   isOpen: boolean;
@@ -13,290 +10,75 @@ interface BarcodeScannerModalProps {
   onScanResult: (result: string) => void;
 }
 
-type ScanType = 'barcode' | 'qr';
-
+// NOTE: Native/mobile barcode scanning has been removed.
+// This modal now supports Bluetooth/USB scanners (keyboard wedge) and manual entry only.
 export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
   isOpen,
   onClose,
-  onScanResult
+  onScanResult,
 }) => {
-  const [isScanning, setIsScanning] = useState(false);
-  const [scanType, setScanType] = useState<ScanType>('barcode');
-  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+  const [code, setCode] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const checkPermission = async () => {
-    try {
-      const { camera } = await BarcodeScanner.checkPermissions();
-      
-      if (camera === 'granted') {
-        setHasPermission(true);
-        return true;
-      } else if (camera === 'prompt' || camera === 'prompt-with-rationale') {
-        const { camera: newStatus } = await BarcodeScanner.requestPermissions();
-        if (newStatus === 'granted') {
-          setHasPermission(true);
-          return true;
-        }
-      }
-      
-      setHasPermission(false);
-      toast({
-        title: 'Camera Permission Required',
-        description: 'Please enable camera permission in your device settings to scan codes.',
-        variant: 'destructive'
-      });
-      return false;
-    } catch (error) {
-      console.error('Permission check failed:', error);
-      setHasPermission(false);
-      toast({
-        title: 'Permission Error',
-        description: 'Failed to check camera permissions.',
-        variant: 'destructive'
-      });
-      return false;
+  useEffect(() => {
+    if (isOpen) {
+      setTimeout(() => inputRef.current?.focus(), 50);
+    } else {
+      setCode('');
     }
-  };
+  }, [isOpen]);
 
-  const startScan = async () => {
-    // Check if running on web (fallback behavior)
-    if (!Capacitor.isNativePlatform()) {
-      toast({
-        title: 'Native Feature Required',
-        description: 'Barcode scanning requires a mobile device. Please use the mobile app.',
-        variant: 'destructive'
-      });
-      return;
-    }
-
-    const hasPermissions = await checkPermission();
-    if (!hasPermissions) return;
-
-    try {
-      setIsScanning(true);
-      
-      // Hide the body background to show camera
-      document.body.classList.add('scanner-active');
-      
-      // Add listener for barcodes scanned
-      const listener = await BarcodeScanner.addListener('barcodesScanned', async (event) => {
-        const firstBarcode = event.barcodes[0];
-        if (!firstBarcode) return;
-        
-        onScanResult(firstBarcode.displayValue);
-        toast({
-          title: 'Scan Successful',
-          description: `${scanType === 'qr' ? 'QR Code' : 'Barcode'} scanned successfully!`
-        });
-        await listener.remove();
-        await stopScan();
-        onClose();
-      });
-      
-      // Start scanning with format filters
-      const formats = scanType === 'qr' 
-        ? [BarcodeFormat.QrCode]
-        : [
-            BarcodeFormat.Code128,
-            BarcodeFormat.Code39,
-            BarcodeFormat.Code93,
-            BarcodeFormat.Codabar,
-            BarcodeFormat.Ean13,
-            BarcodeFormat.Ean8,
-            BarcodeFormat.UpcA,
-            BarcodeFormat.UpcE
-          ];
-      
-      await BarcodeScanner.startScan({ formats });
-    } catch (error: any) {
-      console.error('Scan failed:', error);
-      toast({
-        title: 'Scan Failed',
-        description: error.message || 'Failed to scan code. Please try again.',
-        variant: 'destructive'
-      });
-      setIsScanning(false);
-      stopScan();
-    }
-  };
-
-  const stopScan = async () => {
-    try {
-      await BarcodeScanner.removeAllListeners();
-      await BarcodeScanner.stopScan();
-      document.body.classList.remove('scanner-active');
-      setIsScanning(false);
-    } catch (error) {
-      console.error('Failed to stop scan:', error);
-    }
-  };
-
-  const handleClose = () => {
-    if (isScanning) {
-      stopScan();
-    }
+  const submit = () => {
+    const value = code.trim();
+    if (!value) return;
+    onScanResult(value);
+    setCode('');
     onClose();
   };
 
-  // Web fallback UI
-  if (!Capacitor.isNativePlatform()) {
-    return (
-      <Dialog open={isOpen} onOpenChange={handleClose}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <ScanLine className="w-5 h-5" />
-              Scanning Options
-            </DialogTitle>
-          </DialogHeader>
-          
-          <div className="space-y-6 py-4">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <ScanLine className="w-8 h-8 text-primary" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Multiple Ways to Scan</h3>
-              <p className="text-sm text-muted-foreground">
-                Choose the best scanning method for your device
-              </p>
-            </div>
-            
-            <div className="space-y-3">
-              <div className="p-4 bg-gray-50 dark:bg-gray-950/30 rounded-lg border border-gray-200 dark:border-gray-800">
-                <div className="flex items-start gap-3">
-                  <div className="text-2xl">📱</div>
-                  <div>
-                    <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-1">Mobile Camera</h4>
-                    <p className="text-sm text-gray-700 dark:text-gray-300">
-                      Open this page on your mobile device to use camera scanning
-                    </p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="p-4 bg-gray-50 dark:bg-gray-950/30 rounded-lg border border-gray-200 dark:border-gray-800">
-                <div className="flex items-start gap-3">
-                  <div className="text-2xl">🔌</div>
-                  <div>
-                    <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-1">USB/Bluetooth Scanner</h4>
-                    <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">
-                      Connect a barcode scanner to your computer. When connected, the SKU field will detect scans automatically.
-                    </p>
-                    <p className="text-xs text-gray-600 dark:text-gray-400">
-                      ✓ Most USB/Bluetooth scanners work out of the box
-                    </p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="p-4 bg-gray-50 dark:bg-gray-950/30 rounded-lg border border-gray-200 dark:border-gray-800">
-                <div className="flex items-start gap-3">
-                  <div className="text-2xl">⌨️</div>
-                  <div>
-                    <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-1">Manual Entry</h4>
-                    <p className="text-sm text-gray-700 dark:text-gray-300">
-                      Type the barcode numbers manually into the SKU field
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <Button onClick={onClose} variant="outline" className="w-full">
-              Got it
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-    );
-  }
+  const handleKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      submit();
+    }
+  };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <ScanLine className="w-5 h-5" />
-            Scan Code
-          </DialogTitle>
+          <DialogTitle>Enter or Scan Code</DialogTitle>
         </DialogHeader>
-        
+
         <div className="space-y-4">
-          {/* Scan Type Selection */}
-          <div>
-            <p className="text-sm font-medium mb-2">Select scan type:</p>
-            <div className="flex gap-2">
-              <Button
-                variant={scanType === 'barcode' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setScanType('barcode')}
-                className="flex items-center gap-2"
-              >
-                <Barcode className="w-4 h-4" />
-                Barcode
-              </Button>
-              <Button
-                variant={scanType === 'qr' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setScanType('qr')}
-                className="flex items-center gap-2"
-              >
-                <QrCode className="w-4 h-4" />
-                QR Code
-              </Button>
-            </div>
+          <div className="rounded-xl border bg-background p-4">
+            <p className="text-sm mb-2">
+              Use a Bluetooth/USB barcode scanner or type the code manually.
+            </p>
+            <ul className="text-xs text-muted-foreground list-disc pl-5 space-y-1">
+              <li>Most scanners act like a keyboard and will type into the focused field.</li>
+              <li>You can also paste a value or type it below, then press Enter.</li>
+            </ul>
           </div>
 
-          {/* Scanner Status */}
-          <div className="flex flex-col items-center gap-4 py-4">
-            <div className="w-24 h-24 bg-muted rounded-lg flex items-center justify-center relative overflow-hidden">
-              {scanType === 'qr' ? (
-                <QrCode className="w-12 h-12 text-muted-foreground" />
-              ) : (
-                <Barcode className="w-12 h-12 text-muted-foreground" />
-              )}
-              
-              {isScanning && (
-                <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
-                  <div className="w-full h-0.5 bg-primary animate-pulse" />
-                </div>
-              )}
-            </div>
-
-            <div className="text-center">
-              <p className="text-sm font-medium">
-                {isScanning ? 'Scanning...' : `Ready to scan ${scanType === 'qr' ? 'QR Code' : 'Barcode'}`}
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                {scanType === 'qr' 
-                  ? 'Point camera at QR code' 
-                  : 'Point camera at barcode'
-                }
-              </p>
-            </div>
-
-            {hasPermission === false && (
-              <Badge variant="destructive">Camera permission required</Badge>
-            )}
+          <div className="flex items-center gap-2">
+            <Input
+              ref={inputRef}
+              value={code}
+              placeholder="Enter barcode / QR content"
+              onChange={(e) => setCode(e.target.value)}
+              onKeyDown={handleKey}
+            />
+            <Button onClick={submit}>Submit</Button>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex gap-2">
-            {!isScanning ? (
-              <Button onClick={startScan} className="flex-1">
-                <ScanLine className="w-4 h-4 mr-2" />
-                Start Scanning
-              </Button>
-            ) : (
-              <Button onClick={stopScan} variant="destructive" className="flex-1">
-                <X className="w-4 h-4 mr-2" />
-                Stop Scanning
-              </Button>
-            )}
-            
-            <Button onClick={handleClose} variant="outline">
-              Cancel
-            </Button>
+          <div className="flex items-center gap-2 text-xs">
+            <Badge variant="secondary">Camera access not required</Badge>
+            <span className="text-muted-foreground">Mobile scanning removed</span>
+          </div>
+
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={onClose}>Close</Button>
           </div>
         </div>
       </DialogContent>

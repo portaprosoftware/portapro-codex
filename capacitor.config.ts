@@ -8,11 +8,6 @@ const config: CapacitorConfig = {
     url: "https://7d9ab1da-39d1-43f6-a1c7-3463d3d4225b.lovableproject.com?forceHideBadge=true",
     cleartext: true
   },
-  plugins: {
-    BarcodeScanner: {
-      cameraDirection: 'back'
-    }
-  }
 };
 
 export default config;
