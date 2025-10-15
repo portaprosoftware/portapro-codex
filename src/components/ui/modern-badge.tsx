@@ -3,18 +3,18 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const modernBadgeVariants = cva(
-  "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition-all duration-200 hover:shadow-md hover:scale-105",
+  "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition-all duration-200",
   {
     variants: {
       variant: {
-        default: "bg-gradient-primary text-white shadow-sm",
-        secondary: "bg-gradient-secondary text-white shadow-sm",
-        success: "bg-gradient-green text-white shadow-sm",
-        warning: "bg-gradient-orange text-white shadow-sm",
-        danger: "bg-gradient-red text-white shadow-sm",
-        purple: "bg-gradient-purple text-white shadow-sm",
-        blue: "bg-gradient-blue text-white shadow-sm",
-        outline: "border-2 border-primary text-primary bg-transparent hover:bg-primary hover:text-white",
+        default: "bg-gradient-primary text-white shadow-sm hover:shadow-md hover:scale-105",
+        secondary: "bg-gradient-secondary text-white shadow-sm hover:shadow-md hover:scale-105",
+        success: "bg-gradient-green text-white shadow-sm hover:shadow-md hover:scale-105",
+        warning: "bg-gradient-orange text-white shadow-sm hover:shadow-md hover:scale-105",
+        danger: "bg-gradient-red text-white shadow-sm hover:shadow-md hover:scale-105",
+        purple: "bg-gradient-purple text-white shadow-sm hover:shadow-md hover:scale-105",
+        blue: "bg-gradient-blue text-white shadow-sm hover:shadow-md hover:scale-105",
+        outline: "border-2 border-primary text-primary bg-transparent",
         glass: "bg-white/10 backdrop-blur-sm text-white border border-white/20 hover:bg-white/20",
       },
       size: {
