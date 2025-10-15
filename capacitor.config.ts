@@ -10,12 +10,7 @@ const config: CapacitorConfig = {
   },
   plugins: {
     BarcodeScanner: {
-      shouldShowScanningCamera: true,
-      shouldShowScanArea: true,
-      shouldShowAnimatingLine: true,
-      shouldTorchIcon: true,
-      shouldVibrateOnSuccess: true,
-      shouldBeepOnSuccess: true
+      cameraDirection: 'back'
     }
   }
 };

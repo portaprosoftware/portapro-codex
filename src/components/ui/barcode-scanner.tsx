@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
+import { BarcodeScanner, BarcodeFormat } from '@capacitor-mlkit/barcode-scanning';
 import { Capacitor } from '@capacitor/core';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -26,20 +26,26 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
 
   const checkPermission = async () => {
     try {
-      const status = await BarcodeScanner.checkPermission({ force: true });
+      const { camera } = await BarcodeScanner.checkPermissions();
       
-      if (status.granted) {
+      if (camera === 'granted') {
         setHasPermission(true);
         return true;
-      } else {
-        setHasPermission(false);
-        toast({
-          title: 'Camera Permission Required',
-          description: 'Please enable camera permission in your device settings to scan codes.',
-          variant: 'destructive'
-        });
-        return false;
+      } else if (camera === 'prompt' || camera === 'prompt-with-rationale') {
+        const { camera: newStatus } = await BarcodeScanner.requestPermissions();
+        if (newStatus === 'granted') {
+          setHasPermission(true);
+          return true;
+        }
       }
+      
+      setHasPermission(false);
+      toast({
+        title: 'Camera Permission Required',
+        description: 'Please enable camera permission in your device settings to scan codes.',
+        variant: 'destructive'
+      });
+      return false;
     } catch (error) {
       console.error('Permission check failed:', error);
       setHasPermission(false);
@@ -72,18 +78,36 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
       // Hide the body background to show camera
       document.body.classList.add('scanner-active');
       
-      const result = await BarcodeScanner.startScan({
-        targetedFormats: scanType === 'qr' ? ['QR_CODE'] : ['CODE_128', 'CODE_39', 'CODE_93', 'CODABAR', 'EAN_13', 'EAN_8', 'UPC_A', 'UPC_E']
-      });
-
-      if (result.hasContent) {
-        onScanResult(result.content);
+      // Add listener for barcodes scanned
+      const listener = await BarcodeScanner.addListener('barcodesScanned', async (event) => {
+        const firstBarcode = event.barcodes[0];
+        if (!firstBarcode) return;
+        
+        onScanResult(firstBarcode.displayValue);
         toast({
           title: 'Scan Successful',
           description: `${scanType === 'qr' ? 'QR Code' : 'Barcode'} scanned successfully!`
         });
+        await listener.remove();
+        await stopScan();
         onClose();
-      }
+      });
+      
+      // Start scanning with format filters
+      const formats = scanType === 'qr' 
+        ? [BarcodeFormat.QrCode]
+        : [
+            BarcodeFormat.Code128,
+            BarcodeFormat.Code39,
+            BarcodeFormat.Code93,
+            BarcodeFormat.Codabar,
+            BarcodeFormat.Ean13,
+            BarcodeFormat.Ean8,
+            BarcodeFormat.UpcA,
+            BarcodeFormat.UpcE
+          ];
+      
+      await BarcodeScanner.startScan({ formats });
     } catch (error: any) {
       console.error('Scan failed:', error);
       toast({
@@ -91,7 +115,6 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
         description: error.message || 'Failed to scan code. Please try again.',
         variant: 'destructive'
       });
-    } finally {
       setIsScanning(false);
       stopScan();
     }
@@ -99,6 +122,7 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
 
   const stopScan = async () => {
     try {
+      await BarcodeScanner.removeAllListeners();
       await BarcodeScanner.stopScan();
       document.body.classList.remove('scanner-active');
       setIsScanning(false);
