@@ -1,28 +1,54 @@
-
 {
-  "name": "PortaPro Driver",
+  "name": "PortaPro",
   "short_name": "PortaPro",
-  "description": "Mobile driver app for PortaPro portable toilet rental service",
-  "start_url": "/driver",
+  "description": "The only portable toilet rental software you need",
+  "start_url": "/?source=pwa",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#3B82F6",
-  "orientation": "portrait-primary",
+  "background_color": "#00299a",
+  "theme_color": "#002fa1",
+  "orientation": "any",
   "icons": [
     {
-      "src": "/icon-192x192.png",
+      "src": "./common_pwa/common_pwa_128x128.png",
       "type": "image/png",
-      "sizes": "192x192",
-      "purpose": "any maskable"
+      "sizes": "128x128",
+      "purpose": "any"
     },
     {
-      "src": "/icon-512x512.png",
+      "src": "./common_pwa/common_pwa_192x192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "./common_pwa/common_pwa_256x256.png",
+      "type": "image/png",
+      "sizes": "256x256",
+      "purpose": "any"
+    },
+    {
+      "src": "./common_pwa/common_pwa_384x384.png",
+      "type": "image/png",
+      "sizes": "384x384",
+      "purpose": "any"
+    },
+    {
+      "src": "./common_pwa/common_pwa_512x512.png",
       "type": "image/png",
       "sizes": "512x512",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "./common_pwa/common_pwa_1024x1024.png",
+      "type": "image/png",
+      "sizes": "1024x1024",
+      "purpose": "any"
     }
   ],
-  "categories": ["productivity", "business"],
-  "lang": "en",
+  "categories": [
+    "business",
+    "productivity"
+  ],
+  "lang": "en-US",
   "dir": "ltr"
 }

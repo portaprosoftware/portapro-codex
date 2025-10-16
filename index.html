@@ -4,21 +4,42 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <link rel="manifest" href="/manifest.json" />
-    <meta name="theme-color" content="#3B82F6" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="PortaPro Driver" />
     
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="application-name" content="PortaPro">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="PortaPro">
+
+    <!-- Theme color and gradient representation -->
+    <meta name="theme-color" content="#002fa1">
+    <style>
+      :root {
+        --portapro-gradient: linear-gradient(135deg, #00299a, #002fa1, #0086df);
+      }
+      body {
+        background: var(--portapro-gradient);
+      }
+    </style>
+
+    <!-- Optional dynamic dark/light theme variants -->
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#0086df">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#00299a">
+
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="shortcut icon" href="/favicon.ico" />
     
     <!-- Apple Touch Icons -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png" />
-    <link rel="apple-touch-icon" sizes="167x167" href="/apple-touch-icon-167x167.png" />
+    <link rel="apple-touch-icon" sizes="60x60" href="/ios/ios_60x60.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/ios/ios_76x76.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/ios/ios_120x120.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/ios/ios_152x152.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="/ios/ios_167x167.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/ios/ios_180x180.png">
+    <link rel="apple-touch-icon" sizes="1024x1024" href="/ios/ios_1024x1024.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     
     <!-- Wistia Scripts -->
