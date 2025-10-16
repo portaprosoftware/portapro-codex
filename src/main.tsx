@@ -72,8 +72,8 @@ const queryClient = new QueryClient({
 // Make queryClient globally available for error boundary
 (window as any).queryClient = queryClient;
 
-// One-time cache clear for v9 final icon update
-const BUILD_ID = '2025-10-16-v9-final';
+// One-time cache clear for v10 final icon update
+const BUILD_ID = '2025-10-16-v10-final';
 const storedBuildId = localStorage.getItem('__build_id');
 if (storedBuildId !== BUILD_ID) {
   console.log('Build ID changed - clearing caches for fresh PWA icons');
