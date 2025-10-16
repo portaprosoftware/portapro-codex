@@ -3,38 +3,52 @@
   "name": "PortaPro Tech",
   "short_name": "PortaPro",
   "description": "Mobile tech app for PortaPro portable toilet rental service",
-  "start_url": "/driver",
+  "start_url": "/driver?v=8",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#E5E7EB",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/icon-192x192.png",
+      "src": "/icons/pwa-192-v8.png",
       "type": "image/png",
       "sizes": "192x192",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "/icon-512x512.png",
+      "src": "/icons/pwa-256-v8.png",
+      "type": "image/png",
+      "sizes": "256x256",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/pwa-384-v8.png",
+      "type": "image/png",
+      "sizes": "384x384",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/pwa-512-v8.png",
       "type": "image/png",
       "sizes": "512x512",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/pwa-192-maskable-v8.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/pwa-512-maskable-v8.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
     },
     {
       "src": "/apple-touch-icon.png",
       "type": "image/png",
       "sizes": "180x180"
-    },
-    {
-      "src": "/apple-touch-icon-152x152.png",
-      "type": "image/png",
-      "sizes": "152x152"
-    },
-    {
-      "src": "/apple-touch-icon-167x167.png",
-      "type": "image/png",
-      "sizes": "167x167"
     },
     {
       "src": "/android-launchericon-48-48.png",
