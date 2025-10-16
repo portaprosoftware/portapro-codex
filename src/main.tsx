@@ -10,21 +10,8 @@ import { clearClerkCache } from './utils/authCleanup'
 import { clearAllCaches } from './utils/devUtils'
 import { Toaster } from '@/components/ui/sonner';
 
-const envClerkKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
-const defaultDevKey = "pk_test_YWN0dWFsLW11dHQtOTEuY2xlcmsuYWNjb3VudHMuZGV2JA";
-const isDevHost = location.hostname.includes('localhost') || location.hostname.includes('lovable.dev');
-const isLiveKey = envClerkKey?.startsWith('pk_live_') ?? false;
-
-let effectiveClerkKey = envClerkKey ?? defaultDevKey;
-if (isLiveKey && isDevHost) {
-  console.warn("Detected production Clerk key on a dev host. Falling back to dev key and clearing auth cache.");
-  try { clearClerkCache(); } catch {}
-  effectiveClerkKey = defaultDevKey;
-}
-
-if (!envClerkKey) {
-  console.warn("VITE_CLERK_PUBLISHABLE_KEY not set; using provided development publishable key.");
-}
+// Production Clerk publishable key for portaprosoftware.com
+const CLERK_PUBLISHABLE_KEY = "pk_live_Y2xlcmsucG9ydGFwcm9zb2Z0d2FyZS5jb20k";
 
 // Development vs Production settings
 const isDevelopment = import.meta.env.DEV;
@@ -85,7 +72,7 @@ if (storedBuildId !== BUILD_ID) {
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <ClerkProvider publishableKey={effectiveClerkKey}>
+      <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY}>
         <App />
         <Toaster />
       </ClerkProvider>
