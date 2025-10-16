@@ -9,41 +9,13 @@
   "background_color": "#00299a",
   "theme_color": "#002fa1",
   "icons": [
-    {
-      "src": "/common_pwa/common_pwa_1024x1024.png",
-      "sizes": "1024x1024",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/common_pwa/common_pwa_512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/common_pwa/common_pwa_384x384.png",
-      "sizes": "384x384",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/common_pwa/common_pwa_256x256.png",
-      "sizes": "256x256",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/common_pwa/common_pwa_192x192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/common_pwa/common_pwa_128x128.png",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "any"
-    }
+    { "src": "/macos_pwa/macos_pwa_512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/macos_pwa/macos_pwa_256x256.png", "sizes": "256x256", "type": "image/png", "purpose": "any" },
+    { "src": "/common_pwa/common_pwa_1024x1024.png", "sizes": "1024x1024", "type": "image/png", "purpose": "any" },
+    { "src": "/common_pwa/common_pwa_512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/common_pwa/common_pwa_384x384.png", "sizes": "384x384", "type": "image/png", "purpose": "any" },
+    { "src": "/common_pwa/common_pwa_256x256.png", "sizes": "256x256", "type": "image/png", "purpose": "any" },
+    { "src": "/common_pwa/common_pwa_192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/common_pwa/common_pwa_128x128.png", "sizes": "128x128", "type": "image/png", "purpose": "any" }
   ]
 }
