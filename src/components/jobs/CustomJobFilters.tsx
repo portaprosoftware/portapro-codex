@@ -188,7 +188,8 @@ export const CustomJobFilters: React.FC<CustomJobFiltersProps> = ({
             <SelectItem value="was_overdue">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-yellow-600"></div>
-                Overdue - Rescheduled
+                Rescheduled
+                <span className="text-xs text-muted-foreground ml-1">(previously overdue)</span>
               </div>
             </SelectItem>
             <SelectItem value="overdue">
