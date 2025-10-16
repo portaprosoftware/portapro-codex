@@ -4,8 +4,8 @@
   "description": "The only portable toilet rental software you need",
   "start_url": "/?source=pwa",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "background_color": "#d9dadd",
+  "theme_color": "#d9dadd",
   "orientation": "any",
   "icons": [
     {
