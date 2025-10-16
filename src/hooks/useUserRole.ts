@@ -1,24 +1,56 @@
 
 import React from 'react';
 import { useUser } from '@clerk/clerk-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 export type AppRole = 'owner' | 'dispatcher' | 'admin' | 'driver' | 'viewer' | 'unknown';
 
 export function useUserRole() {
   const { user, isLoaded } = useUser();
 
-  // Only determine role if user is fully loaded and exists
-  const role = (isLoaded && user?.publicMetadata?.role as AppRole) || 'unknown';
+  // Query the user_roles table to get the actual role from Supabase
+  const { data: supabaseRole, isLoading: roleLoading } = useQuery({
+    queryKey: ['user-role', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      
+      // First get the profile to map clerk_user_id to profile id
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('clerk_user_id', user.id)
+        .single();
+      
+      if (!profile) return null;
+      
+      // Then get the role from user_roles table
+      const { data: roleData } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', profile.id)
+        .single();
+      
+      return roleData?.role as AppRole | null;
+    },
+    enabled: isLoaded && !!user,
+  });
 
-  // Log current user info in development for debugging (only on first load)
+  // Priority: Supabase role > Clerk publicMetadata role > unknown
+  const role: AppRole = supabaseRole || (user?.publicMetadata?.role as AppRole) || 'unknown';
+
+  // Log current user info in development for debugging
   const hasLoggedRef = React.useRef(false);
   if (process.env.NODE_ENV === 'development' && isLoaded && !hasLoggedRef.current) {
     console.log('useUserRole - Current user:', {
       userId: user?.id,
       firstName: user?.firstName,
       lastName: user?.lastName,
-      role: user?.publicMetadata?.role,
-      isLoaded
+      clerkRole: user?.publicMetadata?.role,
+      supabaseRole,
+      finalRole: role,
+      isLoaded,
+      roleLoading
     });
     hasLoggedRef.current = true;
   }
@@ -28,25 +60,22 @@ export function useUserRole() {
   const isAdmin = role === 'admin';
   const isDriver = role === 'driver';
   
-  // DEVELOPMENT MODE: Grant admin access when no role is found
-  const developmentAdminAccess = process.env.NODE_ENV === 'development' && role === 'unknown' && isLoaded;
-  
-  // Temporarily allow all roles to access customer docs for testing
-  const canViewCustomerDocs = true; // isOwner || isDispatcher;
-  const hasAdminAccess = true; // isOwner || isDispatcher || isAdmin;
+  // REMOVED temporary overrides - now using real role checks
+  const canViewCustomerDocs = isOwner || isDispatcher || isAdmin;
+  const hasAdminAccess = isOwner || isDispatcher || isAdmin;
   const hasStaffAccess = isOwner || isDispatcher || isAdmin || isDriver;
 
   return {
-    role: developmentAdminAccess ? 'admin' : role,
-    isOwner: developmentAdminAccess || isOwner,
-    isDispatcher: developmentAdminAccess || isDispatcher,
-    isAdmin: developmentAdminAccess || isAdmin,
+    role,
+    isOwner,
+    isDispatcher,
+    isAdmin,
     isDriver,
     canViewCustomerDocs,
     hasAdminAccess,
     hasStaffAccess,
     user,
-    isLoaded,
+    isLoaded: isLoaded && !roleLoading,
     userId: user?.id || null,
   };
 }

@@ -151,10 +151,11 @@ const handler = async (req: Request): Promise<Response> => {
     let clerkUserId: string | null = null;
 
     if (!clerkResponse.ok) {
+      // Read the error text ONCE and store it
       const firstError = await clerkResponse.text();
       console.error('Clerk API error (primary key):', firstError);
 
-      const status = (clerkResponse as any).status as number;
+      const status = clerkResponse.status;
       const looksLikeKeyInvalid = status === 401 || status === 403 || firstError.includes('clerk_key_invalid') || firstError.toLowerCase().includes('secret key');
       const looksLikeAlreadyExists = status === 422 || firstError.toLowerCase().includes('already exists') || firstError.toLowerCase().includes('form_identifier_exists');
 
@@ -164,12 +165,13 @@ const handler = async (req: Request): Promise<Response> => {
         clerkResponse = await createWithKey(secondaryClerkKey);
       }
 
-      // If still not ok, handle existing user case by lookup
+      // If still not ok after retry, handle it
       if (!clerkResponse.ok) {
+        // This is a NEW response, safe to read
         const clerkError = await clerkResponse.text();
         console.error('Clerk API error (final):', clerkError);
 
-        const finalStatus = (clerkResponse as any).status as number;
+        const finalStatus = clerkResponse.status;
         const finalAlreadyExists = finalStatus === 422 || clerkError.toLowerCase().includes('already exists') || clerkError.toLowerCase().includes('form_identifier_exists');
 
         if (finalAlreadyExists) {
