@@ -10,8 +10,8 @@ import { clearClerkCache } from './utils/authCleanup'
 import { clearAllCaches } from './utils/devUtils'
 import { Toaster } from '@/components/ui/sonner';
 
-// Production Clerk publishable key for portaprosoftware.com
-const CLERK_PUBLISHABLE_KEY = "pk_live_Y2xlcmsucG9ydGFwcm9zb2Z0d2FyZS5jb20k";
+// Temporarily using dev key
+const CLERK_PUBLISHABLE_KEY = "pk_test_YWN0dWFsLW11dHQtOTEuY2xlcmsuYWNjb3VudHMuZGV2JA";
 
 // Development vs Production settings
 const isDevelopment = import.meta.env.DEV;
