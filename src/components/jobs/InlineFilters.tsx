@@ -246,7 +246,7 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-yellow-600"></div>
                 Rescheduled
-                <span className="text-xs text-muted-foreground ml-1">(previously overdue)</span>
+                <span className="text-xs text-muted-foreground ml-0.5">previously overdue</span>
               </div>
             </SelectItem>
             <SelectItem value="overdue">

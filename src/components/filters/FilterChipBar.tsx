@@ -59,7 +59,7 @@ export const FilterChipBar: React.FC<FilterChipBarProps> = ({
       'completed': 'Completed',
       'cancelled': 'Cancelled',
       'priority': 'Priority',
-      'was_overdue': 'Rescheduled (previously overdue)',
+      'was_overdue': 'Rescheduled previously overdue',
       'overdue': 'Overdue',
       'completed_late': 'Completed Late'
     };
