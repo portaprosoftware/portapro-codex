@@ -171,6 +171,36 @@
       "src": "/ios/152.png",
       "type": "image/png",
       "sizes": "152x152"
+    },
+    {
+      "src": "/ios/167.png",
+      "type": "image/png",
+      "sizes": "167x167"
+    },
+    {
+      "src": "/ios/180.png",
+      "type": "image/png",
+      "sizes": "180x180"
+    },
+    {
+      "src": "/ios/192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/ios/256.png",
+      "type": "image/png",
+      "sizes": "256x256"
+    },
+    {
+      "src": "/ios/512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "/ios/1024.png",
+      "type": "image/png",
+      "sizes": "1024x1024"
     }
   ],
   "categories": ["productivity", "business"],
