@@ -9,8 +9,8 @@
   "background_color": "#00299a",
   "theme_color": "#002fa1",
   "icons": [
-    { "src": "/macos_pwa/macos_pwa_512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "/macos_pwa/macos_pwa_256x256.png", "sizes": "256x256", "type": "image/png", "purpose": "any" },
-    { "src": "/macos_pwa/macos_pwa_192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" }
+    { "src": "/macos_pwa/macos_pwa_512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/macos_pwa/macos_pwa_256x256.png", "sizes": "256x256", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/macos_pwa/macos_pwa_192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" }
   ]
 }
