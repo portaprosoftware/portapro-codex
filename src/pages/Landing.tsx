@@ -526,6 +526,34 @@ export const Landing: React.FC = () => {
             <p className="text-lg text-muted-foreground">Every unit has a dedicated tracking system for comprehensive inventory control and management.</p>
           </div>
 
+          {/* Feature List - 4 icon rows */}
+          <div className="mb-8">
+            <div className="space-y-6 max-w-4xl mx-auto text-center">
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-3 text-left">
+                  <div className="flex items-start gap-3">
+                    <Database className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Unified tracking system for all inventory types</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Multi-location stock allocation and transfers</span>
+                  </div>
+                </div>
+                <div className="space-y-3 text-left">
+                  <div className="flex items-start gap-3">
+                    <Calendar className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Date-range availability checking and reservations</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Automatic low-stock alerts and reorder points</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Inventory KPIs */}
           <div className="grid sm:grid-cols-2 gap-4 mb-12">
             <StatCard title="Available Today" value="89" icon={CheckCircle} gradientFrom="#10B981" gradientTo="#047857" iconBg="bg-emerald-600" />
@@ -558,33 +586,6 @@ export const Landing: React.FC = () => {
             </div>
           </div>
 
-          {/* Feature List */}
-          <div className="mb-8">
-            <div className="space-y-6 max-w-4xl mx-auto text-center">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-3 text-left">
-                  <div className="flex items-start gap-3">
-                    <Database className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Unified tracking system for all inventory types</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Multi-location stock allocation and transfers</span>
-                  </div>
-                </div>
-                <div className="space-y-3 text-left">
-                  <div className="flex items-start gap-3">
-                    <Calendar className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Date-range availability checking and reservations</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <AlertTriangle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Automatic low-stock alerts and reorder points</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
 
           {/* Interactive Inventory Demo */}
           <div className="mb-12">
