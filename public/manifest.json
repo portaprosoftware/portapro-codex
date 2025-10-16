@@ -10,37 +10,37 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/icons/pwa-192-v8.png",
+      "src": "/icons/pwa-desktop-192.png",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "any"
     },
     {
-      "src": "/icons/pwa-256-v8.png",
+      "src": "/icons/pwa-desktop-256.png",
       "type": "image/png",
       "sizes": "256x256",
       "purpose": "any"
     },
     {
-      "src": "/icons/pwa-384-v8.png",
+      "src": "/icons/pwa-desktop-384.png",
       "type": "image/png",
       "sizes": "384x384",
       "purpose": "any"
     },
     {
-      "src": "/icons/pwa-512-v8.png",
+      "src": "/icons/pwa-desktop-512.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any"
     },
     {
-      "src": "/icons/pwa-192-maskable-v8.png",
+      "src": "/icons/pwa-desktop-192-maskable.png",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "maskable"
     },
     {
-      "src": "/icons/pwa-512-maskable-v8.png",
+      "src": "/icons/pwa-desktop-512-maskable.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "maskable"
