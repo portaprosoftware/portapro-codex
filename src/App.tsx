@@ -10,6 +10,7 @@ import PaymentSuccess from './pages/PaymentSuccess';
 import CustomerPortal from './pages/CustomerPortal';
 
 import Auth from './pages/Auth';
+import AuthCallback from './pages/AuthCallback';
 import Dashboard from './pages/Dashboard';
 import Jobs from './pages/Jobs';
 import Inventory from './pages/Inventory';
@@ -92,8 +93,8 @@ const App = () => {
           <Route path="/security" element={<Security />} />
           {/* Authentication Routes */}
           <Route path="/auth" element={<Auth />} />
-          {/* Fallback for legacy/cached links */}
-          <Route path="/auth-redirect" element={<Navigate to="/" replace />} />
+          {/* Clerk OAuth redirect handler - must whitelist in Clerk dashboard */}
+          <Route path="/auth-redirect" element={<AuthCallback />} />
           
           {/* Driver routes */}
           <Route

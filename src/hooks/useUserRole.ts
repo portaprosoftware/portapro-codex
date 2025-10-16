@@ -14,7 +14,31 @@ export function useUserRole() {
     queryKey: ['user-role', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
-      
+
+      // PRIMARY: Try edge function first (bypasses RLS with service role)
+      try {
+        const projectUrl = 'https://unpnuonbndubcuzxfnmg.supabase.co';
+        const edgeResponse = await fetch(`${projectUrl}/functions/v1/get_role`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVucG51b25ibmR1YmN1enhmbm1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxMzkyMjgsImV4cCI6MjA2NDcxNTIyOH0.goME2hFzqxm0tnFdXAB_0evuiueh8wWfGLIY1vvvqmE',
+          },
+          body: JSON.stringify({ clerkUserId: user.id }),
+        });
+
+        if (edgeResponse.ok) {
+          const result = await edgeResponse.json();
+          if (result.success && result.role) {
+            console.info('useUserRole: Edge function success', result.role);
+            return result.role as AppRole;
+          }
+        }
+      } catch (edgeError) {
+        console.warn('useUserRole: Edge function failed, trying Supabase fallback', edgeError);
+      }
+
+      // FALLBACK: Direct Supabase query
       // First get the profile to map clerk_user_id to profile id
       const { data: profile } = await supabase
         .from('profiles')
