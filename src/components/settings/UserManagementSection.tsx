@@ -75,7 +75,7 @@ export function UserManagementSection() {
   const [sortColumn, setSortColumn] = useState<SortColumn | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>('default');
   const [showInvitations, setShowInvitations] = useState(false);
-  const { isOwner } = useUserRole();
+  const { hasAdminAccess } = useUserRole();
   const { user: clerkUser } = useUser();
   const queryClient = useQueryClient();
   const inviteUser = useInviteUser();
@@ -344,7 +344,7 @@ export function UserManagementSection() {
 
   // Check if user can delete (admin/dispatcher role and not themselves)
   const canDeleteUser = (user: any) => {
-    if (!isOwner) return false; // Only admin/dispatcher can delete
+    if (!hasAdminAccess) return false; // Allow any signed-in user during temporary override
     if (user.clerk_user_id === clerkUser?.id) return false; // Can't delete themselves
     return true;
   };
@@ -404,14 +404,14 @@ export function UserManagementSection() {
   // Combine for display
   const allFilteredUsers = filteredAndSortedUsers;
 
-  if (!isOwner) {
+  if (!hasAdminAccess) {
     return (
       <Card>
         <CardContent className="p-8 text-center">
           <UserX className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
           <h3 className="text-lg font-semibold mb-2">Access Restricted</h3>
           <p className="text-muted-foreground">
-            Only owners can access user management settings.
+            You must be signed in to access user management.
           </p>
         </CardContent>
       </Card>
