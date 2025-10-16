@@ -61,6 +61,12 @@
       "purpose": "any"
     },
     {
+      "src": "/icons/chrome_512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
       "src": "/icons/android_512x512.png",
       "sizes": "512x512",
       "type": "image/png",
