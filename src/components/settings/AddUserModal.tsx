@@ -16,7 +16,7 @@ const addUserFormSchema = z.object({
   lastName: z.string().min(1, 'Last name is required'),
   email: z.string().email('Please enter a valid email address'),
   phone: z.string().optional(),
-  role: z.enum(['driver', 'dispatcher', 'admin']),
+  role: z.enum(['driver', 'dispatcher', 'admin', 'owner']),
 });
 
 type AddUserFormData = z.infer<typeof addUserFormSchema>;
@@ -151,6 +151,7 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({ open, onOpenChange }
                       <SelectItem value="driver">Driver</SelectItem>
                       <SelectItem value="dispatcher">Dispatcher</SelectItem>
                       <SelectItem value="admin">Admin</SelectItem>
+                      <SelectItem value="owner">Owner</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

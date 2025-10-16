@@ -10,11 +10,16 @@ import { clearClerkCache } from './utils/authCleanup'
 import { clearAllCaches } from './utils/devUtils'
 import { Toaster } from '@/components/ui/sonner';
 
-// Temporarily using dev key
-const CLERK_PUBLISHABLE_KEY = "pk_test_YWN0dWFsLW11dHQtOTEuY2xlcmsuYWNjb3VudHMuZGV2JA";
-
 // Development vs Production settings
 const isDevelopment = import.meta.env.DEV;
+
+// Clerk configuration - use dev key in dev, prod key in production
+const CLERK_PUBLISHABLE_KEY = isDevelopment 
+  ? "pk_test_YWN0dWFsLW11dHQtOTEuY2xlcmsuYWNjb3VudHMuZGV2JA"
+  : "pk_live_Y2xlcmsucG9ydGFwcm9zb2Z0d2FyZS5jb20k";
+
+// Custom domain for production
+const clerkDomain = isDevelopment ? undefined : "clerk.portaprosoftware.com";
 
 const queryClient = new QueryClient({
   defaultOptions: {
