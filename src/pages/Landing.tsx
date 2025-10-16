@@ -523,7 +523,7 @@ export const Landing: React.FC = () => {
         <div className="container mx-auto max-w-6xl px-[24px]">
           <div className="text-center mb-8">
             <h2 className="text-3xl lg:text-4xl font-bold text-foreground py-[18px]">Inventory & Supplies — Unified, Accurate, Effortless</h2>
-            <p className="text-lg text-muted-foreground">Track units and consumables across multiple storage sites with precision</p>
+            <p className="text-lg text-muted-foreground">Every unit has a dedicated tracking system for comprehensive inventory control and management.</p>
           </div>
 
           {/* Inventory KPIs */}
@@ -534,11 +534,6 @@ export const Landing: React.FC = () => {
 
           {/* General Inventory Management - Combined Section */}
           <div className="mb-12">
-            <div className="text-center mb-8">
-              <h3 className="text-2xl font-bold text-foreground">General Inventory Management</h3>
-              <p className="text-lg text-muted-foreground">Every unit has a dedicated tracking system for comprehensive inventory control and management.</p>
-            </div>
-            
             <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
               <div className="text-center space-y-3">
                 <div className="w-12 h-12 mx-auto bg-gradient-to-r from-blue-600 to-blue-700 text-white flex items-center justify-center">
