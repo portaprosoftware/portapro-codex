@@ -1,7 +1,7 @@
 
-const CACHE_NAME = 'portapro-v7';
-const STATIC_CACHE = 'portapro-static-v7';
-const DYNAMIC_CACHE = 'portapro-dynamic-v7';
+const CACHE_NAME = 'portapro-v8';
+const STATIC_CACHE = 'portapro-static-v8';
+const DYNAMIC_CACHE = 'portapro-dynamic-v8';
 
 const urlsToCache = [
   '/',
@@ -49,7 +49,8 @@ self.addEventListener('fetch', event => {
       requestUrl.href.includes('/icons/pwa-') || 
       requestUrl.href.includes('/icon-') || 
       requestUrl.href.includes('/favicon') || 
-      requestUrl.href.includes('/manifest.json')) {
+      requestUrl.href.includes('/manifest.json') ||
+      requestUrl.href.includes('/site.webmanifest')) {
     event.respondWith(
       fetch(request)
         .then(response => {

@@ -21,7 +21,7 @@ export const usePWA = () => {
     // Only register service worker in production AND not on Lovable preview domains
     const isDevelopment = import.meta.env.DEV;
     const host = typeof window !== 'undefined' ? window.location.host : '';
-    const isPreviewDomain = host.includes('lovable.app');
+    const isPreviewDomain = host.includes('lovable.app') || host.includes('lovableproject.com');
 
     const unregisterPreviewSW = async () => {
       try {

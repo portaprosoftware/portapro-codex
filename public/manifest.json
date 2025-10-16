@@ -43,7 +43,7 @@
       "purpose": "any"
     },
     {
-      "src": "/icons/android_192x192.png",
+      "src": "/icons/macos_chrome_maskable_192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
@@ -67,7 +67,7 @@
       "purpose": "any"
     },
     {
-      "src": "/icons/android_maskable_192x192.png",
+      "src": "/icons/macos_chrome_maskable_192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
