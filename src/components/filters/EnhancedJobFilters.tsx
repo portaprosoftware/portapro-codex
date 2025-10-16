@@ -397,8 +397,7 @@ export const EnhancedJobFilters: React.FC<EnhancedJobFiltersProps> = ({
                   <SelectItem value="was_overdue">
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 rounded-full bg-yellow-600"></div>
-                      Rescheduled
-                      <span className="text-xs text-muted-foreground ml-0.5">previously overdue</span>
+                      Overdue - Rescheduled
                     </div>
                   </SelectItem>
                   <SelectItem value="overdue">

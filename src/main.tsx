@@ -7,6 +7,7 @@ import './index.css'
 import './scanner.css'
 import './utils/devUtils.ts' // Load dev utilities
 import { clearClerkCache } from './utils/authCleanup'
+import { clearAllCaches } from './utils/devUtils'
 import { Toaster } from '@/components/ui/sonner';
 
 const envClerkKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
@@ -70,6 +71,16 @@ const queryClient = new QueryClient({
 
 // Make queryClient globally available for error boundary
 (window as any).queryClient = queryClient;
+
+// One-time cache clear for v8 icon update
+const BUILD_ID = '2025-10-16-v8';
+const storedBuildId = localStorage.getItem('__build_id');
+if (storedBuildId !== BUILD_ID) {
+  console.log('Build ID changed - clearing caches for fresh PWA icons');
+  clearAllCaches().then(() => {
+    localStorage.setItem('__build_id', BUILD_ID);
+  });
+}
 
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

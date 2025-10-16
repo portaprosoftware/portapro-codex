@@ -28,7 +28,7 @@ const statusOptions = [
   { value: 'completed' as const, label: 'Completed', count: 0 },
   { value: 'cancelled' as const, label: 'Cancelled', count: 0 },
   { value: 'priority' as const, label: 'Priority', count: 0 },
-  { value: 'was_overdue' as const, label: 'Rescheduled previously overdue', count: 0 },
+  { value: 'was_overdue' as const, label: 'Overdue - Rescheduled', count: 0 },
   { value: 'overdue' as const, label: 'Overdue', count: 0 },
   { value: 'completed_late' as const, label: 'Completed Late', count: 0 }
 ];

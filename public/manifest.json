@@ -1,66 +1,15 @@
+
 {
   "name": "PortaPro Software",
   "short_name": "PortaPro",
-  "description": "The only portable toilet rental software you need",
-  "start_url": "/?source=pwa",
+  "description": "Mobile tech app for PortaPro portable toilet rental service",
+  "start_url": "/driver?v=11",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#ffffff",
-  "orientation": "any",
-  "icons": [
-    {
-      "src": "./common_pwa/common_pwa_128x128.png",
-      "type": "image/png",
-      "sizes": "128x128",
-      "purpose": "any"
-    },
-    {
-      "src": "./common_pwa/common_pwa_192x192.png",
-      "type": "image/png",
-      "sizes": "192x192",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "./common_pwa/common_pwa_256x256.png",
-      "type": "image/png",
-      "sizes": "256x256",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "./common_pwa/common_pwa_384x384.png",
-      "type": "image/png",
-      "sizes": "384x384",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "./common_pwa/common_pwa_512x512.png",
-      "type": "image/png",
-      "sizes": "512x512",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "./common_pwa/common_pwa_1024x1024.png",
-      "type": "image/png",
-      "sizes": "1024x1024",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "./macos_pwa/macos_pwa_256x256_v4.png?v=5",
-      "type": "image/png",
-      "sizes": "256x256",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "./macos_pwa/macos_pwa_512x512_v4.png?v=5",
-      "type": "image/png",
-      "sizes": "512x512",
-      "purpose": "any maskable"
-    }
-  ],
-  "categories": [
-    "business",
-    "productivity"
-  ],
-  "lang": "en-US",
+  "theme_color": "#E5E7EB",
+  "orientation": "portrait-primary",
+  "icons": [],
+  "categories": ["productivity", "business"],
+  "lang": "en",
   "dir": "ltr"
 }

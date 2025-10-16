@@ -1,7 +1,7 @@
 
-const CACHE_NAME = 'portapro-v5';
-const STATIC_CACHE = 'portapro-static-v5';
-const DYNAMIC_CACHE = 'portapro-dynamic-v5';
+const CACHE_NAME = 'portapro-v4';
+const STATIC_CACHE = 'portapro-static-v4';
+const DYNAMIC_CACHE = 'portapro-dynamic-v4';
 
 const urlsToCache = [
   '/',
@@ -43,6 +43,27 @@ self.addEventListener('install', event => {
 self.addEventListener('fetch', event => {
   const { request } = event;
   const requestUrl = new URL(request.url);
+  
+  // Icons and manifest - network first to ensure fresh assets
+  if (requestUrl.href.includes('apple-touch-icon') || 
+      requestUrl.href.includes('/icons/pwa-') || 
+      requestUrl.href.includes('/icon-') || 
+      requestUrl.href.includes('/favicon') || 
+      requestUrl.href.includes('/manifest.json')) {
+    event.respondWith(
+      fetch(request)
+        .then(response => {
+          if (response.status === 200) {
+            const responseClone = response.clone();
+            caches.open(STATIC_CACHE)
+              .then(cache => cache.put(request, responseClone));
+          }
+          return response;
+        })
+        .catch(() => caches.match(request))
+    );
+    return;
+  }
   
   // API requests - network first with fallback
   if (apiRoutes.some(route => requestUrl.href.includes(route))) {
