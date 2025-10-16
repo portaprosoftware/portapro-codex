@@ -1,7 +1,7 @@
 
-const CACHE_NAME = 'portapro-v2';
-const STATIC_CACHE = 'portapro-static-v2';
-const DYNAMIC_CACHE = 'portapro-dynamic-v2';
+const CACHE_NAME = 'portapro-v3';
+const STATIC_CACHE = 'portapro-static-v3';
+const DYNAMIC_CACHE = 'portapro-dynamic-v3';
 
 const urlsToCache = [
   '/',

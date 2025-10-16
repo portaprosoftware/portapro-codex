@@ -45,13 +45,13 @@
       "purpose": "any maskable"
     },
     {
-      "src": "./macos_pwa/macos_pwa_256x256.png",
+      "src": "./macos_pwa/macos_pwa_256x256.png?v=2",
       "type": "image/png",
       "sizes": "256x256",
       "purpose": "any maskable"
     },
     {
-      "src": "./macos_pwa/macos_pwa_512x512.png",
+      "src": "./macos_pwa/macos_pwa_512x512.png?v=2",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
