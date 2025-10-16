@@ -18,31 +18,43 @@
       "src": "./common_pwa/common_pwa_192x192.png",
       "type": "image/png",
       "sizes": "192x192",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "./common_pwa/common_pwa_256x256.png",
       "type": "image/png",
       "sizes": "256x256",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "./common_pwa/common_pwa_384x384.png",
       "type": "image/png",
       "sizes": "384x384",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "./common_pwa/common_pwa_512x512.png",
       "type": "image/png",
       "sizes": "512x512",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "./common_pwa/common_pwa_1024x1024.png",
       "type": "image/png",
       "sizes": "1024x1024",
-      "purpose": "any"
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./macos_pwa/macos_pwa_256x256.png",
+      "type": "image/png",
+      "sizes": "256x256",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./macos_pwa/macos_pwa_512x512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
     }
   ],
   "categories": [
