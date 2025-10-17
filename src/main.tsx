@@ -13,11 +13,11 @@ import { Toaster } from '@/components/ui/sonner';
 // Development vs Production settings
 const isDevelopment = import.meta.env.DEV;
 
-// Clerk publishable key from env; set VERCEL env VITE_CLERK_PUBLISHABLE_KEY to live key for clerk.portaprosoftware.com
+// Clerk configuration: explicit domain to avoid redirect issues
 const CLERK_PUBLISHABLE_KEY = (import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined) || (isDevelopment ? "pk_test_YWN0dWFsLW11dHQtOTEuY2xlcmsuYWNjb3VudHMuZGV2JA" : "");
 
 if (!CLERK_PUBLISHABLE_KEY && !isDevelopment) {
-  console.error('Missing VITE_CLERK_PUBLISHABLE_KEY in production. Set the live key that matches your Clerk Frontend API domain (clerk.portaprosoftware.com).');
+  console.error('Missing VITE_CLERK_PUBLISHABLE_KEY in production.');
 }
 
 const queryClient = new QueryClient({

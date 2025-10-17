@@ -22,33 +22,45 @@ export function useUserRole() {
         });
 
         if (!error && data?.success && data?.role) {
-          console.info('useUserRole: Edge function success', data.role);
+          if (import.meta.env.DEV) {
+            console.info('useUserRole: Edge function success', data.role);
+          }
           return data.role as AppRole;
         }
       } catch (edgeError) {
-        console.warn('useUserRole: Edge function failed, trying Supabase fallback', edgeError);
+        console.warn('useUserRole: Edge function failed, trying direct DB lookup', edgeError);
       }
 
-      // FALLBACK: Direct Supabase query
-      // First get the profile to map clerk_user_id to profile id
+      // FALLBACK: Direct Supabase query with retry
       const { data: profile } = await supabase
         .from('profiles')
         .select('id')
         .eq('clerk_user_id', user.id)
         .maybeSingle();
       
-      if (!profile) return null;
+      if (!profile) {
+        if (import.meta.env.DEV) {
+          console.warn('useUserRole: Profile not found for clerk_user_id', user.id);
+        }
+        return null;
+      }
       
-      // Then get the role from user_roles table
+      // Get role from user_roles table
       const { data: roleData } = await supabase
         .from('user_roles')
         .select('role')
         .eq('user_id', profile.id)
         .maybeSingle();
       
+      if (import.meta.env.DEV) {
+        console.info('useUserRole: Direct DB lookup', { profileId: profile.id, role: roleData?.role });
+      }
+      
       return roleData?.role as AppRole | null;
     },
     enabled: isLoaded && !!user,
+    retry: 2,
+    retryDelay: 500,
   });
 
   // Priority: Supabase role > Clerk publicMetadata role > unknown

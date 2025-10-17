@@ -21,8 +21,17 @@ const AuthCallback = () => {
     const hasOAuthParams = params.has('code') || params.has('__clerk_status') || params.has('state');
     
     if (!hasOAuthParams) {
-      console.warn('AuthCallback: No OAuth params found, redirecting to home');
+      console.warn('AuthCallback: Missing OAuth params, redirecting to home', {
+        search: window.location.search,
+        params: Object.fromEntries(params.entries())
+      });
       navigate('/', { replace: true });
+    } else {
+      console.info('AuthCallback: Valid OAuth params detected', {
+        hasCode: params.has('code'),
+        hasStatus: params.has('__clerk_status'),
+        hasState: params.has('state')
+      });
     }
   }, [navigate]);
 
