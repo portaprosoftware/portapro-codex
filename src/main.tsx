@@ -76,7 +76,11 @@ if (storedBuildId !== BUILD_ID) {
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY}>
+      <ClerkProvider 
+        publishableKey={CLERK_PUBLISHABLE_KEY}
+        afterSignInUrl="/"
+        afterSignUpUrl="/"
+      >
         <App />
         <Toaster />
       </ClerkProvider>

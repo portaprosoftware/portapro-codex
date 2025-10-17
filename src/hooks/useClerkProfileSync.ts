@@ -17,90 +17,28 @@ export const useClerkProfileSync = () => {
       imageUrl?: string;
       clerkRole?: string;
     }) => {
-      // PRIMARY: Try RPC first (most reliable in production)
+      console.log('🔄 Starting profile sync for:', userData.clerkUserId);
+
+      // PRIMARY METHOD: Direct Supabase insert (most reliable)
       try {
-        const { data: profileId, error } = await supabase.rpc('sync_clerk_profile', {
-          clerk_user_id_param: userData.clerkUserId,
-          email_param: userData.email,
-          first_name_param: userData.firstName,
-          last_name_param: userData.lastName,
-          image_url_param: userData.imageUrl || null,
-        });
-
-        if (error) throw error;
-
-        // After RPC success, ensure role exists and matches Clerk
-        if (profileId) {
-          const { data: currentRole } = await supabase
-            .from('user_roles')
-            .select('role')
-            .eq('user_id', profileId)
-            .maybeSingle();
-
-          // If Clerk provides a role, sync it
-          if (userData.clerkRole) {
-            if (!currentRole || (currentRole as any).role !== userData.clerkRole) {
-              await supabase.from('user_roles').delete().eq('user_id', profileId);
-              await supabase.from('user_roles').insert({ user_id: profileId, role: userData.clerkRole as any });
-            }
-          } else if (!currentRole) {
-            // No Clerk role and no DB role: seed first owner
-            const { data: owners } = await supabase
-              .from('user_roles')
-              .select('id')
-              .eq('role', 'owner')
-              .limit(1);
-
-            if (!owners || owners.length === 0) {
-              await supabase.from('user_roles').insert({ user_id: profileId, role: 'owner' });
-              console.info('useClerkProfileSync: Auto-seeded first owner');
-            }
-          }
-
-          console.info('useClerkProfileSync: RPC sync success', { profileId });
-          return profileId;
-        }
-
-        throw new Error('RPC returned no profile ID');
-      } catch (rpcError) {
-        console.warn('useClerkProfileSync: RPC failed, trying edge function', rpcError);
-      }
-
-      // FALLBACK 1: Try edge function
-      try {
-        const { data, error } = await supabase.functions.invoke('profile_sync', {
-          body: {
-            clerkUserId: userData.clerkUserId,
-            email: userData.email,
-            firstName: userData.firstName,
-            lastName: userData.lastName,
-            imageUrl: userData.imageUrl,
-            clerkRole: userData.clerkRole,
-          },
-        });
-
-        if (!error && data?.success) {
-          console.info('useClerkProfileSync: Edge function success', data);
-          return data.profileId;
-        }
-        
-        throw new Error(error?.message || 'Edge function failed');
-      } catch (edgeError) {
-        console.warn('useClerkProfileSync: Edge function failed, trying direct upsert', edgeError);
-      }
-
-      // FALLBACK 2: Direct upsert (last resort)
-      try {
-        const { data: existingProfile } = await supabase
+        // Check if profile exists
+        const { data: existingProfile, error: checkError } = await supabase
           .from('profiles')
           .select('id')
           .eq('clerk_user_id', userData.clerkUserId)
           .maybeSingle();
 
+        if (checkError) {
+          console.error('❌ Error checking existing profile:', checkError);
+          throw checkError;
+        }
+
         let profileId = existingProfile?.id as string | null;
 
+        // Create profile if it doesn't exist
         if (!profileId) {
-          const { data: insertedProfile, error: insertProfileError } = await supabase
+          console.log('➕ Creating new profile...');
+          const { data: insertedProfile, error: insertError } = await supabase
             .from('profiles')
             .insert({
               clerk_user_id: userData.clerkUserId,
@@ -112,28 +50,80 @@ export const useClerkProfileSync = () => {
             .select('id')
             .single();
 
-          if (insertProfileError) throw insertProfileError;
+          if (insertError) {
+            console.error('❌ Profile insert failed:', insertError);
+            throw insertError;
+          }
+
           profileId = insertedProfile?.id as string | null;
+          console.log('✅ Profile created:', profileId);
+        } else {
+          console.log('✅ Profile already exists:', profileId);
         }
 
-        if (!profileId) throw new Error('Direct upsert failed to get profile ID');
+        if (!profileId) {
+          throw new Error('Failed to get profile ID');
+        }
 
-        // Ensure role
+        // Handle role assignment
+        const { data: existingRole, error: roleCheckError } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', profileId)
+          .maybeSingle();
+
+        if (roleCheckError) {
+          console.error('❌ Error checking role:', roleCheckError);
+        }
+
+        // Assign role
         if (userData.clerkRole) {
-          await supabase.from('user_roles').delete().eq('user_id', profileId);
-          await supabase.from('user_roles').insert({ user_id: profileId, role: userData.clerkRole as any });
+          // User has a role from Clerk metadata - use it
+          if (!existingRole || (existingRole as any).role !== userData.clerkRole) {
+            console.log('🔑 Setting role from Clerk:', userData.clerkRole);
+            await supabase.from('user_roles').delete().eq('user_id', profileId);
+            await supabase.from('user_roles').insert({ 
+              user_id: profileId, 
+              role: userData.clerkRole as any 
+            });
+          }
+        } else if (!existingRole) {
+          // No Clerk role and no DB role - check if this is the first user
+          const { data: owners, error: ownersError } = await supabase
+            .from('user_roles')
+            .select('id')
+            .eq('role', 'owner')
+            .limit(1);
+
+          if (ownersError) {
+            console.error('❌ Error checking owners:', ownersError);
+          }
+
+          if (!owners || owners.length === 0) {
+            console.log('👑 First user - assigning owner role');
+            await supabase.from('user_roles').insert({ 
+              user_id: profileId, 
+              role: 'owner' 
+            });
+          } else {
+            console.warn('⚠️ No role assigned and not first user');
+          }
         }
 
-        console.info('useClerkProfileSync: Direct upsert success', { profileId });
+        console.log('✅ Profile sync complete:', { profileId });
         return profileId;
-      } catch (fallbackError) {
-        console.error('useClerkProfileSync: All sync methods failed', fallbackError);
-        throw fallbackError;
+
+      } catch (directError) {
+        console.error('❌ Direct profile creation failed:', directError);
+        throw directError;
       }
     },
     onError: (error) => {
-      console.error('Failed to sync profile:', error);
-      toast.error('Failed to sync profile with database');
+      console.error('❌ Profile sync failed:', error);
+      toast.error('Failed to sync profile. Please contact support.');
+    },
+    onSuccess: (profileId) => {
+      console.log('✅ Profile sync successful:', profileId);
     }
   });
 
