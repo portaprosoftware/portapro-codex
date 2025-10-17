@@ -14,10 +14,9 @@ import { Toaster } from '@/components/ui/sonner';
 const isDevelopment = import.meta.env.DEV;
 
 // Clerk configuration - use dev key in dev, prod key in production
-// CRITICAL: Production key MUST match accounts.portaprosoftware.com domain
 const CLERK_PUBLISHABLE_KEY = isDevelopment 
   ? "pk_test_YWN0dWFsLW11dHQtOTEuY2xlcmsuYWNjb3VudHMuZGV2JA"
-  : "pk_live_YWNjb3VudHMucG9ydGFwcm9zb2Z0d2FyZS5jb20k"; // accounts.portaprosoftware.com
+  : "pk_live_Y2xlcmsucG9ydGFwcm9zb2Z0d2FyZS5jb20k";
 
 const queryClient = new QueryClient({
   defaultOptions: {
