@@ -14,13 +14,13 @@ import {
 import { cn } from '@/lib/utils';
 import { useUserRole } from '@/hooks/useUserRole';
 import { 
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
 
 interface MobileNavigationItem {
   title: string;
@@ -66,21 +66,21 @@ export const MobileTopNavigation: React.FC = () => {
           <h1 className="text-lg font-semibold text-gray-900">PortaPro</h1>
         </div>
 
-        <Sheet>
-          <SheetTrigger asChild>
+        <Drawer>
+          <DrawerTrigger asChild>
             <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
               <Menu className="h-6 w-6 text-gray-600" />
             </button>
-          </SheetTrigger>
-          <SheetContent side="right" className="w-80">
-            <SheetHeader>
-              <SheetTitle>Navigation</SheetTitle>
-              <SheetDescription>
+          </DrawerTrigger>
+          <DrawerContent className="max-h-[85vh]">
+            <DrawerHeader>
+              <DrawerTitle>Navigation</DrawerTitle>
+              <DrawerDescription>
                 Access all your tools and features
-              </SheetDescription>
-            </SheetHeader>
+              </DrawerDescription>
+            </DrawerHeader>
             
-            <nav className="mt-6 space-y-2">
+            <nav className="mt-6 space-y-2 px-4 pb-8 overflow-y-auto">
               {visibleItems.map((item) => (
                 <NavLink
                   key={item.href}
@@ -104,8 +104,8 @@ export const MobileTopNavigation: React.FC = () => {
                 </NavLink>
               ))}
             </nav>
-          </SheetContent>
-        </Sheet>
+          </DrawerContent>
+        </Drawer>
       </div>
     </div>
   );
