@@ -272,27 +272,7 @@ export const FullScreenDispatchView: React.FC<FullScreenDispatchViewProps> = ({
                         >
                           <ChevronRight className="h-4 w-4" />
                         </Button>
-                       </div>
-                       <div className="flex gap-1 ml-1">
-                         <Button
-                           variant="outline"
-                           size="sm"
-                           className="h-8 w-8 p-0"
-                           onClick={() => scrollVertical('up')}
-                           title="Scroll up"
-                         >
-                           <ChevronUp className="h-4 w-4" />
-                         </Button>
-                         <Button
-                           variant="outline"
-                           size="sm"
-                           className="h-8 w-8 p-0"
-                           onClick={() => scrollVertical('down')}
-                           title="Scroll down"
-                         >
-                           <ChevronDown className="h-4 w-4" />
-                         </Button>
-                       </div>
+                        </div>
                     </div>
                   )}
                   
