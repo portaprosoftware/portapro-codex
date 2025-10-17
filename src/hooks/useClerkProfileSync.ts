@@ -19,34 +19,23 @@ export const useClerkProfileSync = () => {
     }) => {
       // PRIMARY: Try edge function first (bypasses RLS with service role)
       try {
-        const { data: supabaseConfig } = await supabase.auth.getSession();
-        const projectUrl = 'https://unpnuonbndubcuzxfnmg.supabase.co';
-        
-        const edgeResponse = await fetch(`${projectUrl}/functions/v1/profile_sync`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVucG51b25ibmR1YmN1enhmbm1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxMzkyMjgsImV4cCI6MjA2NDcxNTIyOH0.goME2hFzqxm0tnFdXAB_0evuiueh8wWfGLIY1vvvqmE',
-          },
-          body: JSON.stringify({
+        const { data, error } = await supabase.functions.invoke('profile_sync', {
+          body: {
             clerkUserId: userData.clerkUserId,
             email: userData.email,
             firstName: userData.firstName,
             lastName: userData.lastName,
             imageUrl: userData.imageUrl,
             clerkRole: userData.clerkRole,
-          }),
+          },
         });
 
-        if (edgeResponse.ok) {
-          const result = await edgeResponse.json();
-          if (result.success) {
-            console.info('useClerkProfileSync: Edge function success', result);
-            return result.profileId;
-          }
+        if (!error && data?.success) {
+          console.info('useClerkProfileSync: Edge function success', data);
+          return data.profileId;
         }
         
-        throw new Error('Edge function failed, falling back to RPC');
+        throw new Error(error?.message || 'Edge function failed, falling back to RPC');
       } catch (edgeError) {
         console.warn('useClerkProfileSync: Edge function failed, trying RPC fallback', edgeError);
       }

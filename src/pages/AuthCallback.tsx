@@ -15,6 +15,17 @@ import { useNavigate } from 'react-router-dom';
 const AuthCallback = () => {
   const navigate = useNavigate();
 
+  // Guard: Only render Clerk callback when OAuth params are present
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const hasOAuthParams = params.has('code') || params.has('__clerk_status') || params.has('state');
+    
+    if (!hasOAuthParams) {
+      console.warn('AuthCallback: No OAuth params found, redirecting to home');
+      navigate('/', { replace: true });
+    }
+  }, [navigate]);
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-green-50">
       <div className="space-y-4 text-center">
