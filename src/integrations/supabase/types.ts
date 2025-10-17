@@ -7544,7 +7544,7 @@ export type Database = {
           first_name?: string | null
           hire_date?: string | null
           home_base?: string | null
-          id: string
+          id?: string
           image_url?: string | null
           is_active?: boolean
           last_name?: string | null

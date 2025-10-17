@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useUser } from '@clerk/clerk-react';
 import { useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -6,7 +6,6 @@ import { toast } from 'sonner';
 
 export const useClerkProfileSync = () => {
   const { user, isLoaded } = useUser();
-  const hasSyncedRef = useRef(false);
 
   const syncProfileMutation = useMutation({
     mutationFn: async (userData: {
@@ -17,120 +16,131 @@ export const useClerkProfileSync = () => {
       imageUrl?: string;
       clerkRole?: string;
     }) => {
+      // Check sessionStorage to prevent duplicate sync attempts
+      const syncKey = `clerk_sync_done:${userData.clerkUserId}`;
+      if (typeof window !== 'undefined' && sessionStorage.getItem(syncKey)) {
+        console.log('⏭️ Sync already completed for this session:', userData.clerkUserId);
+        return null;
+      }
+
       console.log('🔄 Starting profile sync for:', userData.clerkUserId);
 
-      // PRIMARY METHOD: Direct Supabase insert (most reliable)
       try {
-        // Check if profile exists
-        const { data: existingProfile, error: checkError } = await supabase
+        // Generate UUID for the profile
+        const profileId = crypto?.randomUUID?.() ?? self.crypto.randomUUID();
+        
+        // Upsert profile (insert or update if clerk_user_id already exists)
+        const { data: upsertedProfile, error: upsertError } = await supabase
           .from('profiles')
+          .upsert({
+            id: profileId,
+            clerk_user_id: userData.clerkUserId,
+            email: userData.email || null,
+            first_name: userData.firstName || null,
+            last_name: userData.lastName || null,
+            image_url: userData.imageUrl || null,
+          }, { 
+            onConflict: 'clerk_user_id',
+            ignoreDuplicates: false 
+          })
           .select('id')
-          .eq('clerk_user_id', userData.clerkUserId)
-          .maybeSingle();
+          .single();
 
-        if (checkError) {
-          console.error('❌ Error checking existing profile:', checkError);
-          throw checkError;
+        if (upsertError) {
+          console.error('❌ Profile upsert failed:', {
+            code: upsertError.code,
+            message: upsertError.message,
+            details: upsertError.details
+          });
+          throw upsertError;
         }
 
-        let profileId = existingProfile?.id as string | null;
-
-        // Create profile if it doesn't exist
-        if (!profileId) {
-          console.log('➕ Creating new profile...');
-          const { data: insertedProfile, error: insertError } = await supabase
-            .from('profiles')
-            .insert({
-              clerk_user_id: userData.clerkUserId,
-              email: userData.email || null,
-              first_name: userData.firstName || null,
-              last_name: userData.lastName || null,
-              image_url: userData.imageUrl || null,
-            } as any)
-            .select('id')
-            .single();
-
-          if (insertError) {
-            console.error('❌ Profile insert failed:', insertError);
-            throw insertError;
-          }
-
-          profileId = insertedProfile?.id as string | null;
-          console.log('✅ Profile created:', profileId);
-        } else {
-          console.log('✅ Profile already exists:', profileId);
+        const finalProfileId = upsertedProfile?.id;
+        if (!finalProfileId) {
+          throw new Error('Failed to get profile ID after upsert');
         }
 
-        if (!profileId) {
-          throw new Error('Failed to get profile ID');
-        }
+        console.log('✅ Profile upserted:', finalProfileId);
 
         // Handle role assignment
-        const { data: existingRole, error: roleCheckError } = await supabase
+        const { data: existingRole } = await supabase
           .from('user_roles')
           .select('role')
-          .eq('user_id', profileId)
+          .eq('user_id', finalProfileId)
           .maybeSingle();
 
-        if (roleCheckError) {
-          console.error('❌ Error checking role:', roleCheckError);
-        }
-
-        // Assign role
+        // Assign role based on Clerk metadata or first-user logic
         if (userData.clerkRole) {
           // User has a role from Clerk metadata - use it
           if (!existingRole || (existingRole as any).role !== userData.clerkRole) {
-            console.log('🔑 Setting role from Clerk:', userData.clerkRole);
-            await supabase.from('user_roles').delete().eq('user_id', profileId);
-            await supabase.from('user_roles').insert({ 
-              user_id: profileId, 
-              role: userData.clerkRole as any 
-            });
+            console.log('🔑 Setting role from Clerk metadata:', userData.clerkRole);
+            await supabase.from('user_roles').delete().eq('user_id', finalProfileId);
+            const { error: roleInsertError } = await supabase
+              .from('user_roles')
+              .insert({ 
+                user_id: finalProfileId, 
+                role: userData.clerkRole as any 
+              });
+            
+            if (roleInsertError) {
+              console.error('❌ Role insert failed:', roleInsertError);
+            }
           }
         } else if (!existingRole) {
           // No Clerk role and no DB role - check if this is the first user
-          const { data: owners, error: ownersError } = await supabase
+          const { data: owners } = await supabase
             .from('user_roles')
             .select('id')
             .eq('role', 'owner')
             .limit(1);
 
-          if (ownersError) {
-            console.error('❌ Error checking owners:', ownersError);
-          }
-
           if (!owners || owners.length === 0) {
             console.log('👑 First user - assigning owner role');
-            await supabase.from('user_roles').insert({ 
-              user_id: profileId, 
-              role: 'owner' 
-            });
+            const { error: ownerInsertError } = await supabase
+              .from('user_roles')
+              .insert({ 
+                user_id: finalProfileId, 
+                role: 'owner' 
+              });
+            
+            if (ownerInsertError) {
+              console.error('❌ Owner role insert failed:', ownerInsertError);
+            }
           } else {
-            console.warn('⚠️ No role assigned and not first user');
+            console.warn('⚠️ No role assigned and not first user - admin must assign role');
           }
         }
 
-        console.log('✅ Profile sync complete:', { profileId });
-        return profileId;
+        // Mark sync as complete in sessionStorage
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem(syncKey, 'true');
+        }
 
-      } catch (directError) {
-        console.error('❌ Direct profile creation failed:', directError);
-        throw directError;
+        console.log('✅ Profile sync complete');
+        return finalProfileId;
+
+      } catch (error: any) {
+        console.error('❌ Profile sync failed:', {
+          code: error?.code,
+          message: error?.message,
+          details: error?.details
+        });
+        throw error;
       }
     },
-    onError: (error) => {
-      console.error('❌ Profile sync failed:', error);
-      toast.error('Failed to sync profile. Please contact support.');
+    onError: (error: any) => {
+      console.error('❌ Profile sync error:', error);
+      toast.error('Failed to sync your profile. Please refresh the page or contact support.');
     },
     onSuccess: (profileId) => {
-      console.log('✅ Profile sync successful:', profileId);
+      if (profileId) {
+        console.log('✅ Profile sync successful:', profileId);
+      }
     }
   });
 
   useEffect(() => {
-    if (isLoaded && user && !hasSyncedRef.current) {
-      hasSyncedRef.current = true;
-      
+    if (isLoaded && user) {
       // Sync profile with role from Clerk publicMetadata
       syncProfileMutation.mutate({
         clerkUserId: user.id,
