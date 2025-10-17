@@ -1,6 +1,7 @@
 import React from 'react';
-import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
 import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
+import { RouterSelector } from './components/RouterSelector';
 import { useUserRole } from './hooks/useUserRole';
 import { Layout } from './components/layout/Layout';
 import { ErrorBoundary } from './components/ui/error-boundary';
@@ -66,7 +67,7 @@ import Security from './pages/Security';
 const App = () => {
   return (
     <ErrorBoundary>
-      <BrowserRouter>
+      <RouterSelector>
         <div className="min-h-screen bg-background font-sans antialiased">
         
         <Routes>
@@ -474,7 +475,7 @@ const App = () => {
           } />
         </Routes>
         </div>
-      </BrowserRouter>
+      </RouterSelector>
     </ErrorBoundary>
   );
 }
