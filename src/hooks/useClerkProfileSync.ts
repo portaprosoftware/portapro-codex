@@ -26,41 +26,77 @@ export const useClerkProfileSync = () => {
       console.log('🔄 Starting profile sync for:', userData.clerkUserId);
 
       try {
-        // Generate UUID for the profile
         const profileId = crypto?.randomUUID?.() ?? self.crypto.randomUUID();
-        
-        // Upsert profile (insert or update if clerk_user_id already exists)
-        const { data: upsertedProfile, error: upsertError } = await supabase
+
+        // Check if profile already exists by Clerk user id
+        const { data: existingProfile, error: selectError } = await supabase
           .from('profiles')
-          .upsert({
-            id: profileId,
-            clerk_user_id: userData.clerkUserId,
-            email: userData.email || null,
-            first_name: userData.firstName || null,
-            last_name: userData.lastName || null,
-            image_url: userData.imageUrl || null,
-          }, { 
-            onConflict: 'clerk_user_id',
-            ignoreDuplicates: false 
-          })
           .select('id')
-          .single();
+          .eq('clerk_user_id', userData.clerkUserId)
+          .maybeSingle();
 
-        if (upsertError) {
-          console.error('❌ Profile upsert failed:', {
-            code: upsertError.code,
-            message: upsertError.message,
-            details: upsertError.details
+        if (selectError) {
+          console.error('❌ Profile select failed:', {
+            code: selectError.code,
+            message: selectError.message,
+            details: selectError.details
           });
-          throw upsertError;
+          throw selectError;
         }
 
-        const finalProfileId = upsertedProfile?.id;
-        if (!finalProfileId) {
-          throw new Error('Failed to get profile ID after upsert');
+        let finalProfileId: string;
+
+        if (existingProfile?.id) {
+          // Update existing profile WITHOUT changing the primary key
+          const { error: updateError } = await supabase
+            .from('profiles')
+            .update({
+              email: userData.email || null,
+              first_name: userData.firstName || null,
+              last_name: userData.lastName || null,
+              image_url: userData.imageUrl || null,
+            })
+            .eq('id', existingProfile.id);
+
+          if (updateError) {
+            console.error('❌ Profile update failed:', {
+              code: updateError.code,
+              message: updateError.message,
+              details: updateError.details
+            });
+            throw updateError;
+          }
+
+          finalProfileId = existingProfile.id;
+          console.log('✅ Profile updated:', finalProfileId);
+        } else {
+          // Insert new profile with explicit id
+          const { data: inserted, error: insertError } = await supabase
+            .from('profiles')
+            .insert({
+              id: profileId,
+              clerk_user_id: userData.clerkUserId,
+              email: userData.email || null,
+              first_name: userData.firstName || null,
+              last_name: userData.lastName || null,
+              image_url: userData.imageUrl || null,
+            })
+            .select('id')
+            .single();
+
+          if (insertError) {
+            console.error('❌ Profile insert failed:', {
+              code: insertError.code,
+              message: insertError.message,
+              details: insertError.details
+            });
+            throw insertError;
+          }
+
+          finalProfileId = inserted!.id as string;
+          console.log('✅ Profile created:', finalProfileId);
         }
 
-        console.log('✅ Profile upserted:', finalProfileId);
 
         // Handle role assignment
         const { data: existingRole } = await supabase
