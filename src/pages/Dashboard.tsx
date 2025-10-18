@@ -233,11 +233,12 @@ const Dashboard = () => {
   }, [companySettings?.company_timezone]);
   
   return (
-    <div className="p-4 space-y-4 font-sans">
-      {/* Hero Banner - Compact */}
-      <div className="bg-gradient-to-b from-[#F6F9FF] to-white rounded-xl shadow-sm border border-gray-200 p-4 transition-all duration-300 hover:shadow-md">
-        <div className="flex items-center justify-between">
-          <div className="space-y-2">
+    <div className="px-4 md:px-6 py-4 space-y-4 font-sans">
+      {/* Hero Banner - Mobile Optimized */}
+      <div className="bg-gradient-to-b from-[#F6F9FF] to-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-4 transition-all duration-300 hover:shadow-md">
+        <div className="flex flex-col md:flex-row items-center md:justify-between gap-4 md:gap-0">
+          {/* Welcome text - centered on mobile */}
+          <div className="space-y-2 text-center md:text-left w-full md:w-auto">
             <h1 className="text-2xl font-bold text-gray-900 font-sans">
               Welcome back, {user?.firstName || 'User'}!
             </h1>
@@ -251,8 +252,8 @@ const Dashboard = () => {
             )}
           </div>
           
-          {/* Digital Date and Time - Center */}
-          <div className="text-center flex-shrink-0">
+          {/* Digital Date and Time - centered on mobile */}
+          <div className="text-center flex-shrink-0 order-first md:order-none">
             <div className="text-xl font-bold text-gray-900 font-sans">
               {currentTime.toLocaleTimeString([], { 
                 hour: '2-digit', 
@@ -269,11 +270,17 @@ const Dashboard = () => {
             </div>
           </div>
           
-          {/* Analog Clock - Right */}
-          <div className="flex-shrink-0">
+          {/* Analog Clock - smaller on mobile, hidden on very small screens */}
+          <div className="hidden sm:flex flex-shrink-0">
+            <MinimalClock 
+              timeZone={companySettings?.company_timezone || 'America/New_York'}
+              size={56}
+              className="md:hidden"
+            />
             <MinimalClock 
               timeZone={companySettings?.company_timezone || 'America/New_York'}
               size={80}
+              className="hidden md:block"
             />
           </div>
         </div>
@@ -281,11 +288,11 @@ const Dashboard = () => {
 
       {/* Company Overview Section */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <h2 className="text-base font-semibold text-gray-900 font-sans">Company Overview</h2>
-          <p className="text-sm text-gray-600 font-sans">Select any card to explore corresponding section</p>
+          <p className="hidden sm:block text-sm text-gray-600 font-sans">Select any card to explore corresponding section</p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
           <StatCard
             title="Total Inventory"
             value={`${inventoryData?.totalProducts || 0} products`}
@@ -388,7 +395,7 @@ const Dashboard = () => {
       {/* Alerts & Expiring Documents Section */}
       <div className="space-y-4">
         <h2 className="text-base font-semibold text-gray-900 font-sans">Alerts & Expiring Documents</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
           <StatCard
             title="Vehicle Maintenance"
             value={maintenanceData?.count || 0}

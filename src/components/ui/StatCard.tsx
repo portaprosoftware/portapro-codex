@@ -66,7 +66,7 @@ export const StatCard: React.FC<StatCardProps> = ({
         "bg-gradient-to-b from-[#F6F9FF] to-white",
         "rounded-xl border border-gray-200 shadow-sm",
         "hover:shadow-md hover:-translate-y-1",
-        "p-4 h-32", // Larger cards with more space
+        "p-5 md:p-4 min-h-[140px] md:h-32", // Mobile optimized padding and height
         clickable && "cursor-pointer hover:shadow-lg hover:-translate-y-2",
         className
       )}
@@ -84,10 +84,10 @@ export const StatCard: React.FC<StatCardProps> = ({
       <div className="flex items-center justify-between h-full">
         {/* Left side - Value and title */}
         <div className="flex-1 min-w-0">
-          {/* Value */}
+          {/* Value - larger on mobile for better readability */}
           <div className={cn(
             "leading-tight mb-1 font-sans",
-            isReactElement ? "" : "text-xl font-bold text-gray-900"
+            isReactElement ? "" : "text-2xl md:text-xl font-bold text-gray-900"
           )}>
             {displayValue}
           </div>
@@ -97,9 +97,9 @@ export const StatCard: React.FC<StatCardProps> = ({
             {title}
           </div>
           
-          {/* Subtitle */}
+          {/* Subtitle - more readable on mobile */}
           {subtitle && (
-            <div className={cn("text-xs font-medium font-sans truncate", subtitleColor)}>
+            <div className={cn("text-sm md:text-xs font-medium font-sans truncate", subtitleColor)}>
               {subtitle}
             </div>
           )}
