@@ -72,32 +72,32 @@ export const MobileTopNavigation: React.FC = () => {
               <Menu className="h-6 w-6 text-gray-600" />
             </button>
           </DrawerTrigger>
-          <DrawerContent className="max-h-[85vh]">
-            <DrawerHeader>
-              <DrawerTitle>Navigation</DrawerTitle>
-              <DrawerDescription>
-                Access all your tools and features
+          <DrawerContent className="h-[80vh] flex flex-col">
+            <DrawerHeader className="border-b border-gray-200 pb-4">
+              <DrawerTitle className="text-xl font-bold">Menu</DrawerTitle>
+              <DrawerDescription className="text-sm text-gray-600">
+                Navigate to your workspace
               </DrawerDescription>
             </DrawerHeader>
             
-            <nav className="mt-6 space-y-2 px-4 pb-8 overflow-y-auto">
+            <nav className="flex-1 space-y-1 px-4 pt-4 pb-8 overflow-y-auto">
               {visibleItems.map((item) => (
                 <NavLink
                   key={item.href}
                   to={item.href}
                   className={({ isActive }) =>
                     cn(
-                      "flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-all duration-200",
+                      "flex items-center gap-3 px-4 py-4 rounded-xl text-base font-medium transition-all duration-200",
                       isActive
-                        ? "nav-item-active text-white"
-                        : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                        ? "nav-item-active text-white shadow-lg"
+                        : "text-gray-700 hover:bg-gray-50 active:bg-gray-100"
                     )
                   }
                 >
-                  <item.icon className="w-5 h-5 flex-shrink-0" strokeWidth={2} />
+                  <item.icon className="w-6 h-6 flex-shrink-0" strokeWidth={2} />
                   <span className="flex-1">{item.title}</span>
                   {item.badge && (
-                    <span className="px-2 py-1 text-xs font-bold bg-blue-100 text-blue-600 rounded-full min-w-[1.25rem] h-5 flex items-center justify-center">
+                    <span className="px-2.5 py-1 text-xs font-bold bg-gradient-primary text-white rounded-full min-w-[1.5rem] h-6 flex items-center justify-center">
                       {item.badge}
                     </span>
                   )}
