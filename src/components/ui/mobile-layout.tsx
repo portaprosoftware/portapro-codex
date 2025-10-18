@@ -2,7 +2,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { Menu, Bell, User, Home, Calendar, Package, Settings } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, DrawerTrigger } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useUserRole } from '@/hooks/useUserRole';
@@ -25,42 +25,39 @@ const MobileTopNavigation: React.FC = () => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border h-14">
       <div className="flex items-center justify-between px-4 h-full">
-        {/* Left side - Menu */}
-        <Sheet>
-          <SheetTrigger asChild>
+        <Drawer>
+          <DrawerTrigger asChild>
             <Button variant="ghost" size="sm" className="md:hidden">
               <Menu className="h-5 w-5" />
             </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-80">
-            <div className="flex flex-col h-full">
-              <div className="border-b border-border pb-4 mb-4">
-                <h2 className="font-semibold text-lg">PortaPro</h2>
-                <p className="text-sm text-muted-foreground">Mobile Navigation</p>
-              </div>
-              
-              <nav className="flex-1 space-y-2">
-                {navigationItems.map((item) => (
-                  <NavLink
-                    key={item.href}
-                    to={item.href}
-                    className={({ isActive }) =>
-                      cn(
-                        "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 font-medium text-sm",
-                        isActive 
-                          ? "bg-gradient-primary text-white shadow-sm" 
-                          : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-                      )
-                    }
-                  >
-                    <item.icon className="h-5 w-5" />
-                    <span>{item.title}</span>
-                  </NavLink>
-                ))}
-              </nav>
-            </div>
-          </SheetContent>
-        </Sheet>
+          </DrawerTrigger>
+          <DrawerContent className="z-[60] h-[80vh] flex flex-col">
+            <DrawerHeader className="border-b border-border pb-4">
+              <DrawerTitle className="text-lg font-semibold">PortaPro</DrawerTitle>
+              <DrawerDescription className="text-sm text-muted-foreground">Mobile Navigation</DrawerDescription>
+            </DrawerHeader>
+            
+            <nav className="flex-1 space-y-2 px-4 pt-4 pb-8 overflow-y-auto">
+              {navigationItems.map((item) => (
+                <NavLink
+                  key={item.href}
+                  to={item.href}
+                  className={({ isActive }) =>
+                    cn(
+                      "flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 font-medium text-sm",
+                      isActive 
+                        ? "bg-gradient-primary text-white shadow-sm" 
+                        : "text-muted-foreground hover:bg-muted/30 hover:text-foreground"
+                    )
+                  }
+                >
+                  <item.icon className="h-5 w-5" />
+                  <span>{item.title}</span>
+                </NavLink>
+              ))}
+            </nav>
+          </DrawerContent>
+        </Drawer>
 
         {/* Center - Logo/Title */}
         <div className="flex items-center gap-2">
