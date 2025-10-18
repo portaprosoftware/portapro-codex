@@ -2,29 +2,9 @@ import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { 
-  LayoutDashboard, 
-  CalendarDays, 
-  Toilet, 
-  Users2, 
-  Truck, 
-  ClipboardCheck,
-  FileText,
-  BarChart4,
-  Building2,
-  Building,
-  Warehouse,
-  Megaphone,
-  MessageSquare,
-  Droplets,
-  Settings,
-  UserCog,
-  Mail
-} from 'lucide-react';
 import { useUserRole } from '@/hooks/useUserRole';
 import { UserButton, useUser } from '@clerk/clerk-react';
 import { Logo } from '@/components/ui/logo';
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import {
   Sidebar,
@@ -37,115 +17,22 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuBadge,
   useSidebar,
 } from "@/components/ui/sidebar";
-
-interface NavigationItem {
-  title: string;
-  url: string;
-  icon: React.ElementType;
-  description?: string;
-  badge?: string | number;
-  permission?: 'owner' | 'admin' | 'staff';
-}
+import {
+  coreItems,
+  dayToDayItems,
+  inventoryItems,
+  managementItems,
+  adminItems,
+  type NavigationItem
+} from './navConfig';
 
 interface AppSidebarProps {
   activeSection?: string;
   onSectionChange?: (section: string) => void;
 }
 
-const coreItems: NavigationItem[] = [
-  { 
-    title: 'Dashboard', 
-    url: '/', 
-    icon: LayoutDashboard
-  },
-];
-
-const dayToDayItems: NavigationItem[] = [
-  { 
-    title: 'Jobs', 
-    url: '/jobs', 
-    icon: CalendarDays,
-    permission: 'staff'
-  },
-  { 
-    title: 'Customers', 
-    url: '/customers', 
-    icon: Users2,
-    permission: 'staff'
-  },
-  { 
-    title: 'Quotes & Invoices', 
-    url: '/quotes-invoices', 
-    icon: FileText,
-    permission: 'staff'
-  },
-];
-
-const inventoryItems: NavigationItem[] = [
-  { 
-    title: 'Equipment', 
-    url: '/inventory', 
-    icon: Toilet,
-    permission: 'staff'
-  },
-  { 
-    title: 'Consumables', 
-    url: '/consumables', 
-    icon: Droplets,
-    permission: 'staff'
-  },
-  { 
-    title: 'Storage', 
-    url: '/storage-sites', 
-    icon: Warehouse,
-    permission: 'admin'
-  }
-];
-
-const managementItems: NavigationItem[] = [
-  { 
-    title: 'Fleet Management', 
-    url: '/fleet', 
-    icon: Truck,
-    permission: 'staff'
-  },
-  { 
-    title: 'Services Hub', 
-    url: '/maintenance-hub', 
-    icon: ClipboardCheck,
-    permission: 'staff'
-  },
-  { 
-    title: 'Team Management', 
-    url: '/team-management', 
-    icon: UserCog,
-    permission: 'admin'
-  },
-];
-
-const adminItems: NavigationItem[] = [
-  { 
-    title: 'Marketing', 
-    url: '/marketing', 
-    icon: Megaphone,
-    permission: 'admin'
-  },
-  { 
-    title: 'Analytics', 
-    url: '/analytics', 
-    icon: BarChart4,
-    permission: 'admin'
-  },
-  { 
-    title: 'Settings', 
-    url: '/settings', 
-    icon: Settings,
-    permission: 'admin'
-  },
-];
 
 export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) {
   const { hasStaffAccess, hasAdminAccess, isOwner } = useUserRole();

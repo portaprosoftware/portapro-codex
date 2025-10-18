@@ -2,8 +2,9 @@
 import React, { useState, useEffect } from "react";
 import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
+import { MobileNavDrawer } from "./MobileNavDrawer";
+import { Logo } from "@/components/ui/logo";
 import { useUserRole } from "@/hooks/useUserRole";
-import { useIsMobile } from "@/hooks/use-mobile";
 import "@/utils/authCleanup"; // Load auth cleanup utilities
 
 interface LayoutProps {
@@ -69,24 +70,37 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
     );
   }
 
+  // Desktop layout with sidebar
+  if (isDesktop) {
+    return (
+      <SidebarProvider defaultOpen={true}>
+        <div className="min-h-screen flex w-full" style={{ backgroundColor: '#f9fafb' }}>
+          <AppSidebar 
+            activeSection={activeSection} 
+            onSectionChange={setActiveSection} 
+          />
+          <SidebarInset className="flex-1">
+            <main className="flex-1 overflow-y-auto p-4">
+              {children}
+            </main>
+          </SidebarInset>
+        </div>
+      </SidebarProvider>
+    );
+  }
+
+  // Mobile layout with bottom-up drawer
   return (
-    <SidebarProvider defaultOpen={isDesktop}>
-      <div className="min-h-screen flex w-full" style={{ backgroundColor: '#f9fafb' }}>
-        <AppSidebar 
-          activeSection={activeSection} 
-          onSectionChange={setActiveSection} 
-        />
-        <SidebarInset className="flex-1">
-          {!isDesktop && (
-            <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-white px-4">
-              <SidebarTrigger className="-ml-1" />
-            </header>
-          )}
-          <main className="flex-1 overflow-y-auto p-4">
-            {children}
-          </main>
-        </SidebarInset>
-      </div>
-    </SidebarProvider>
+    <div className="min-h-screen flex flex-col w-full" style={{ backgroundColor: '#f9fafb' }}>
+      <header className="flex h-16 shrink-0 items-center justify-between border-b bg-white px-4 sticky top-0 z-50">
+        <div className="flex items-center gap-3">
+          <MobileNavDrawer />
+          <Logo showText={true} />
+        </div>
+      </header>
+      <main className="flex-1 overflow-y-auto p-4">
+        {children}
+      </main>
+    </div>
   );
 };
