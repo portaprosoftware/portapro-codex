@@ -1,6 +1,6 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Menu, Bell, User, Home, Calendar, Package, Settings } from 'lucide-react';
+import { Bell, User, Home, Calendar, Package, Settings, MoreHorizontal } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, DrawerTrigger } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
@@ -13,54 +13,14 @@ interface MobileLayoutProps {
 }
 
 const MobileTopNavigation: React.FC = () => {
-  const { hasAdminAccess } = useUserRole();
-
-  const navigationItems = [
-    { title: "Dashboard", href: "/", icon: Home },
-    { title: "Jobs", href: "/jobs", icon: Calendar },
-    { title: "Inventory", href: "/inventory", icon: Package },
-    { title: "Settings", href: "/settings", icon: Settings, adminOnly: true },
-  ].filter(item => !item.adminOnly || hasAdminAccess);
-
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border h-14">
       <div className="flex items-center justify-between px-4 h-full">
-        <Drawer>
-          <DrawerTrigger asChild>
-            <Button variant="ghost" size="sm" className="md:hidden">
-              <Menu className="h-5 w-5" />
-            </Button>
-          </DrawerTrigger>
-          <DrawerContent className="z-[60] h-[80vh] flex flex-col">
-            <DrawerHeader className="border-b border-border pb-4">
-              <DrawerTitle className="text-lg font-semibold">PortaPro</DrawerTitle>
-              <DrawerDescription className="text-sm text-muted-foreground">Mobile Navigation</DrawerDescription>
-            </DrawerHeader>
-            
-            <nav className="flex-1 space-y-2 px-4 pt-4 pb-8 overflow-y-auto">
-              {navigationItems.map((item) => (
-                <NavLink
-                  key={item.href}
-                  to={item.href}
-                  className={({ isActive }) =>
-                    cn(
-                      "flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 font-medium text-sm",
-                      isActive 
-                        ? "bg-gradient-primary text-white shadow-sm" 
-                        : "text-muted-foreground hover:bg-muted/30 hover:text-foreground"
-                    )
-                  }
-                >
-                  <item.icon className="h-5 w-5" />
-                  <span>{item.title}</span>
-                </NavLink>
-              ))}
-            </nav>
-          </DrawerContent>
-        </Drawer>
-
         {/* Center - Logo/Title */}
         <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-sm">P</span>
+          </div>
           <h1 className="font-semibold text-lg">PortaPro</h1>
         </div>
 
@@ -81,39 +41,94 @@ const MobileTopNavigation: React.FC = () => {
     </header>
   );
 };
-
 const MobileBottomNavigation: React.FC = () => {
-  const { hasAdminAccess } = useUserRole();
+  const { hasAdminAccess, hasStaffAccess } = useUserRole();
+  const [drawerOpen, setDrawerOpen] = React.useState(false);
+
+  const navigationItems = [
+    { title: "Dashboard", href: "/", icon: Home },
+    { title: "Jobs", href: "/jobs", icon: Calendar, permission: 'staff' },
+    { title: "Customers", href: "/customers", icon: User, permission: 'staff' },
+    { title: "Inventory", href: "/inventory", icon: Package, permission: 'staff' },
+    { title: "Fleet", href: "/fleet", icon: Package, permission: 'admin' },
+    { title: "Quotes & Invoices", href: "/quotes-invoices", icon: Package, permission: 'admin' },
+    { title: "Analytics", href: "/analytics", icon: Package, permission: 'admin' },
+    { title: "Settings", href: "/settings", icon: Settings, permission: 'owner' },
+  ].filter(item => {
+    if (!item.permission) return true;
+    if (item.permission === 'owner') return hasAdminAccess; // Simplified for demo
+    if (item.permission === 'admin') return hasAdminAccess;
+    if (item.permission === 'staff') return hasStaffAccess;
+    return false;
+  });
 
   const bottomNavItems = [
     { title: "Home", href: "/", icon: Home },
     { title: "Jobs", href: "/jobs", icon: Calendar },
     { title: "Inventory", href: "/inventory", icon: Package },
-    { title: "Settings", href: "/settings", icon: Settings, adminOnly: true },
-  ].filter(item => !item.adminOnly || hasAdminAccess);
+  ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-t border-border md:hidden">
-      <div className="grid grid-cols-4 h-16">
-        {bottomNavItems.map((item) => (
-          <NavLink
-            key={item.href}
-            to={item.href}
-            className={({ isActive }) =>
-              cn(
-                "flex flex-col items-center justify-center gap-1 transition-all duration-200",
-                isActive
-                  ? "text-primary bg-primary/10"
-                  : "text-muted-foreground hover:text-foreground"
-              )
-            }
+    <>
+      <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
+        <DrawerContent className="z-[60] h-[80vh] flex flex-col">
+          <DrawerHeader className="border-b border-border pb-4">
+            <DrawerTitle className="text-lg font-semibold">PortaPro</DrawerTitle>
+            <DrawerDescription className="text-sm text-muted-foreground">Mobile Navigation</DrawerDescription>
+          </DrawerHeader>
+          
+          <nav className="flex-1 space-y-2 px-4 pt-4 pb-8 overflow-y-auto">
+            {navigationItems.map((item) => (
+              <NavLink
+                key={item.href}
+                to={item.href}
+                onClick={() => setDrawerOpen(false)}
+                className={({ isActive }) =>
+                  cn(
+                    "flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 font-medium text-sm",
+                    isActive 
+                      ? "bg-gradient-primary text-white shadow-sm" 
+                      : "text-muted-foreground hover:bg-muted/30 hover:text-foreground"
+                  )
+                }
+              >
+                <item.icon className="h-5 w-5" />
+                <span>{item.title}</span>
+              </NavLink>
+            ))}
+          </nav>
+        </DrawerContent>
+      </Drawer>
+
+      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-t border-border md:hidden">
+        <div className="grid grid-cols-4 h-16">
+          {bottomNavItems.map((item) => (
+            <NavLink
+              key={item.href}
+              to={item.href}
+              className={({ isActive }) =>
+                cn(
+                  "flex flex-col items-center justify-center gap-1 transition-all duration-200",
+                  isActive
+                    ? "text-primary bg-primary/10"
+                    : "text-muted-foreground hover:text-foreground"
+                )
+              }
+            >
+              <item.icon className="h-5 w-5" />
+              <span className="text-xs font-medium">{item.title}</span>
+            </NavLink>
+          ))}
+          <button
+            onClick={() => setDrawerOpen(true)}
+            className="flex flex-col items-center justify-center gap-1 transition-all duration-200 text-muted-foreground hover:text-foreground"
           >
-            <item.icon className="h-5 w-5" />
-            <span className="text-xs font-medium">{item.title}</span>
-          </NavLink>
-        ))}
-      </div>
-    </nav>
+            <MoreHorizontal className="h-5 w-5" />
+            <span className="text-xs font-medium">More</span>
+          </button>
+        </div>
+      </nav>
+    </>
   );
 };
 
