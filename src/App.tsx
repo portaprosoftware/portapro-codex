@@ -1,8 +1,9 @@
-import React from 'react';
-import { Route, Routes, Navigate } from 'react-router-dom';
-import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
+import React, { useEffect } from 'react';
+import { Route, Routes, Navigate, useNavigate, useLocation } from 'react-router-dom';
+import { SignedIn, SignedOut, RedirectToSignIn, useAuth } from '@clerk/clerk-react';
 import { RouterSelector } from './components/RouterSelector';
 import { useUserRole } from './hooks/useUserRole';
+import { useLastRoute, getLastRoute } from './hooks/useLastRoute';
 import { Layout } from './components/layout/Layout';
 import { ErrorBoundary } from './components/ui/error-boundary';
 import { Landing } from './pages/Landing';
@@ -64,12 +65,53 @@ import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
 import Security from './pages/Security';
 
-const App = () => {
+const RootRedirect = () => {
+  const { isSignedIn, isLoaded } = useAuth();
+  const { role } = useUserRole();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isLoaded) return;
+
+    if (isSignedIn) {
+      // Check for driver role first
+      if (role === 'driver') {
+        navigate('/driver', { replace: true });
+        return;
+      }
+
+      // Check for last visited route
+      const lastRoute = getLastRoute();
+      if (lastRoute && lastRoute !== '/') {
+        navigate(lastRoute, { replace: true });
+      } else {
+        navigate('/dashboard', { replace: true });
+      }
+    } else {
+      // Redirect to external Clerk sign-in
+      window.location.href = 'https://accounts.portaprosoftware.com/sign-in';
+    }
+  }, [isSignedIn, isLoaded, role, navigate]);
+
+  // Show loading while checking auth
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  return null;
+};
+
+const AppContent = () => {
+  useLastRoute(); // Track route changes
+
   return (
     <ErrorBoundary>
       <RouterSelector>
         <div className="min-h-screen bg-background font-sans antialiased">
-        
         <Routes>
           {/* Public QR Scan Routes */}
           <Route path="/scan/:unitId" element={<ScanFeedback />} />
@@ -112,8 +154,11 @@ const App = () => {
             <Route path="profile" element={<DriverProfilePage />} />
           </Route>
 
-          {/* Root route - show landing page for everyone, dashboard for authenticated users */}
-          <Route path="/" element={
+          {/* Root route - intelligent redirect based on auth state */}
+          <Route path="/" element={<RootRedirect />} />
+          
+          {/* Dashboard route */}
+          <Route path="/dashboard" element={
             <>
               <SignedIn>
                 <Layout>
@@ -121,7 +166,7 @@ const App = () => {
                 </Layout>
               </SignedIn>
               <SignedOut>
-                <Landing />
+                <Navigate to="/" replace />
               </SignedOut>
             </>
           } />
@@ -460,24 +505,13 @@ const App = () => {
             </>
           } />
 
-          {/* Catch all other routes - redirect to landing for unauthenticated, dashboard for authenticated */}
-          <Route path="*" element={
-            <>
-              <SignedIn>
-                <Layout>
-                  <Dashboard />
-                </Layout>
-              </SignedIn>
-              <SignedOut>
-                <Landing />
-              </SignedOut>
-            </>
-          } />
+          {/* Catch all other routes - redirect to root */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         </div>
       </RouterSelector>
     </ErrorBoundary>
   );
-}
+};
 
-export default App;
+export default AppContent;
