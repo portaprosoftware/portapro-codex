@@ -236,7 +236,7 @@ const Dashboard = () => {
     <div className="px-4 md:px-6 py-4 space-y-4 font-sans">
       {/* Hero Banner - Mobile Optimized */}
       <div className="bg-gradient-to-b from-[#F6F9FF] to-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-4 transition-all duration-300 hover:shadow-md">
-        <div className="flex flex-col md:flex-row items-center md:justify-between gap-4 md:gap-0">
+        <div className="flex flex-col md:flex-row items-center md:justify-between gap-2 md:gap-0">
           {/* Welcome text - centered on mobile */}
           <div className="space-y-2 text-center md:text-left w-full md:w-auto">
             <h1 className="text-2xl font-bold text-gray-900 font-sans">
