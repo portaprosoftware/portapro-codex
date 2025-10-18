@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Menu } from 'lucide-react';
 import { useUserRole } from '@/hooks/useUserRole';
 import { cn } from "@/lib/utils";
+import { Logo } from "@/components/ui/logo";
 import {
   Drawer,
   DrawerClose,
@@ -122,10 +123,10 @@ export function MobileNavDrawer() {
           <Menu className="h-6 w-6 text-gray-700" />
         </button>
       </DrawerTrigger>
-      <DrawerContent className="h-[80vh] max-h-[80vh] flex flex-col z-[60] rounded-t-2xl shadow-2xl">
+      <DrawerContent className="h-[90vh] max-h-[90vh] flex flex-col z-[60] rounded-t-2xl shadow-2xl">
         <DrawerHeader className="border-b pb-4">
-          <DrawerTitle className="text-xl font-bold bg-gradient-to-r from-blue-700 to-blue-800 bg-clip-text text-transparent">
-            PortaPro
+          <DrawerTitle className="flex justify-center">
+            <Logo showText={true} />
           </DrawerTitle>
           <DrawerDescription className="text-sm text-gray-600">
             Mobile Navigation
