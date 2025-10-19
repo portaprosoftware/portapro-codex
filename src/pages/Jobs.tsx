@@ -26,6 +26,7 @@ import { UnassignedJobCard } from '@/components/jobs/UnassignedJobCard';
 import { FullScreenDispatchView } from '@/components/dispatch/FullScreenDispatchView';
 import { EnhancedDateNavigator } from '@/components/jobs/EnhancedDateNavigator';
 import { InlineFilters } from '@/components/jobs/InlineFilters';
+import { MobileStickyHeader } from '@/components/jobs/MobileStickyHeader';
 import { useJobs, useUpdateJobStatus, useCreateJob } from '@/hooks/useJobs';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -563,7 +564,16 @@ const JobsPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 overflow-x-hidden">
+      {/* Mobile Sticky Header - Phase 5 */}
+      {activeTab === 'calendar' && (
+        <MobileStickyHeader
+          selectedDate={selectedDate}
+          jobsCount={allJobs.length}
+          onAddJob={() => setIsJobWizardOpen(true)}
+        />
+      )}
+      
       <div className={cn("max-w-none px-4 md:px-6 py-4 md:py-6 space-y-3 md:space-y-6", activeTab === "dispatch" && "md:space-y-3")}>
         {/* Page Header with Navigation Pills */}
         <div className="bg-white rounded-lg border shadow-sm p-4 md:p-6">
@@ -826,8 +836,8 @@ const JobsPage: React.FC = () => {
             >
               <div className="min-h-screen" key="new-dispatch-layout-v2">
 
-                {/* Two Column Layout - NEW VERSION */}
-                <div className="grid grid-cols-[300px_1fr] gap-4" key="new-two-column-layout">
+                {/* Two Column Layout - Responsive for Mobile (Phase 7) */}
+                <div className="flex flex-col md:grid md:grid-cols-[300px_1fr] gap-4" key="new-two-column-layout">
                   
                   {/* Left Column - Unassigned Jobs */}
                   <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
@@ -991,9 +1001,9 @@ const JobsPage: React.FC = () => {
           )}
           
           {activeTab === 'map' && (
-            <div className="flex gap-4" style={{ height: 'calc(100vh - 140px)' }}>
-              {/* Left Sidebar - Map Controls */}
-              <div className="w-80 space-y-4">
+            <div className="flex flex-col md:flex-row gap-4" style={{ height: 'calc(100vh - 140px)' }}>
+              {/* Left Sidebar - Map Controls (Mobile: Stack on top, Desktop: Sidebar) */}
+              <div className="w-full md:w-80 space-y-4">
                 {/* Map Mode Toggle */}
                 <div className="bg-white rounded-lg border shadow-sm p-4">
                   <div className="space-y-3">
@@ -1001,23 +1011,42 @@ const JobsPage: React.FC = () => {
                       mode={mapMode}
                       onModeChange={setMapMode}
                     />
-                    <p className="text-sm text-gray-600">
+                    <p className="text-xs md:text-sm text-gray-600">
                       Toggle between different map views. Use the filters above to narrow your results further.
                     </p>
                   </div>
                 </div>
                 
-                {/* Map Legend */}
-                <MapLegend 
-                  mapMode={mapMode}
-                  filteredJobsCount={filterJobs(allJobs).length}
-                  availableDrivers={drivers}
-                />
+                {/* Map Legend - Collapsible on Mobile */}
+                <div className="md:block">
+                  <Accordion type="single" collapsible defaultValue="legend" className="md:hidden">
+                    <AccordionItem value="legend" className="bg-white border rounded-lg">
+                      <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                        <span className="text-sm font-semibold">Map Legend</span>
+                      </AccordionTrigger>
+                      <AccordionContent className="px-4 pb-4">
+                        <MapLegend 
+                          mapMode={mapMode}
+                          filteredJobsCount={filterJobs(allJobs).length}
+                          availableDrivers={drivers}
+                        />
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                  
+                  <div className="hidden md:block">
+                    <MapLegend 
+                      mapMode={mapMode}
+                      filteredJobsCount={filterJobs(allJobs).length}
+                      availableDrivers={drivers}
+                    />
+                  </div>
+                </div>
               </div>
               
-              {/* Right Side - Map */}
-              <div className="flex-1 rounded-lg overflow-hidden">
-                <JobsMapErrorBoundary 
+              {/* Right Side - Map (Mobile: Full width below controls) */}
+              <div className="flex-1 rounded-lg overflow-hidden min-h-[400px] md:min-h-0">
+                <JobsMapErrorBoundary
                   onRetry={() => {
                     console.log('Retrying map with fresh data');
                   }}

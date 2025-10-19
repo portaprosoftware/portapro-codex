@@ -210,568 +210,579 @@
   }
 }
 
-@layer utilities {
-  /* Typography */
-  .page-title {
-    font-family: 'Inter', sans-serif;
-    font-size: 1.875rem;
-    font-weight: 700;
-    color: hsl(var(--foreground));
-    line-height: 1.2;
-  }
+/* Typography */
+.page-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+  line-height: 1.2;
+}
 
-  .section-header {
-    font-family: 'Inter', sans-serif;
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: hsl(var(--foreground));
-    margin-bottom: 1rem;
-  }
+.section-header {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+  margin-bottom: 1rem;
+}
 
-  .card-title {
-    font-family: 'Inter', sans-serif;
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: hsl(var(--foreground));
-  }
+.card-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
 
-  .body-text {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.875rem;
-    font-weight: 400;
-    color: hsl(var(--muted-foreground));
-    line-height: 1.5;
-  }
+.body-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: hsl(var(--muted-foreground));
+  line-height: 1.5;
+}
 
-  .caption-text {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.75rem;
-    font-weight: 400;
-    color: hsl(var(--muted-foreground));
-    line-height: 1.4;
-  }
+.caption-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: hsl(var(--muted-foreground));
+  line-height: 1.4;
+}
 
-  /* Status Badge System */
-  .doc-current {
-    background-color: hsl(var(--green-100));
-    color: hsl(var(--green-700));
-    border: 1px solid hsl(var(--green-500));
-  }
-  
-  .doc-expiring {
-    background-color: hsl(var(--orange-100));
-    color: hsl(var(--orange-700));
-    border: 1px solid hsl(var(--orange-500));
-  }
-  
-  .doc-urgent {
-    background-color: hsl(var(--orange-100));
-    color: hsl(var(--orange-700));
-    border: 1px solid hsl(var(--orange-500));
-  }
-  
-  .doc-overdue {
-    background-color: hsl(var(--red-100));
-    color: hsl(var(--red-700));
-    border: 1px solid hsl(var(--red-700));
-  }
-  
-  .doc-not-set {
-    background-color: hsl(var(--gray-100));
-    color: hsl(var(--gray-600));
-    border: 1px solid hsl(var(--gray-600));
-  }
+/* Status Badge System */
+.doc-current {
+  background-color: hsl(var(--green-100));
+  color: hsl(var(--green-700));
+  border: 1px solid hsl(var(--green-500));
+}
 
-  /* Navigation */
-  .nav-item-active {
-    background: linear-gradient(to right, #1d4ed8, #1e40af) !important;
-    color: #fff !important;
-    font-weight: 700 !important;
-  }
+.doc-expiring {
+  background-color: hsl(var(--orange-100));
+  color: hsl(var(--orange-700));
+  border: 1px solid hsl(var(--orange-500));
+}
 
-  .nav-item-active:hover {
-    background: linear-gradient(to right, #1d4ed8, #1e40af) !important;
-    filter: brightness(1.1);
-  }
+.doc-urgent {
+  background-color: hsl(var(--orange-100));
+  color: hsl(var(--orange-700));
+  border: 1px solid hsl(var(--orange-500));
+}
 
-  .nav-item-active * {
-    color: #fff !important;
-    font-weight: 700 !important;
-  }
+.doc-overdue {
+  background-color: hsl(var(--red-100));
+  color: hsl(var(--red-700));
+  border: 1px solid hsl(var(--red-700));
+}
 
-  /* Override for badges within active nav items */
-  .nav-item-active .bg-gray-200 {
-    background-color: rgb(229 231 235) !important;
-    color: rgb(31 41 55) !important;
-  }
-  
-  /* Enterprise Buttons */
-  .btn-enterprise {
-    @apply font-bold text-white rounded-xl transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5;
-    background: linear-gradient(to right, #1d4ed8, #1e40af);
-    font-family: 'Inter', sans-serif;
-    will-change: transform, box-shadow;
-  }
-  
-  .btn-enterprise:hover {
-    filter: brightness(1.1);
-  }
-  
-  .btn-secondary {
-    @apply bg-secondary text-secondary-foreground border border-border rounded-xl font-semibold transition-all duration-200 hover:bg-accent hover:text-accent-foreground hover:shadow-md hover:-translate-y-0.5;
-    font-family: 'Inter', sans-serif;
-    will-change: transform, box-shadow;
-  }
-  
-  .btn-primary {
-    background: var(--gradient-primary);
-    color: white;
-  }
+.doc-not-set {
+  background-color: hsl(var(--gray-100));
+  color: hsl(var(--gray-600));
+  border: 1px solid hsl(var(--gray-600));
+}
 
-  .btn-primary:hover {
-    background: var(--gradient-primary);
-    filter: brightness(1.1);
-  }
-  
-  /* Enterprise Cards */
-  .card-enterprise {
-    @apply border border-border rounded-xl shadow-sm p-6 transition-all duration-200 hover:shadow-md;
-    background: hsl(var(--card));
-  }
+/* Navigation */
+.nav-item-active {
+  background: linear-gradient(to right, #1d4ed8, #1e40af) !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+}
 
-  .enterprise-card {
-    background: hsl(var(--card));
-    border: 1px solid hsl(var(--border));
-    border-radius: 0.75rem;
-    padding: 1.5rem;
-    box-shadow: 0 1px 3px hsla(var(--foreground), 0.1);
-    transition: all 0.2s ease-in-out;
-  }
+.nav-item-active:hover {
+  background: linear-gradient(to right, #1d4ed8, #1e40af) !important;
+  filter: brightness(1.1);
+}
 
-  .enterprise-card:hover {
-    box-shadow: 0 4px 12px hsla(var(--foreground), 0.15);
-    transform: translateY(-2px);
-  }
+.nav-item-active * {
+  color: #fff !important;
+  font-weight: 700 !important;
+}
 
-  .enterprise-card:focus-within {
-    outline: 2px solid hsl(var(--ring));
-    outline-offset: 2px;
-  }
+/* Override for badges within active nav items */
+.nav-item-active .bg-gray-200 {
+  background-color: rgb(229 231 235) !important;
+  color: rgb(31 41 55) !important;
+}
 
-  /* Job Cards */
-  .enterprise-job-card {
-    background: hsl(var(--card));
-    border: 1px solid hsl(var(--border));
-    border-radius: 0.75rem;
+/* Enterprise Buttons */
+.btn-enterprise {
+  @apply font-bold text-white rounded-xl transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5;
+  background: linear-gradient(to right, #1d4ed8, #1e40af);
+  font-family: 'Inter', sans-serif;
+  will-change: transform, box-shadow;
+}
+
+.btn-enterprise:hover {
+  filter: brightness(1.1);
+}
+
+.btn-secondary {
+  @apply bg-secondary text-secondary-foreground border border-border rounded-xl font-semibold transition-all duration-200 hover:bg-accent hover:text-accent-foreground hover:shadow-md hover:-translate-y-0.5;
+  font-family: 'Inter', sans-serif;
+  will-change: transform, box-shadow;
+}
+
+.btn-primary {
+  background: var(--gradient-primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--gradient-primary);
+  filter: brightness(1.1);
+}
+
+/* Enterprise Cards */
+.card-enterprise {
+  @apply border border-border rounded-xl shadow-sm p-6 transition-all duration-200 hover:shadow-md;
+  background: hsl(var(--card));
+}
+
+.enterprise-card {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px hsla(var(--foreground), 0.1);
+  transition: all 0.2s ease-in-out;
+}
+
+.enterprise-card:hover {
+  box-shadow: 0 4px 12px hsla(var(--foreground), 0.15);
+  transform: translateY(-2px);
+}
+
+.enterprise-card:focus-within {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+/* Job Cards - Phase 6: Touch-friendly enhancements */
+.enterprise-job-card {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.75rem;
+  padding: 1rem;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.enterprise-job-card:hover {
+  box-shadow: 0 4px 12px hsla(var(--foreground), 0.1);
+  border-color: hsl(var(--primary));
+}
+
+/* Phase 6: Active state for touch feedback */
+.enterprise-job-card:active {
+  transform: scale(0.98);
+  transition: transform 0.1s ease-in-out;
+}
+
+/* Delivery job card */
+.enterprise-job-card.delivery {
+  position: relative;
+  border-left: none;
+}
+
+.enterprise-job-card.delivery::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--gradient-blue);
+  border-top-left-radius: 0.75rem;
+  border-bottom-left-radius: 0.75rem;
+}
+
+/* Pickup job card */
+.enterprise-job-card.pickup {
+  position: relative;
+  border-left: none;
+}
+
+.enterprise-job-card.pickup::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--gradient-yellow);
+  border-top-left-radius: 0.75rem;
+  border-bottom-left-radius: 0.75rem;
+}
+
+/* Service job card */
+.enterprise-job-card.service {
+  position: relative;
+  border-left: none;
+}
+
+.enterprise-job-card.service::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--gradient-purple);
+  border-top-left-radius: 0.75rem;
+  border-bottom-left-radius: 0.75rem;
+}
+
+/* On-site survey job card */
+.enterprise-job-card.on-site-survey {
+  position: relative;
+  border-left: none;
+}
+
+.enterprise-job-card.on-site-survey::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: hsl(var(--status-survey));
+  border-top-left-radius: 0.75rem;
+  border-bottom-left-radius: 0.75rem;
+}
+
+/* Maintenance job card */
+.enterprise-job-card.maintenance {
+  position: relative;
+  border-left: none;
+}
+
+.enterprise-job-card.maintenance::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--gradient-purple);
+  border-top-left-radius: 0.75rem;
+  border-bottom-left-radius: 0.75rem;
+}
+
+/* Status Badges */
+.enterprise-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.enterprise-status-badge.assigned {
+  background-color: hsl(var(--blue-100));
+  color: hsl(var(--blue-700));
+}
+
+.enterprise-status-badge.in-progress {
+  background-color: hsl(var(--orange-100));
+  color: hsl(var(--orange-700));
+}
+
+.enterprise-status-badge.completed {
+  background-color: hsl(var(--green-100));
+  color: hsl(var(--green-700));
+}
+
+.enterprise-status-badge.overdue {
+  background-color: hsl(var(--red-100));
+  color: hsl(var(--red-700));
+}
+
+.enterprise-status-badge.cancelled {
+  background-color: hsl(var(--gray-100));
+  color: hsl(var(--gray-600));
+}
+
+/* Enterprise specific classes for cancelled jobs */
+.enterprise-job-card.cancelled {
+  opacity: 0.7;
+  position: relative;
+  border-left-color: hsl(var(--status-cancelled)) !important;
+}
+
+.enterprise-job-card.cancelled::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, hsl(var(--status-cancelled)), transparent);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.enterprise-job-card.cancelled .enterprise-card-title {
+  text-decoration: line-through;
+  text-decoration-color: hsl(var(--status-cancelled));
+}
+
+.enterprise-job-card.cancelled::after {
+  content: 'CANCELLED';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: hsl(var(--status-cancelled));
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: bold;
+  z-index: 15;
+}
+
+/* Dispatch Card Styles */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.dispatch-job-card {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.dispatch-job-card p,
+.dispatch-job-card span {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+}
+
+.dispatch-job-card .truncate {
+  max-width: 100%;
+}
+
+/* Drag and drop visual feedback */
+.droppable-area {
+  transition: background-color 0.2s ease-in-out;
+}
+
+.droppable-area.is-dragging-over {
+  background-color: hsla(var(--primary), 0.05);
+  border-color: hsla(var(--primary), 0.2);
+}
+
+.dragging-item {
+  transform: rotate(3deg);
+  box-shadow: 0 10px 25px hsla(var(--foreground), 0.15);
+  background-color: hsla(var(--card), 0.95);
+}
+
+.driver-column {
+  min-height: 400px;
+  background-color: hsl(var(--muted));
+}
+
+.driver-column.has-jobs {
+  background-color: hsl(var(--card));
+}
+
+.driver-column .dispatch-job-card {
+  max-width: 280px;
+  width: 100%;
+}
+
+/* Navigation */
+.nav-enterprise {
+  @apply flex items-center px-3 py-2 text-muted-foreground rounded-lg transition-all duration-200 font-medium;
+  font-family: 'Inter', sans-serif;
+}
+
+.nav-enterprise:hover {
+  background-color: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+}
+
+.nav-enterprise-active {
+  @apply text-white;
+  background: var(--gradient-primary);
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Interactive Animation Classes */
+.story-link {
+  @apply relative inline-block after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-primary after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left;
+}
+
+.hover-scale {
+  @apply transition-transform duration-200 hover:scale-105;
+}
+
+.hover-lift {
+  @apply transition-all duration-200 hover:-translate-y-1 hover:shadow-lg;
+}
+
+.hover-glow {
+  @apply transition-all duration-300 hover:shadow-glow;
+}
+
+.pulse-on-hover {
+  @apply transition-all duration-200 hover:animate-pulse-glow;
+}
+
+.bounce-on-click {
+  @apply active:animate-bounce-in;
+}
+
+.enterprise-focus-visible {
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+}
+
+.enterprise-skeleton {
+  @apply animate-pulse bg-gradient-to-r from-muted via-accent to-muted bg-[length:200%_100%];
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+.enterprise-spinner {
+  @apply animate-spin rounded-full border-2 border-muted border-t-primary;
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.font-sans {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Enhanced accessibility and interaction states */
+.focus-ring {
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+}
+
+.loading-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Performance optimizations */
+.gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Gradient utilities */
+.gradient-primary {
+  background: var(--gradient-primary);
+  color: #fff;
+  border-radius: 8px;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 768px) {
+  .enterprise-header {
     padding: 1rem;
-    transition: all 0.2s ease-in-out;
-    cursor: pointer;
+    min-height: 120px;
   }
-
-  .enterprise-job-card:hover {
-    box-shadow: 0 4px 12px hsla(var(--foreground), 0.1);
-    border-color: hsl(var(--primary));
+  
+  .enterprise-job-card {
+    margin-bottom: 0.75rem;
   }
-
-  .enterprise-job-card.delivery {
-    position: relative;
-    border-left: none;
+  
+  .mobile-safe-area {
+    padding-bottom: env(safe-area-inset-bottom);
   }
-
-  .enterprise-job-card.delivery::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 4px;
-    height: 100%;
-    background: var(--gradient-blue);
-    border-top-left-radius: 0.75rem;
-    border-bottom-left-radius: 0.75rem;
-  }
-
-  .enterprise-job-card.pickup {
-    position: relative;
-    border-left: none;
-  }
-
-  .enterprise-job-card.pickup::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 4px;
-    height: 100%;
-    background: var(--gradient-yellow);
-    border-top-left-radius: 0.75rem;
-    border-bottom-left-radius: 0.75rem;
-  }
-
-  .enterprise-job-card.service {
-    position: relative;
-    border-left: none;
-  }
-
-  .enterprise-job-card.service::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 4px;
-    height: 100%;
-    background: var(--gradient-purple);
-    border-top-left-radius: 0.75rem;
-    border-bottom-left-radius: 0.75rem;
-  }
-
-  .enterprise-job-card.on-site-survey {
-    position: relative;
-    border-left: none;
-  }
-
-  .enterprise-job-card.on-site-survey::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 4px;
-    height: 100%;
-    background: hsl(var(--status-survey));
-    border-top-left-radius: 0.75rem;
-    border-bottom-left-radius: 0.75rem;
-  }
-
-  .enterprise-job-card.maintenance {
-    position: relative;
-    border-left: none;
-  }
-
-  .enterprise-job-card.maintenance::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 4px;
-    height: 100%;
-    background: var(--gradient-purple);
-    border-top-left-radius: 0.75rem;
-    border-bottom-left-radius: 0.75rem;
-  }
-
-  /* Status Badges */
-  .enterprise-status-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.25rem 0.75rem;
-    border-radius: 9999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    font-family: 'Inter', sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 0.025em;
-  }
-
-  .enterprise-status-badge.assigned {
-    background-color: hsl(var(--blue-100));
-    color: hsl(var(--blue-700));
-  }
-
-  .enterprise-status-badge.in-progress {
-    background-color: hsl(var(--orange-100));
-    color: hsl(var(--orange-700));
-  }
-
-  .enterprise-status-badge.completed {
-    background-color: hsl(var(--green-100));
-    color: hsl(var(--green-700));
-  }
-
-  .enterprise-status-badge.overdue {
-    background-color: hsl(var(--red-100));
-    color: hsl(var(--red-700));
-  }
-
-  .enterprise-status-badge.cancelled {
-    background-color: hsl(var(--gray-100));
-    color: hsl(var(--gray-600));
-  }
-
-  /* Enterprise specific classes for cancelled jobs */
-  .enterprise-job-card.cancelled {
-    opacity: 0.7;
-    position: relative;
-    border-left-color: hsl(var(--status-cancelled)) !important;
-  }
-
-  .enterprise-job-card.cancelled::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, hsl(var(--status-cancelled)), transparent);
-    z-index: 10;
-    pointer-events: none;
-  }
-
-  .enterprise-job-card.cancelled .enterprise-card-title {
-    text-decoration: line-through;
-    text-decoration-color: hsl(var(--status-cancelled));
-  }
-
-  .enterprise-job-card.cancelled::after {
-    content: 'CANCELLED';
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    background: hsl(var(--status-cancelled));
-    color: white;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 10px;
-    font-weight: bold;
-    z-index: 15;
-  }
-
-  /* Dispatch Card Styles */
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
+  
   .dispatch-job-card {
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    hyphens: auto;
-    max-width: 100%;
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  .dispatch-job-card p,
-  .dispatch-job-card span {
-    word-wrap: break-word;
-    overflow-wrap: break-word;
+    font-size: 0.75rem;
     max-width: 100%;
   }
+  
+  .dispatch-job-card .job-title {
+    font-size: 0.875rem;
+  }
+}
 
-  .dispatch-job-card .truncate {
-    max-width: 100%;
-  }
-
-  /* Drag and drop visual feedback */
-  .droppable-area {
-    transition: background-color 0.2s ease-in-out;
-  }
-
-  .droppable-area.is-dragging-over {
-    background-color: hsla(var(--primary), 0.05);
-    border-color: hsla(var(--primary), 0.2);
-  }
-
-  .dragging-item {
-    transform: rotate(3deg);
-    box-shadow: 0 10px 25px hsla(var(--foreground), 0.15);
-    background-color: hsla(var(--card), 0.95);
-  }
-
-  .driver-column {
-    min-height: 400px;
-    background-color: hsl(var(--muted));
-  }
-
-  .driver-column.has-jobs {
-    background-color: hsl(var(--card));
-  }
-
-  .driver-column .dispatch-job-card {
-    max-width: 280px;
-    width: 100%;
-  }
-  
-  /* Navigation */
-  .nav-enterprise {
-    @apply flex items-center px-3 py-2 text-muted-foreground rounded-lg transition-all duration-200 font-medium;
-    font-family: 'Inter', sans-serif;
-  }
-  
-  .nav-enterprise:hover {
-    background-color: hsl(var(--accent));
-    color: hsl(var(--accent-foreground));
-  }
-  
-  .nav-enterprise-active {
-    @apply text-white;
-    background: var(--gradient-primary);
-    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Interactive Animation Classes */
-  .story-link {
-    @apply relative inline-block after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-primary after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left;
-  }
-  
-  .hover-scale {
-    @apply transition-transform duration-200 hover:scale-105;
-  }
-  
-  .hover-lift {
-    @apply transition-all duration-200 hover:-translate-y-1 hover:shadow-lg;
-  }
-  
-  .hover-glow {
-    @apply transition-all duration-300 hover:shadow-glow;
-  }
-  
-  .pulse-on-hover {
-    @apply transition-all duration-200 hover:animate-pulse-glow;
-  }
-  
-  .bounce-on-click {
-    @apply active:animate-bounce-in;
-  }
-  
-  .enterprise-focus-visible {
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
-  }
-  
+/* Dark mode enhancements */
+@media (prefers-color-scheme: dark) {
   .enterprise-skeleton {
-    @apply animate-pulse bg-gradient-to-r from-muted via-accent to-muted bg-[length:200%_100%];
-    animation: skeleton-loading 1.5s ease-in-out infinite;
+    background: hsl(var(--muted));
   }
   
-  .enterprise-spinner {
-    @apply animate-spin rounded-full border-2 border-muted border-t-primary;
+  .nav-item-active {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   }
-  
-  @keyframes skeleton-loading {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-  }
-  
-  .font-sans {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  }
+}
 
-  /* Enhanced accessibility and interaction states */
-  .focus-ring {
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
-  }
+/* Customer Portal Styling */
+.customer-portal-card {
+  background: var(--gradient-grey-card);
+  border: 1px solid hsl(210, 15%, 90%);
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px hsla(210, 15%, 30%, 0.08);
+  transition: all 0.2s ease-in-out;
+}
 
-  .loading-shimmer {
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
-  }
+.customer-portal-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px hsla(210, 15%, 30%, 0.12);
+}
 
-  @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-  }
+.customer-portal-icon {
+  background: var(--gradient-primary);
+  color: white;
+  border-radius: 50%;
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px hsla(var(--primary), 0.25);
+}
 
-  /* Performance optimizations */
-  .gpu-accelerated {
-    transform: translateZ(0);
-    will-change: transform;
-  }
+.customer-portal-icon.blue {
+  background: var(--gradient-blue);
+}
 
-  /* Gradient utilities */
-  .gradient-primary {
-    background: var(--gradient-primary);
-    color: #fff;
-    border-radius: 8px;
-    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.1);
-  }
+.customer-portal-icon.green {
+  background: var(--gradient-green);
+}
 
-  /* Mobile-specific optimizations */
-  @media (max-width: 768px) {
-    .enterprise-header {
-      padding: 1rem;
-      min-height: 120px;
-    }
-    
-    .enterprise-job-card {
-      margin-bottom: 0.75rem;
-    }
-    
-    .mobile-safe-area {
-      padding-bottom: env(safe-area-inset-bottom);
-    }
-    
-    .dispatch-job-card {
-      font-size: 0.75rem;
-      max-width: 100%;
-    }
-    
-    .dispatch-job-card .job-title {
-      font-size: 0.875rem;
-    }
-  }
+.customer-portal-icon.orange {
+  background: var(--gradient-orange);
+}
 
-  /* Dark mode enhancements */
-  @media (prefers-color-scheme: dark) {
-    .enterprise-skeleton {
-      background: hsl(var(--muted));
-    }
-    
-    .nav-item-active {
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-  }
+.customer-portal-icon.red {
+  background: var(--gradient-red);
+}
 
-  /* Customer Portal Styling */
-  .customer-portal-card {
-    background: var(--gradient-grey-card);
-    border: 1px solid hsl(210, 15%, 90%);
-    border-radius: 0.75rem;
-    box-shadow: 0 2px 8px hsla(210, 15%, 30%, 0.08);
-    transition: all 0.2s ease-in-out;
-  }
+.customer-portal-icon.purple {
+  background: var(--gradient-purple);
+}
 
-  .customer-portal-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px hsla(210, 15%, 30%, 0.12);
-  }
-
-  .customer-portal-icon {
-    background: var(--gradient-primary);
-    color: white;
-    border-radius: 50%;
-    padding: 0.75rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 8px hsla(var(--primary), 0.25);
-  }
-
-  .customer-portal-icon.blue {
-    background: var(--gradient-blue);
-  }
-
-  .customer-portal-icon.green {
-    background: var(--gradient-green);
-  }
-
-  .customer-portal-icon.orange {
-    background: var(--gradient-orange);
-  }
-
-  .customer-portal-icon.red {
-    background: var(--gradient-red);
-  }
-
-  .customer-portal-icon.purple {
-    background: var(--gradient-purple);
-  }
-
-  .customer-portal-icon svg {
-    stroke: white;
-    stroke-width: 2.5;
-    fill: none;
-  }
+.customer-portal-icon svg {
+  stroke: white;
+  stroke-width: 2.5;
+  fill: none;
 }
 
 /* Mapbox GL JS styling and z-index fixes */
@@ -783,20 +794,52 @@
   z-index: 200;
 }
 
-/* Custom popup styling */
-.custom-popup .mapboxgl-popup-close-button {
-  font-size: 28px;
-  width: 32px;
-  height: 32px;
-  line-height: 28px;
-  padding: 0;
-  right: 8px;
-  top: 8px;
-  color: #666;
-  font-weight: 300;
+.mapboxgl-canvas {
+  outline: none;
 }
 
-.custom-popup .mapboxgl-popup-close-button:hover {
-  background-color: #f3f4f6;
-  color: #111;
+/* Phase 6: Button Enhancements - Touch-friendly */
+.btn-hover-effect {
+  transition: all 0.2s ease-in-out;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-hover-effect:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-hover-effect:active {
+  transform: scale(0.98);
+  transition: transform 0.1s ease-in-out;
+}
+
+/* Mobile: All touch targets minimum 44px (Phase 6) */
+@media (max-width: 768px) {
+  button, 
+  a.btn,
+  .touch-target {
+    min-height: 44px;
+  }
+  
+  /* Larger tap areas for mobile */
+  .enterprise-job-card {
+    padding: 1.25rem;
+  }
+  
+  /* Prevent text selection during drag operations */
+  .enterprise-job-card {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+  }
+  
+  /* Reduce motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 }
