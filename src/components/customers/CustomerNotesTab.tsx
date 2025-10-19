@@ -3,7 +3,8 @@ import { format } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Eye, Edit, Trash2, Plus, Filter, FileText, MoreVertical, Search, CalendarIcon, X } from 'lucide-react';
+import { Eye, Edit, Trash2, Plus, Filter, FileText, MoreVertical, Search, CalendarIcon, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useCustomerNotes } from '@/hooks/useCustomerNotes';
 import { EditNotesModal } from './EditNotesModal';
 import { ViewNoteModal } from './ViewNoteModal';
@@ -38,6 +39,7 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [dateFrom, setDateFrom] = useState<Date | undefined>();
   const [dateTo, setDateTo] = useState<Date | undefined>();
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   // Tag options
   const communicationTags = [
@@ -162,9 +164,9 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Notes Header */}
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 md:space-y-6 relative">
+      {/* Notes Header - Desktop only */}
+      <div className="hidden lg:flex items-center justify-between">
         <h3 className="text-lg font-semibold text-foreground">Customer Notes</h3>
         <Button
           onClick={() => handleAddNote('general')}
@@ -175,157 +177,173 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
         </Button>
       </div>
 
-      {/* Filters Section */}
-      <Card>
-        <CardContent className="space-y-4 pt-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            {/* Communication Tags Filter */}
-            <div className="space-y-2">
-              <Label htmlFor="communication-filter">Communication</Label>
-              <Select value={selectedCommunicationTag} onValueChange={setSelectedCommunicationTag}>
-                <SelectTrigger className="bg-background border border-border">
-                  <SelectValue placeholder="All communication tags" />
-                </SelectTrigger>
-                <SelectContent className="bg-background border border-border shadow-lg z-50">
-                  <SelectItem value="all">All communication tags</SelectItem>
-                  {communicationTags.map((tag) => (
-                    <SelectItem key={tag} value={tag}>{tag}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* General Tags Filter */}
-            <div className="space-y-2">
-              <Label htmlFor="general-filter">General</Label>
-              <Select value={selectedGeneralTag} onValueChange={setSelectedGeneralTag}>
-                <SelectTrigger className="bg-background border border-border">
-                  <SelectValue placeholder="All general tags" />
-                </SelectTrigger>
-                <SelectContent className="bg-background border border-border shadow-lg z-50">
-                  <SelectItem value="all">All general tags</SelectItem>
-                  {generalTags.map((tag) => (
-                    <SelectItem key={tag} value={tag}>{tag}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Important Toggle */}
-            <div className="space-y-2">
-              <Label htmlFor="important-toggle">Important / Urgent Only</Label>
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="important-toggle"
-                  checked={showImportantOnly}
-                  onCheckedChange={setShowImportantOnly}
-                />
-                <span className="text-sm text-muted-foreground">
-                  {showImportantOnly ? 'Showing important notes only' : 'Showing all notes'}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Date Range Filter */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_auto] gap-4 items-end">
-            <div className="space-y-2">
-              <Label>From Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !dateFrom && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dateFrom ? format(dateFrom, "PPP") : "Select start date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={dateFrom}
-                    onSelect={setDateFrom}
-                    initialFocus
-                    className={cn("p-3 pointer-events-auto")}
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-
-            <div className="space-y-2">
-              <Label>To Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !dateTo && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dateTo ? format(dateTo, "PPP") : "Select end date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={dateTo}
-                    onSelect={setDateTo}
-                    initialFocus
-                    className={cn("p-3 pointer-events-auto")}
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-
-            {(dateFrom || dateTo) && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setDateFrom(undefined);
-                  setDateTo(undefined);
-                }}
-                className="h-10 whitespace-nowrap"
-              >
-                <X className="h-3 w-3 mr-1" />
-                Clear date filter
+      {/* Filters Section - Collapsible on mobile */}
+      <Collapsible open={filtersOpen} onOpenChange={setFiltersOpen}>
+        <Card className="rounded-xl md:rounded-2xl">
+          <CardHeader className="p-4 lg:hidden">
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" className="w-full flex items-center justify-between p-0 h-auto hover:bg-transparent">
+                <div className="flex items-center gap-2">
+                  <Filter className="w-4 h-4" />
+                  <span className="font-semibold">Filters</span>
+                </div>
+                {filtersOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
               </Button>
-            )}
-          </div>
+            </CollapsibleTrigger>
+          </CardHeader>
+          
+          <CollapsibleContent>
+            <CardContent className="space-y-4 pt-0 lg:pt-6 p-4 md:p-6">
+              <div className="space-y-3 lg:space-y-0 lg:grid lg:grid-cols-3 lg:gap-4">
+                {/* Communication Tags Filter */}
+                <div className="space-y-2">
+                  <Label htmlFor="communication-filter" className="text-sm">Communication</Label>
+                  <Select value={selectedCommunicationTag} onValueChange={setSelectedCommunicationTag}>
+                    <SelectTrigger className="bg-background border border-border h-11 text-base">
+                      <SelectValue placeholder="All communication tags" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-background border border-border shadow-lg z-50">
+                      <SelectItem value="all">All communication tags</SelectItem>
+                      {communicationTags.map((tag) => (
+                        <SelectItem key={tag} value={tag}>{tag}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-          {/* Search Bar */}
-          <div>
-            <Label>Search Notes</Label>
-            <div className="relative mt-2">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="text"
-                placeholder="Search notes by title, content, or tags..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9"
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+                {/* General Tags Filter */}
+                <div className="space-y-2">
+                  <Label htmlFor="general-filter" className="text-sm">General</Label>
+                  <Select value={selectedGeneralTag} onValueChange={setSelectedGeneralTag}>
+                    <SelectTrigger className="bg-background border border-border h-11 text-base">
+                      <SelectValue placeholder="All general tags" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-background border border-border shadow-lg z-50">
+                      <SelectItem value="all">All general tags</SelectItem>
+                      {generalTags.map((tag) => (
+                        <SelectItem key={tag} value={tag}>{tag}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Important Toggle */}
+                <div className="space-y-2">
+                  <Label htmlFor="important-toggle" className="text-sm">Important / Urgent Only</Label>
+                  <div className="flex items-center space-x-2 h-11">
+                    <Switch
+                      id="important-toggle"
+                      checked={showImportantOnly}
+                      onCheckedChange={setShowImportantOnly}
+                    />
+                    <span className="text-sm text-muted-foreground">
+                      {showImportantOnly ? 'Showing important notes only' : 'Showing all notes'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Date Range Filter */}
+              <div className="space-y-3 lg:space-y-0 lg:grid lg:grid-cols-[1fr_1fr_auto] lg:gap-4 lg:items-end">
+                <div className="space-y-2">
+                  <Label className="text-sm">From Date</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal h-11 text-base",
+                          !dateFrom && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {dateFrom ? format(dateFrom, "PPP") : "Select start date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={dateFrom}
+                        onSelect={setDateFrom}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm">To Date</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal h-11 text-base",
+                          !dateTo && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {dateTo ? format(dateTo, "PPP") : "Select end date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={dateTo}
+                        onSelect={setDateTo}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                {(dateFrom || dateTo) && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setDateFrom(undefined);
+                      setDateTo(undefined);
+                    }}
+                    className="h-11 whitespace-nowrap"
+                  >
+                    <X className="h-3 w-3 mr-1" />
+                    Clear dates
+                  </Button>
+                )}
+              </div>
+
+              {/* Search Bar */}
+              <div className="space-y-2">
+                <Label className="text-sm">Search Notes</Label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="text"
+                    placeholder="Search notes by title, content, or tags..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-9 h-11 text-base"
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
 
       {/* Notes Display */}
       {filteredNotes.length === 0 ? (
-        <Card className="rounded-2xl">
-          <CardContent className="py-12">
+        <Card className="rounded-xl md:rounded-2xl">
+          <CardContent className="py-12 p-4 md:p-6">
             <div className="text-center">
               <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-foreground mb-2">
+              <h3 className="text-base md:text-lg font-medium text-foreground mb-2">
                 {notes?.length === 0 ? 'No Notes Yet' : 'No Matching Notes'}
               </h3>
-              <p className="text-muted-foreground mb-4">
+              <p className="text-sm md:text-base text-muted-foreground mb-4">
                 {notes?.length === 0 
                   ? 'Start by adding your first note for this customer.'
                   : 'Try adjusting your filters to see more notes.'
@@ -334,7 +352,7 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
               {notes?.length === 0 && (
                 <Button
                   onClick={() => handleAddNote('general')}
-                  className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
+                  className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white h-11"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Add First Note
@@ -344,112 +362,151 @@ export function CustomerNotesTab({ customerId }: CustomerNotesTabProps) {
           </CardContent>
         </Card>
       ) : (
-        <Card className="rounded-2xl">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Notes ({filteredNotes.length})</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-0">
-            {/* Header Row */}
-            <div className="grid grid-cols-12 gap-4 pb-3 border-b text-sm font-medium text-muted-foreground">
-              <div className="col-span-4">Title</div>
-              <div className="col-span-4">Content Preview</div>
-              <div className="col-span-2">Date</div>
-              <div className="col-span-2 text-right">Actions</div>
-            </div>
-            
-            {/* Notes List */}
-            <div className="space-y-0">
-              {filteredNotes.map((note) => (
-                <div
-                  key={note.id}
-                  className="grid grid-cols-12 gap-4 py-3 border-b last:border-b-0 hover:bg-muted/30 transition-colors"
-                >
-                  {/* Title Column */}
-                  <div className="col-span-4 space-y-1">
-                    <button
-                      onClick={() => handleViewNote(note)}
-                      className="text-sm font-medium text-foreground hover:text-primary cursor-pointer text-left block"
-                    >
-                      {note.title || 'Customer Note'}
-                    </button>
-                    <div className="flex flex-wrap gap-1">
-                      {note.is_important && (
-                        <Badge variant="destructive" className="text-xs">
-                          Important
-                        </Badge>
-                      )}
-                      {note.tags && note.tags.length > 0 && (
-                        <>
-                          {note.tags.slice(0, 2).map((tag, index) => (
-                            <Badge key={index} variant="outline" className="text-xs h-5">
-                              {tag}
-                            </Badge>
-                          ))}
-                          {note.tags.length > 2 && (
-                            <Badge variant="outline" className="text-xs h-5">
-                              +{note.tags.length - 2} more
-                            </Badge>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  </div>
-                  
-                  {/* Content Preview Column */}
-                  <div className="col-span-4">
-                    <p className="text-sm text-muted-foreground line-clamp-2">
-                      {note.note_text.length > 100 
-                        ? `${note.note_text.substring(0, 100)}...` 
-                        : note.note_text
-                      }
-                    </p>
-                  </div>
-                  
-                  {/* Date Column */}
-                  <div className="col-span-2">
-                    <div className="text-xs text-muted-foreground">
-                      {format(new Date(note.created_at), 'MMM d, yyyy')}
-                    </div>
-                    {note.updated_at !== note.created_at && (
-                      <div className="text-xs text-muted-foreground">
-                        Updated {format(new Date(note.updated_at), 'MMM d')}
+        <>
+          {/* Desktop Table View (>= 1024px) */}
+          <Card className="rounded-xl md:rounded-2xl hidden lg:block">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg">Notes ({filteredNotes.length})</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-0">
+              {/* Header Row */}
+              <div className="grid grid-cols-12 gap-4 pb-3 border-b text-sm font-medium text-muted-foreground">
+                <div className="col-span-4">Title</div>
+                <div className="col-span-4">Content Preview</div>
+                <div className="col-span-2">Date</div>
+                <div className="col-span-2 text-right">Actions</div>
+              </div>
+              
+              {/* Notes List */}
+              <div className="space-y-0">
+                {filteredNotes.map((note) => (
+                  <div
+                    key={note.id}
+                    className="grid grid-cols-12 gap-4 py-3 border-b last:border-b-0 hover:bg-muted/30 transition-colors"
+                  >
+                    {/* Title Column */}
+                    <div className="col-span-4 space-y-1">
+                      <button
+                        onClick={() => handleViewNote(note)}
+                        className="text-sm font-medium text-foreground hover:text-primary cursor-pointer text-left block"
+                      >
+                        {note.title || 'Customer Note'}
+                      </button>
+                      <div className="flex flex-wrap gap-1">
+                        {note.is_important && (
+                          <Badge variant="destructive" className="text-xs">
+                            Important
+                          </Badge>
+                        )}
+                        {note.tags && note.tags.length > 0 && (
+                          <>
+                            {note.tags.slice(0, 2).map((tag, index) => (
+                              <Badge key={index} variant="outline" className="text-xs h-5">
+                                {tag}
+                              </Badge>
+                            ))}
+                            {note.tags.length > 2 && (
+                              <Badge variant="outline" className="text-xs h-5">
+                                +{note.tags.length - 2} more
+                              </Badge>
+                            )}
+                          </>
+                        )}
                       </div>
-                    )}
+                    </div>
+                    
+                    {/* Content Preview Column */}
+                    <div className="col-span-4">
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        {note.note_text.length > 100 
+                          ? `${note.note_text.substring(0, 100)}...` 
+                          : note.note_text
+                        }
+                      </p>
+                    </div>
+                    
+                    {/* Date Column */}
+                    <div className="col-span-2">
+                      <div className="text-xs text-muted-foreground">
+                        {format(new Date(note.created_at), 'MMM d, yyyy')}
+                      </div>
+                      {note.updated_at !== note.created_at && (
+                        <div className="text-xs text-muted-foreground">
+                          Updated {format(new Date(note.updated_at), 'MMM d')}
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Actions Column */}
+                    <div className="col-span-2 flex items-center justify-end">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-40">
+                          <DropdownMenuItem onClick={() => handleViewNote(note)}>
+                            <Eye className="h-4 w-4 mr-2" />
+                            View
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleEditNote(note)}>
+                            <Edit className="h-4 w-4 mr-2" />
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={() => handleDeleteNote(note)}
+                            className="text-destructive focus:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   </div>
-                  
-                  {/* Actions Column */}
-                  <div className="col-span-2 flex items-center justify-end">
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Mobile Card View (< 1024px) */}
+          <div className="space-y-3 lg:hidden">
+            {filteredNotes.map((note) => (
+              <Card key={note.id} className="rounded-xl cursor-pointer hover:shadow-md transition-shadow" onClick={() => handleViewNote(note)}>
+                <CardContent className="p-4">
+                  <div className="flex items-start justify-between gap-3 mb-2">
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold text-base mb-1">{note.title || 'Customer Note'}</h4>
+                      <div className="flex flex-wrap gap-1 mb-2">
+                        {note.is_important && <Badge variant="destructive" className="text-xs">Important</Badge>}
+                        {note.tags?.slice(0, 2).map((tag, i) => <Badge key={i} variant="outline" className="text-xs">{tag}</Badge>)}
+                      </div>
+                    </div>
                     <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
+                      <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0"><MoreVertical className="h-4 w-4" /></Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-40">
-                        <DropdownMenuItem onClick={() => handleViewNote(note)}>
-                          <Eye className="h-4 w-4 mr-2" />
-                          View
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleEditNote(note)}>
-                          <Edit className="h-4 w-4 mr-2" />
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem 
-                          onClick={() => handleDeleteNote(note)}
-                          className="text-destructive focus:text-destructive"
-                        >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Delete
-                        </DropdownMenuItem>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleViewNote(note); }}><Eye className="h-4 w-4 mr-2" />View</DropdownMenuItem>
+                        <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleEditNote(note); }}><Edit className="h-4 w-4 mr-2" />Edit</DropdownMenuItem>
+                        <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleDeleteNote(note); }} className="text-destructive"><Trash2 className="h-4 w-4 mr-2" />Delete</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                  <p className="text-sm text-muted-foreground line-clamp-2 mb-2">{note.note_text.substring(0, 150)}{note.note_text.length > 150 ? '...' : ''}</p>
+                  <div className="text-xs text-muted-foreground">{format(new Date(note.created_at), 'MMM d, yyyy')}</div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </>
       )}
+
+      {/* FAB - Mobile only */}
+      <Button onClick={() => handleAddNote('general')} className="lg:hidden fixed bottom-20 right-4 z-50 h-14 w-14 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg p-0">
+        <Plus className="w-6 h-6" />
+      </Button>
 
       {/* Edit Modal */}
       <EditNotesModal

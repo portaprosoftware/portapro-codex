@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { User, FileText } from 'lucide-react';
 import { CustomerInfoPanel } from './CustomerInfoPanel';
 import { CustomerNotesTab } from './CustomerNotesTab';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 
 interface Customer {
   id: string;
@@ -45,8 +47,36 @@ export function CustomerOverviewTab({ customer }: CustomerOverviewTabProps) {
 
   return (
     <div className="w-full">
-      {/* Toggle Switch for Overview */}
-      <div className="mb-6 flex">
+      {/* Mobile Subsection Dropdown (< 1024px) */}
+      <div className="mb-6 lg:hidden">
+        <Label htmlFor="subsection-select" className="text-sm font-medium mb-2 block">
+          Subsection
+        </Label>
+        <Select value={activeSubTab} onValueChange={setActiveSubTab}>
+          <SelectTrigger id="subsection-select" className="w-full h-11 text-base">
+            <SelectValue>
+              {activeSubTab === 'details' ? 'Details' : 'Notes'}
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent className="bg-background border border-border shadow-lg">
+            <SelectItem value="details" className="h-11">
+              <div className="flex items-center gap-2">
+                <User className="w-4 h-4" />
+                <span>Details</span>
+              </div>
+            </SelectItem>
+            <SelectItem value="notes" className="h-11">
+              <div className="flex items-center gap-2">
+                <FileText className="w-4 h-4" />
+                <span>Notes</span>
+              </div>
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Desktop Toggle Switch (>= 1024px) */}
+      <div className="mb-6 hidden lg:flex">
         <div className="bg-gray-100 p-1 rounded-lg flex">
           <button
             onClick={() => setActiveSubTab('details')}

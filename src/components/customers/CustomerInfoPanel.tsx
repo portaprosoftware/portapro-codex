@@ -153,45 +153,57 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3 md:space-y-6">
       {/* Contact Information */}
-      <Card className="rounded-2xl">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-lg font-semibold">Contact Information</CardTitle>
+      <Card className="rounded-xl md:rounded-2xl">
+        <CardHeader className="flex flex-row items-center justify-between p-4 md:p-6">
+          <CardTitle className="text-base md:text-lg font-semibold">Contact Information</CardTitle>
           <Button
             onClick={() => setShowEditModal(true)}
-            className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium px-4 py-2 rounded-md border-0"
+            size="sm"
+            className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium px-3 py-1.5 md:px-4 md:py-2 rounded-md border-0 h-11 text-sm"
           >
-            <Edit className="w-4 h-4 mr-2" />
-            Edit
+            <Edit className="w-4 h-4 md:mr-2" />
+            <span className="hidden md:inline">Edit</span>
           </Button>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">Company Name</label>
-              <p className="text-foreground font-medium">{customer.name}</p>
+        <CardContent className="space-y-3 p-4 md:p-6">
+          {/* Mobile: Stacked layout, Desktop: Grid */}
+          <div className="space-y-3 md:space-y-0 md:grid md:grid-cols-2 md:gap-4">
+            <div className="space-y-1">
+              <label className="text-xs md:text-sm font-medium text-muted-foreground">Company Name</label>
+              <p className="text-base md:text-base text-foreground font-semibold">{customer.name}</p>
             </div>
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">Customer Type</label>
-              <div className="mt-1">
+            <div className="space-y-1">
+              <label className="text-xs md:text-sm font-medium text-muted-foreground">Customer Type</label>
+              <div>
                 <Badge className={getCustomerTypeColor(customer.customer_type)}>
                   {customer.customer_type ? formatCategoryDisplay(customer.customer_type) : 'Unknown'}
                 </Badge>
               </div>
             </div>
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">Email</label>
-              <p className="text-foreground">{customer.email || 'Not provided'}</p>
+            <div className="space-y-1">
+              <label className="text-xs md:text-sm font-medium text-muted-foreground">Email</label>
+              <a 
+                href={`mailto:${customer.email}`}
+                className="text-base md:text-base text-foreground hover:text-primary block"
+              >
+                {customer.email || 'Not provided'}
+              </a>
             </div>
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">Phone</label>
-              <p className="text-foreground">{formatPhoneNumber(customer.phone) || 'Not provided'}</p>
+            <div className="space-y-1">
+              <label className="text-xs md:text-sm font-medium text-muted-foreground">Phone</label>
+              <a 
+                href={`tel:${customer.phone}`}
+                className="text-base md:text-base text-foreground hover:text-primary block"
+              >
+                {formatPhoneNumber(customer.phone) || 'Not provided'}
+              </a>
             </div>
           </div>
-          <div className="flex justify-between items-center border-t pt-4">
+          <div className="flex justify-between items-center border-t pt-3 md:pt-4 text-sm md:text-base">
             <span className="text-muted-foreground">Customer Since</span>
-            <span className="text-foreground">
+            <span className="text-foreground font-medium">
               {new Date(customer.created_at).toLocaleDateString()}
             </span>
           </div>
@@ -232,55 +244,55 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
       )}
 
       {/* Service Address */}
-      <Card className="rounded-2xl">
-        <CardHeader>
-          <CardTitle className="text-lg font-semibold flex items-center">
-            <MapPin className="w-5 h-5 mr-2" />
+      <Card className="rounded-xl md:rounded-2xl">
+        <CardHeader className="p-4 md:p-6 pb-3">
+          <CardTitle className="text-base md:text-lg font-semibold flex items-center">
+            <MapPin className="w-4 h-4 md:w-5 md:h-5 mr-2" />
             Service Address
           </CardTitle>
           <p className="text-xs text-muted-foreground mt-1">Synchronized with default service location</p>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3 p-4 md:p-6 pt-0">
           <div>
-            <div className="flex items-start justify-between mb-3">
-              <p className="text-foreground flex-1">{serviceAddress}</p>
+            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2 mb-3">
+              <p className="text-sm md:text-base text-foreground flex-1">{serviceAddress}</p>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => copyToClipboard(serviceAddress, 'Service address')}
-                className="flex items-center gap-1"
+                className="flex items-center gap-1 h-11 md:h-auto w-full md:w-auto justify-center"
               >
                 <Copy className="w-4 h-4" />
                 <span className="text-sm">Copy Address</span>
               </Button>
             </div>
             {customer.service_street && (
-              <div className="flex flex-wrap gap-2">
+              <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => handleMapLink(serviceAddress, 'google')}
-                  className="flex items-center"
+                  className="flex items-center whitespace-nowrap h-11 px-4"
                 >
-                  <ExternalLink className="w-4 h-4 mr-1" />
+                  <ExternalLink className="w-4 h-4 mr-1.5" />
                   Google Maps
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => handleMapLink(serviceAddress, 'apple')}
-                  className="flex items-center"
+                  className="flex items-center whitespace-nowrap h-11 px-4"
                 >
-                  <ExternalLink className="w-4 h-4 mr-1" />
+                  <ExternalLink className="w-4 h-4 mr-1.5" />
                   Apple Maps
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => handleMapLink(serviceAddress, 'waze')}
-                  className="flex items-center"
+                  className="flex items-center whitespace-nowrap h-11 px-4"
                 >
-                  <Navigation className="w-4 h-4 mr-1" />
+                  <Navigation className="w-4 h-4 mr-1.5" />
                   Waze
                 </Button>
               </div>
@@ -290,18 +302,18 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
       </Card>
 
       {/* Billing Address */}
-      <Card className="rounded-2xl">
-        <CardHeader>
-          <CardTitle className="text-lg font-semibold">Billing Address</CardTitle>
+      <Card className="rounded-xl md:rounded-2xl">
+        <CardHeader className="p-4 md:p-6 pb-3">
+          <CardTitle className="text-base md:text-lg font-semibold">Billing Address</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="flex items-start justify-between">
-            <p className="text-foreground flex-1">{billingAddress}</p>
+        <CardContent className="p-4 md:p-6 pt-0">
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2">
+            <p className="text-sm md:text-base text-foreground flex-1">{billingAddress}</p>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => copyToClipboard(billingAddress, 'Billing address')}
-              className="flex items-center gap-1"
+              className="flex items-center gap-1 h-11 md:h-auto w-full md:w-auto justify-center"
             >
               <Copy className="w-4 h-4" />
               <span className="text-sm">Copy Address</span>
@@ -365,21 +377,21 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
       </Card>
 
       {/* Delete Customer Card */}
-      <Card className="border-gray-200 bg-gray-100">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-black text-lg flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-gray-600" />
+      <Card className="border-gray-200 bg-gray-100 rounded-xl md:rounded-2xl">
+        <CardHeader className="pb-3 p-4 md:p-6">
+          <CardTitle className="text-black text-base md:text-lg flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4 md:h-5 md:w-5 text-gray-600" />
             Delete Customer Profile
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 md:p-6 pt-0">
           <p className="text-sm text-gray-600 mb-4">
             Permanently delete this customer and all associated data. This action cannot be undone.
           </p>
           <Button
             onClick={() => setShowDeleteDrawer(true)}
             variant="destructive"
-            className="bg-red-600 hover:bg-red-700 text-white"
+            className="bg-red-600 hover:bg-red-700 text-white w-full md:w-auto h-11"
           >
             <Trash2 className="h-4 w-4 mr-2" />
             Delete Customer Profile

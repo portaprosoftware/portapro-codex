@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { TabNav } from '@/components/ui/TabNav';
 import { User, Users, MapPin, Briefcase, DollarSign, MessageSquare, FileText, File } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 import { CustomerOverviewTab } from './CustomerOverviewTab';
 import { CustomerContactsTab } from './CustomerContactsTab';
 import { ServiceLocationTab } from './ServiceLocationTab';
@@ -68,10 +70,47 @@ export function CustomerTabs({ customer }: CustomerTabsProps) {
     }
   };
 
+  const tabOptions = [
+    { value: 'overview', label: 'Overview', icon: User },
+    { value: 'contacts', label: 'Contacts', icon: Users },
+    { value: 'locations', label: 'Service Locations', icon: MapPin },
+    { value: 'jobs-reports', label: 'Jobs & Reports', icon: Briefcase },
+    { value: 'financial', label: 'Financial', icon: DollarSign },
+    { value: 'communication', label: 'Communication', icon: MessageSquare },
+    { value: 'documents', label: 'Documents', icon: File },
+  ];
+
   return (
     <div className="w-full">
-      {/* Customer Navigation Pills */}
-      <div className="mb-6">
+      {/* Mobile Dropdown Navigation (< 1024px) */}
+      <div className="mb-6 lg:hidden">
+        <Label htmlFor="section-select" className="text-sm font-medium mb-2 block">
+          Section
+        </Label>
+        <Select value={activeTab} onValueChange={setActiveTab}>
+          <SelectTrigger id="section-select" className="w-full h-11 text-base">
+            <SelectValue>
+              {tabOptions.find(opt => opt.value === activeTab)?.label || 'Select section'}
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent className="bg-background border border-border shadow-lg">
+            {tabOptions.map((option) => {
+              const Icon = option.icon;
+              return (
+                <SelectItem key={option.value} value={option.value} className="h-11">
+                  <div className="flex items-center gap-2">
+                    <Icon className="w-4 h-4" />
+                    <span>{option.label}</span>
+                  </div>
+                </SelectItem>
+              );
+            })}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Desktop Tab Navigation (>= 1024px) */}
+      <div className="mb-6 hidden lg:block">
         <TabNav ariaLabel="Customer sections">
           <TabNav.Item 
             to="#overview" 

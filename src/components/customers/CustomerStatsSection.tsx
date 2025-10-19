@@ -1,14 +1,19 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Calendar, DollarSign, FileText, MapPin } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Calendar, DollarSign, FileText, MapPin, ChevronRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { StatCard } from '@/components/ui/StatCard';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 
 interface CustomerStatsSectionProps {
   customerId: string;
 }
 
 export function CustomerStatsSection({ customerId }: CustomerStatsSectionProps) {
+  const navigate = useNavigate();
+  
   const { data: stats, isLoading } = useQuery({
     queryKey: ['customer-stats', customerId],
     queryFn: async () => {
@@ -76,46 +81,86 @@ export function CustomerStatsSection({ customerId }: CustomerStatsSectionProps) 
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-      <StatCard
-        title="Total Job History"
-        value={stats?.totalJobs.toString() || '0'}
-        icon={Calendar}
-        gradientFrom="#3B82F6"
-        gradientTo="#1D4ED8"
-        iconBg="#3B82F6"
-        delay={0}
-      />
-      
-      <StatCard
-        title="Outstanding Balance"
-        value={`$${stats?.outstandingBalance.toLocaleString() || '0'}`}
-        icon={DollarSign}
-        gradientFrom="#10B981"
-        gradientTo="#059669"
-        iconBg="#10B981"
-        delay={100}
-      />
-      
-      <StatCard
-        title="Outstanding Invoices"
-        value={stats?.outstandingInvoices.toString() || '0'}
-        icon={FileText}
-        gradientFrom="#F59E0B"
-        gradientTo="#D97706"
-        iconBg="#F59E0B"
-        delay={200}
-      />
-      
-      <StatCard
-        title="Next Scheduled Job"
-        value={formatNextJob()}
-        icon={MapPin}
-        gradientFrom="#8B5CF6"
-        gradientTo="#7C3AED"
-        iconBg="#8B5CF6"
-        delay={300}
-      />
+    <div className="mb-6 md:mb-8">
+      {/* KPI Tiles - single column on mobile, grid on desktop */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+        <div className="cursor-pointer" onClick={() => navigate('/customer-hub')}>
+          <StatCard
+            title="Total Job History"
+            value={stats?.totalJobs.toString() || '0'}
+            icon={Calendar}
+            gradientFrom="#3B82F6"
+            gradientTo="#1D4ED8"
+            iconBg="#3B82F6"
+            delay={0}
+            clickable={true}
+          />
+        </div>
+        
+        <div className="cursor-pointer" onClick={() => navigate('/customer-hub')}>
+          <StatCard
+            title="Outstanding Balance"
+            value={`$${stats?.outstandingBalance.toLocaleString() || '0'}`}
+            icon={DollarSign}
+            gradientFrom="#10B981"
+            gradientTo="#059669"
+            iconBg="#10B981"
+            delay={100}
+            clickable={true}
+          />
+        </div>
+        
+        <div className="cursor-pointer" onClick={() => navigate('/customer-hub')}>
+          <StatCard
+            title="Outstanding Invoices"
+            value={stats?.outstandingInvoices.toString() || '0'}
+            icon={FileText}
+            gradientFrom="#F59E0B"
+            gradientTo="#D97706"
+            iconBg="#F59E0B"
+            delay={200}
+            clickable={true}
+          />
+        </div>
+        
+        {/* Next Job Card - special styling for "No upcoming jobs" */}
+        {stats?.nextJob ? (
+          <div className="cursor-pointer" onClick={() => navigate('/customer-hub')}>
+            <StatCard
+              title="Next Scheduled Job"
+              value={formatNextJob()}
+              icon={MapPin}
+              gradientFrom="#8B5CF6"
+              gradientTo="#7C3AED"
+              iconBg="#8B5CF6"
+              delay={300}
+              clickable={true}
+            />
+          </div>
+        ) : (
+          <Card className="relative overflow-hidden transition-all duration-300 ease-out bg-gradient-to-b from-[#F6F9FF] to-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:-translate-y-1 p-5 md:p-4 min-h-[140px] md:h-32">
+            <div className="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl bg-gradient-to-b from-purple-500 to-purple-700" />
+            
+            <div className="flex items-center justify-between h-full">
+              <div className="flex-1">
+                <div className="text-lg font-bold text-gray-900 mb-1">No upcoming jobs</div>
+                <div className="text-sm text-gray-600 mb-2">Next Scheduled Job</div>
+                <Button
+                  size="sm"
+                  onClick={() => navigate('/customer-hub')}
+                  className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-medium text-xs px-3 py-1.5 h-auto"
+                >
+                  Schedule Job
+                </Button>
+              </div>
+              
+              <div className="w-12 h-12 rounded-lg flex items-center justify-center shadow-md flex-shrink-0 ml-3 bg-gradient-to-br from-purple-500 to-purple-700">
+                <MapPin className="w-6 h-6 text-white" strokeWidth={2} />
+              </div>
+            </div>
+          </Card>
+        )}
+      </div>
     </div>
   );
 }
