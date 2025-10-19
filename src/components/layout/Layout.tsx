@@ -110,8 +110,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
               elements: {
                 userButtonAvatarBox: "w-8 h-8",
                 userButtonPopoverCard: "shadow-lg",
-                profileSection__profile: "relative pb-8",
-                profileSectionContent__profile: "relative after:content-['ℹ️_Photo_uploads_and_removals_are_saved_automatically'] after:absolute after:-bottom-6 after:left-0 after:right-0 after:text-xs after:text-center after:text-gray-500 after:italic after:px-4",
+                rootBox: "portapro-clerk-note",
               }
             }}
           />
