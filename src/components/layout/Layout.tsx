@@ -5,6 +5,7 @@ import { AppSidebar } from "./AppSidebar";
 import { MobileNavDrawer } from "./MobileNavDrawer";
 import { Logo } from "@/components/ui/logo";
 import { useUserRole } from "@/hooks/useUserRole";
+import { UserButton, useUser } from "@clerk/clerk-react";
 import "@/utils/authCleanup"; // Load auth cleanup utilities
 
 interface LayoutProps {
@@ -14,12 +15,13 @@ interface LayoutProps {
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [mounted, setMounted] = useState(false);
   const [activeSection, setActiveSection] = useState<string>('/');
+  const { user } = useUser();
   
   useEffect(() => {
     setMounted(true);
   }, []);
   
-  const { role, user, isLoaded } = useUserRole();
+  const { role, user: roleUser, isLoaded } = useUserRole();
   const [isDesktop, setIsDesktop] = useState(false);
   
   useEffect(() => {
@@ -49,11 +51,11 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
     );
   }
 
-  if (!role && user) {
+  if (!role && roleUser) {
     return (
       <div className="min-h-screen flex items-center justify-center p-6" style={{ backgroundColor: '#f9fafb' }}>
         <div className="bg-white rounded-lg shadow-lg p-6 text-center space-y-4">
-          <h2 className="text-2xl font-bold">Welcome {user.firstName}!</h2>
+          <h2 className="text-2xl font-bold">Welcome {roleUser.firstName}!</h2>
           <p>Please contact your administrator to set your role, or go to your Clerk dashboard and add:</p>
           <code className="block bg-gray-100 p-4 rounded">publicMetadata: {`{"role": "owner"}`}</code>
           <p className="text-sm text-gray-500">Valid roles: owner, dispatch, driver, customer</p>
@@ -98,9 +100,26 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           <Logo showText={true} />
         </div>
       </header>
-      <main className="flex-1 overflow-y-auto p-4">
+      <main className="flex-1 overflow-y-auto p-4 pb-20">
         {children}
       </main>
+      <footer className="flex h-16 shrink-0 items-center justify-between border-t bg-gray-50 px-4 sticky bottom-0 z-50">
+        <div className="flex items-center gap-3 ml-auto">
+          <UserButton 
+            appearance={{
+              elements: {
+                userButtonAvatarBox: "w-8 h-8",
+                userButtonPopoverCard: "shadow-lg"
+              }
+            }}
+          />
+          {user && (
+            <div className="text-sm text-gray-600 truncate max-w-[200px]">
+              {user.firstName || user.emailAddresses?.[0]?.emailAddress || 'User'}
+            </div>
+          )}
+        </div>
+      </footer>
     </div>
   );
 };
