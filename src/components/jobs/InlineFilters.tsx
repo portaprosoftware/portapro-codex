@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -17,6 +18,7 @@ import { StockVehicleSelectionModal } from '@/components/fleet/StockVehicleSelec
 import { UniversalJobsHeader } from './UniversalJobsHeader';
 import { FilterToggle } from './FilterToggle';
 import { MultiSelectDriverFilter } from '@/components/fleet/MultiSelectDriverFilter';
+import { MobileFilterPanel } from './MobileFilterPanel';
 
 interface InlineFiltersProps {
   searchTerm: string;
@@ -69,6 +71,7 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
   const [showAvailabilityTracker, setShowAvailabilityTracker] = useState(false);
   const [showVehicleModal, setShowVehicleModal] = useState(false);
   const [showDriverModal, setShowDriverModal] = useState(false);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   
   // Convert drivers array to match MultiSelectDriverFilter format
   const selectedDriversForModal = selectedDriver === 'all' 
@@ -80,6 +83,14 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
         email: null,
         clerk_user_id: null
       }));
+
+  // Calculate active filters count for mobile
+  const activeFiltersCount = [
+    searchTerm !== '',
+    selectedDriver !== 'all',
+    selectedJobType !== 'all',
+    selectedStatus !== 'all'
+  ].filter(Boolean).length;
 
   // Route vs Truck Stock queries
   const { data: vehicles } = useQuery({
@@ -117,6 +128,192 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
     staleTime: 30000,
     refetchOnWindowFocus: false,
   });
+
+  // Shared filter controls component
+  const FilterControls = () => (
+    <>
+      {/* Search Input */}
+      <div className="w-full md:flex-1 md:min-w-80">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <Input
+            type="text"
+            placeholder="Enter Job ID (e.g., 2032) or Customer name"
+            value={searchTerm}
+            onChange={(e) => onSearchChange(e.target.value)}
+            onKeyDown={onSearchKeyDown}
+            className="pl-10"
+          />
+        </div>
+      </div>
+
+      {/* Driver Filter */}
+      <Button
+        variant="outline"
+        onClick={() => setShowDriverModal(true)}
+        className="w-full md:w-48 justify-between min-h-[44px]"
+      >
+        <span className="truncate">
+          {selectedDriver === 'all' 
+            ? 'All Drivers' 
+            : `${drivers.find(d => d.id === selectedDriver)?.first_name} ${drivers.find(d => d.id === selectedDriver)?.last_name}`
+          }
+        </span>
+        <Users className="h-4 w-4 ml-2 opacity-50 flex-shrink-0" />
+      </Button>
+
+      {/* Job Type Filter */}
+      <Select value={selectedJobType} onValueChange={onJobTypeChange}>
+        <SelectTrigger className="w-full md:w-48 min-h-[44px]">
+          <SelectValue placeholder="All Job Types" />
+        </SelectTrigger>
+        <SelectContent className="bg-white border shadow-lg z-[9999]">
+          <SelectItem value="all">All Job Types</SelectItem>
+          <SelectItem value="delivery">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-[hsl(var(--status-delivery))]"></div>
+              Delivery
+            </div>
+          </SelectItem>
+          <SelectItem value="pickup">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-[hsl(var(--status-pickup))]"></div>
+              Pickup
+            </div>
+          </SelectItem>
+          <SelectItem value="partial-pickup">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-[hsl(var(--status-partial-pickup))]"></div>
+              Partial Pickup
+            </div>
+          </SelectItem>
+          <SelectItem value="service">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-[hsl(var(--status-service))]"></div>
+              Service
+            </div>
+          </SelectItem>
+          <SelectItem value="on-site-survey">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-[hsl(var(--status-survey))]"></div>
+              Survey/Estimate
+            </div>
+          </SelectItem>
+        </SelectContent>
+      </Select>
+
+      {/* Status Filter */}
+      <Select value={selectedStatus} onValueChange={onStatusChange}>
+        <SelectTrigger className="w-full md:w-48 min-h-[44px]">
+          <SelectValue placeholder="All Statuses" />
+        </SelectTrigger>
+        <SelectContent className="bg-white border shadow-lg z-[9999]">
+          <SelectItem value="all">All Statuses</SelectItem>
+          <SelectItem value="assigned">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+              Assigned
+            </div>
+          </SelectItem>
+          <SelectItem value="unassigned">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-gray-400"></div>
+              Unassigned
+            </div>
+          </SelectItem>
+          <SelectItem value="in_progress">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-orange-500"></div>
+              In Progress
+            </div>
+          </SelectItem>
+          <SelectItem value="completed">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-green-500"></div>
+              Completed
+            </div>
+          </SelectItem>
+          <SelectItem value="cancelled">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-gray-500"></div>
+              Cancelled
+            </div>
+          </SelectItem>
+          <SelectItem value="priority">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+              Priority
+            </div>
+          </SelectItem>
+          <SelectItem value="was_overdue">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-yellow-600"></div>
+              Overdue - Rescheduled
+            </div>
+          </SelectItem>
+          <SelectItem value="overdue">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-red-500"></div>
+              Overdue
+            </div>
+          </SelectItem>
+          <SelectItem value="completed_late">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-gray-600"></div>
+              Completed Late
+            </div>
+          </SelectItem>
+        </SelectContent>
+      </Select>
+
+      {/* Date Navigator */}
+      {showDateNavigator && selectedDate && onDateChange && (
+        <div className="w-full md:w-auto">
+          <div className="flex flex-col md:flex-row md:items-center gap-2">
+            <EnhancedDateNavigator
+              date={selectedDate}
+              onDateChange={onDateChange}
+              label="Date"
+            />
+            
+            {/* Today/Tomorrow Quick Select Buttons */}
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onDateChange(new Date())}
+                className="text-xs px-3 py-2 flex-1 md:flex-none min-h-[44px] md:min-h-0"
+              >
+                Today
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const tomorrow = new Date();
+                  tomorrow.setDate(tomorrow.getDate() + 1);
+                  onDateChange(tomorrow);
+                }}
+                className="text-xs px-3 py-2 flex-1 md:flex-none min-h-[44px] md:min-h-0"
+              >
+                Tomorrow
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Show Cancelled Jobs Toggle */}
+      {onToggleCancelled && (
+        <FilterToggle
+          showCancelled={showCancelled}
+          onToggle={onToggleCancelled}
+          cancelledCount={cancelledCount}
+        />
+      )}
+    </>
+  );
+
   return (
     <TooltipProvider>
       <div className="space-y-1">
@@ -128,296 +325,24 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
           />
         )}
 
-        <div className="flex items-center gap-4 flex-wrap">
-          {/* Search Input */}
-          <div className="flex-1 min-w-80">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input
-                type="text"
-                placeholder="Enter Job ID (e.g., 2032) or Customer name"
-                value={searchTerm}
-                onChange={(e) => onSearchChange(e.target.value)}
-                onKeyDown={onSearchKeyDown}
-                className="pl-10"
-              />
-            </div>
-          </div>
-
-        {/* Driver Filter - Multi-Select Button */}
-        <Button
-          variant="outline"
-          onClick={() => setShowDriverModal(true)}
-          className="w-48 justify-between"
-        >
-          <span className="truncate">
-            {selectedDriver === 'all' 
-              ? 'All Drivers' 
-              : `${drivers.find(d => d.id === selectedDriver)?.first_name} ${drivers.find(d => d.id === selectedDriver)?.last_name}`
-            }
-          </span>
-          <Users className="h-4 w-4 ml-2 opacity-50" />
-        </Button>
-
-        {/* Job Type Filter */}
-        <Select value={selectedJobType} onValueChange={onJobTypeChange}>
-          <SelectTrigger className="w-48">
-            <SelectValue placeholder="All Job Types" />
-          </SelectTrigger>
-          <SelectContent className="bg-white border shadow-lg z-[9999]">
-            <SelectItem value="all">All Job Types</SelectItem>
-            <SelectItem value="delivery">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-[hsl(var(--status-delivery))]"></div>
-                Delivery
-              </div>
-            </SelectItem>
-            <SelectItem value="pickup">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-[hsl(var(--status-pickup))]"></div>
-                Pickup
-              </div>
-            </SelectItem>
-            <SelectItem value="partial-pickup">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-[hsl(var(--status-partial-pickup))]"></div>
-                Partial Pickup
-              </div>
-            </SelectItem>
-            <SelectItem value="service">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-[hsl(var(--status-service))]"></div>
-                Service
-              </div>
-            </SelectItem>
-            <SelectItem value="on-site-survey">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-[hsl(var(--status-survey))]"></div>
-                Survey/Estimate
-              </div>
-            </SelectItem>
-          </SelectContent>
-        </Select>
-
-        {/* Status Filter */}
-        <Select value={selectedStatus} onValueChange={onStatusChange}>
-          <SelectTrigger className="w-48">
-            <SelectValue placeholder="All Statuses" />
-          </SelectTrigger>
-          <SelectContent className="bg-white border shadow-lg z-[9999]">
-            <SelectItem value="all">All Statuses</SelectItem>
-            <SelectItem value="assigned">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                Assigned
-              </div>
-            </SelectItem>
-            <SelectItem value="unassigned">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-gray-400"></div>
-                Unassigned
-              </div>
-            </SelectItem>
-            <SelectItem value="in_progress">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-orange-500"></div>
-                In Progress
-              </div>
-            </SelectItem>
-            <SelectItem value="completed">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                Completed
-              </div>
-            </SelectItem>
-            <SelectItem value="cancelled">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-gray-500"></div>
-                Cancelled
-              </div>
-            </SelectItem>
-            <SelectItem value="priority">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
-                Priority
-              </div>
-            </SelectItem>
-            <SelectItem value="was_overdue">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-yellow-600"></div>
-                Overdue - Rescheduled
-              </div>
-            </SelectItem>
-            <SelectItem value="overdue">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-red-500"></div>
-                Overdue
-              </div>
-            </SelectItem>
-            <SelectItem value="completed_late">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-gray-600"></div>
-                Completed Late
-              </div>
-            </SelectItem>
-          </SelectContent>
-        </Select>
-
-        {/* Date Navigator */}
-        {showDateNavigator && selectedDate && onDateChange && (
-          <div className="flex items-center gap-2">
-            <EnhancedDateNavigator
-              date={selectedDate}
-              onDateChange={onDateChange}
-              label="Date"
-            />
-            
-            {/* Today/Tomorrow Quick Select Buttons */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => onDateChange(new Date())}
-              className="text-xs px-3 py-1"
-            >
-              Today
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                const tomorrow = new Date();
-                tomorrow.setDate(tomorrow.getDate() + 1);
-                onDateChange(tomorrow);
-              }}
-              className="text-xs px-3 py-1"
-            >
-              Tomorrow
-            </Button>
-          </div>
-          )}
-
-          {/* Availability Tracker Button */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowAvailabilityTracker(true)}
-            className="flex items-center gap-2"
-          >
-            <Calendar className="h-4 w-4" />
-            Product Availability
-          </Button>
-
-          {/* Route vs Truck Stock Toggle */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowRouteStock(!showRouteStock)}
-            className="flex items-center gap-2"
-          >
-            {showRouteStock ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-            Route vs Truck Stock
-          </Button>
-
-          {/* Show Cancelled Jobs Toggle */}
-          {onToggleCancelled && (
-            <FilterToggle
-              showCancelled={showCancelled}
-              onToggle={onToggleCancelled}
-              cancelledCount={cancelledCount}
-            />
-          )}
+        {/* Desktop Filters - Hidden on Mobile */}
+        <div className="hidden md:flex items-center gap-4 flex-wrap">
+          <FilterControls />
         </div>
 
-        {/* Route vs Truck Stock Section */}
-        {showRouteStock && (
-          <Card className="p-4 space-y-3 mt-2">
-            <div className="flex items-center gap-2">
-              <h3 className="text-sm font-medium text-muted-foreground">Route vs Truck Stock</h3>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <button className="p-1 hover:bg-muted rounded-full transition-colors">
-                    <Info className="h-4 w-4 text-muted-foreground" />
-                  </button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-md">
-                  <DialogHeader>
-                    <DialogTitle>How This Works</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-3">
-                    <p className="text-sm text-muted-foreground">
-                      This tool helps you ensure your truck has enough supplies before starting your route.
-                    </p>
-                    <div className="space-y-2 text-xs">
-                      <p><strong>Needed:</strong> Total supplies required for all jobs assigned to this truck</p>
-                      <p><strong>On Truck:</strong> Current stock levels loaded on the vehicle</p>
-                      <p><strong>Deficit:</strong> How many more items you need to load</p>
-                      <p><strong>Status:</strong> "OK" means you're ready, "Replenish" means load more supplies</p>
-                    </div>
-                  </div>
-                </DialogContent>
-              </Dialog>
+        {/* Mobile Filters - Collapsible */}
+        <div className="md:hidden">
+          <MobileFilterPanel
+            isOpen={mobileFiltersOpen}
+            onToggle={setMobileFiltersOpen}
+            activeFiltersCount={activeFiltersCount}
+          >
+            <div className="space-y-3">
+              <FilterControls />
             </div>
+          </MobileFilterPanel>
+        </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <label className="text-sm text-muted-foreground">Vehicle</label>
-                <Button
-                  variant="outline"
-                  onClick={() => setShowVehicleModal(true)}
-                  className="justify-start h-10 w-full"
-                >
-                  <Truck className="h-4 w-4 mr-2" />
-                  {stockVehicleId ? 
-                    vehicles?.find(v => v.id === stockVehicleId)?.license_plate || 'Selected Vehicle' : 
-                    'Select Vehicle'
-                  }
-                </Button>
-              </div>
-              <div className="flex items-end gap-2">
-                <div className="flex-1">
-                  <label className="text-sm text-muted-foreground">Service Date</label>
-                  <Input type="date" value={stockServiceDate} onChange={(e) => setStockServiceDate(e.target.value)} />
-                </div>
-              </div>
-            </div>
-
-            {!stockVehicleId ? (
-              <div className="text-sm text-muted-foreground">Pick a vehicle and date to check stock readiness.</div>
-            ) : isLoadingRouteStatus ? (
-              <div className="text-sm text-muted-foreground">Checking stock...</div>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Item</TableHead>
-                    <TableHead>Needed</TableHead>
-                    <TableHead>On Truck</TableHead>
-                    <TableHead>Deficit</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {(routeStatus || []).map((row: any) => (
-                    <TableRow key={row.consumable_id}>
-                      <TableCell className="font-medium">{row.consumable_name}</TableCell>
-                      <TableCell>{row.needed_qty}</TableCell>
-                      <TableCell>{row.vehicle_balance}</TableCell>
-                      <TableCell>{row.deficit}</TableCell>
-                      <TableCell>
-                        {row.ok ? (
-                          <Badge variant="secondary">OK</Badge>
-                        ) : (
-                          <Badge variant="destructive">Replenish</Badge>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </Card>
-        )}
-        
         {/* Vehicle Selection Modal */}
         <StockVehicleSelectionModal
           open={showVehicleModal}
@@ -448,10 +373,10 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
             } else if (drivers.length === 1) {
               onDriverChange(drivers[0].id);
             } else {
-              // For multiple drivers, just use the first one for now
-              // Later you might want to update the Jobs page to support multiple driver filtering
+              // Handle multiple drivers - for now just select the first
               onDriverChange(drivers[0].id);
             }
+            setShowDriverModal(false);
           }}
         />
       </div>

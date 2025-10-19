@@ -564,69 +564,102 @@ const JobsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className={cn("max-w-none px-6 py-6 space-y-6", activeTab === "dispatch" && "space-y-3")}>
+      <div className={cn("max-w-none px-4 md:px-6 py-4 md:py-6 space-y-3 md:space-y-6", activeTab === "dispatch" && "md:space-y-3")}>
         {/* Page Header with Navigation Pills */}
-        <div className="bg-white rounded-lg border shadow-sm p-6">
+        <div className="bg-white rounded-lg border shadow-sm p-4 md:p-6">
           <div className="flex flex-col h-full">
-            <div className="mb-4">
-              <h1 className="text-2xl font-semibold text-gray-900 font-inter">Jobs</h1>
-              <p className="text-base text-gray-600 font-inter mt-1">Schedule and manage job assignments</p>
+            <div className="mb-3 md:mb-4 text-center md:text-left">
+              <h1 className="text-xl md:text-2xl font-semibold text-gray-900 font-inter">Jobs</h1>
+              <p className="text-sm md:text-base text-gray-600 font-inter mt-1">Schedule and manage job assignments</p>
             </div>
             
-            {/* Jobs Sub-Navigation Pills */}
-            <div className="flex items-center justify-between">
-              <div className="enterprise-tabs">
-                <TabNav ariaLabel="Jobs views">
-                  <TabNav.Item 
-                    to="/jobs/calendar" 
-                    isActive={activeTab === 'calendar'}
+            {/* Jobs Sub-Navigation Pills - Horizontal Scroll on Mobile */}
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+              {/* Horizontal scrollable tabs on mobile */}
+              <div className="overflow-x-auto scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
+                <nav aria-label="Jobs views" className="flex items-center space-x-1 min-w-max md:min-w-0">
+                  <button
+                    type="button"
+                    className={cn(
+                      "px-3 md:px-4 py-2 rounded-full font-medium text-xs md:text-sm transition-all duration-200 font-inter flex items-center gap-1 md:gap-2 flex-shrink-0 focus:outline-none transform hover:-translate-y-0.5",
+                      activeTab === 'calendar'
+                        ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold shadow-sm"
+                        : "bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
+                    )}
                     onClick={() => navigateToTab('calendar')}
+                    aria-current={activeTab === 'calendar' ? "page" : undefined}
                   >
-                    <CalendarIcon className="w-4 h-4" />
-                    Calendar
-                  </TabNav.Item>
-                  <TabNav.Item 
-                    to="/jobs/dispatch" 
-                    isActive={activeTab === 'dispatch'}
+                    <CalendarIcon className="w-3 h-3 md:w-4 md:h-4" />
+                    <span className="hidden xs:inline">Calendar</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={cn(
+                      "px-3 md:px-4 py-2 rounded-full font-medium text-xs md:text-sm transition-all duration-200 font-inter flex items-center gap-1 md:gap-2 flex-shrink-0 focus:outline-none transform hover:-translate-y-0.5",
+                      activeTab === 'dispatch'
+                        ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold shadow-sm"
+                        : "bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
+                    )}
                     onClick={() => navigateToTab('dispatch')}
+                    aria-current={activeTab === 'dispatch' ? "page" : undefined}
                   >
-                    <ClipboardList className="w-4 h-4" />
-                    Dispatch
-                  </TabNav.Item>
-                  <TabNav.Item 
-                    to="/jobs/map" 
-                    isActive={activeTab === 'map'}
+                    <ClipboardList className="w-3 h-3 md:w-4 md:h-4" />
+                    <span className="hidden xs:inline">Dispatch</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={cn(
+                      "px-3 md:px-4 py-2 rounded-full font-medium text-xs md:text-sm transition-all duration-200 font-inter flex items-center gap-1 md:gap-2 flex-shrink-0 focus:outline-none transform hover:-translate-y-0.5",
+                      activeTab === 'map'
+                        ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold shadow-sm"
+                        : "bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
+                    )}
                     onClick={() => navigateToTab('map')}
+                    aria-current={activeTab === 'map' ? "page" : undefined}
                   >
-                    <MapPin className="w-4 h-4" />
-                    Map
-                  </TabNav.Item>
-                  <TabNav.Item 
-                    to="/jobs/custom" 
-                    isActive={activeTab === 'custom'}
+                    <MapPin className="w-3 h-3 md:w-4 md:h-4" />
+                    <span className="hidden xs:inline">Map</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={cn(
+                      "px-3 md:px-4 py-2 rounded-full font-medium text-xs md:text-sm transition-all duration-200 font-inter flex items-center gap-1 md:gap-2 flex-shrink-0 focus:outline-none transform hover:-translate-y-0.5",
+                      activeTab === 'custom'
+                        ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold shadow-sm"
+                        : "bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
+                    )}
                     onClick={() => navigateToTab('custom')}
+                    aria-current={activeTab === 'custom' ? "page" : undefined}
                   >
-                    <Filter className="w-4 h-4" />
-                    Advanced Search
-                  </TabNav.Item>
-                  <TabNav.Item 
-                    to="/jobs/drafts" 
-                    isActive={activeTab === 'drafts'}
+                    <Filter className="w-3 h-3 md:w-4 md:h-4" />
+                    <span className="hidden xs:inline">Search</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={cn(
+                      "px-3 md:px-4 py-2 rounded-full font-medium text-xs md:text-sm transition-all duration-200 font-inter flex items-center gap-1 md:gap-2 flex-shrink-0 focus:outline-none transform hover:-translate-y-0.5",
+                      activeTab === 'drafts'
+                        ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold shadow-sm"
+                        : "bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
+                    )}
                     onClick={() => navigateToTab('drafts')}
+                    aria-current={activeTab === 'drafts' ? "page" : undefined}
                   >
-                    <FileText className="w-4 h-4" />
-                    Drafts
+                    <FileText className="w-3 h-3 md:w-4 md:h-4" />
+                    <span className="hidden xs:inline">Drafts</span>
                     {drafts.length > 0 && (
-                      <Badge variant="secondary" className="ml-2 text-xs">
+                      <Badge variant="secondary" className="ml-1 text-xs">
                         {drafts.length}
                       </Badge>
                     )}
-                  </TabNav.Item>
-                </TabNav>
+                  </button>
+                </nav>
               </div>
+              
+              {/* Schedule Job Button - Full width on mobile, inline on desktop */}
               <Button 
                 onClick={() => setIsJobWizardOpen(true)}
-                className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold rounded-xl transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
+                className="w-full md:w-auto bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold rounded-xl transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 min-h-[44px]"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Schedule Job
@@ -711,22 +744,24 @@ const JobsPage: React.FC = () => {
           )}
 
           {activeTab === 'calendar' && (
-            <div className="space-y-6">
+            <div className="space-y-4 md:space-y-6">
               
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-4 md:gap-6">
                 {/* Going Out Card */}
                 <div className="bg-white rounded-lg border shadow-sm">
-                  <div className="p-6 border-b border-gray-200">
+                  <div className="p-4 md:p-6 border-b border-gray-200 bg-gray-50 sticky top-0 md:static z-10">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4">
-                        <h3 className="enterprise-card-title mb-0">Going Out ({filterJobs(outgoingJobs).length})</h3>
+                      <div className="flex items-center space-x-2 md:space-x-4">
+                        <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-0">
+                          Going Out ({filterJobs(outgoingJobs).length})
+                        </h3>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="p-6">
+                  <div className="p-4 md:p-6">
                     {filterJobs(outgoingJobs).length > 0 ? (
-                      <div className="space-y-4">
+                      <div className="space-y-3 md:space-y-4">
                         {filterJobs(outgoingJobs).map(job => (
                           <JobCard
                             key={job.id}
@@ -738,10 +773,10 @@ const JobsPage: React.FC = () => {
                         ))}
                       </div>
                     ) : (
-                      <div className="enterprise-empty-state">
-                        <ClipboardList className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                        <p className="text-lg font-medium text-gray-500 font-inter">No jobs scheduled</p>
-                        <p className="text-sm text-gray-400 font-inter">No outgoing jobs for this date</p>
+                      <div className="enterprise-empty-state py-8 md:py-12">
+                        <ClipboardList className="w-12 h-12 md:w-16 md:h-16 text-gray-300 mx-auto mb-3 md:mb-4" />
+                        <p className="text-base md:text-lg font-medium text-gray-500 font-inter">No jobs scheduled</p>
+                        <p className="text-xs md:text-sm text-gray-400 font-inter mt-1">No outgoing jobs for this date</p>
                       </div>
                     )}
                   </div>
@@ -749,17 +784,19 @@ const JobsPage: React.FC = () => {
 
                 {/* Coming Back Card */}
                 <div className="bg-white rounded-lg border shadow-sm">
-                  <div className="p-6 border-b border-gray-200">
+                  <div className="p-4 md:p-6 border-b border-gray-200 bg-gray-50 sticky top-0 md:static z-10">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4">
-                        <h3 className="enterprise-card-title mb-0">Coming Back ({incomingJobs.length})</h3>
+                      <div className="flex items-center space-x-2 md:space-x-4">
+                        <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-0">
+                          Coming Back ({incomingJobs.length})
+                        </h3>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="p-6">
+                  <div className="p-4 md:p-6">
                     {incomingJobs.length > 0 ? (
-                      <div className="space-y-4">
+                      <div className="space-y-3 md:space-y-4">
                         {incomingJobs.map(job => (
                           <JobCard
                             key={job.id}
@@ -770,10 +807,10 @@ const JobsPage: React.FC = () => {
                         ))}
                       </div>
                     ) : (
-                      <div className="enterprise-empty-state">
-                        <ClipboardList className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                        <p className="text-lg font-medium text-gray-500 font-inter">No pickups scheduled</p>
-                        <p className="text-sm text-gray-400 font-inter">No incoming jobs for this date</p>
+                      <div className="enterprise-empty-state py-8 md:py-12">
+                        <ClipboardList className="w-12 h-12 md:w-16 md:h-16 text-gray-300 mx-auto mb-3 md:mb-4" />
+                        <p className="text-base md:text-lg font-medium text-gray-500 font-inter">No pickups scheduled</p>
+                        <p className="text-xs md:text-sm text-gray-400 font-inter mt-1">No incoming jobs for this date</p>
                       </div>
                     )}
                   </div>

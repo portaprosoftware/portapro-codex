@@ -145,7 +145,7 @@ export const JobCard: React.FC<JobCardProps> = ({
     return (
       <div 
         className={cn(
-          "enterprise-job-card group cursor-pointer border-l-4",
+          "enterprise-job-card group cursor-pointer border-l-4 p-4 md:p-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 active:scale-95",
           jobTypeInfo.borderColor,
           job.job_type,
           job.status === 'cancelled' && 'cancelled'
@@ -153,6 +153,7 @@ export const JobCard: React.FC<JobCardProps> = ({
         tabIndex={0}
         role="button"
         aria-label={`Job ${job.job_number} for ${job.customers.name}`}
+        onClick={handleViewJob}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
