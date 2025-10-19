@@ -17,9 +17,9 @@ export const UniversalJobsHeader: React.FC<UniversalJobsHeaderProps> = ({
   return (
     <div className="py-3 px-4">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-        {/* Date and Jobs Badge - Inline on all screen sizes */}
+        {/* Date and Jobs Badge - Single row on mobile */}
         <div className="flex items-center justify-between md:justify-start">
-          <div className="flex items-center gap-3 md:gap-6">
+          <div className="flex items-center gap-4 md:gap-6">
             <div className="flex items-center gap-2">
               <CalendarIcon className="h-4 w-4 text-gray-600" />
               <span className="font-medium text-gray-900 text-sm md:text-base">
