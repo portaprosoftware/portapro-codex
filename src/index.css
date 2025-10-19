@@ -208,20 +208,6 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-
-  /* Clerk UserButton photo auto-save note */
-  .cl-userProfile.portapro-clerk-note .cl-profileSection__profile::after {
-    content: "ℹ️ Photo uploads and removals are saved automatically — no need to select Save.";
-    display: block;
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid hsl(var(--border));
-    font-size: 12px;
-    line-height: 1.4;
-    color: hsl(var(--muted-foreground));
-    font-style: italic;
-    text-align: center;
-  }
 }
 
 /* Typography */

@@ -109,8 +109,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             appearance={{
               elements: {
                 userButtonAvatarBox: "w-8 h-8",
-                userButtonPopoverCard: "shadow-lg",
-                rootBox: "portapro-clerk-note",
+                userButtonPopoverCard: "shadow-lg"
               }
             }}
           />
