@@ -4,6 +4,7 @@ import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/s
 import { AppSidebar } from "./AppSidebar";
 import { MobileNavDrawer } from "./MobileNavDrawer";
 import { Logo } from "@/components/ui/logo";
+import { Button } from "@/components/ui/button";
 import { useUserRole } from "@/hooks/useUserRole";
 import { UserButton, useUser } from "@clerk/clerk-react";
 import "@/utils/authCleanup"; // Load auth cleanup utilities
@@ -119,6 +120,17 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             </div>
           )}
         </div>
+        
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="text-xs font-medium text-gray-600 hover:text-gray-900"
+        >
+          Back to Top
+        </Button>
+        
+        <div className="w-[100px]" /> {/* Spacer for layout balance */}
       </footer>
     </div>
   );
