@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Menu } from 'lucide-react';
+import { AlignLeft } from 'lucide-react';
 import { useUserRole } from '@/hooks/useUserRole';
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/ui/logo";
@@ -120,7 +120,7 @@ export function MobileNavDrawer() {
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
         <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-          <Menu className="h-6 w-6 text-gray-700" />
+          <AlignLeft className="h-6 w-6 text-gray-700" />
         </button>
       </DrawerTrigger>
       <DrawerContent className="h-[85vh] max-h-[85vh] flex flex-col z-[60] rounded-t-2xl shadow-2xl">
