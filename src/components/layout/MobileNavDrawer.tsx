@@ -123,14 +123,9 @@ export function MobileNavDrawer() {
           <Menu className="h-6 w-6 text-gray-700" />
         </button>
       </DrawerTrigger>
-      <DrawerContent className="h-[90vh] max-h-[90vh] flex flex-col z-[60] rounded-t-2xl shadow-2xl">
-        <DrawerHeader className="border-b pb-4">
-          <DrawerTitle className="flex justify-center">
-            <Logo showText={true} />
-          </DrawerTitle>
-          <DrawerDescription className="text-sm text-gray-600">
-            Mobile Navigation
-          </DrawerDescription>
+      <DrawerContent className="h-[85vh] max-h-[85vh] flex flex-col z-[60] rounded-t-2xl shadow-2xl">
+        <DrawerHeader className="border-b pb-2 pt-2">
+          <DrawerTitle className="sr-only">Navigation Menu</DrawerTitle>
         </DrawerHeader>
         
         <nav className="flex-1 overflow-y-auto px-4 pt-4 pb-[max(16px,env(safe-area-inset-bottom))]">
