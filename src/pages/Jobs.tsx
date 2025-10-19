@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import JobsMapPage from '@/components/JobsMapView';
 import { JobsMapErrorBoundary } from '@/components/JobsMapErrorBoundary';
@@ -583,88 +584,141 @@ const JobsPage: React.FC = () => {
               <p className="text-sm md:text-base text-gray-600 font-inter mt-1">Schedule and manage job assignments</p>
             </div>
             
-            {/* Jobs Sub-Navigation Pills - Horizontal Scroll on Mobile */}
+            {/* Jobs Sub-Navigation Pills - Dropdown on Mobile/Tablet, Full Tabs on Desktop */}
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-              {/* Horizontal scrollable tabs on mobile with scroll snap */}
-              <div className="overflow-x-auto scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0 snap-x snap-mandatory">
-                <nav aria-label="Jobs views" className="flex items-center space-x-1 min-w-max md:min-w-0">
-                  <button
-                    type="button"
-                    className={cn(
-                      "px-3 md:px-4 py-2 rounded-full font-medium text-xs md:text-sm transition-all duration-200 font-inter flex items-center gap-1 md:gap-2 flex-shrink-0 focus:outline-none transform hover:-translate-y-0.5 snap-start",
-                      activeTab === 'calendar'
-                        ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold shadow-sm"
-                        : "bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
-                    )}
-                    onClick={() => navigateToTab('calendar')}
-                    aria-current={activeTab === 'calendar' ? "page" : undefined}
-                  >
-                    <CalendarIcon className="w-3 h-3 md:w-4 md:h-4" />
-                    <span className="hidden xs:inline">Calendar</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={cn(
-                      "px-3 md:px-4 py-2 rounded-full font-medium text-xs md:text-sm transition-all duration-200 font-inter flex items-center gap-1 md:gap-2 flex-shrink-0 focus:outline-none transform hover:-translate-y-0.5 snap-start",
-                      activeTab === 'dispatch'
-                        ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold shadow-sm"
-                        : "bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
-                    )}
-                    onClick={() => navigateToTab('dispatch')}
-                    aria-current={activeTab === 'dispatch' ? "page" : undefined}
-                  >
-                    <ClipboardList className="w-3 h-3 md:w-4 md:h-4" />
-                    <span className="hidden xs:inline">Dispatch</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={cn(
-                      "px-3 md:px-4 py-2 rounded-full font-medium text-xs md:text-sm transition-all duration-200 font-inter flex items-center gap-1 md:gap-2 flex-shrink-0 focus:outline-none transform hover:-translate-y-0.5 snap-start",
-                      activeTab === 'map'
-                        ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold shadow-sm"
-                        : "bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
-                    )}
-                    onClick={() => navigateToTab('map')}
-                    aria-current={activeTab === 'map' ? "page" : undefined}
-                  >
-                    <MapPin className="w-3 h-3 md:w-4 md:h-4" />
-                    <span className="hidden xs:inline">Map</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={cn(
-                      "px-3 md:px-4 py-2 rounded-full font-medium text-xs md:text-sm transition-all duration-200 font-inter flex items-center gap-1 md:gap-2 flex-shrink-0 focus:outline-none transform hover:-translate-y-0.5 snap-start",
-                      activeTab === 'custom'
-                        ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold shadow-sm"
-                        : "bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
-                    )}
-                    onClick={() => navigateToTab('custom')}
-                    aria-current={activeTab === 'custom' ? "page" : undefined}
-                  >
-                    <Filter className="w-3 h-3 md:w-4 md:h-4" />
-                    <span className="hidden xs:inline">Search</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={cn(
-                      "px-3 md:px-4 py-2 rounded-full font-medium text-xs md:text-sm transition-all duration-200 font-inter flex items-center gap-1 md:gap-2 flex-shrink-0 focus:outline-none transform hover:-translate-y-0.5 snap-start",
-                      activeTab === 'drafts'
-                        ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold shadow-sm"
-                        : "bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
-                    )}
-                    onClick={() => navigateToTab('drafts')}
-                    aria-current={activeTab === 'drafts' ? "page" : undefined}
-                  >
-                    <FileText className="w-3 h-3 md:w-4 md:h-4" />
-                    <span className="hidden xs:inline">Drafts</span>
-                    {drafts.length > 0 && (
-                      <Badge variant="secondary" className="ml-1 text-xs">
-                        {drafts.length}
-                      </Badge>
-                    )}
-                  </button>
-                </nav>
+              
+              {/* Mobile/Tablet Dropdown */}
+              <div className="md:hidden">
+                <Select value={activeTab} onValueChange={(value: any) => navigateToTab(value)}>
+                  <SelectTrigger className="w-full bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold border-0 min-h-[44px]">
+                    <SelectValue>
+                      <div className="flex items-center gap-2">
+                        {activeTab === 'calendar' && <><CalendarIcon className="w-4 h-4" /> Calendar</>}
+                        {activeTab === 'dispatch' && <><ClipboardList className="w-4 h-4" /> Dispatch</>}
+                        {activeTab === 'map' && <><MapPin className="w-4 h-4" /> Map</>}
+                        {activeTab === 'custom' && <><Filter className="w-4 h-4" /> Advanced Search</>}
+                        {activeTab === 'drafts' && <><FileText className="w-4 h-4" /> Drafts {drafts.length > 0 && `(${drafts.length})`}</>}
+                      </div>
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent className="bg-white border shadow-lg z-[9999]">
+                    <SelectItem value="calendar">
+                      <div className="flex items-center gap-2">
+                        <CalendarIcon className="w-4 h-4" />
+                        Calendar
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="dispatch">
+                      <div className="flex items-center gap-2">
+                        <ClipboardList className="w-4 h-4" />
+                        Dispatch
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="map">
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4" />
+                        Map
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="custom">
+                      <div className="flex items-center gap-2">
+                        <Filter className="w-4 h-4" />
+                        Advanced Search
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="drafts">
+                      <div className="flex items-center gap-2">
+                        <FileText className="w-4 h-4" />
+                        Drafts
+                        {drafts.length > 0 && (
+                          <Badge variant="secondary" className="ml-1 text-xs">
+                            {drafts.length}
+                          </Badge>
+                        )}
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
+
+              {/* Desktop Full Tabs */}
+              <nav aria-label="Jobs views" className="hidden md:flex items-center space-x-1">
+                <button
+                  type="button"
+                  className={cn(
+                    "px-4 py-2 rounded-full font-medium text-sm transition-all duration-200 font-inter flex items-center gap-2 flex-shrink-0 focus:outline-none transform hover:-translate-y-0.5",
+                    activeTab === 'calendar'
+                      ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold shadow-sm"
+                      : "bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
+                  )}
+                  onClick={() => navigateToTab('calendar')}
+                  aria-current={activeTab === 'calendar' ? "page" : undefined}
+                >
+                  <CalendarIcon className="w-4 h-4" />
+                  Calendar
+                </button>
+                <button
+                  type="button"
+                  className={cn(
+                    "px-4 py-2 rounded-full font-medium text-sm transition-all duration-200 font-inter flex items-center gap-2 flex-shrink-0 focus:outline-none transform hover:-translate-y-0.5",
+                    activeTab === 'dispatch'
+                      ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold shadow-sm"
+                      : "bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
+                  )}
+                  onClick={() => navigateToTab('dispatch')}
+                  aria-current={activeTab === 'dispatch' ? "page" : undefined}
+                >
+                  <ClipboardList className="w-4 h-4" />
+                  Dispatch
+                </button>
+                <button
+                  type="button"
+                  className={cn(
+                    "px-4 py-2 rounded-full font-medium text-sm transition-all duration-200 font-inter flex items-center gap-2 flex-shrink-0 focus:outline-none transform hover:-translate-y-0.5",
+                    activeTab === 'map'
+                      ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold shadow-sm"
+                      : "bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
+                  )}
+                  onClick={() => navigateToTab('map')}
+                  aria-current={activeTab === 'map' ? "page" : undefined}
+                >
+                  <MapPin className="w-4 h-4" />
+                  Map
+                </button>
+                <button
+                  type="button"
+                  className={cn(
+                    "px-4 py-2 rounded-full font-medium text-sm transition-all duration-200 font-inter flex items-center gap-2 flex-shrink-0 focus:outline-none transform hover:-translate-y-0.5",
+                    activeTab === 'custom'
+                      ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold shadow-sm"
+                      : "bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
+                  )}
+                  onClick={() => navigateToTab('custom')}
+                  aria-current={activeTab === 'custom' ? "page" : undefined}
+                >
+                  <Filter className="w-4 h-4" />
+                  Advanced Search
+                </button>
+                <button
+                  type="button"
+                  className={cn(
+                    "px-4 py-2 rounded-full font-medium text-sm transition-all duration-200 font-inter flex items-center gap-2 flex-shrink-0 focus:outline-none transform hover:-translate-y-0.5",
+                    activeTab === 'drafts'
+                      ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold shadow-sm"
+                      : "bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
+                  )}
+                  onClick={() => navigateToTab('drafts')}
+                  aria-current={activeTab === 'drafts' ? "page" : undefined}
+                >
+                  <FileText className="w-4 h-4" />
+                  Drafts
+                  {drafts.length > 0 && (
+                    <Badge variant="secondary" className="ml-1 text-xs">
+                      {drafts.length}
+                    </Badge>
+                  )}
+                </button>
+              </nav>
               
               {/* Schedule Job Button - Full width on mobile, inline on desktop */}
               <Button 
