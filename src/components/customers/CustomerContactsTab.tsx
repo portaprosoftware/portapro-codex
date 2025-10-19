@@ -1,8 +1,9 @@
 
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Users } from 'lucide-react';
+import { Plus, Users, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { CustomerContactCard } from './CustomerContactCard';
 import { AddContactModal } from './AddContactModal';
@@ -29,6 +30,7 @@ interface CustomerContact {
 
 export function CustomerContactsTab({ customerId }: CustomerContactsTabProps) {
   const [showAddModal, setShowAddModal] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const queryClient = useQueryClient();
 
   const { data: contacts = [], isLoading } = useQuery({
@@ -76,14 +78,32 @@ export function CustomerContactsTab({ customerId }: CustomerContactsTabProps) {
     deleteContactMutation.mutate(contactId);
   };
 
+  // Filter contacts based on search query
+  const filteredContacts = contacts.filter((contact) => {
+    if (!searchQuery) return true;
+    const query = searchQuery.toLowerCase();
+    const fullName = `${contact.first_name} ${contact.last_name}`.toLowerCase();
+    const email = contact.email?.toLowerCase() || '';
+    const phone = contact.phone?.toLowerCase() || '';
+    const title = contact.title?.toLowerCase() || '';
+    const type = contact.contact_type?.toLowerCase() || '';
+    
+    return fullName.includes(query) || 
+           email.includes(query) || 
+           phone.includes(query) || 
+           title.includes(query) ||
+           type.includes(query);
+  });
+
   if (isLoading) {
     return (
-      <div className="bg-card rounded-2xl p-6">
+      <div className="px-4 py-4">
         <div className="animate-pulse space-y-4">
-          <div className="h-6 bg-gray-200 rounded w-1/4"></div>
+          <div className="h-10 bg-gray-200 rounded w-1/2"></div>
+          <div className="h-10 bg-gray-200 rounded"></div>
           <div className="space-y-3">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="h-20 bg-gray-200 rounded"></div>
+              <div key={i} className="h-32 bg-gray-200 rounded-xl"></div>
             ))}
           </div>
         </div>
@@ -92,8 +112,9 @@ export function CustomerContactsTab({ customerId }: CustomerContactsTabProps) {
   }
 
   return (
-    <div className="bg-card rounded-2xl p-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="px-4 py-4 space-y-4">
+      {/* Header - Stacked on mobile, side-by-side on tablet+ */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div className="flex items-center gap-2">
           <Users className="w-5 h-5 text-primary" />
           <h3 className="text-lg font-semibold text-foreground">Customer Contacts</h3>
@@ -101,26 +122,50 @@ export function CustomerContactsTab({ customerId }: CustomerContactsTabProps) {
         </div>
         <Button 
           onClick={() => setShowAddModal(true)}
-          className="flex items-center gap-2 bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold"
+          className="w-full md:w-auto h-11 flex items-center justify-center gap-2 bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold text-base"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-5 h-5" />
           Add Contact
         </Button>
       </div>
 
+      {/* Search Input */}
+      {contacts.length > 0 && (
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+          <Input
+            type="search"
+            placeholder="Search contacts..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10 h-11 text-base"
+          />
+        </div>
+      )}
+
+      {/* Empty State */}
       {contacts.length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground">
-          <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
-          <p className="text-lg font-medium mb-2">No contacts added yet</p>
-          <p className="text-sm mb-4">Add your first contact to get started</p>
-          <Button onClick={() => setShowAddModal(true)} variant="outline">
-            <Plus className="w-4 h-4 mr-2" />
+        <div className="bg-card rounded-xl border-2 border-dashed border-border text-center py-12 px-4">
+          <Users className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+          <p className="text-lg font-semibold mb-2">No contacts added yet</p>
+          <p className="text-sm text-muted-foreground mb-6">Add your first contact to get started</p>
+          <Button 
+            onClick={() => setShowAddModal(true)} 
+            className="w-full md:w-auto h-11 bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold"
+          >
+            <Plus className="w-5 h-5 mr-2" />
             Add First Contact
           </Button>
         </div>
+      ) : filteredContacts.length === 0 ? (
+        <div className="bg-card rounded-xl border border-border text-center py-12 px-4">
+          <Search className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+          <p className="text-lg font-semibold mb-2">No contacts found</p>
+          <p className="text-sm text-muted-foreground">Try adjusting your search</p>
+        </div>
       ) : (
-        <div className="grid gap-4">
-          {contacts.map((contact) => (
+        <div className="space-y-3 md:space-y-4 max-w-4xl mx-auto">
+          {filteredContacts.map((contact) => (
             <CustomerContactCard
               key={contact.id}
               contact={contact}
