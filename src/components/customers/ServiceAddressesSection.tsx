@@ -67,13 +67,13 @@ export function ServiceAddressesSection({ customerId }: ServiceAddressesSectionP
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
         <p className="text-sm text-muted-foreground">
           Manage physical addresses for customers with multiple service locations.
         </p>
         <Button 
           onClick={() => setIsAddModalOpen(true)}
-          className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold"
+          className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold w-full sm:w-auto min-h-[44px]"
         >
           <Plus className="w-4 h-4 mr-2" />
           Add Location
@@ -95,12 +95,12 @@ export function ServiceAddressesSection({ customerId }: ServiceAddressesSectionP
         <div className="text-center py-12 bg-muted/50 rounded-lg">
           <MapPin className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
           <h3 className="text-lg font-medium text-foreground mb-2">No service locations</h3>
-          <p className="text-muted-foreground mb-4">
+          <p className="text-muted-foreground mb-4 px-4">
             Add your first service location to get started
           </p>
           <Button 
             onClick={() => setIsAddModalOpen(true)}
-            className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold"
+            className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold min-h-[44px]"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Location

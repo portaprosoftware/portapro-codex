@@ -126,10 +126,10 @@ export function ServiceLocationCard({ location, onUpdate, onDelete }: ServiceLoc
 
   return (
     <Card className="hover:shadow-md transition-shadow">
-      <CardContent className="p-6">
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
+      <CardContent className="p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-wrap items-center gap-2 mb-2">
               <h4 className="font-semibold text-foreground">{location.location_name}</h4>
               <div className="flex gap-1">
                 {location.is_default && (
@@ -154,9 +154,9 @@ export function ServiceLocationCard({ location, onUpdate, onDelete }: ServiceLoc
             )}
 
             <div className="flex items-start gap-2 mb-4">
-              <MapPin className="w-4 h-4 text-muted-foreground mt-0.5" />
-              <div className="flex-1">
-                <p className="text-sm text-foreground select-text">{fullAddress}</p>
+              <MapPin className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-foreground select-text break-words">{fullAddress}</p>
                 {location.access_instructions && (
                   <p className="text-xs text-muted-foreground mt-1">
                     <strong>Access:</strong> {location.access_instructions}
@@ -165,60 +165,66 @@ export function ServiceLocationCard({ location, onUpdate, onDelete }: ServiceLoc
               </div>
             </div>
 
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={openInGoogleMaps}
-                className="text-xs"
-              >
-                <ExternalLink className="w-3 h-3 mr-1" />
-                Google Maps
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={openInAppleMaps}
-                className="text-xs"
-              >
-                <ExternalLink className="w-3 h-3 mr-1" />
-                Apple Maps
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={openInWaze}
-                className="text-xs"
-              >
-                <ExternalLink className="w-3 h-3 mr-1" />
-                Waze
-              </Button>
+            {/* Map Action Buttons - Horizontal scrollable on mobile */}
+            <div className="-mx-4 sm:mx-0 px-4 sm:px-0">
+              <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0 sm:flex-wrap no-scrollbar">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={copyAddress}
+                  className="text-xs flex-shrink-0 min-h-[36px]"
+                >
+                  <Copy className="w-3 h-3 mr-1" />
+                  Copy Address
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={openInGoogleMaps}
+                  className="text-xs flex-shrink-0 min-h-[36px]"
+                >
+                  <ExternalLink className="w-3 h-3 mr-1" />
+                  Google Maps
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={openInAppleMaps}
+                  className="text-xs flex-shrink-0 min-h-[36px]"
+                >
+                  <ExternalLink className="w-3 h-3 mr-1" />
+                  Apple Maps
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={openInWaze}
+                  className="text-xs flex-shrink-0 min-h-[36px]"
+                >
+                  <ExternalLink className="w-3 h-3 mr-1" />
+                  Waze
+                </Button>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={copyAddress}
-              className="flex items-center gap-1.5"
-            >
-              <Copy className="w-3.5 h-3.5" />
-              Copy Address
-            </Button>
+          <div className="flex items-center gap-2 flex-shrink-0">
             {!location.is_locked && (
               <>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setIsEditModalOpen(true)}
+                  className="min-h-[36px]"
                 >
-                  <Edit className="w-4 h-4" />
+                  <Edit className="w-4 h-4 sm:mr-1" />
+                  <span className="hidden sm:inline">Edit</span>
                 </Button>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="outline" size="sm">
-                      <Trash2 className="w-4 h-4" />
+                    <Button variant="outline" size="sm" className="min-h-[36px]">
+                      <Trash2 className="w-4 h-4 sm:mr-1" />
+                      <span className="hidden sm:inline">Delete</span>
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
@@ -264,6 +270,15 @@ export function ServiceLocationCard({ location, onUpdate, onDelete }: ServiceLoc
           />
         )}
       </CardContent>
+      <style>{`
+        .no-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .no-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
     </Card>
   );
 }

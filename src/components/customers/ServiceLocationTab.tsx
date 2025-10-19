@@ -728,13 +728,13 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
             placeholder="Search or paste a physical service address"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
+            className="pl-10 min-h-[44px] text-base"
           />
         </div>
         <Button 
           type="submit" 
           disabled={!searchQuery.trim() || isSearching}
-          className="px-6"
+          className="px-4 sm:px-6 min-h-[44px]"
         >
           {isSearching ? 'Searching...' : 'Go'}
         </Button>
@@ -754,64 +754,78 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
                 font-size: 9px !important;
               }
             `}</style>
-            {/* Map Style Toggle Switch */}
-            <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
-              <div className="bg-background/90 backdrop-blur-sm rounded-lg p-1 shadow-md border">
-                <div className="flex">
-                  <button
-                    onClick={() => mapStyle !== 'mapbox://styles/mapbox/streets-v12' && toggleMapStyle()}
-                    className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
-                      mapStyle === 'mapbox://styles/mapbox/streets-v12'
-                        ? 'bg-primary text-primary-foreground shadow-sm'
-                        : 'text-muted-foreground hover:text-foreground'
-                    }`}
-                  >
-                    Streets
-                  </button>
-                  <button
-                    onClick={() => mapStyle !== 'mapbox://styles/mapbox/satellite-streets-v12' && toggleMapStyle()}
-                    className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
-                      mapStyle === 'mapbox://styles/mapbox/satellite-streets-v12'
-                        ? 'bg-primary text-primary-foreground shadow-sm'
-                        : 'text-muted-foreground hover:text-foreground'
-                    }`}
-                  >
-                    Satellite
-                  </button>
+            {/* Map Controls - Horizontal scrollable on mobile */}
+            <div className="absolute top-4 left-4 right-4 z-10">
+              <div className="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 no-scrollbar">
+                <div className="bg-background/90 backdrop-blur-sm rounded-lg p-1 shadow-md border flex-shrink-0">
+                  <div className="flex">
+                    <button
+                      onClick={() => mapStyle !== 'mapbox://styles/mapbox/streets-v12' && toggleMapStyle()}
+                      className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all whitespace-nowrap ${
+                        mapStyle === 'mapbox://styles/mapbox/streets-v12'
+                          ? 'bg-primary text-primary-foreground shadow-sm'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      Streets
+                    </button>
+                    <button
+                      onClick={() => mapStyle !== 'mapbox://styles/mapbox/satellite-streets-v12' && toggleMapStyle()}
+                      className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all whitespace-nowrap ${
+                        mapStyle === 'mapbox://styles/mapbox/satellite-streets-v12'
+                          ? 'bg-primary text-primary-foreground shadow-sm'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      Satellite
+                    </button>
+                  </div>
                 </div>
-              </div>
-              
-              {/* Activate Drop Mode Button */}
-              <Button
-                onClick={toggleDropMode}
-                size="sm"
-                className={`flex items-center gap-2 ${
-                  dropModeActive 
-                    ? 'bg-gray-500 hover:bg-gray-600 text-white' 
-                    : 'bg-blue-600 hover:bg-blue-700 text-white'
-                }`}
-              >
-                <Target className="w-4 h-4" />
-                {dropModeActive ? "Exit Drop Mode" : "Activate Pin Drop Mode"}
-              </Button>
-              
-              {/* Drop Pin Here Button - shown when drop mode is active */}
-              {dropModeActive && (
+                
+                {/* Activate Drop Mode Button */}
                 <Button
-                  onClick={dropPinAtCenter}
+                  onClick={toggleDropMode}
                   size="sm"
-                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+                  className={`flex items-center gap-2 flex-shrink-0 whitespace-nowrap ${
+                    dropModeActive 
+                      ? 'bg-gray-500 hover:bg-gray-600 text-white' 
+                      : 'bg-blue-600 hover:bg-blue-700 text-white'
+                  }`}
                 >
-                  <Plus className="w-4 h-4" />
-                  Drop Pin Here
+                  <Target className="w-4 h-4" />
+                  <span className="hidden sm:inline">{dropModeActive ? "Exit Drop Mode" : "Activate Pin Drop Mode"}</span>
+                  <span className="sm:hidden">{dropModeActive ? "Exit" : "Drop Mode"}</span>
                 </Button>
-              )}
+                
+                {/* Drop Pin Here Button - shown when drop mode is active */}
+                {dropModeActive && (
+                  <Button
+                    onClick={dropPinAtCenter}
+                    size="sm"
+                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white flex-shrink-0 whitespace-nowrap"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span className="hidden sm:inline">Drop Pin Here</span>
+                    <span className="sm:hidden">Drop</span>
+                  </Button>
+                )}
+              </div>
             </div>
             
             <div 
               ref={mapContainer} 
-              className="w-full h-[500px]"
+              className="w-full h-[260px] sm:h-[320px] md:h-[450px]"
             />
+
+            <style>{`
+              .no-scrollbar::-webkit-scrollbar {
+                display: none;
+              }
+              .no-scrollbar {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+              }
+            `}</style>
             {dropModeActive && (
               <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
                 <div className="w-8 h-8 flex items-center justify-center">
@@ -847,7 +861,7 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
 
         {/* Grouped Pins by Location - Takes 1 column */}
         <div className="lg:col-span-1">
-          <div className="bg-muted/50 rounded-lg p-4 h-full max-h-[530px] overflow-y-auto">
+          <div className="bg-muted/50 rounded-lg p-4 h-full max-h-[400px] sm:max-h-[530px] overflow-y-auto">
             <h4 className="font-medium mb-3">Locations & Pins ({pins.length})</h4>
             
             {/* Search Bar */}
@@ -1241,11 +1255,37 @@ export function ServiceLocationTab({ customerId }: ServiceLocationTabProps) {
 
   return (
     <div className="space-y-6">
-      <div className="bg-card rounded-2xl p-6">
+      <div className="bg-card rounded-2xl p-4 sm:p-6">
         <h3 className="text-lg font-semibold text-foreground mb-4">Service Locations</h3>
         
-        {/* Toggle Switch for Service Locations */}
-        <div className="mb-6 flex">
+        {/* Mobile Dropdown (< 1024px) */}
+        <div className="mb-6 lg:hidden">
+          <label htmlFor="view-mode-select" className="text-sm font-medium text-muted-foreground block mb-2">
+            View Mode
+          </label>
+          <Select value={activeTab} onValueChange={setActiveTab}>
+            <SelectTrigger id="view-mode-select" className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="addresses">
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  Physical Addresses
+                </div>
+              </SelectItem>
+              <SelectItem value="pins">
+                <div className="flex items-center gap-2">
+                  <Navigation className="w-4 h-4" />
+                  Drop Map Pins
+                </div>
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Desktop Toggle Switch (≥ 1024px) */}
+        <div className="mb-6 hidden lg:flex">
           <div className="bg-gray-100 p-1 rounded-lg flex">
             <button
               onClick={() => setActiveTab('addresses')}
