@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { TabNav } from '@/components/ui/TabNav';
-import { User, Users, MapPin, Briefcase, DollarSign, MessageSquare, FileText, File } from 'lucide-react';
+import { User, Users, MapPin, Briefcase, DollarSign, MessageSquare, FileText, File, Check, ChevronDown } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
+import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { CustomerOverviewTab } from './CustomerOverviewTab';
 import { CustomerContactsTab } from './CustomerContactsTab';
@@ -82,31 +84,60 @@ export function CustomerTabs({ customer }: CustomerTabsProps) {
 
   return (
     <div className="w-full">
-      {/* Mobile Dropdown Navigation (< 1024px) */}
+      {/* Mobile/Tablet Drawer Navigation (< 1024px) */}
       <div className="mb-6 lg:hidden">
-        <Label htmlFor="section-select" className="text-sm font-medium mb-2 block">
+        <Label htmlFor="section-drawer" className="text-sm font-medium mb-2 block">
           Section
         </Label>
-        <Select value={activeTab} onValueChange={setActiveTab}>
-          <SelectTrigger id="section-select" className="w-full h-11 text-base">
-            <SelectValue>
-              {tabOptions.find(opt => opt.value === activeTab)?.label || 'Select section'}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent className="bg-background border border-border shadow-lg">
-            {tabOptions.map((option) => {
-              const Icon = option.icon;
-              return (
-                <SelectItem key={option.value} value={option.value} className="h-11">
-                  <div className="flex items-center gap-2">
-                    <Icon className="w-4 h-4" />
-                    <span>{option.label}</span>
-                  </div>
-                </SelectItem>
-              );
-            })}
-          </SelectContent>
-        </Select>
+        <Drawer>
+          <DrawerTrigger asChild>
+            <Button 
+              id="section-drawer"
+              variant="outline" 
+              className="w-full justify-between h-11 text-base"
+            >
+              <div className="flex items-center gap-2">
+                {(() => {
+                  const currentTab = tabOptions.find(opt => opt.value === activeTab);
+                  const Icon = currentTab?.icon || User;
+                  return (
+                    <>
+                      <Icon className="w-5 h-5" />
+                      <span>{currentTab?.label || 'Select section'}</span>
+                    </>
+                  );
+                })()}
+              </div>
+              <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </DrawerTrigger>
+          <DrawerContent className="max-h-[50vh]">
+            <DrawerHeader className="border-b">
+              <DrawerTitle className="text-lg">Section</DrawerTitle>
+            </DrawerHeader>
+            <div className="overflow-y-auto p-4">
+              <div className="space-y-1">
+                {tabOptions.map((option) => {
+                  const Icon = option.icon;
+                  return (
+                    <Button
+                      key={option.value}
+                      variant="ghost"
+                      className={`w-full justify-start h-12 text-base font-normal ${
+                        activeTab === option.value ? 'bg-accent' : ''
+                      }`}
+                      onClick={() => setActiveTab(option.value)}
+                    >
+                      <Check className={`mr-2 h-5 w-5 ${activeTab === option.value ? 'opacity-100' : 'opacity-0'}`} />
+                      <Icon className="w-5 h-5 mr-2" />
+                      {option.label}
+                    </Button>
+                  );
+                })}
+              </div>
+            </div>
+          </DrawerContent>
+        </Drawer>
       </div>
 
       {/* Desktop Tab Navigation (>= 1024px) */}
