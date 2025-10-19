@@ -13,11 +13,12 @@ import { Toaster } from '@/components/ui/sonner';
 // Development vs Production settings
 const isDevelopment = import.meta.env.DEV;
 
-// Clerk configuration: explicit domain to avoid redirect issues
-const CLERK_PUBLISHABLE_KEY = (import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined) || (isDevelopment ? "pk_test_YWN0dWFsLW11dHQtOTEuY2xlcmsuYWNjb3VudHMuZGV2JA" : "");
+// Clerk configuration: provide safe fallback to test key if env missing
+const DEFAULT_TEST_PK = "pk_test_YWN0dWFsLW11dHQtOTEuY2xlcmsuYWNjb3VudHMuZGV2JA";
+const CLERK_PUBLISHABLE_KEY = (import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined) || DEFAULT_TEST_PK;
 
-if (!CLERK_PUBLISHABLE_KEY && !isDevelopment) {
-  console.error('Missing VITE_CLERK_PUBLISHABLE_KEY in production.');
+if (!import.meta.env.VITE_CLERK_PUBLISHABLE_KEY && !isDevelopment) {
+  console.error('Missing VITE_CLERK_PUBLISHABLE_KEY in production. Using test key fallback.');
 }
 
 const queryClient = new QueryClient({
