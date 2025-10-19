@@ -15,8 +15,8 @@ interface RouterSelectorProps {
 export const RouterSelector: React.FC<RouterSelectorProps> = ({ children }) => {
   const useHash = 
     import.meta.env.PROD && 
-    window.location.hostname === 'www.portaprosoftware.com';
-
+    window.location.hostname.endsWith('portaprosoftware.com');
+ 
   if (useHash) {
     return <HashRouter>{children}</HashRouter>;
   }
