@@ -269,37 +269,11 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
       {/* Date Navigator */}
       {showDateNavigator && selectedDate && onDateChange && (
         <div className="w-full md:w-auto">
-          <div className="flex flex-col md:flex-row md:items-center gap-2">
-            <EnhancedDateNavigator
-              date={selectedDate}
-              onDateChange={onDateChange}
-              label="Date"
-            />
-            
-            {/* Today/Tomorrow Quick Select Buttons */}
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => onDateChange(new Date())}
-                className="text-xs px-3 py-2 flex-1 md:flex-none min-h-[44px] md:min-h-0"
-              >
-                Today
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  const tomorrow = new Date();
-                  tomorrow.setDate(tomorrow.getDate() + 1);
-                  onDateChange(tomorrow);
-                }}
-                className="text-xs px-3 py-2 flex-1 md:flex-none min-h-[44px] md:min-h-0"
-              >
-                Tomorrow
-              </Button>
-            </div>
-          </div>
+          <EnhancedDateNavigator
+            date={selectedDate}
+            onDateChange={onDateChange}
+            label="Date"
+          />
         </div>
       )}
 

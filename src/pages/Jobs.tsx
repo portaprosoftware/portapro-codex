@@ -585,13 +585,13 @@ const JobsPage: React.FC = () => {
             
             {/* Jobs Sub-Navigation Pills - Horizontal Scroll on Mobile */}
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-              {/* Horizontal scrollable tabs on mobile */}
-              <div className="overflow-x-auto scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
+              {/* Horizontal scrollable tabs on mobile with scroll snap */}
+              <div className="overflow-x-auto scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0 snap-x snap-mandatory">
                 <nav aria-label="Jobs views" className="flex items-center space-x-1 min-w-max md:min-w-0">
                   <button
                     type="button"
                     className={cn(
-                      "px-3 md:px-4 py-2 rounded-full font-medium text-xs md:text-sm transition-all duration-200 font-inter flex items-center gap-1 md:gap-2 flex-shrink-0 focus:outline-none transform hover:-translate-y-0.5",
+                      "px-3 md:px-4 py-2 rounded-full font-medium text-xs md:text-sm transition-all duration-200 font-inter flex items-center gap-1 md:gap-2 flex-shrink-0 focus:outline-none transform hover:-translate-y-0.5 snap-start",
                       activeTab === 'calendar'
                         ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold shadow-sm"
                         : "bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
@@ -605,7 +605,7 @@ const JobsPage: React.FC = () => {
                   <button
                     type="button"
                     className={cn(
-                      "px-3 md:px-4 py-2 rounded-full font-medium text-xs md:text-sm transition-all duration-200 font-inter flex items-center gap-1 md:gap-2 flex-shrink-0 focus:outline-none transform hover:-translate-y-0.5",
+                      "px-3 md:px-4 py-2 rounded-full font-medium text-xs md:text-sm transition-all duration-200 font-inter flex items-center gap-1 md:gap-2 flex-shrink-0 focus:outline-none transform hover:-translate-y-0.5 snap-start",
                       activeTab === 'dispatch'
                         ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold shadow-sm"
                         : "bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
@@ -619,7 +619,7 @@ const JobsPage: React.FC = () => {
                   <button
                     type="button"
                     className={cn(
-                      "px-3 md:px-4 py-2 rounded-full font-medium text-xs md:text-sm transition-all duration-200 font-inter flex items-center gap-1 md:gap-2 flex-shrink-0 focus:outline-none transform hover:-translate-y-0.5",
+                      "px-3 md:px-4 py-2 rounded-full font-medium text-xs md:text-sm transition-all duration-200 font-inter flex items-center gap-1 md:gap-2 flex-shrink-0 focus:outline-none transform hover:-translate-y-0.5 snap-start",
                       activeTab === 'map'
                         ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold shadow-sm"
                         : "bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
@@ -633,7 +633,7 @@ const JobsPage: React.FC = () => {
                   <button
                     type="button"
                     className={cn(
-                      "px-3 md:px-4 py-2 rounded-full font-medium text-xs md:text-sm transition-all duration-200 font-inter flex items-center gap-1 md:gap-2 flex-shrink-0 focus:outline-none transform hover:-translate-y-0.5",
+                      "px-3 md:px-4 py-2 rounded-full font-medium text-xs md:text-sm transition-all duration-200 font-inter flex items-center gap-1 md:gap-2 flex-shrink-0 focus:outline-none transform hover:-translate-y-0.5 snap-start",
                       activeTab === 'custom'
                         ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold shadow-sm"
                         : "bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
@@ -647,7 +647,7 @@ const JobsPage: React.FC = () => {
                   <button
                     type="button"
                     className={cn(
-                      "px-3 md:px-4 py-2 rounded-full font-medium text-xs md:text-sm transition-all duration-200 font-inter flex items-center gap-1 md:gap-2 flex-shrink-0 focus:outline-none transform hover:-translate-y-0.5",
+                      "px-3 md:px-4 py-2 rounded-full font-medium text-xs md:text-sm transition-all duration-200 font-inter flex items-center gap-1 md:gap-2 flex-shrink-0 focus:outline-none transform hover:-translate-y-0.5 snap-start",
                       activeTab === 'drafts'
                         ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold shadow-sm"
                         : "bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
@@ -839,12 +839,73 @@ const JobsPage: React.FC = () => {
                 {/* Two Column Layout - Responsive for Mobile (Phase 7) */}
                 <div className="flex flex-col md:grid md:grid-cols-[300px_1fr] gap-4" key="new-two-column-layout">
                   
-                  {/* Left Column - Unassigned Jobs */}
-                  <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                    
-                    {/* Scrollable Unassigned Jobs List */}
+                  {/* Left Column - Unassigned Jobs - Mobile Accordion */}
+                  <div className="md:hidden">
+                    <Accordion type="single" collapsible defaultValue="unassigned">
+                      <AccordionItem value="unassigned" className="bg-white border border-gray-200 rounded-lg">
+                        <AccordionTrigger className="px-4 py-3 bg-orange-50 hover:no-underline rounded-t-lg">
+                          <div className="flex items-center gap-2">
+                            <AlertTriangle className="h-4 w-4 text-orange-500" />
+                            <span className="font-medium text-gray-900">Unassigned Jobs</span>
+                            <Badge variant="secondary" className="text-xs ml-2">
+                              {filterJobs(unassignedJobs).length}
+                            </Badge>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="px-0 pb-0">
+                          <Droppable droppableId="unassigned" direction="vertical">
+                            {(provided, snapshot) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.droppableProps}
+                                className={cn(
+                                  "p-4 min-h-[200px] transition-colors duration-200",
+                                  snapshot.isDraggingOver 
+                                    ? 'bg-orange-50 border-l-4 border-l-orange-500' 
+                                    : ''
+                                )}
+                              >
+                                {filterJobs(unassignedJobs).length === 0 ? (
+                                  <div className="flex items-center justify-center h-32 text-gray-400">
+                                    <div className="text-center">
+                                      <ClipboardList className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                                      <p className="text-sm">No unassigned jobs for {format(selectedDate, 'MMM d, yyyy')}</p>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="space-y-3">
+                                    {filterJobs(unassignedJobs).map((job, index) => (
+                                      <Draggable key={job.id} draggableId={job.id} index={index}>
+                                        {(provided, snapshot) => (
+                                          <div
+                                            ref={provided.innerRef}
+                                            {...provided.draggableProps}
+                                            {...provided.dragHandleProps}
+                                            className={cn('w-full', snapshot.isDragging ? 'opacity-50' : '')}
+                                          >
+                                            <UnassignedJobCard
+                                              job={job}
+                                              onView={handleJobView}
+                                              isDragging={snapshot.isDragging}
+                                            />
+                                          </div>
+                                        )}
+                                      </Draggable>
+                                    ))}
+                                  </div>
+                                )}
+                                {provided.placeholder}
+                              </div>
+                            )}
+                          </Droppable>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  </div>
+
+                  {/* Left Column - Unassigned Jobs - Desktop */}
+                  <div className="hidden md:block bg-white border border-gray-200 rounded-lg overflow-hidden">
                     <div className="overflow-y-auto max-h-[calc(100vh-180px)]">
-                      {/* Unassigned Jobs Title */}
                       <div className="sticky top-0 z-20 p-4 border-b border-gray-200 bg-orange-50">
                         <div className="flex items-center gap-2">
                           <AlertTriangle className="h-4 w-4 text-orange-500" />
@@ -873,9 +934,9 @@ const JobsPage: React.FC = () => {
                                   <p className="text-sm">No unassigned jobs for {format(selectedDate, 'MMM d, yyyy')}</p>
                                 </div>
                               </div>
-                             ) : (
-                               <div className="space-y-3 px-4 pb-4 pt-3">
-                                 {filterJobs(unassignedJobs).map((job, index) => (
+                            ) : (
+                              <div className="space-y-3 px-4 pb-4 pt-3">
+                                {filterJobs(unassignedJobs).map((job, index) => (
                                   <Draggable key={job.id} draggableId={job.id} index={index}>
                                     {(provided, snapshot) => (
                                       <div
@@ -884,11 +945,11 @@ const JobsPage: React.FC = () => {
                                         {...provided.dragHandleProps}
                                         className={cn('w-full', snapshot.isDragging ? 'opacity-50' : '')}
                                       >
-                                         <UnassignedJobCard
-                                           job={job}
-                                           onView={handleJobView}
-                                           isDragging={snapshot.isDragging}
-                                         />
+                                        <UnassignedJobCard
+                                          job={job}
+                                          onView={handleJobView}
+                                          isDragging={snapshot.isDragging}
+                                        />
                                       </div>
                                     )}
                                   </Draggable>
@@ -902,12 +963,93 @@ const JobsPage: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Right Column - Drivers & Assigned Jobs */}
-                  <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                    
-                    {/* Scrollable Drivers Content */}
+                  {/* Right Column - Drivers & Assigned Jobs - Mobile Accordion */}
+                  <div className="md:hidden">
+                    <Accordion type="single" collapsible defaultValue="drivers">
+                      <AccordionItem value="drivers" className="bg-white border border-gray-200 rounded-lg">
+                        <AccordionTrigger className="px-4 py-3 bg-gray-50 hover:no-underline rounded-t-lg">
+                          <div className="flex items-center justify-between w-full pr-2">
+                            <h3 className="font-medium text-gray-900">Drivers</h3>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="px-0 pb-0">
+                          {drivers.map(driver => {
+                            const driverJobs = filterJobs(getJobsByDriver(driver.id));
+                            return (
+                              <div key={driver.id} className="border-b border-gray-200 last:border-b-0">
+                                <div className="bg-gray-50 p-4 border-b border-gray-100">
+                                  <div className="flex items-center justify-between">
+                                    <h4 className="font-medium text-gray-900 text-sm">
+                                      {driver.first_name} {driver.last_name}
+                                    </h4>
+                                    <Badge 
+                                      variant={driverJobs.length > 0 ? "default" : "secondary"}
+                                      className="text-xs"
+                                    >
+                                      {driverJobs.length} jobs
+                                    </Badge>
+                                  </div>
+                                </div>
+                                <div className="min-h-[120px]">
+                                  <Droppable droppableId={driver.id} direction="vertical">
+                                    {(provided, snapshot) => (
+                                      <div
+                                        ref={provided.innerRef}
+                                        {...provided.droppableProps}
+                                        className={cn(
+                                          "p-4 min-h-[120px] transition-colors duration-200",
+                                          snapshot.isDraggingOver 
+                                            ? 'bg-blue-50 border-l-4 border-l-blue-500' 
+                                            : ''
+                                        )}
+                                      >
+                                        {driverJobs.length === 0 ? (
+                                          <div className="flex items-center justify-center h-full text-gray-400">
+                                            <div className="text-center">
+                                              <ClipboardList className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                                              <p className="text-sm">
+                                                Drop jobs here to assign to {driver.first_name}
+                                              </p>
+                                            </div>
+                                          </div>
+                                        ) : (
+                                          <div className="space-y-3">
+                                            {driverJobs.map((job, index) => (
+                                              <Draggable key={job.id} draggableId={job.id} index={index}>
+                                                {(provided, snapshot) => (
+                                                  <div
+                                                    ref={provided.innerRef}
+                                                    {...provided.draggableProps}
+                                                    {...provided.dragHandleProps}
+                                                    className={snapshot.isDragging ? 'opacity-50' : ''}
+                                                  >
+                                                    <DispatchJobCardList
+                                                      job={job}
+                                                      onView={handleJobView}
+                                                      isDragging={snapshot.isDragging}
+                                                    />
+                                                  </div>
+                                                )}
+                                              </Draggable>
+                                            ))}
+                                          </div>
+                                        )}
+                                        {provided.placeholder}
+                                      </div>
+                                    )}
+                                  </Droppable>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  </div>
+
+                  {/* Right Column - Drivers & Assigned Jobs - Desktop */}
+                  <div className="hidden md:block bg-white border border-gray-200 rounded-lg overflow-hidden">
                     <div className="overflow-y-auto max-h-[calc(100vh-180px)]">
-                      {/* Drivers Title */}
                       <div className="sticky top-0 z-20 p-4 border-b border-gray-200 bg-gray-50">
                         <div className="flex items-center justify-between">
                           <h3 className="font-medium text-gray-900">Drivers</h3>
@@ -924,7 +1066,6 @@ const JobsPage: React.FC = () => {
                         const driverJobs = filterJobs(getJobsByDriver(driver.id));
                         return (
                           <div key={driver.id} className="border-b border-gray-200 last:border-b-0">
-                            {/* Driver Header */}
                             <div className="bg-gray-50 p-4 border-b border-gray-100">
                               <div className="flex items-center justify-between">
                                 <h4 className="font-medium text-gray-900 text-sm">
@@ -938,8 +1079,6 @@ const JobsPage: React.FC = () => {
                                 </Badge>
                               </div>
                             </div>
-
-                            {/* Job Assignment Area */}
                             <div className="min-h-[120px]">
                               <Droppable droppableId={driver.id} direction="vertical">
                                 {(provided, snapshot) => (
