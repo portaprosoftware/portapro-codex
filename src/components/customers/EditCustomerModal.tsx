@@ -625,20 +625,18 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                   control={form.control}
                   name="billing_differs_from_service"
                   render={({ field }) => (
-                    <FormItem className="rounded-lg border p-4">
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                       <div className="space-y-0.5">
-                        <FormLabel className="text-base font-semibold">Billing address is different</FormLabel>
+                        <FormLabel className="text-base">Billing address is different</FormLabel>
                         <FormDescription>
                           Use a different address for billing
                         </FormDescription>
                       </div>
                       <FormControl>
-                        <div className="pt-4">
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </div>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
                       </FormControl>
                     </FormItem>
                   )}
@@ -736,20 +734,18 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                   control={form.control}
                   name="default_service_differs_from_main"
                   render={({ field }) => (
-                    <FormItem className="rounded-lg border p-4">
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                       <div className="space-y-0.5">
-                        <FormLabel className="text-base font-semibold">Default service address is different</FormLabel>
+                        <FormLabel className="text-base">Default service address is different</FormLabel>
                         <FormDescription>
                           Use a different address for the default service location
                         </FormDescription>
                       </div>
                       <FormControl>
-                        <div className="pt-4">
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </div>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
                       </FormControl>
                     </FormItem>
                   )}
@@ -847,22 +843,20 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
                    control={form.control}
                    name="deposit_required"
                    render={({ field }) => (
-                     <FormItem className="rounded-lg border p-4">
+                     <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                        <div className="space-y-0.5">
-                         <FormLabel className="text-base font-semibold">Deposit Required</FormLabel>
+                         <FormLabel className="text-base">Deposit Required</FormLabel>
                          <FormDescription>
                            Require a deposit for this customer
                          </FormDescription>
-                        </div>
-                        <FormControl>
-                          <div className="pt-4">
-                            <Switch
-                              checked={field.value}
-                              onCheckedChange={handleDepositToggle}
-                            />
-                          </div>
-                        </FormControl>
-                      </FormItem>
+                       </div>
+                       <FormControl>
+                         <Switch
+                           checked={field.value}
+                           onCheckedChange={handleDepositToggle}
+                         />
+                       </FormControl>
+                     </FormItem>
                    )}
                  />
                </div>
