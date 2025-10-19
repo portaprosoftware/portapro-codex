@@ -124,14 +124,12 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           )}
         </div>
         
-        <Button
-          variant="ghost"
-          size="sm"
+        <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="text-xs font-medium text-gray-600 hover:text-gray-900"
+          className="text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors bg-transparent border-0 cursor-pointer"
         >
           Back to Top
-        </Button>
+        </button>
         
         <Button
           variant="ghost"
