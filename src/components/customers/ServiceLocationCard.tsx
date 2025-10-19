@@ -165,46 +165,44 @@ export function ServiceLocationCard({ location, onUpdate, onDelete }: ServiceLoc
               </div>
             </div>
 
-            {/* Map Action Buttons - Horizontal scrollable on mobile */}
-            <div className="-mx-4 sm:mx-0 px-4 sm:px-0">
-              <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0 sm:flex-wrap no-scrollbar">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={copyAddress}
-                  className="text-xs flex-shrink-0 min-h-[36px]"
-                >
-                  <Copy className="w-3 h-3 mr-1" />
-                  Copy Address
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={openInGoogleMaps}
-                  className="text-xs flex-shrink-0 min-h-[36px]"
-                >
-                  <ExternalLink className="w-3 h-3 mr-1" />
-                  Google Maps
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={openInAppleMaps}
-                  className="text-xs flex-shrink-0 min-h-[36px]"
-                >
-                  <ExternalLink className="w-3 h-3 mr-1" />
-                  Apple Maps
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={openInWaze}
-                  className="text-xs flex-shrink-0 min-h-[36px]"
-                >
-                  <ExternalLink className="w-3 h-3 mr-1" />
-                  Waze
-                </Button>
-              </div>
+            {/* Map Action Buttons - Stacked grid on mobile, flex row on desktop */}
+            <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={copyAddress}
+                className="text-xs min-h-[44px] justify-start"
+              >
+                <Copy className="w-4 h-4 mr-2 flex-shrink-0" />
+                Copy Address
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={openInGoogleMaps}
+                className="text-xs min-h-[44px] justify-start"
+              >
+                <ExternalLink className="w-4 h-4 mr-2 flex-shrink-0" />
+                Google Maps
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={openInAppleMaps}
+                className="text-xs min-h-[44px] justify-start"
+              >
+                <ExternalLink className="w-4 h-4 mr-2 flex-shrink-0" />
+                Apple Maps
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={openInWaze}
+                className="text-xs min-h-[44px] justify-start"
+              >
+                <ExternalLink className="w-4 h-4 mr-2 flex-shrink-0" />
+                Waze
+              </Button>
             </div>
           </div>
 
