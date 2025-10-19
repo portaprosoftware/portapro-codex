@@ -20,14 +20,12 @@ export const MobileStickyHeader: React.FC<MobileStickyHeaderProps> = ({
       <div className="flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-3">
           <Calendar className="w-5 h-5 text-primary" />
-          <div className="flex flex-col">
-            <span className="text-sm font-semibold text-foreground">
-              {format(selectedDate, 'MMM d, yyyy')}
-            </span>
-            <Badge variant="secondary" className="text-xs w-fit">
-              {jobsCount} {jobsCount === 1 ? 'job' : 'jobs'}
-            </Badge>
-          </div>
+          <span className="text-sm font-semibold text-foreground">
+            {format(selectedDate, 'MMM d, yyyy')}
+          </span>
+          <Badge variant="secondary" className="text-xs">
+            {jobsCount} {jobsCount === 1 ? 'job' : 'jobs'}
+          </Badge>
         </div>
         <Button
           size="sm"
