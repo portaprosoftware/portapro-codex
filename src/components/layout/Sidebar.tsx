@@ -37,8 +37,8 @@ const Sidebar = () => {
   };
 
   const handleSignOut = async () => {
-    const { handleSignOut: signOutHelper } = await import('@/utils/auth');
-    await signOutHelper(signOut);
+    await signOut();
+    navigate("/sign-in");
   };
 
   const menuItems = [

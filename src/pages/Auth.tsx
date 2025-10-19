@@ -1,24 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { SignIn, SignUp, useAuth, useUser } from '@clerk/clerk-react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { getLastRoute } from '@/hooks/useLastRoute';
 
 const Auth = () => {
   const { isSignedIn, isLoaded } = useAuth();
   const { user } = useUser();
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('signin');
-
-  // Handle redirect after successful authentication
-  useEffect(() => {
-    if (isSignedIn && user) {
-      const lastRoute = getLastRoute();
-      const redirectTo = lastRoute && lastRoute !== '/' ? lastRoute : '/dashboard';
-      navigate(redirectTo, { replace: true });
-    }
-  }, [isSignedIn, user, navigate]);
 
   // Show loading while Clerk is initializing
   if (!isLoaded) {
@@ -29,7 +18,10 @@ const Auth = () => {
     );
   }
 
-  // Loading state is handled above, signed in state is handled by useEffect
+  // Redirect if already signed in
+  if (isSignedIn && user) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-green-50 p-4">

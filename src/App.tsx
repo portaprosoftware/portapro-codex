@@ -1,9 +1,8 @@
-import React, { useEffect } from 'react';
-import { Route, Routes, Navigate, useNavigate, useLocation } from 'react-router-dom';
-import { SignedIn, SignedOut, RedirectToSignIn, useAuth } from '@clerk/clerk-react';
+import React from 'react';
+import { Route, Routes, Navigate } from 'react-router-dom';
+import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
 import { RouterSelector } from './components/RouterSelector';
 import { useUserRole } from './hooks/useUserRole';
-import { useLastRoute, getLastRoute } from './hooks/useLastRoute';
 import { Layout } from './components/layout/Layout';
 import { ErrorBoundary } from './components/ui/error-boundary';
 import { Landing } from './pages/Landing';
@@ -65,58 +64,13 @@ import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
 import Security from './pages/Security';
 
-const RootRedirect = () => {
-  const { isSignedIn, isLoaded } = useAuth();
-  const { role } = useUserRole();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!isLoaded) return;
-
-    if (isSignedIn) {
-      // Check for driver role first
-      if (role === 'driver') {
-        navigate('/driver', { replace: true });
-        return;
-      }
-
-      // Check for last visited route
-      const lastRoute = getLastRoute();
-      if (lastRoute && lastRoute !== '/') {
-        navigate(lastRoute, { replace: true });
-      } else {
-        navigate('/dashboard', { replace: true });
-      }
-    } else {
-      // Redirect to external Clerk sign-in
-      window.location.href = 'https://accounts.portaprosoftware.com/sign-in';
-    }
-  }, [isSignedIn, isLoaded, role, navigate]);
-
-  // Show loading while checking auth
-  if (!isLoaded) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
-  return null;
-};
-
-const RouteTracker = () => {
-  useLastRoute();
-  return null;
-};
-
-const AppContent = () => {
+const App = () => {
   return (
     <ErrorBoundary>
       <RouterSelector>
         <div className="min-h-screen bg-background font-sans antialiased">
-          <RouteTracker />
-          <Routes>
+        
+        <Routes>
           {/* Public QR Scan Routes */}
           <Route path="/scan/:unitId" element={<ScanFeedback />} />
           <Route path="/consumable-request/:consumableId" element={<ConsumableRequestPage />} />
@@ -158,11 +112,8 @@ const AppContent = () => {
             <Route path="profile" element={<DriverProfilePage />} />
           </Route>
 
-          {/* Root route - intelligent redirect based on auth state */}
-          <Route path="/" element={<RootRedirect />} />
-          
-          {/* Dashboard route */}
-          <Route path="/dashboard" element={
+          {/* Root route - show landing page for everyone, dashboard for authenticated users */}
+          <Route path="/" element={
             <>
               <SignedIn>
                 <Layout>
@@ -170,7 +121,7 @@ const AppContent = () => {
                 </Layout>
               </SignedIn>
               <SignedOut>
-                <Navigate to="/" replace />
+                <Landing />
               </SignedOut>
             </>
           } />
@@ -509,13 +460,24 @@ const AppContent = () => {
             </>
           } />
 
-          {/* Catch all other routes - redirect to root */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          {/* Catch all other routes - redirect to landing for unauthenticated, dashboard for authenticated */}
+          <Route path="*" element={
+            <>
+              <SignedIn>
+                <Layout>
+                  <Dashboard />
+                </Layout>
+              </SignedIn>
+              <SignedOut>
+                <Landing />
+              </SignedOut>
+            </>
+          } />
         </Routes>
         </div>
       </RouterSelector>
     </ErrorBoundary>
   );
-};
+}
 
-export default AppContent;
+export default App;

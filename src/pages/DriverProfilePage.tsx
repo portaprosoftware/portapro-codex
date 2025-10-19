@@ -11,11 +11,6 @@ export const DriverProfilePage: React.FC = () => {
   const { user } = useUser();
   const { signOut } = useClerk();
 
-  const handleSignOutClick = async () => {
-    const { handleSignOut } = await import('@/utils/auth');
-    await handleSignOut(signOut);
-  };
-
   return (
     <div className="p-4 space-y-6">
       {/* Profile Info */}
@@ -69,7 +64,7 @@ export const DriverProfilePage: React.FC = () => {
       <Button 
         variant="outline" 
         className="w-full"
-        onClick={handleSignOutClick}
+        onClick={() => signOut()}
       >
         <LogOut className="w-4 h-4 mr-2" />
         Sign Out
