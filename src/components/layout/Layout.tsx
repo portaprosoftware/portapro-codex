@@ -7,6 +7,8 @@ import { Logo } from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
 import { useUserRole } from "@/hooks/useUserRole";
 import { UserButton, useUser } from "@clerk/clerk-react";
+import { Settings } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import "@/utils/authCleanup"; // Load auth cleanup utilities
 
 interface LayoutProps {
@@ -17,6 +19,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [mounted, setMounted] = useState(false);
   const [activeSection, setActiveSection] = useState<string>('/');
   const { user } = useUser();
+  const navigate = useNavigate();
   
   useEffect(() => {
     setMounted(true);
@@ -130,7 +133,14 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           Back to Top
         </Button>
         
-        <div className="w-[100px]" /> {/* Spacer for layout balance */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate('/settings')}
+          className="flex items-center gap-2"
+        >
+          <Settings className="w-5 h-5 text-gray-600" />
+        </Button>
       </footer>
     </div>
   );
