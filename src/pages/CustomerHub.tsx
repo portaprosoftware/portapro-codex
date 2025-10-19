@@ -1,12 +1,13 @@
 
 import React, { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Upload, Plus, Search, Filter, Eye, ChevronUp, ChevronDown, ChevronsUpDown, ChevronRight, Phone, Mail } from "lucide-react";
+import { Upload, Plus, Search, Filter, Eye, ChevronUp, ChevronDown, ChevronsUpDown, ChevronRight, Phone, Mail, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { EnhancedCard } from "@/components/ui/enhanced-card";
 
 import { SimpleCustomerModal } from "@/components/customers/SimpleCustomerModal";
@@ -186,29 +187,89 @@ const CustomerHub: React.FC = () => {
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <h2 className="text-lg font-medium text-gray-900">All Customers</h2>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+            {/* Mobile/Tablet: Drawer - Desktop: Select */}
             <div className="flex items-center gap-2">
               <Filter className="w-4 h-4 text-gray-500" />
-              <Select value={selectedType} onValueChange={setSelectedType}>
-                <SelectTrigger className="w-full sm:w-40">
-                  <SelectValue placeholder="All Types" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
-                  {Object.entries(CUSTOMER_TYPES).map(([key, type]) => (
-                    <SelectItem key={key} value={key}>
-                      {type.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              
+              {/* Desktop Select (lg and up) */}
+              <div className="hidden lg:block">
+                <Select value={selectedType} onValueChange={setSelectedType}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue placeholder="All Types" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Types</SelectItem>
+                    {Object.entries(CUSTOMER_TYPES).map(([key, type]) => (
+                      <SelectItem key={key} value={key}>
+                        {type.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Mobile/Tablet Drawer (below lg) */}
+              <div className="lg:hidden w-full sm:w-40">
+                <Drawer>
+                  <DrawerTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-between h-10 text-base"
+                    >
+                      <span className="truncate">
+                        {selectedType === 'all' 
+                          ? 'All Types' 
+                          : CUSTOMER_TYPES[selectedType as keyof typeof CUSTOMER_TYPES]?.label || 'All Types'}
+                      </span>
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </DrawerTrigger>
+                  <DrawerContent className="max-h-[50vh]">
+                    <DrawerHeader className="border-b">
+                      <DrawerTitle className="text-lg">Customer Type</DrawerTitle>
+                    </DrawerHeader>
+                    <div className="overflow-y-auto p-4">
+                      <div className="space-y-1">
+                        {/* All Types Option */}
+                        <Button
+                          variant="ghost"
+                          className={`w-full justify-start h-12 text-base font-normal ${
+                            selectedType === 'all' ? 'bg-accent' : ''
+                          }`}
+                          onClick={() => setSelectedType('all')}
+                        >
+                          <Check className={`mr-2 h-5 w-5 ${selectedType === 'all' ? 'opacity-100' : 'opacity-0'}`} />
+                          All Types
+                        </Button>
+
+                        {/* Customer Type Options */}
+                        {Object.entries(CUSTOMER_TYPES).map(([key, type]) => (
+                          <Button
+                            key={key}
+                            variant="ghost"
+                            className={`w-full justify-start h-12 text-base font-normal ${
+                              selectedType === key ? 'bg-accent' : ''
+                            }`}
+                            onClick={() => setSelectedType(key)}
+                          >
+                            <Check className={`mr-2 h-5 w-5 ${selectedType === key ? 'opacity-100' : 'opacity-0'}`} />
+                            {type.label}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  </DrawerContent>
+                </Drawer>
+              </div>
             </div>
+
             <div className="relative w-full sm:w-auto">
               <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <Input
                 placeholder="Search customers..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 w-full sm:w-64"
+                className="pl-10 w-full sm:w-64 h-10 text-base"
               />
             </div>
           </div>
