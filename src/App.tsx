@@ -105,14 +105,18 @@ const RootRedirect = () => {
   return null;
 };
 
-const AppContent = () => {
-  useLastRoute(); // Track route changes
+const RouteTracker = () => {
+  useLastRoute();
+  return null;
+};
 
+const AppContent = () => {
   return (
     <ErrorBoundary>
       <RouterSelector>
         <div className="min-h-screen bg-background font-sans antialiased">
-        <Routes>
+          <RouteTracker />
+          <Routes>
           {/* Public QR Scan Routes */}
           <Route path="/scan/:unitId" element={<ScanFeedback />} />
           <Route path="/consumable-request/:consumableId" element={<ConsumableRequestPage />} />
