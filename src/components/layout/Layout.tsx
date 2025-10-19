@@ -109,7 +109,9 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             appearance={{
               elements: {
                 userButtonAvatarBox: "w-8 h-8",
-                userButtonPopoverCard: "shadow-lg"
+                userButtonPopoverCard: "shadow-lg",
+                profileSectionContent__profile: "relative",
+                avatarBox: "relative after:content-['Photo_uploads_and_removals_are_saved_automatically_—_no_need_to_select_Save'] after:absolute after:-bottom-12 after:left-0 after:right-0 after:text-xs after:text-center after:text-muted-foreground after:font-normal after:px-2 after:leading-tight",
               }
             }}
           />
