@@ -739,6 +739,33 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
           {isSearching ? 'Searching...' : 'Go'}
         </Button>
       </form>
+
+      {/* Mobile/PWA Drop Mode Controls - Above Map */}
+      <div className="lg:hidden flex flex-col gap-2">
+        <Button
+          onClick={toggleDropMode}
+          size="sm"
+          className={`flex items-center justify-center gap-2 w-full ${
+            dropModeActive 
+              ? 'bg-gray-500 hover:bg-gray-600 text-white' 
+              : 'bg-blue-600 hover:bg-blue-700 text-white'
+          }`}
+        >
+          <Target className="w-4 h-4" />
+          <span>{dropModeActive ? "Exit Drop Mode" : "Activate Pin Drop Mode"}</span>
+        </Button>
+        
+        {dropModeActive && (
+          <Button
+            onClick={dropPinAtCenter}
+            size="sm"
+            className="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Drop Pin Here</span>
+          </Button>
+        )}
+      </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Map Container - Takes 2 columns */}
@@ -754,9 +781,9 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
                 font-size: 9px !important;
               }
             `}</style>
-            {/* Map Controls - Horizontal scrollable on mobile */}
+            {/* Map Controls - Desktop Only (Streets/Satellite) */}
             <div className="absolute top-4 left-4 right-4 z-10">
-              <div className="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 no-scrollbar">
+              <div className="flex items-center gap-2">
                 <div className="bg-background/90 backdrop-blur-sm rounded-lg p-1 shadow-md border flex-shrink-0">
                   <div className="flex">
                     <button
@@ -782,31 +809,29 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
                   </div>
                 </div>
                 
-                {/* Activate Drop Mode Button */}
+                {/* Activate Drop Mode Button - Desktop Only */}
                 <Button
                   onClick={toggleDropMode}
                   size="sm"
-                  className={`flex items-center gap-2 flex-shrink-0 whitespace-nowrap ${
+                  className={`hidden lg:flex items-center gap-2 flex-shrink-0 whitespace-nowrap ${
                     dropModeActive 
                       ? 'bg-gray-500 hover:bg-gray-600 text-white' 
                       : 'bg-blue-600 hover:bg-blue-700 text-white'
                   }`}
                 >
                   <Target className="w-4 h-4" />
-                  <span className="hidden sm:inline">{dropModeActive ? "Exit Drop Mode" : "Activate Pin Drop Mode"}</span>
-                  <span className="sm:hidden">{dropModeActive ? "Exit" : "Drop Mode"}</span>
+                  <span>{dropModeActive ? "Exit Drop Mode" : "Activate Pin Drop Mode"}</span>
                 </Button>
                 
-                {/* Drop Pin Here Button - shown when drop mode is active */}
+                {/* Drop Pin Here Button - Desktop Only */}
                 {dropModeActive && (
                   <Button
                     onClick={dropPinAtCenter}
                     size="sm"
-                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white flex-shrink-0 whitespace-nowrap"
+                    className="hidden lg:flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white flex-shrink-0 whitespace-nowrap"
                   >
                     <Plus className="w-4 h-4" />
-                    <span className="hidden sm:inline">Drop Pin Here</span>
-                    <span className="sm:hidden">Drop</span>
+                    <span>Drop Pin Here</span>
                   </Button>
                 )}
               </div>
