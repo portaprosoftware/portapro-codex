@@ -2234,11 +2234,13 @@ export const Landing: React.FC = () => {
                 <div className="bg-muted/30 border border-border rounded-lg p-4">
                   <h4 className="font-semibold text-foreground mb-2">What's next? 🚀</h4>
                   <ul className="text-sm text-muted-foreground space-y-1">
-                    <li>• We'll review your information and reach out within 24 hours</li>
-                    <li>• Schedule a personalized demo based on your fleet size</li>
+                    <li>• We'll review your information and reach out ASAP -- same day in most cases.</li>
                     <li>• Discuss your specific challenges and how PortaPro can help</li>
                     <li>• Answer all your questions about features, pricing, and implementation</li>
                   </ul>
+                  <p className="text-sm text-muted-foreground mt-3 pt-3 border-t border-border">
+                    Schedule a personalized demo at your convenience
+                  </p>
                 </div>
 
                 <div className="flex gap-3 pt-4">
