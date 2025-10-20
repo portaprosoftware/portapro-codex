@@ -83,6 +83,14 @@ const blogPosts: BlogPost[] = [
     badgeGradient: 'from-green-500 to-green-700'
   },
   {
+    id: 'offline-mode',
+    category: 'Technology',
+    title: 'Why Offline Mode Matters: How PortaPro Works Even Without Signal',
+    excerpt: 'A deep dive into PortaPro\'s offline mode—how it helps drivers complete routes, log services, and track units even when there\'s no internet connection on rural roads or festival sites.',
+    date: 'June 3, 2025',
+    badgeGradient: 'from-blue-500 to-blue-700'
+  },
+  {
     id: 'google-vision',
     category: 'Technology',
     title: 'Using Google Vision to Track Units and Eliminate Manual Data Entry',
@@ -747,6 +755,145 @@ export const BlogSlider: React.FC<BlogSliderProps> = ({
                         <p className="text-lg">Portable restroom businesses don't need futuristic robotics—they need everyday tools that <em>save time, prevent mistakes, and recover revenue</em>. Google Vision inside PortaPro does exactly that.</p>
                         <p className="text-lg mt-3 font-semibold">Smartphone camera in → Unit identified → Job tracked → No paperwork.</p>
                         <p className="mt-3">It's simple. It's fast. And it finally works the way operators do.</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {selectedPost === 'offline-mode' && (
+                  <div className="space-y-6">
+                    <div className="space-y-4">
+                      <Badge className="bg-gradient-to-r from-blue-500 to-blue-700 text-white font-bold border-0">Technology</Badge>
+                      <h1 className="text-3xl font-bold">Why Offline Mode Matters: How PortaPro Works Even Without Signal on Rural Routes and Event Sites</h1>
+                      <p className="text-muted-foreground">June 3, 2025</p>
+                    </div>
+                    <div className="prose max-w-none space-y-6">
+                      <p className="text-lg">If you run a portable restroom business, you already know this truth: <strong>cell service is not guaranteed where your drivers work.</strong> Whether it's a construction site in the woods, a music festival in a field, or a rural county fairground, dead zones are part of the job. But most software assumes you're always connected.</p>
+                      
+                      <p>That's why Offline Mode inside PortaPro isn't a bonus feature—it's a <strong>necessity</strong>.</p>
+                      
+                      <p>In this article, we're breaking down how Offline Mode works, why it matters, and how it solves real problems in the field for operators and drivers.</p>
+                      
+                      <h2 className="text-2xl font-bold mt-8">The Challenge: Software That Only Works with Wi-Fi or LTE</h2>
+                      <p>Most routing or job management tools in other industries shut down when the internet drops. In our industry, that means:</p>
+                      <ul className="list-disc pl-6 space-y-2">
+                        <li>Drivers can't see their next stop</li>
+                        <li>They can't log that they serviced a unit</li>
+                        <li>GPS stops tracking</li>
+                        <li>Service history is lost or written on paper</li>
+                        <li>Office staff thinks a driver is "inactive" when they're actually just working with no signal</li>
+                      </ul>
+                      
+                      <p className="italic border-l-4 border-primary pl-4 py-2 bg-muted/50">"We'll just stick with paper. At least it always works." — Frustrated operators everywhere</p>
+                      
+                      <p className="font-semibold">PortaPro was built differently.</p>
+                      
+                      <h2 className="text-2xl font-bold mt-8">How Offline Mode Actually Works in PortaPro</h2>
+                      <p>When drivers start their route for the day, the app <strong>downloads everything they need</strong>—even if they lose connection later:</p>
+                      
+                      <div className="bg-muted/30 rounded-lg p-6 my-6">
+                        <ul className="space-y-2">
+                          <li className="flex items-start gap-2">
+                            <span className="text-green-600 font-bold">✅</span>
+                            <span>Service routes and stop order</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-green-600 font-bold">✅</span>
+                            <span>Unit locations and job site addresses</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-green-600 font-bold">✅</span>
+                            <span>Notes, instructions, gate codes, customer contacts</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-green-600 font-bold">✅</span>
+                            <span>Inventory assigned to their truck</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-green-600 font-bold">✅</span>
+                            <span>Job photos, signatures, and service logs (all saved locally until upload)</span>
+                          </li>
+                        </ul>
+                        <p className="mt-4 font-semibold">If signal drops, drivers barely notice. The app keeps working exactly the same—no error messages, no spinning loaders.</p>
+                        <p className="mt-2">Once the phone gets service again (even briefly), PortaPro automatically syncs everything to the office dashboard.</p>
+                      </div>
+                      
+                      <h2 className="text-2xl font-bold mt-8">Real-World Uses of Offline Mode</h2>
+                      <div className="space-y-4">
+                        <div className="border-l-4 border-blue-600 pl-4 py-2">
+                          <h3 className="font-bold text-lg mb-1">1. Rural Construction Routes</h3>
+                          <p className="text-sm text-muted-foreground">A driver in Missouri runs a 120-mile service loop where half the stops don't have LTE. With Offline Mode, he logs each unit as "Serviced" or "Could Not Service" and adds notes or photos. Everything syncs automatically when he gets closer to town.</p>
+                        </div>
+                        <div className="border-l-4 border-green-600 pl-4 py-2">
+                          <h3 className="font-bold text-lg mb-1">2. Music Festival Setup</h3>
+                          <p className="text-sm text-muted-foreground">Event grounds often don't have Wi-Fi, and thousands of people flood the same cellular tower. PortaPro still records unit placement, zone names like "Main Stage Left," and service sweeps. No delays. No waiting for a signal.</p>
+                        </div>
+                        <div className="border-l-4 border-purple-600 pl-4 py-2">
+                          <h3 className="font-bold text-lg mb-1">3. After-Storm Cleanup</h3>
+                          <p className="text-sm text-muted-foreground">During one storm, power went out at multiple job sites. Drivers kept working. PortaPro kept running. Nothing got lost.</p>
+                        </div>
+                      </div>
+                      
+                      <h2 className="text-2xl font-bold mt-8">Why Offline Mode Saves You Money (Not Just Stress)</h2>
+                      <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900 rounded-lg p-6 my-6">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="border-b-2 border-green-600">
+                              <th className="text-left py-2 font-bold">Problem Solved</th>
+                              <th className="text-left py-2 font-bold">Before PortaPro</th>
+                              <th className="text-left py-2 font-bold">With PortaPro Offline</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-green-200 dark:divide-green-800">
+                            <tr>
+                              <td className="py-2">Lost service logs</td>
+                              <td className="py-2">Paper sheets damaged / lost</td>
+                              <td className="py-2 font-bold text-green-700 dark:text-green-400">Every log saved locally and synced</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2">Missed invoices</td>
+                              <td className="py-2">Drivers forgot to record jobs</td>
+                              <td className="py-2 font-bold text-green-700 dark:text-green-400">All jobs logged in app—even offline</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2">Driver downtime</td>
+                              <td className="py-2">Waiting for signal to load maps or jobs</td>
+                              <td className="py-2 font-bold text-green-700 dark:text-green-400">Work continues uninterrupted</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2">Customer disputes</td>
+                              <td className="py-2">"You didn't clean this unit"</td>
+                              <td className="py-2 font-bold text-green-700 dark:text-green-400">Timestamp + photo proof saved offline</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2">Multi-day festivals</td>
+                              <td className="py-2">No service = no tracking</td>
+                              <td className="py-2 font-bold text-green-700 dark:text-green-400">Full history captured and synced</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      
+                      <h2 className="text-2xl font-bold mt-8">The Technology Behind It (Simple Explanation)</h2>
+                      <div className="bg-muted/30 rounded-lg p-6 my-6">
+                        <ul className="list-disc pl-6 space-y-2">
+                          <li>The route data is cached locally on the device when the driver starts their shift.</li>
+                          <li>Every action (photo, note, status change) is stored in an encrypted offline database inside the app.</li>
+                          <li>When the phone detects service again, PortaPro pushes updates to the cloud in the correct order.</li>
+                          <li>If two people update the same job, the most recent timestamp wins—but nothing is overwritten without record.</li>
+                        </ul>
+                      </div>
+                      
+                      <div className="bg-gradient-to-r from-primary to-primary/80 rounded-lg p-6 text-white my-8">
+                        <h3 className="text-xl font-bold mb-3">Final Thought</h3>
+                        <p className="text-lg mb-3">Portable restroom work doesn't happen in offices or fiber-connected cities—it happens in fields, gravel roads, back lots, and festival grounds. Technology has to respect that reality.</p>
+                        <p className="mb-2"><strong>Offline Mode means your business doesn't stop when your signal does.</strong></p>
+                        <ul className="space-y-1 ml-4 mb-3">
+                          <li>• It keeps routes moving.</li>
+                          <li>• It keeps logs accurate.</li>
+                          <li>• It keeps drivers doing their job—without calling dispatch every five minutes.</li>
+                        </ul>
+                        <p className="text-lg font-semibold">And most importantly—<strong>it makes software feel invisible, not fragile.</strong></p>
                       </div>
                     </div>
                   </div>
