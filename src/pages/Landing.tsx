@@ -357,9 +357,27 @@ export const Landing: React.FC = () => {
                 <a href="https://accounts.portaprosoftware.com/sign-in" target="_blank" rel="noopener noreferrer">
                   <Button variant="outline" className="w-full font-medium bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground shadow-none hover:shadow-none">Sign In</Button>
                 </a>
-                <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noopener noreferrer">
-                  <Button className="w-full text-sm font-medium">Start Free Trial</Button>
-                </a>
+                <Button 
+                  className="w-full bg-gradient-blue text-white text-sm font-medium"
+                  onClick={() => {
+                    handleScheduleDemo();
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  <Laptop className="w-4 h-4 mr-2" />
+                  Schedule Demo
+                </Button>
+                <Button 
+                  variant="outline"
+                  className="w-full text-sm font-medium"
+                  onClick={() => {
+                    handleRequestInfo();
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  <Phone className="w-4 h-4 mr-2" />
+                  Request Information
+                </Button>
               </div>
             </div>
           </div>}
