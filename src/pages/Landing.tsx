@@ -381,12 +381,15 @@ export const Landing: React.FC = () => {
               </div>
               
               <div className="flex flex-col sm:flex-row gap-2">
-                <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
-                  <Button variant="outline" size="default" className="font-medium px-6 py-3 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200 w-full flex items-center justify-center min-w-[160px]">
-                    <ArrowRight className="w-4 h-4 mr-2" />
-                    Start Free Trial
-                  </Button>
-                </a>
+                <Button 
+                  variant="outline" 
+                  size="default" 
+                  className="font-medium px-6 py-3 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200 w-full sm:w-auto flex items-center justify-center min-w-[160px]"
+                  onClick={handleScheduleDemo}
+                >
+                  <Laptop className="w-4 h-4 mr-2" />
+                  Schedule Demo
+                </Button>
                 <Button variant="outline" size="default" className="font-medium px-6 py-3 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200 w-full sm:w-auto flex items-center justify-center min-w-[160px]" onClick={() => setQuestionsFormOpen(true)}>
                   <Phone className="w-4 h-4 mr-2" />
                   Request Information
