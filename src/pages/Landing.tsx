@@ -2048,7 +2048,7 @@ export const Landing: React.FC = () => {
               <div className="space-y-6">
                 <div className="text-center">
                   <p className="text-muted-foreground">
-                    Have a question or need help? Reach out to our support team.
+                    Need help? Contact support.
                   </p>
                 </div>
 
