@@ -2235,9 +2235,9 @@ export const Landing: React.FC = () => {
                 <div className="bg-muted/30 border border-border rounded-lg p-4">
                   <h4 className="font-semibold text-foreground mb-2">What's next? 🚀</h4>
                   <ul className="text-sm text-muted-foreground space-y-2">
-                    <li>• We'll review your details and get back to you ASAP — usually the same day.</li>
-                    <li>• We'll talk through your specific challenges and how PortaPro can help.</li>
-                    <li>• We'll answer any questions you have about features, pricing, or getting started.</li>
+                    <li>We'll review your details and get back to you ASAP — usually the same day.</li>
+                    <li>We'll talk through your specific challenges and how PortaPro can help.</li>
+                    <li>We'll answer any questions you have about features, pricing, or getting started.</li>
                   </ul>
                 </div>
 
@@ -2363,9 +2363,9 @@ export const Landing: React.FC = () => {
                 <div className="bg-muted/30 border border-border rounded-lg p-4">
                   <h4 className="font-semibold text-foreground mb-2">What's next? 🚀</h4>
                   <ul className="text-sm text-muted-foreground space-y-2">
-                    <li>• We'll review your details and get back to you ASAP — usually the same day.</li>
-                    <li>• We'll talk through your specific challenges and how PortaPro can help.</li>
-                    <li>• We'll answer any questions you have about features, pricing, or getting started.</li>
+                    <li>We'll review your details and get back to you ASAP — usually the same day.</li>
+                    <li>We'll talk through your specific challenges and how PortaPro can help.</li>
+                    <li>We'll answer any questions you have about features, pricing, or getting started.</li>
                   </ul>
                 </div>
 
