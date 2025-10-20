@@ -411,7 +411,7 @@ export const Landing: React.FC = () => {
                   <Laptop className="w-4 h-4 mr-2" />
                   Schedule Demo
                 </Button>
-                <Button variant="outline" size="default" className="font-medium px-6 py-3 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200 w-full sm:w-auto flex items-center justify-center min-w-[160px]" onClick={() => setQuestionsFormOpen(true)}>
+                <Button variant="outline" size="default" className="font-medium px-6 py-3 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200 w-full sm:w-auto flex items-center justify-center min-w-[160px]" onClick={handleRequestInfo}>
                   <Phone className="w-4 h-4 mr-2" />
                   Request Information
                 </Button>
