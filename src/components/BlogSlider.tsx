@@ -83,6 +83,14 @@ const blogPosts: BlogPost[] = [
     badgeGradient: 'from-green-500 to-green-700'
   },
   {
+    id: 'google-vision',
+    category: 'Technology',
+    title: 'Using Google Vision to Track Units and Eliminate Manual Data Entry',
+    excerpt: 'How Google Vision Lens helps operators scan unit numbers, eliminate manual data entry, and track inventory faster and more accurately without barcodes or QR codes.',
+    date: 'January 17, 2025',
+    badgeGradient: 'from-blue-500 to-blue-700'
+  },
+  {
     id: 'qr-codes',
     category: 'Technology',
     title: 'QR Codes on Porta Potties: How It Actually Works',
@@ -632,6 +640,118 @@ export const BlogSlider: React.FC<BlogSliderProps> = ({
                   </div>
                 )}
                 
+                {selectedPost === 'google-vision' && (
+                  <div className="space-y-6">
+                    <div className="space-y-4">
+                      <Badge className="bg-gradient-to-r from-blue-500 to-blue-700 text-white font-bold border-0">Technology</Badge>
+                      <h1 className="text-3xl font-bold">Using Google Vision to Track Units and Eliminate Manual Data Entry in Portable Restroom Operations</h1>
+                      <p className="text-muted-foreground">January 17, 2025</p>
+                    </div>
+                    <div className="prose max-w-none space-y-6">
+                      <p className="text-lg">One of the biggest daily headaches for portable toilet operators isn't the pumping, delivery, or scheduling — it's the <strong>tracking</strong>. Knowing which units are in the yard, which are on job sites, which need servicing, and which are missing can drain hours from office teams and drivers. Most operators still rely on handwritten labels, faded barcode stickers, or memory. And in a business where every misplaced unit costs money, manual tracking is risky.</p>
+                      
+                      <p>But in 2025, that's changing — because image recognition is finally becoming easy, practical, and affordable for portable sanitation. At PortaPro, we're testing and integrating <strong>Google Vision Lens</strong> to help operators scan and identify units without typing, barcodes, or even QR codes.</p>
+                      
+                      <h2 className="text-2xl font-bold mt-8">What Is Google Vision and Why Does It Matter in This Industry?</h2>
+                      <p><strong>Google Vision Lens</strong> is a tool that uses artificial intelligence to read text, numbers, logos, and objects using a regular smartphone camera. Unlike a normal barcode scanner that needs a label, Vision can read:</p>
+                      <ul className="list-disc pl-6 space-y-2">
+                        <li>Molded unit serial numbers on the plastic body</li>
+                        <li>Scratched or faded company logos</li>
+                        <li>Permanent marker notes on rental units</li>
+                        <li>Handwritten asset numbers on trailers, trucks, or wash stations</li>
+                        <li>Sticker numbers — even if damaged or dirty</li>
+                      </ul>
+                      <p>That means drivers don't need perfectly scanned barcodes — they can just <strong>point their camera</strong> at the unit and PortaPro recognizes it instantly.</p>
+                      
+                      <h2 className="text-2xl font-bold mt-8">How It Works Inside PortaPro</h2>
+                      <p>When enabled, the process is simple:</p>
+                      <div className="bg-muted/30 rounded-lg p-6 my-6">
+                        <ol className="list-decimal pl-6 space-y-3">
+                          <li>The driver opens the PortaPro mobile app.</li>
+                          <li>They select "Scan Unit."</li>
+                          <li>The camera opens with Google Vision enabled.</li>
+                          <li>They point it at the front of the portable toilet (logo, number panel, or marker).</li>
+                          <li>Vision reads the number in under a second.</li>
+                          <li>PortaPro automatically pulls up that unit's record — location, wash history, customer, contract, etc.</li>
+                        </ol>
+                        <p className="mt-4 font-semibold">No typing. No stickers. No hunting for a tiny barcode label under the vent.</p>
+                      </div>
+                      
+                      <h2 className="text-2xl font-bold mt-8">Why This Is a Big Deal for Operators</h2>
+                      <div className="space-y-4">
+                        <div className="border-l-4 border-blue-600 pl-4 py-2">
+                          <h3 className="font-bold text-lg mb-1">1. Works Even When Barcodes Don't</h3>
+                          <p className="text-sm text-muted-foreground">Barcodes peel off. QR codes get pressure-washed. Stickers fade in the sun. But molded plastic serial numbers and company labels rarely disappear. Vision reads those instead.</p>
+                        </div>
+                        <div className="border-l-4 border-green-600 pl-4 py-2">
+                          <h3 className="font-bold text-lg mb-1">2. Faster Check-In and Check-Out at the Yard</h3>
+                          <p className="text-sm text-muted-foreground">Drivers can scan 30–50 units in minutes when prepping for a delivery or returning from a pickup.</p>
+                        </div>
+                        <div className="border-l-4 border-purple-600 pl-4 py-2">
+                          <h3 className="font-bold text-lg mb-1">3. Helps Recover "Lost" Units</h3>
+                          <p className="text-sm text-muted-foreground">When someone calls and says, "We found one of your toilets behind the barn," the tech can scan it immediately and reassign it in PortaPro.</p>
+                        </div>
+                        <div className="border-l-4 border-orange-600 pl-4 py-2">
+                          <h3 className="font-bold text-lg mb-1">4. Perfect for Older Units Without Smart Labels</h3>
+                          <p className="text-sm text-muted-foreground">Most companies don't want to re-sticker their entire fleet. With Vision, they don't have to.</p>
+                        </div>
+                      </div>
+                      
+                      <h2 className="text-2xl font-bold mt-8">How Accurate Is It?</h2>
+                      <p>In early field tests with PortaPro users:</p>
+                      <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 rounded-lg p-6 my-6">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="border-b-2 border-blue-600">
+                              <th className="text-left py-2 font-bold">Condition</th>
+                              <th className="text-left py-2 font-bold">Accuracy Rate</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-blue-200 dark:divide-blue-800">
+                            <tr>
+                              <td className="py-2">Molded plastic numbers (clean)</td>
+                              <td className="py-2 font-bold text-blue-700 dark:text-blue-400">99%</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2">Molded numbers (muddy / dusty)</td>
+                              <td className="py-2 font-bold text-blue-700 dark:text-blue-400">95%</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2">Handwritten marker numbers</td>
+                              <td className="py-2 font-bold text-blue-700 dark:text-blue-400">93%</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2">Faded or partially damaged stickers</td>
+                              <td className="py-2 font-bold text-blue-700 dark:text-blue-400">90%</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2">Blurry or low lighting photos</td>
+                              <td className="py-2 font-bold text-blue-700 dark:text-blue-400">80–85%</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <p className="mt-4 font-semibold">The biggest advantage? <strong>No extra hardware is needed</strong>—just a smartphone camera.</p>
+                      </div>
+                      
+                      <h2 className="text-2xl font-bold mt-8">Where This Technology Is Going</h2>
+                      <p>Google Vision is just step one. PortaPro plans to connect image recognition to:</p>
+                      <ul className="list-disc pl-6 space-y-2">
+                        <li><strong>Auto-assign units to job sites when scanned on arrival</strong></li>
+                        <li><strong>Detect damaged doors, cracks, or graffiti through image AI</strong></li>
+                        <li><strong>Automatically log wash records by scanning instead of manually typing</strong></li>
+                        <li><strong>Scan truck license plates for fuel logs and mileage tracking</strong></li>
+                      </ul>
+                      
+                      <div className="bg-gradient-to-r from-primary to-primary/80 rounded-lg p-6 text-white my-8">
+                        <h3 className="text-xl font-bold mb-2">Final Thoughts</h3>
+                        <p className="text-lg">Portable restroom businesses don't need futuristic robotics—they need everyday tools that <em>save time, prevent mistakes, and recover revenue</em>. Google Vision inside PortaPro does exactly that.</p>
+                        <p className="text-lg mt-3 font-semibold">Smartphone camera in → Unit identified → Job tracked → No paperwork.</p>
+                        <p className="mt-3">It's simple. It's fast. And it finally works the way operators do.</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {selectedPost === 'qr-codes' && (
                   <div className="space-y-6">
                     <div className="space-y-4">
