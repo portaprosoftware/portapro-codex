@@ -125,135 +125,137 @@ export function ServiceLocationCard({ location, onUpdate, onDelete }: ServiceLoc
   };
 
   return (
-    <Card className="hover:shadow-md transition-shadow">
+    <Card className="hover:shadow-md transition-shadow overflow-hidden">
       <CardContent className="p-4 sm:p-6">
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
-          <div className="flex-1 min-w-0">
-            <div className="flex flex-wrap items-center gap-2 mb-2">
-              <h4 className="font-semibold text-foreground">{location.location_name}</h4>
-              <div className="flex gap-1">
-                {location.is_default && (
-                  <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white border-0 font-bold px-3 py-1 rounded-full">
-                    <Star className="w-3 h-3 mr-1" />
-                    Default
-                  </Badge>
-                )}
-                {location.is_locked && (
-                  <Badge className="bg-gradient-to-r from-gray-500 to-gray-600 text-white border-0 font-bold px-3 py-1 rounded-full">
-                    <Lock className="w-3 h-3 mr-1" />
-                    Locked
-                  </Badge>
-                 )}
-              </div>
-            </div>
-
-            {location.location_description && (
-              <p className="text-sm text-muted-foreground mb-3">
-                {location.location_description}
-              </p>
-            )}
-
-            <div className="flex items-start gap-2 mb-4">
-              <MapPin className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm text-foreground select-text break-words">{fullAddress}</p>
-                {location.access_instructions && (
-                  <p className="text-xs text-muted-foreground mt-1">
-                    <strong>Access:</strong> {location.access_instructions}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {/* Map Action Buttons - Stacked grid on mobile, flex row on desktop */}
-            <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={copyAddress}
-                className="text-xs min-h-[44px] justify-start"
-              >
-                <Copy className="w-4 h-4 mr-2 flex-shrink-0" />
-                Copy Address
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={openInGoogleMaps}
-                className="text-xs min-h-[44px] justify-start"
-              >
-                <ExternalLink className="w-4 h-4 mr-2 flex-shrink-0" />
-                Google Maps
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={openInAppleMaps}
-                className="text-xs min-h-[44px] justify-start"
-              >
-                <ExternalLink className="w-4 h-4 mr-2 flex-shrink-0" />
-                Apple Maps
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={openInWaze}
-                className="text-xs min-h-[44px] justify-start"
-              >
-                <ExternalLink className="w-4 h-4 mr-2 flex-shrink-0" />
-                Waze
-              </Button>
+        <div className="space-y-4">
+          {/* Header Section */}
+          <div className="space-y-2">
+            <h4 className="font-semibold text-foreground break-words">{location.location_name}</h4>
+            
+            {/* Badges - Wrapping with gaps */}
+            <div className="flex flex-wrap gap-1.5">
+              {location.is_default && (
+                <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white border-0 font-bold px-3 py-1 rounded-full whitespace-nowrap">
+                  <Star className="w-3 h-3 mr-1" />
+                  Default
+                </Badge>
+              )}
+              {location.is_locked && (
+                <Badge className="bg-gradient-to-r from-gray-500 to-gray-600 text-white border-0 font-bold px-3 py-1 rounded-full whitespace-nowrap">
+                  <Lock className="w-3 h-3 mr-1" />
+                  Locked
+                </Badge>
+              )}
             </div>
           </div>
 
-          <div className="flex items-center gap-2 flex-shrink-0">
-            {!location.is_locked && (
-              <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsEditModalOpen(true)}
-                  className="min-h-[36px]"
-                >
-                  <Edit className="w-4 h-4 sm:mr-1" />
-                  <span className="hidden sm:inline">Edit</span>
-                </Button>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="outline" size="sm" className="min-h-[36px]">
-                      <Trash2 className="w-4 h-4 sm:mr-1" />
-                      <span className="hidden sm:inline">Delete</span>
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Delete Service Location</AlertDialogTitle>
-                      <AlertDialogDescription className="space-y-2">
-                        <p>Are you sure you want to delete "{location.location_name}"?</p>
-                        {location.is_default && (
-                          <p className="text-yellow-600 font-medium">
-                            ⚠️ This is the default service location for this customer.
-                          </p>
-                        )}
-                        {location.is_locked && (
-                          <p className="text-orange-600 font-medium">
-                            🔒 This is a system-generated location based on the customer's service address.
-                          </p>
-                        )}
-                        <p className="text-red-600">This action cannot be undone.</p>
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
-                        Delete Location
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </>
-            )}
+          {/* Description */}
+          {location.location_description && (
+            <p className="text-sm text-muted-foreground break-words">
+              {location.location_description}
+            </p>
+          )}
+
+          {/* Address */}
+          <div className="flex items-start gap-2">
+            <MapPin className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm text-foreground select-text break-words whitespace-normal">{fullAddress}</p>
+              {location.access_instructions && (
+                <p className="text-xs text-muted-foreground mt-1 break-words">
+                  <strong>Access:</strong> {location.access_instructions}
+                </p>
+              )}
+            </div>
           </div>
+
+          {/* Map Action Buttons - Responsive Grid */}
+          <div className="grid grid-cols-1 xs:grid-cols-2 md:flex md:flex-wrap gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={copyAddress}
+              className="text-xs min-h-[36px] justify-start w-full md:w-auto"
+            >
+              <Copy className="w-4 h-4 mr-2 flex-shrink-0" />
+              <span className="truncate">Copy Address</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={openInGoogleMaps}
+              className="text-xs min-h-[36px] justify-start w-full md:w-auto"
+            >
+              <ExternalLink className="w-4 h-4 mr-2 flex-shrink-0" />
+              <span className="truncate">Google Maps</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={openInAppleMaps}
+              className="text-xs min-h-[36px] justify-start w-full md:w-auto"
+            >
+              <ExternalLink className="w-4 h-4 mr-2 flex-shrink-0" />
+              <span className="truncate">Apple Maps</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={openInWaze}
+              className="text-xs min-h-[36px] justify-start w-full md:w-auto"
+            >
+              <ExternalLink className="w-4 h-4 mr-2 flex-shrink-0" />
+              <span className="truncate">Waze</span>
+            </Button>
+          </div>
+
+          {/* Edit/Delete Actions - Bottom Row */}
+          {!location.is_locked && (
+            <div className="flex gap-2 pt-2 border-t">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsEditModalOpen(true)}
+                className="flex-1 min-h-[36px]"
+              >
+                <Edit className="w-4 h-4 mr-2" />
+                <span>Edit</span>
+              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="flex-1 min-h-[36px]">
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    <span>Delete</span>
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete Service Location</AlertDialogTitle>
+                    <AlertDialogDescription className="space-y-2">
+                      <p>Are you sure you want to delete "{location.location_name}"?</p>
+                      {location.is_default && (
+                        <p className="text-yellow-600 font-medium">
+                          ⚠️ This is the default service location for this customer.
+                        </p>
+                      )}
+                      {location.is_locked && (
+                        <p className="text-orange-600 font-medium">
+                          🔒 This is a system-generated location based on the customer's service address.
+                        </p>
+                      )}
+                      <p className="text-red-600">This action cannot be undone.</p>
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+                      Delete Location
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+          )}
         </div>
 
         {!location.is_locked && (
