@@ -71,18 +71,18 @@ export function StorageAnalyticsLocationSection({
   return (
     <Card>
       <CardHeader className="pb-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex flex-col gap-3">
           <CardTitle className="flex items-center gap-2 text-base lg:text-lg">
             <Icon className={`h-5 w-5 lg:h-6 lg:w-6 ${iconColor}`} />
             {title}
           </CardTitle>
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <Button
               variant="outline"
               size="sm"
               onClick={onExportPDF}
               disabled={isExporting}
-              className="text-xs lg:text-sm h-9"
+              className="text-xs lg:text-sm h-9 w-full sm:w-auto"
             >
               <Download className="h-4 w-4 mr-1.5" />
               Export PDF
@@ -92,7 +92,7 @@ export function StorageAnalyticsLocationSection({
               size="sm"
               onClick={onExportCSV}
               disabled={isExporting}
-              className="text-xs lg:text-sm h-9"
+              className="text-xs lg:text-sm h-9 w-full sm:w-auto"
             >
               <Download className="h-4 w-4 mr-1.5" />
               Export CSV

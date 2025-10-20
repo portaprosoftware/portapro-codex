@@ -47,10 +47,10 @@ export function StorageAnalyticsKPICards({ summary }: KPICardsProps) {
   return (
     <>
       {/* Total Stock Value - Full Width on Mobile */}
-      <Card className="col-span-full lg:col-span-1">
+      <Card className="col-span-full lg:col-span-1 overflow-hidden">
         <CardContent className="p-4 lg:p-6">
-          <div className="flex items-center justify-between">
-            <div>
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex-1 min-w-0">
               <div className="text-2xl lg:text-3xl font-bold">
                 ${summary.total_stock_value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
@@ -58,8 +58,8 @@ export function StorageAnalyticsKPICards({ summary }: KPICardsProps) {
                 Total Stock Value
               </div>
             </div>
-            <div className="flex-shrink-0 w-12 h-12 lg:w-14 lg:h-14 rounded-full bg-blue-50 dark:bg-blue-950 flex items-center justify-center">
-              <DollarSign className="h-6 w-6 lg:h-7 lg:w-7 text-blue-600" />
+            <div className="flex-shrink-0 w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-blue-50 dark:bg-blue-950 flex items-center justify-center">
+              <DollarSign className="h-5 w-5 lg:h-6 lg:w-6 text-blue-600" />
             </div>
           </div>
         </CardContent>
@@ -67,10 +67,10 @@ export function StorageAnalyticsKPICards({ summary }: KPICardsProps) {
 
       {/* KPI Grid - 2 columns on mobile, 4 on desktop */}
       {kpiCards.map((kpi, index) => (
-        <Card key={index} className="hover:shadow-md transition-shadow cursor-pointer">
+        <Card key={index} className="hover:shadow-md transition-shadow cursor-pointer overflow-hidden">
           <CardContent className="p-4 lg:p-6">
-            <div className="flex items-center justify-between">
-              <div>
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex-1 min-w-0">
                 <div className="text-2xl lg:text-3xl font-bold">
                   {kpi.value}
                 </div>
@@ -78,8 +78,8 @@ export function StorageAnalyticsKPICards({ summary }: KPICardsProps) {
                   {kpi.label}
                 </div>
               </div>
-              <div className={`flex-shrink-0 w-12 h-12 lg:w-14 lg:h-14 rounded-full ${kpi.bgColor} flex items-center justify-center`}>
-                <kpi.icon className={`h-6 w-6 lg:h-7 lg:w-7 ${kpi.color}`} />
+              <div className={`flex-shrink-0 w-10 h-10 lg:w-12 lg:h-12 rounded-full ${kpi.bgColor} flex items-center justify-center`}>
+                <kpi.icon className={`h-5 w-5 lg:h-6 lg:w-6 ${kpi.color}`} />
               </div>
             </div>
           </CardContent>
