@@ -26,6 +26,10 @@ import { QuotesExportModal } from '@/components/quotes/QuotesExportModal';
 import { InvoicesExportModal } from '@/components/invoices/InvoicesExportModal';
 import { QuickBooksExportModal } from '@/components/quotes/QuickBooksExportModal';
 import { QuoteDateFilters } from '@/components/quotes/QuoteDateFilters';
+import { QuickDateFilters } from '@/components/quotes/QuickDateFilters';
+import { KpiCard } from '@/components/quotes/KpiCard';
+import { MobileMoreMenu } from '@/components/quotes/MobileMoreMenu';
+import { ActiveFilterChip } from '@/components/quotes/ActiveFilterChip';
 import { DateRange } from 'react-day-picker';
 
 const QuotesInvoices: React.FC = () => {
@@ -39,6 +43,8 @@ const QuotesInvoices: React.FC = () => {
   const [showQuoteWizard, setShowQuoteWizard] = useState(false);
   const [showInvoiceWizard, setShowInvoiceWizard] = useState(false);
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [activeQuickFilter, setActiveQuickFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string | undefined>();
 
   // Fetch quote metrics (year-to-date)
   const { data: quoteMetrics } = useQuery({
@@ -118,62 +124,62 @@ const QuotesInvoices: React.FC = () => {
         <div className="space-y-6">
 
           {/* Quote Metrics Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Total Quote Value */}
-            <Card className="border-transparent bg-gradient-to-r from-blue-600 to-blue-800 text-white">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between">
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium text-white/90">Total Quote Value ({quoteMetrics?.year || new Date().getFullYear()} YTD)</p>
-                    <p className="text-3xl font-bold text-white">
-                      {formatCurrency(quoteMetrics?.total_value)}
-                    </p>
-                  </div>
-                  <TrendingUp className="h-6 w-6 text-white" />
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Pending Value */}
-            <Card className="border-transparent bg-gradient-to-r from-yellow-500 to-yellow-700 text-white">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between">
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium text-white/90">Pending Value ({quoteMetrics?.year || new Date().getFullYear()} YTD)</p>
-                    <p className="text-3xl font-bold text-white">
-                      {formatCurrency(quoteMetrics?.pending_value)}
-                    </p>
-                  </div>
-                  <FileText className="h-6 w-6 text-white" />
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Accepted Value */}
-            <Card className="border-transparent bg-gradient-to-r from-green-600 to-green-800 text-white">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between">
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium text-white/90">Accepted Value ({quoteMetrics?.year || new Date().getFullYear()} YTD)</p>
-                    <p className="text-3xl font-bold text-white">
-                      {formatCurrency(quoteMetrics?.accepted_value)}
-                    </p>
-                  </div>
-                  <DollarSign className="h-6 w-6 text-white" />
-                </div>
-              </CardContent>
-            </Card>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+            <KpiCard
+              title={`Total Quote Value (${quoteMetrics?.year || new Date().getFullYear()} YTD)`}
+              value={formatCurrency(quoteMetrics?.total_value)}
+              icon={TrendingUp}
+              gradient="bg-gradient-to-r from-blue-600 to-blue-800"
+              onClick={() => {
+                setStatusFilter(undefined);
+                setActiveQuickFilter('all');
+              }}
+            />
+            <KpiCard
+              title={`Pending Value (${quoteMetrics?.year || new Date().getFullYear()} YTD)`}
+              value={formatCurrency(quoteMetrics?.pending_value)}
+              icon={FileText}
+              gradient="bg-gradient-to-r from-yellow-500 to-yellow-700"
+              onClick={() => {
+                setStatusFilter('sent');
+                setActiveQuickFilter('all');
+              }}
+              subtitle="Tap to filter"
+            />
+            <KpiCard
+              title={`Accepted Value (${quoteMetrics?.year || new Date().getFullYear()} YTD)`}
+              value={formatCurrency(quoteMetrics?.accepted_value)}
+              icon={DollarSign}
+              gradient="bg-gradient-to-r from-green-600 to-green-800"
+              onClick={() => {
+                setStatusFilter('accepted');
+                setActiveQuickFilter('all');
+              }}
+              subtitle="Tap to filter"
+            />
           </div>
 
-          {/* Date Filters */}
-          <QuoteDateFilters 
-            dateRange={dateRange}
-            onDateRangeChange={setDateRange}
-          />
+          {/* Quick Date Filters - Mobile Horizontal Scroll */}
+          <div className="lg:hidden">
+            <QuickDateFilters 
+              onDateRangeChange={setDateRange}
+              activeFilter={activeQuickFilter}
+              onActiveFilterChange={setActiveQuickFilter}
+            />
+          </div>
+
+          {/* Date Filters - Desktop */}
+          <div className="hidden lg:block">
+            <QuoteDateFilters 
+              dateRange={dateRange}
+              onDateRangeChange={setDateRange}
+            />
+          </div>
 
           {/* Quotes Section */}
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
+            {/* Header - Desktop */}
+            <div className="hidden lg:flex items-center justify-between">
               <h2 className="text-lg font-bold text-foreground">All Quotes</h2>
               <div className="flex items-center space-x-2">
                 <div className="relative">
@@ -214,6 +220,30 @@ const QuotesInvoices: React.FC = () => {
               </div>
             </div>
 
+            {/* Header - Mobile */}
+            <div className="lg:hidden space-y-3 px-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-bold text-foreground">All Quotes</h2>
+                <MobileMoreMenu
+                  type="quotes"
+                  onExport={() => setShowQuoteExport(true)}
+                  onQuickBooksExport={() => setShowQuickBooksQuoteExport(true)}
+                />
+              </div>
+              {statusFilter && (
+                <ActiveFilterChip
+                  label={`Status: ${statusFilter.charAt(0).toUpperCase() + statusFilter.slice(1)}`}
+                  onClear={() => setStatusFilter(undefined)}
+                />
+              )}
+              <Input
+                placeholder="Search quotes..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full min-h-[44px] text-base"
+              />
+            </div>
+
             <QuotesTable searchTerm={searchTerm} dateRange={dateRange} />
           </div>
 
@@ -225,62 +255,62 @@ const QuotesInvoices: React.FC = () => {
       {activeTab === 'invoices' && (
         <div className="space-y-6">
           {/* Invoice Metrics Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Total Invoice Value */}
-            <Card className="border-transparent bg-gradient-to-r from-blue-600 to-blue-800 text-white">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between">
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium text-white/90">Total Invoice Value ({invoiceMetrics?.year || new Date().getFullYear()} YTD)</p>
-                    <p className="text-3xl font-bold text-white">
-                      {formatCurrency(invoiceMetrics?.total_value)}
-                    </p>
-                  </div>
-                  <TrendingUp className="h-6 w-6 text-white" />
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Unpaid Value */}
-            <Card className="border-transparent bg-gradient-to-r from-yellow-500 to-yellow-700 text-white">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between">
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium text-white/90">Unpaid Value ({invoiceMetrics?.year || new Date().getFullYear()} YTD)</p>
-                    <p className="text-3xl font-bold text-white">
-                      {formatCurrency(invoiceMetrics?.unpaid_value)}
-                    </p>
-                  </div>
-                  <FileText className="h-6 w-6 text-white" />
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Paid Value */}
-            <Card className="border-transparent bg-gradient-to-r from-green-600 to-green-800 text-white">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between">
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium text-white/90">Paid Value ({invoiceMetrics?.year || new Date().getFullYear()} YTD)</p>
-                    <p className="text-3xl font-bold text-white">
-                      {formatCurrency(invoiceMetrics?.paid_value)}
-                    </p>
-                  </div>
-                  <DollarSign className="h-6 w-6 text-white" />
-                </div>
-              </CardContent>
-            </Card>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+            <KpiCard
+              title={`Total Invoice Value (${invoiceMetrics?.year || new Date().getFullYear()} YTD)`}
+              value={formatCurrency(invoiceMetrics?.total_value)}
+              icon={TrendingUp}
+              gradient="bg-gradient-to-r from-blue-600 to-blue-800"
+              onClick={() => {
+                setStatusFilter(undefined);
+                setActiveQuickFilter('all');
+              }}
+            />
+            <KpiCard
+              title={`Unpaid Value (${invoiceMetrics?.year || new Date().getFullYear()} YTD)`}
+              value={formatCurrency(invoiceMetrics?.unpaid_value)}
+              icon={FileText}
+              gradient="bg-gradient-to-r from-yellow-500 to-yellow-700"
+              onClick={() => {
+                setStatusFilter('unpaid');
+                setActiveQuickFilter('all');
+              }}
+              subtitle="Tap to filter"
+            />
+            <KpiCard
+              title={`Paid Value (${invoiceMetrics?.year || new Date().getFullYear()} YTD)`}
+              value={formatCurrency(invoiceMetrics?.paid_value)}
+              icon={DollarSign}
+              gradient="bg-gradient-to-r from-green-600 to-green-800"
+              onClick={() => {
+                setStatusFilter('paid');
+                setActiveQuickFilter('all');
+              }}
+              subtitle="Tap to filter"
+            />
           </div>
 
-          {/* Date Filters */}
-          <QuoteDateFilters 
-            dateRange={dateRange}
-            onDateRangeChange={setDateRange}
-          />
+          {/* Quick Date Filters - Mobile Horizontal Scroll */}
+          <div className="lg:hidden">
+            <QuickDateFilters 
+              onDateRangeChange={setDateRange}
+              activeFilter={activeQuickFilter}
+              onActiveFilterChange={setActiveQuickFilter}
+            />
+          </div>
+
+          {/* Date Filters - Desktop */}
+          <div className="hidden lg:block">
+            <QuoteDateFilters 
+              dateRange={dateRange}
+              onDateRangeChange={setDateRange}
+            />
+          </div>
 
           {/* Invoices Section */}
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
+            {/* Header - Desktop */}
+            <div className="hidden lg:flex items-center justify-between">
               <h2 className="text-lg font-bold text-foreground">All Invoices</h2>
               <div className="flex items-center space-x-2">
                 <div className="relative">
@@ -319,6 +349,30 @@ const QuotesInvoices: React.FC = () => {
                   Create Invoice
                 </Button>
               </div>
+            </div>
+
+            {/* Header - Mobile */}
+            <div className="lg:hidden space-y-3 px-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-bold text-foreground">All Invoices</h2>
+                <MobileMoreMenu
+                  type="invoices"
+                  onExport={() => setShowInvoiceExport(true)}
+                  onQuickBooksExport={() => setShowQuickBooksInvoiceExport(true)}
+                />
+              </div>
+              {statusFilter && (
+                <ActiveFilterChip
+                  label={`Status: ${statusFilter.charAt(0).toUpperCase() + statusFilter.slice(1)}`}
+                  onClear={() => setStatusFilter(undefined)}
+                />
+              )}
+              <Input
+                placeholder="Search invoices..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full min-h-[44px] text-base"
+              />
             </div>
 
             <InvoicesTable searchTerm={searchTerm} dateRange={dateRange} />
