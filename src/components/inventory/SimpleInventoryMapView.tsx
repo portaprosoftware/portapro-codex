@@ -366,7 +366,11 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
             variant={mapStyle === 'streets' ? 'default' : 'secondary'}
             size="sm"
             onClick={() => setMapStyle('streets')}
-            className="h-9 md:h-10 px-3 bg-white/90 backdrop-blur-sm hover:bg-white shadow-md"
+            className={`h-9 md:h-10 px-3 shadow-md ${
+              mapStyle === 'streets' 
+                ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                : 'bg-white/90 backdrop-blur-sm hover:bg-white'
+            }`}
           >
             <MapIcon className="h-4 w-4 mr-1.5" />
             <span className="text-sm">Streets</span>
@@ -375,7 +379,11 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
             variant={mapStyle === 'satellite' ? 'default' : 'secondary'}
             size="sm"
             onClick={() => setMapStyle('satellite')}
-            className="h-9 md:h-10 px-3 bg-white/90 backdrop-blur-sm hover:bg-white shadow-md"
+            className={`h-9 md:h-10 px-3 shadow-md ${
+              mapStyle === 'satellite' 
+                ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                : 'bg-white/90 backdrop-blur-sm hover:bg-white'
+            }`}
           >
             <Satellite className="h-4 w-4 mr-1.5" />
             <span className="text-sm">Satellite</span>
