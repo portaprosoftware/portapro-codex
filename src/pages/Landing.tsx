@@ -1201,6 +1201,7 @@ export const Landing: React.FC = () => {
                 }
               }} className="block hover:text-white text-left">Features</button>
                 <a href="#mobile-app" className="block hover:text-white">Mobile</a>
+                <button onClick={() => setIsFeatureModalOpen(true)} className="block hover:text-white text-left">Feature Requests</button>
               </div>
             </div>
             <div className="space-y-3 sm:space-y-4">
