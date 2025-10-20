@@ -2257,7 +2257,7 @@ export const Landing: React.FC = () => {
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b">
               <div>
-                <h2 className="text-xl font-bold text-foreground">Interested in Learning More?</h2>
+                <h2 className="text-xl font-bold text-foreground">Request Details</h2>
                 <p className="text-sm text-muted-foreground">Tell us about your needs and we'll get in touch</p>
               </div>
               <button onClick={() => setRequestInfoFormOpen(false)} className="p-2 rounded-lg hover:bg-muted">
@@ -2296,9 +2296,9 @@ export const Landing: React.FC = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
-                    Phone Number (Optional)
+                    Phone Number *
                   </label>
-                  <input type="tel" className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="(555) 123-4567" />
+                  <input type="tel" required className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="(555) 123-4567" />
                 </div>
 
                 <div>
@@ -2371,7 +2371,7 @@ export const Landing: React.FC = () => {
 
                 <div className="flex justify-end pt-4">
                   <Button type="submit" className="bg-primary hover:bg-primary/90">
-                    Request Details
+                    Submit
                   </Button>
                 </div>
               </form>
