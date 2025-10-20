@@ -56,7 +56,7 @@ export default function About() {
           <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-foreground">WHAT MAKES PORTAPRO DIFFERENT</h2>
           
           <div className="space-y-6">
-            <div className="border-l-4 border-primary pl-6 py-4 bg-muted/30 rounded-r-lg">
+            <div className="border-l-4 border-primary pl-6 py-4">
               <h3 className="font-bold text-xl mb-3 text-foreground">Route Planning & Live Service Updates</h3>
               <p className="text-muted-foreground mb-3 text-lg">
                 Drag-and-drop scheduling, daily driver routes, arrival/service tracking.
@@ -66,7 +66,7 @@ export default function About() {
               </p>
             </div>
 
-            <div className="border-l-4 border-blue-600 pl-6 py-4 bg-blue-50/50 rounded-r-lg">
+            <div className="border-l-4 border-blue-600 pl-6 py-4">
               <h3 className="font-bold text-xl mb-3 text-foreground">Unit & Inventory Tracking (QR / Barcode)</h3>
               <p className="text-muted-foreground mb-3 text-lg">
                 Scan units as they leave the yard, change locations, or need repairs. Tracks wash history and damage.
@@ -76,7 +76,7 @@ export default function About() {
               </p>
             </div>
 
-            <div className="border-l-4 border-green-600 pl-6 py-4 bg-green-50/50 rounded-r-lg">
+            <div className="border-l-4 border-green-600 pl-6 py-4">
               <h3 className="font-bold text-xl mb-3 text-foreground">Quotes → Jobs → Invoices (Tap-to-Pay)</h3>
               <p className="text-muted-foreground mb-3 text-lg">
                 Build quotes, convert to jobs, convert to invoices with one click. Take card or ACH payments on-site or online.
@@ -86,7 +86,7 @@ export default function About() {
               </p>
             </div>
 
-            <div className="border-l-4 border-purple-600 pl-6 py-4 bg-purple-50/50 rounded-r-lg">
+            <div className="border-l-4 border-purple-600 pl-6 py-4">
               <h3 className="font-bold text-xl mb-3 text-foreground">100% Mobile Driver App (Works Offline)</h3>
               <p className="text-muted-foreground mb-3 text-lg">
                 Drivers complete routes, log services, add photos, collect signatures—all from their phone.
@@ -96,7 +96,7 @@ export default function About() {
               </p>
             </div>
 
-            <div className="border-l-4 border-orange-600 pl-6 py-4 bg-orange-50/50 rounded-r-lg">
+            <div className="border-l-4 border-orange-600 pl-6 py-4">
               <h3 className="font-bold text-xl mb-3 text-foreground">Automated Customer Alerts & Service Logs</h3>
               <p className="text-muted-foreground mb-3 text-lg">
                 Text or email customers when units are delivered, serviced, or picked up—with photos if needed.
