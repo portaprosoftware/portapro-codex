@@ -435,13 +435,15 @@ export function UserManagementSection() {
         <CardHeader className="pb-4">
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center space-x-2">
-                <Users className="w-5 h-5" />
-                <span>User Management</span>
-                <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold border-0">
+              <div className="flex flex-col gap-2">
+                <CardTitle className="flex items-center space-x-2">
+                  <Users className="w-5 h-5" />
+                  <span>User Management</span>
+                </CardTitle>
+                <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold border-0 w-fit">
                   {allFilteredUsers.length} Users
                 </Badge>
-              </CardTitle>
+              </div>
               
               {/* Desktop Invite Button */}
               <Button 
