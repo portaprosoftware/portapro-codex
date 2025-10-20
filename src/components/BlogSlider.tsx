@@ -1,8 +1,25 @@
-import React from 'react';
-import { X, ArrowRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, ArrowRight, ChevronDown, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface BlogSliderProps {
   isOpen: boolean;
@@ -11,13 +28,143 @@ interface BlogSliderProps {
   onSelectPost: (postId: string | null) => void;
 }
 
+type BlogCategory = 'All' | 'Company News' | 'Case Studies' | 'Technology' | 'Business Tips' | 'Product Updates' | 'Industry Insights';
+
+interface BlogPost {
+  id: string;
+  category: Exclude<BlogCategory, 'All'>;
+  title: string;
+  excerpt: string;
+  date: string;
+  featured?: boolean;
+  badgeGradient: string;
+}
+
+const blogPosts: BlogPost[] = [
+  {
+    id: 'featured',
+    category: 'Company News',
+    title: 'Why We Built PortaPro: Behind the Scenes with Our Founding Team',
+    excerpt: 'At PortaPro, we didn\'t just build another SaaS platform — we built a solution to a problem we lived. Our founding team came from the trenches of field service, operations, and tech.',
+    date: 'January 15, 2024',
+    featured: true,
+    badgeGradient: 'from-yellow-500 to-orange-600'
+  },
+  {
+    id: 'case-study',
+    category: 'Case Studies',
+    title: 'How One Operator Saved 10 Hours a Week with PortaPro\'s Smart Scheduling',
+    excerpt: 'When Mike, a solo operator in the Midwest, came to us, his biggest complaint was simple: "I\'m spending more time coordinating jobs than actually doing them."',
+    date: 'January 8, 2024',
+    badgeGradient: 'from-green-500 to-green-700'
+  },
+  {
+    id: 'qr-codes',
+    category: 'Technology',
+    title: 'QR Codes on Porta Potties: How It Actually Works',
+    excerpt: 'Yes, your porta potty can have a QR code — and yes, it can be life-changing. Every individual unit in PortaPro can be tagged with a unique QR code.',
+    date: 'December 28, 2023',
+    badgeGradient: 'from-blue-500 to-blue-700'
+  },
+  {
+    id: 'missed-cleanings',
+    category: 'Business Tips',
+    title: 'The Hidden Cost of Missed Cleanings (And How to Stop Them)',
+    excerpt: 'Missed cleanings don\'t just mean one unhappy customer. They mean negative reviews, lost contracts, overtime hours, and emergency dispatch costs.',
+    date: 'December 15, 2023',
+    badgeGradient: 'from-orange-500 to-red-600'
+  },
+  {
+    id: 'ai-update',
+    category: 'Product Updates',
+    title: 'PortaPro Product Update: AI Lock Detection + Inventory Scanning',
+    excerpt: 'We\'re excited to roll out one of our most-requested features: AI-powered lock detection and molded panel scanning with Google Vision OCR.',
+    date: 'December 1, 2023',
+    badgeGradient: 'from-purple-500 to-purple-700'
+  },
+];
+
+const categories: BlogCategory[] = ['All', 'Company News', 'Case Studies', 'Technology', 'Business Tips', 'Product Updates', 'Industry Insights'];
+
 export const BlogSlider: React.FC<BlogSliderProps> = ({ 
   isOpen, 
   onClose, 
   selectedPost, 
   onSelectPost 
 }) => {
+  const [selectedCategory, setSelectedCategory] = useState<BlogCategory>('All');
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const isMobile = useIsMobile();
+
   if (!isOpen) return null;
+
+  const filteredPosts = selectedCategory === 'All' 
+    ? blogPosts 
+    : blogPosts.filter(post => post.category === selectedCategory);
+
+  const CategoryFilterDesktop = () => (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" className="gap-2">
+          <Filter className="w-4 h-4" />
+          {selectedCategory}
+          <ChevronDown className="w-4 h-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="w-56 bg-background z-50">
+        {categories.map((category) => (
+          <DropdownMenuItem
+            key={category}
+            onClick={() => setSelectedCategory(category)}
+            className={selectedCategory === category ? 'bg-accent' : ''}
+          >
+            {category}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+
+  const CategoryFilterMobile = () => (
+    <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
+      <DrawerTrigger asChild>
+        <Button variant="outline" className="gap-2 w-full sm:w-auto">
+          <Filter className="w-4 h-4" />
+          {selectedCategory}
+          <ChevronDown className="w-4 h-4" />
+        </Button>
+      </DrawerTrigger>
+      <DrawerContent className="h-[75vh]">
+        <DrawerHeader>
+          <DrawerTitle>Browse by Category</DrawerTitle>
+          <DrawerDescription>Filter blog posts by category</DrawerDescription>
+        </DrawerHeader>
+        <div className="px-4 py-6 space-y-2 overflow-y-auto">
+          {categories.map((category) => (
+            <button
+              key={category}
+              onClick={() => {
+                setSelectedCategory(category);
+                setDrawerOpen(false);
+              }}
+              className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+                selectedCategory === category
+                  ? 'bg-primary text-white font-semibold'
+                  : 'bg-muted hover:bg-muted/80'
+              }`}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+        <DrawerFooter>
+          <DrawerClose asChild>
+            <Button variant="outline">Close</Button>
+          </DrawerClose>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
+  );
 
   return (
     <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm animate-fade-in">
@@ -50,7 +197,7 @@ export const BlogSlider: React.FC<BlogSliderProps> = ({
                 {selectedPost === 'featured' && (
                   <div className="space-y-6">
                     <div className="space-y-4">
-                      <Badge className="bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-bold border-0">Featured</Badge>
+                      <Badge className="bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-bold border-0">Company News</Badge>
                       <h1 className="text-3xl font-bold">Why We Built PortaPro: Behind the Scenes with Our Founding Team</h1>
                       <p className="text-muted-foreground">January 15, 2024 • Company</p>
                     </div>
@@ -66,7 +213,7 @@ export const BlogSlider: React.FC<BlogSliderProps> = ({
                 {selectedPost === 'case-study' && (
                   <div className="space-y-6">
                     <div className="space-y-4">
-                      <Badge className="bg-gradient-to-r from-green-500 to-green-700 text-white font-bold border-0">Case Study</Badge>
+                      <Badge className="bg-gradient-to-r from-green-500 to-green-700 text-white font-bold border-0">Case Studies</Badge>
                       <h1 className="text-3xl font-bold">How One Operator Saved 10 Hours a Week with PortaPro's Smart Scheduling</h1>
                       <p className="text-muted-foreground">January 8, 2024</p>
                     </div>
@@ -128,7 +275,7 @@ export const BlogSlider: React.FC<BlogSliderProps> = ({
                 {selectedPost === 'ai-update' && (
                   <div className="space-y-6">
                     <div className="space-y-4">
-                      <Badge className="bg-gradient-to-r from-purple-500 to-purple-700 text-white font-bold border-0">Product Update</Badge>
+                      <Badge className="bg-gradient-to-r from-purple-500 to-purple-700 text-white font-bold border-0">Product Updates</Badge>
                       <h1 className="text-3xl font-bold">PortaPro Product Update: AI Lock Detection + Inventory Scanning</h1>
                       <p className="text-muted-foreground">December 1, 2023</p>
                     </div>
@@ -156,122 +303,58 @@ export const BlogSlider: React.FC<BlogSliderProps> = ({
             ) : (
               /* Blog Posts Grid */
               <div className="space-y-8">
+                {/* Category Filter */}
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xl font-bold">Browse by Category</h3>
+                  {isMobile ? <CategoryFilterMobile /> : <CategoryFilterDesktop />}
+                </div>
+
                 <div className="grid md:grid-cols-2 gap-6">
-                  {/* Featured Post */}
-                  <div className="md:col-span-2 bg-gradient-to-br from-primary via-primary/90 to-primary/80 rounded-2xl p-8 text-white">
-                    <Badge className="bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-bold border-0 mb-4">Featured</Badge>
-                    <h3 className="text-2xl font-bold mb-3">Why We Built PortaPro: Behind the Scenes with Our Founding Team</h3>
-                    <p className="text-white/90 mb-4 text-lg">
-                      At PortaPro, we didn't just build another SaaS platform — we built a solution to a problem we lived. Our founding team came from the trenches of field service, operations, and tech.
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-white/80 text-sm">January 15, 2024 • Company</span>
-                      <Button 
-                        className="bg-white text-primary hover:bg-white/90"
-                        onClick={() => onSelectPost('featured')}
-                      >
-                        Read More <ArrowRight className="w-4 h-4 ml-2" />
-                      </Button>
-                    </div>
-                  </div>
-
-                  {/* Blog Post 1 */}
-                  <Card className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                    <CardContent className="p-6">
-                      <Badge className="bg-gradient-to-r from-green-500 to-green-700 text-white font-bold border-0 mb-3">Case Study</Badge>
-                      <h3 className="text-xl font-bold mb-3">How One Operator Saved 10 Hours a Week with PortaPro's Smart Scheduling</h3>
-                      <p className="text-muted-foreground mb-4">
-                        When Mike, a solo operator in the Midwest, came to us, his biggest complaint was simple: "I'm spending more time coordinating jobs than actually doing them."
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground text-sm">January 8, 2024</span>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => onSelectPost('case-study')}
-                        >
-                          Read More <ArrowRight className="w-3 h-3 ml-1" />
-                        </Button>
+                  {filteredPosts.map((post) => (
+                    post.featured ? (
+                      /* Featured Post */
+                      <div key={post.id} className="md:col-span-2 bg-gradient-to-br from-primary via-primary/90 to-primary/80 rounded-2xl p-8 text-white">
+                        <Badge className={`bg-gradient-to-r ${post.badgeGradient} text-white font-bold border-0 mb-4`}>{post.category}</Badge>
+                        <h3 className="text-2xl font-bold mb-3">{post.title}</h3>
+                        <p className="text-white/90 mb-4 text-lg">{post.excerpt}</p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-white/80 text-sm">{post.date} • {post.category}</span>
+                          <Button 
+                            className="bg-white text-primary hover:bg-white/90"
+                            onClick={() => onSelectPost(post.id)}
+                          >
+                            Read More <ArrowRight className="w-4 h-4 ml-2" />
+                          </Button>
+                        </div>
                       </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Blog Post 2 */}
-                  <Card className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                    <CardContent className="p-6">
-                      <Badge className="bg-gradient-to-r from-blue-500 to-blue-700 text-white font-bold border-0 mb-3">Technology</Badge>
-                      <h3 className="text-xl font-bold mb-3">QR Codes on Porta Potties: How It Actually Works</h3>
-                      <p className="text-muted-foreground mb-4">
-                        Yes, your porta potty can have a QR code — and yes, it can be life-changing. Every individual unit in PortaPro can be tagged with a unique QR code.
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground text-sm">December 28, 2023</span>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => onSelectPost('qr-codes')}
-                        >
-                          Read More <ArrowRight className="w-3 h-3 ml-1" />
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Blog Post 3 */}
-                  <Card className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                    <CardContent className="p-6">
-                      <Badge className="bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold border-0 mb-3">Business Tips</Badge>
-                      <h3 className="text-xl font-bold mb-3">The Hidden Cost of Missed Cleanings (And How to Stop Them)</h3>
-                      <p className="text-muted-foreground mb-4">
-                        Missed cleanings don't just mean one unhappy customer. They mean negative reviews, lost contracts, overtime hours, and emergency dispatch costs.
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground text-sm">December 15, 2023</span>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => onSelectPost('missed-cleanings')}
-                        >
-                          Read More <ArrowRight className="w-3 h-3 ml-1" />
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Blog Post 4 */}
-                  <Card className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                    <CardContent className="p-6">
-                      <Badge className="bg-gradient-to-r from-purple-500 to-purple-700 text-white font-bold border-0 mb-3">Product Update</Badge>
-                      <h3 className="text-xl font-bold mb-3">PortaPro Product Update: AI Lock Detection + Inventory Scanning</h3>
-                      <p className="text-muted-foreground mb-4">
-                        We're excited to roll out one of our most-requested features: AI-powered lock detection and molded panel scanning with Google Vision OCR.
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground text-sm">December 1, 2023</span>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => onSelectPost('ai-update')}
-                        >
-                          Read More <ArrowRight className="w-3 h-3 ml-1" />
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
+                    ) : (
+                      /* Regular Post */
+                      <Card key={post.id} className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                        <CardContent className="p-6">
+                          <Badge className={`bg-gradient-to-r ${post.badgeGradient} text-white font-bold border-0 mb-3`}>{post.category}</Badge>
+                          <h3 className="text-xl font-bold mb-3">{post.title}</h3>
+                          <p className="text-muted-foreground mb-4">{post.excerpt}</p>
+                          <div className="flex items-center justify-between">
+                            <span className="text-muted-foreground text-sm">{post.date}</span>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => onSelectPost(post.id)}
+                            >
+                              Read More <ArrowRight className="w-3 h-3 ml-1" />
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )
+                  ))}
                 </div>
 
-                {/* Categories Section */}
-                <div className="border-t pt-8">
-                  <h3 className="text-xl font-bold mb-4">Browse by Category</h3>
-                  <div className="flex flex-wrap gap-3">
-                    <Badge variant="outline" className="cursor-pointer hover:bg-primary hover:text-white transition-colors">Company News</Badge>
-                    <Badge variant="outline" className="cursor-pointer hover:bg-primary hover:text-white transition-colors">Case Studies</Badge>
-                    <Badge variant="outline" className="cursor-pointer hover:bg-primary hover:text-white transition-colors">Technology</Badge>
-                    <Badge variant="outline" className="cursor-pointer hover:bg-primary hover:text-white transition-colors">Business Tips</Badge>
-                    <Badge variant="outline" className="cursor-pointer hover:bg-primary hover:text-white transition-colors">Product Updates</Badge>
-                    <Badge variant="outline" className="cursor-pointer hover:bg-primary hover:text-white transition-colors">Industry Insights</Badge>
+                {filteredPosts.length === 0 && (
+                  <div className="text-center py-12">
+                    <p className="text-muted-foreground">No blog posts found in this category.</p>
                   </div>
-                </div>
+                )}
 
                 {/* Subscribe Section */}
                 <div className="bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 rounded-2xl p-6 text-white">
