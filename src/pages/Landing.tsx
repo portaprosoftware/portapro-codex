@@ -1123,13 +1123,23 @@ export const Landing: React.FC = () => {
                         <span className="text-xs sm:text-sm text-gray-800 font-medium leading-tight">{feature}</span>
                       </li>)}
                   </ul>
-                  <Button 
-                    className="w-full bg-gradient-blue text-white hover:bg-blue-700 text-lg py-6 mt-6 font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
-                    onClick={handleRequestInfo}
-                  >
-                    Request Information
-                    <Phone className="w-5 h-5 ml-2" />
-                  </Button>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <Button 
+                      className="flex-1 bg-gradient-blue text-white hover:bg-blue-700 text-lg py-6 mt-6 font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
+                      onClick={handleScheduleDemo}
+                    >
+                      <Laptop className="w-5 h-5 mr-2" />
+                      Schedule Demo
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      className="flex-1 bg-white text-foreground hover:bg-gray-50 text-lg py-6 mt-6 font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
+                      onClick={handleRequestInfo}
+                    >
+                      <Phone className="w-5 h-5 mr-2" />
+                      Request Information
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             </div>
