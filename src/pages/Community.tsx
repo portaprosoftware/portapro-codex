@@ -82,7 +82,7 @@ export default function Community() {
             >
               <div className="p-6 sm:p-8">
                 <div className="flex items-start gap-4 mb-4">
-                  <card.icon className="w-10 h-10 text-primary flex-shrink-0 stroke-[2.5]" />
+                  <card.icon className="w-8 h-8 text-primary flex-shrink-0 stroke-[2.5]" />
                   <div className="flex-1 min-w-0">
                     <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-1">
                       {card.subtitle}
