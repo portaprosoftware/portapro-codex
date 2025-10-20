@@ -224,7 +224,7 @@ const CustomerHub: React.FC = () => {
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                   </DrawerTrigger>
-                  <DrawerContent className="max-h-[50vh]">
+                  <DrawerContent className="max-h-[75vh]">
                     <DrawerHeader className="border-b">
                       <DrawerTitle className="text-lg">Customer Type</DrawerTitle>
                     </DrawerHeader>
