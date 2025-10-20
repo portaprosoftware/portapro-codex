@@ -4,6 +4,7 @@ import { ArrowRight, Play, CheckCircle, Truck, Users, BarChart3, ClipboardList, 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
 import { LandingLogo } from '@/components/ui/landing-logo';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { BlogSlider } from '@/components/BlogSlider';
@@ -1085,9 +1086,11 @@ export const Landing: React.FC = () => {
             
             <div className="flex items-center justify-center gap-4 mt-2">
               <span className={`font-medium ${!isAnnual ? 'text-white' : 'text-white/70'}`}>Monthly</span>
-              <button onClick={() => setIsAnnual(!isAnnual)} className={`relative w-12 h-6 rounded-full transition-colors ${isAnnual ? 'bg-gradient-to-r from-green-500 to-green-600' : 'bg-white/30'}`}>
-                <div className={`absolute top-1 w-4 h-4 rounded-full transition-transform ${isAnnual ? 'bg-white translate-x-7' : 'bg-white translate-x-1'}`} />
-              </button>
+              <Switch 
+                checked={isAnnual} 
+                onCheckedChange={setIsAnnual}
+                className={isAnnual ? 'data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-green-500 data-[state=checked]:to-green-600' : 'data-[state=unchecked]:bg-white/30'}
+              />
               <span className={`font-medium ${isAnnual ? 'text-white' : 'text-white/70'}`}>
                 Annual <Badge variant="secondary" className={`ml-1 ${isAnnual ? 'bg-gradient-to-r from-green-500 to-green-600 text-white font-bold' : 'bg-white/20 text-white'}`}>Save $50/month</Badge>
               </span>
