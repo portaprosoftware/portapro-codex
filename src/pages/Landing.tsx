@@ -335,20 +335,10 @@ export const Landing: React.FC = () => {
             </div>
           </div>
 
-          {/* Mobile Menu Button & More Info */}
-          <div className="md:hidden flex items-center gap-2">
-            <Button 
-              size="sm"
-              variant="outline"
-              className="bg-muted text-foreground text-xs font-medium"
-              onClick={handleRequestInfo}
-            >
-              More Info
-            </Button>
-            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
-          </div>
+          {/* Mobile Menu Button */}
+          <button className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
         </div>
 
         {/* Mobile Menu */}
