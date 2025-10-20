@@ -1223,7 +1223,7 @@ export const Landing: React.FC = () => {
               <h4 className="font-semibold text-white text-sm sm:text-base">Company</h4>
               <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm text-white/80">
                 <a href="/about" onClick={(e) => { e.preventDefault(); setAboutSliderOpen(true); }} className="block hover:text-white text-left">About</a>
-                <a href="#" className="block hover:text-white">Careers</a>
+                
                 <a href="/blog" onClick={(e) => { e.preventDefault(); setBlogSliderOpen(true); }} className="block hover:text-white text-left">Blog</a>
               </div>
             </div>
@@ -1232,6 +1232,7 @@ export const Landing: React.FC = () => {
               <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm text-white/80">
                 <a href="/help" className="block hover:text-white">Help Center</a>
                 <a href="/community" onClick={(e) => { e.preventDefault(); setCommunitySliderOpen(true); }} className="block hover:text-white text-left">Community</a>
+                <a href="https://status.portaprosoftware.com" target="_blank" rel="noopener noreferrer" className="block hover:text-white text-left">Status</a>
               </div>
             </div>
             <div className="space-y-3 sm:space-y-4">
