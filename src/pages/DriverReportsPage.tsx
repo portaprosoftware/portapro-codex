@@ -149,17 +149,18 @@ export const DriverReportsPage: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col h-full bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-4 py-3">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center space-x-3">
-            <FileText className="w-6 h-6 text-blue-600" />
+    <div className="flex flex-col h-full bg-gray-50 max-w-3xl mx-auto">
+      {/* Header - compact on mobile */}
+      <div className="bg-white border-b border-gray-200 px-4 py-4">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-2">
+            <FileText className="w-5 h-5 text-blue-600" />
             <h1 className="text-xl font-semibold text-gray-900">Service Reports</h1>
           </div>
           <Button 
             variant="outline" 
             size="sm"
+            className="h-11"
             onClick={() => setShowAnalytics(!showAnalytics)}
           >
             <BarChart3 className="w-4 h-4 mr-2" />
@@ -209,20 +210,21 @@ export const DriverReportsPage: React.FC = () => {
           </div>
         )}
         
-        {/* Search and Filter */}
-        <div className="flex space-x-3">
+        {/* Search and Filter - 48px inputs */}
+        <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input
               placeholder="Search reports, customers..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
+              className="pl-10 h-12 text-base rounded-xl"
+              style={{ fontSize: '16px' }}
             />
           </div>
           
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-40">
+            <SelectTrigger className="w-full sm:w-40 h-12 rounded-xl">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -239,10 +241,10 @@ export const DriverReportsPage: React.FC = () => {
       {/* Reports List */}
       <div className="flex-1 overflow-y-auto p-4">
         {filteredReports.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-64 text-gray-500">
+          <div className="flex flex-col items-center justify-center min-h-[280px] text-gray-500 px-4">
             <FileText className="w-12 h-12 mb-4 text-gray-400" />
-            <h3 className="text-lg font-medium mb-2">No Service Reports</h3>
-            <p className="text-center">
+            <h3 className="text-lg font-semibold mb-2">No Service Reports</h3>
+            <p className="text-sm text-center text-muted-foreground max-w-xs">
               {searchQuery || statusFilter !== 'all' 
                 ? 'No reports match your current filters'
                 : "You haven't completed any service reports yet"

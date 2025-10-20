@@ -12,11 +12,11 @@ export const DriverProfilePage: React.FC = () => {
   const { signOut } = useClerk();
 
   return (
-    <div className="p-4 space-y-6">
-      {/* Profile Info */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
+    <div className="p-4 space-y-5 max-w-3xl mx-auto">
+      {/* Profile Info Card - rounded-2xl, p-4 */}
+      <Card className="rounded-2xl shadow-sm">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center space-x-2 text-base">
             <User className="w-5 h-5" />
             <span>Profile</span>
           </CardTitle>

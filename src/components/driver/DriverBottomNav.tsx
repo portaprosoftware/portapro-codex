@@ -37,15 +37,15 @@ export const DriverBottomNav: React.FC = () => {
   const location = useLocation();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
-      <div 
-        className="flex items-center justify-around py-2"
-        style={{ 
-          paddingBottom: 'max(8px, env(safe-area-inset-bottom))',
-          paddingLeft: 'env(safe-area-inset-left)',
-          paddingRight: 'env(safe-area-inset-right)'
-        }}
-      >
+    <nav 
+      className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 h-16"
+      style={{
+        paddingBottom: 'env(safe-area-inset-bottom)',
+        paddingLeft: 'env(safe-area-inset-left)',
+        paddingRight: 'env(safe-area-inset-right)'
+      }}
+    >
+      <div className="flex items-center justify-around h-full">
         {navItems.map((item) => {
           const isActive = item.end 
             ? location.pathname === item.to
@@ -56,7 +56,7 @@ export const DriverBottomNav: React.FC = () => {
               key={item.to}
               to={item.to}
               className={cn(
-                "flex flex-col items-center px-2 py-2 min-w-0 flex-1",
+                "flex flex-col items-center justify-center px-2 min-w-0 flex-1",
                 "text-xs font-medium rounded-lg transition-colors min-h-[48px]",
                 isActive
                   ? "text-white bg-gradient-primary"
@@ -64,10 +64,10 @@ export const DriverBottomNav: React.FC = () => {
               )}
             >
               <item.icon className={cn(
-                "w-5 h-5 sm:w-6 sm:h-6 mb-1",
+                "w-5.5 h-5.5 mb-0.5",
                 isActive ? "text-white" : "text-gray-400"
               )} />
-              <span className="truncate text-[10px] sm:text-xs">{item.label}</span>
+              <span className="truncate text-[12px]">{item.label}</span>
             </NavLink>
           );
         })}

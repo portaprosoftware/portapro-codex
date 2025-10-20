@@ -72,35 +72,34 @@ export const DriverVehiclesPage: React.FC = () => {
 
   return (
     <PullToRefresh onRefresh={handleRefresh}>
-      <div className="p-6 space-y-6">
-        {/* Header */}
+      <div className="p-4 space-y-5 max-w-3xl mx-auto">
+        {/* Header - Title on left */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-              <Truck className="h-6 w-6" />
-              My Vehicles
-            </h1>
-          </div>
+          <h1 className="text-2xl font-semibold text-foreground flex items-center gap-2">
+            <Truck className="h-6 w-6" />
+            My Vehicles
+          </h1>
 
-          {/* Date Selection */}
+          {/* Date Selection - 48px height */}
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4 text-muted-foreground" />
             <input
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
-              className="border rounded-md px-3 py-2 bg-background text-foreground"
+              className="h-12 border rounded-xl px-3 py-2 bg-background text-foreground text-base"
+              style={{ fontSize: '16px' }} // Prevent iOS zoom
             />
           </div>
         </div>
 
         {/* Vehicle Assignments */}
         {assignments.length === 0 ? (
-          <Card>
+          <Card className="rounded-2xl shadow-sm">
             <CardContent className="p-8 text-center">
               <Truck className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
               <h3 className="text-lg font-semibold mb-2">No vehicles assigned</h3>
-              <p className="text-muted-foreground mb-4">
+              <p className="text-sm text-muted-foreground max-w-xs mx-auto">
                 You don't have any vehicles assigned for {format(new Date(selectedDate), 'MMMM d, yyyy')}.
               </p>
             </CardContent>

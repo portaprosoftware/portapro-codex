@@ -184,9 +184,9 @@ export const DailySchedule: React.FC = () => {
   const isToday = isSameDay(selectedDate, new Date());
 
   return (
-    <div className="flex flex-col h-full bg-gray-50">
+    <div className="flex flex-col h-full bg-gray-50 max-w-3xl mx-auto">
       {/* Date Header with Calendar Dropdown */}
-      <div className="bg-white border-b border-gray-200 px-4 py-3">
+      <div className="bg-white border-b border-gray-200 px-4 py-4">
         <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
           <PopoverTrigger asChild>
             <Button variant="ghost" className="w-full justify-between p-0 h-auto">
@@ -288,10 +288,10 @@ export const DailySchedule: React.FC = () => {
             })}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center h-full text-gray-400 p-8">
+          <div className="flex flex-col items-center justify-center min-h-[280px] text-gray-400 p-8">
             <CalendarIcon className="w-12 h-12 mb-4" />
-            <h3 className="text-lg font-medium text-gray-500 mb-2">Nothing planned</h3>
-            <p className="text-sm text-center">You have no jobs scheduled for this day.</p>
+            <h3 className="text-lg font-semibold text-gray-500 mb-2">Nothing planned</h3>
+            <p className="text-sm text-center text-muted-foreground max-w-xs">You have no jobs scheduled for this day.</p>
           </div>
         )}
       </div>
