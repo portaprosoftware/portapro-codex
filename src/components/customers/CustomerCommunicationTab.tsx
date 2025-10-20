@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { AIEmailGeneratorModal } from './AIEmailGeneratorModal';
 import { NewMessageModal } from './NewMessageModal';
 import { PortalLinkModal } from './PortalLinkModal';
+import { CommunicationCard } from './CommunicationCard';
 
 interface CustomerCommunicationTabProps {
   customerId: string;
@@ -54,37 +55,73 @@ export function CustomerCommunicationTab({ customerId }: CustomerCommunicationTa
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 overflow-x-hidden px-4 lg:px-0">
       {/* Header with Actions */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3">
         <h3 className="text-lg font-semibold text-foreground">Communication History</h3>
-        <div className="flex items-center gap-3">
+        
+        {/* Action Buttons - Responsive Stack */}
+        <div className="grid grid-cols-1 xs:grid-cols-2 lg:flex lg:items-center gap-2 lg:gap-3">
           <Button
             onClick={() => setShowAIEmail(true)}
-            className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white"
+            className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white min-h-[44px] justify-center"
+            aria-label="Create AI email"
           >
             <Sparkles className="w-4 h-4 mr-2" />
-            AI Email
+            <span>AI Email</span>
           </Button>
           <Button
             onClick={() => setShowNewMessage(true)}
-            className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
+            className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white min-h-[44px] justify-center"
+            aria-label="Compose new message"
           >
             <Plus className="w-4 h-4 mr-2" />
-            New Message
+            <span>New Message</span>
           </Button>
           <Button
             onClick={() => setShowPortalLink(true)}
             variant="outline"
+            className="min-h-[44px] justify-center xs:col-span-2 lg:col-span-1"
+            aria-label="Open customer portal"
           >
             <ExternalLink className="w-4 h-4 mr-2" />
-            Portal Link
+            <span>Portal Link</span>
           </Button>
         </div>
       </div>
 
-      {/* Communication History Table */}
-      <div className="bg-card rounded-2xl border shadow-sm">
+      {/* Mobile/Tablet Card View (<1024px) */}
+      <div className="lg:hidden">
+        {isLoading ? (
+          <div className="text-center py-8 text-muted-foreground">
+            Loading communications...
+          </div>
+        ) : communications.length === 0 ? (
+          <div className="text-center py-12 bg-card rounded-2xl border shadow-sm">
+            <MessageSquare className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+            <h4 className="text-lg font-medium text-foreground mb-2">No Communication History</h4>
+            <p className="text-muted-foreground mb-4">
+              Start communicating with this customer
+            </p>
+            <Button
+              onClick={() => setShowNewMessage(true)}
+              className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              New Message
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {communications.map((comm) => (
+              <CommunicationCard key={comm.id} communication={comm} />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Desktop Table View (≥1024px) */}
+      <div className="hidden lg:block bg-card rounded-2xl border shadow-sm">
         <Table>
           <TableHeader>
             <TableRow>
