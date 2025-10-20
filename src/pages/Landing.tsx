@@ -506,9 +506,7 @@ export const Landing: React.FC = () => {
         <div className="container mx-auto max-w-6xl px-6">
           <div className="text-center">
             <p className="text-sm text-muted-foreground font-bold">
-              Tired of tracking units, routes, staff, customers, and a fleet across ten different places?
-              <br />
-              PortaPro does it all—finally an affordable, all-in-one system built custom for you.
+              Tired of juggling your day-to-day across 10 systems? PortaPro puts it all in one place—fully mobile, and fairly priced.
             </p>
           </div>
         </div>
