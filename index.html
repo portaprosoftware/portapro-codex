@@ -3,7 +3,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     
     <!-- Main favicon -->
     <link rel="icon" type="image/png" href="/favicon.png">
@@ -46,12 +46,19 @@
         padding-bottom: env(safe-area-inset-bottom);
       }
       
-      /* Mobile optimizations */
+      /* Mobile optimizations - native app feel */
       @media (max-width: 768px) {
         body {
           -webkit-touch-callout: none;
           -webkit-user-select: none;
           -webkit-tap-highlight-color: transparent;
+          /* Minimum 16px font to prevent auto-zoom on input focus */
+          font-size: 16px;
+        }
+        
+        /* Prevent input zoom on iOS */
+        input, textarea, select {
+          font-size: 16px !important;
         }
       }
     </style>

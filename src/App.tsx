@@ -3,6 +3,7 @@ import { Route, Routes, Navigate } from 'react-router-dom';
 import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
 import { RouterSelector } from './components/RouterSelector';
 import { useUserRole } from './hooks/useUserRole';
+import { usePWAStandalone } from './hooks/usePWAStandalone';
 import { Layout } from './components/layout/Layout';
 import { ErrorBoundary } from './components/ui/error-boundary';
 import { Landing } from './pages/Landing';
@@ -66,6 +67,9 @@ import Privacy from './pages/Privacy';
 import Security from './pages/Security';
 
 const App = () => {
+  // Enable PWA standalone mode behaviors (zoom lock, gesture blocking)
+  usePWAStandalone();
+
   return (
     <ErrorBoundary>
       <RouterSelector>

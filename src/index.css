@@ -180,6 +180,23 @@
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
   }
+
+  /* Prevent horizontal scroll for native app feel */
+  html, body {
+    overflow-x: hidden;
+    overscroll-behavior-x: contain;
+  }
+
+  /* Prevent content overflow */
+  img, video, canvas, iframe {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Prevent long text from breaking layout */
+  * {
+    word-break: break-word;
+  }
   
   /* Emoji icons should appear bold and prominent */
   .emoji-icon {
