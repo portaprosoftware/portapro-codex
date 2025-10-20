@@ -196,7 +196,7 @@ export const MobileInventoryFilters: React.FC<MobileInventoryFiltersProps> = ({
             className="flex-1 min-w-0 h-11"
           >
             <Sliders className="h-4 w-4 mr-2 rotate-90" />
-            <span className="truncate">All Units</span>
+            <span className="truncate">Quick View</span>
           </Button>
         )}
       </div>

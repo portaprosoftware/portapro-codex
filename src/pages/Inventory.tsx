@@ -416,7 +416,7 @@ const Inventory: React.FC = () => {
                     className="flex items-center gap-2"
                   >
                     <Sliders className="h-4 w-4 rotate-90" />
-                    All Units
+                    Quick View
                   </Button>
                 </div>
 
