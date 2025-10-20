@@ -45,3 +45,6 @@ verify_jwt = false
 [functions.send-fuel-notifications]
 verify_jwt = false
 
+[functions.send-dvir-reminders]
+verify_jwt = false
+
