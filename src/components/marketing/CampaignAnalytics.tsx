@@ -104,62 +104,63 @@ export const CampaignAnalytics: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-6">
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="space-y-4 md:space-y-6">
+      {/* Summary Cards - Responsive Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         {summaryCards.map((card, index) => (
-          <Card key={index} className="p-6">
+          <Card key={index} className="p-4 md:p-6 rounded-2xl shadow-md min-h-[88px]">
             <div className="flex justify-between items-start">
-              <div>
-                <p className="text-sm font-medium text-gray-600 mb-1">{card.title}</p>
-                <p className="text-2xl font-bold" style={{ color: card.color }}>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-600 mb-1 truncate">{card.title}</p>
+                <p className="text-2xl font-bold truncate" style={{ color: card.color }}>
                   {card.value}
                 </p>
               </div>
               <div 
-                className="w-8 h-8 rounded-md flex items-center justify-center"
+                className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ml-2"
                 style={{ backgroundColor: card.color }}
               >
-                <card.icon className="w-4 h-4 text-white" />
+                <card.icon className="w-5 h-5 text-white" />
               </div>
             </div>
           </Card>
         ))}
       </div>
 
-
-      {/* Channel Distribution & Recent Campaigns */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Channel Distribution */}
-        <Card className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Campaign Channels {dateRange}</h3>
-            <div className="flex gap-1">
+      {/* Channel Distribution & Recent Campaigns - Mobile Stack */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+        {/* Channel Distribution with YTD/MTD Toggle */}
+        <Card className="p-4 md:p-6 rounded-2xl shadow-md">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+            <h3 className="text-base md:text-lg font-semibold">Campaign Channels {dateRange}</h3>
+            <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
               <Button
-                variant={dateRange === 'YTD' ? 'default' : 'outline'}
+                variant={dateRange === 'YTD' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setDateRange('YTD')}
+                className="min-h-[44px] px-4"
               >
                 YTD
               </Button>
               <Button
-                variant={dateRange === 'MTD' ? 'default' : 'outline'}
+                variant={dateRange === 'MTD' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setDateRange('MTD')}
+                className="min-h-[44px] px-4"
               >
                 MTD
               </Button>
             </div>
           </div>
           <div className="flex items-center justify-center">
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={240}>
               <PieChart>
                 <Pie
                   data={channelData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
+                  innerRadius={50}
+                  outerRadius={90}
                   paddingAngle={5}
                   dataKey="value"
                 >
@@ -171,7 +172,7 @@ export const CampaignAnalytics: React.FC = () => {
               </PieChart>
             </ResponsiveContainer>
           </div>
-          <div className="flex justify-center gap-4 mt-4">
+          <div className="flex flex-wrap justify-center gap-3 md:gap-4 mt-4">
             {channelData.map((channel) => (
               <div key={channel.name} className="flex items-center gap-2">
                 <div 
@@ -185,39 +186,39 @@ export const CampaignAnalytics: React.FC = () => {
         </Card>
 
         {/* Recent Campaigns */}
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Recent Campaigns</h3>
-          <div className="space-y-4">
+        <Card className="p-4 md:p-6 rounded-2xl shadow-md">
+          <h3 className="text-base md:text-lg font-semibold mb-4">Recent Campaigns</h3>
+          <div className="space-y-3 md:space-y-4">
             {campaigns.slice(0, 5).map((campaign) => (
-              <div key={campaign.id} className="flex items-center justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-medium text-sm">{campaign.name}</span>
+              <div key={campaign.id} className="flex items-center justify-between gap-3 min-h-[44px]">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    <span className="font-medium text-sm truncate">{campaign.name}</span>
                     <Badge 
                       variant={
                         campaign.status === 'completed' ? 'default' :
                         campaign.status === 'sending' ? 'destructive' :
                         campaign.status === 'scheduled' ? 'secondary' : 'outline'
                       }
-                      className="text-xs"
+                      className="text-xs shrink-0"
                     >
                       {campaign.status}
                     </Badge>
                   </div>
-                  <div className="flex items-center gap-4 text-xs text-gray-500">
-                    <span>{campaign.campaign_type}</span>
-                    <span>{campaign.total_recipients || 0} recipients</span>
+                  <div className="flex flex-wrap items-center gap-2 md:gap-4 text-xs text-gray-500">
+                    <span className="shrink-0">{campaign.campaign_type}</span>
+                    <span className="shrink-0">{campaign.total_recipients || 0} recipients</span>
                     {campaign.delivered_count > 0 && (
-                      <span>{((campaign.opened_count || 0) / campaign.delivered_count * 100).toFixed(1)}% open rate</span>
+                      <span className="shrink-0">{((campaign.opened_count || 0) / campaign.delivered_count * 100).toFixed(1)}% open rate</span>
                     )}
                   </div>
                 </div>
                 {campaign.campaign_type === 'email' ? (
-                  <Mail className="w-4 h-4 text-blue-500" />
+                  <Mail className="w-4 h-4 text-blue-500 shrink-0" />
                 ) : campaign.campaign_type === 'sms' ? (
-                  <MessageSquare className="w-4 h-4 text-green-500" />
+                  <MessageSquare className="w-4 h-4 text-green-500 shrink-0" />
                 ) : (
-                  <Users className="w-4 h-4 text-purple-500" />
+                  <Users className="w-4 h-4 text-purple-500 shrink-0" />
                 )}
               </div>
             ))}

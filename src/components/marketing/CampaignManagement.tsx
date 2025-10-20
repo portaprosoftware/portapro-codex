@@ -17,6 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { cn } from '@/lib/utils';
 
 export const CampaignManagement: React.FC = () => {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -36,23 +37,36 @@ export const CampaignManagement: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Campaign Creation */}
-      <div className="bg-white rounded-lg border shadow-sm p-6">
-        <div className="flex items-center justify-between mb-4">
+    <div className="space-y-4 md:space-y-6">
+      {/* Campaign Creation Card */}
+      <div className="bg-white rounded-2xl border shadow-sm p-4 md:p-6">
+        <div className="flex flex-col gap-4">
           <div>
             <h2 className="text-lg font-semibold text-gray-900 font-inter">Create Campaign</h2>
             <p className="text-sm text-gray-600 mt-1">
               Emails and texts will go to the company phone number and email address listed in each customer's profile under 'Overview'.
             </p>
           </div>
+          
+          {/* Desktop Button */}
           <Button 
             onClick={() => setIsCreateOpen(true)}
-            className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold"
+            className="hidden md:flex bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold w-full md:w-auto"
           >
             <Plus className="h-4 w-4 mr-2" />
             Create Campaign
           </Button>
+
+          {/* Mobile FAB - Fixed position */}
+          <div className="md:hidden fixed bottom-20 right-4 z-40">
+            <Button 
+              onClick={() => setIsCreateOpen(true)}
+              size="lg"
+              className="h-14 w-14 rounded-full shadow-lg bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold"
+            >
+              <Plus className="h-6 w-6" />
+            </Button>
+          </div>
 
           <CustomModal
             isOpen={isCreateOpen}
@@ -69,7 +83,7 @@ export const CampaignManagement: React.FC = () => {
       </div>
 
       {/* Campaign Analytics */}
-      <div className="bg-white rounded-lg border shadow-sm p-6">
+      <div className="bg-white rounded-2xl border shadow-sm p-4 md:p-6">
         <h2 className="text-lg font-semibold text-gray-900 font-inter mb-4">Campaign Performance</h2>
         <CampaignAnalytics />
       </div>
@@ -131,18 +145,24 @@ const CustomerTypesOverview: React.FC = () => {
   };
 
   return (
-    <div className="bg-white rounded-lg border shadow-sm p-6">
+    <div className="bg-white rounded-2xl border shadow-sm p-4 md:p-6">
       <h2 className="text-lg font-semibold text-gray-900 font-inter mb-4">Customer Types</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="flex flex-wrap gap-3">
         {customerTypes.map((type) => (
-          <div key={type.customer_type} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-            <Badge className={`${getTypeGradient(type.customer_type)} text-white border-0 font-bold px-3 py-1 rounded-full text-xs`}>
+          <button
+            key={type.customer_type}
+            className="flex items-center gap-2 p-3 bg-gray-50 rounded-full hover:bg-gray-100 transition-all min-h-[44px]"
+          >
+            <Badge className={cn(
+              getTypeGradient(type.customer_type),
+              "text-white border-0 font-bold px-3 py-1 rounded-full text-xs whitespace-nowrap"
+            )}>
               {formatTypeName(type.customer_type)}
             </Badge>
-            <span className="text-sm font-semibold text-gray-700 ml-2">
+            <span className="text-sm font-semibold text-gray-700">
               ({type.total_count})
             </span>
-          </div>
+          </button>
         ))}
       </div>
     </div>
