@@ -41,10 +41,18 @@ export const StorageSitesNavigation: React.FC<StorageSitesNavigationProps> = ({ 
           <p className="text-gray-600 mt-1">
             Manage storage garages and view garage analytics
           </p>
+          {/* Desktop button */}
           <div className="mt-4 hidden lg:block">
             <Button onClick={onAddStorage} className="bg-gradient-to-r from-blue-700 to-blue-800 text-white hover:from-blue-800 hover:to-blue-900 gap-2">
               <Plus className="h-4 w-4" />
               Add Storage Garage
+            </Button>
+          </div>
+          {/* Mobile/Tablet button */}
+          <div className="mt-4 lg:hidden">
+            <Button onClick={onAddStorage} className="w-full bg-gradient-to-r from-blue-700 to-blue-800 text-white hover:from-blue-800 hover:to-blue-900 gap-2">
+              <Plus className="h-4 w-4" />
+              + Garage
             </Button>
           </div>
         </div>
