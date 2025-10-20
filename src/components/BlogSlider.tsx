@@ -139,6 +139,14 @@ const blogPosts: BlogPost[] = [
     badgeGradient: 'from-orange-500 to-red-600'
   },
   {
+    id: 'industry-trends-2025',
+    category: 'Industry Insights',
+    title: '2025 Portable Sanitation Trends: Rising Demand, Labor Pressure, and the Shift to Digital Operations',
+    excerpt: 'An overview of the biggest trends shaping the portable sanitation industry in 2025, including rising demand, labor shortages, digital tools, and changes in customer expectations.',
+    date: 'June 18, 2025',
+    badgeGradient: 'from-cyan-500 to-teal-600'
+  },
+  {
     id: 'mobile-first-platform',
     category: 'Product Updates',
     title: 'Why PortaPro Is 100% Mobile—For Drivers, Dispatchers, and the Entire Operation',
@@ -158,7 +166,7 @@ const blogPosts: BlogPost[] = [
     id: 'ai-update',
     category: 'Product Updates',
     title: 'PortaPro Product Update: AI Lock Detection + Inventory Scanning',
-    excerpt: 'We\'re excited to roll out one of our most-requested features: AI-powered lock detection and molded panel scanning with Google Vision OCR.',
+    excerpt: "We're excited to roll out one of our most-requested features: AI-powered lock detection and molded panel scanning with Google Vision OCR.",
     date: 'December 1, 2023',
     badgeGradient: 'from-purple-500 to-purple-700'
   },
@@ -1712,6 +1720,119 @@ export const BlogSlider: React.FC<BlogSliderProps> = ({
                   </div>
                 )}
                 
+                {selectedPost === 'industry-trends-2025' && (
+                  <div className="space-y-6">
+                    <div className="space-y-4">
+                      <Badge className="bg-gradient-to-r from-cyan-500 to-teal-600 text-white font-bold border-0">Industry Insights</Badge>
+                      <h1 className="text-3xl font-bold">2025 Portable Sanitation Trends: Rising Demand, Labor Pressure, and the Shift to Digital Operations</h1>
+                      <p className="text-muted-foreground">June 18, 2025</p>
+                    </div>
+                    <div className="prose prose-lg max-w-none">
+                      <p className="text-lg text-muted-foreground mb-6">
+                        The portable sanitation industry is changing faster in 2025 than it has in the past decade. Demand is up, event schedules are packed, cities are tightening regulations, and operators are under pressure to do more with limited labor and aging fleets. At the same time, customers—contractors, event organizers, municipalities—expect cleaner units, faster communication, and digital records.
+                      </p>
+                      <p className="text-base text-muted-foreground mb-6">
+                        After months of speaking with operators across North America, here are the trends shaping portable sanitation this year—and what they mean for businesses of all sizes.
+                      </p>
+
+                      <h3 className="text-2xl font-bold text-foreground mt-8 mb-4">1. Demand is Rising Across All Segments—Not Just Events</h3>
+                      <p className="text-base text-muted-foreground mb-4">
+                        Event rentals are up—weddings, festivals, county fairs, marathons—but that's not the full story in 2025. Construction is booming in many markets due to federal infrastructure projects and new commercial development. Even utility work, solar field installation, and road widening projects are requiring long-term sanitation setups.
+                      </p>
+                      <p className="text-base text-muted-foreground mb-4 font-semibold">Operators are reporting:</p>
+                      <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
+                        <li>15–30% increase in event inquiries compared to 2024</li>
+                        <li>Steady demand for long-term construction rentals (schools, commercial builds, warehouses)</li>
+                        <li>Off-season dips are shorter—winter work is still active in many regions</li>
+                      </ul>
+                      <p className="text-base text-muted-foreground mb-6">
+                        This increased demand has led to waitlists for rental units in some regions as early as April.
+                      </p>
+
+                      <h3 className="text-2xl font-bold text-foreground mt-8 mb-4">2. Labor Shortages Remain the Industry's Biggest Pain Point</h3>
+                      <p className="text-base text-muted-foreground mb-4">
+                        Finding and keeping reliable drivers and service techs is still the number one challenge for operators in 2025. Larger fleets report turnover every 6–12 months, especially among CDL drivers.
+                      </p>
+                      <p className="text-base text-muted-foreground mb-4 font-semibold">What operators say has changed:</p>
+                      <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
+                        <li>Starting wages have increased by $2–$4/hr in most states</li>
+                        <li>Drivers want routes that make sense (no backtracking) and mobile tools instead of paper</li>
+                        <li>Younger drivers expect GPS, route apps, and digital pay logs—not clipboards</li>
+                      </ul>
+                      <p className="text-base text-muted-foreground mb-6">
+                        Those who don't adapt often lose staff to delivery companies, trucking fleets, and municipalities.
+                      </p>
+
+                      <h3 className="text-2xl font-bold text-foreground mt-8 mb-4">3. Digital Operations Are No Longer a Luxury—They're Expected</h3>
+                      <p className="text-base text-muted-foreground mb-4">
+                        Customers aren't just renting toilets—they now expect transparency, documentation, and quick updates.
+                      </p>
+                      <p className="text-base text-muted-foreground mb-4 font-semibold">In 2025, the most requested features from customers are:</p>
+                      <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
+                        <li>Digital service logs (time, GPS, photo proof)</li>
+                        <li>Invoices sent automatically (not 3 weeks late via mail)</li>
+                        <li>Mobile tap-to-pay, ACH, or emailed invoice links</li>
+                        <li>Service alerts like "your unit has been cleaned" or "driver is 10 minutes away"</li>
+                      </ul>
+                      <p className="text-base text-muted-foreground mb-6">
+                        Cities and large general contractors are also starting to require digital service records for compliance and contract renewal.
+                      </p>
+
+                      <h3 className="text-2xl font-bold text-foreground mt-8 mb-4">4. Increased Focus on Unit Cleanliness and Brand Appearance</h3>
+                      <p className="text-base text-muted-foreground mb-4">
+                        Even on construction sites, cleanliness expectations are rising. Contractors say workers complain more when units are not serviced on time, especially during hot months.
+                      </p>
+                      <p className="text-base text-muted-foreground mb-4 font-semibold">Operators are responding by:</p>
+                      <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
+                        <li>Shortening service intervals in summer</li>
+                        <li>Using stronger deodorizers and hand sanitizer refills</li>
+                        <li>Power-washing units more frequently</li>
+                        <li>Applying clear branding and contact numbers on each unit</li>
+                      </ul>
+                      <p className="text-base text-muted-foreground mb-6">
+                        Events go even further—organizers want spotless units with stocked sinks, foam handwash stations, mirror attachments, and in some cases, floral or décor elements.
+                      </p>
+
+                      <h3 className="text-2xl font-bold text-foreground mt-8 mb-4">5. Rising Costs are Forcing Smarter Pricing Models</h3>
+                      <p className="text-base text-muted-foreground mb-4">
+                        Fuel, disposal fees, insurance, and equipment costs have all gone up in 2025. Many operators who haven't updated pricing in years are now adjusting rates to stay profitable.
+                      </p>
+                      <p className="text-base text-muted-foreground mb-4 font-semibold">The most common pricing changes include:</p>
+                      <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
+                        <li>Delivery and pickup fees added as separate line items</li>
+                        <li>Fuel surcharges when diesel exceeds certain thresholds</li>
+                        <li>Event weekend pricing (flat rate vs daily rate)</li>
+                        <li>"High usage" fees for festivals, concerts, school events</li>
+                      </ul>
+                      <p className="text-base text-muted-foreground mb-6">
+                        Customers are more understanding of fees when there's clarity and documentation.
+                      </p>
+
+                      <h3 className="text-2xl font-bold text-foreground mt-8 mb-4">6. Future Outlook: Smart Units, AI Damage Detection, and Predictive Routing</h3>
+                      <p className="text-base text-muted-foreground mb-4">
+                        Looking ahead, operators and manufacturers are discussing technology beyond QR labels—such as:
+                      </p>
+                      <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
+                        <li>Sensors that track tank fullness in real time</li>
+                        <li>AI-based image recognition to detect graffiti or damage</li>
+                        <li>GPS-integrated units for high-value assets</li>
+                        <li>Predictive routing that schedules service <strong>before</strong> complaints come in</li>
+                      </ul>
+                      <p className="text-base text-muted-foreground mb-6">
+                        Not all of this is mainstream yet, but pilot programs are already happening in larger fleets.
+                      </p>
+
+                      <h3 className="text-2xl font-bold text-foreground mt-8 mb-4">Final Thought</h3>
+                      <p className="text-base text-muted-foreground mb-4">
+                        2025 is a turning point for the portable sanitation industry. Demand is rising, expectations are higher, and the companies that will win aren't necessarily the biggest—they're the ones who adapt.
+                      </p>
+                      <p className="text-base text-muted-foreground mb-4">
+                        Whether it's better scheduling, cleaner units, digital service logs, or smarter pricing, the operators embracing change are the ones growing fastest.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
                 {selectedPost === 'ai-update' && (
                   <div className="space-y-6">
                     <div className="space-y-4">
