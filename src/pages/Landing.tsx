@@ -505,8 +505,10 @@ export const Landing: React.FC = () => {
       <section id="about" className="py-6 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="text-center">
-            <p className="text-sm text-muted-foreground">
-              <span className="font-bold">Tired of tracking units, routes, staff, customers, and a fleet across ten different places?</span> PortaPro does it all—finally an affordable, all-in-one system built custom for you.
+            <p className="text-sm text-muted-foreground font-bold">
+              Tired of tracking units, routes, staff, customers, and a fleet across ten different places?
+              <br />
+              PortaPro does it all—finally an affordable, all-in-one system built custom for you.
             </p>
           </div>
         </div>
