@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { SignInButton, SignUpButton } from '@clerk/clerk-react';
-import { ArrowRight, Play, CheckCircle, Truck, Users, BarChart3, ClipboardList, MapPin, Calendar, DollarSign, Zap, Building2, FileText, Smartphone, Heart, Phone, Mail, Menu, X, Camera, Eye, Compass, Database, Shield, Clock, BellRing, Wrench, CalendarClock, Gauge, HardHat, Route, CloudOff, QrCode, Laptop, RefreshCcw, Bath } from 'lucide-react';
+import { ArrowRight, Play, CheckCircle, Truck, Users, BarChart3, ClipboardList, MapPin, Calendar, DollarSign, Zap, Building2, FileText, Smartphone, Heart, Phone, Mail, Menu, X, Camera, Eye, Compass, Database, Shield, Clock, BellRing, Wrench, CalendarClock, Gauge, HardHat, Route, CloudOff, QrCode, Laptop, RefreshCcw, PiggyBank, Toilet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -470,7 +470,7 @@ export const Landing: React.FC = () => {
                 <article className="rounded-2xl border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm h-full">
                   <div className="flex items-center gap-3 mb-2">
                     <div className="w-10 h-10 rounded-lg bg-gradient-blue text-white flex items-center justify-center">
-                      <Bath className="h-5 w-5" strokeWidth={2.5} aria-hidden="true" />
+                      <Toilet className="h-5 w-5" strokeWidth={2.5} aria-hidden="true" />
                     </div>
                     <h3 className="text-sm font-semibold">Industry-Focused</h3>
                   </div>
@@ -480,7 +480,7 @@ export const Landing: React.FC = () => {
                 <article className="rounded-2xl border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm h-full">
                   <div className="flex items-center gap-3 mb-2">
                     <div className="w-10 h-10 rounded-lg bg-gradient-green text-white flex items-center justify-center">
-                      <DollarSign className="h-5 w-5" strokeWidth={2.5} aria-hidden="true" />
+                      <PiggyBank className="h-5 w-5" strokeWidth={2.5} aria-hidden="true" />
                     </div>
                     <h3 className="text-sm font-semibold">Affordable Cost</h3>
                   </div>
