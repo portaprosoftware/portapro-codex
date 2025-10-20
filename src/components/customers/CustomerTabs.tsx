@@ -111,7 +111,7 @@ export function CustomerTabs({ customer }: CustomerTabsProps) {
               <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </DrawerTrigger>
-          <DrawerContent className="max-h-[50vh]">
+          <DrawerContent className="max-h-[75vh]">
             <DrawerHeader className="border-b">
               <DrawerTitle className="text-lg">Section</DrawerTitle>
             </DrawerHeader>
@@ -120,18 +120,19 @@ export function CustomerTabs({ customer }: CustomerTabsProps) {
                 {tabOptions.map((option) => {
                   const Icon = option.icon;
                   return (
-                    <Button
-                      key={option.value}
-                      variant="ghost"
-                      className={`w-full justify-start h-12 text-base font-normal ${
-                        activeTab === option.value ? 'bg-accent' : ''
-                      }`}
-                      onClick={() => setActiveTab(option.value)}
-                    >
-                      <Check className={`mr-2 h-5 w-5 ${activeTab === option.value ? 'opacity-100' : 'opacity-0'}`} />
-                      <Icon className="w-5 h-5 mr-2" />
-                      {option.label}
-                    </Button>
+                    <DrawerTrigger key={option.value} asChild>
+                      <Button
+                        variant="ghost"
+                        className={`w-full justify-start h-12 text-base font-normal ${
+                          activeTab === option.value ? 'bg-accent' : ''
+                        }`}
+                        onClick={() => setActiveTab(option.value)}
+                      >
+                        <Check className={`mr-2 h-5 w-5 ${activeTab === option.value ? 'opacity-100' : 'opacity-0'}`} />
+                        <Icon className="w-5 h-5 mr-2" />
+                        {option.label}
+                      </Button>
+                    </DrawerTrigger>
                   );
                 })}
               </div>
