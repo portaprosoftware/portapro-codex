@@ -139,6 +139,14 @@ const blogPosts: BlogPost[] = [
     badgeGradient: 'from-orange-500 to-red-600'
   },
   {
+    id: 'route-optimization',
+    category: 'Product Updates',
+    title: 'One-Click Route Optimization Now Available in PortaPro',
+    excerpt: 'PortaPro now includes one-click route optimization, helping operators reduce fuel costs, save time, and eliminate guesswork in daily service scheduling.',
+    date: 'January 30, 2025',
+    badgeGradient: 'from-purple-500 to-purple-700'
+  },
+  {
     id: 'ai-update',
     category: 'Product Updates',
     title: 'PortaPro Product Update: AI Lock Detection + Inventory Scanning',
@@ -1399,6 +1407,139 @@ export const BlogSlider: React.FC<BlogSliderProps> = ({
                       <p><strong>In other words: chaos.</strong></p>
                       <p>PortaPro was built to prevent this. Our job scheduling engine alerts your team before service windows are missed. Color-coded dashboards show what's coming due. And QR codes + tech sign-offs prove every job was completed.</p>
                       <p>Most companies don't realize how much missed cleanings cost until it's too late. With PortaPro, you stop guessing and start preventing. Less stress, more accountability.</p>
+                    </div>
+                  </div>
+                )}
+                
+                {selectedPost === 'route-optimization' && (
+                  <div className="space-y-6">
+                    <div className="space-y-4">
+                      <Badge className="bg-gradient-to-r from-purple-500 to-purple-700 text-white font-bold border-0">Product Updates</Badge>
+                      <h1 className="text-3xl font-bold">One-Click Route Optimization Now Available in PortaPro</h1>
+                      <p className="text-muted-foreground">January 30, 2025</p>
+                    </div>
+                    <div className="prose max-w-none space-y-6">
+                      <p>In January 2025, PortaPro introduced one of its most requested features to date—<strong>One-Click Route Optimization</strong>. It's designed to solve one of the biggest daily challenges in the portable sanitation business: building efficient routes quickly without wasting time, fuel, or driver energy.</p>
+                      
+                      <p>Whether you're servicing 20 units or 400, every extra mile, every unnecessary turn, and every wrong address costs time and money. Up until now, operators either mapped routes by memory, scribbled on paper maps, or manually dragged stops around in Google Maps. That worked—until it didn't.</p>
+                      
+                      <p>Now, drivers can leave the yard with optimized routes automatically sorted into the smartest order, with travel time and distance minimized—no spreadsheets, no manual guesswork.</p>
+                      
+                      <h2 className="text-2xl font-bold mt-8">What Does Route Optimization Actually Do?</h2>
+                      <p>Inside PortaPro, after assigning units or jobs to a driver, you can now press <strong>"Optimize Route"</strong>. In seconds, the system:</p>
+                      <ul className="list-disc pl-6 space-y-2">
+                        <li>Reorders all stops into the most efficient driving sequence</li>
+                        <li>Uses real road data—speed limits, turn restrictions, traffic patterns</li>
+                        <li>Avoids backtracking and unnecessary detours</li>
+                        <li>Keeps fixed stops in place (schools, time-window clients, etc.)</li>
+                        <li>Syncs the new route directly to the driver's mobile app</li>
+                      </ul>
+                      <p>No exporting. No printing. No explaining. The driver opens their phone and sees stop #1, #2, #3 in the perfect order.</p>
+                      
+                      <h2 className="text-2xl font-bold mt-8">Why This Matters for Operators</h2>
+                      <p>Route optimization solves more than just mileage. It fixes hidden costs that most operators deal with every single day:</p>
+                      
+                      <div className="bg-muted/30 rounded-lg p-6 my-6">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="border-b-2 border-primary">
+                              <th className="text-left py-2 font-bold">Problem</th>
+                              <th className="text-left py-2 font-bold">Before Optimization</th>
+                              <th className="text-left py-2 font-bold">After Optimization</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-border">
+                            <tr>
+                              <td className="py-3 font-semibold">Fuel Waste</td>
+                              <td className="py-3">Drivers zigzag across town</td>
+                              <td className="py-3 italic">Direct, efficient route paths</td>
+                            </tr>
+                            <tr>
+                              <td className="py-3 font-semibold">Driver Fatigue</td>
+                              <td className="py-3">Long days with duplicate driving</td>
+                              <td className="py-3 italic">Shorter, predictable days</td>
+                            </tr>
+                            <tr>
+                              <td className="py-3 font-semibold">Missed Services</td>
+                              <td className="py-3">Skipped units due to poor planning</td>
+                              <td className="py-3 italic">Every unit assigned a logical stop</td>
+                            </tr>
+                            <tr>
+                              <td className="py-3 font-semibold">Dispatcher Stress</td>
+                              <td className="py-3">Routes handwritten or guessed</td>
+                              <td className="py-3 italic">One-click, repeatable process</td>
+                            </tr>
+                            <tr>
+                              <td className="py-3 font-semibold">New Driver Training</td>
+                              <td className="py-3">Takes weeks to learn all locations</td>
+                              <td className="py-3 italic">App guides turn-by-turn automatically</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      
+                      <p className="italic border-l-4 border-primary pl-4 py-2 bg-muted/50">"We shaved about 1.5 hours off each driver's day. Not by driving faster—just by driving smarter." — Operator from Michigan</p>
+                      
+                      <h2 className="text-2xl font-bold mt-8">How It Works Behind the Scenes (Simple Explanation)</h2>
+                      <p>The system uses Vehicle Routing Problem (VRP) algorithms—the same type used by major delivery companies. It considers:</p>
+                      <ul className="list-disc pl-6 space-y-2">
+                        <li>Distance between stops</li>
+                        <li>Road speeds, left-turn restrictions, bridges</li>
+                        <li>Service time at each stop</li>
+                        <li>Time windows (example: "must service before 9 AM")</li>
+                        <li>Truck return to yard (optional)</li>
+                      </ul>
+                      <p>This is not a generic Google Maps reorder. It's sanitation-specific logic based on how drivers actually work.</p>
+                      
+                      <h2 className="text-2xl font-bold mt-8">Real Test Results from Operators</h2>
+                      <p>Here are early results from real PortaPro users:</p>
+                      
+                      <div className="bg-muted/30 rounded-lg p-6 my-6">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="border-b-2 border-primary">
+                              <th className="text-left py-2 font-bold">Fleet Size</th>
+                              <th className="text-left py-2 font-bold">Daily Route Optimization Savings</th>
+                              <th className="text-left py-2 font-bold">Notes</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-border">
+                            <tr>
+                              <td className="py-3">3 trucks (rural area)</td>
+                              <td className="py-3 font-semibold">36 fewer miles per truck</td>
+                              <td className="py-3 italic">Saved 2.3 gallons of diesel per route</td>
+                            </tr>
+                            <tr>
+                              <td className="py-3">5 trucks (city area)</td>
+                              <td className="py-3 font-semibold">55-minute reduction per route</td>
+                              <td className="py-3 italic">Reduced overtime costs</td>
+                            </tr>
+                            <tr>
+                              <td className="py-3">2-truck seasonal operator</td>
+                              <td className="py-3 font-semibold">No missed event services</td>
+                              <td className="py-3 italic">Eliminated manual mapping at 5 AM</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      
+                      <h2 className="text-2xl font-bold mt-8">Built for the Realities of Field Work</h2>
+                      <p>Route optimization doesn't mean drivers lose control. PortaPro still lets them:</p>
+                      <ul className="list-disc pl-6 space-y-2">
+                        <li>Skip a stop and add a note ("gate locked", "unit blocked by forklift")</li>
+                        <li>Reorder manually if needed</li>
+                        <li>Add last-minute pickups or emergency calls</li>
+                        <li>Continue offline when cell service drops—optimization remains saved</li>
+                      </ul>
+                      
+                      <h2 className="text-2xl font-bold mt-8">Why We Built It</h2>
+                      <p>Operators told us the same thing in different words:</p>
+                      <p className="italic border-l-4 border-primary pl-4 py-2 bg-muted/50">"The work isn't hard. The planning is."</p>
+                      <p>This feature was designed to give dispatchers back their morning, drivers back their time, and owners back their fuel budget.</p>
+                      
+                      <h2 className="text-2xl font-bold mt-8">Final Thought</h2>
+                      <p>Route optimization isn't about technology for technology's sake. It's about making routes predictable, service reliable, and days less stressful—for the owner, the dispatcher, and the guy driving the truck in the rain at 6 AM.</p>
+                      <p>And now, it's built into PortaPro—one click, no friction.</p>
                     </div>
                   </div>
                 )}
