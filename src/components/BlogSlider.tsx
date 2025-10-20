@@ -139,6 +139,14 @@ const blogPosts: BlogPost[] = [
     badgeGradient: 'from-orange-500 to-red-600'
   },
   {
+    id: 'event-service-visibility',
+    category: 'Industry Insights',
+    title: 'Why Event Organizers Now Expect Real-Time Service Visibility from Portable Restroom Companies',
+    excerpt: 'In 2025, event organizers expect real-time service tracking, digital proof of cleaning, and live communication from portable sanitation vendors. Here\'s why the industry is shifting and what operators can do to keep up.',
+    date: 'October 10, 2025',
+    badgeGradient: 'from-cyan-500 to-teal-600'
+  },
+  {
     id: 'industry-trends-2025',
     category: 'Industry Insights',
     title: '2025 Portable Sanitation Trends: Rising Demand, Labor Pressure, and the Shift to Digital Operations',
@@ -1720,6 +1728,134 @@ export const BlogSlider: React.FC<BlogSliderProps> = ({
                   </div>
                 )}
                 
+                {selectedPost === 'event-service-visibility' && (
+                  <div className="space-y-6">
+                    <div className="space-y-4">
+                      <Badge className="bg-gradient-to-r from-cyan-500 to-teal-600 text-white font-bold border-0">Industry Insights</Badge>
+                      <h1 className="text-3xl font-bold">Why Event Organizers Now Expect Real-Time Service Visibility from Portable Restroom Companies</h1>
+                      <p className="text-muted-foreground">October 10, 2025</p>
+                    </div>
+                    <div className="prose prose-lg max-w-none">
+                      <p className="text-lg text-muted-foreground mb-6">
+                        Five years ago, a festival organizer or wedding planner renting portable toilets mainly cared about two things: <em>Did the units arrive? Did they get serviced sometime during the day?</em> In 2025, that answer is no longer enough.
+                      </p>
+                      <p className="text-base text-muted-foreground mb-6">
+                        Today, event organizers want to <strong>know when units are delivered, where they're placed, when they're serviced, and who serviced them—often with photo proof or digital tracking.</strong> And many aren't just requesting this information—they're expecting it as part of the rental agreement.
+                      </p>
+                      <p className="text-base text-muted-foreground mb-6">
+                        This shift is changing how operators manage service, communication, and accountability. Here's why it's happening and how businesses are adapting.
+                      </p>
+
+                      <h3 className="text-2xl font-bold text-foreground mt-8 mb-4">What's Driving This Change?</h3>
+                      <p className="text-base text-muted-foreground mb-4">
+                        Three main factors are reshaping expectations:
+                      </p>
+                      <p className="text-base text-muted-foreground mb-2 font-semibold">1. Larger Events = Higher Stakes</p>
+                      <p className="text-base text-muted-foreground mb-4">
+                        Outdoor festivals, corporate events, marathons, and weddings expect a premium experience. A row of overflowing toilets isn't just a minor mistake—it can ruin a guest experience and damage the event brand.
+                      </p>
+                      <p className="text-base text-muted-foreground mb-2 font-semibold">2. Technology Changed What "Good Service" Means</p>
+                      <p className="text-base text-muted-foreground mb-4">
+                        People track DoorDash deliveries, Amazon packages, Lyft rides, even where their kids' school bus is. When event organizers spend thousands on sanitation, they expect the same clarity.
+                      </p>
+                      <p className="text-base text-muted-foreground mb-2 font-semibold">3. Too Many Past Failures</p>
+                      <p className="text-base text-muted-foreground mb-6">
+                        Organizers have been burned before. Units placed in the wrong spot. No service during a multi-day event. No way to prove a pump-out actually happened. They're simply saying: "Never again."
+                      </p>
+
+                      <h3 className="text-2xl font-bold text-foreground mt-8 mb-4">What Event Organizers Now Expect from Rental Companies</h3>
+                      <div className="overflow-x-auto my-6">
+                        <table className="w-full border-collapse">
+                          <thead>
+                            <tr className="border-b-2 border-border">
+                              <th className="text-left p-3 font-semibold">Old Expectation</th>
+                              <th className="text-left p-3 font-semibold">New Expectation (2025)</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr className="border-b border-border">
+                              <td className="p-3 text-muted-foreground">"We'll deliver sometime Friday morning."</td>
+                              <td className="p-3 text-muted-foreground"><strong>Exact delivery window</strong> + photo or pin of unit placement</td>
+                            </tr>
+                            <tr className="border-b border-border">
+                              <td className="p-3 text-muted-foreground">"We'll service twice a day."</td>
+                              <td className="p-3 text-muted-foreground"><strong>Timestamped service logs</strong> + name of driver who serviced each unit</td>
+                            </tr>
+                            <tr className="border-b border-border">
+                              <td className="p-3 text-muted-foreground">"Text us if you need extra cleanings."</td>
+                              <td className="p-3 text-muted-foreground"><strong>Organizers get alerts automatically</strong> when units are serviced, delayed, or skipped</td>
+                            </tr>
+                            <tr className="border-b border-border">
+                              <td className="p-3 text-muted-foreground">"Just return everything Monday."</td>
+                              <td className="p-3 text-muted-foreground"><strong>Inventory list + unit conditions</strong> after pickup with damage notes/photos</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <p className="text-base text-muted-foreground mb-6">
+                        Some organizers even include this language directly in their contracts or RFPs (Request for Proposals).
+                      </p>
+
+                      <h3 className="text-2xl font-bold text-foreground mt-8 mb-4">How Leading Operators Are Responding</h3>
+                      <p className="text-base text-muted-foreground mb-4">
+                        Top-performing companies aren't fighting these expectations—they're using them as a competitive advantage.
+                      </p>
+                      <p className="text-base text-muted-foreground mb-2 font-semibold">1. Digital Service Logs</p>
+                      <p className="text-base text-muted-foreground mb-4">
+                        Drivers mark units as "Serviced," "Could Not Service," or "Needs Attention" in mobile apps. Photo proof is optional but often used.
+                      </p>
+                      <p className="text-base text-muted-foreground mb-2 font-semibold">2. GPS-Based Unit Placement</p>
+                      <p className="text-base text-muted-foreground mb-4">
+                        Units are dropped and logged on a digital map. Zones are labeled: "Main Stage," "VIP Tent," "Food Court," etc. No confusion. No guesses.
+                      </p>
+                      <p className="text-base text-muted-foreground mb-2 font-semibold">3. Real-Time Updates to Event Staff</p>
+                      <p className="text-base text-muted-foreground mb-4">
+                        Some operators now trigger automated notifications such as:
+                      </p>
+                      <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
+                        <li>"Service sweep complete at 1:40 PM — 38 units serviced."</li>
+                        <li>"3 units blocked by fencing—unable to access. Contact us if needed."</li>
+                      </ul>
+                      <p className="text-base text-muted-foreground mb-2 font-semibold">4. Post-Event Reports</p>
+                      <p className="text-base text-muted-foreground mb-4">
+                        Instead of, "We serviced them like we said," operators send a simple summary:
+                      </p>
+                      <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-6">
+                        <li>47 total units delivered</li>
+                        <li>94 total services performed</li>
+                        <li>3 blocked units (photos attached)</li>
+                        <li>Pickup completed 8:12 PM Sunday</li>
+                      </ul>
+
+                      <h3 className="text-2xl font-bold text-foreground mt-8 mb-4">Does This Really Matter for Operators?</h3>
+                      <p className="text-base text-muted-foreground mb-4">
+                        Yes—and it's influencing <strong>who wins contracts.</strong>
+                      </p>
+                      <p className="text-base text-muted-foreground mb-4">
+                        Large event planners and municipalities are quietly choosing vendors who can provide <strong>transparency, reliability, and documentation</strong>, even if they aren't the cheapest.
+                      </p>
+                      <p className="text-base text-muted-foreground mb-4">In interviews, operators shared:</p>
+                      <p className="text-base text-muted-foreground italic border-l-4 border-primary pl-4 py-2 bg-muted/50 mb-2">
+                        "We didn't win because we were cheaper. We won because we could prove we'd show up."
+                      </p>
+                      <p className="text-base text-muted-foreground italic border-l-4 border-primary pl-4 py-2 bg-muted/50 mb-6">
+                        "Once they saw live service tracking, they said, 'That's exactly what we've been asking for.'"
+                      </p>
+
+                      <h3 className="text-2xl font-bold text-foreground mt-8 mb-4">The Bottom Line</h3>
+                      <p className="text-base text-muted-foreground mb-4">
+                        Portable restroom rentals are no longer just about dropping off units. In 2025, event organizers want partners—not just suppliers. They expect accountability, updates, and digital transparency.
+                      </p>
+                      <p className="text-base text-muted-foreground mb-4">
+                        For operators, this isn't a burden. It's an opportunity to stand out, charge more confidently, and build long-term relationships.
+                      </p>
+                      <p className="text-base text-muted-foreground mb-4">
+                        When customers can <em>see</em> the work being done, they stop questioning your price—and start trusting your service.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
                 {selectedPost === 'industry-trends-2025' && (
                   <div className="space-y-6">
                     <div className="space-y-4">
