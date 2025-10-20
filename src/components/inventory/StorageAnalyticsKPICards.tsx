@@ -35,15 +35,15 @@ export function StorageAnalyticsKPICards({ summary }: KPICardsProps) {
         <CardContent className="p-4 lg:p-6">
           <div className="flex items-center justify-between gap-3">
             <div className="flex-1 min-w-0">
-              <div className="text-2xl lg:text-3xl font-bold">
+              <div className="text-xl lg:text-3xl font-bold">
                 ${summary.total_stock_value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
-              <div className="text-sm lg:text-base text-muted-foreground font-medium mt-1">
+              <div className="text-xs lg:text-base text-muted-foreground font-medium mt-1">
                 Total Stock Value
               </div>
             </div>
             <div className="flex-shrink-0">
-              <DollarSign className="h-6 w-6 lg:h-7 lg:w-7 text-blue-600" />
+              <DollarSign className="h-5 w-5 lg:h-7 lg:w-7 text-blue-600" />
             </div>
           </div>
         </CardContent>
@@ -52,18 +52,18 @@ export function StorageAnalyticsKPICards({ summary }: KPICardsProps) {
       {/* Combined Categories Card */}
       <Card className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
         <CardContent className="p-4 lg:p-6">
-          <div className="space-y-3">
-            <div className="text-sm lg:text-base text-muted-foreground font-semibold">
+          <div className="space-y-2 lg:space-y-3">
+            <div className="text-xs lg:text-base text-muted-foreground font-semibold">
               Categories:
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1.5 lg:space-y-2">
               <div className="flex items-baseline gap-2">
-                <span className="text-xl lg:text-2xl font-bold">{summary.total_consumable_types}</span>
-                <span className="text-sm lg:text-base text-muted-foreground">Consumables</span>
+                <span className="text-lg lg:text-2xl font-bold">{summary.total_consumable_types}</span>
+                <span className="text-xs lg:text-base text-muted-foreground">Consumables</span>
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-xl lg:text-2xl font-bold">{summary.total_product_types}</span>
-                <span className="text-sm lg:text-base text-muted-foreground">Equipment</span>
+                <span className="text-lg lg:text-2xl font-bold">{summary.total_product_types}</span>
+                <span className="text-xs lg:text-base text-muted-foreground">Equipment</span>
               </div>
             </div>
           </div>
@@ -76,15 +76,15 @@ export function StorageAnalyticsKPICards({ summary }: KPICardsProps) {
           <CardContent className="p-4 lg:p-6">
             <div className="flex items-center justify-between gap-3">
               <div className="flex-1 min-w-0">
-                <div className="text-2xl lg:text-3xl font-bold">
+                <div className="text-xl lg:text-3xl font-bold">
                   {kpi.value}
                 </div>
-                <div className="text-sm lg:text-base text-muted-foreground font-medium mt-1">
+                <div className="text-xs lg:text-base text-muted-foreground font-medium mt-1">
                   {kpi.label}
                 </div>
               </div>
               <div className="flex-shrink-0">
-                <kpi.icon className={`h-6 w-6 lg:h-7 lg:w-7 ${kpi.color}`} />
+                <kpi.icon className={`h-5 w-5 lg:h-7 lg:w-7 ${kpi.color}`} />
               </div>
             </div>
           </CardContent>
