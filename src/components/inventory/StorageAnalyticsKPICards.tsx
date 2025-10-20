@@ -19,28 +19,32 @@ export function StorageAnalyticsKPICards({ summary }: KPICardsProps) {
       value: summary.total_locations,
       icon: Warehouse,
       color: "text-blue-600",
-      bgColor: "bg-blue-50 dark:bg-blue-950"
+      bgColor: "bg-blue-50 dark:bg-blue-950",
+      iconPadding: "p-2"
     },
     {
       label: "Consumable Types",
       value: summary.total_consumable_types,
       icon: Droplet,
       color: "text-blue-600",
-      bgColor: "bg-blue-50 dark:bg-blue-950"
+      bgColor: "bg-blue-50 dark:bg-blue-950",
+      iconPadding: "p-2.5"
     },
     {
       label: "Product Types",
       value: summary.total_product_types,
       icon: Package,
       color: "text-blue-600",
-      bgColor: "bg-blue-50 dark:bg-blue-950"
+      bgColor: "bg-blue-50 dark:bg-blue-950",
+      iconPadding: "p-2"
     },
     {
       label: "Spill Kit Types",
       value: summary.total_spill_kit_types,
       icon: Shield,
       color: "text-orange-600",
-      bgColor: "bg-orange-50 dark:bg-orange-950"
+      bgColor: "bg-orange-50 dark:bg-orange-950",
+      iconPadding: "p-2"
     }
   ];
 
@@ -78,8 +82,8 @@ export function StorageAnalyticsKPICards({ summary }: KPICardsProps) {
                   {kpi.label}
                 </div>
               </div>
-              <div className={`flex-shrink-0 w-10 h-10 lg:w-12 lg:h-12 rounded-full ${kpi.bgColor} flex items-center justify-center`}>
-                <kpi.icon className={`h-5 w-5 lg:h-6 lg:w-6 ${kpi.color}`} />
+              <div className={`flex-shrink-0 w-10 h-10 lg:w-12 lg:h-12 rounded-full ${kpi.bgColor} flex items-center justify-center ${kpi.iconPadding || 'p-2'}`}>
+                <kpi.icon className={`h-full w-full ${kpi.color}`} />
               </div>
             </div>
           </CardContent>
