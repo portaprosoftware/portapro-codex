@@ -329,9 +329,9 @@ export const Landing: React.FC = () => {
             </nav>
             
             <div className="flex items-center gap-4">
-              <a href="https://accounts.portaprosoftware.com/sign-in" target="_blank" rel="noopener noreferrer">
+              <SignInButton mode="redirect" fallbackRedirectUrl="/dashboard">
                 <Button variant="ghost" className="text-sm font-medium shadow-none hover:shadow-none">Sign In</Button>
-              </a>
+              </SignInButton>
               <Button 
                 className="bg-gradient-blue text-white text-sm font-medium"
                 onClick={handleScheduleDemo}
@@ -361,9 +361,9 @@ export const Landing: React.FC = () => {
                 <button onClick={() => { scrollToSection('tour'); setMobileMenuOpen(false); }} className="block w-full text-left py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Watch</button>
               </nav>
               <div className="flex flex-col gap-2 pt-4 border-t">
-                <a href="https://accounts.portaprosoftware.com/sign-in" target="_blank" rel="noopener noreferrer">
+                <SignInButton mode="redirect" fallbackRedirectUrl="/dashboard">
                   <Button variant="outline" className="w-full font-medium bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground shadow-none hover:shadow-none">Sign In</Button>
-                </a>
+                </SignInButton>
                 <Button 
                   className="w-full bg-gradient-blue text-white text-sm font-medium"
                   onClick={() => {
