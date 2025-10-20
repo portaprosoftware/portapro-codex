@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Warehouse, Shield, DollarSign } from "lucide-react";
+import { Warehouse, Shield } from "lucide-react";
 
 interface KPICardsProps {
   summary: {
@@ -41,9 +41,6 @@ export function StorageAnalyticsKPICards({ summary }: KPICardsProps) {
               <div className="text-xs lg:text-base text-muted-foreground font-medium mt-1">
                 Total Stock Value
               </div>
-            </div>
-            <div className="flex-shrink-0">
-              <DollarSign className="h-5 w-5 lg:h-7 lg:w-7 text-blue-600" />
             </div>
           </div>
         </CardContent>
