@@ -20,8 +20,10 @@ import {
 } from "lucide-react";
 import { MaintenanceTrackerTab } from "./MaintenanceTrackerTab";
 import { MaintenanceHistorySection } from "./MaintenanceHistorySection";
+import { cn } from "@/lib/utils";
 
 export const InventoryMaintenanceOverview: React.FC = () => {
+  const [activeMode, setActiveMode] = useState<"tracker" | "history">("tracker");
   const [searchQuery, setSearchQuery] = useState("");
   const [priorityFilter, setPriorityFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -94,31 +96,47 @@ export const InventoryMaintenanceOverview: React.FC = () => {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <h2 className="text-xl font-bold text-foreground">Inventory Maintenance</h2>
+      <div className="flex flex-col gap-2">
+        <h2 className="text-lg md:text-xl font-bold text-foreground">Inventory Maintenance</h2>
         <p className="text-muted-foreground text-sm">
           Manage and track maintenance across your entire inventory
         </p>
       </div>
 
       {/* Tabbed Views */}
-      <Tabs defaultValue="tracker" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+      <Tabs value={activeMode} onValueChange={(v) => setActiveMode(v as "tracker" | "history")} className="w-full">
+        {/* Desktop: TabsList with pills */}
+        <TabsList className="hidden lg:grid w-full grid-cols-2 mb-4">
           <TabsTrigger value="tracker">Maintenance Tracker</TabsTrigger>
           <TabsTrigger value="history">Maintenance History</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="tracker" className="space-y-4">
+        {/* Mobile: Select dropdown */}
+        <div className="lg:hidden mb-4">
+          <Select value={activeMode} onValueChange={(v) => setActiveMode(v as "tracker" | "history")}>
+            <SelectTrigger className="h-12 text-base">
+              <SelectValue>
+                {activeMode === "tracker" ? "Maintenance Tracker" : "Maintenance History"}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="tracker">Maintenance Tracker</SelectItem>
+              <SelectItem value="history">Maintenance History</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <TabsContent value="tracker" className="space-y-4 mt-0">
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-4 md:p-6">
               <MaintenanceTrackerTab productId="all" />
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="history" className="space-y-4">
+        <TabsContent value="history" className="space-y-4 mt-0">
           <MaintenanceHistorySection productId="all" />
         </TabsContent>
       </Tabs>
