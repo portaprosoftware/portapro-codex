@@ -428,7 +428,7 @@ export const Landing: React.FC = () => {
               
               <div className="space-y-6 mt-8">
                 <div className="space-y-4">
-                  <div className="flex items-center gap-6 flex-wrap opacity-90">
+                  <div className="flex items-center gap-6 flex-wrap opacity-90 py-2 md:py-4">
                     <span className="text-white/80 text-sm">Trusted by operators across North America</span>
                     <button onClick={() => {
                     if (isMobile) {
