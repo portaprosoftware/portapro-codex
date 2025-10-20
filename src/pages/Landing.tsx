@@ -1174,7 +1174,7 @@ export const Landing: React.FC = () => {
           <div className="flex justify-center">
             <div className="rounded-2xl p-12 shadow-md border bg-card flex items-center justify-center min-h-[300px] w-full max-w-4xl">
               <div className="text-center">
-                <h3 className="text-2xl font-bold text-foreground">Coming Soon!</h3>
+                <h3 className="text-2xl font-bold text-foreground">Watch PortaPro - Coming Soon!</h3>
               </div>
             </div>
           </div>
