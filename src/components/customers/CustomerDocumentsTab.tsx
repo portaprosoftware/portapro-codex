@@ -10,8 +10,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { FileText, Download, Trash2, Upload } from 'lucide-react';
+import { FileText, Download, Trash2, Upload, X } from 'lucide-react';
 import { format } from 'date-fns';
+import { DocumentCard } from './DocumentCard';
 
 interface CustomerDocumentsTabProps {
   customerId: string;
@@ -38,6 +39,7 @@ export const CustomerDocumentsTab: React.FC<CustomerDocumentsTabProps> = ({ cust
   const [docType, setDocType] = useState<string>('contract');
   const [docName, setDocName] = useState<string>('');
   const [uploading, setUploading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const { data: docs, isLoading } = useQuery({
     queryKey: ['customer-documents', customerId],
@@ -90,6 +92,7 @@ export const CustomerDocumentsTab: React.FC<CustomerDocumentsTabProps> = ({ cust
 
       toast({ title: 'Uploaded', description: 'Document uploaded successfully.' });
       setDocName('');
+      setSelectedFile(null);
       queryClient.invalidateQueries({ queryKey: ['customer-documents', customerId] });
     } catch (e: any) {
       console.error('Customer document upload error:', e);
@@ -156,18 +159,19 @@ export const CustomerDocumentsTab: React.FC<CustomerDocumentsTabProps> = ({ cust
   }, [docs]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 overflow-x-hidden px-4 lg:px-0">
       {canViewCustomerDocs && (
-        <Card className="bg-white rounded-2xl shadow-md border">
+        <Card className="bg-card rounded-2xl shadow-sm border">
           <CardHeader>
-            <CardTitle className="text-xl">Upload Document</CardTitle>
+            <CardTitle className="text-lg">Upload Document</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Vertical Stack on Mobile */}
+            <div className="flex flex-col gap-4">
               <div className="space-y-2">
-                <Label>Document Type</Label>
+                <Label htmlFor="doc-type">Document Type</Label>
                 <Select value={docType} onValueChange={setDocType}>
-                  <SelectTrigger>
+                  <SelectTrigger id="doc-type" className="min-h-[44px]">
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -177,17 +181,21 @@ export const CustomerDocumentsTab: React.FC<CustomerDocumentsTabProps> = ({ cust
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2 md:col-span-2">
-                <Label>Document Name (optional)</Label>
+              
+              <div className="space-y-2">
+                <Label htmlFor="doc-name">Document Name (optional)</Label>
                 <Input
+                  id="doc-name"
                   placeholder="e.g., Master Services Agreement"
                   value={docName}
                   onChange={(e) => setDocName(e.target.value)}
+                  className="min-h-[44px] text-base"
                 />
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            {/* File Selection */}
+            <div className="space-y-3">
               <input
                 ref={fileRef}
                 type="file"
@@ -195,79 +203,93 @@ export const CustomerDocumentsTab: React.FC<CustomerDocumentsTabProps> = ({ cust
                 className="hidden"
                 onChange={(e) => {
                   const f = e.target.files?.[0];
-                  if (f) onUpload(f);
+                  if (f) {
+                    setSelectedFile(f);
+                    onUpload(f);
+                  }
                 }}
                 disabled={uploading}
               />
-              <Button
-                type="button"
-                onClick={() => fileRef.current?.click()}
-                disabled={uploading}
-                className="inline-flex items-center"
-              >
-                <Upload className="w-4 h-4 mr-2" />
-                {uploading ? 'Uploading...' : 'Choose File & Upload'}
-              </Button>
-              <div className="text-sm text-muted-foreground">
+              
+              {selectedFile && !uploading ? (
+                <div className="flex items-center gap-2 p-3 rounded-lg border bg-muted/50">
+                  <FileText className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                  <span className="text-sm flex-1 truncate">{selectedFile.name}</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0"
+                    onClick={() => {
+                      setSelectedFile(null);
+                      if (fileRef.current) fileRef.current.value = '';
+                    }}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  type="button"
+                  onClick={() => fileRef.current?.click()}
+                  disabled={uploading}
+                  className="w-full min-h-[44px] bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  {uploading ? 'Uploading...' : 'Choose File & Upload'}
+                </Button>
+              )}
+              
+              <p className="text-xs text-muted-foreground">
                 Supported: PDF, JPG, PNG, DOC, DOCX (max ~10MB recommended)
-              </div>
+              </p>
             </div>
           </CardContent>
         </Card>
       )}
 
-      <Card className="bg-white rounded-2xl shadow-md border">
+      <Card className="bg-card rounded-2xl shadow-sm border">
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-xl">Customer Documents</CardTitle>
-            <div className="text-sm text-muted-foreground">
+          <div className="flex flex-col xs:flex-row items-start xs:items-center justify-between gap-2">
+            <CardTitle className="text-lg">Customer Documents</CardTitle>
+            <div className="text-sm text-muted-foreground whitespace-nowrap">
               Total files: {(docs || []).length} • Size: {(totalSize / (1024 * 1024)).toFixed(1)} MB
             </div>
           </div>
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="h-24 animate-pulse bg-muted rounded-xl" />
+            <div className="space-y-3">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-24 animate-pulse bg-muted rounded-xl" />
+              ))}
+            </div>
           ) : (docs || []).length === 0 ? (
-            <div className="text-sm text-muted-foreground">No documents uploaded yet.</div>
+            <div className="text-center py-12">
+              <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+              <h4 className="text-lg font-medium text-foreground mb-2">No Documents</h4>
+              <p className="text-sm text-muted-foreground mb-4">
+                Upload your first document to get started
+              </p>
+              {canViewCustomerDocs && (
+                <Button
+                  onClick={() => fileRef.current?.click()}
+                  className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  Upload Document
+                </Button>
+              )}
+            </div>
           ) : (
             <div className="space-y-3">
               {(docs || []).map((d) => (
-                <div key={d.id} className="flex items-center justify-between p-3 rounded-xl border bg-white">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="h-9 w-9 rounded-lg bg-blue-600 text-white flex items-center justify-center">
-                      <FileText className="h-4 w-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="font-medium truncate">{d.document_name || 'Untitled document'}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {d.document_type || 'document'} • {d.file_size ? `${(Number(d.file_size) / 1024).toFixed(0)} KB` : '—'} • {format(new Date(d.created_at), 'PPp')}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    {d.file_url && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => downloadMutation.mutate(d.file_url!)}
-                      >
-                        <Download className="h-4 w-4 mr-1" />
-                        Download
-                      </Button>
-                    )}
-                    {canViewCustomerDocs && (
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => deleteMutation.mutate(d)}
-                      >
-                        <Trash2 className="h-4 w-4 mr-1" />
-                        Delete
-                      </Button>
-                    )}
-                  </div>
-                </div>
+                <DocumentCard
+                  key={d.id}
+                  document={d}
+                  onDownload={() => d.file_url && downloadMutation.mutate(d.file_url)}
+                  onDelete={() => deleteMutation.mutate(d)}
+                  canDelete={canViewCustomerDocs}
+                />
               ))}
             </div>
           )}
