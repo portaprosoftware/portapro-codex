@@ -2046,12 +2046,9 @@ export const Landing: React.FC = () => {
             {/* Content */}
             <div className="flex-1 overflow-y-auto p-6">
               <div className="space-y-6">
-                <div className="text-center space-y-1">
+                <div className="text-center">
                   <p className="text-muted-foreground">
-                    Have a question or need help?
-                  </p>
-                  <p className="text-muted-foreground">
-                    Reach out to our support team.
+                    Have a question or need help? Reach out to our support team.
                   </p>
                 </div>
 
