@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { FileText, Download, Eye, Search, Calendar, ExternalLink } from 'lucide-react';
 import { format } from 'date-fns';
+import { ServiceReportCard } from './ServiceReportCard';
 
 interface CustomerServiceReportsTabProps {
   customerId: string;
@@ -120,33 +121,33 @@ export function CustomerServiceReportsTab({ customerId }: CustomerServiceReports
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 overflow-x-hidden px-4 lg:px-0">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
           <h3 className="text-lg font-semibold text-foreground">Service Reports</h3>
           <p className="text-sm text-muted-foreground">
             Reports completed for jobs at this customer location
           </p>
         </div>
-        <Badge variant="outline" className="text-lg px-3 py-1">
+        <Badge variant="outline" className="text-base px-3 py-1 whitespace-nowrap">
           {filteredReports.length} Report{filteredReports.length !== 1 ? 's' : ''}
         </Badge>
       </div>
 
       {/* Search and Filter */}
-      <div className="flex items-center gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+      <div className="flex flex-col xs:flex-row items-stretch xs:items-center gap-3">
+        <div className="relative flex-1 min-w-0">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             placeholder="Search reports, job numbers..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
+            className="pl-10 min-h-[44px] text-base"
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-40">
+          <SelectTrigger className="w-full xs:w-[180px] min-h-[44px]">
             <SelectValue placeholder="All Status" />
           </SelectTrigger>
           <SelectContent>
@@ -158,14 +159,14 @@ export function CustomerServiceReportsTab({ customerId }: CustomerServiceReports
         </Select>
       </div>
 
-      {/* Reports Grid */}
-      <div className="grid gap-4">
+      {/* Mobile/Tablet Card View (<1024px) */}
+      <div className="lg:hidden">
         {isLoading ? (
           <div className="text-center py-8 text-muted-foreground">
             Loading service reports...
           </div>
         ) : filteredReports.length === 0 ? (
-          <div className="text-center py-12">
+          <div className="text-center py-12 bg-card rounded-2xl border shadow-sm">
             <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
             <h4 className="text-lg font-medium text-foreground mb-2">No Service Reports</h4>
             <p className="text-muted-foreground">
@@ -176,80 +177,108 @@ export function CustomerServiceReportsTab({ customerId }: CustomerServiceReports
             </p>
           </div>
         ) : (
-          filteredReports.map((report) => (
-            <Card key={report.id} className="hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h4 className="font-semibold text-foreground">
-                        {report.report_number}
-                      </h4>
-                      {getStatusBadge(report.completion_percentage)}
-                      {report.jobs && getJobTypeBadge(report.jobs.job_type)}
-                    </div>
-                    
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="w-4 h-4" />
-                        <span>
-                          {format(new Date(report.created_at), 'MMM d, yyyy')}
-                        </span>
+          <div className="space-y-3">
+            {filteredReports.map((report) => (
+              <ServiceReportCard key={report.id} report={report as any} />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Desktop Card View (≥1024px) */}
+      <div className="hidden lg:block">
+        <div className="grid gap-4">
+          {isLoading ? (
+            <div className="text-center py-8 text-muted-foreground">
+              Loading service reports...
+            </div>
+          ) : filteredReports.length === 0 ? (
+            <div className="text-center py-12">
+              <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+              <h4 className="text-lg font-medium text-foreground mb-2">No Service Reports</h4>
+              <p className="text-muted-foreground">
+                {searchQuery || statusFilter !== 'all' 
+                  ? 'No reports match your current filters'
+                  : 'No service reports have been completed for this customer yet'
+                }
+              </p>
+            </div>
+          ) : (
+            filteredReports.map((report) => (
+              <Card key={report.id} className="hover:shadow-md transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h4 className="font-semibold text-foreground">
+                          {report.report_number}
+                        </h4>
+                        {getStatusBadge(report.completion_percentage)}
+                        {report.jobs && getJobTypeBadge(report.jobs.job_type)}
                       </div>
                       
-                      {report.jobs && (
-                        <span className="font-mono text-xs bg-muted px-2 py-1 rounded">
-                          Job: {report.jobs.job_number}
-                        </span>
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="w-4 h-4" />
+                          <span>
+                            {format(new Date(report.created_at), 'MMM d, yyyy')}
+                          </span>
+                        </div>
+                        
+                        {report.jobs && (
+                          <span className="font-mono text-xs bg-muted px-2 py-1 rounded">
+                            Job: {report.jobs.job_number}
+                          </span>
+                        )}
+                        
+                        {report.maintenance_report_templates?.name && (
+                          <span>
+                            Template: {report.maintenance_report_templates.name}
+                          </span>
+                        )}
+                      </div>
+
+                      {report.assigned_technician && (
+                        <p className="text-sm text-muted-foreground">
+                          Technician: {report.assigned_technician}
+                        </p>
                       )}
-                      
-                      {report.maintenance_report_templates?.name && (
-                        <span>
-                          Template: {report.maintenance_report_templates.name}
-                        </span>
-                      )}
                     </div>
 
-                    {report.assigned_technician && (
-                      <p className="text-sm text-muted-foreground">
-                        Technician: {report.assigned_technician}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-2 ml-4">
-                    <Button variant="outline" size="sm">
-                      <Eye className="w-4 h-4 mr-2" />
-                      View
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      <Download className="w-4 h-4 mr-2" />
-                      PDF
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <ExternalLink className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-
-                {report.completion_percentage < 100 && (
-                  <div className="mt-4">
-                    <div className="flex items-center justify-between text-sm mb-1">
-                      <span className="text-muted-foreground">Progress</span>
-                      <span className="font-medium">{report.completion_percentage}%</span>
-                    </div>
-                    <div className="w-full bg-muted rounded-full h-2">
-                      <div 
-                        className="bg-primary h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${report.completion_percentage}%` }}
-                      />
+                    <div className="flex items-center gap-2 ml-4">
+                      <Button variant="outline" size="sm">
+                        <Eye className="w-4 h-4 mr-2" />
+                        View
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        <Download className="w-4 h-4 mr-2" />
+                        PDF
+                      </Button>
+                      <Button variant="ghost" size="sm">
+                        <ExternalLink className="w-4 h-4" />
+                      </Button>
                     </div>
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          ))
-        )}
+
+                  {report.completion_percentage < 100 && (
+                    <div className="mt-4">
+                      <div className="flex items-center justify-between text-sm mb-1">
+                        <span className="text-muted-foreground">Progress</span>
+                        <span className="font-medium">{report.completion_percentage}%</span>
+                      </div>
+                      <div className="w-full bg-muted rounded-full h-2">
+                        <div 
+                          className="bg-primary h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${report.completion_percentage}%` }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

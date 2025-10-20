@@ -6,8 +6,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Eye, Edit, Filter, FileText, CheckCircle, Clock } from 'lucide-react';
+import { Eye, Edit, Filter, FileText, CheckCircle, Clock, Briefcase } from 'lucide-react';
 import { format } from 'date-fns';
+import { JobCard } from './JobCard';
 
 interface CustomerJobsTabProps {
   customerId: string;
@@ -64,32 +65,56 @@ export function CustomerJobsTab({ customerId }: CustomerJobsTabProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 overflow-x-hidden px-4 lg:px-0">
       {/* Header with Filter */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col xs:flex-row items-start xs:items-center justify-between gap-3">
         <h3 className="text-lg font-semibold text-foreground">Jobs & Orders</h3>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-muted-foreground" />
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="All Statuses" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
-                {Object.entries(JOB_STATUSES).map(([status, config]) => (
-                  <SelectItem key={status} value={status}>
-                    {config.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+        <div className="flex items-center gap-2 w-full xs:w-auto">
+          <Filter className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="min-h-[44px] w-full xs:w-[180px]">
+              <SelectValue placeholder="All Statuses" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Statuses</SelectItem>
+              {Object.entries(JOB_STATUSES).map(([status, config]) => (
+                <SelectItem key={status} value={status}>
+                  {config.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
-      {/* Jobs Table */}
-      <div className="bg-card rounded-2xl border shadow-sm">
+      {/* Mobile/Tablet Card View (<1024px) */}
+      <div className="lg:hidden">
+        {isLoading ? (
+          <div className="text-center py-8 text-muted-foreground">
+            Loading jobs...
+          </div>
+        ) : jobs.length === 0 ? (
+          <div className="text-center py-12 bg-card rounded-2xl border shadow-sm">
+            <Briefcase className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+            <h4 className="text-lg font-medium text-foreground mb-2">No Jobs Found</h4>
+            <p className="text-muted-foreground mb-4">
+              {statusFilter !== 'all' 
+                ? 'No jobs match your current filter'
+                : 'No jobs have been created for this customer yet'
+              }
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {jobs.map((job) => (
+              <JobCard key={job.id} job={job as any} />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Desktop Table View (≥1024px) */}
+      <div className="hidden lg:block bg-card rounded-2xl border shadow-sm">
         <Table>
           <TableHeader>
             <TableRow>
