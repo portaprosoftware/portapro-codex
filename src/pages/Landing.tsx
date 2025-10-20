@@ -490,7 +490,7 @@ export const Landing: React.FC = () => {
                 <article className="rounded-2xl border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm h-full">
                   <div className="flex items-center gap-3 mb-2">
                     <div className="w-10 h-10 rounded-lg bg-gradient-orange text-white flex items-center justify-center">
-                      <Phone className="h-5 w-5" strokeWidth={2.5} aria-hidden="true" />
+                      <Smartphone className="h-5 w-5" strokeWidth={2.5} aria-hidden="true" />
                     </div>
                     <h3 className="text-sm font-semibold">Friendly Support</h3>
                   </div>
