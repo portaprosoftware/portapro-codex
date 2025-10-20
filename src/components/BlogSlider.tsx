@@ -115,6 +115,14 @@ const blogPosts: BlogPost[] = [
     badgeGradient: 'from-blue-500 to-blue-700'
   },
   {
+    id: 'pricing-strategy',
+    category: 'Business Tips',
+    title: 'How to Price Portable Toilet Rentals for Construction Sites vs Events',
+    excerpt: 'A practical guide to pricing portable toilet rentals differently for construction sites and special events—so operators stay profitable while staying competitive.',
+    date: 'May 25, 2025',
+    badgeGradient: 'from-orange-500 to-red-600'
+  },
+  {
     id: 'scheduling-strategies',
     category: 'Business Tips',
     title: '7 Scheduling Strategies Used by High-Volume Portable Restroom Operators',
@@ -1080,6 +1088,182 @@ export const BlogSlider: React.FC<BlogSliderProps> = ({
                   </div>
                 )}
                 
+                {selectedPost === 'pricing-strategy' && (
+                  <div className="space-y-6">
+                    <div className="space-y-4">
+                      <Badge className="bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold border-0">Business Tips</Badge>
+                      <h1 className="text-3xl font-bold">How to Price Portable Toilet Rentals for Construction Sites vs Events — Without Losing Profit</h1>
+                      <p className="text-muted-foreground">May 25, 2025</p>
+                    </div>
+                    <div className="prose max-w-none space-y-6">
+                      <p className="text-lg">Pricing is one of the most confusing parts of running a portable restroom business. Charge too much and you lose bids. Charge too little and you're basically working for free after fuel, labor, and pump-outs. And to make things more complicated—<strong><em>construction rentals and event rentals should not be priced the same way.</em></strong></p>
+                      
+                      <p>They operate on different timelines, service needs, risks, and expectations. Yet many operators still offer "one-price-fits-all." That's a fast way to lose money.</p>
+                      
+                      <p>This guide breaks down the pricing differences between construction and events — and offers real strategies used by profitable operators.</p>
+                      
+                      <h2 className="text-2xl font-bold mt-8">Why Construction and Events Are Not the Same Business</h2>
+                      <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 rounded-lg p-6 my-6">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="border-b-2 border-blue-600">
+                              <th className="text-left py-2 font-bold">Factor</th>
+                              <th className="text-left py-2 font-bold">Construction Rentals</th>
+                              <th className="text-left py-2 font-bold">Event Rentals</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-blue-200 dark:divide-blue-800">
+                            <tr>
+                              <td className="py-2 font-semibold">Duration</td>
+                              <td className="py-2">Weeks or months</td>
+                              <td className="py-2">1–3 days</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2 font-semibold">Service Frequency</td>
+                              <td className="py-2">Weekly or twice weekly</td>
+                              <td className="py-2">Usually once before and once after</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2 font-semibold">Delivery Timing</td>
+                              <td className="py-2">Flexible</td>
+                              <td className="py-2">Specific tight windows (before attendees arrive)</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2 font-semibold">Unit Placement</td>
+                              <td className="py-2">Open job sites</td>
+                              <td className="py-2">Precise, sometimes restricted placement</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2 font-semibold">Risk Factors</td>
+                              <td className="py-2">Graffiti, job site damage, theft</td>
+                              <td className="py-2">Overuse, tipping, spillage, intoxicated guests</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2 font-semibold">Client Expectation</td>
+                              <td className="py-2">Utility & reliability</td>
+                              <td className="py-2">Cleanliness, image, and reputation</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <p className="mt-4 italic">Trying to price both the same way is like charging the same for a Kia and a limo service.</p>
+                      </div>
+                      
+                      <h2 className="text-2xl font-bold mt-8">How Successful Operators Approach Pricing</h2>
+                      
+                      <h3 className="text-xl font-bold mt-6">✅ 1. Break Pricing into 3 Components</h3>
+                      <p>Instead of "$___ per unit per month," break it down:</p>
+                      <div className="bg-muted/30 rounded-lg p-6 my-4">
+                        <ul className="space-y-2">
+                          <li className="flex items-start gap-2">
+                            <span className="font-bold">•</span>
+                            <span><strong>Base Rental Fee</strong> – covers the unit itself</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="font-bold">•</span>
+                            <span><strong>Service Fee</strong> – covers pumping, chemicals, disposal, labor, fuel</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="font-bold">•</span>
+                            <span><strong>Delivery & Pickup Fee</strong> – covers truck time, fuel, and labor</span>
+                          </li>
+                        </ul>
+                        <p className="mt-3 italic">This lets you adjust parts without renegotiating everything.</p>
+                      </div>
+                      
+                      <h3 className="text-xl font-bold mt-6">✅ 2. Construction Pricing Formula (Used by Real Operators)</h3>
+                      <div className="bg-green-50 dark:bg-green-950 rounded-lg p-6 my-4 border-l-4 border-green-600">
+                        <p className="font-mono mb-3">(Base Rate) + (Weekly Service Rate × Number of Weeks) + Delivery + Pickup</p>
+                        <p className="font-bold mb-2">Example:</p>
+                        <ul className="space-y-1 ml-4">
+                          <li>• Unit rental: $115/month</li>
+                          <li>• Weekly service: $30/week</li>
+                          <li>• Delivery/Pickup per unit: $35 each way</li>
+                        </ul>
+                        <p className="mt-3 font-semibold">Why this works:</p>
+                        <p className="text-sm">It stabilizes cash flow while ensuring fuel, labor, and disposal are covered every week—so you're never "eating the cost" of extra pump-outs.</p>
+                      </div>
+                      
+                      <h3 className="text-xl font-bold mt-6">✅ 3. Event Pricing Formula (Higher Risk, Shorter Term)</h3>
+                      <div className="bg-purple-50 dark:bg-purple-950 rounded-lg p-6 my-4 border-l-4 border-purple-600">
+                        <p className="font-mono mb-3">(Flat Event Rate) = (Unit Rental) + (Delivery + Pickup) + (Pre/Post Service Fee) + (Damage/Mess Buffer)</p>
+                        <p className="mb-2">Events are intense, short-term hits of labor. Most profitable operators:</p>
+                        <ul className="space-y-1 ml-4">
+                          <li>• Charge per event (not per day)</li>
+                          <li>• Include delivery, pickup, and 1–2 services</li>
+                          <li>• Add <strong>$15–$25 "high usage" fee</strong> for events over 1,000 people</li>
+                          <li>• Add <strong>refundable damage/cleaning deposits</strong> for weddings, festivals, or private parties</li>
+                        </ul>
+                      </div>
+                      
+                      <h2 className="text-2xl font-bold mt-8">Real Numbers from Operators (2025 Averages in the U.S.)</h2>
+                      <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-950 dark:to-orange-900 rounded-lg p-6 my-6">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="border-b-2 border-orange-600">
+                              <th className="text-left py-2 font-bold">Rental Type</th>
+                              <th className="text-left py-2 font-bold">Avg. Price Per Unit</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-orange-200 dark:divide-orange-800">
+                            <tr>
+                              <td className="py-2">Small Construction Site</td>
+                              <td className="py-2 font-semibold">$125–$150/month + $25–$35/service</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2">Large Construction Contract</td>
+                              <td className="py-2 font-semibold">$100–$120/month (volume discount)</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2">Small Event (Under 100 ppl)</td>
+                              <td className="py-2 font-semibold">$100–$130 all-in (2–3 days)</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2">Mid Event (200–500 ppl)</td>
+                              <td className="py-2 font-semibold">$140–$180 + $20 service add-ons</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2">Large Festival or Wedding</td>
+                              <td className="py-2 font-semibold">$175–$250 + $100 deposit (damage/cleaning)</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2">Luxury Restroom Trailer</td>
+                              <td className="py-2 font-semibold">$900–$1,500 per event weekend</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <p className="mt-4 text-sm italic">These are average benchmarks—not rules. Your fuel costs, disposal fees, and labor market should drive your final numbers.</p>
+                      </div>
+                      
+                      <h2 className="text-2xl font-bold mt-8">Pro Tips from Real Operators</h2>
+                      <div className="space-y-4">
+                        <div className="border-l-4 border-blue-600 pl-4 py-2">
+                          <p className="font-bold mb-1">💡 Charge for emergency service calls.</p>
+                          <p className="text-sm">Fall festival + 85°F + overflowing units? That's a $75 emergency cleanout, not a freebie.</p>
+                        </div>
+                        <div className="border-l-4 border-green-600 pl-4 py-2">
+                          <p className="font-bold mb-1">💡 Never absorb fuel costs silently.</p>
+                          <p className="text-sm">Some operators add a variable fuel surcharge when diesel prices spike—customers actually understand.</p>
+                        </div>
+                        <div className="border-l-4 border-purple-600 pl-4 py-2">
+                          <p className="font-bold mb-1">💡 Document everything.</p>
+                          <p className="text-sm">Take a photo at delivery. Take a photo after pickup. If someone says "it arrived dirty," you have proof.</p>
+                        </div>
+                        <div className="border-l-4 border-orange-600 pl-4 py-2">
+                          <p className="font-bold mb-1">💡 Don't be the cheapest—be the most reliable.</p>
+                          <p className="text-sm">Contractors will pay more for a company that <em>actually shows up on time.</em></p>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-gradient-to-r from-primary to-primary/80 rounded-lg p-6 text-white my-8">
+                        <h3 className="text-xl font-bold mb-3">Final Thought</h3>
+                        <p className="text-lg mb-3">Pricing isn't about guessing a number that "feels fair." It's math + risk + reputation.</p>
+                        <p className="mb-3">Construction and event rentals <strong>are not the same service</strong>, so they should never be priced the same way.</p>
+                        <p className="text-lg font-semibold">The operators making the healthiest profits in 2025 are the ones who price with intention—not tradition.</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {selectedPost === 'scheduling-strategies' && (
                   <div className="space-y-6">
                     <div className="space-y-4">
