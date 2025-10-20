@@ -414,6 +414,19 @@ export const Landing: React.FC = () => {
                     <ul className="text-white/80 text-sm space-y-1">
                       <li>• Admin, Driver/Tech, Dispatcher & Customers (for unique customer portals)</li>
                     </ul>
+                    
+                    {/* Feature badges - directly under user roles */}
+                    <div className="flex flex-wrap gap-2 mt-4">
+                      <span className="px-3 py-1.5 rounded-full bg-gradient-to-r from-gray-900 to-black text-white text-xs font-bold">
+                        ✓ No setup fees
+                      </span>
+                      <span className="px-3 py-1.5 rounded-full bg-gradient-to-r from-gray-900 to-black text-white text-xs font-bold">
+                        ✓ Support included
+                      </span>
+                      <span className="px-3 py-1.5 rounded-full bg-gradient-to-r from-gray-900 to-black text-white text-xs font-bold">
+                        ✓ Unlimited users, trucks & units
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -424,25 +437,8 @@ export const Landing: React.FC = () => {
             </div>
           </div>
           
-            {/* Feature badges - moved to blue background */}
-            <div className="container mx-auto max-w-6xl px-6 mt-6">
-              <div className="flex flex-wrap justify-center gap-2 mb-6">
-                <span className="px-3 py-1 rounded-full bg-gradient-blue text-white text-xs font-bold">
-                  ✓ 14 Day Free Trial
-                </span>
-                <span className="px-3 py-1 rounded-full bg-gradient-blue text-white text-xs font-bold">
-                  ✓ No setup fees
-                </span>
-                <span className="px-3 py-1 rounded-full bg-gradient-blue text-white text-xs font-bold">
-                  ✓ Support included
-                </span>
-                <span className="px-3 py-1 rounded-full bg-gradient-blue text-white text-xs font-bold">
-                  ✓ Unlimited users, trucks & units
-                </span>
-              </div>
-            
             {/* Proof Bar - moved to blue background */}
-            <div>
+            <div className="container mx-auto max-w-6xl px-6 mt-6">
               <div className="sr-only">Proof Bar</div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
                 <article className="rounded-2xl border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm h-full">
@@ -476,7 +472,6 @@ export const Landing: React.FC = () => {
                 </article>
               </div>
             </div>
-          </div>
         </div>
       </section>
 
