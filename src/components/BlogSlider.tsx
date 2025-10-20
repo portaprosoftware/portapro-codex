@@ -51,6 +51,14 @@ const blogPosts: BlogPost[] = [
     badgeGradient: 'from-yellow-500 to-orange-600'
   },
   {
+    id: 'texas-revenue-case-study',
+    category: 'Case Studies',
+    title: 'From Paper to Profit: How a Texas Operator Increased Revenue by 22%',
+    excerpt: 'A Texas portable restroom company transitioned from paper to PortaPro and increased revenue by 22% in four months, while reducing unpaid invoices by 40% and cutting overtime in half.',
+    date: 'August 7, 2025',
+    badgeGradient: 'from-green-500 to-green-700'
+  },
+  {
     id: 'festival-case-study',
     category: 'Case Studies',
     title: 'Festival Season Success: How One Operator Managed 5 Events in One Weekend',
@@ -226,6 +234,143 @@ export const BlogSlider: React.FC<BlogSliderProps> = ({
                   </div>
                 )}
                 
+                {selectedPost === 'texas-revenue-case-study' && (
+                  <div className="space-y-6">
+                    <div className="space-y-4">
+                      <Badge className="bg-gradient-to-r from-green-500 to-green-700 text-white font-bold border-0">Case Studies</Badge>
+                      <h1 className="text-3xl font-bold">From Paper to Profit: How a Texas Operator Increased Revenue by 22% After Switching to PortaPro</h1>
+                      <p className="text-muted-foreground">August 7, 2025</p>
+                    </div>
+                    <div className="prose max-w-none space-y-6">
+                      <p className="text-lg">In early 2025, a portable toilet operator based in Waco, Texas, made a decision that completely changed how they ran their business: they threw out their clipboard system and switched their entire workflow—from dispatch to billing—into PortaPro. Within four months, the business increased revenue by <strong>22%</strong>, reduced unpaid invoices by nearly 40%, and cut driver overtime hours in half.</p>
+                      
+                      <p>This isn't a story about hiring more people, buying more trucks, or raising prices. This is about replacing paper with a tool that finally matched how they work.</p>
+                      
+                      <h2 className="text-2xl font-bold mt-8">The Situation Before PortaPro</h2>
+                      <p>This family-run business managed around 300 units, 5 service trucks, and a mix of construction and event clients. Operations looked like this:</p>
+                      <ul className="list-disc pl-6 space-y-2">
+                        <li>Route assignments handwritten every morning</li>
+                        <li>Drivers turning in crumpled service sheets at the end of the day</li>
+                        <li>Invoices sent only after someone manually typed work orders into QuickBooks</li>
+                        <li>No way to see how many units were actually in the field</li>
+                        <li>Services occasionally missed or unbilled because paper forms got lost</li>
+                      </ul>
+                      
+                      <p className="italic border-l-4 border-primary pl-4 py-2 bg-muted/50">"We weren't running a bad business. We were just running blind. We didn't know what we were missing, so we assumed everything was fine." — Owner</p>
+                      
+                      <h2 className="text-2xl font-bold mt-8">Why They Switched</h2>
+                      <p>The tipping point came when they lost a <strong>$12,000 annual contract</strong> because a general contractor said he needed "a more professional partner." Not more units, not cheaper rates—just better organization and faster response.</p>
+                      <p>Three weeks later, they signed up for PortaPro.</p>
+                      
+                      <h2 className="text-2xl font-bold mt-8">What Changed (And Why It Worked)</h2>
+                      <div className="bg-muted/30 rounded-lg p-6 my-6">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="border-b-2 border-primary">
+                              <th className="text-left py-2 font-bold">PortaPro Feature</th>
+                              <th className="text-left py-2 font-bold">What They Did</th>
+                              <th className="text-left py-2 font-bold">Why It Increased Revenue</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-border">
+                            <tr>
+                              <td className="py-3 font-semibold">Digital Dispatch & Routes</td>
+                              <td className="py-3">Office staff built routes using drag-and-drop, sent instantly to driver phones.</td>
+                              <td className="py-3 italic">No more missed stops = no more giving away free service "make-up days."</td>
+                            </tr>
+                            <tr>
+                              <td className="py-3 font-semibold">Service Logs + Photos</td>
+                              <td className="py-3">Drivers logged every pump-out with timestamp, notes, or photo.</td>
+                              <td className="py-3 italic">Every service was counted and billable—no more "he said, she said."</td>
+                            </tr>
+                            <tr>
+                              <td className="py-3 font-semibold">Automatic Quote → Job → Invoice</td>
+                              <td className="py-3">Once a quote was approved, it automatically became a job and then an invoice after completion.</td>
+                              <td className="py-3 italic">Eliminated delays in invoicing—cash flowed in faster.</td>
+                            </tr>
+                            <tr>
+                              <td className="py-3 font-semibold">Tap-to-Pay & Customer Portal</td>
+                              <td className="py-3">Event customers could pay on the spot or online.</td>
+                              <td className="py-3 italic">38% fewer unpaid invoices in 90 days.</td>
+                            </tr>
+                            <tr>
+                              <td className="py-3 font-semibold">Inventory Tracking</td>
+                              <td className="py-3">Each unit was labeled and scanned as it left or entered the yard.</td>
+                              <td className="py-3 italic">They discovered 14 "ghost units" sitting behind a barn—now back in rental rotation.</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      
+                      <h2 className="text-2xl font-bold mt-8">The Numbers After 4 Months</h2>
+                      <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900 rounded-lg p-6 my-6">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="border-b-2 border-green-600">
+                              <th className="text-left py-2 font-bold">Metric</th>
+                              <th className="text-left py-2 font-bold">Before PortaPro</th>
+                              <th className="text-left py-2 font-bold">After PortaPro</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-green-200 dark:divide-green-800">
+                            <tr>
+                              <td className="py-2">Monthly Revenue</td>
+                              <td className="py-2">Baseline</td>
+                              <td className="py-2 font-bold text-green-700 dark:text-green-400">+22% increase</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2">Unpaid/Overdue Invoices</td>
+                              <td className="py-2">31% of invoices</td>
+                              <td className="py-2 font-bold text-green-700 dark:text-green-400">19% of invoices</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2">Average Days to Get Paid</td>
+                              <td className="py-2">28 days</td>
+                              <td className="py-2 font-bold text-green-700 dark:text-green-400">12 days</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2">Driver Overtime Costs</td>
+                              <td className="py-2">$1,400/mo</td>
+                              <td className="py-2 font-bold text-green-700 dark:text-green-400">$750/mo</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2">"Missing" Units</td>
+                              <td className="py-2">14 units misplaced</td>
+                              <td className="py-2 font-bold text-green-700 dark:text-green-400">0 — all scanned/tracked</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2">Time Spent on Paperwork</td>
+                              <td className="py-2">2–3 hours/day</td>
+                              <td className="py-2 font-bold text-green-700 dark:text-green-400">Under 30 minutes/day</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      
+                      <h2 className="text-2xl font-bold mt-8">What Surprised Them Most</h2>
+                      <div className="space-y-4">
+                        <div className="border-l-4 border-blue-600 pl-4 py-2">
+                          <p className="font-bold mb-1">1. The drivers liked it.</p>
+                          <p className="text-sm text-muted-foreground">The owner worried his older drivers wouldn't accept new technology. Instead, they said the mobile app made their jobs easier—no more forgetting addresses or losing paper sheets.</p>
+                        </div>
+                        <div className="border-l-4 border-green-600 pl-4 py-2">
+                          <p className="font-bold mb-1">2. They had been losing money quietly.</p>
+                          <p className="text-sm text-muted-foreground">Units left on job sites for months without billing. Extra pump-outs done under the table to keep clients happy. None of it recorded—until now.</p>
+                        </div>
+                        <div className="border-l-4 border-purple-600 pl-4 py-2">
+                          <p className="font-bold mb-1">3. Organization became a selling point.</p>
+                          <p className="text-sm text-muted-foreground">Contractors started saying, "We like you because we don't have to chase you."</p>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-gradient-to-r from-primary to-primary/80 rounded-lg p-6 text-white my-8">
+                        <h3 className="text-xl font-bold mb-2">Final Quote from the Owner</h3>
+                        <p className="italic text-lg">"PortaPro didn't make us work harder—it made us finally see the work we were already doing. Once we could see everything, the money followed."</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {selectedPost === 'indiana-case-study' && (
                   <div className="space-y-6">
                     <div className="space-y-4">
