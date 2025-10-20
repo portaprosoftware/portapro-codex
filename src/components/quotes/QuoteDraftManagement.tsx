@@ -116,8 +116,8 @@ export const QuoteDraftManagement: React.FC = () => {
           {drafts.map((draft) => (
             <Card key={draft.id} className="bg-muted/20">
               <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
+                <div className="space-y-4">
+                  <div>
                     <h4 className="font-semibold text-foreground">{draft.name}</h4>
                     <p className="text-sm text-muted-foreground">
                       {(draft.quote_data as any)?.customer?.name || 'No customer assigned'} • ${((draft.quote_data as any)?.totalCost || 0).toFixed(2)}
@@ -126,11 +126,11 @@ export const QuoteDraftManagement: React.FC = () => {
                       Last updated {formatDistanceToNow(new Date(draft.updated_at), { addSuffix: true })}
                     </p>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 pt-2 border-t">
                     <Button
                       size="sm"
                       onClick={() => handleResumeDraft(draft)}
-                      className="bg-primary hover:bg-primary/90"
+                      className="flex-1 bg-primary hover:bg-primary/90"
                     >
                       Resume
                     </Button>
