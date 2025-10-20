@@ -1925,9 +1925,7 @@ export const Landing: React.FC = () => {
                   {/* Community Hub Card */}
                   <div className="bg-card rounded-xl border border-border/60 hover:border-border transition-all p-6">
                     <div className="flex items-start gap-4 mb-4">
-                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center border border-primary/20">
-                        <Users className="w-6 h-6 text-primary" />
-                      </div>
+                      <Users className="w-10 h-10 text-primary flex-shrink-0 stroke-[2.5]" />
                       <div className="flex-1 min-w-0">
                         <h3 className="text-lg font-semibold text-foreground mb-1">
                           Connect with Other Operators
@@ -1949,9 +1947,7 @@ export const Landing: React.FC = () => {
                   {/* Real-World Operators Card */}
                   <div className="bg-card rounded-xl border border-border/60 hover:border-border transition-all p-6">
                     <div className="flex items-start gap-4 mb-4">
-                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center border border-primary/20">
-                        <MapPin className="w-6 h-6 text-primary" />
-                      </div>
+                      <MapPin className="w-10 h-10 text-primary flex-shrink-0 stroke-[2.5]" />
                       <div className="flex-1 min-w-0">
                         <h3 className="text-lg font-semibold text-foreground mb-1">
                           See PortaPro in Action
@@ -1979,9 +1975,7 @@ export const Landing: React.FC = () => {
                   {/* Shape the Future Card */}
                   <div className="bg-card rounded-xl border border-border/60 hover:border-border transition-all p-6">
                     <div className="flex items-start gap-4 mb-4">
-                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center border border-primary/20">
-                        <Lightbulb className="w-6 h-6 text-primary" />
-                      </div>
+                      <Lightbulb className="w-10 h-10 text-primary flex-shrink-0 stroke-[2.5]" />
                       <div className="flex-1 min-w-0">
                         <h3 className="text-lg font-semibold text-foreground mb-1">
                           Share Ideas & Influence the Product
