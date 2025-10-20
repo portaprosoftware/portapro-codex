@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Download, Warehouse, Package, DollarSign, Box, Shield, Droplet, ChevronDown } from "lucide-react";
+import { StorageAnalyticsKPICards } from "./StorageAnalyticsKPICards";
+import { StorageAnalyticsLocationSection } from "./StorageAnalyticsLocationSection";
+import { Droplet, Package, Shield } from "lucide-react";
 import { toast } from "sonner";
 import jsPDF from 'jspdf';
 
@@ -61,19 +59,6 @@ interface LocationReportData {
 
 export function StorageLocationReporting() {
   const [isExporting, setIsExporting] = useState(false);
-  const [expandedLocations, setExpandedLocations] = useState<Set<string>>(new Set());
-
-  const toggleLocation = (locationId: string) => {
-    setExpandedLocations(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(locationId)) {
-        newSet.delete(locationId);
-      } else {
-        newSet.add(locationId);
-      }
-      return newSet;
-    });
-  };
 
   const { data: reportData, isLoading } = useQuery({
     queryKey: ['storage-location-reporting'],
@@ -386,298 +371,73 @@ export function StorageLocationReporting() {
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {[...Array(4)].map((_, i) => (
-            <Card key={i} className="animate-pulse">
-              <CardContent className="p-6">
-                <div className="h-8 bg-muted rounded mb-2"></div>
-                <div className="h-4 bg-muted rounded w-24"></div>
-              </CardContent>
-            </Card>
-          ))}
+      <div className="px-4 overflow-x-hidden">
+        <div className="space-y-6">
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 lg:gap-4">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="animate-pulse">
+                <div className="bg-muted rounded-xl h-24 lg:h-28"></div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {reportData && (
-        <>
-          {/* Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-2xl font-bold">{reportData.summary.total_locations}</div>
-                    <div className="text-sm text-muted-foreground font-bold">Active Garage Site Locations</div>
-                  </div>
-                  <Warehouse className="h-8 w-8 text-primary" />
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-2xl font-bold">{reportData.summary.total_consumable_types}</div>
-                    <div className="text-sm text-muted-foreground font-bold">Consumable Types</div>
-                  </div>
-                  <Droplet className="h-8 w-8 text-primary" />
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-2xl font-bold">{reportData.summary.total_product_types}</div>
-                    <div className="text-sm text-muted-foreground font-bold">Product Types</div>
-                  </div>
-                  <Package className="h-8 w-8 text-primary" />
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-2xl font-bold">{reportData.summary.total_spill_kit_types}</div>
-                    <div className="text-sm text-muted-foreground font-bold">Spill Kit Types</div>
-                  </div>
-                  <Shield className="h-8 w-8 text-orange-500" />
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-2xl font-bold">
-                      ${reportData.summary.total_stock_value.toLocaleString()}
-                    </div>
-                    <div className="text-sm text-muted-foreground font-bold">Total Stock Value</div>
-                  </div>
-                  <DollarSign className="h-8 w-8 text-primary" />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+    <div className="px-4 overflow-x-hidden">
+      <div className="space-y-6 pb-6">
+        {reportData && (
+          <>
+            {/* KPI Cards - Mobile First Grid */}
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 lg:gap-4">
+              <StorageAnalyticsKPICards summary={reportData.summary} />
+            </div>
 
-          {/* Consumable Details by Location */}
-          {reportData.consumable_details.length > 0 && (
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <span className="text-2xl">🧻</span>
-                  Consumable Details by Location
-                </CardTitle>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={exportToPDF}
-                    disabled={isExporting || !reportData}
-                    className="gap-2"
-                  >
-                    <Download className="h-4 w-4" />
-                    Export PDF
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={exportToCSV}
-                    disabled={!reportData}
-                    className="gap-2"
-                  >
-                    <Download className="h-4 w-4" />
-                    Export CSV
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {reportData.consumable_details.map((location) => (
-                  <Collapsible
-                    key={location.location_id}
-                    open={expandedLocations.has(location.location_id)}
-                    onOpenChange={() => toggleLocation(location.location_id)}
-                  >
-                    <Card className="border-l-4 border-l-primary">
-                      <CardContent className="p-4">
-                        <CollapsibleTrigger className="w-full">
-                          <div className="space-y-3">
-                            <div className="flex justify-between items-center">
-                              <div className="flex items-center gap-2">
-                                <ChevronDown 
-                                  className={`h-4 w-4 transition-transform ${
-                                    expandedLocations.has(location.location_id) ? 'rotate-180' : ''
-                                  }`}
-                                />
-                                <h5 className="font-medium text-base">{location.location_name}</h5>
-                              </div>
-                              <div className="text-right">
-                                <div className="text-sm font-medium">
-                                  {location.total_items} consumables • {location.total_quantity} units
-                                </div>
-                                <div className="text-base font-bold text-primary">
-                                  Cost of Goods: ${location.total_value.toLocaleString()}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent className="mt-3">
-                          <div className="space-y-2">
-                            {location.items.map((item, idx) => (
-                              <div key={idx} className="flex justify-between items-center text-sm p-2 bg-muted/50 rounded">
-                                <div className="flex items-center gap-2">
-                                  <span className="font-medium">{item.item_name}</span>
-                                </div>
-                                <div className="flex items-center gap-3 text-muted-foreground">
-                                  <span>{item.quantity} units</span>
-                                  <span className="font-medium text-foreground">
-                                    ${(item.total_value).toLocaleString()}
-                                  </span>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </CollapsibleContent>
-                      </CardContent>
-                    </Card>
-                  </Collapsible>
-                ))}
-              </CardContent>
-            </Card>
-          )}
+            {/* Consumable Details by Location */}
+            <StorageAnalyticsLocationSection
+              title="Consumable Details by Location"
+              icon={Droplet}
+              iconColor="text-blue-600"
+              borderColor="border-l-blue-600"
+              data={reportData.consumable_details}
+              onExportPDF={exportToPDF}
+              onExportCSV={exportToCSV}
+              isExporting={isExporting}
+              showValue={true}
+              showCategory={true}
+            />
 
-          {/* Product Details by Location */}
-          {reportData.product_details.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <Package className="h-5 w-5 text-blue-600" />
-                  Product Types by Location
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {reportData.product_details.map((location) => (
-                  <Collapsible
-                    key={location.location_id}
-                    open={expandedLocations.has(location.location_id + '_products')}
-                    onOpenChange={() => toggleLocation(location.location_id + '_products')}
-                  >
-                    <Card className="border-l-4 border-l-blue-600">
-                      <CardContent className="p-4">
-                        <CollapsibleTrigger className="w-full">
-                          <div className="space-y-3">
-                            <div className="flex justify-between items-center">
-                              <div className="flex items-center gap-2">
-                                <ChevronDown 
-                                  className={`h-4 w-4 transition-transform ${
-                                    expandedLocations.has(location.location_id + '_products') ? 'rotate-180' : ''
-                                  }`}
-                                />
-                                <h5 className="font-medium text-base">{location.location_name}</h5>
-                              </div>
-                              <div className="text-right">
-                                <div className="text-sm font-medium">
-                                  {location.total_items} product {location.total_items === 1 ? 'type' : 'types'} • {location.total_quantity} total units
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent className="mt-3">
-                          <div className="space-y-2">
-                            {location.items.map((item, idx) => (
-                              <div key={idx} className="flex justify-between items-center text-sm p-2 bg-muted/50 rounded">
-                                <div className="flex items-center gap-2">
-                                  <span className="font-medium">{item.item_name}</span>
-                                </div>
-                                <div className="flex items-center gap-3 text-muted-foreground">
-                                  <span className="font-medium text-foreground">{item.quantity} units</span>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </CollapsibleContent>
-                      </CardContent>
-                    </Card>
-                  </Collapsible>
-                ))}
-              </CardContent>
-            </Card>
-          )}
+            {/* Product Types by Location */}
+            <StorageAnalyticsLocationSection
+              title="Product Types by Location"
+              icon={Package}
+              iconColor="text-blue-600"
+              borderColor="border-l-blue-600"
+              data={reportData.product_details}
+              onExportPDF={exportToPDF}
+              onExportCSV={exportToCSV}
+              isExporting={isExporting}
+              showValue={false}
+            />
 
-          {/* Spill Kits by Location */}
-          {reportData.spill_kit_details.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <Shield className="h-5 w-5 text-orange-500" />
-                  Spill Kits by Location
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {reportData.spill_kit_details.map((location) => (
-                  <Collapsible
-                    key={location.location_id}
-                    open={expandedLocations.has(location.location_id + '_spill')}
-                    onOpenChange={() => toggleLocation(location.location_id + '_spill')}
-                  >
-                    <Card className="border-l-4 border-l-orange-500">
-                      <CardContent className="p-4">
-                        <CollapsibleTrigger className="w-full">
-                          <div className="space-y-3">
-                            <div className="flex justify-between items-center">
-                              <div className="flex items-center gap-2">
-                                <ChevronDown 
-                                  className={`h-4 w-4 transition-transform ${
-                                    expandedLocations.has(location.location_id + '_spill') ? 'rotate-180' : ''
-                                  }`}
-                                />
-                                <h5 className="font-medium text-base">{location.location_name}</h5>
-                              </div>
-                              <div className="text-right">
-                                <div className="text-sm font-medium">
-                                  {location.total_items} spill kit {location.total_items === 1 ? 'item' : 'items'} • {location.total_quantity} total units
-                                </div>
-                                <div className="text-lg font-bold text-orange-600">
-                                  Total: ${location.total_value.toLocaleString()}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent className="mt-3">
-                          <div className="space-y-2">
-                            {location.items.map((item, idx) => (
-                              <div key={idx} className="flex justify-between items-center text-sm p-2 bg-muted/50 rounded">
-                                <div className="flex items-center gap-2">
-                                  <span className="font-medium">{item.item_name}</span>
-                                </div>
-                                <div className="flex items-center gap-3 text-muted-foreground">
-                                  <span>{item.quantity} units × ${item.unit_cost.toLocaleString()} per item</span>
-                                  <span className="font-medium text-foreground">
-                                    ${(item.total_value).toLocaleString()}
-                                  </span>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </CollapsibleContent>
-                      </CardContent>
-                    </Card>
-                  </Collapsible>
-                ))}
-              </CardContent>
-            </Card>
-          )}
-        </>
-      )}
+            {/* Spill Kits by Location */}
+            <StorageAnalyticsLocationSection
+              title="Spill Kits by Location"
+              icon={Shield}
+              iconColor="text-orange-600"
+              borderColor="border-l-orange-600"
+              data={reportData.spill_kit_details}
+              onExportPDF={exportToPDF}
+              onExportCSV={exportToCSV}
+              isExporting={isExporting}
+              showValue={true}
+              showItemType={true}
+            />
+          </>
+        )}
+      </div>
     </div>
   );
 }
