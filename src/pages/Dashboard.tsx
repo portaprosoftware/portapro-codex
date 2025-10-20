@@ -232,7 +232,7 @@ const Dashboard = () => {
   }, [companySettings?.company_timezone]);
   
   return (
-    <div className="px-4 md:px-6 py-4 space-y-4 font-sans">
+    <div className="px-2 md:px-4 py-3 space-y-4 font-sans">
       {/* Hero Banner - Mobile Optimized */}
       <div className="bg-gradient-to-b from-[#F6F9FF] to-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-4 transition-all duration-300 hover:shadow-md">
         <div className="flex flex-col md:flex-row items-center md:justify-between gap-2 md:gap-0">

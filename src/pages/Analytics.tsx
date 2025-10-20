@@ -80,7 +80,7 @@ const Analytics = () => {
   };
 
   return (
-    <div className="max-w-none px-4 md:px-6 py-6 min-h-screen bg-gray-50 overflow-x-hidden">
+    <div className="max-w-none px-2 md:px-4 py-4 min-h-screen bg-gray-50 overflow-x-hidden">
       {/* Header */}
       <div className="bg-white rounded-2xl border shadow-sm p-4 md:p-6 mb-6">
         <div className="flex flex-col gap-4 mb-6">
