@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { FeatureIdeaModal } from '@/components/ui/feature-idea-modal';
 import { SignInButton, SignUpButton } from '@clerk/clerk-react';
 import { ArrowRight, Play, CheckCircle, Truck, Users, BarChart3, ClipboardList, MapPin, Calendar, DollarSign, Zap, Building2, FileText, Smartphone, Heart, Phone, Mail, Menu, X, Camera, Eye, Compass, Database, Shield, Clock, BellRing, Wrench, CalendarClock, Gauge, HardHat, Route, CloudOff, QrCode, Laptop, RefreshCcw, PiggyBank, Toilet, Wallet, WalletMinimal, HandCoins, MonitorSmartphone, ExternalLink, Lightbulb } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -216,6 +217,7 @@ export const Landing: React.FC = () => {
   const [communitySliderOpen, setCommunitySliderOpen] = useState(false);
   const [blogSliderOpen, setBlogSliderOpen] = useState(false);
   const [contactFormOpen, setContactFormOpen] = useState(false);
+  const [isFeatureModalOpen, setIsFeatureModalOpen] = useState(false);
   const [questionsFormOpen, setQuestionsFormOpen] = useState(false);
   const [requestInfoFormOpen, setRequestInfoFormOpen] = useState(false);
   const [featuresSheetOpen, setFeaturesSheetOpen] = useState(false);
@@ -1993,9 +1995,11 @@ export const Landing: React.FC = () => {
                         View Roadmap
                         <ExternalLink className="w-4 h-4" />
                       </button>
-                      <button className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm bg-gradient-to-r from-primary to-primary/90 text-white hover:shadow-md hover:scale-[1.02] transition-all">
+                      <button 
+                        onClick={() => setIsFeatureModalOpen(true)}
+                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm bg-gradient-to-r from-primary to-primary/90 text-white hover:shadow-md hover:scale-[1.02] transition-all"
+                      >
                         Submit Feature Idea
-                        <ExternalLink className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
@@ -2397,7 +2401,11 @@ export const Landing: React.FC = () => {
             <iframe src="https://calendly.com/portapro/portapro-software-demo?embed_type=Inline&embed_domain=1&hide_gdpr_banner=1" width="100%" height="100%" className="rounded-lg" frameBorder="0" title="Schedule Demo" />
           </div>
         </div>}
-
+      
+      <FeatureIdeaModal 
+        isOpen={isFeatureModalOpen} 
+        onClose={() => setIsFeatureModalOpen(false)} 
+      />
     </div>;
 };
 export default Landing;

@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Users, MapPin, Lightbulb, ArrowRight, ArrowLeft, ExternalLink } from 'lucide-react';
 import { LandingLogo } from '@/components/ui/landing-logo';
 import { EnhancedCard } from '@/components/ui/enhanced-card';
+import { FeatureIdeaModal } from '@/components/ui/feature-idea-modal';
 
 export default function Community() {
+  const [isFeatureModalOpen, setIsFeatureModalOpen] = useState(false);
+  
   const communityCards = [
     {
       icon: Users,
@@ -99,6 +102,7 @@ export default function Community() {
                   {card.buttons.map((button, btnIndex) => (
                     <button
                       key={btnIndex}
+                      onClick={() => button.label === "Submit Feature Idea" && setIsFeatureModalOpen(true)}
                       className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all ${
                         button.primary
                           ? 'bg-gradient-to-r from-primary to-primary/90 text-white hover:shadow-md hover:scale-[1.02]'
@@ -106,7 +110,7 @@ export default function Community() {
                       }`}
                     >
                       {button.label}
-                      <ExternalLink className="w-4 h-4" />
+                      {button.label !== "Submit Feature Idea" && <ExternalLink className="w-4 h-4" />}
                     </button>
                   ))}
                 </div>
@@ -136,6 +140,11 @@ export default function Community() {
           </EnhancedCard>
         </div>
       </div>
+      
+      <FeatureIdeaModal 
+        isOpen={isFeatureModalOpen} 
+        onClose={() => setIsFeatureModalOpen(false)} 
+      />
     </div>
   );
 }
