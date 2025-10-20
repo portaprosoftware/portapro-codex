@@ -45,7 +45,7 @@ const Auth = () => {
             <TabsContent value="signin" className="space-y-4 mt-6">
               <div className="flex justify-center">
                 <SignIn 
-                  fallbackRedirectUrl="/"
+                  fallbackRedirectUrl="/dashboard"
                   appearance={{
                     elements: {
                       card: "shadow-none border-0",
@@ -62,7 +62,7 @@ const Auth = () => {
             <TabsContent value="signup" className="space-y-4 mt-6">
               <div className="flex justify-center">
                 <SignUp 
-                  fallbackRedirectUrl="/"
+                  fallbackRedirectUrl="/dashboard"
                   appearance={{
                     elements: {
                       card: "shadow-none border-0",
