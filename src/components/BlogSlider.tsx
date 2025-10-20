@@ -51,6 +51,14 @@ const blogPosts: BlogPost[] = [
     badgeGradient: 'from-yellow-500 to-orange-600'
   },
   {
+    id: 'festival-case-study',
+    category: 'Case Studies',
+    title: 'Festival Season Success: How One Operator Managed 5 Events in One Weekend',
+    excerpt: 'A mid-sized Tennessee operator coordinated 5 major festivals with 312 units and 4 trucks in one weekend using PortaPro—with zero lost units and minimal complaints.',
+    date: 'April 28, 2025',
+    badgeGradient: 'from-green-500 to-green-700'
+  },
+  {
     id: 'indiana-case-study',
     category: 'Case Studies',
     title: 'How a Family-Owned Operator Cut Missed Services by 48% Using PortaPro',
@@ -333,6 +341,135 @@ export const BlogSlider: React.FC<BlogSliderProps> = ({
                 )}
 
                 
+                {selectedPost === 'festival-case-study' && (
+                  <div className="space-y-6">
+                    <div className="space-y-4">
+                      <Badge className="bg-gradient-to-r from-green-500 to-green-700 text-white font-bold border-0">Case Studies</Badge>
+                      <h1 className="text-3xl font-bold">Festival Season Success: How One Operator Managed 5 Events in One Weekend with PortaPro</h1>
+                      <p className="text-muted-foreground">April 28, 2025</p>
+                    </div>
+                    <div className="prose max-w-none space-y-6">
+                      <p className="text-lg">In April 2025, a mid-sized portable toilet company in Tennessee faced their busiest weekend of the year—five different festivals, 312 rental units, 9 hand-wash stations, and only 4 service trucks available. In previous years, this exact situation caused chaos: lost units, late deliveries, overflowing toilets, and unhappy event organizers.</p>
+                      
+                      <p>But this year was different. They did it all—on time, fully serviced, no missing inventory—and the event coordinators called it <strong>"the smoothest experience yet."</strong> Their only change? They switched all logistics over to PortaPro.</p>
+                      
+                      <h2 className="text-2xl font-bold mt-8">The Challenge: Too Many Events, Too Many Moving Parts</h2>
+                      <p>Here's what the operation looked like before PortaPro:</p>
+                      <ul className="list-disc pl-6 space-y-2">
+                        <li>Google Sheets to assign units</li>
+                        <li>Text messages to drivers for route instructions</li>
+                        <li>Handwritten delivery logs</li>
+                        <li>Guessing where spare units were when emergencies came up</li>
+                        <li>No system for tracking when a unit was last cleaned during multi-day festivals</li>
+                        <li>Arguments with event organizers: <em>"That unit wasn't serviced." "Actually, it was… we think."</em></li>
+                      </ul>
+                      
+                      <p className="italic border-l-4 border-primary pl-4 py-2 bg-muted/50">"Every festival weekend felt like survival mode. You hoped your drivers remembered everything—and that you could find the units on Monday." — Operations Manager</p>
+                      
+                      <h2 className="text-2xl font-bold mt-8">What They Changed with PortaPro</h2>
+                      <p>Instead of overhaul, they focused on three big things: <strong>planning, tracking, and communication</strong>.</p>
+                      
+                      <div className="bg-muted/30 rounded-lg p-6 my-6">
+                        <h3 className="text-xl font-bold mb-4">✅ 1. Smart Delivery Staging & GPS Drop Pins</h3>
+                        <p className="mb-3">They pre-planned each event in PortaPro:</p>
+                        <div className="space-y-3">
+                          <div className="border-l-4 border-blue-600 pl-4">
+                            <p className="font-semibold">Dropped GPS pins for exact placement areas at venues</p>
+                            <p className="text-sm text-muted-foreground italic">→ No more "Where does this unit go again?" calls</p>
+                          </div>
+                          <div className="border-l-4 border-green-600 pl-4">
+                            <p className="font-semibold">Assigned units to events before loading trucks</p>
+                            <p className="text-sm text-muted-foreground italic">→ Eliminated last-minute confusion at the yard</p>
+                          </div>
+                          <div className="border-l-4 border-purple-600 pl-4">
+                            <p className="font-semibold">Marked "Exact Location" with photos for future service runs</p>
+                            <p className="text-sm text-muted-foreground italic">→ Drivers instantly knew where units were at crowded fairgrounds</p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-muted/30 rounded-lg p-6 my-6">
+                        <h3 className="text-xl font-bold mb-4">✅ 2. Real-Time Inventory & Service Logging</h3>
+                        <ul className="list-disc pl-6 space-y-2">
+                          <li>Each unit was scanned via QR code as it left the yard</li>
+                          <li>Once placed on site, it was assigned to a "Location Zone" in PortaPro (Main Stage, Food Court, Parking Lot, etc.)</li>
+                          <li>During multi-day events, drivers logged every pump-out and trash refill directly in the app</li>
+                        </ul>
+                        <p className="italic border-l-4 border-primary pl-4 py-2 bg-background mt-4">"Instead of guessing if a unit was serviced Saturday night, we could see it—time, driver, and photo."</p>
+                      </div>
+                      
+                      <div className="bg-muted/30 rounded-lg p-6 my-6">
+                        <h3 className="text-xl font-bold mb-4">✅ 3. Live Communication with Event Organizers</h3>
+                        <p className="mb-3">For the first time, organizers received automatic updates:</p>
+                        <ul className="list-disc pl-6 space-y-1">
+                          <li><strong>"Units Delivered — 47 Completed"</strong></li>
+                          <li><strong>"First Service Sweep Complete"</strong></li>
+                          <li><strong>"Hand-wash refill finished at 2:15 PM"</strong></li>
+                        </ul>
+                        <p className="mt-3">No last-second panic. No walkie-talkie arguments.</p>
+                      </div>
+                      
+                      <h2 className="text-2xl font-bold mt-8">The Results</h2>
+                      <p>After using PortaPro, here's how the numbers shifted:</p>
+                      
+                      <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900 rounded-lg p-6 my-6">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="border-b-2 border-green-600">
+                              <th className="text-left py-2 font-bold">Metric</th>
+                              <th className="text-left py-2 font-bold">Before</th>
+                              <th className="text-left py-2 font-bold">After PortaPro</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-green-200 dark:divide-green-800">
+                            <tr>
+                              <td className="py-2">Lost / unaccounted units</td>
+                              <td className="py-2">6–9 per big weekend</td>
+                              <td className="py-2 font-bold text-green-700 dark:text-green-400">0 lost units</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2">Missed services</td>
+                              <td className="py-2">10+ complaints</td>
+                              <td className="py-2 font-bold text-green-700 dark:text-green-400">1 documented issue</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2">Calls from organizers</td>
+                              <td className="py-2">30+ per weekend</td>
+                              <td className="py-2 font-bold text-green-700 dark:text-green-400">6 total</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2">Time to reconcile units post-event</td>
+                              <td className="py-2">2 full days</td>
+                              <td className="py-2 font-bold text-green-700 dark:text-green-400">3 hours</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      
+                      <h2 className="text-2xl font-bold mt-8">Biggest Lessons from the Crew</h2>
+                      <div className="space-y-4">
+                        <div className="border-l-4 border-blue-600 pl-4 py-2 bg-blue-50/50 dark:bg-blue-950/50">
+                          <p className="font-bold">💡 "Photos end arguments."</p>
+                          <p className="text-sm text-muted-foreground">Drivers took a photo of units after placement or servicing. This stopped disputes instantly.</p>
+                        </div>
+                        <div className="border-l-4 border-green-600 pl-4 py-2 bg-green-50/50 dark:bg-green-950/50">
+                          <p className="font-bold">💡 "Zones are smarter than addresses."</p>
+                          <p className="text-sm text-muted-foreground">Festival sites don't have street addresses—so PortaPro lets you name zones and drop GPS pins for each.</p>
+                        </div>
+                        <div className="border-l-4 border-purple-600 pl-4 py-2 bg-purple-50/50 dark:bg-purple-950/50">
+                          <p className="font-bold">💡 "You only stress when things are unknown."</p>
+                          <p className="text-sm text-muted-foreground">With real-time updates, the team wasn't guessing. They <em>knew</em>.</p>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-gradient-to-r from-primary to-primary/80 rounded-lg p-6 text-white my-8">
+                        <h3 className="text-xl font-bold mb-2">Final Quote from the Owner</h3>
+                        <p className="italic text-lg">"This was the first year I actually enjoyed festival weekend. We didn't work less—we just worked without chaos. That was new."</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {selectedPost === 'case-study' && (
                   <div className="space-y-6">
                     <div className="space-y-4">
