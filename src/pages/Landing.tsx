@@ -1171,12 +1171,8 @@ export const Landing: React.FC = () => {
       {/* In action: 60-second tour - White */}
       <section id="tour" className="py-4 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">See PortaPro in Action</h2>
-              <p className="text-lg text-muted-foreground">A quick 60-second overview of the job wizard, driver app, and quote-to-job flow.</p>
-            </div>
-            <div className="rounded-2xl p-12 shadow-md border bg-card flex items-center justify-center min-h-[300px]">
+          <div className="flex justify-center">
+            <div className="rounded-2xl p-12 shadow-md border bg-card flex items-center justify-center min-h-[300px] w-full max-w-4xl">
               <div className="text-center space-y-4">
                 <h3 className="text-2xl font-bold text-foreground">Updated PortaPro Preview coming soon!</h3>
                 <p className="text-lg text-muted-foreground">New Features</p>
