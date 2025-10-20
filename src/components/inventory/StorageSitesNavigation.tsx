@@ -52,7 +52,7 @@ export const StorageSitesNavigation: React.FC<StorageSitesNavigationProps> = ({ 
           <div className="mt-4 lg:hidden">
             <Button onClick={onAddStorage} className="w-full bg-gradient-to-r from-blue-700 to-blue-800 text-white hover:from-blue-800 hover:to-blue-900 gap-2">
               <Plus className="h-4 w-4" />
-              + Garage
+              Garage
             </Button>
           </div>
         </div>
