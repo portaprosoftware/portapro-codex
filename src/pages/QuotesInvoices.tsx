@@ -27,6 +27,7 @@ import { InvoicesExportModal } from '@/components/invoices/InvoicesExportModal';
 import { QuickBooksExportModal } from '@/components/quotes/QuickBooksExportModal';
 import { QuoteDateFilters } from '@/components/quotes/QuoteDateFilters';
 import { QuickDateFilters } from '@/components/quotes/QuickDateFilters';
+import { MobileDateFilterDrawer } from '@/components/quotes/MobileDateFilterDrawer';
 import { KpiCard } from '@/components/quotes/KpiCard';
 import { MobileMoreMenu } from '@/components/quotes/MobileMoreMenu';
 import { ActiveFilterChip } from '@/components/quotes/ActiveFilterChip';
@@ -159,9 +160,10 @@ const QuotesInvoices: React.FC = () => {
             />
           </div>
 
-          {/* Quick Date Filters - Mobile Horizontal Scroll */}
-          <div className="lg:hidden">
-            <QuickDateFilters 
+          {/* Date Filters - Mobile Drawer */}
+          <div className="lg:hidden px-4">
+            <MobileDateFilterDrawer
+              dateRange={dateRange}
               onDateRangeChange={setDateRange}
               activeFilter={activeQuickFilter}
               onActiveFilterChange={setActiveQuickFilter}
@@ -290,9 +292,10 @@ const QuotesInvoices: React.FC = () => {
             />
           </div>
 
-          {/* Quick Date Filters - Mobile Horizontal Scroll */}
-          <div className="lg:hidden">
-            <QuickDateFilters 
+          {/* Date Filters - Mobile Drawer */}
+          <div className="lg:hidden px-4">
+            <MobileDateFilterDrawer
+              dateRange={dateRange}
               onDateRangeChange={setDateRange}
               activeFilter={activeQuickFilter}
               onActiveFilterChange={setActiveQuickFilter}
