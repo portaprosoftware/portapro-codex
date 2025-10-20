@@ -308,7 +308,9 @@ export const Landing: React.FC = () => {
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300 h-14">
         <div className="container mx-auto px-12 h-full flex items-center justify-between max-w-full">
           <div className="flex items-center gap-4">
-            <LandingLogo />
+            <div onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="cursor-pointer">
+              <LandingLogo />
+            </div>
             <div className="hidden lg:block">
               <FeaturesMegaMenu ref={featuresMegaMenuRef} />
             </div>
