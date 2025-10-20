@@ -86,9 +86,8 @@ const Dashboard = () => {
       return {
         total: data?.length || 0,
         deliveries: jobsByType.delivery || 0,
-        pickups: jobsByType.pickup || 0,
+        pickups: (jobsByType.pickup || 0) + (jobsByType.partial_pickup || 0),
         services: jobsByType.service || 0,
-        partialPickups: jobsByType.partial_pickup || 0,
         surveys: jobsByType['on_site_survey'] || 0
       };
     }
@@ -338,7 +337,6 @@ const Dashboard = () => {
                   <span>{jobsData?.services || 0} services</span>
                   <span>{jobsData?.surveys || 0} surveys</span>
                 </div>
-                <div>{jobsData?.partialPickups || 0} partial pickups</div>
               </div>
             }
             subtitleColor="text-gray-600"
