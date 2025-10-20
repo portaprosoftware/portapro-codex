@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { useUser } from '@clerk/clerk-react';
-import { Bell, Settings, Wifi, WifiOff } from 'lucide-react';
+import { useUser, UserButton } from '@clerk/clerk-react';
+import { Bell, Wifi, WifiOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useDriverNotifications } from '@/hooks/useDriverNotifications';
@@ -38,11 +38,6 @@ export const DriverHeader: React.FC = () => {
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
-              <span className="text-white text-sm font-semibold">
-                {user?.firstName?.charAt(0) || 'D'}
-              </span>
-            </div>
             <div className="min-w-0">
               <h1 className="text-base sm:text-lg font-semibold text-gray-900 truncate">
                 Welcome, {user?.firstName || 'Driver'}
@@ -80,9 +75,13 @@ export const DriverHeader: React.FC = () => {
               )}
             </Button>
             
-            <Button variant="ghost" size="icon" className="h-10 w-10">
-              <Settings className="w-5 h-5" />
-            </Button>
+            <UserButton 
+              appearance={{
+                elements: {
+                  avatarBox: "w-10 h-10"
+                }
+              }}
+            />
           </div>
         </div>
       </div>
