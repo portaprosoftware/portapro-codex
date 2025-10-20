@@ -2039,7 +2039,10 @@ export const Landing: React.FC = () => {
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b">
-              <h2 className="text-2xl font-bold text-foreground">Contact Support</h2>
+              <div className="flex items-center gap-2">
+                <Mail className="w-5 h-5 text-foreground" />
+                <h2 className="text-2xl font-bold text-foreground">Contact Support</h2>
+              </div>
               <button onClick={() => setContactFormOpen(false)} className="p-2 rounded-lg hover:bg-muted">
                 <X className="w-5 h-5" />
               </button>
@@ -2048,12 +2051,12 @@ export const Landing: React.FC = () => {
             {/* Content */}
             <div className="flex-1 overflow-y-auto p-6">
               <div className="space-y-6">
-                <div className="text-center space-y-2">
-                  <div className="w-16 h-16 mx-auto rounded-full bg-primary/10 flex items-center justify-center">
-                    <Mail className="w-8 h-8 text-primary" />
-                  </div>
+                <div className="text-center space-y-1">
                   <p className="text-muted-foreground">
-                    Have a question or need help? Reach out to our support team.
+                    Have a question or need help?
+                  </p>
+                  <p className="text-muted-foreground">
+                    Reach out to our support team.
                   </p>
                 </div>
 
