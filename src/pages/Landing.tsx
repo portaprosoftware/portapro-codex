@@ -335,15 +335,15 @@ export const Landing: React.FC = () => {
             </div>
           </div>
 
-          {/* Mobile Menu Button & Request Call */}
+          {/* Mobile Menu Button & More Info */}
           <div className="md:hidden flex items-center gap-2">
             <Button 
               size="sm"
-              className="bg-gradient-blue text-white text-xs font-medium"
+              variant="outline"
+              className="bg-muted text-foreground text-xs font-medium"
               onClick={handleRequestInfo}
             >
-              <Phone className="w-4 h-4 mr-1" />
-              Request Call
+              More Info
             </Button>
             <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
