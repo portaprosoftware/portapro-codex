@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Warehouse, Droplet, Package, Shield, DollarSign } from "lucide-react";
+import { Warehouse, Shield, DollarSign } from "lucide-react";
 
 interface KPICardsProps {
   summary: {
@@ -18,22 +18,6 @@ export function StorageAnalyticsKPICards({ summary }: KPICardsProps) {
       label: "Active Garage Site Locations",
       value: summary.total_locations,
       icon: Warehouse,
-      color: "text-blue-600",
-      bgColor: "bg-blue-50 dark:bg-blue-950",
-      iconPadding: "p-2"
-    },
-    {
-      label: "Consumable Types",
-      value: summary.total_consumable_types,
-      icon: Droplet,
-      color: "text-blue-600",
-      bgColor: "bg-blue-50 dark:bg-blue-950",
-      iconPadding: "p-2.5"
-    },
-    {
-      label: "Product Types",
-      value: summary.total_product_types,
-      icon: Package,
       color: "text-blue-600",
       bgColor: "bg-blue-50 dark:bg-blue-950",
       iconPadding: "p-2"
@@ -64,6 +48,27 @@ export function StorageAnalyticsKPICards({ summary }: KPICardsProps) {
             </div>
             <div className="flex-shrink-0 w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-blue-50 dark:bg-blue-950 flex items-center justify-center">
               <DollarSign className="h-5 w-5 lg:h-6 lg:w-6 text-blue-600" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Combined Categories Card */}
+      <Card className="col-span-full sm:col-span-1 overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
+        <CardContent className="p-4 lg:p-6">
+          <div className="space-y-3">
+            <div className="text-sm lg:text-base text-muted-foreground font-semibold">
+              Categories:
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-baseline gap-2">
+                <span className="text-xl lg:text-2xl font-bold">{summary.total_consumable_types}</span>
+                <span className="text-sm lg:text-base text-muted-foreground">consumables</span>
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-xl lg:text-2xl font-bold">{summary.total_product_types}</span>
+                <span className="text-sm lg:text-base text-muted-foreground">equipment types</span>
+              </div>
             </div>
           </div>
         </CardContent>
