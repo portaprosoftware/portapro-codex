@@ -51,6 +51,14 @@ const blogPosts: BlogPost[] = [
     badgeGradient: 'from-yellow-500 to-orange-600'
   },
   {
+    id: 'indiana-case-study',
+    category: 'Case Studies',
+    title: 'How a Family-Owned Operator Cut Missed Services by 48% Using PortaPro',
+    excerpt: 'A family-owned portable restroom company in northern Indiana reduced missed services by nearly half within 60 days using PortaPro\'s route management and mobile driver tools—without hiring anyone new.',
+    date: 'February 12, 2025',
+    badgeGradient: 'from-green-500 to-green-700'
+  },
+  {
     id: 'case-study',
     category: 'Case Studies',
     title: 'How One Operator Saved 10 Hours a Week with PortaPro\'s Smart Scheduling',
@@ -209,6 +217,121 @@ export const BlogSlider: React.FC<BlogSliderProps> = ({
                     </div>
                   </div>
                 )}
+                
+                {selectedPost === 'indiana-case-study' && (
+                  <div className="space-y-6">
+                    <div className="space-y-4">
+                      <Badge className="bg-gradient-to-r from-green-500 to-green-700 text-white font-bold border-0">Case Studies</Badge>
+                      <h1 className="text-3xl font-bold">How a Family-Owned Operator Cut Missed Services by 48% Using PortaPro</h1>
+                      <p className="text-muted-foreground">February 12, 2025</p>
+                    </div>
+                    <div className="prose max-w-none space-y-6">
+                      <p className="text-lg">In January 2025, a family-owned portable restroom company in northern Indiana decided they couldn't keep running their business from dry erase boards, phone calls, and paper route sheets. They had 230 units in the field, 3 service trucks, and an office run by the owner's wife and daughter. The biggest frustration? Missed services, misplaced toilets, and angry phone calls asking, "Did you even service this unit?"</p>
+                      
+                      <p>After switching to PortaPro, they reported a <strong>48% reduction in missed services within 60 days</strong>—without hiring anyone new or changing their routes. Here's exactly how they did it.</p>
+                      
+                      <h2 className="text-2xl font-bold mt-8">Before PortaPro: A System Held Together by Memory and Phone Calls</h2>
+                      <p>Like many family operators, this business relied on:</p>
+                      <ul className="list-disc pl-6 space-y-2">
+                        <li>Paper calendars taped inside the office wall</li>
+                        <li>Drivers calling in when they finished a route</li>
+                        <li>Google Maps for directions—but no real tracking</li>
+                        <li>Disputes with construction managers about whether a unit had been serviced</li>
+                        <li>Zero proof of service—just "trust us"</li>
+                      </ul>
+                      <p className="italic border-l-4 border-primary pl-4 py-2 bg-muted/50">"We weren't lazy. We just didn't have a better system. Drivers forgot things. Rain smudged paper route sheets. And customers didn't want excuses—they wanted proof." — Business Owner</p>
+                      
+                      <h2 className="text-2xl font-bold mt-8">What Changed with PortaPro</h2>
+                      <p>They didn't overhaul the business. They simply replaced paper and guesswork with PortaPro's mobile workflow built for field teams.</p>
+                      
+                      <div className="bg-muted/30 rounded-lg p-6 my-6">
+                        <h3 className="text-xl font-bold mb-4">Key Features Used & Impact</h3>
+                        <div className="space-y-4">
+                          <div className="border-l-4 border-blue-600 pl-4">
+                            <h4 className="font-bold">Digital Route Sheets</h4>
+                            <p className="text-sm text-muted-foreground">Routes built on desktop, instantly sent to each driver's phone.</p>
+                            <p className="text-sm italic mt-1">→ No more smudged paper or forgotten stops.</p>
+                          </div>
+                          <div className="border-l-4 border-green-600 pl-4">
+                            <h4 className="font-bold">Service Logging (Tap to Complete)</h4>
+                            <p className="text-sm text-muted-foreground">Techs tapped a unit, marked "Serviced" or "Not Serviced" with an optional note/photo.</p>
+                            <p className="text-sm italic mt-1">→ Every unit either got serviced—or had a reason logged in writing.</p>
+                          </div>
+                          <div className="border-l-4 border-purple-600 pl-4">
+                            <h4 className="font-bold">Photo Proof</h4>
+                            <p className="text-sm text-muted-foreground">Drivers could take a photo after servicing a unit.</p>
+                            <p className="text-sm italic mt-1">→ No more arguments with contractors—time, photo, and GPS logged automatically.</p>
+                          </div>
+                          <div className="border-l-4 border-orange-600 pl-4">
+                            <h4 className="font-bold">Offline Mode</h4>
+                            <p className="text-sm text-muted-foreground">Rural job sites had no cell signal—but the app still logged everything.</p>
+                            <p className="text-sm italic mt-1">→ Drivers kept working; data synced back to office when signal returned.</p>
+                          </div>
+                          <div className="border-l-4 border-primary pl-4">
+                            <h4 className="font-bold">Service History by Unit</h4>
+                            <p className="text-sm text-muted-foreground">Every toilet now had a digital history—dates, jobs, field notes.</p>
+                            <p className="text-sm italic mt-1">→ Office could answer "When was this serviced last?" in seconds.</p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <h2 className="text-2xl font-bold mt-8">The Results (After 60 Days)</h2>
+                      <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900 rounded-lg p-6 my-6">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="border-b-2 border-green-600">
+                              <th className="text-left py-2 font-bold">Metric</th>
+                              <th className="text-left py-2 font-bold">Before PortaPro</th>
+                              <th className="text-left py-2 font-bold">After PortaPro</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-green-200 dark:divide-green-800">
+                            <tr>
+                              <td className="py-2">Missed Service Calls</td>
+                              <td className="py-2">12–15 per week</td>
+                              <td className="py-2 font-bold text-green-700 dark:text-green-400">6–8 per week</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2">Units with Proof of Service</td>
+                              <td className="py-2">0% (trust-based)</td>
+                              <td className="py-2 font-bold text-green-700 dark:text-green-400">82%</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2">Phone Calls from Job Sites</td>
+                              <td className="py-2">20–25 per week</td>
+                              <td className="py-2 font-bold text-green-700 dark:text-green-400">8–10 per week</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2">Time Recreating Lost Routes</td>
+                              <td className="py-2">Daily</td>
+                              <td className="py-2 font-bold text-green-700 dark:text-green-400">Almost zero</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2">New Long-Term Contracts</td>
+                              <td className="py-2">Inconsistent</td>
+                              <td className="py-2 font-bold text-green-700 dark:text-green-400">3 signed in 60 days</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      
+                      <p>This wasn't a huge fleet. It was a family—all driving trucks, cleaning toilets, and managing kids' school schedules. But giving them software that <em>worked the way they did</em> meant they could perform like pros without acting like a giant company.</p>
+                      
+                      <h2 className="text-2xl font-bold mt-8">Lessons for Other Operators</h2>
+                      <ol className="list-decimal pl-6 space-y-2">
+                        <li><strong>You don't need software that does everything</strong>—just software that does <em>your</em> job well.</li>
+                        <li><strong>Proof of service isn't about policing your drivers</strong>—it's about protecting your relationships.</li>
+                        <li><strong>Small fleets don't need automation</strong>—they need organization.</li>
+                      </ol>
+                      
+                      <div className="bg-gradient-to-r from-primary to-primary/80 rounded-lg p-6 text-white my-8">
+                        <h3 className="text-xl font-bold mb-2">Final Thought from the Owner</h3>
+                        <p className="italic text-lg">"We didn't buy PortaPro to 'be more high-tech.' We bought it so customers would stop doubting our work. Now if someone calls and says we didn't service a toilet, we open the app and send them the photo. Conversation over."</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 
                 {selectedPost === 'case-study' && (
                   <div className="space-y-6">
