@@ -115,6 +115,14 @@ const blogPosts: BlogPost[] = [
     badgeGradient: 'from-blue-500 to-blue-700'
   },
   {
+    id: 'scheduling-strategies',
+    category: 'Business Tips',
+    title: '7 Scheduling Strategies Used by High-Volume Portable Restroom Operators',
+    excerpt: 'A practical guide to how top portable restroom operators schedule routes, reduce overtime, avoid missed services, and keep drivers and customers happy during peak season.',
+    date: 'March 9, 2025',
+    badgeGradient: 'from-orange-500 to-red-600'
+  },
+  {
     id: 'missed-cleanings',
     category: 'Business Tips',
     title: 'The Hidden Cost of Missed Cleanings (And How to Stop Them)',
@@ -1072,6 +1080,123 @@ export const BlogSlider: React.FC<BlogSliderProps> = ({
                   </div>
                 )}
                 
+                {selectedPost === 'scheduling-strategies' && (
+                  <div className="space-y-6">
+                    <div className="space-y-4">
+                      <Badge className="bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold border-0">Business Tips</Badge>
+                      <h1 className="text-3xl font-bold">7 Scheduling Strategies Used by High-Volume Portable Restroom Operators</h1>
+                      <p className="text-muted-foreground">March 9, 2025</p>
+                    </div>
+                    <div className="prose max-w-none space-y-6">
+                      <p className="text-lg">Whether you're running 50 units or 5,000, the most stressful part of this business usually comes down to one thing—<strong>scheduling</strong>. Who's servicing what? Which driver is on which route? Did someone already pump that unit? And why is the phone ringing again about a missed service?</p>
+                      
+                      <p>After talking with operators across the U.S. and Canada, we've collected seven proven scheduling strategies used by high-volume companies who manage to stay profitable, organized, and calm—even in peak season.</p>
+                      
+                      <p className="font-semibold">This isn't theory—these are field-tested practices from real operators.</p>
+                      
+                      <h2 className="text-2xl font-bold mt-8">1. Plan Routes the Day Before, Never the Morning Of</h2>
+                      <p>Many small operators build their routes in the morning while drivers wait around. High-performing teams don't.</p>
+                      
+                      <div className="bg-muted/30 rounded-lg p-6 my-6">
+                        <p className="font-bold mb-3">What they do instead:</p>
+                        <ul className="list-disc pl-6 space-y-2">
+                          <li>Dispatch builds and finalizes routes <em>the evening before</em></li>
+                          <li>Drivers can see their schedule on their phone before going to bed</li>
+                          <li>Trucks are pre-loaded with chemicals, water, and supplies at the end of the previous day</li>
+                        </ul>
+                        <p className="font-bold mt-4 mb-2">Why it works:</p>
+                        <ul className="list-disc pl-6 space-y-1">
+                          <li>Zero yard delays in the morning</li>
+                          <li>Fewer forgotten supplies or keys</li>
+                          <li>Drivers immediately roll out and hit their first stop on time</li>
+                        </ul>
+                      </div>
+                      
+                      <h2 className="text-2xl font-bold mt-8">2. Group Stops by Zones, Not by Customer Type</h2>
+                      <p>A common mistake is to schedule by account ("all construction sites first, then special events"). But the pros schedule by <strong>geography</strong>—what's closest, most efficient, and less likely to cause backtracking.</p>
+                      
+                      <div className="bg-blue-50 dark:bg-blue-950 rounded-lg p-6 my-6 border-l-4 border-blue-600">
+                        <p className="font-bold mb-2">Example zone names operators use:</p>
+                        <ul className="space-y-1">
+                          <li>• North Industrial</li>
+                          <li>• Downtown Core</li>
+                          <li>• Fairgrounds / Event Side</li>
+                          <li>• West Suburbs</li>
+                        </ul>
+                        <p className="mt-3 text-sm">This reduces drive time, fuel cost, and driver fatigue—especially when combined with live maps or route apps.</p>
+                      </div>
+                      
+                      <h2 className="text-2xl font-bold mt-8">3. Use "Time Windows" for Key Customers</h2>
+                      <p>Some jobs can't be missed—schools, downtown office parks, government contracts.</p>
+                      <p>High-volume operators put these into <strong>locked time windows</strong> like:</p>
+                      <ul className="list-disc pl-6 space-y-2">
+                        <li>"Service before 9 AM"</li>
+                        <li>"After 2 PM only—school dismissal traffic before that"</li>
+                        <li>"No service during wedding ceremony between 1–2 PM"</li>
+                      </ul>
+                      <p>Every other stop is filled around those commitments. This keeps premium clients happy and contractual penalties to a minimum.</p>
+                      
+                      <h2 className="text-2xl font-bold mt-8">4. Assign Every Route a Back-Up Driver</h2>
+                      <p>Things go wrong—flat tires, accidents, sick calls, flooded festival lots.</p>
+                      <div className="bg-muted/30 rounded-lg p-6 my-6">
+                        <p className="mb-3">High-performing teams assign a "floating driver" or backup tech each day. They don't get a full route but instead:</p>
+                        <ul className="list-disc pl-6 space-y-2">
+                          <li>Handle emergency calls</li>
+                          <li>Pick up missed units</li>
+                          <li>Support whoever falls behind</li>
+                          <li>Deliver extra hand sanitizer or deodorizer when events run out</li>
+                        </ul>
+                        <p className="mt-4 font-semibold">This one simple change dramatically reduces stress for dispatchers and event organizers.</p>
+                      </div>
+                      
+                      <h2 className="text-2xl font-bold mt-8">5. Never Rely on Verbal or Handwritten Notes</h2>
+                      <p>Most missed services happen because someone "thought" a unit got done, or a driver scribbled an address that no one can read.</p>
+                      <div className="bg-green-50 dark:bg-green-950 rounded-lg p-6 my-6 border-l-4 border-green-600">
+                        <p className="font-bold mb-3">Operators who consistently avoid mistakes:</p>
+                        <ul className="list-disc pl-6 space-y-2">
+                          <li>Log every service digitally</li>
+                          <li>Require drivers to tap "Serviced" or "Blocked / Could Not Service" for each stop</li>
+                          <li>Use photos to confirm washes, damage, or obstructions</li>
+                        </ul>
+                        <p className="mt-4 font-semibold">Photos don't lie. Handwriting does.</p>
+                      </div>
+                      
+                      <h2 className="text-2xl font-bold mt-8">6. Build Seasonal vs. Year-Round Route Templates</h2>
+                      <p>Peak season (festival months) is a completely different rhythm from winter construction schedules.</p>
+                      <div className="bg-muted/30 rounded-lg p-6 my-6">
+                        <p className="mb-3 font-bold">Top operators create two versions of their routes:</p>
+                        <ul className="space-y-3">
+                          <li className="border-l-4 border-orange-600 pl-4 py-2">
+                            <strong>Seasonal Route Templates</strong> — with extra event sites, temporary drivers, added weekend runs
+                          </li>
+                          <li className="border-l-4 border-blue-600 pl-4 py-2">
+                            <strong>Winter / Slow Season Templates</strong> — fewer drivers, optimized fuel, fewer services per unit
+                          </li>
+                        </ul>
+                        <p className="mt-4">This makes scaling up or down incredibly smooth.</p>
+                      </div>
+                      
+                      <h2 className="text-2xl font-bold mt-8">7. Review Routes Weekly—Not Just When Problems Happen</h2>
+                      <p>High-performing operators don't wait for complaints to check routes.</p>
+                      <div className="bg-purple-50 dark:bg-purple-950 rounded-lg p-6 my-6 border-l-4 border-purple-600">
+                        <p className="font-bold mb-3">Every week, they:</p>
+                        <ul className="list-disc pl-6 space-y-2">
+                          <li>Look at total stops per driver</li>
+                          <li>Review fuel usage vs. revenue per route</li>
+                          <li>Adjust routes that are too heavy or too light</li>
+                          <li>Reassign units when construction jobs finish or events end</li>
+                        </ul>
+                      </div>
+                      
+                      <div className="bg-gradient-to-r from-primary to-primary/80 rounded-lg p-6 text-white my-8">
+                        <h3 className="text-xl font-bold mb-3">The Bottom Line</h3>
+                        <p className="text-lg mb-3">Great scheduling isn't about being perfect—it's about being <em>consistent, visible, and flexible</em>.</p>
+                        <p>These seven strategies won't solve every problem. But they will give you a baseline structure that prevents most of the chaos—especially during peak season when stress is highest and margins are tightest.</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {selectedPost === 'missed-cleanings' && (
                   <div className="space-y-6">
                     <div className="space-y-4">
