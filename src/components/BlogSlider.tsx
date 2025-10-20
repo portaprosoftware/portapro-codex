@@ -83,6 +83,14 @@ const blogPosts: BlogPost[] = [
     badgeGradient: 'from-green-500 to-green-700'
   },
   {
+    id: 'tracking-comparison',
+    category: 'Technology',
+    title: 'QR vs RFID vs GPS: What\'s the Best Way to Track Your Inventory?',
+    excerpt: 'A practical breakdown of QR codes, RFID tags, and GPS units for tracking toilets, sinks, and trailers—what works, what doesn\'t, and what PortaPro actually recommends.',
+    date: 'October 1, 2025',
+    badgeGradient: 'from-blue-500 to-blue-700'
+  },
+  {
     id: 'offline-mode',
     category: 'Technology',
     title: 'Why Offline Mode Matters: How PortaPro Works Even Without Signal',
@@ -894,6 +902,148 @@ export const BlogSlider: React.FC<BlogSliderProps> = ({
                           <li>• It keeps drivers doing their job—without calling dispatch every five minutes.</li>
                         </ul>
                         <p className="text-lg font-semibold">And most importantly—<strong>it makes software feel invisible, not fragile.</strong></p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {selectedPost === 'tracking-comparison' && (
+                  <div className="space-y-6">
+                    <div className="space-y-4">
+                      <Badge className="bg-gradient-to-r from-blue-500 to-blue-700 text-white font-bold border-0">Technology</Badge>
+                      <h1 className="text-3xl font-bold">QR vs RFID vs GPS: What's the Best Way to Track Your Portable Restroom Inventory?</h1>
+                      <p className="text-muted-foreground">October 1, 2025</p>
+                    </div>
+                    <div className="prose max-w-none space-y-6">
+                      <p className="text-lg">Keeping track of hundreds of toilets, sinks, trailers, and handwash stations is one of the hardest parts of running a portable restroom company. Units get dropped for weekend events, moved by contractors, forgotten behind barns, or never returned after storm cleanup.</p>
+                      
+                      <p className="font-semibold text-lg">Every operator wants to know: "What's the best way to track my inventory—QR codes, GPS, RFID, or something else?"</p>
+                      
+                      <p>The truth: each option has pros and cons. And depending on your fleet size, terrain, and budget, one system might make more sense than the others.</p>
+                      
+                      <p>Here's a breakdown of what actually works in the field—based on real operator feedback and PortaPro's own testing.</p>
+                      
+                      <h2 className="text-2xl font-bold mt-8">🟦 1. QR Codes — Simple, Cheap, and Effective</h2>
+                      <p className="font-semibold">How it works:</p>
+                      <p>A sticker is placed on each unit. Drivers scan it with their phone. PortaPro pulls up the unit's full history, location, last service date, and customer contract.</p>
+                      
+                      <div className="grid md:grid-cols-2 gap-4 my-6">
+                        <div className="bg-green-50 dark:bg-green-950 rounded-lg p-4 border-l-4 border-green-600">
+                          <h3 className="font-bold text-lg mb-2 text-green-700 dark:text-green-400">Pros:</h3>
+                          <ul className="space-y-1 text-sm">
+                            <li>• Very affordable (as low as $0.05 per label)</li>
+                            <li>• Works with just a smartphone — no hardware needed</li>
+                            <li>• Fast to scan during drop-off, pickup, or service</li>
+                            <li>• Connects directly to PortaPro's inventory and service logs</li>
+                          </ul>
+                        </div>
+                        <div className="bg-red-50 dark:bg-red-950 rounded-lg p-4 border-l-4 border-red-600">
+                          <h3 className="font-bold text-lg mb-2 text-red-700 dark:text-red-400">Cons:</h3>
+                          <ul className="space-y-1 text-sm">
+                            <li>• Stickers can fade, get pressure-washed off, or be vandalized</li>
+                            <li>• Requires someone to physically scan the unit to update location</li>
+                            <li>• No "live tracking" — only updates when scanned</li>
+                          </ul>
+                        </div>
+                      </div>
+                      <p className="italic font-semibold">Best for: Small to mid-size fleets, construction routes, daily service logging, and tracking units at events.</p>
+                      
+                      <h2 className="text-2xl font-bold mt-8">🟦 2. RFID Tags — Hands-Free Scanning, Higher Cost</h2>
+                      <p className="font-semibold">How it works:</p>
+                      <p>An RFID tag is attached to the unit. Drivers carry a handheld scanner or phone with NFC. The scanner detects nearby units without direct line-of-sight.</p>
+                      
+                      <div className="grid md:grid-cols-2 gap-4 my-6">
+                        <div className="bg-green-50 dark:bg-green-950 rounded-lg p-4 border-l-4 border-green-600">
+                          <h3 className="font-bold text-lg mb-2 text-green-700 dark:text-green-400">Pros:</h3>
+                          <ul className="space-y-1 text-sm">
+                            <li>• Can scan multiple units without aiming a camera</li>
+                            <li>• Works even if mud or graffiti covers the tag</li>
+                            <li>• Faster than QR when scanning 50–100 units in a yard</li>
+                          </ul>
+                        </div>
+                        <div className="bg-red-50 dark:bg-red-950 rounded-lg p-4 border-l-4 border-red-600">
+                          <h3 className="font-bold text-lg mb-2 text-red-700 dark:text-red-400">Cons:</h3>
+                          <ul className="space-y-1 text-sm">
+                            <li>• Tags and scanners are more expensive ($1–$5 per unit)</li>
+                            <li>• Still not real-time tracking — only proximity-based</li>
+                            <li>• Requires special equipment or NFC-enabled devices</li>
+                          </ul>
+                        </div>
+                      </div>
+                      <p className="italic font-semibold">Best for: Large yards, high-volume staging, winter months when labels get dirty or wet.</p>
+                      
+                      <h2 className="text-2xl font-bold mt-8">🟦 3. GPS Trackers — Real-Time Location, High Cost</h2>
+                      <p className="font-semibold">How it works:</p>
+                      <p>A battery-powered GPS device is attached to units or trailers. Locations update every 5–15 minutes via cell or satellite.</p>
+                      
+                      <div className="grid md:grid-cols-2 gap-4 my-6">
+                        <div className="bg-green-50 dark:bg-green-950 rounded-lg p-4 border-l-4 border-green-600">
+                          <h3 className="font-bold text-lg mb-2 text-green-700 dark:text-green-400">Pros:</h3>
+                          <ul className="space-y-1 text-sm">
+                            <li>• You can see exactly where a unit is <em>right now</em></li>
+                            <li>• Great for high-theft areas or tracking luxury trailers</li>
+                            <li>• Provides movement alerts and geofencing</li>
+                          </ul>
+                        </div>
+                        <div className="bg-red-50 dark:bg-red-950 rounded-lg p-4 border-l-4 border-red-600">
+                          <h3 className="font-bold text-lg mb-2 text-red-700 dark:text-red-400">Cons:</h3>
+                          <ul className="space-y-1 text-sm">
+                            <li>• $80–$200 per tracker + monthly data fees</li>
+                            <li>• Needs charging or battery replacements</li>
+                            <li>• Not realistic to put GPS on every toilet</li>
+                          </ul>
+                        </div>
+                      </div>
+                      <p className="italic font-semibold">Best for: High-value assets — luxury restroom trailers, vacuum trucks, handwash trailers, or large generator units.</p>
+                      
+                      <h2 className="text-2xl font-bold mt-8">✅ So What Does PortaPro Recommend?</h2>
+                      <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 rounded-lg p-6 my-6">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="border-b-2 border-blue-600">
+                              <th className="text-left py-2 font-bold">Unit Type</th>
+                              <th className="text-left py-2 font-bold">Best Tracking Method</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-blue-200 dark:divide-blue-800">
+                            <tr>
+                              <td className="py-2">Standard toilets</td>
+                              <td className="py-2 font-bold">QR codes or Vision-based scanning</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2">High-volume inventory yards</td>
+                              <td className="py-2 font-bold">RFID or QR hybrid</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2">Handwash or specialty sinks</td>
+                              <td className="py-2 font-bold">QR + service log check-ins</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2">Luxury or ADA trailers</td>
+                              <td className="py-2 font-bold">GPS tracking</td>
+                            </tr>
+                            <tr>
+                              <td className="py-2">Entire fleet visibility</td>
+                              <td className="py-2 font-bold">GPS for vehicles + QR for units</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <p className="mt-4 text-sm">PortaPro currently supports QR and barcode scanning. RFID and GPS integrations are in active development — with the goal of letting operators mix and match tracking types depending on asset value.</p>
+                      </div>
+                      
+                      <h2 className="text-2xl font-bold mt-8">💡 The Future: No Labels At All? (AI Vision + GPS Hybrid)</h2>
+                      <p>Imagine this: a driver just points their camera at a row of toilets — no stickers, no tags. AI reads the molded unit numbers and assigns them a GPS location automatically.</p>
+                      <p className="font-semibold">This is exactly where PortaPro + Google Vision is headed.</p>
+                      
+                      <div className="bg-gradient-to-r from-primary to-primary/80 rounded-lg p-6 text-white my-8">
+                        <h3 className="text-xl font-bold mb-3">Final Word</h3>
+                        <p className="text-lg mb-3">You don't need the most expensive tech — you need the <em>right</em> tech for your fleet.</p>
+                        <ul className="space-y-2">
+                          <li>• <strong>Under 500 units?</strong> QR + mobile app is more than enough.</li>
+                          <li>• <strong>Multiple yards or large staging lots?</strong> Consider adding RFID.</li>
+                          <li>• <strong>Luxury trailers or theft-prone jobs?</strong> GPS pays for itself.</li>
+                          <li>• <strong>And if you don't know where your toilets are?</strong> You're not alone — and you don't need to stay that way.</li>
+                        </ul>
                       </div>
                     </div>
                   </div>
