@@ -81,7 +81,6 @@ export function EnhancedUserProfileCard({
               <h3 className={`font-semibold text-lg ${!user.is_active ? 'text-gray-400' : ''}`}>
                 {user.first_name} {user.last_name}
               </h3>
-              <p className={`text-sm ${!user.is_active ? 'text-gray-400' : 'text-muted-foreground'}`}>{user.email}</p>
             </div>
           </div>
           

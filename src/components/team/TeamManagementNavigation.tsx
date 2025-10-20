@@ -1,19 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { 
   Users, 
   Calendar, 
   Clock, 
   FileText,
-  GraduationCap
+  GraduationCap,
+  Menu
 } from "lucide-react";
 import { TabNav } from "@/components/ui/TabNav";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 
 type TeamTab = 'users' | 'scheduling' | 'time-off' | 'training' | 'custom-reports';
 
 export const TeamManagementNavigation: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   const navigationItems = [
     {
@@ -62,6 +66,7 @@ export const TeamManagementNavigation: React.FC = () => {
 
   const handleNavigation = (value: TeamTab) => {
     navigate(`/team-management/${value}`);
+    setSheetOpen(false);
   };
 
   const isActiveRoute = (value: TeamTab) => {
@@ -82,7 +87,8 @@ export const TeamManagementNavigation: React.FC = () => {
           </div>
         </div>
         
-        <div className="flex items-center space-x-4">
+        {/* Desktop Navigation */}
+        <div className="hidden lg:flex items-center space-x-4">
           <div className="enterprise-tabs">
             <TabNav ariaLabel="Team Management Navigation">
               {navigationItems.map((item) => (
@@ -98,6 +104,41 @@ export const TeamManagementNavigation: React.FC = () => {
               ))}
             </TabNav>
           </div>
+        </div>
+
+        {/* Mobile/Tablet Navigation - 75% Bottom Sheet */}
+        <div className="lg:hidden">
+          <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+            <SheetTrigger asChild>
+              <Button variant="outline" className="w-full justify-between min-h-[44px]">
+                <div className="flex items-center gap-2">
+                  {navigationItems.find(item => isActiveRoute(item.value))?.icon && (
+                    React.createElement(navigationItems.find(item => isActiveRoute(item.value))!.icon, { className: "h-4 w-4" })
+                  )}
+                  <span>{navigationItems.find(item => isActiveRoute(item.value))?.title}</span>
+                </div>
+                <Menu className="h-4 w-4" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="bottom" className="h-[75vh] rounded-t-2xl">
+              <SheetHeader>
+                <SheetTitle>Team Management</SheetTitle>
+              </SheetHeader>
+              <div className="mt-6 space-y-2">
+                {navigationItems.map((item) => (
+                  <Button
+                    key={item.value}
+                    variant={isActiveRoute(item.value) ? "default" : "ghost"}
+                    className="w-full justify-start min-h-[56px]"
+                    onClick={() => handleNavigation(item.value)}
+                  >
+                    <item.icon className="h-5 w-5 mr-3" />
+                    <span className="text-base">{item.title}</span>
+                  </Button>
+                ))}
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
     </div>

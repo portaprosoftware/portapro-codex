@@ -16,7 +16,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Plus, Edit, Trash2, Search, Filter, UserCheck, UserX, Crown, Headphones, Truck, User, Shield, MoreVertical, Grid3X3, List, Upload, FileText, TrendingUp, Bell, Send, RefreshCw, ChevronDown, X, Eye, Calendar } from "lucide-react";
+import { Users, Plus, Edit, Trash2, Search, Filter, UserCheck, UserX, Crown, Headphones, Truck, User, Shield, MoreVertical, Grid3X3, List, Upload, FileText, TrendingUp, Bell, Send, RefreshCw, ChevronDown, X, Eye, Calendar, Menu } from "lucide-react";
 import { EnhancedUserProfileCard } from "@/components/team/enhanced/EnhancedUserProfileCard";
 import { UserListView } from "@/components/team/enhanced/UserListView";
 import { BulkTeamOperations } from "@/components/team/BulkTeamOperations";
@@ -80,6 +80,8 @@ export function UserManagementSection() {
   const [sortDirection, setSortDirection] = useState<SortDirection>('default');
   const [showInvitations, setShowInvitations] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const [tabSheetOpen, setTabSheetOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<string>("overview");
   const { hasAdminAccess } = useUserRole();
   const { user: clerkUser } = useUser();
   const queryClient = useQueryClient();
@@ -462,12 +464,55 @@ export function UserManagementSection() {
           </div>
         </CardHeader>
         <CardContent className="px-4 md:px-6">
-          <Tabs defaultValue="overview" className="space-y-4">
-            <TabsList className="bg-white rounded-full p-1 shadow-sm border w-full lg:w-fit overflow-x-auto no-scrollbar snap-x snap-mandatory">
-              <TabsTrigger value="overview" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-4 py-2 text-sm whitespace-nowrap snap-center min-h-[44px]">Overview</TabsTrigger>
-              <TabsTrigger value="bulk-operations" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-4 py-2 text-sm whitespace-nowrap snap-center min-h-[44px]">Bulk Operations</TabsTrigger>
-              <TabsTrigger value="compliance" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-4 py-2 text-sm whitespace-nowrap snap-center min-h-[44px]">Compliance</TabsTrigger>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+            {/* Desktop Tabs */}
+            <TabsList className="hidden lg:flex bg-white rounded-full p-1 shadow-sm border w-fit">
+              <TabsTrigger value="overview" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-4 py-2 text-sm whitespace-nowrap min-h-[44px]">Overview</TabsTrigger>
+              <TabsTrigger value="bulk-operations" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-4 py-2 text-sm whitespace-nowrap min-h-[44px]">Bulk Operations</TabsTrigger>
+              <TabsTrigger value="compliance" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-4 py-2 text-sm whitespace-nowrap min-h-[44px]">Compliance</TabsTrigger>
             </TabsList>
+
+            {/* Mobile/Tablet Tabs - 50% Bottom Sheet */}
+            <div className="lg:hidden">
+              <Sheet open={tabSheetOpen} onOpenChange={setTabSheetOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="outline" className="w-full justify-between min-h-[44px]">
+                    <span className="capitalize font-medium">
+                      {activeTab === "bulk-operations" ? "Bulk Operations" : activeTab}
+                    </span>
+                    <Menu className="h-4 w-4" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="bottom" className="h-[50vh] rounded-t-2xl">
+                  <SheetHeader>
+                    <SheetTitle>User Management</SheetTitle>
+                  </SheetHeader>
+                  <div className="mt-6 space-y-2">
+                    <Button
+                      variant={activeTab === "overview" ? "default" : "ghost"}
+                      className="w-full justify-start min-h-[56px] text-base"
+                      onClick={() => { setActiveTab("overview"); setTabSheetOpen(false); }}
+                    >
+                      Overview
+                    </Button>
+                    <Button
+                      variant={activeTab === "bulk-operations" ? "default" : "ghost"}
+                      className="w-full justify-start min-h-[56px] text-base"
+                      onClick={() => { setActiveTab("bulk-operations"); setTabSheetOpen(false); }}
+                    >
+                      Bulk Operations
+                    </Button>
+                    <Button
+                      variant={activeTab === "compliance" ? "default" : "ghost"}
+                      className="w-full justify-start min-h-[56px] text-base"
+                      onClick={() => { setActiveTab("compliance"); setTabSheetOpen(false); }}
+                    >
+                      Compliance
+                    </Button>
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
             
             <TabsContent value="overview" className="space-y-4">
               {/* Mobile Filter Sheet */}
