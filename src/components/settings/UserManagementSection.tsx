@@ -12,16 +12,16 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Plus, Edit, Trash2, Search, Filter, UserCheck, UserX, Crown, Headphones, Truck, User, Shield, MoreVertical, Grid3X3, List, Upload, FileText, TrendingUp, Bell, Send, RefreshCw } from "lucide-react";
+import { Users, Plus, Edit, Trash2, Search, Filter, UserCheck, UserX, Crown, Headphones, Truck, User, Shield, MoreVertical, Grid3X3, List, Upload, FileText, TrendingUp, Bell, Send, RefreshCw, ChevronDown, X, Eye, Calendar } from "lucide-react";
 import { EnhancedUserProfileCard } from "@/components/team/enhanced/EnhancedUserProfileCard";
 import { UserListView } from "@/components/team/enhanced/UserListView";
 import { BulkTeamOperations } from "@/components/team/BulkTeamOperations";
 import { ComplianceDashboard } from "@/components/team/ComplianceDashboard";
 import { CustomReportBuilder } from "@/components/team/CustomReportBuilder";
-
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -31,6 +31,7 @@ import { EditUserModal } from "./EditUserModal";
 import { AddUserModal } from "./AddUserModal";
 import { InvitationStatusBadge } from "@/components/team/InvitationStatusBadge";
 import { useUser } from "@clerk/clerk-react";
+import { cn } from "@/lib/utils";
 
 const userFormSchema = z.object({
   first_name: z.string().min(1, "First name is required"),
@@ -71,10 +72,14 @@ export function UserManagementSection() {
   const [editingUser, setEditingUser] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
-  const [viewMode, setViewMode] = useState<"list" | "grid">("list");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [viewMode, setViewMode] = useState<"list" | "grid">(
+    typeof window !== 'undefined' && window.innerWidth < 768 ? "grid" : "list"
+  );
   const [sortColumn, setSortColumn] = useState<SortColumn | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>('default');
   const [showInvitations, setShowInvitations] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
   const { hasAdminAccess } = useUserRole();
   const { user: clerkUser } = useUser();
   const queryClient = useQueryClient();
@@ -359,11 +364,15 @@ export function UserManagementSection() {
     let filtered = users.filter(user => {
       const matchesSearch = !searchTerm || 
         `${user.first_name} ${user.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.email?.toLowerCase().includes(searchTerm.toLowerCase());
+        user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.phone?.toLowerCase().includes(searchTerm.toLowerCase());
       
       const matchesRole = roleFilter === "all" || user.current_role === roleFilter;
+      const matchesStatus = statusFilter === "all" || 
+        (statusFilter === "active" && user.is_active) ||
+        (statusFilter === "inactive" && !user.is_active);
       
-      return matchesSearch && matchesRole;
+      return matchesSearch && matchesRole && matchesStatus;
   });
 
     // Apply sorting
@@ -419,84 +428,222 @@ export function UserManagementSection() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center space-x-2">
-            <Users className="w-5 h-5" />
-            <span>User Management</span>
-            <Badge variant="secondary">{allFilteredUsers.length} Users</Badge>
-          </CardTitle>
-          
-          <Button 
-            onClick={() => setIsCreateModalOpen(true)}
-            className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Invite User
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="bg-white rounded-full p-1 shadow-sm border w-fit overflow-x-auto">
-            <TabsTrigger value="overview" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Overview</TabsTrigger>
-            <TabsTrigger value="bulk-operations" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Bulk Operations</TabsTrigger>
-            <TabsTrigger value="compliance" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-3 py-2 text-sm whitespace-nowrap">Compliance</TabsTrigger>
+    <div className="space-y-4 px-0 overflow-x-hidden">
+      <Card className="rounded-2xl shadow-md">
+        <CardHeader className="pb-4">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center space-x-2">
+                <Users className="w-5 h-5" />
+                <span>User Management</span>
+                <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold border-0">
+                  {allFilteredUsers.length} Users
+                </Badge>
+              </CardTitle>
+              
+              {/* Desktop Invite Button */}
+              <Button 
+                onClick={() => setIsCreateModalOpen(true)}
+                className="hidden lg:flex bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Invite User
+              </Button>
+            </div>
+
+            {/* Mobile Invite Button */}
+            <Button 
+              onClick={() => setIsCreateModalOpen(true)}
+              className="lg:hidden w-full min-h-[44px] bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Invite User
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="px-4 md:px-6">
+          <Tabs defaultValue="overview" className="space-y-4">
+            <TabsList className="bg-white rounded-full p-1 shadow-sm border w-full lg:w-fit overflow-x-auto no-scrollbar snap-x snap-mandatory">
+              <TabsTrigger value="overview" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-4 py-2 text-sm whitespace-nowrap snap-center min-h-[44px]">Overview</TabsTrigger>
+              <TabsTrigger value="bulk-operations" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-4 py-2 text-sm whitespace-nowrap snap-center min-h-[44px]">Bulk Operations</TabsTrigger>
+              <TabsTrigger value="compliance" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:border-0 rounded-full px-4 py-2 text-sm whitespace-nowrap snap-center min-h-[44px]">Compliance</TabsTrigger>
+            </TabsList>
             
-            
-          </TabsList>
-          
-          <TabsContent value="overview">
-            {/* Filters */}
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center space-x-4">
-                <div className="relative flex-1 max-w-sm">
-                  <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search users"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-                
-                <Select value={roleFilter} onValueChange={setRoleFilter}>
-                  <SelectTrigger className="w-40">
-                    <Filter className="w-4 h-4 mr-2" />
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Roles</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
-                    <SelectItem value="dispatcher">Dispatcher</SelectItem>
-                    <SelectItem value="driver">Driver</SelectItem>
-                  </SelectContent>
-                </Select>
+            <TabsContent value="overview" className="space-y-4">
+              {/* Mobile Filter Sheet */}
+              <div className="lg:hidden">
+                <Sheet open={showFilters} onOpenChange={setShowFilters}>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" className="w-full min-h-[44px] justify-between mb-4">
+                      <span className="flex items-center gap-2">
+                        <Filter className="w-4 h-4" />
+                        Filters
+                        {(searchTerm || roleFilter !== "all" || statusFilter !== "all") && (
+                          <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold border-0">
+                            Active
+                          </Badge>
+                        )}
+                      </span>
+                      <ChevronDown className="w-4 h-4" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="bottom" className="h-[75vh] rounded-t-2xl">
+                    <SheetHeader>
+                      <SheetTitle>Filters & Sort</SheetTitle>
+                    </SheetHeader>
+                    <div className="space-y-4 mt-6 overflow-y-auto max-h-[calc(75vh-120px)]">
+                      {/* Search */}
+                      <div>
+                        <label className="text-sm font-medium text-gray-700 mb-2 block">Search</label>
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                          <Input
+                            placeholder="Search name, email, phone..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="pl-10 pr-10 min-h-[44px]"
+                          />
+                          {searchTerm && (
+                            <button
+                              onClick={() => setSearchTerm("")}
+                              className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                            >
+                              <X className="w-4 h-4 text-gray-400" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Role Filter */}
+                      <div>
+                        <label className="text-sm font-medium text-gray-700 mb-2 block">Role</label>
+                        <Select value={roleFilter} onValueChange={setRoleFilter}>
+                          <SelectTrigger className="min-h-[44px]">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">All Roles</SelectItem>
+                            <SelectItem value="admin">Admin</SelectItem>
+                            <SelectItem value="dispatcher">Dispatcher</SelectItem>
+                            <SelectItem value="driver">Driver</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Status Filter */}
+                      <div>
+                        <label className="text-sm font-medium text-gray-700 mb-2 block">Status</label>
+                        <Select value={statusFilter} onValueChange={setStatusFilter}>
+                          <SelectTrigger className="min-h-[44px]">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">All Statuses</SelectItem>
+                            <SelectItem value="active">Active</SelectItem>
+                            <SelectItem value="inactive">Deactivated</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Clear Filters */}
+                      <Button
+                        variant="outline"
+                        className="w-full min-h-[44px] border-red-500 text-red-600 hover:bg-red-50"
+                        onClick={() => {
+                          setSearchTerm("");
+                          setRoleFilter("all");
+                          setStatusFilter("all");
+                        }}
+                      >
+                        Clear All Filters
+                      </Button>
+                    </div>
+                  </SheetContent>
+                </Sheet>
               </div>
 
-              {/* View Toggle */}
-              <div className="flex items-center space-x-1 border rounded-lg p-1">
+              {/* Desktop Filters */}
+              <div className="hidden lg:flex items-center justify-between mb-6">
+                <div className="flex items-center space-x-4">
+                  <div className="relative flex-1 max-w-sm">
+                    <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search users"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                  
+                  <Select value={roleFilter} onValueChange={setRoleFilter}>
+                    <SelectTrigger className="w-40">
+                      <Filter className="w-4 h-4 mr-2" />
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Roles</SelectItem>
+                      <SelectItem value="admin">Admin</SelectItem>
+                      <SelectItem value="dispatcher">Dispatcher</SelectItem>
+                      <SelectItem value="driver">Driver</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                    <SelectTrigger className="w-40">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Statuses</SelectItem>
+                      <SelectItem value="active">Active</SelectItem>
+                      <SelectItem value="inactive">Inactive</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* View Toggle */}
+                <div className="flex items-center space-x-1 border rounded-lg p-1">
+                  <Button
+                    variant={viewMode === "list" ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => setViewMode("list")}
+                    className="h-8 px-3"
+                  >
+                    <List className="w-4 h-4 mr-1" />
+                    List
+                  </Button>
+                  <Button
+                    variant={viewMode === "grid" ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => setViewMode("grid")}
+                    className="h-8 px-3"
+                  >
+                    <Grid3X3 className="w-4 h-4 mr-1" />
+                    Grid
+                  </Button>
+                </div>
+              </div>
+
+              {/* Mobile View Toggle */}
+              <div className="lg:hidden flex bg-gray-100 rounded-lg p-1 mb-4">
                 <Button
                   variant={viewMode === "list" ? "default" : "ghost"}
                   size="sm"
                   onClick={() => setViewMode("list")}
-                  className="h-8 px-3"
+                  className="flex-1 min-h-[44px]"
                 >
-                  <List className="w-4 h-4 mr-1" />
+                  <List className="w-4 h-4 mr-2" />
                   List
                 </Button>
                 <Button
                   variant={viewMode === "grid" ? "default" : "ghost"}
                   size="sm"
                   onClick={() => setViewMode("grid")}
-                  className="h-8 px-3"
+                  className="flex-1 min-h-[44px]"
                 >
-                  <Grid3X3 className="w-4 h-4 mr-1" />
+                  <Grid3X3 className="w-4 h-4 mr-2" />
                   Grid
                 </Button>
               </div>
-            </div>
 
             {/* Users Display */}
             {viewMode === "list" ? (
@@ -645,7 +792,8 @@ export function UserManagementSection() {
           </AlertDialogContent>
         </AlertDialog>
 
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
