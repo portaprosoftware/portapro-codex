@@ -170,9 +170,9 @@ export const OverviewSection: React.FC<OverviewSectionProps> = ({ dateRange }) =
   const statusData = processStatusDistribution();
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 md:space-y-8">
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
         <StatCard
           title="Job Summary"
           value={`${overview?.jobs?.total || 0}`}
@@ -233,12 +233,12 @@ export const OverviewSection: React.FC<OverviewSectionProps> = ({ dateRange }) =
       </div>
 
       {/* Job Volume Trend and Deposit Analytics */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 mb-6">
         <div className="lg:col-span-2">
           <TrendChart 
             data={trendData}
             title="Job Volume Over Time"
-            height={300}
+            height={window.innerWidth < 768 ? 240 : 300}
           />
         </div>
         <div>
