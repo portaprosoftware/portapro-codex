@@ -309,13 +309,13 @@ export const Landing: React.FC = () => {
         <div className="container mx-auto px-12 h-full flex items-center justify-between max-w-full">
           <div className="flex items-center gap-4">
             <LandingLogo />
-            <div className="hidden md:block">
+            <div className="hidden lg:block">
               <FeaturesMegaMenu ref={featuresMegaMenuRef} />
             </div>
           </div>
           
           {/* Desktop Navigation & Auth Buttons */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden lg:flex items-center gap-8">
             <nav className="flex items-center gap-8">
               <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Pricing</a>
               <button onClick={() => setQuestionsFormOpen(true)} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Contact</button>
@@ -337,13 +337,13 @@ export const Landing: React.FC = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <button className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+          <button className="lg:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
 
         {/* Mobile Menu */}
-        {mobileMenuOpen && <div className="md:hidden border-t bg-background">
+        {mobileMenuOpen && <div className="lg:hidden border-t bg-background">
             <div className="container mx-auto px-6 py-4 space-y-4">
               <nav className="space-y-2">
                 <button onClick={() => {
