@@ -107,12 +107,12 @@ export default function PublicPayment() {
           <CardContent className="space-y-4">
             <p className="text-center text-muted-foreground">{error}</p>
             <Button
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/dashboard')}
               variant="outline"
               className="w-full"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Return Home
+              Return to Dashboard
             </Button>
           </CardContent>
         </Card>

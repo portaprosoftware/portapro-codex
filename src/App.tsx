@@ -114,8 +114,11 @@ const App = () => {
             <Route path="profile" element={<DriverProfilePage />} />
           </Route>
 
-          {/* Root route - show landing page for everyone, dashboard for authenticated users */}
-          <Route path="/" element={
+          {/* Root route - always show landing page */}
+          <Route path="/" element={<Landing />} />
+          
+          {/* Dashboard route - requires authentication */}
+          <Route path="/dashboard" element={
             <>
               <SignedIn>
                 <Layout>
@@ -123,7 +126,7 @@ const App = () => {
                 </Layout>
               </SignedIn>
               <SignedOut>
-                <Landing />
+                <Auth />
               </SignedOut>
             </>
           } />

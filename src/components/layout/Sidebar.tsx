@@ -42,7 +42,7 @@ const Sidebar = () => {
   };
 
   const menuItems = [
-    { icon: Home, label: "Dashboard", path: "/" },
+    { icon: Home, label: "Dashboard", path: "/dashboard" },
     { icon: Calendar, label: "Jobs", path: "/jobs" },
     { icon: Package, label: "Inventory", path: "/inventory" },
     { icon: Droplets, label: "Consumables", path: "/consumables" },
