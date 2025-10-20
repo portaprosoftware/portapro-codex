@@ -139,6 +139,14 @@ const blogPosts: BlogPost[] = [
     badgeGradient: 'from-orange-500 to-red-600'
   },
   {
+    id: 'mobile-first-platform',
+    category: 'Product Updates',
+    title: 'Why PortaPro Is 100% Mobile—For Drivers, Dispatchers, and the Entire Operation',
+    excerpt: 'PortaPro is now fully mobile-friendly across the entire platform, including driver app, dispatch dashboard, service logging, invoicing, and inventory tracking—so the entire business can be run from a phone.',
+    date: 'April 21, 2025',
+    badgeGradient: 'from-purple-500 to-purple-700'
+  },
+  {
     id: 'route-optimization',
     category: 'Product Updates',
     title: 'One-Click Route Optimization Now Available in PortaPro',
@@ -1411,6 +1419,166 @@ export const BlogSlider: React.FC<BlogSliderProps> = ({
                   </div>
                 )}
                 
+                {selectedPost === 'mobile-first-platform' && (
+                  <div className="space-y-6">
+                    <div className="space-y-4">
+                      <Badge className="bg-gradient-to-r from-purple-500 to-purple-700 text-white font-bold border-0">Product Updates</Badge>
+                      <h1 className="text-3xl font-bold">Why PortaPro Is 100% Mobile—For Drivers, Dispatchers, and the Entire Operation</h1>
+                      <p className="text-muted-foreground">April 21, 2025</p>
+                    </div>
+                    <div className="prose prose-lg max-w-none">
+                      <p className="text-lg text-muted-foreground mb-6">
+                        Most sanitation software was built for desktops first, then "made mobile" later. PortaPro did the opposite. We built <strong>every feature—from routes to invoicing to unit tracking—to work perfectly from a phone or tablet</strong>.
+                      </p>
+                      <p className="text-base text-muted-foreground mb-6">
+                        Because in this industry, work doesn't happen behind a desk. It happens in truck cabs. In muddy fields. At 6 AM on construction sites. And if software only works on a laptop, it doesn't really work.
+                      </p>
+
+                      <h3 className="text-2xl font-bold text-foreground mt-8 mb-4">What "100% Mobile" Actually Means</h3>
+                      <p className="text-base text-muted-foreground mb-4">
+                        This isn't just a mobile app for drivers. It means the <strong>entire platform</strong>—office dashboard, dispatching, service logs, inventory, signatures, updates, even invoicing—works flawlessly on a smartphone.
+                      </p>
+                      <div className="bg-muted/30 rounded-lg p-6 my-6">
+                        <h4 className="text-lg font-semibold text-foreground mb-4">Mobile Features Include:</h4>
+                        <div className="grid gap-3 text-sm">
+                          <div className="space-y-1">
+                            <p className="font-semibold text-foreground">Driver daily routes</p>
+                            <p className="text-muted-foreground">Tap on phone → see stop order, directions, notes</p>
+                          </div>
+                          <div className="space-y-1">
+                            <p className="font-semibold text-foreground">Unit service logs</p>
+                            <p className="text-muted-foreground">Tap "Serviced", add note/photo, even offline</p>
+                          </div>
+                          <div className="space-y-1">
+                            <p className="font-semibold text-foreground">Inventory tracking</p>
+                            <p className="text-muted-foreground">Scan barcodes or Google Vision → assign to job</p>
+                          </div>
+                          <div className="space-y-1">
+                            <p className="font-semibold text-foreground">Quotes & invoices</p>
+                            <p className="text-muted-foreground">Create, edit, send invoices from phone</p>
+                          </div>
+                          <div className="space-y-1">
+                            <p className="font-semibold text-foreground">Live driver tracking</p>
+                            <p className="text-muted-foreground">Dispatch can see active routes from mobile dashboard</p>
+                          </div>
+                          <div className="space-y-1">
+                            <p className="font-semibold text-foreground">Payment collection</p>
+                            <p className="text-muted-foreground">Drivers can collect card or tap-to-pay in the field</p>
+                          </div>
+                          <div className="space-y-1">
+                            <p className="font-semibold text-foreground">Customer signatures</p>
+                            <p className="text-muted-foreground">Customers sign directly on the driver's screen</p>
+                          </div>
+                          <div className="space-y-1">
+                            <p className="font-semibold text-foreground">Works offline?</p>
+                            <p className="text-muted-foreground">Yes—auto-syncs later</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <h3 className="text-2xl font-bold text-foreground mt-8 mb-4">Designed for Drivers—Not Just Dispatch</h3>
+                      <p className="text-base text-muted-foreground mb-4">
+                        Drivers are the heart of operations. So PortaPro's driver interface is <strong>designed to work with one hand, in gloves, in sunlight, or in a truck cupholder</strong>.
+                      </p>
+                      <p className="text-base text-muted-foreground mb-4">Key features include:</p>
+                      <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
+                        <li>Large buttons, high-contrast fonts, no clutter</li>
+                        <li>Offline mode for rural sites and event grounds</li>
+                        <li>Tap to mark a unit "Serviced," "Blocked," or "Needs Repair"</li>
+                        <li>Add photos for proof of service or damage</li>
+                        <li>Automatic timestamps and GPS location</li>
+                        <li>Step-by-step navigation to the next stop</li>
+                      </ul>
+                      <p className="text-base text-muted-foreground italic border-l-4 border-primary pl-4 mb-6">
+                        A driver in Missouri told us: "I'm not a tech guy. But if I can use Instagram, I can use PortaPro."
+                      </p>
+
+                      <h3 className="text-2xl font-bold text-foreground mt-8 mb-4">What About the Office Team?</h3>
+                      <p className="text-base text-muted-foreground mb-4">
+                        Not everyone is in a truck. But office staff shouldn't be tied to a chair either.
+                      </p>
+                      <p className="text-base text-muted-foreground mb-4">Dispatchers can now:</p>
+                      <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-6">
+                        <li>Assign routes from a phone or tablet</li>
+                        <li>Reassign jobs mid-day with two taps</li>
+                        <li>View driver progress in real time</li>
+                        <li>Add emergency stops without calling anyone</li>
+                        <li>Handle customer calls from anywhere—not just from the office computer</li>
+                      </ul>
+
+                      <h3 className="text-2xl font-bold text-foreground mt-8 mb-4">Why Going Fully Mobile Matters for Business Owners</h3>
+                      <p className="text-base text-muted-foreground mb-4">
+                        This update isn't just about convenience—it solves major business problems.
+                      </p>
+                      <div className="bg-muted/30 rounded-lg p-6 my-6">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="border-b-2 border-primary">
+                              <th className="text-left py-2 font-bold">Problem</th>
+                              <th className="text-left py-2 font-bold">With Paper/Old Software</th>
+                              <th className="text-left py-2 font-bold">With PortaPro Mobile</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-border">
+                            <tr>
+                              <td className="py-3 font-semibold">Owner on vacation</td>
+                              <td className="py-3">Can't access service data</td>
+                              <td className="py-3 italic">See routes, revenue, and unit map from phone</td>
+                            </tr>
+                            <tr>
+                              <td className="py-3 font-semibold">Employee calls off</td>
+                              <td className="py-3">Routes must be rebuilt manually</td>
+                              <td className="py-3 italic">Drag and reassign from phone in seconds</td>
+                            </tr>
+                            <tr>
+                              <td className="py-3 font-semibold">New driver training</td>
+                              <td className="py-3">Takes weeks to learn routes</td>
+                              <td className="py-3 italic">App guides them stop-by-stop</td>
+                            </tr>
+                            <tr>
+                              <td className="py-3 font-semibold">Lost paper work orders</td>
+                              <td className="py-3">No record = no invoice</td>
+                              <td className="py-3 italic">Every job logged digitally in real time</td>
+                            </tr>
+                            <tr>
+                              <td className="py-3 font-semibold">Office closed or remote</td>
+                              <td className="py-3">Business stops</td>
+                              <td className="py-3 italic">Business runs from anywhere</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+
+                      <h3 className="text-2xl font-bold text-foreground mt-8 mb-4">Built for the Field from Day One</h3>
+                      <p className="text-base text-muted-foreground mb-4">
+                        This is not a "lite version" or companion app. Every button, font size, layout, swipe interaction and icon was tested in real-world environments:
+                      </p>
+                      <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-6">
+                        <li>✅ Bright sunlight</li>
+                        <li>✅ Wet gloves</li>
+                        <li>✅ Spotty cell service</li>
+                        <li>✅ Bumpy truck dashboard surfaces</li>
+                        <li>✅ Left-handed and right-handed phone users</li>
+                        <li>✅ Hot truck cab screens in July</li>
+                      </ul>
+                      <p className="text-base text-muted-foreground mb-6">
+                        If it didn't work in those conditions, it didn't ship.
+                      </p>
+
+                      <h3 className="text-2xl font-bold text-foreground mt-8 mb-4">Final Thought</h3>
+                      <p className="text-base text-muted-foreground mb-4">
+                        Portable sanitation isn't a desk job—and your software shouldn't be either.
+                      </p>
+                      <p className="text-base text-muted-foreground mb-4">
+                        With PortaPro, your entire business fits in your pocket. Drivers, dispatchers, owners, technicians, part-timers—everyone uses the same real-time system. No more waiting until someone is "back at the office."
+                      </p>
+                      <p className="text-base text-muted-foreground font-semibold">
+                        <strong>Work happens in the field. Now your software does too.</strong>
+                      </p>
+                    </div>
+                  </div>
+                )}
+
                 {selectedPost === 'route-optimization' && (
                   <div className="space-y-6">
                     <div className="space-y-4">
