@@ -51,10 +51,10 @@ export const SettingsSection: React.FC = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center space-x-2">
-          <Settings className="w-5 h-5" />
-          <span>Settings & Help</span>
-        </CardTitle>
+      <CardTitle className="flex items-center space-x-2 text-base">
+        <Settings className="w-5 h-5" />
+        <span>Settings & Help</span>
+      </CardTitle>
       </CardHeader>
       
       <CardContent className="space-y-6">

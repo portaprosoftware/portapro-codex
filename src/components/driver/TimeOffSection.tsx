@@ -64,10 +64,10 @@ export const TimeOffSection: React.FC = () => {
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center space-x-2">
-            <Calendar className="w-5 h-5" />
-            <span>Time Off</span>
-          </CardTitle>
+        <CardTitle className="flex items-center space-x-2 text-base">
+          <Calendar className="w-5 h-5" />
+          <span>Time Off</span>
+        </CardTitle>
           
           <Button 
             size="sm" 
