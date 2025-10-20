@@ -244,129 +244,123 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
       )}
 
       {/* Service Address */}
-      <Card className="rounded-xl md:rounded-2xl">
-        <CardHeader className="p-4 md:p-6 pb-3">
-          <CardTitle className="text-base md:text-lg font-semibold flex items-center">
-            <MapPin className="w-4 h-4 md:w-5 md:h-5 mr-2" />
+      <Card className="rounded-2xl border border-slate-200">
+        <CardHeader className="p-4 sm:p-5 pb-2">
+          <CardTitle className="text-base font-semibold flex items-center mb-1">
+            <MapPin className="w-[18px] h-[18px] mr-2" />
             Service Address
           </CardTitle>
-          <p className="text-xs text-muted-foreground mt-1">Synchronized with default service location</p>
+          <p className="text-xs text-muted-foreground">Synced with service location</p>
         </CardHeader>
-        <CardContent className="space-y-3 p-4 md:p-6 pt-0">
-          <div>
-            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2 mb-3">
-              <p className="text-sm md:text-base text-foreground flex-1">{serviceAddress}</p>
+        <CardContent className="p-4 sm:p-5 pt-2 space-y-3">
+          <p className="text-sm text-slate-800 break-words">{serviceAddress}</p>
+          
+          {customer.service_street && (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
                 onClick={() => copyToClipboard(serviceAddress, 'Service address')}
-                className="flex items-center gap-1 h-11 md:h-auto w-full md:w-auto justify-center"
+                className="inline-flex items-center justify-center h-11 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50"
+                aria-label="Copy address to clipboard"
               >
-                <Copy className="w-4 h-4" />
-                <span className="text-sm">Copy Address</span>
+                <Copy className="w-4 h-4 mr-2" />
+                Copy
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleMapLink(serviceAddress, 'google')}
+                className="inline-flex items-center justify-center h-11 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50"
+                aria-label="Open in Google Maps"
+              >
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Google
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleMapLink(serviceAddress, 'apple')}
+                className="inline-flex items-center justify-center h-11 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50"
+                aria-label="Open in Apple Maps"
+              >
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Apple
               </Button>
             </div>
-            {customer.service_street && (
-              <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleMapLink(serviceAddress, 'google')}
-                  className="flex items-center whitespace-nowrap h-11 px-4"
-                >
-                  <ExternalLink className="w-4 h-4 mr-1.5" />
-                  Google Maps
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleMapLink(serviceAddress, 'apple')}
-                  className="flex items-center whitespace-nowrap h-11 px-4"
-                >
-                  <ExternalLink className="w-4 h-4 mr-1.5" />
-                  Apple Maps
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleMapLink(serviceAddress, 'waze')}
-                  className="flex items-center whitespace-nowrap h-11 px-4"
-                >
-                  <Navigation className="w-4 h-4 mr-1.5" />
-                  Waze
-                </Button>
-              </div>
-            )}
-          </div>
+          )}
         </CardContent>
       </Card>
 
       {/* Billing Address */}
-      <Card className="rounded-xl md:rounded-2xl">
-        <CardHeader className="p-4 md:p-6 pb-3">
-          <CardTitle className="text-base md:text-lg font-semibold">Billing Address</CardTitle>
+      <Card className="rounded-2xl border border-slate-200">
+        <CardHeader className="p-4 sm:p-5 pb-2">
+          <CardTitle className="text-base font-semibold">Billing Address</CardTitle>
         </CardHeader>
-        <CardContent className="p-4 md:p-6 pt-0">
-          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2">
-            <p className="text-sm md:text-base text-foreground flex-1">{billingAddress}</p>
+        <CardContent className="p-4 sm:p-5 pt-2 space-y-3">
+          <p className="text-sm text-slate-800 break-words">{billingAddress}</p>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
               onClick={() => copyToClipboard(billingAddress, 'Billing address')}
-              className="flex items-center gap-1 h-11 md:h-auto w-full md:w-auto justify-center"
+              className="inline-flex items-center justify-center h-11 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50"
+              aria-label="Copy address to clipboard"
             >
-              <Copy className="w-4 h-4" />
-              <span className="text-sm">Copy Address</span>
+              <Copy className="w-4 h-4 mr-2" />
+              Copy
             </Button>
           </div>
         </CardContent>
       </Card>
 
       {/* Deposit Status */}
-      <Card className="rounded-2xl">
-        <CardHeader className="pb-3">
-          <div className="flex items-center gap-2">
-            <CardTitle className="text-lg font-semibold">Deposit Status</CardTitle>
-            <p className="text-xs text-muted-foreground">Deposit required by default</p>
+      <Card className="rounded-2xl border border-slate-200">
+        <CardHeader className="p-4 sm:p-5 pb-2">
+          <div className="flex items-start justify-between">
+            <h3 className="text-base font-semibold leading-tight">
+              Deposit<br className="sm:hidden"/>
+              <span className="hidden sm:inline"> </span>Status
+            </h3>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowDepositPercentageDialog(true)}
+              className="text-slate-600 hover:text-slate-900 inline-flex items-center h-auto p-1"
+              aria-label="Edit deposit settings"
+            >
+              <Edit className="w-4 h-4" />
+            </Button>
           </div>
         </CardHeader>
-        <CardContent className="space-y-3 pt-0">
-          <div className="flex items-center justify-between">
-            <div>
-              <span className="text-muted-foreground text-sm block mb-2">Deposit Status</span>
-              {getDepositStatusBadge()}
-            </div>
-            <div className="flex flex-col items-start">
-              <span className="text-muted-foreground text-sm mb-2">Default Deposit Percentage</span>
-              <div className="flex items-center gap-2 -ml-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowDepositPercentageDialog(true)}
-                  className="h-8 w-8 p-0"
-                >
-                  <Edit className="w-4 h-4" />
-                </Button>
-                {customer.custom_deposit_percentage !== null && customer.custom_deposit_percentage !== undefined ? (
-                  <Badge variant="outline" className="text-xs">
-                    Custom Override
-                  </Badge>
-                ) : (
-                  <Badge variant="secondary" className="text-xs">
-                    Company Default
-                  </Badge>
-                )}
-                <span className="text-xl font-bold text-foreground">
-                  {customer.custom_deposit_percentage ?? companySettings?.default_deposit_percentage ?? 25}%
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                {customer.custom_deposit_percentage !== null && customer.custom_deposit_percentage !== undefined
-                  ? `Overrides company default of ${companySettings?.default_deposit_percentage ?? 25}%`
-                  : 'Using company default percentage'}
-              </p>
-            </div>
+        <CardContent className="p-4 sm:p-5 pt-2">
+          <div className="flex flex-wrap items-center gap-2 mb-2">
+            <Badge 
+              className={`px-3 py-1.5 rounded-full text-sm font-medium border-0 ${
+                customer.deposit_required === false 
+                  ? "bg-emerald-100 text-emerald-700" 
+                  : "bg-red-100 text-red-700"
+              }`}
+            >
+              {customer.deposit_required === false ? "No Deposit" : "Deposit Required"}
+            </Badge>
+            
+            <Badge className="px-3 py-1.5 rounded-full text-sm font-medium bg-blue-600 text-white border-0">
+              Company Default
+            </Badge>
+            
+            <span className="text-lg sm:text-xl font-semibold ml-auto">
+              {customer.custom_deposit_percentage ?? companySettings?.default_deposit_percentage ?? 25}%
+            </span>
           </div>
+          
+          <p className="text-xs text-muted-foreground">
+            {customer.custom_deposit_percentage !== null && customer.custom_deposit_percentage !== undefined
+              ? `Overrides company default of ${companySettings?.default_deposit_percentage ?? 25}%`
+              : 'Using company default'}
+          </p>
+          
           {customer.important_information && (
             <div className="border-t pt-3 mt-3">
               <span className="text-sm font-medium text-muted-foreground">Important Information</span>
