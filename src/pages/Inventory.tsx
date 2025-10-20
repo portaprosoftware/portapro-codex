@@ -391,7 +391,7 @@ const Inventory: React.FC = () => {
 
             {/* Action Buttons and Controls - Desktop Only */}
             <div className="hidden md:block space-y-6">
-              {/* Top Row: Action Buttons on left, View Toggle and Add Product on right */}
+              {/* Top Row: Action Buttons on left, Availability Tracker and Add Product on right */}
               <div className="flex justify-between items-center">
                 <div className="flex flex-wrap gap-2">
                   <Button 
@@ -421,26 +421,6 @@ const Inventory: React.FC = () => {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  {/* View Toggle */}
-                  <div className="flex bg-muted rounded-lg p-1">
-                    <Button
-                      variant={viewType === 'list' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setViewType('list')}
-                      className="h-8 px-3"
-                    >
-                      <List className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant={viewType === 'grid' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setViewType('grid')}
-                      className="h-8 px-3"
-                    >
-                      <Grid3X3 className="h-4 w-4" />
-                    </Button>
-                  </div>
-
                   {/* Availability Tracker */}
                   <Button 
                     variant="outline"
@@ -494,11 +474,33 @@ const Inventory: React.FC = () => {
                   )}
                 </div>
 
-                {/* Desktop: Status Filter Buttons */}
-                <DesktopStatusTabs 
-                  activeFilter={activeFilter}
-                  onFilterChange={handleFilterClick}
-                />
+                {/* Desktop: Status Filter Buttons and View Toggle */}
+                <div className="flex items-center gap-3">
+                  <DesktopStatusTabs 
+                    activeFilter={activeFilter}
+                    onFilterChange={handleFilterClick}
+                  />
+                  
+                  {/* View Toggle */}
+                  <div className="flex bg-muted rounded-lg p-1">
+                    <Button
+                      variant={viewType === 'list' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => setViewType('list')}
+                      className="h-8 px-3"
+                    >
+                      <List className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant={viewType === 'grid' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => setViewType('grid')}
+                      className="h-8 px-3"
+                    >
+                      <Grid3X3 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
               </div>
             </div>
 
