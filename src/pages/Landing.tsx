@@ -417,13 +417,13 @@ export const Landing: React.FC = () => {
                     
                     {/* Feature badges - directly under user roles */}
                     <div className="flex flex-wrap gap-2 mt-4">
-                      <span className="px-3 py-1.5 rounded-full bg-gradient-to-r from-gray-900 to-black text-white text-xs font-bold">
+                      <span className="px-3 py-1.5 rounded-full bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground text-xs font-bold">
                         ✓ No setup fees
                       </span>
-                      <span className="px-3 py-1.5 rounded-full bg-gradient-to-r from-gray-900 to-black text-white text-xs font-bold">
+                      <span className="px-3 py-1.5 rounded-full bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground text-xs font-bold">
                         ✓ Support included
                       </span>
-                      <span className="px-3 py-1.5 rounded-full bg-gradient-to-r from-gray-900 to-black text-white text-xs font-bold">
+                      <span className="px-3 py-1.5 rounded-full bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground text-xs font-bold">
                         ✓ Unlimited users, trucks & units
                       </span>
                     </div>
