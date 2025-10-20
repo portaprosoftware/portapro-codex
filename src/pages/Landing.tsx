@@ -2106,10 +2106,14 @@ export const Landing: React.FC = () => {
                   </p>
                   <div className="space-y-1">
                     <p className="text-sm font-medium">
-                      📧 support@portaprosoftware.com
+                      <a href="mailto:support@portaprosoftware.com" className="hover:text-primary transition-colors">
+                        support@portaprosoftware.com
+                      </a>
                     </p>
                     <p className="text-sm font-medium">
-                      📞 (216) 412-3239
+                      <a href="tel:+12164123239" className="hover:text-primary transition-colors">
+                        (216) 412-3239
+                      </a>
                     </p>
                   </div>
                 </div>
