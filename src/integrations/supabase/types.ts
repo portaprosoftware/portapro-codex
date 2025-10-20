@@ -2387,6 +2387,66 @@ export type Database = {
           },
         ]
       }
+      driver_notification_preferences: {
+        Row: {
+          created_at: string | null
+          driver_id: string
+          dvir_reminder: boolean | null
+          email_notifications: boolean | null
+          id: string
+          in_app_notifications: boolean | null
+          job_assigned: boolean | null
+          job_cancelled: boolean | null
+          job_updated: boolean | null
+          message_received: boolean | null
+          quiet_hours_enabled: boolean | null
+          quiet_hours_end: string | null
+          quiet_hours_start: string | null
+          schedule_changed: boolean | null
+          sms_notifications: boolean | null
+          updated_at: string | null
+          vehicle_assigned: boolean | null
+        }
+        Insert: {
+          created_at?: string | null
+          driver_id: string
+          dvir_reminder?: boolean | null
+          email_notifications?: boolean | null
+          id?: string
+          in_app_notifications?: boolean | null
+          job_assigned?: boolean | null
+          job_cancelled?: boolean | null
+          job_updated?: boolean | null
+          message_received?: boolean | null
+          quiet_hours_enabled?: boolean | null
+          quiet_hours_end?: string | null
+          quiet_hours_start?: string | null
+          schedule_changed?: boolean | null
+          sms_notifications?: boolean | null
+          updated_at?: string | null
+          vehicle_assigned?: boolean | null
+        }
+        Update: {
+          created_at?: string | null
+          driver_id?: string
+          dvir_reminder?: boolean | null
+          email_notifications?: boolean | null
+          id?: string
+          in_app_notifications?: boolean | null
+          job_assigned?: boolean | null
+          job_cancelled?: boolean | null
+          job_updated?: boolean | null
+          message_received?: boolean | null
+          quiet_hours_enabled?: boolean | null
+          quiet_hours_end?: string | null
+          quiet_hours_start?: string | null
+          schedule_changed?: boolean | null
+          sms_notifications?: boolean | null
+          updated_at?: string | null
+          vehicle_assigned?: boolean | null
+        }
+        Relationships: []
+      }
       driver_ppe_info: {
         Row: {
           boot_size: string | null
@@ -12769,6 +12829,10 @@ export type Database = {
           service_type: string
           status: string
         }[]
+      }
+      should_notify_driver: {
+        Args: { p_driver_id: string; p_notification_type: string }
+        Returns: boolean
       }
       soft_delete_quote: {
         Args: { quote_uuid: string }
