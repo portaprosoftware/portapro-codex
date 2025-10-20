@@ -58,7 +58,8 @@ export const StorageSitesNavigation: React.FC<StorageSitesNavigationProps> = ({ 
               onClick={() => handleNavigation(item.value)}
             >
               <item.icon className="h-4 w-4" />
-              <span>{item.title}</span>
+              <span className="hidden lg:inline">{item.title}</span>
+              <span className="lg:hidden">{item.value === "locations" ? "Locations" : item.title}</span>
             </TabNav.Item>
           ))}
         </TabNav>
