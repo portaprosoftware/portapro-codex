@@ -2266,7 +2266,7 @@ export const Landing: React.FC = () => {
             <div className="flex items-center justify-between p-4 border-b">
               <div>
                 <h2 className="text-xl font-bold text-foreground">Request Details</h2>
-                <p className="text-sm text-muted-foreground">Tell us about your needs and we'll get in touch</p>
+                <p className="text-sm text-muted-foreground">We'll help you build a simpler tomorrow</p>
               </div>
               <button onClick={() => setRequestInfoFormOpen(false)} className="p-2 rounded-lg hover:bg-muted">
                 <X className="w-5 h-5" />
