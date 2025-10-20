@@ -335,10 +335,20 @@ export const Landing: React.FC = () => {
             </div>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          {/* Mobile Menu Button & Request Call */}
+          <div className="md:hidden flex items-center gap-2">
+            <Button 
+              size="sm"
+              className="bg-gradient-blue text-white text-xs font-medium"
+              onClick={handleRequestInfo}
+            >
+              <Phone className="w-4 h-4 mr-1" />
+              Request Call
+            </Button>
+            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Menu */}
@@ -368,8 +378,7 @@ export const Landing: React.FC = () => {
                   Schedule Demo
                 </Button>
                 <Button 
-                  variant="outline"
-                  className="w-full text-sm font-medium"
+                  className="w-full bg-gradient-blue text-white text-sm font-medium"
                   onClick={() => {
                     handleRequestInfo();
                     setMobileMenuOpen(false);
