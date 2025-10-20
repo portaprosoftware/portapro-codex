@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { SignInButton, SignUpButton } from '@clerk/clerk-react';
-import { ArrowRight, Play, CheckCircle, Truck, Users, BarChart3, ClipboardList, MapPin, Calendar, DollarSign, Zap, Building2, FileText, Smartphone, Heart, Phone, Mail, Menu, X, Camera, Eye, Compass, Database, Shield, Clock, BellRing, Wrench, CalendarClock, Gauge, HardHat, Route, CloudOff, QrCode, Laptop, RefreshCcw, PiggyBank, Toilet, Wallet, WalletMinimal, HandCoins, MonitorSmartphone } from 'lucide-react';
+import { ArrowRight, Play, CheckCircle, Truck, Users, BarChart3, ClipboardList, MapPin, Calendar, DollarSign, Zap, Building2, FileText, Smartphone, Heart, Phone, Mail, Menu, X, Camera, Eye, Compass, Database, Shield, Clock, BellRing, Wrench, CalendarClock, Gauge, HardHat, Route, CloudOff, QrCode, Laptop, RefreshCcw, PiggyBank, Toilet, Wallet, WalletMinimal, HandCoins, MonitorSmartphone, ExternalLink, Lightbulb } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -1904,124 +1904,120 @@ export const Landing: React.FC = () => {
           <div className="fixed inset-y-0 right-0 w-full max-w-4xl bg-background shadow-2xl animate-slide-in-right">
             <div className="flex flex-col h-full">
               {/* Header */}
-              <div className="flex items-center justify-between p-6 border-b">
-                <h2 className="text-2xl font-bold text-foreground">🚀 Join the PortaPro Community</h2>
-                <button onClick={() => setCommunitySliderOpen(false)} className="p-2 hover:bg-muted rounded-full transition-colors">
+              <div className="flex items-center justify-between p-6 border-b bg-gradient-to-b from-muted/30 to-background">
+                <div>
+                  <h2 className="text-2xl font-bold text-foreground mb-1">Join the PortaPro Community</h2>
+                  <p className="text-sm text-muted-foreground">Where portable sanitation pros connect, learn, and grow together.</p>
+                </div>
+                <button onClick={() => setCommunitySliderOpen(false)} className="p-2 hover:bg-muted rounded-full transition-colors flex-shrink-0">
                   <X className="w-5 h-5" />
                 </button>
               </div>
               
               {/* Content */}
               <div className="flex-1 overflow-y-auto p-6">
-                <div className="space-y-8 max-w-4xl">
-                  <div className="text-center">
-                    <p className="text-lg text-muted-foreground">
-                      Where modern sanitation pros connect, learn, and grow together.
+                <div className="space-y-6 max-w-3xl mx-auto">
+                  {/* Introduction */}
+                  <p className="text-base text-muted-foreground leading-relaxed">
+                    At PortaPro, we're not just building software — we're building a movement. The PortaPro Community is here to bring together operators, field techs, dispatchers, and business owners who want to modernize operations, reduce chaos, and share real wins from the field.
+                  </p>
+                  
+                  {/* Community Hub Card */}
+                  <div className="bg-card rounded-xl border border-border/60 hover:border-border transition-all p-6">
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center border border-primary/20">
+                        <Users className="w-6 h-6 text-primary" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-lg font-semibold text-foreground mb-1">
+                          Connect with Other Operators
+                        </h3>
+                        <p className="text-sm text-muted-foreground font-medium">
+                          Community Hub
+                        </p>
+                      </div>
+                    </div>
+                    <p className="text-[15px] text-muted-foreground leading-relaxed mb-6">
+                      Join our private online community to swap tips, ask questions, and talk business with others who do what you do.
                     </p>
+                    <button className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm bg-gradient-to-r from-primary to-primary/90 text-white hover:shadow-md hover:scale-[1.02] transition-all">
+                      Join the Community
+                      <ExternalLink className="w-4 h-4" />
+                    </button>
                   </div>
                   
-                  <div className="space-y-8 text-foreground">
-                    <p className="text-lg">
-                      At PortaPro, we're not just building software — we're building a movement. The PortaPro Community is here to bring together operators, field techs, dispatchers, and business owners who want to modernize operations, reduce chaos, and share real wins from the field.
+                  {/* Real-World Operators Card */}
+                  <div className="bg-card rounded-xl border border-border/60 hover:border-border transition-all p-6">
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center border border-primary/20">
+                        <MapPin className="w-6 h-6 text-primary" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-lg font-semibold text-foreground mb-1">
+                          See PortaPro in Action
+                        </h3>
+                        <p className="text-sm text-muted-foreground font-medium">
+                          Real-World Operators
+                        </p>
+                      </div>
+                    </div>
+                    <p className="text-[15px] text-muted-foreground leading-relaxed mb-6">
+                      Explore where PortaPro is being used—from local family-owned companies to large regional fleets. Hear their stories and learn from their playbooks.
                     </p>
-                    
-                    <div className="space-y-6">
-                      <div className="bg-gradient-to-br from-primary via-primary/90 to-primary/80 rounded-2xl p-6 text-white">
-                        <h3 className="text-xl font-bold mb-4">👥 Connect with Other Operators</h3>
-                        <p className="mb-4">
-                          Join our exclusive Facebook or Discord group to ask questions, swap dispatch tips, or just talk shop with others in the industry.
-                        </p>
-                        <Button className="bg-white text-primary hover:bg-white/90 font-semibold">
-                          👉 Join the PortaPro Group
-                        </Button>
+                    <div className="flex flex-wrap gap-3">
+                      <button className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm bg-muted text-foreground hover:bg-muted/80 border border-border transition-all">
+                        View the Map
+                        <ExternalLink className="w-4 h-4" />
+                      </button>
+                      <button className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm bg-muted text-foreground hover:bg-muted/80 border border-border transition-all">
+                        User Stories
+                        <ExternalLink className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {/* Shape the Future Card */}
+                  <div className="bg-card rounded-xl border border-border/60 hover:border-border transition-all p-6">
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center border border-primary/20">
+                        <Lightbulb className="w-6 h-6 text-primary" />
                       </div>
-                      
-                      <div className="bg-muted/50 rounded-2xl p-6">
-                        <h3 className="text-xl font-bold mb-4">🗺️ See Where PortaPro Is Used</h3>
-                        <p>
-                          From small towns to major metros, PortaPro is powering smarter operations across the country. Check out our growing footprint and hear real user stories.
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-lg font-semibold text-foreground mb-1">
+                          Share Ideas & Influence the Product
+                        </h3>
+                        <p className="text-sm text-muted-foreground font-medium">
+                          Shape the Future
                         </p>
-                      </div>
-                      
-                      <div className="bg-gradient-to-br from-green-500 via-green-600 to-green-700 rounded-2xl p-6 text-white">
-                        <h3 className="text-xl font-bold mb-4">🧠 Share Ideas & Shape the Product</h3>
-                        <p className="mb-4">
-                          We take your feedback seriously. Submit ideas, vote on features, and view our public roadmap.
-                        </p>
-                        <div className="flex flex-col sm:flex-row gap-3">
-                          <Button className="bg-white text-green-700 hover:bg-white/90 font-semibold">
-                            👉 View the Roadmap
-                          </Button>
-                          <Button className="bg-white text-green-700 hover:bg-white/90 font-semibold">
-                            👉 Submit a Feature Request
-                          </Button>
-                        </div>
-                      </div>
-                      
-                      <div className="bg-gradient-to-br from-orange-500 via-orange-600 to-orange-700 rounded-2xl p-6 text-white">
-                        <h3 className="text-xl font-bold mb-4">🔓 Become a Beta Tester</h3>
-                        <p className="mb-4">
-                          Be the first to try new features like QR scanning, lock tracking, and mobile updates. Help us test in real-world conditions before launch.
-                        </p>
-                        <Button className="bg-white text-orange-700 hover:bg-white/90 font-semibold">
-                          👉 Sign Up for Early Access
-                        </Button>
-                      </div>
-                      
-                      <div className="bg-muted/50 rounded-2xl p-6">
-                        <h3 className="text-xl font-bold mb-4">📚 The PortaPro Playbook</h3>
-                        <p className="mb-4">
-                          Explore a library of templates and how-to guides to improve your operation. Built by pros, for pros.
-                        </p>
-                        <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-muted-foreground">
-                          <li className="flex items-center gap-2">
-                            <CheckCircle className="w-4 h-4 text-primary" />
-                            Pricing Calculator Templates
-                          </li>
-                          <li className="flex items-center gap-2">
-                            <CheckCircle className="w-4 h-4 text-primary" />
-                            Inspection Checklists
-                          </li>
-                          <li className="flex items-center gap-2">
-                            <CheckCircle className="w-4 h-4 text-primary" />
-                            Field Tech SOPs
-                          </li>
-                          <li className="flex items-center gap-2">
-                            <CheckCircle className="w-4 h-4 text-primary" />
-                            Service Report Examples
-                          </li>
-                        </ul>
-                      </div>
-                      
-                      <div className="bg-gradient-to-br from-purple-500 via-purple-600 to-purple-700 rounded-2xl p-6 text-white">
-                        <h3 className="text-xl font-bold mb-4">🎉 Shoutouts & Wins from the Field</h3>
-                        <p className="mb-4">
-                          We highlight the real people making PortaPro great. Have a milestone or cool story? We might feature you next.
-                        </p>
-                        <Button className="bg-white text-purple-700 hover:bg-white/90 font-semibold">
-                          👉 Submit Your Win
-                        </Button>
-                      </div>
-                      
-                      <div className="bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 rounded-2xl p-6 text-white">
-                        <h3 className="text-xl font-bold mb-4">📩 Stay in the Loop</h3>
-                        <p className="mb-4">
-                          Get exclusive updates, product announcements, and community invites right in your inbox.
-                        </p>
-                        <Button className="bg-white text-blue-700 hover:bg-white/90 font-semibold">
-                          👉 Subscribe to Updates
-                        </Button>
                       </div>
                     </div>
-                    
-                    <div className="text-center space-y-2 pt-8 border-t">
-                      <p className="text-xl font-bold text-foreground">
-                        PortaPro Community: Built for the Field — Together.
-                      </p>
-                      <p className="text-lg text-muted-foreground font-medium">
-                        Your crew. Your customers. Your advantage.
-                      </p>
+                    <p className="text-[15px] text-muted-foreground leading-relaxed mb-6">
+                      Submit ideas, vote on features, and follow what's coming next on our public roadmap. Your voice directly impacts what we build.
+                    </p>
+                    <div className="flex flex-wrap gap-3">
+                      <button className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm bg-muted text-foreground hover:bg-muted/80 border border-border transition-all">
+                        View Roadmap
+                        <ExternalLink className="w-4 h-4" />
+                      </button>
+                      <button className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm bg-gradient-to-r from-primary to-primary/90 text-white hover:shadow-md hover:scale-[1.02] transition-all">
+                        Submit Feature Idea
+                        <ExternalLink className="w-4 h-4" />
+                      </button>
                     </div>
+                  </div>
+                  
+                  {/* Bottom CTA */}
+                  <div className="bg-gradient-to-br from-primary/5 to-primary/[0.02] rounded-xl border border-primary/20 p-6 sm:p-8 text-center mt-8">
+                    <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-3">
+                      Ready to Connect?
+                    </h3>
+                    <p className="text-muted-foreground mb-6 text-base leading-relaxed">
+                      Join a growing network of portable sanitation professionals who are modernizing their operations and sharing what works.
+                    </p>
+                    <button className="inline-flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-primary to-primary/90 text-white rounded-lg hover:shadow-lg hover:scale-[1.02] transition-all font-semibold text-base">
+                      Get Started Today
+                      <ArrowRight className="w-5 h-5" />
+                    </button>
                   </div>
                 </div>
               </div>
