@@ -2008,10 +2008,13 @@ export const Landing: React.FC = () => {
                     <p className="text-muted-foreground mb-6 text-base leading-relaxed">
                       Join a growing network of portable sanitation professionals who are modernizing their operations and sharing what works.
                     </p>
-                    <button className="inline-flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-primary to-primary/90 text-white rounded-lg hover:shadow-lg hover:scale-[1.02] transition-all font-semibold text-base">
-                      Get Started Today
+                    <button className="inline-flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-primary to-primary/90 text-white rounded-lg hover:shadow-lg hover:scale-[1.02] transition-all font-semibold text-base mb-3">
+                      Join Community Today
                       <ArrowRight className="w-5 h-5" />
                     </button>
+                    <p className="text-sm text-muted-foreground">
+                      Everyone is welcome to join, whether you use PortaPro - or not!
+                    </p>
                   </div>
                 </div>
               </div>
