@@ -16,6 +16,10 @@ import { cn } from '@/lib/utils';
 import { ProductsView } from '@/components/inventory/ProductsView';
 import { LocationMapView } from '@/components/inventory/LocationMapView';
 import { InventoryFilters } from '@/components/inventory/InventoryFilters';
+import { MobileInventoryFilters } from '@/components/inventory/MobileInventoryFilters';
+import { MobileTabSelect } from '@/components/inventory/MobileTabSelect';
+import { FloatingActionButton } from '@/components/inventory/FloatingActionButton';
+import { MobileStatusFilter, DesktopStatusTabs } from '@/components/inventory/MobileStatusFilter';
 
 import { CodeCategoriesView } from '@/components/inventory/CodeCategoriesView';
 import { MaintenanceTrackerTab } from '@/components/inventory/MaintenanceTrackerTab';
@@ -300,66 +304,93 @@ const Inventory: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-none px-6 py-6 space-y-6">
+    <div className="min-h-screen bg-gray-50 overflow-x-hidden">
+      <div className="max-w-none px-4 md:px-6 py-6 space-y-6">
         {/* Card 1: Header + Tab Navigation */}
-        <div className="bg-background rounded-2xl shadow-md p-6">
+        <div className="bg-background rounded-2xl shadow-md p-4 md:p-6">
           <div className="mb-6">
-            <h1 className="text-2xl font-semibold text-foreground">Inventory Management</h1>
-            <p className="text-muted-foreground">Manage your portable toilet inventory and assets</p>
+            <h1 className="text-xl md:text-2xl font-semibold text-foreground">Inventory Management</h1>
+            <p className="text-sm md:text-base text-muted-foreground">Manage your portable toilet inventory and assets</p>
           </div>
           
-          <TabNav ariaLabel="Inventory navigation">
-            <TabNav.Item
-              to="/inventory/products"
-              isActive={activeTab === 'products'}
-              onClick={() => navigateToTab('products')}
-            >
-              <Toilet className="h-4 w-4" />
-              Equipment
-            </TabNav.Item>
-            <TabNav.Item
-              to="/inventory/location-map"
-              isActive={activeTab === 'location-map'}
-              onClick={() => navigateToTab('location-map')}
-            >
-              <MapPin className="h-4 w-4" />
-              Location Map
-            </TabNav.Item>
-            <TabNav.Item
-              to="#"
-              isActive={activeTab === 'maintenance'}
-              onClick={() => navigateToTab('maintenance')}
-            >
-              <Wrench className="h-4 w-4" />
-              Maintenance
-            </TabNav.Item>
-            <TabNav.Item
-              to="/inventory/code-categories"
-              isActive={activeTab === 'code-categories'}
-              onClick={() => navigateToTab('code-categories')}
-            >
-              <FileDigit className="h-4 w-4" />
-              Series Assignments
-            </TabNav.Item>
-          </TabNav>
+          {/* Desktop: Tab Navigation */}
+          <div className="hidden lg:block">
+            <TabNav ariaLabel="Inventory navigation">
+              <TabNav.Item
+                to="/inventory/products"
+                isActive={activeTab === 'products'}
+                onClick={() => navigateToTab('products')}
+              >
+                <Toilet className="h-4 w-4" />
+                Equipment
+              </TabNav.Item>
+              <TabNav.Item
+                to="/inventory/location-map"
+                isActive={activeTab === 'location-map'}
+                onClick={() => navigateToTab('location-map')}
+              >
+                <MapPin className="h-4 w-4" />
+                Location Map
+              </TabNav.Item>
+              <TabNav.Item
+                to="#"
+                isActive={activeTab === 'maintenance'}
+                onClick={() => navigateToTab('maintenance')}
+              >
+                <Wrench className="h-4 w-4" />
+                Maintenance
+              </TabNav.Item>
+              <TabNav.Item
+                to="/inventory/code-categories"
+                isActive={activeTab === 'code-categories'}
+                onClick={() => navigateToTab('code-categories')}
+              >
+                <FileDigit className="h-4 w-4" />
+                Series Assignments
+              </TabNav.Item>
+            </TabNav>
+          </div>
+
+          {/* Mobile/Tablet: Select Dropdown */}
+          <div className="lg:hidden">
+            <MobileTabSelect activeTab={activeTab} onTabChange={navigateToTab} />
+          </div>
         </div>
 
         {/* Content based on active tab */}
         {activeTab === 'products' && (
-          <div className="bg-background rounded-2xl shadow-md p-6 space-y-6">
-            {/* Search and Filters */}
-            <InventoryFilters 
-              searchQuery={searchQuery}
-              onSearchChange={setSearchQuery}
-              selectedLocationId={selectedLocationId}
-              onLocationChange={setSelectedLocationId}
-              selectedProductType={selectedProductType}
-              onProductTypeChange={setSelectedProductType}
-            />
+          <div className="bg-background rounded-2xl shadow-md p-4 md:p-6 space-y-4 md:space-y-6">
+            {/* Desktop: Search and Filters */}
+            <div className="hidden md:block">
+              <InventoryFilters 
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                selectedLocationId={selectedLocationId}
+                onLocationChange={setSelectedLocationId}
+                selectedProductType={selectedProductType}
+                onProductTypeChange={setSelectedProductType}
+              />
+            </div>
 
-            {/* Action Buttons and Controls */}
-            <div className="space-y-6">
+            {/* Mobile: Collapsible Filters */}
+            <div className="md:hidden">
+              <MobileInventoryFilters
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                selectedLocationId={selectedLocationId}
+                onLocationChange={setSelectedLocationId}
+                selectedProductType={selectedProductType}
+                onProductTypeChange={setSelectedProductType}
+                hideInactive={hideInactive}
+                onHideInactiveChange={setHideInactive}
+                onCapturePanel={() => setShowOCRSearch(true)}
+                onScanQR={() => setShowQRScanner(true)}
+                onAllUnits={() => setShowIndividualUnitsSlider(true)}
+              />
+            </div>
+
+            {/* Action Buttons and Controls - Desktop Only */}
+            <div className="hidden md:block space-y-6">
               {/* Top Row: Action Buttons on left, View Toggle and Add Product on right */}
               <div className="flex justify-between items-center">
                 <div className="flex flex-wrap gap-2">
@@ -430,12 +461,12 @@ const Inventory: React.FC = () => {
                 </div>
               </div>
 
-              {/* Info Text */}
+              {/* Info Text - Desktop */}
               <div className="text-sm text-muted-foreground">
                 Scan QR or snap a photo of the molded tool number to search
               </div>
 
-              {/* Filter Controls Row */}
+              {/* Filter Controls Row - Desktop */}
               <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
                 <div className="flex items-center space-x-2">
                   <Switch
@@ -463,27 +494,20 @@ const Inventory: React.FC = () => {
                   )}
                 </div>
 
-                {/* Status Filter Buttons */}
-                <div className="flex flex-wrap gap-3">
-                  {filters.map((filter) => (
-                    <button
-                      key={filter.key}
-                      onClick={() => handleFilterClick(filter.key)}
-                      className={cn(
-                        "px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200",
-                        getFilterStyle(filter.key)
-                      )}
-                    >
-                      {filter.label}
-                      {filter.count !== null && (
-                        <Badge variant="secondary" className="ml-2 text-xs bg-white/20">
-                          {filter.count}
-                        </Badge>
-                      )}
-                    </button>
-                  ))}
-                </div>
+                {/* Desktop: Status Filter Buttons */}
+                <DesktopStatusTabs 
+                  activeFilter={activeFilter}
+                  onFilterChange={handleFilterClick}
+                />
               </div>
+            </div>
+
+            {/* Mobile: Status Filter Select */}
+            <div className="md:hidden">
+              <MobileStatusFilter
+                activeFilter={activeFilter}
+                onFilterChange={handleFilterClick}
+              />
             </div>
 
             {/* Product Grid */}
@@ -496,6 +520,9 @@ const Inventory: React.FC = () => {
               selectedProductType={selectedProductType}
               onProductSelect={(productId) => setSelectedProduct(productId)}
             />
+
+            {/* Floating Action Button - Mobile Only */}
+            <FloatingActionButton onClick={() => setAddInventoryModalOpen(true)} />
           </div>
         )}
 

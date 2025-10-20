@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ProductCard } from "./ProductCard";
 import { ProductListItem } from "./ProductListItem";
+import { MobileProductCard } from "./MobileProductCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProductType } from "@/lib/productTypes";
 
@@ -220,11 +221,20 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
 
   if (isLoading) {
     return (
-      <div className={viewType === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "space-y-4"}>
-        {Array.from({ length: 8 }).map((_, i) => (
-          <Skeleton key={i} className={viewType === "grid" ? "h-64" : "h-20"} />
-        ))}
-      </div>
+      <>
+        {/* Desktop Grid Skeleton */}
+        <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <Skeleton key={i} className={viewType === "grid" ? "h-64" : "h-20"} />
+          ))}
+        </div>
+        {/* Mobile Single Column Skeleton */}
+        <div className="md:hidden space-y-3">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-80" />
+          ))}
+        </div>
+      </>
     );
   }
 
@@ -250,11 +260,13 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
     );
   }
 
-  if (viewType === "list") {
-    return (
-      <div className="space-y-2">
+  // Mobile: Always use single-column image cards
+  return (
+    <>
+      {/* Mobile View - Single Column Image Cards */}
+      <div className="md:hidden space-y-3">
         {products.map((product) => (
-          <ProductListItem
+          <MobileProductCard
             key={product.id}
             product={product}
             onSelect={() => onProductSelect(product.id)}
@@ -263,20 +275,33 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
           />
         ))}
       </div>
-    );
-  }
 
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {products.map((product) => (
-        <ProductCard
-          key={product.id}
-          product={product}
-          onSelect={() => onProductSelect(product.id)}
-          selectedLocationId={selectedLocationId}
-          selectedLocationName={selectedLocationName}
-        />
-      ))}
-    </div>
+      {/* Tablet/Desktop View */}
+      {viewType === "list" ? (
+        <div className="hidden md:block space-y-2">
+          {products.map((product) => (
+            <ProductListItem
+              key={product.id}
+              product={product}
+              onSelect={() => onProductSelect(product.id)}
+              selectedLocationId={selectedLocationId}
+              selectedLocationName={selectedLocationName}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {products.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              onSelect={() => onProductSelect(product.id)}
+              selectedLocationId={selectedLocationId}
+              selectedLocationName={selectedLocationName}
+            />
+          ))}
+        </div>
+      )}
+    </>
   );
 };
