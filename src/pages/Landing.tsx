@@ -1294,31 +1294,31 @@ export const Landing: React.FC = () => {
                   <div>
                     <h3 className="text-2xl font-bold mb-6 text-foreground">WHAT MAKES PORTAPRO DIFFERENT</h3>
                     <div className="space-y-6">
-                      <div className="border-l-4 border-primary pl-6 py-4 bg-muted/30 rounded-r-lg">
+                      <div className="border-l-4 border-primary pl-6 py-4">
                         <h4 className="font-bold text-lg mb-2 text-foreground">Route Planning & Live Service Updates</h4>
                         <p className="text-muted-foreground mb-2">Drag-and-drop scheduling, daily driver routes, arrival/service tracking.</p>
                         <p className="text-sm text-muted-foreground italic">Stops missed services and "where's my driver?" phone calls. Office and field stay in sync in real time.</p>
                       </div>
 
-                      <div className="border-l-4 border-blue-600 pl-6 py-4 bg-blue-50/50 rounded-r-lg">
+                      <div className="border-l-4 border-blue-600 pl-6 py-4">
                         <h4 className="font-bold text-lg mb-2 text-foreground">Unit & Inventory Tracking (QR / Barcode)</h4>
                         <p className="text-muted-foreground mb-2">Scan units as they leave the yard, change locations, or need repairs. Tracks wash history and damage.</p>
                         <p className="text-sm text-muted-foreground italic">No more missing toilets or guessing where assets are. Every unit has a history and a location.</p>
                       </div>
 
-                      <div className="border-l-4 border-green-600 pl-6 py-4 bg-green-50/50 rounded-r-lg">
+                      <div className="border-l-4 border-green-600 pl-6 py-4">
                         <h4 className="font-bold text-lg mb-2 text-foreground">Quotes → Jobs → Invoices (Tap-to-Pay)</h4>
                         <p className="text-muted-foreground mb-2">Build quotes, convert to jobs, convert to invoices with one click. Take card or ACH payments on-site or online.</p>
                         <p className="text-sm text-muted-foreground italic">Ends unpaid work and check-chasing. Makes even small operators look professional and modern.</p>
                       </div>
 
-                      <div className="border-l-4 border-purple-600 pl-6 py-4 bg-purple-50/50 rounded-r-lg">
+                      <div className="border-l-4 border-purple-600 pl-6 py-4">
                         <h4 className="font-bold text-lg mb-2 text-foreground">100% Mobile Driver App (Works Offline)</h4>
                         <p className="text-muted-foreground mb-2">Drivers complete routes, log services, add photos, collect signatures—all from their phone.</p>
                         <p className="text-sm text-muted-foreground italic">No training required. Works even without cell service in rural areas or event fields.</p>
                       </div>
 
-                      <div className="border-l-4 border-orange-600 pl-6 py-4 bg-orange-50/50 rounded-r-lg">
+                      <div className="border-l-4 border-orange-600 pl-6 py-4">
                         <h4 className="font-bold text-lg mb-2 text-foreground">Automated Customer Alerts & Service Logs</h4>
                         <p className="text-muted-foreground mb-2">Text or email customers when units are delivered, serviced, or picked up—with photos if needed.</p>
                         <p className="text-sm text-muted-foreground italic">Fewer customer calls. More trust. You look organized and accountable.</p>
