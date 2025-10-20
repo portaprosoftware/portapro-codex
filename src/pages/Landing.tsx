@@ -1222,15 +1222,6 @@ export const Landing: React.FC = () => {
               </div>
             </div>
             
-            {/* Mobile CTA */}
-            <div className="block sm:hidden">
-              <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noopener noreferrer" className="block">
-                <Button className="w-full bg-white text-blue-600 hover:bg-gray-100 font-medium py-3 rounded-lg shadow-lg">
-                  Start Free Trial
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </a>
-            </div>
           </div>
         </div>
       </footer>
