@@ -78,8 +78,8 @@ createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queryClient}>
       <ClerkProvider 
         publishableKey={CLERK_PUBLISHABLE_KEY}
-        signInFallbackRedirectUrl="/"
-        signUpFallbackRedirectUrl="/"
+        signInFallbackRedirectUrl="/dashboard"
+        signUpFallbackRedirectUrl="/dashboard"
       >
         <App />
         <Toaster />

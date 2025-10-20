@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FeatureIdeaModal } from '@/components/ui/feature-idea-modal';
 import { JoinCommunityModal } from '@/components/ui/join-community-modal';
-import { SignInButton, SignUpButton } from '@clerk/clerk-react';
+import { SignInButton, SignUpButton, useAuth } from '@clerk/clerk-react';
+import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Play, CheckCircle, Truck, Users, BarChart3, ClipboardList, MapPin, Calendar, DollarSign, Zap, Building2, FileText, Smartphone, Heart, Phone, Mail, Menu, X, Camera, Eye, Compass, Database, Shield, Clock, BellRing, Wrench, CalendarClock, Gauge, HardHat, Route, CloudOff, QrCode, Laptop, RefreshCcw, PiggyBank, Toilet, Wallet, WalletMinimal, HandCoins, MonitorSmartphone, ExternalLink, Lightbulb } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -209,6 +210,8 @@ const completePackage = {
   features: ["Unlimited drivers and users", "Multi-Step Job Creation Wizard", "Multi-site inventory tracking", "Mobile driver app with offline capability", "Custom report templates and builder", "Quote-to-job conversion flow", "Advanced analytics and reporting", "Team management and scheduling", "Stripe payment integration", "Customer portal access", "Priority email and chat support", "Full onboarding and training included"]
 };
 export const Landing: React.FC = () => {
+  const { isLoaded, isSignedIn } = useAuth();
+  const navigate = useNavigate();
   const [isAnnual, setIsAnnual] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [aboutSliderOpen, setAboutSliderOpen] = useState(false);
@@ -232,6 +235,13 @@ export const Landing: React.FC = () => {
 
   // Date string used across sections
   const todayStr = new Date().toISOString().split('T')[0];
+
+  // Auto-redirect if already signed in
+  useEffect(() => {
+    if (isLoaded && isSignedIn) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isLoaded, isSignedIn, navigate]);
 
   // Handle questions form
   const handleRequestInfo = () => {
@@ -329,7 +339,11 @@ export const Landing: React.FC = () => {
             </nav>
             
             <div className="flex items-center gap-4">
-              <SignInButton mode="redirect" fallbackRedirectUrl="/dashboard">
+              <SignInButton 
+                mode="redirect" 
+                forceRedirectUrl="/dashboard"
+                fallbackRedirectUrl="/dashboard"
+              >
                 <Button variant="ghost" className="text-sm font-medium shadow-none hover:shadow-none">Sign In</Button>
               </SignInButton>
               <Button 
@@ -361,7 +375,11 @@ export const Landing: React.FC = () => {
                 <button onClick={() => { scrollToSection('tour'); setMobileMenuOpen(false); }} className="block w-full text-left py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hover:scale-105 transform duration-200">Watch</button>
               </nav>
               <div className="flex flex-col gap-2 pt-4 border-t">
-                <SignInButton mode="redirect" fallbackRedirectUrl="/dashboard">
+                <SignInButton 
+                  mode="redirect" 
+                  forceRedirectUrl="/dashboard"
+                  fallbackRedirectUrl="/dashboard"
+                >
                   <Button variant="outline" className="w-full font-medium bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground shadow-none hover:shadow-none">Sign In</Button>
                 </SignInButton>
                 <Button 

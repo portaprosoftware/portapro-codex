@@ -130,7 +130,7 @@ const App = () => {
                 </Layout>
               </SignedIn>
               <SignedOut>
-                <Auth />
+                <RedirectToSignIn redirectUrl="/dashboard" />
               </SignedOut>
             </>
           } />
