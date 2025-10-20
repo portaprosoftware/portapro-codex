@@ -1,0 +1,12 @@
+{
+  "redirects": [
+    {
+      "source": "/",
+      "has": [
+        { "type": "host", "value": "demo.portaprosoftware.com" }
+      ],
+      "destination": "https://meetings.dialpad.com/portapro-tyler",
+      "permanent": false
+    }
+  ]
+}
