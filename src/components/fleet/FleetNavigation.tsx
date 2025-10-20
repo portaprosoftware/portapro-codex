@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,15 +9,18 @@ import {
   Wrench, 
   Fuel, 
   FolderOpen,
-  Package
+  Package,
+  ChevronDown
 } from "lucide-react";
 import { TabNav } from "@/components/ui/TabNav";
 import { Badge } from "@/components/ui/badge";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
 export const FleetNavigation: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
   
   // Fetch real-time compliance notification counts
   const { data: complianceCounts } = useQuery({
@@ -98,8 +101,15 @@ export const FleetNavigation: React.FC = () => {
     }
   ];
 
+
   const handleNavigation = (href: string) => {
     navigate(href);
+    setIsSheetOpen(false); // Close sheet after navigation
+  };
+
+  const getActiveTitle = () => {
+    const activeItem = navigationItems.find(item => isActiveRoute(item.href, item.end));
+    return activeItem?.title || "Fleet";
   };
 
   const isActiveRoute = (href: string, end?: boolean) => {
@@ -152,40 +162,59 @@ export const FleetNavigation: React.FC = () => {
           </TabNav>
         </div>
 
-        {/* Mobile Navigation - Horizontal Scroll */}
-        <div className="lg:hidden -mx-4 px-4">
-          <div 
-            className="flex gap-2 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 scrollbar-hide"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-            role="tablist"
-            aria-label="Fleet Management Navigation"
-          >
-            {navigationItems.map((item) => (
+        {/* Mobile Navigation - Bottom Drawer */}
+        <div className="lg:hidden">
+          <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+            <SheetTrigger asChild>
               <button
-                key={item.href}
-                onClick={() => handleNavigation(item.href)}
-                className={cn(
-                  "snap-start whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 flex items-center gap-2 min-h-[44px] flex-shrink-0",
-                  isActiveRoute(item.href, item.end)
-                    ? "bg-primary text-primary-foreground shadow-md"
-                    : "bg-muted text-muted-foreground hover:bg-muted/80"
-                )}
-                role="tab"
-                aria-selected={isActiveRoute(item.href, item.end)}
+                className="w-full flex items-center justify-between px-4 py-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors min-h-[44px]"
+                aria-label="Open navigation menu"
               >
-                <item.icon className="h-4 w-4" />
-                <span>{item.title}</span>
-                {item.badge && (
-                  <Badge 
-                    variant="destructive" 
-                    className="text-xs"
-                  >
-                    {item.badge}
-                  </Badge>
-                )}
+                <span className="text-sm font-medium flex items-center gap-2">
+                  {navigationItems.find(item => isActiveRoute(item.href, item.end))?.icon && 
+                    React.createElement(navigationItems.find(item => isActiveRoute(item.href, item.end))!.icon, { className: "h-4 w-4" })
+                  }
+                  {getActiveTitle()}
+                </span>
+                <ChevronDown className="h-4 w-4 text-muted-foreground" />
               </button>
-            ))}
-          </div>
+            </SheetTrigger>
+            <SheetContent 
+              side="bottom" 
+              className="h-[75vh] rounded-t-2xl"
+            >
+              <SheetHeader>
+                <SheetTitle className="text-left">Fleet Navigation</SheetTitle>
+              </SheetHeader>
+              <div className="mt-6 space-y-2">
+                {navigationItems.map((item) => (
+                  <button
+                    key={item.href}
+                    onClick={() => handleNavigation(item.href)}
+                    className={cn(
+                      "w-full flex items-center justify-between px-4 py-3 rounded-lg text-left transition-all min-h-[56px]",
+                      isActiveRoute(item.href, item.end)
+                        ? "bg-primary text-primary-foreground font-semibold"
+                        : "hover:bg-muted text-foreground"
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <item.icon className="h-5 w-5" />
+                      <span className="text-base">{item.title}</span>
+                    </div>
+                    {item.badge && (
+                      <Badge 
+                        variant="destructive" 
+                        className="text-sm"
+                      >
+                        {item.badge}
+                      </Badge>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
       
