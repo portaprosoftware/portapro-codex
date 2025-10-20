@@ -51,11 +51,14 @@ serve(async (req) => {
       .from('payments')
       .insert({
         invoice_id: invoiceId,
-        customer_id: invoice.customer_id,
         amount: amount,
+        currency: 'USD',
         payment_method: 'credit_card',
-        payment_type: 'invoice',
         status: 'pending',
+        metadata: {
+          customer_id: invoice.customer_id,
+          payment_type: 'invoice',
+        },
       })
       .select()
       .single();
