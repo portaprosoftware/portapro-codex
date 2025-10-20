@@ -2,15 +2,15 @@ import React, { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
-export default function PaymentSuccess() {
+export default function PaymentCanceled() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const invoiceId = searchParams.get('invoice_id');
 
   useEffect(() => {
-    // Show success message
-    toast.success('Payment completed successfully!', {
-      description: 'Your invoice payment has been processed.',
+    // Show canceled message
+    toast.info('Payment canceled', {
+      description: 'Your payment was not completed. You can try again anytime.',
     });
 
     // Redirect to invoices page after a short delay

@@ -8,6 +8,7 @@ import { ErrorBoundary } from './components/ui/error-boundary';
 import { Landing } from './pages/Landing';
 import PublicPayment from './pages/PublicPayment';
 import PaymentSuccess from './pages/PaymentSuccess';
+import PaymentCanceled from './pages/PaymentCanceled';
 import CustomerPortal from './pages/CustomerPortal';
 
 import Auth from './pages/Auth';
@@ -76,8 +77,9 @@ const App = () => {
           <Route path="/consumable-request/:consumableId" element={<ConsumableRequestPage />} />
           
           {/* Public Payment Routes */}
-          <Route path="/payment/:paymentLinkId" element={<PublicPayment />} />
-          <Route path="/payment/:paymentId/success" element={<PaymentSuccess />} />
+          <Route path="/payment/:invoiceId" element={<PublicPayment />} />
+          <Route path="/payment-success" element={<PaymentSuccess />} />
+          <Route path="/payment-canceled" element={<PaymentCanceled />} />
           <Route path="/portal/:token" element={<CustomerPortal />} />
           
           {/* Landing Page Route - should be accessible without auth */}

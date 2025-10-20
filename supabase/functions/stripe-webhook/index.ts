@@ -82,13 +82,58 @@ serve(async (req) => {
         .eq('stripe_payment_intent_id', paymentIntent.id);
     }
 
-    // Handle checkout.session.completed (for payment links)
+    // Handle checkout.session.completed (for payment links and invoice payments)
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session;
       
       console.log('Checkout session completed:', session.id);
 
-      if (session.payment_intent) {
+      // Handle invoice payments
+      if (session.metadata?.invoice_id && session.metadata?.payment_id) {
+        const { data: payment, error: paymentError } = await supabase
+          .from('payments')
+          .update({
+            status: 'completed',
+            paid_at: new Date().toISOString(),
+            stripe_payment_intent_id: session.payment_intent as string,
+          })
+          .eq('id', session.metadata.payment_id)
+          .select()
+          .single();
+
+        if (paymentError) {
+          console.error('Error updating payment:', paymentError);
+        } else {
+          // Update invoice status
+          const { data: invoice, error: invoiceError } = await supabase
+            .from('invoices')
+            .select('amount')
+            .eq('id', session.metadata.invoice_id)
+            .single();
+
+          if (!invoiceError && invoice) {
+            // Check total paid amount for this invoice
+            const { data: payments } = await supabase
+              .from('payments')
+              .select('amount')
+              .eq('invoice_id', session.metadata.invoice_id)
+              .eq('status', 'completed');
+
+            const totalPaid = payments?.reduce((sum, p) => sum + (p.amount || 0), 0) || 0;
+            const newStatus = totalPaid >= invoice.amount ? 'paid' : 'partial';
+
+            await supabase
+              .from('invoices')
+              .update({ status: newStatus, updated_at: new Date().toISOString() })
+              .eq('id', session.metadata.invoice_id);
+
+            console.log('Invoice status updated to:', newStatus);
+          }
+        }
+      }
+      
+      // Handle payment links (existing functionality)
+      if (session.payment_intent && session.metadata?.payment_link_id) {
         await supabase
           .from('payments')
           .update({
@@ -96,7 +141,7 @@ serve(async (req) => {
             paid_at: new Date().toISOString(),
             stripe_payment_intent_id: session.payment_intent as string,
           })
-          .eq('stripe_payment_link_id', session.metadata?.payment_link_id || '');
+          .eq('stripe_payment_link_id', session.metadata.payment_link_id);
       }
     }
 

@@ -43,7 +43,31 @@ export function CollectPaymentModal({ isOpen, onClose, invoice }: CollectPayment
 
   const processPaymentMutation = useMutation({
     mutationFn: async (data: PaymentData) => {
-      // Create payment record
+      // Handle credit card payments through Stripe
+      if (data.paymentMethod === 'credit_card') {
+        const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
+          'create-invoice-checkout',
+          {
+            body: {
+              invoiceId: invoice.id,
+              amount: data.amount,
+              isPublic: false,
+            },
+          }
+        );
+
+        if (checkoutError) throw checkoutError;
+        
+        // Redirect to Stripe Checkout
+        if (checkoutData?.checkoutUrl) {
+          window.location.href = checkoutData.checkoutUrl;
+          return { success: true, redirected: true };
+        }
+        
+        throw new Error('Failed to create checkout session');
+      }
+
+      // Handle non-credit card payments (cash, check, bank transfer)
       const { error: paymentError } = await supabase
         .from('payments')
         .insert({
@@ -53,7 +77,7 @@ export function CollectPaymentModal({ isOpen, onClose, invoice }: CollectPayment
           reference_number: data.referenceNumber || null,
           notes: data.notes || null,
           status: 'completed',
-          created_by: 'current_user' // Will be replaced with actual Clerk user ID
+          created_by: 'current_user'
         });
 
       if (paymentError) throw paymentError;
@@ -72,10 +96,12 @@ export function CollectPaymentModal({ isOpen, onClose, invoice }: CollectPayment
 
       return { success: true };
     },
-    onSuccess: () => {
-      toast.success('Payment processed successfully!');
-      queryClient.invalidateQueries({ queryKey: ['invoices'] });
-      onClose();
+    onSuccess: (data) => {
+      if (!data.redirected) {
+        toast.success('Payment processed successfully!');
+        queryClient.invalidateQueries({ queryKey: ['invoices'] });
+        onClose();
+      }
     },
     onError: (error: any) => {
       toast.error('Failed to process payment: ' + error.message);
@@ -267,9 +293,9 @@ export function CollectPaymentModal({ isOpen, onClose, invoice }: CollectPayment
             {/* Stripe Integration Notice */}
             {paymentData.paymentMethod === 'credit_card' && (
               <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-                <p className="text-sm text-blue-800 dark:text-blue-200">
+                <p className="text-sm text-blue-800 dark:text-blue-200 font-medium">
                   <CreditCard className="inline h-4 w-4 mr-1" />
-                  Credit card processing will be handled through Stripe integration.
+                  You will be redirected to Stripe's secure checkout page to complete your payment.
                 </p>
               </div>
             )}

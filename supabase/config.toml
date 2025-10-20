@@ -1,5 +1,8 @@
 project_id = "unpnuonbndubcuzxfnmg"
 
+[functions.create-invoice-checkout]
+verify_jwt = false
+
 [functions.profile_sync]
 verify_jwt = false
 
