@@ -2243,11 +2243,8 @@ export const Landing: React.FC = () => {
                   </p>
                 </div>
 
-                <div className="flex gap-3 pt-4">
-                  <Button type="button" variant="outline" onClick={() => setQuestionsFormOpen(false)} className="flex-1">
-                    Maybe Later
-                  </Button>
-                  <Button type="submit" className="flex-1 bg-primary hover:bg-primary/90">
+                <div className="flex justify-end pt-4">
+                  <Button type="submit" className="bg-primary hover:bg-primary/90">
                     Send My Questions
                   </Button>
                 </div>
