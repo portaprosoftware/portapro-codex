@@ -1123,12 +1123,13 @@ export const Landing: React.FC = () => {
                         <span className="text-xs sm:text-sm text-gray-800 font-medium leading-tight">{feature}</span>
                       </li>)}
                   </ul>
-                  <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noopener noreferrer">
-                    <Button className="w-full bg-gradient-blue text-white hover:bg-blue-700 text-lg py-6 mt-6 font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
-                      Start Free Trial
-                      <ArrowRight className="w-5 h-5 ml-2" />
-                    </Button>
-                  </a>
+                  <Button 
+                    className="w-full bg-gradient-blue text-white hover:bg-blue-700 text-lg py-6 mt-6 font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
+                    onClick={handleRequestInfo}
+                  >
+                    Request Information
+                    <Phone className="w-5 h-5 ml-2" />
+                  </Button>
                 </CardContent>
               </Card>
             </div>
