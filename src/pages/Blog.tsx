@@ -1,6 +1,7 @@
 import React from 'react';
-import { Calendar, User, ArrowRight, Clock, ArrowLeft } from 'lucide-react';
+import { Calendar, User, ArrowRight, Clock, ArrowLeft, ExternalLink } from 'lucide-react';
 import { LandingLogo } from '@/components/ui/landing-logo';
+import { Button } from '@/components/ui/button';
 
 export default function Blog() {
   const blogPosts = [
@@ -139,24 +140,19 @@ export default function Blog() {
           </div>
         </div>
 
-        {/* Newsletter Signup */}
+        {/* External Blog Link */}
         <div className="max-w-2xl mx-auto mt-16 text-center">
-          <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl p-8">
-            <h3 className="text-2xl font-bold text-foreground mb-4">Stay Updated</h3>
-            <p className="text-muted-foreground mb-6">
-              Subscribe to our newsletter for the latest industry insights and product updates.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-              <button className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 font-medium">
-                Subscribe
-              </button>
-            </div>
-          </div>
+          <Button 
+            variant="gradient" 
+            size="lg"
+            asChild
+            className="group"
+          >
+            <a href="/blog" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2">
+              Visit Full Blog
+              <ExternalLink className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </a>
+          </Button>
         </div>
       </div>
     </div>
