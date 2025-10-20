@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FeatureIdeaModal } from '@/components/ui/feature-idea-modal';
+import { JoinCommunityModal } from '@/components/ui/join-community-modal';
 import { SignInButton, SignUpButton } from '@clerk/clerk-react';
 import { ArrowRight, Play, CheckCircle, Truck, Users, BarChart3, ClipboardList, MapPin, Calendar, DollarSign, Zap, Building2, FileText, Smartphone, Heart, Phone, Mail, Menu, X, Camera, Eye, Compass, Database, Shield, Clock, BellRing, Wrench, CalendarClock, Gauge, HardHat, Route, CloudOff, QrCode, Laptop, RefreshCcw, PiggyBank, Toilet, Wallet, WalletMinimal, HandCoins, MonitorSmartphone, ExternalLink, Lightbulb } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -218,6 +219,7 @@ export const Landing: React.FC = () => {
   const [blogSliderOpen, setBlogSliderOpen] = useState(false);
   const [contactFormOpen, setContactFormOpen] = useState(false);
   const [isFeatureModalOpen, setIsFeatureModalOpen] = useState(false);
+  const [isJoinCommunityModalOpen, setIsJoinCommunityModalOpen] = useState(false);
   const [questionsFormOpen, setQuestionsFormOpen] = useState(false);
   const [requestInfoFormOpen, setRequestInfoFormOpen] = useState(false);
   const [featuresSheetOpen, setFeaturesSheetOpen] = useState(false);
@@ -2013,7 +2015,10 @@ export const Landing: React.FC = () => {
                     <p className="text-muted-foreground mb-6 text-base leading-relaxed">
                       Join a growing network of portable sanitation professionals who are modernizing their operations and sharing what works.
                     </p>
-                    <button className="inline-flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-primary to-primary/90 text-white rounded-lg hover:shadow-lg hover:scale-[1.02] transition-all font-semibold text-base mb-3">
+                    <button 
+                      onClick={() => setIsJoinCommunityModalOpen(true)}
+                      className="inline-flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-primary to-primary/90 text-white rounded-lg hover:shadow-lg hover:scale-[1.02] transition-all font-semibold text-base mb-3"
+                    >
                       Join Community Today
                       <ArrowRight className="w-5 h-5" />
                     </button>
@@ -2406,6 +2411,11 @@ export const Landing: React.FC = () => {
       <FeatureIdeaModal 
         isOpen={isFeatureModalOpen} 
         onClose={() => setIsFeatureModalOpen(false)} 
+      />
+      
+      <JoinCommunityModal 
+        isOpen={isJoinCommunityModalOpen} 
+        onClose={() => setIsJoinCommunityModalOpen(false)} 
       />
     </div>;
 };

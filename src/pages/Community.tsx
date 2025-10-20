@@ -3,9 +3,11 @@ import { Users, MapPin, Lightbulb, ArrowRight, ArrowLeft, ExternalLink } from 'l
 import { LandingLogo } from '@/components/ui/landing-logo';
 import { EnhancedCard } from '@/components/ui/enhanced-card';
 import { FeatureIdeaModal } from '@/components/ui/feature-idea-modal';
+import { JoinCommunityModal } from '@/components/ui/join-community-modal';
 
 export default function Community() {
   const [isFeatureModalOpen, setIsFeatureModalOpen] = useState(false);
+  const [isJoinCommunityModalOpen, setIsJoinCommunityModalOpen] = useState(false);
   
   const communityCards = [
     {
@@ -129,7 +131,10 @@ export default function Community() {
               <p className="text-muted-foreground mb-6 text-base sm:text-lg leading-relaxed">
                 Join a growing network of portable sanitation professionals who are modernizing their operations and sharing what works.
               </p>
-              <button className="inline-flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-primary to-primary/90 text-white rounded-lg hover:shadow-lg hover:scale-[1.02] transition-all font-semibold text-base mb-3">
+              <button 
+                onClick={() => setIsJoinCommunityModalOpen(true)}
+                className="inline-flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-primary to-primary/90 text-white rounded-lg hover:shadow-lg hover:scale-[1.02] transition-all font-semibold text-base mb-3"
+              >
                 Join Community Today
                 <ArrowRight className="w-5 h-5" />
               </button>
@@ -144,6 +149,11 @@ export default function Community() {
       <FeatureIdeaModal 
         isOpen={isFeatureModalOpen} 
         onClose={() => setIsFeatureModalOpen(false)} 
+      />
+      
+      <JoinCommunityModal 
+        isOpen={isJoinCommunityModalOpen} 
+        onClose={() => setIsJoinCommunityModalOpen(false)} 
       />
     </div>
   );
