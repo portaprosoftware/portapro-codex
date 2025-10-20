@@ -2492,12 +2492,24 @@ export const Landing: React.FC = () => {
 
 
       {/* Calendly Popup Widget */}
-      {calendlyOpen && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="relative bg-white rounded-lg shadow-xl w-full max-w-2xl h-[80vh] mx-4">
-            <button onClick={() => setCalendlyOpen(false)} className="absolute top-4 right-4 z-10 p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors">
-              <X className="w-5 h-5" />
+      {calendlyOpen && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="relative bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-hidden">
+            <button onClick={() => setCalendlyOpen(false)} className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/90 hover:bg-white shadow-lg transition-colors">
+              <X className="w-5 h-5 text-gray-700" />
             </button>
-            <iframe src="https://calendly.com/portapro/portapro-software-demo?embed_type=Inline&embed_domain=1&hide_gdpr_banner=1" width="100%" height="100%" className="rounded-lg" frameBorder="0" title="Schedule Demo" />
+            <div className="w-full h-[700px] min-h-[500px]">
+              <iframe 
+                src="https://calendly.com/portapro/portapro-software-demo?embed_type=Inline&embed_domain=1&hide_gdpr_banner=1" 
+                width="100%" 
+                height="100%" 
+                className="rounded-lg" 
+                frameBorder="0" 
+                title="Schedule Demo"
+                loading="eager"
+                allow="payment"
+                style={{ minHeight: '500px' }}
+              />
+            </div>
           </div>
         </div>}
       
