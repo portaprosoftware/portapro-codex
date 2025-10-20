@@ -6,10 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ServiceEditModal } from "./ServiceEditModal";
-import { Search, Plus, Edit, Copy, Archive, Grid, List, Clock, DollarSign, MoreVertical, FileText } from "lucide-react";
+import { Search, Plus, Edit, Copy, Archive, Grid, List, Clock, DollarSign, MoreVertical, FileText, X } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ServiceTemplateAssignmentModal } from "./ServiceTemplateAssignmentModal";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface Service {
   id: string;
@@ -182,20 +184,78 @@ export const ServiceCatalogTab: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 lg:space-y-6">
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h2 className="text-xl font-semibold text-gray-900">Service Catalog</h2>
-          <p className="text-gray-600">Define the services you offer. These power scheduling and the driver app.</p>
+      <div className="flex flex-col gap-4">
+        {/* Title + View Toggle Row */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <div className="min-w-0 flex-1">
+            <h2 className="text-lg lg:text-xl font-semibold text-gray-900">Service Catalog</h2>
+            <p className="text-sm lg:text-base text-gray-600">Define the services you offer. These power scheduling and the driver app.</p>
+          </div>
+          
+          {/* Desktop View Toggle + Add Button */}
+          <div className="hidden lg:flex items-center gap-3">
+            <div className="flex bg-gray-100 rounded-lg p-1">
+              <Button
+                variant={viewMode === "list" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setViewMode("list")}
+                className="px-3"
+                aria-label="List view"
+              >
+                <List className="w-4 h-4" />
+              </Button>
+              <Button
+                variant={viewMode === "grid" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setViewMode("grid")}
+                className="px-3"
+                aria-label="Grid view"
+              >
+                <Grid className="w-4 h-4" />
+              </Button>
+            </div>
+            <Button
+              onClick={() => setIsCreating(true)}
+              className="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold border-0 hover:from-blue-700 hover:to-blue-800"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Add Service
+            </Button>
+          </div>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="flex bg-gray-100 rounded-lg p-1">
+
+        {/* Search */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Input
+            placeholder="Search services..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 pr-10 min-h-[44px]"
+            aria-label="Search services"
+          />
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm('')}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              aria-label="Clear search"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+
+        {/* Mobile View Toggle + Add Service Row */}
+        <div className="lg:hidden flex items-center gap-3">
+          <div className="flex bg-gray-100 rounded-lg p-1 flex-shrink-0">
             <Button
               variant={viewMode === "list" ? "default" : "ghost"}
               size="sm"
               onClick={() => setViewMode("list")}
-              className="px-3"
+              className="px-3 min-h-[44px]"
+              aria-label="List view"
             >
               <List className="w-4 h-4" />
             </Button>
@@ -203,30 +263,20 @@ export const ServiceCatalogTab: React.FC = () => {
               variant={viewMode === "grid" ? "default" : "ghost"}
               size="sm"
               onClick={() => setViewMode("grid")}
-              className="px-3"
+              className="px-3 min-h-[44px]"
+              aria-label="Grid view"
             >
               <Grid className="w-4 h-4" />
             </Button>
           </div>
           <Button
             onClick={() => setIsCreating(true)}
-            className="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold border-0 hover:from-blue-700 hover:to-blue-800"
+            className="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold border-0 hover:from-blue-700 hover:to-blue-800 flex-1 min-h-[44px]"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Service
           </Button>
         </div>
-      </div>
-
-      {/* Search */}
-      <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-        <Input
-          placeholder="Search services..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10"
-        />
       </div>
 
       {/* Services Display */}
@@ -329,85 +379,187 @@ export const ServiceCatalogTab: React.FC = () => {
           ))}
         </div>
       ) : (
-        <Card>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b">
-                <tr>
-                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Service</th>
-                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Category</th>
-                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Rate</th>
-                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Duration</th>
-                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Template</th>
-                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {filteredServices.map((service) => (
-                  <tr key={service.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4">
-                      <div>
-                        <p className="font-medium text-gray-900">{service.name}</p>
-                        <p className="text-sm text-gray-600">{service.code}</p>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <Badge className={`text-xs ${getCategoryColor(service.category)}`}>
-                        {formatCategoryLabel(service.category)}
-                      </Badge>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {formatRate(service.default_rate, service.pricing_method)}
-                    </td>
-                <td className="px-6 py-4 text-sm text-gray-600">
-                  {service.estimated_duration_minutes}m
-                </td>
-                <td className="px-6 py-4">
-                  {service.default_template_id ? (
-                    <Badge className="text-xs bg-gradient-to-r from-green-500 to-green-600 text-white font-bold border-0">
-                      <FileText className="w-3 h-3 mr-1" />
-                      Template Set
-                    </Badge>
-                  ) : (
-                    <span className="text-xs text-gray-400">No template</span>
-                  )}
-                </td>
-                    <td className="px-6 py-4">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => setSelectedService(service)}>
-                            <Edit className="w-4 h-4 mr-2" />
-                            Edit
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => setTemplateAssignmentService(service)}>
-                            <FileText className="w-4 h-4 mr-2" />
-                            Assign Template
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => duplicateServiceMutation.mutate(service)}>
-                            <Copy className="w-4 h-4 mr-2" />
-                            Duplicate
-                          </DropdownMenuItem>
-                          <DropdownMenuItem 
-                            onClick={() => deleteServiceMutation.mutate(service.id)}
-                            className="text-red-600"
+        <>
+          {/* Mobile Card View */}
+          <div className="lg:hidden space-y-3">
+            {filteredServices.map((service) => (
+              <Card key={service.id} className="p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                <div className="space-y-3">
+                  {/* Title + 3-dot Menu */}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-base text-gray-900 break-words">{service.name}</h3>
+                      {service.code && (
+                        <p className="text-xs text-muted-foreground mt-0.5">ID: {service.code}</p>
+                      )}
+                    </div>
+                    <Sheet>
+                      <SheetTrigger asChild>
+                        <Button variant="ghost" size="icon" className="flex-shrink-0 h-10 w-10">
+                          <MoreVertical className="h-5 w-5" />
+                          <span className="sr-only">Open actions for {service.name}</span>
+                        </Button>
+                      </SheetTrigger>
+                      <SheetContent side="bottom" className="rounded-t-2xl">
+                        <SheetHeader>
+                          <SheetTitle className="text-left">{service.name}</SheetTitle>
+                        </SheetHeader>
+                        <div className="mt-6 space-y-2">
+                          <Button
+                            variant="ghost"
+                            className="w-full justify-start h-14 text-base"
+                            onClick={() => setSelectedService(service)}
                           >
-                            <Archive className="w-4 h-4 mr-2" />
+                            <Edit className="h-5 w-5 mr-3" />
+                            Edit
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            className="w-full justify-start h-14 text-base"
+                            onClick={() => setTemplateAssignmentService(service)}
+                          >
+                            <FileText className="h-5 w-5 mr-3" />
+                            Assign Template
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            className="w-full justify-start h-14 text-base"
+                            onClick={() => duplicateServiceMutation.mutate(service)}
+                          >
+                            <Copy className="h-5 w-5 mr-3" />
+                            Duplicate
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            className="w-full justify-start h-14 text-base text-red-600 hover:text-red-700 hover:bg-red-50"
+                            onClick={() => deleteServiceMutation.mutate(service.id)}
+                          >
+                            <Archive className="h-5 w-5 mr-3" />
                             Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                          </Button>
+                        </div>
+                      </SheetContent>
+                    </Sheet>
+                  </div>
+
+                  {/* Category Badge */}
+                  {service.category && (
+                    <Badge className={`text-xs ${getCategoryColor(service.category)}`}>
+                      {formatCategoryLabel(service.category)}
+                    </Badge>
+                  )}
+
+                  {/* Rate + Duration Row */}
+                  <div className="flex items-center flex-wrap gap-3 text-sm">
+                    <div className="flex items-center gap-2">
+                      <DollarSign className="w-4 h-4 text-green-600 flex-shrink-0" />
+                      <span className="text-gray-700 font-medium">
+                        {formatRate(service.default_rate, service.pricing_method)}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                      <span className="text-gray-700">{service.estimated_duration_minutes}m</span>
+                    </div>
+                  </div>
+
+                  {/* Template Status */}
+                  <div>
+                    {service.default_template_id ? (
+                      <Badge className="text-xs bg-gradient-to-r from-green-500 to-green-600 text-white font-bold border-0">
+                        <FileText className="w-3 h-3 mr-1" />
+                        Template Set
+                      </Badge>
+                    ) : (
+                      <span className="text-xs text-gray-400">No template assigned</span>
+                    )}
+                  </div>
+                </div>
+              </Card>
+            ))}
           </div>
-        </Card>
+
+          {/* Desktop Table View */}
+          <Card className="hidden lg:block">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 border-b">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Service</th>
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Category</th>
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Rate</th>
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Duration</th>
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Template</th>
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {filteredServices.map((service) => (
+                    <tr key={service.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4">
+                        <div>
+                          <p className="font-medium text-gray-900">{service.name}</p>
+                          <p className="text-sm text-gray-600">{service.code}</p>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <Badge className={`text-xs ${getCategoryColor(service.category)}`}>
+                          {formatCategoryLabel(service.category)}
+                        </Badge>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600">
+                        {formatRate(service.default_rate, service.pricing_method)}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600">
+                        {service.estimated_duration_minutes}m
+                      </td>
+                      <td className="px-6 py-4">
+                        {service.default_template_id ? (
+                          <Badge className="text-xs bg-gradient-to-r from-green-500 to-green-600 text-white font-bold border-0">
+                            <FileText className="w-3 h-3 mr-1" />
+                            Template Set
+                          </Badge>
+                        ) : (
+                          <span className="text-xs text-gray-400">No template</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => setSelectedService(service)}>
+                              <Edit className="w-4 h-4 mr-2" />
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setTemplateAssignmentService(service)}>
+                              <FileText className="w-4 h-4 mr-2" />
+                              Assign Template
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => duplicateServiceMutation.mutate(service)}>
+                              <Copy className="w-4 h-4 mr-2" />
+                              Duplicate
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              onClick={() => deleteServiceMutation.mutate(service.id)}
+                              className="text-red-600"
+                            >
+                              <Archive className="w-4 h-4 mr-2" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+        </>
       )}
 
       {/* Modals */}
