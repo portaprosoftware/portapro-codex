@@ -324,11 +324,13 @@ export const Landing: React.FC = () => {
               <a href="https://accounts.portaprosoftware.com/sign-in" target="_blank" rel="noopener noreferrer">
                 <Button variant="ghost" className="text-sm font-medium shadow-none hover:shadow-none">Sign In</Button>
               </a>
-              <a href="https://accounts.portaprosoftware.com/sign-up" target="_blank" rel="noopener noreferrer">
-                <Button className="bg-gradient-blue text-white text-sm font-medium">
-                  Start Free Trial
-                </Button>
-              </a>
+              <Button 
+                className="bg-gradient-blue text-white text-sm font-medium"
+                onClick={handleScheduleDemo}
+              >
+                <Laptop className="w-4 h-4 mr-2" />
+                Schedule Demo
+              </Button>
             </div>
           </div>
 
