@@ -1173,9 +1173,8 @@ export const Landing: React.FC = () => {
         <div className="container mx-auto max-w-6xl px-6">
           <div className="flex justify-center">
             <div className="rounded-2xl p-12 shadow-md border bg-card flex items-center justify-center min-h-[300px] w-full max-w-4xl">
-              <div className="text-center space-y-4">
-                <h3 className="text-2xl font-bold text-foreground">Updated PortaPro Preview coming soon!</h3>
-                <p className="text-lg text-muted-foreground">New Features</p>
+              <div className="text-center">
+                <h3 className="text-2xl font-bold text-foreground">Coming Soon!</h3>
               </div>
             </div>
           </div>
