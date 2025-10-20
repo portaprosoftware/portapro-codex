@@ -66,13 +66,7 @@ export const TeamManagementShowcase: React.FC = () => {
             <div className="grid md:grid-cols-2 gap-2 sm:gap-4">
               {/* Scheduling Features */}
               <Card>
-                <CardHeader className="pb-0">
-                  <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                    <Users className="w-5 h-5 text-primary" />
-                    <span className="truncate">Scheduling Features</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2 sm:space-y-3 p-2 sm:p-3 pt-0">
+                <CardContent className="space-y-2 sm:space-y-3 p-2 sm:p-3">
                   <div className="space-y-2">
                     <div className="flex items-start gap-2">
                       <CalendarClock className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
@@ -128,13 +122,7 @@ export const TeamManagementShowcase: React.FC = () => {
             <div className="grid md:grid-cols-2 gap-2 sm:gap-4">
               {/* Time Off Features */}
               <Card>
-                <CardHeader className="pb-0">
-                  <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                    <Calendar className="w-5 h-5 text-primary" />
-                    <span className="truncate">Time Off Management</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2 sm:space-y-3 p-2 sm:p-3 pt-0">
+                <CardContent className="space-y-2 sm:space-y-3 p-2 sm:p-3">
                   <div className="space-y-2">
                     <div className="flex items-start gap-2">
                       <Calendar className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
@@ -215,13 +203,7 @@ export const TeamManagementShowcase: React.FC = () => {
             <div className="grid md:grid-cols-2 gap-2 sm:gap-4">
               {/* Compliance Features */}
               <Card>
-                <CardHeader className="pb-0">
-                  <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                    <Shield className="w-5 h-5 text-primary" />
-                    <span className="truncate">Compliance Tracking</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2 sm:space-y-3 p-2 sm:p-3 pt-0">
+                <CardContent className="space-y-2 sm:space-y-3 p-2 sm:p-3">
                   <div className="space-y-2">
                     <div className="flex items-start gap-2">
                       <Shield className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
