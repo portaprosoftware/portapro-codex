@@ -2311,6 +2311,13 @@ export const Landing: React.FC = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
+                    Company Website <span className="text-muted-foreground font-normal">(optional)</span>
+                  </label>
+                  <input type="url" className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="https://www.yourcompany.com" />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     How many units are in your fleet?
                   </label>
                   <select className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
