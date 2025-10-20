@@ -7,7 +7,7 @@ import { Logo } from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
 import { useUserRole } from "@/hooks/useUserRole";
 import { UserButton, useUser } from "@clerk/clerk-react";
-import { Settings } from "lucide-react";
+import { Settings, ArrowUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import "@/utils/authCleanup"; // Load auth cleanup utilities
 
@@ -124,18 +124,21 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           )}
         </div>
         
+        <div className="flex-1"></div>
+        
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors bg-transparent border-0 cursor-pointer"
+          className="flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors bg-transparent border-0 cursor-pointer ml-auto"
         >
-          Back to Top
+          <ArrowUp className="w-4 h-4" />
+          Top
         </button>
         
         <Button
           variant="ghost"
           size="sm"
           onClick={() => navigate('/settings')}
-          className="flex items-center gap-2"
+          className="hidden lg:flex items-center gap-2"
         >
           <Settings className="w-5 h-5 text-gray-600" />
         </Button>
