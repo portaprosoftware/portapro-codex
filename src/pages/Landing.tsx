@@ -217,6 +217,7 @@ export const Landing: React.FC = () => {
   const [blogSliderOpen, setBlogSliderOpen] = useState(false);
   const [contactFormOpen, setContactFormOpen] = useState(false);
   const [questionsFormOpen, setQuestionsFormOpen] = useState(false);
+  const [requestInfoFormOpen, setRequestInfoFormOpen] = useState(false);
   const [featuresSheetOpen, setFeaturesSheetOpen] = useState(false);
   const [selectedBlogPost, setSelectedBlogPost] = useState<string | null>(null);
   const [calendlyOpen, setCalendlyOpen] = useState(false);
@@ -230,7 +231,7 @@ export const Landing: React.FC = () => {
 
   // Handle questions form
   const handleRequestInfo = () => {
-    setQuestionsFormOpen(true);
+    setRequestInfoFormOpen(true);
   };
 
   // Handle Calendly popup
@@ -2243,6 +2244,134 @@ export const Landing: React.FC = () => {
                 <div className="flex justify-end pt-4">
                   <Button type="submit" className="bg-primary hover:bg-primary/90">
                     Send My Questions
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>}
+
+      {/* Request Information Form Popup */}
+      {requestInfoFormOpen && <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[72vh] flex flex-col">
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b">
+              <div>
+                <h2 className="text-xl font-bold text-foreground">Interested in Learning More?</h2>
+                <p className="text-sm text-muted-foreground">Tell us about your needs and we'll get in touch</p>
+              </div>
+              <button onClick={() => setRequestInfoFormOpen(false)} className="p-2 rounded-lg hover:bg-muted">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto p-4">
+              <form className="space-y-4" onSubmit={e => {
+            e.preventDefault();
+            alert('Thank you for your interest! We\'ll be in touch within 24 hours.');
+            setRequestInfoFormOpen(false);
+          }}>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      First Name *
+                    </label>
+                    <input type="text" required className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="John" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Last Name *
+                    </label>
+                    <input type="text" required className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Doe" />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Email *
+                  </label>
+                  <input type="email" required className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="john@company.com" />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Phone Number (Optional)
+                  </label>
+                  <input type="tel" className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="(555) 123-4567" />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Company Name *
+                  </label>
+                  <input type="text" required className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Your Company Name" />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    How many units are in your fleet?
+                  </label>
+                  <select className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <option value="">Select fleet size</option>
+                    <option value="1-25">1-25 units</option>
+                    <option value="26-50">26-50 units</option>
+                    <option value="51-100">51-100 units</option>
+                    <option value="101-250">101-250 units</option>
+                    <option value="251-500">251-500 units</option>
+                    <option value="500+">500+ units</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    What's your biggest challenge right now?
+                  </label>
+                  <select className="w-full px-3 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <option value="">Select your main challenge</option>
+                    <option value="scheduling">Scheduling and dispatching</option>
+                    <option value="inventory">Inventory tracking</option>
+                    <option value="customer-management">Customer management</option>
+                    <option value="billing-invoicing">Billing and invoicing</option>
+                    <option value="driver-coordination">Driver coordination</option>
+                    <option value="fleet-maintenance">Fleet maintenance</option>
+                    <option value="reporting">Reporting and analytics</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Preferred contact method
+                  </label>
+                  <div className="flex gap-4">
+                    <label className="flex items-center">
+                      <input type="radio" name="contact" value="email" className="mr-2" defaultChecked />
+                      Email
+                    </label>
+                    <label className="flex items-center">
+                      <input type="radio" name="contact" value="phone" className="mr-2" />
+                      Phone
+                    </label>
+                    <label className="flex items-center">
+                      <input type="radio" name="contact" value="either" className="mr-2" />
+                      Either
+                    </label>
+                  </div>
+                </div>
+
+                <div className="bg-muted/30 border border-border rounded-lg p-4">
+                  <h4 className="font-semibold text-foreground mb-2">What's next? 🚀</h4>
+                  <ul className="text-sm text-muted-foreground space-y-2">
+                    <li>• We'll review your details and get back to you ASAP — usually the same day.</li>
+                    <li>• We'll talk through your specific challenges and how PortaPro can help.</li>
+                    <li>• We'll answer any questions you have about features, pricing, or getting started.</li>
+                  </ul>
+                </div>
+
+                <div className="flex justify-end pt-4">
+                  <Button type="submit" className="bg-primary hover:bg-primary/90">
+                    Request Details
                   </Button>
                 </div>
               </form>
