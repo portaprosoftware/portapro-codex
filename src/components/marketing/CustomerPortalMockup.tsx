@@ -38,20 +38,20 @@ export const CustomerPortalMockup: React.FC = () => {
                   onClick={() => setShowNotifications(!showNotifications)}
                   className="p-2 hover:bg-gray-100 rounded-full transition-colors relative"
                 >
-                  <Bell className="w-5 h-5 text-gray-400" />
+                  <Bell className="w-5 h-5 text-blue-600" />
                   {/* Notification badge */}
-                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center border-2 border-white">
+                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center border-2 border-white">
                     <span className="text-xs text-white font-bold">2</span>
                   </div>
                 </button>
                 
                 {/* Notifications Dropdown */}
                 {showNotifications && (
-                  <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                  <div className="absolute right-0 mt-2 w-72 sm:w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
                     <div className="p-4 border-b border-gray-200">
                       <div className="flex items-center justify-between">
                         <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                          <Bell className="w-4 h-4 text-orange-600" />
+                          <Bell className="w-4 h-4 text-blue-600" />
                           Notifications
                         </h3>
                         <button 
@@ -68,9 +68,9 @@ export const CustomerPortalMockup: React.FC = () => {
                         <p className="text-xs text-gray-700">Tomorrow at 9:00 AM</p>
                       </div>
                       
-                      <button className="w-full p-3 bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 hover:border-blue-300 transition-all duration-200 text-left group">
-                        <p className="text-sm font-medium text-blue-900 group-hover:text-blue-800">Invoice ready</p>
-                        <p className="text-xs text-blue-700 group-hover:text-blue-600">Ready for review</p>
+                      <button className="w-full p-3 bg-gradient-to-r from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 rounded-lg border border-gray-300 transition-all duration-200 text-left group">
+                        <p className="text-sm font-medium text-gray-900">Invoice ready</p>
+                        <p className="text-xs font-bold text-blue-700">Ready for review</p>
                       </button>
                     </div>
                   </div>
@@ -94,20 +94,20 @@ export const CustomerPortalMockup: React.FC = () => {
                 onClick={() => setShowNotifications(!showNotifications)}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors relative"
               >
-                <Bell className="w-5 h-5 text-gray-400" />
+                <Bell className="w-5 h-5 text-blue-600" />
                 {/* Notification badge */}
-                <div className="absolute -top-1 -right-1 w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center border-2 border-white">
+                <div className="absolute -top-1 -right-1 w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center border-2 border-white">
                   <span className="text-xs text-white font-bold">2</span>
                 </div>
               </button>
               
               {/* Notifications Dropdown */}
               {showNotifications && (
-                <div className="absolute left-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                <div className="absolute right-0 mt-2 w-72 sm:w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
                   <div className="p-4 border-b border-gray-200">
                     <div className="flex items-center justify-between">
                       <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                        <Bell className="w-4 h-4 text-orange-600" />
+                        <Bell className="w-4 h-4 text-blue-600" />
                         Notifications
                       </h3>
                       <button 
@@ -124,9 +124,9 @@ export const CustomerPortalMockup: React.FC = () => {
                       <p className="text-xs text-gray-700">Tomorrow at 9:00 AM</p>
                     </div>
                     
-                    <button className="w-full p-3 bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 hover:border-blue-300 transition-all duration-200 text-left group">
-                      <p className="text-sm font-medium text-blue-900 group-hover:text-blue-800">Invoice ready</p>
-                      <p className="text-xs text-blue-700 group-hover:text-blue-600">Ready for review</p>
+                    <button className="w-full p-3 bg-gradient-to-r from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 rounded-lg border border-gray-300 transition-all duration-200 text-left group">
+                      <p className="text-sm font-medium text-gray-900">Invoice ready</p>
+                      <p className="text-xs font-bold text-blue-700">Ready for review</p>
                     </button>
                   </div>
                 </div>
