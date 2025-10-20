@@ -13,9 +13,10 @@ interface RouterSelectorProps {
  * this can be simplified to always use BrowserRouter.
  */
 export const RouterSelector: React.FC<RouterSelectorProps> = ({ children }) => {
+  const HASH_HOSTS = ['www.portaprosoftware.com', 'portaprosoftware.com'];
   const useHash = 
     import.meta.env.PROD && 
-    window.location.hostname === 'www.portaprosoftware.com';
+    HASH_HOSTS.includes(window.location.hostname);
 
   if (useHash) {
     return <HashRouter>{children}</HashRouter>;

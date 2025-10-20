@@ -73,13 +73,18 @@ if (storedBuildId !== BUILD_ID) {
   });
 }
 
+// Determine hash-based redirect for production custom domain
+const HASH_HOSTS = new Set(['www.portaprosoftware.com', 'portaprosoftware.com']);
+const isHashHost = import.meta.env.PROD && HASH_HOSTS.has(window.location.hostname);
+const dashboardRedirect = isHashHost ? '/#/dashboard' : '/dashboard';
+
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <ClerkProvider 
         publishableKey={CLERK_PUBLISHABLE_KEY}
-        signInFallbackRedirectUrl="/dashboard"
-        signUpFallbackRedirectUrl="/dashboard"
+        signInFallbackRedirectUrl={dashboardRedirect}
+        signUpFallbackRedirectUrl={dashboardRedirect}
       >
         <App />
         <Toaster />
