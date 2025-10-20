@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { InvoiceCreationWizard } from "./InvoiceCreationWizard";
 import { ViewQuoteModal } from "./ViewQuoteModal";
+import { QuoteCard } from "./QuoteCard";
 import { useConvertQuoteToJob } from "@/hooks/useConvertQuoteToJob";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -135,94 +136,122 @@ export const QuotesTable = ({ searchTerm, dateRange }: QuotesTableProps) => {
   }
 
   return (
-    <div className="rounded-lg border border-border bg-card">
-      <Table>
-        <TableHeader>
-          <TableRow className="border-b border-border bg-muted/50">
-            <TableHead className="font-medium text-sm text-foreground">Quote #</TableHead>
-            <TableHead className="font-medium text-sm text-foreground">Customer</TableHead>
-            <TableHead className="font-medium text-sm text-foreground">Date</TableHead>
-            <TableHead className="font-medium text-sm text-foreground">Amount</TableHead>
-            <TableHead className="font-medium text-sm text-foreground">Status</TableHead>
-            <TableHead className="font-medium text-sm text-foreground">Expiration</TableHead>
-            <TableHead className="font-medium text-sm text-foreground w-12">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {quotes?.map((quote, index) => (
-            <TableRow 
-              key={quote.id} 
-              className={`border-b border-border ${index % 2 === 0 ? 'bg-muted/20' : 'bg-card'}`}
-            >
-              <TableCell className="font-medium text-sm text-foreground">
-                {quote.quote_number || `Q-${quote.id.slice(0, 8)}`}
-              </TableCell>
-              <TableCell className="text-sm text-foreground">
-                {(quote.customers as any)?.name || 'Unknown Customer'}
-              </TableCell>
-              <TableCell className="text-sm text-muted-foreground">
-                {formatDate(quote.created_at)}
-              </TableCell>
-              <TableCell className="text-sm text-foreground font-medium">
-                {formatCurrency(quote.total_amount)}
-              </TableCell>
-              <TableCell>
-                {getStatusBadge(quote.status)}
-              </TableCell>
-              <TableCell className="text-sm text-muted-foreground">
-                {quote.expiration_date ? formatDate(quote.expiration_date) : 'No expiration'}
-              </TableCell>
-              <TableCell>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0">
-                      <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem 
-                      onClick={() => {
-                        setSelectedQuoteForView(quote.id);
-                        setShowViewQuote(true);
-                      }}
-                    >
-                      <Eye className="mr-2 h-4 w-4" />
-                      View Quote
-                    </DropdownMenuItem>
-                    {quote.status === 'accepted' && (
-                      <>
-                        <DropdownMenuItem 
-                          onClick={() => {
-                            setSelectedQuoteForInvoice(quote);
-                            setShowCreateInvoice(true);
-                          }}
-                        >
-                          <FileText className="mr-2 h-4 w-4" />
-                          Convert to Invoice
-                        </DropdownMenuItem>
-                        <DropdownMenuItem 
-                          onClick={() => convertQuoteToJob.mutate({ quoteId: quote.id })}
-                          disabled={convertQuoteToJob.isPending}
-                        >
-                          <BriefcaseIcon className="mr-2 h-4 w-4" />
-                          {convertQuoteToJob.isPending ? 'Converting...' : 'Convert to Job'}
-                        </DropdownMenuItem>
-                      </>
-                    )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
+    <>
+      {/* Desktop Table View - hidden on mobile */}
+      <div className="hidden lg:block rounded-lg border border-border bg-card">
+        <Table>
+          <TableHeader>
+            <TableRow className="border-b border-border bg-muted/50">
+              <TableHead className="font-medium text-sm text-foreground">Quote #</TableHead>
+              <TableHead className="font-medium text-sm text-foreground">Customer</TableHead>
+              <TableHead className="font-medium text-sm text-foreground">Date</TableHead>
+              <TableHead className="font-medium text-sm text-foreground">Amount</TableHead>
+              <TableHead className="font-medium text-sm text-foreground">Status</TableHead>
+              <TableHead className="font-medium text-sm text-foreground">Expiration</TableHead>
+              <TableHead className="font-medium text-sm text-foreground w-12">Actions</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      
-      {(!quotes || quotes.length === 0) && (
-        <div className="flex items-center justify-center h-32">
-          <p className="text-muted-foreground">No quotes found</p>
-        </div>
-      )}
+          </TableHeader>
+          <TableBody>
+            {quotes?.map((quote, index) => (
+              <TableRow 
+                key={quote.id} 
+                className={`border-b border-border ${index % 2 === 0 ? 'bg-muted/20' : 'bg-card'}`}
+              >
+                <TableCell className="font-medium text-sm text-foreground">
+                  {quote.quote_number || `Q-${quote.id.slice(0, 8)}`}
+                </TableCell>
+                <TableCell className="text-sm text-foreground">
+                  {(quote.customers as any)?.name || 'Unknown Customer'}
+                </TableCell>
+                <TableCell className="text-sm text-muted-foreground">
+                  {formatDate(quote.created_at)}
+                </TableCell>
+                <TableCell className="text-sm text-foreground font-medium">
+                  {formatCurrency(quote.total_amount)}
+                </TableCell>
+                <TableCell>
+                  {getStatusBadge(quote.status)}
+                </TableCell>
+                <TableCell className="text-sm text-muted-foreground">
+                  {quote.expiration_date ? formatDate(quote.expiration_date) : 'No expiration'}
+                </TableCell>
+                <TableCell>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="h-8 w-8 p-0">
+                        <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem 
+                        onClick={() => {
+                          setSelectedQuoteForView(quote.id);
+                          setShowViewQuote(true);
+                        }}
+                      >
+                        <Eye className="mr-2 h-4 w-4" />
+                        View Quote
+                      </DropdownMenuItem>
+                      {quote.status === 'accepted' && (
+                        <>
+                          <DropdownMenuItem 
+                            onClick={() => {
+                              setSelectedQuoteForInvoice(quote);
+                              setShowCreateInvoice(true);
+                            }}
+                          >
+                            <FileText className="mr-2 h-4 w-4" />
+                            Convert to Invoice
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={() => convertQuoteToJob.mutate({ quoteId: quote.id })}
+                            disabled={convertQuoteToJob.isPending}
+                          >
+                            <BriefcaseIcon className="mr-2 h-4 w-4" />
+                            {convertQuoteToJob.isPending ? 'Converting...' : 'Convert to Job'}
+                          </DropdownMenuItem>
+                        </>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        
+        {(!quotes || quotes.length === 0) && (
+          <div className="flex items-center justify-center h-32">
+            <p className="text-muted-foreground">No quotes found</p>
+          </div>
+        )}
+      </div>
 
+      {/* Mobile Card View - visible on mobile/tablet */}
+      <div className="lg:hidden px-4 space-y-3">
+        {quotes && quotes.length > 0 ? (
+          quotes.map((quote) => (
+            <QuoteCard
+              key={quote.id}
+              quote={quote}
+              onViewQuote={() => {
+                setSelectedQuoteForView(quote.id);
+                setShowViewQuote(true);
+              }}
+              onConvertToInvoice={() => {
+                setSelectedQuoteForInvoice(quote);
+                setShowCreateInvoice(true);
+              }}
+              onConvertToJob={() => convertQuoteToJob.mutate({ quoteId: quote.id })}
+              isConvertingToJob={convertQuoteToJob.isPending}
+            />
+          ))
+        ) : (
+          <div className="flex items-center justify-center h-32">
+            <p className="text-muted-foreground">No quotes found</p>
+          </div>
+        )}
+      </div>
 
       {selectedQuoteForInvoice && (
         <InvoiceCreationWizard
@@ -243,6 +272,6 @@ export const QuotesTable = ({ searchTerm, dateRange }: QuotesTableProps) => {
         }}
         quoteId={selectedQuoteForView}
       />
-    </div>
+    </>
   );
 };

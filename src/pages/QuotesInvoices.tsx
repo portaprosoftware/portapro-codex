@@ -16,6 +16,7 @@ import {
   Plus,
   Download
 } from 'lucide-react';
+import { FloatingActionButton } from '@/components/ui/floating-action-button';
 import { QuotesTable } from '@/components/quotes/QuotesTable';
 import { InvoicesTable } from '@/components/quotes/InvoicesTable';
 import { NewQuoteWizard } from '@/components/quotes/NewQuoteWizard';
@@ -205,7 +206,7 @@ const QuotesInvoices: React.FC = () => {
                 </Button>
                 <Button 
                   onClick={() => setShowQuoteWizard(true)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  className="bg-blue-600 hover:bg-blue-700 text-white hidden lg:flex"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Create Quote
@@ -312,7 +313,7 @@ const QuotesInvoices: React.FC = () => {
                 </Button>
                 <Button 
                   onClick={() => setShowInvoiceWizard(true)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  className="bg-blue-600 hover:bg-blue-700 text-white hidden lg:flex"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Create Invoice
@@ -356,6 +357,26 @@ const QuotesInvoices: React.FC = () => {
         isOpen={showInvoiceWizard} 
         onClose={() => setShowInvoiceWizard(false)} 
       />
+
+      {/* Floating Action Button - visible on mobile/tablet only */}
+      <div className="lg:hidden">
+        {activeTab === 'quotes' && (
+          <FloatingActionButton
+            icon={Plus}
+            onClick={() => setShowQuoteWizard(true)}
+            variant="primary"
+            tooltip="Create Quote"
+          />
+        )}
+        {activeTab === 'invoices' && (
+          <FloatingActionButton
+            icon={Plus}
+            onClick={() => setShowInvoiceWizard(true)}
+            variant="success"
+            tooltip="Create Invoice"
+          />
+        )}
+      </div>
       </div>
     </div>
   );
