@@ -5,6 +5,9 @@ import { useCurrentInventoryLocations } from '@/hooks/useCurrentInventoryLocatio
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Satellite, Map as MapIcon, X, Package } from 'lucide-react';
+import { MobileMapControls } from './MobileMapControls';
+import { MapLegend } from './MapLegend';
+import { MarkerDetailsSheet } from './MarkerDetailsSheet';
 
 interface SimpleInventoryMapViewProps {
   searchQuery?: string;
@@ -303,56 +306,91 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
     );
   }
 
+  // Map control handlers
+  const handleZoomIn = () => {
+    map.current?.zoomIn();
+  };
+
+  const handleZoomOut = () => {
+    map.current?.zoomOut();
+  };
+
+  const handleLocate = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          map.current?.flyTo({
+            center: [position.coords.longitude, position.coords.latitude],
+            zoom: 14,
+          });
+        },
+        (error) => {
+          console.error('Geolocation error:', error);
+        }
+      );
+    }
+  };
+
+  const handleRecenter = () => {
+    if (!inventoryLocations.length || !map.current) return;
+    
+    const bounds = new mapboxgl.LngLatBounds();
+    inventoryLocations.forEach((location) => {
+      bounds.extend([location.longitude, location.latitude]);
+    });
+    
+    if (!bounds.isEmpty()) {
+      map.current.fitBounds(bounds, {
+        padding: { top: 80, bottom: 80, left: 80, right: 80 },
+        maxZoom: 15,
+      });
+    }
+  };
+
+  // Prepare status counts for legend
+  const legendStatusCounts = Object.entries(statusCounts).map(([status, count]) => ({
+    status,
+    count,
+    color: getStatusColor(status),
+  }));
+
   return (
-    <div className="relative w-full h-[500px]">
-      <div ref={mapContainer} className="w-full h-full rounded-lg" />
-      
-      {/* Legend - Top Left */}
-      <div className="absolute top-4 left-4 z-10 space-y-2">
-        <div className="bg-background/90 backdrop-blur-sm rounded-lg border shadow-lg p-3">
-          <div className="flex items-center space-x-2 mb-2">
-            <Package className="h-4 w-4" />
-            <span className="text-sm font-medium">Current Deployed Inventory</span>
-          </div>
-          <div className="text-lg font-bold">{totalInventory} Units</div>
-          
-          <div className="mt-3 space-y-1">
-            {Object.entries(statusCounts).map(([status, count]) => (
-              <div key={status} className="flex items-center space-x-2 text-xs">
-                <div 
-                  className="w-3 h-3 rounded-full border border-white"
-                  style={{ backgroundColor: getStatusColor(status) }}
-                />
-                <span className="capitalize">{status}: {count}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+    <div className="space-y-3 md:space-y-4">
+      {/* Mobile/Responsive Map Container */}
+      <div className="relative w-full h-[280px] sm:h-[320px] md:h-[400px] lg:h-[500px] overflow-hidden rounded-xl">
+        <div ref={mapContainer} className="w-full h-full" />
         
-        {/* Map Style Controls */}
-        <div className="bg-background/90 backdrop-blur-sm rounded-lg border shadow-lg p-2">
-          <div className="flex space-x-1">
-            <Button
-              variant={mapStyle === 'streets' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setMapStyle('streets')}
-              className="flex items-center space-x-1"
-            >
-              <MapIcon className="h-4 w-4" />
-              <span className="hidden sm:inline">Streets</span>
-            </Button>
-            <Button
-              variant={mapStyle === 'satellite' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setMapStyle('satellite')}
-              className="flex items-center space-x-1"
-            >
-              <Satellite className="h-4 w-4" />
-              <span className="hidden sm:inline">Satellite</span>
-            </Button>
-          </div>
+        {/* Map Style Controls - Top Left (wraps on mobile) */}
+        <div className="absolute top-3 left-3 z-10 flex flex-wrap gap-2">
+          <Button
+            variant={mapStyle === 'streets' ? 'default' : 'secondary'}
+            size="sm"
+            onClick={() => setMapStyle('streets')}
+            className="h-9 md:h-10 px-3 bg-white/90 backdrop-blur-sm hover:bg-white shadow-md"
+          >
+            <MapIcon className="h-4 w-4 mr-1.5" />
+            <span className="text-sm">Streets</span>
+          </Button>
+          <Button
+            variant={mapStyle === 'satellite' ? 'default' : 'secondary'}
+            size="sm"
+            onClick={() => setMapStyle('satellite')}
+            className="h-9 md:h-10 px-3 bg-white/90 backdrop-blur-sm hover:bg-white shadow-md"
+          >
+            <Satellite className="h-4 w-4 mr-1.5" />
+            <span className="text-sm">Satellite</span>
+          </Button>
         </div>
-      </div>
+
+        {/* Mobile Map Controls - Bottom Right */}
+        <div className="md:hidden">
+          <MobileMapControls
+            onZoomIn={handleZoomIn}
+            onZoomOut={handleZoomOut}
+            onLocate={handleLocate}
+            onRecenter={handleRecenter}
+          />
+        </div>
       
       {/* Loading overlay */}
       {dataLoading && (
@@ -363,137 +401,136 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
           </div>
         </div>
       )}
-
-      {/* Inventory Details Popup */}
-      {selectedLocation && (
-        <div className="absolute top-4 right-4 z-10 w-96 max-h-[450px] overflow-y-auto">
-          <Card className="p-4">
-            <div className="flex justify-between items-start mb-3">
-              <div className="flex items-center space-x-2">
-                <Package className="h-5 w-5 text-primary" />
-                <h3 className="font-semibold text-lg">Inventory at Location</h3>
+        
+        {/* Desktop Info Panel (Right Side) - Hidden on Mobile */}
+        {selectedLocation && (
+          <div className="hidden md:block absolute top-4 right-4 z-10 w-96 max-h-[450px] overflow-y-auto">
+            <Card className="p-4">
+              <div className="flex justify-between items-start mb-3">
+                <div className="flex items-center space-x-2">
+                  <Package className="h-5 w-5 text-primary" />
+                  <h3 className="font-semibold text-lg">Inventory at Location</h3>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedLocation(null)}
+                  className="h-6 w-6 p-0"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSelectedLocation(null)}
-                className="h-6 w-6 p-0"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-            
-            <div className="space-y-3">
-              {/* Location Info */}
-              <div className="border-b pb-3">
-                <div className="text-sm space-y-1">
-                  <div>
-                    <span className="font-medium">Customer:</span> {selectedLocation.customer_name}
-                  </div>
-                  <div>
-                    <span className="font-medium">Address:</span> {selectedLocation.customer_address}
-                  </div>
-                  {selectedLocation.customer_phone && (
+              
+              <div className="space-y-3">
+                {/* Location Info */}
+                <div className="border-b pb-3">
+                  <div className="text-sm space-y-1">
                     <div>
-                      <span className="font-medium">Phone:</span> {selectedLocation.customer_phone}
+                      <span className="font-medium">Customer:</span> {selectedLocation.customer_name}
                     </div>
-                  )}
+                    <div>
+                      <span className="font-medium">Address:</span> {selectedLocation.customer_address}
+                    </div>
+                    {selectedLocation.customer_phone && (
+                      <div>
+                        <span className="font-medium">Phone:</span> {selectedLocation.customer_phone}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
 
-              {/* Inventory Summary */}
-              <div className="bg-muted/30 rounded-lg p-3">
-                <div className="flex items-center justify-between">
-                  <span className="font-medium">Total Items:</span>
-                  <span className="text-lg font-bold">{selectedLocation.quantity}</span>
+                {/* Inventory Summary */}
+                <div className="bg-muted/30 rounded-lg p-3">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium">Total Items:</span>
+                    <span className="text-lg font-bold">{selectedLocation.quantity}</span>
+                  </div>
+                  <div className="flex items-center justify-between mt-1">
+                    <span className="text-sm text-muted-foreground"><span className="font-bold">Product Types:</span></span>
+                    <span className="text-sm font-bold">{selectedLocation.items ? groupProductsByType(selectedLocation.items).length : 1}</span>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between mt-1">
-                  <span className="text-sm text-muted-foreground"><span className="font-bold">Product Types:</span></span>
-                  <span className="text-sm font-bold">{selectedLocation.items ? groupProductsByType(selectedLocation.items).length : 1}</span>
-                </div>
-              </div>
 
-              {/* Grouped Product Summary */}
-              <div>
-                <h4 className="font-medium mb-2">Equipment at this location:</h4>
-                <div className="space-y-2">
-                  {selectedLocation.items && selectedLocation.items.length > 0 ? (
-                    groupProductsByType(selectedLocation.items).map((product, index) => (
-                      <div key={index} className="border rounded-lg p-3 bg-background">
-                        {/* Product Name - larger font, own row */}
+
+                {/* Grouped Product Summary */}
+                <div>
+                  <h4 className="font-medium mb-2">Equipment at this location:</h4>
+                  <div className="space-y-2">
+                    {selectedLocation.items && selectedLocation.items.length > 0 ? (
+                      groupProductsByType(selectedLocation.items).map((product, index) => (
+                        <div key={index} className="border rounded-lg p-3 bg-background">
+                          <div className="mb-2">
+                            <h5 className="font-semibold text-base">{product.name}</h5>
+                          </div>
+                          <div className="mb-3">
+                            <span className="text-sm font-medium">
+                              Total Units at Location: {product.totalQuantity}
+                            </span>
+                          </div>
+                          {product.bulkQuantity > 0 && (
+                            <div className="text-sm mb-2">
+                              <div className="font-medium">{product.bulkQuantity} Bulk Inventory</div>
+                              <div className="text-xs text-muted-foreground mt-1">
+                                Delivered on: {new Date(product.deliveredDate).toLocaleDateString()}
+                              </div>
+                            </div>
+                          )}
+                          {product.trackedUnits.length > 0 && (
+                            <div className="text-sm">
+                              <div className="font-medium mb-1">
+                                {product.trackedUnits.length} Tracked Unit{product.trackedUnits.length > 1 ? 's' : ''}:
+                              </div>
+                              <div className="space-y-1 pl-2">
+                                {product.trackedUnits.map((unit, unitIndex) => (
+                                  <div key={unitIndex} className="text-xs text-muted-foreground">
+                                    {unit.code} - Delivered on: {new Date(unit.deliveredDate).toLocaleDateString()}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ))
+                    ) : (
+                      <div className="border rounded-lg p-3 bg-background">
                         <div className="mb-2">
-                          <h5 className="font-semibold text-base">{product.name}</h5>
-                        </div>
-                        
-                        {/* Total Units Count */}
-                        <div className="mb-3">
-                          <span className="text-sm font-medium">
-                            Total Units at Location: {product.totalQuantity}
+                          <span className="font-medium text-sm">
+                            {selectedLocation.quantity} {selectedLocation.product_name}
+                            {selectedLocation.quantity > 1 ? 's' : ''}
                           </span>
                         </div>
-                        
-                        {/* Bulk Inventory */}
-                        {product.bulkQuantity > 0 && (
-                          <div className="text-sm mb-2">
-                            <div className="font-medium">{product.bulkQuantity} Bulk Inventory</div>
-                            <div className="text-xs text-muted-foreground mt-1">
-                              Delivered on: {new Date(product.deliveredDate).toLocaleDateString()}
-                            </div>
-                          </div>
-                        )}
-                        
-                        {/* Tracked Units */}
-                        {product.trackedUnits.length > 0 && (
-                          <div className="text-sm">
-                            <div className="font-medium mb-1">
-                              {product.trackedUnits.length} Tracked Unit{product.trackedUnits.length > 1 ? 's' : ''}:
-                            </div>
-                            <div className="space-y-1 pl-2">
-                              {product.trackedUnits.map((unit, unitIndex) => (
-                                <div key={unitIndex} className="text-xs text-muted-foreground">
-                                  {unit.code} - Delivered on: {new Date(unit.deliveredDate).toLocaleDateString()}
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
                       </div>
-                    ))
-                  ) : (
-                    // Single item fallback
-                    <div className="border rounded-lg p-3 bg-background">
-                      <div className="mb-2">
-                        <span className="font-medium text-sm">
-                          {selectedLocation.quantity} {selectedLocation.product_name}
-                          {selectedLocation.quantity > 1 ? 's' : ''}
-                        </span>
-                        {selectedLocation.item_code && selectedLocation.item_code !== 'BULK' && (
-                          <span className="text-xs text-muted-foreground ml-2">
-                            (1 tracked unit)
-                          </span>
-                        )}
-                        {(!selectedLocation.item_code || selectedLocation.item_code === 'BULK') && selectedLocation.quantity > 1 && (
-                          <span className="text-xs text-muted-foreground ml-2">
-                            ({selectedLocation.quantity} bulk)
-                          </span>
-                        )}
-                      </div>
-                      {selectedLocation.item_code && selectedLocation.item_code !== 'BULK' && (
-                        <div className="text-xs text-muted-foreground mb-1">
-                          <span className="font-medium">Tracked unit:</span> {selectedLocation.item_code}
-                        </div>
-                      )}
-                      <div className="text-xs text-muted-foreground">
-                        <span className="font-medium">Delivered on:</span> {new Date(selectedLocation.scheduled_date).toLocaleDateString()}
-                      </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
+            </Card>
+          </div>
+        )}
+
+        {/* Loading overlay */}
+        {dataLoading && (
+          <div className="absolute inset-0 bg-background/50 backdrop-blur-sm rounded-lg flex items-center justify-center z-20">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Loading inventory data...</p>
             </div>
-          </Card>
-        </div>
-      )}
+          </div>
+        )}
+      </div>
+
+      {/* Mobile Bottom Sheet for Marker Details */}
+      <MarkerDetailsSheet
+        open={!!selectedLocation}
+        onOpenChange={(open) => !open && setSelectedLocation(null)}
+        location={selectedLocation}
+      />
+
+      {/* Legend Below Map - Wraps on Mobile */}
+      <MapLegend
+        statusCounts={legendStatusCounts}
+        totalInventory={totalInventory}
+      />
     </div>
   );
 };

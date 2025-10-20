@@ -527,21 +527,37 @@ const Inventory: React.FC = () => {
         )}
 
         {activeTab === 'location-map' && (
-          <div className="bg-background rounded-2xl shadow-md p-6 space-y-6">
-            {/* Search and Filters */}
-            <InventoryFilters
-              searchQuery={searchQuery}
-              onSearchChange={setSearchQuery}
-              selectedLocationId={selectedLocationId}
-              onLocationChange={setSelectedLocationId}
-              selectedProductType={selectedProductType}
-              onProductTypeChange={setSelectedProductType}
-            />
+          <div className="bg-background rounded-2xl shadow-md p-4 md:p-6 space-y-4 md:space-y-6">
+            {/* Desktop: Search and Filters */}
+            <div className="hidden md:block">
+              <InventoryFilters
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                selectedLocationId={selectedLocationId}
+                onLocationChange={setSelectedLocationId}
+                selectedProductType={selectedProductType}
+                onProductTypeChange={setSelectedProductType}
+              />
+            </div>
+
+            {/* Mobile: Collapsible Filters */}
+            <div className="md:hidden">
+              <MobileInventoryFilters
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                selectedLocationId={selectedLocationId}
+                onLocationChange={setSelectedLocationId}
+                selectedProductType={selectedProductType}
+                onProductTypeChange={setSelectedProductType}
+                hideInactive={false}
+                onHideInactiveChange={() => {}}
+              />
+            </div>
             
             {/* Map Section */}
-            <div className="h-[600px]">
+            <div>
               <div className="mb-4">
-                <h3 className="text-lg font-semibold">Current Deployed Inventory</h3>
+                <h3 className="text-base md:text-lg font-semibold">Current Deployed Inventory</h3>
                 <p className="text-sm text-muted-foreground">View equipment currently deployed in the field</p>
               </div>
               
