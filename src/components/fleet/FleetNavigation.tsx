@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { TabNav } from "@/components/ui/TabNav";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 export const FleetNavigation: React.FC = () => {
   const location = useLocation();
@@ -114,40 +115,86 @@ export const FleetNavigation: React.FC = () => {
 
   return (
     <div className="bg-white border border-gray-200 rounded-2xl shadow-sm">
-      <div className="p-6">
+      <div className="p-4 lg:p-6">
         <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-2xl font-semibold text-gray-900 font-inter">
+          <div className="min-w-0 flex-1">
+            <h1 className="text-xl lg:text-2xl font-semibold text-gray-900 font-inter truncate">
               Fleet Management
             </h1>
-            <p className="text-gray-600 mt-1">
+            <p className="text-sm lg:text-base text-gray-600 mt-1">
               Manage vehicles, compliance, maintenance, and operations
             </p>
           </div>
         </div>
         
-        <TabNav ariaLabel="Fleet Management Navigation">
-          {navigationItems.map((item) => (
-            <TabNav.Item
-              key={item.href}
-              to={item.href}
-              isActive={isActiveRoute(item.href, item.end)}
-              onClick={() => handleNavigation(item.href)}
-            >
-              <item.icon className="h-4 w-4" />
-              <span>{item.title}</span>
-              {item.badge && (
-                <Badge 
-                  variant="destructive" 
-                  className="text-xs ml-1"
-                >
-                  {item.badge}
-                </Badge>
-              )}
-            </TabNav.Item>
-          ))}
-        </TabNav>
+        {/* Desktop Navigation */}
+        <div className="hidden lg:block">
+          <TabNav ariaLabel="Fleet Management Navigation">
+            {navigationItems.map((item) => (
+              <TabNav.Item
+                key={item.href}
+                to={item.href}
+                isActive={isActiveRoute(item.href, item.end)}
+                onClick={() => handleNavigation(item.href)}
+              >
+                <item.icon className="h-4 w-4" />
+                <span>{item.title}</span>
+                {item.badge && (
+                  <Badge 
+                    variant="destructive" 
+                    className="text-xs ml-1"
+                  >
+                    {item.badge}
+                  </Badge>
+                )}
+              </TabNav.Item>
+            ))}
+          </TabNav>
+        </div>
+
+        {/* Mobile Navigation - Horizontal Scroll */}
+        <div className="lg:hidden -mx-4 px-4">
+          <div 
+            className="flex gap-2 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 scrollbar-hide"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            role="tablist"
+            aria-label="Fleet Management Navigation"
+          >
+            {navigationItems.map((item) => (
+              <button
+                key={item.href}
+                onClick={() => handleNavigation(item.href)}
+                className={cn(
+                  "snap-start whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 flex items-center gap-2 min-h-[44px] flex-shrink-0",
+                  isActiveRoute(item.href, item.end)
+                    ? "bg-primary text-primary-foreground shadow-md"
+                    : "bg-muted text-muted-foreground hover:bg-muted/80"
+                )}
+                role="tab"
+                aria-selected={isActiveRoute(item.href, item.end)}
+              >
+                <item.icon className="h-4 w-4" />
+                <span>{item.title}</span>
+                {item.badge && (
+                  <Badge 
+                    variant="destructive" 
+                    className="text-xs"
+                  >
+                    {item.badge}
+                  </Badge>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
+      
+      {/* Hide scrollbar globally for this component */}
+      <style>{`
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
     </div>
   );
 };
