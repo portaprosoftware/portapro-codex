@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { useQuoteDrafts } from '@/hooks/useQuoteDrafts';
 import { formatDistanceToNow } from 'date-fns';
-import { FileText, Trash2, Loader2 } from 'lucide-react';
+import { Trash2, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { NewQuoteWizard } from './NewQuoteWizard';
 
@@ -40,8 +40,7 @@ export const QuoteDraftManagement: React.FC = () => {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
+          <CardTitle>
             Quote Drafts
           </CardTitle>
           <CardDescription>
@@ -93,7 +92,6 @@ export const QuoteDraftManagement: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />
                 Quote Drafts
                 <Badge variant="secondary">{drafts.length}</Badge>
               </CardTitle>
