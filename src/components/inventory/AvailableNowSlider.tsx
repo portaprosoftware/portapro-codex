@@ -150,8 +150,7 @@ export const AvailableNowSlider: React.FC<AvailableNowSliderProps> = ({ isOpen, 
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent className="w-full sm:w-1/2 sm:max-w-none overflow-y-auto antialiased" style={{ WebkitFontSmoothing: 'antialiased', textRendering: 'optimizeLegibility' }}>
         <SheetHeader>
-          <SheetTitle className="flex items-center gap-2">
-            <Package className="w-5 h-5" />
+          <SheetTitle>
             All Units Overview
           </SheetTitle>
           <SheetDescription>
@@ -176,15 +175,12 @@ export const AvailableNowSlider: React.FC<AvailableNowSliderProps> = ({ isOpen, 
                     variant="ghost"
                     className="w-full p-4 h-auto justify-between hover:bg-gray-50"
                   >
-                    <div className="flex items-center gap-3">
-                      <Package className="w-5 h-5 text-blue-600" />
-                      <div className="text-left">
+                    <div className="text-left">
                         <h3 className="font-semibold text-gray-900">{product.name}</h3>
                         <p className="text-sm text-gray-600">
                            Total Stock: <TotalStockDisplay productId={product.id} />
                          </p>
                       </div>
-                    </div>
                      <div className="flex items-center gap-2">
                         <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold">
                           <TotalStockDisplay productId={product.id} className="text-white font-bold" />
