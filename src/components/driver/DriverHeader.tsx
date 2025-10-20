@@ -4,10 +4,14 @@ import { useUser } from '@clerk/clerk-react';
 import { Bell, Settings, Wifi, WifiOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useDriverNotifications } from '@/hooks/useDriverNotifications';
+import { DriverNotificationDropdown } from './DriverNotificationDropdown';
 
 export const DriverHeader: React.FC = () => {
   const { user } = useUser();
   const [isOnline, setIsOnline] = React.useState(navigator.onLine);
+  const [showNotifications, setShowNotifications] = React.useState(false);
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useDriverNotifications();
 
   React.useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -62,11 +66,18 @@ export const DriverHeader: React.FC = () => {
           </div>
 
           <div className="flex items-center space-x-2 flex-shrink-0">
-            <Button variant="ghost" size="icon" className="relative h-10 w-10">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="relative h-10 w-10"
+              onClick={() => setShowNotifications(!showNotifications)}
+            >
               <Bell className="w-5 h-5" />
-              <Badge className="absolute -top-1 -right-1 w-5 h-5 rounded-full p-0 flex items-center justify-center text-xs">
-                3
-              </Badge>
+              {unreadCount > 0 && (
+                <Badge className="absolute -top-1 -right-1 min-w-[20px] h-5 rounded-full p-0 px-1 flex items-center justify-center text-xs bg-gradient-to-r from-red-500 to-red-600 animate-pulse">
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </Badge>
+              )}
             </Button>
             
             <Button variant="ghost" size="icon" className="h-10 w-10">
@@ -75,6 +86,15 @@ export const DriverHeader: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {showNotifications && (
+        <DriverNotificationDropdown
+          notifications={notifications}
+          onClose={() => setShowNotifications(false)}
+          onMarkAsRead={markAsRead}
+          onMarkAllAsRead={markAllAsRead}
+        />
+      )}
     </header>
   );
 };
