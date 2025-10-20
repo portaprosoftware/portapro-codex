@@ -1261,10 +1261,10 @@ export const Landing: React.FC = () => {
 
       {/* About Us Slider */}
       {aboutSliderOpen && <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm animate-fade-in">
-          <div className="fixed inset-y-0 right-0 w-full max-w-2xl bg-background shadow-2xl animate-slide-in-right">
-            <div className="flex flex-col h-full">
+          <div className="fixed inset-y-0 right-0 w-full max-w-4xl bg-background shadow-2xl animate-slide-in-right overflow-y-auto">
+            <div className="flex flex-col min-h-full">
               {/* Header */}
-              <div className="flex items-center justify-between p-6 border-b">
+              <div className="sticky top-0 bg-background z-10 flex items-center justify-between p-6 border-b">
                 <h2 className="text-2xl font-bold text-foreground">About Us</h2>
                 <button onClick={() => setAboutSliderOpen(false)} className="p-2 hover:bg-muted rounded-full transition-colors">
                   <X className="w-5 h-5" />
@@ -1272,19 +1272,99 @@ export const Landing: React.FC = () => {
               </div>
               
               {/* Content */}
-              <div className="flex-1 overflow-y-auto p-6">
-                <div className="space-y-8">
+              <div className="flex-1 p-6">
+                <div className="max-w-3xl mx-auto space-y-8">
+                  {/* Who We Are */}
                   <div className="bg-gradient-to-br from-primary via-primary/90 to-primary/80 rounded-2xl p-8 text-white">
-                    <h3 className="text-2xl font-bold mb-6 text-center">WHO WE ARE</h3>
-                    
-                    <div className="space-y-6 text-lg leading-relaxed">
-                      <p>
-                        PortaPro is the all‑in‑one operations platform built specifically for the needs of portable‑toilet rental operators and their teams. We believe running a successful service business shouldn't require wrestling with unrelated, over‑engineered software or paper‑heavy processes. With PortaPro, you get branded, purpose‑built tools, expert resources, and hands‑on guidance to help operators of every size streamline dispatch, inventory, payments, and customer communications—so you can focus on growth, not grunt work.
-                      </p>
-                      
-                      <p>
-                        Founded in <strong>2025</strong>, PortaPro is already trusted by rental fleets across North America. From one‑click route planning and barcode‑driven inventory tracking to instant tap‑to‑pay and on‑demand service alerts, PortaPro bridges the gap between field efficiency and business success. Our platform empowers operators to unlock their full potential—as service professionals and entrepreneurs—by giving them software that finally works the way they do.
-                      </p>
+                    <h3 className="text-2xl font-bold mb-4">WHO WE ARE</h3>
+                    <p className="text-lg leading-relaxed">
+                      Software built the way your industry actually works. PortaPro is the all-in-one operations platform built specifically for portable toilet rental companies. No more forcing your business into tools made for plumbers, HVAC, or spreadsheets. PortaPro gives operators, dispatchers, drivers, and office teams one clean system to manage routes, inventory, customers, billing, and service—without the chaos of paper or ten different apps.
+                    </p>
+                  </div>
+
+                  {/* Why We Exist */}
+                  <div>
+                    <h3 className="text-2xl font-bold mb-4 text-foreground">WHY WE EXIST</h3>
+                    <p className="text-lg text-muted-foreground leading-relaxed">
+                      Running a sanitation business shouldn't require fighting software or drowning in paperwork. Most operators either outgrow spreadsheets or get stuck paying for overbuilt software that doesn't match how the field really works. PortaPro fixes that—by giving operators a platform designed around their exact workflow, not the other way around.
+                    </p>
+                  </div>
+
+                  {/* What Makes PortaPro Different */}
+                  <div>
+                    <h3 className="text-2xl font-bold mb-6 text-foreground">WHAT MAKES PORTAPRO DIFFERENT</h3>
+                    <div className="space-y-6">
+                      <div className="border-l-4 border-primary pl-6 py-4 bg-muted/30 rounded-r-lg">
+                        <h4 className="font-bold text-lg mb-2 text-foreground">Route Planning & Live Service Updates</h4>
+                        <p className="text-muted-foreground mb-2">Drag-and-drop scheduling, daily driver routes, arrival/service tracking.</p>
+                        <p className="text-sm text-muted-foreground italic">Stops missed services and "where's my driver?" phone calls. Office and field stay in sync in real time.</p>
+                      </div>
+
+                      <div className="border-l-4 border-blue-600 pl-6 py-4 bg-blue-50/50 rounded-r-lg">
+                        <h4 className="font-bold text-lg mb-2 text-foreground">Unit & Inventory Tracking (QR / Barcode)</h4>
+                        <p className="text-muted-foreground mb-2">Scan units as they leave the yard, change locations, or need repairs. Tracks wash history and damage.</p>
+                        <p className="text-sm text-muted-foreground italic">No more missing toilets or guessing where assets are. Every unit has a history and a location.</p>
+                      </div>
+
+                      <div className="border-l-4 border-green-600 pl-6 py-4 bg-green-50/50 rounded-r-lg">
+                        <h4 className="font-bold text-lg mb-2 text-foreground">Quotes → Jobs → Invoices (Tap-to-Pay)</h4>
+                        <p className="text-muted-foreground mb-2">Build quotes, convert to jobs, convert to invoices with one click. Take card or ACH payments on-site or online.</p>
+                        <p className="text-sm text-muted-foreground italic">Ends unpaid work and check-chasing. Makes even small operators look professional and modern.</p>
+                      </div>
+
+                      <div className="border-l-4 border-purple-600 pl-6 py-4 bg-purple-50/50 rounded-r-lg">
+                        <h4 className="font-bold text-lg mb-2 text-foreground">100% Mobile Driver App (Works Offline)</h4>
+                        <p className="text-muted-foreground mb-2">Drivers complete routes, log services, add photos, collect signatures—all from their phone.</p>
+                        <p className="text-sm text-muted-foreground italic">No training required. Works even without cell service in rural areas or event fields.</p>
+                      </div>
+
+                      <div className="border-l-4 border-orange-600 pl-6 py-4 bg-orange-50/50 rounded-r-lg">
+                        <h4 className="font-bold text-lg mb-2 text-foreground">Automated Customer Alerts & Service Logs</h4>
+                        <p className="text-muted-foreground mb-2">Text or email customers when units are delivered, serviced, or picked up—with photos if needed.</p>
+                        <p className="text-sm text-muted-foreground italic">Fewer customer calls. More trust. You look organized and accountable.</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Our Story */}
+                  <div className="bg-muted/30 rounded-2xl p-8">
+                    <h3 className="text-2xl font-bold mb-4 text-foreground">OUR STORY</h3>
+                    <p className="text-lg text-muted-foreground leading-relaxed">
+                      Founded in 2025, PortaPro was built after seeing operators run million-dollar fleets from clipboards, whiteboards, and outdated software that didn't fit the job. We knew this industry deserved better—software designed for how operators actually work in the field, not how consultants think they should.
+                    </p>
+                    <p className="text-lg text-muted-foreground leading-relaxed mt-4">
+                      Today, PortaPro is trusted by rental fleets across North America—family-owned companies, event specialists, and multi-truck operations who want a simpler, more profitable way to run their business.
+                    </p>
+                  </div>
+
+                  {/* Our Values */}
+                  <div>
+                    <h3 className="text-2xl font-bold mb-6 text-foreground">OUR VALUES</h3>
+                    <div className="space-y-4">
+                      <div className="p-4 rounded-lg bg-card border-l-4 border-primary">
+                        <h4 className="font-bold text-lg mb-1 text-foreground">Field First</h4>
+                        <p className="text-muted-foreground">If it doesn't work at 6 AM in the rain, we don't ship it.</p>
+                      </div>
+
+                      <div className="p-4 rounded-lg bg-card border-l-4 border-blue-600">
+                        <h4 className="font-bold text-lg mb-1 text-foreground">Simple Wins</h4>
+                        <p className="text-muted-foreground">Software should make work easier—not add more steps.</p>
+                      </div>
+
+                      <div className="p-4 rounded-lg bg-card border-l-4 border-green-600">
+                        <h4 className="font-bold text-lg mb-1 text-foreground">Operators Over Investors</h4>
+                        <p className="text-muted-foreground">We build for the people in the field, not the boardroom.</p>
+                      </div>
+
+                      <div className="p-4 rounded-lg bg-card border-l-4 border-purple-600">
+                        <h4 className="font-bold text-lg mb-1 text-foreground">Share the Playbook</h4>
+                        <p className="text-muted-foreground">We openly share templates, pricing strategies, and industry best practices.</p>
+                      </div>
+
+                      <div className="p-4 rounded-lg bg-card border-l-4 border-orange-600">
+                        <h4 className="font-bold text-lg mb-1 text-foreground">Respect the Work</h4>
+                        <p className="text-muted-foreground">This industry runs on grit and service. We build tools that honor that.</p>
+                      </div>
                     </div>
                   </div>
                 </div>
