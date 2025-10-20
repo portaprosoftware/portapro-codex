@@ -2244,13 +2244,6 @@ export const Landing: React.FC = () => {
           </div>
         </div>}
 
-      {/* Schedule Demo Floating Button */}
-      <div className="fixed bottom-6 right-6 z-50">
-        <Button onClick={handleScheduleDemo} className="bg-gradient-blue text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
-          <Laptop className="w-4 h-4 mr-2" />
-          Schedule Demo
-        </Button>
-      </div>
     </div>;
 };
 export default Landing;
