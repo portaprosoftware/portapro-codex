@@ -114,24 +114,21 @@ export function DocumentCard({ document, onDownload, onDelete, canDelete }: Docu
     <>
       <Card className="p-4 sm:p-5 hover:shadow-md transition-shadow">
         <div className="flex items-start justify-between gap-3">
-          {/* Left: Icon + Info */}
-          <div className="flex items-start gap-3 min-w-0 flex-1">
-            <div className="h-10 w-10 rounded-lg bg-blue-600 text-white flex items-center justify-center flex-shrink-0">
-              {getFileIcon()}
-            </div>
-            <div className="min-w-0 flex-1">
-              {/* File name */}
-              <h4 className="font-semibold text-base line-clamp-2 break-words mb-1">
-                {document.document_name || 'Untitled document'}
-              </h4>
-              {/* Metadata */}
-              <div className="flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground">
-                <span className="capitalize">{document.document_type || 'document'}</span>
-                <span>•</span>
-                <span>{formatFileSize(document.file_size)}</span>
-                <span>•</span>
-                <span>{format(new Date(document.created_at), 'MMM d, yyyy, h:mm a')}</span>
-              </div>
+          {/* Left: Document Info (no icon) */}
+          <div className="min-w-0 flex-1">
+            {/* File name */}
+            <h4 className="font-semibold text-base line-clamp-2 break-words mb-1">
+              {document.document_name || 'Untitled document'}
+            </h4>
+            {/* Metadata */}
+            <div className="flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground break-words">
+              <span className="capitalize">{document.document_type || 'document'}</span>
+              <span>•</span>
+              <span>{formatFileSize(document.file_size)}</span>
+              <span className="hidden xs:inline">•</span>
+              <span className="w-full xs:w-auto">
+                {format(new Date(document.created_at), 'MMM d, yyyy, h:mm a')}
+              </span>
             </div>
           </div>
 

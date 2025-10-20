@@ -249,9 +249,9 @@ export const CustomerDocumentsTab: React.FC<CustomerDocumentsTabProps> = ({ cust
 
       <Card className="bg-card rounded-2xl shadow-sm border">
         <CardHeader>
-          <div className="flex flex-col xs:flex-row items-start xs:items-center justify-between gap-2">
+          <div className="flex flex-col gap-2">
             <CardTitle className="text-lg">Customer Documents</CardTitle>
-            <div className="text-sm text-muted-foreground whitespace-nowrap">
+            <div className="text-sm text-muted-foreground break-words">
               Total files: {(docs || []).length} • Size: {(totalSize / (1024 * 1024)).toFixed(1)} MB
             </div>
           </div>
