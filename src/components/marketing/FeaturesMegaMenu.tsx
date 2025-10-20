@@ -9,7 +9,11 @@ interface FeaturesMegaMenuRef {
   triggerOpen: () => void
 }
 
-export const FeaturesMegaMenu = forwardRef<FeaturesMegaMenuRef>((props, ref) => {
+interface FeaturesMegaMenuProps {
+  onFeatureClick?: (sectionId: string) => void
+}
+
+export const FeaturesMegaMenu = forwardRef<FeaturesMegaMenuRef, FeaturesMegaMenuProps>(({ onFeatureClick }, ref) => {
   const [open, setOpen] = useState(false)
 
   useImperativeHandle(ref, () => ({
@@ -39,17 +43,25 @@ export const FeaturesMegaMenu = forwardRef<FeaturesMegaMenuRef>((props, ref) => 
                 {group.title}
               </h3>
               <ul className="space-y-1.5">
-                {group.items.map((item, idx) => (
-                  <li key={item.key}>
-                    <a
-                      href={item.href.startsWith('#') ? item.href : `/features#${item.key}`}
-                      className={cn(
-                        'group flex items-start gap-3 rounded-lg p-2 transition-colors',
-                        'hover:bg-muted focus:bg-muted focus:outline-none'
-                      )}
-                      aria-label={`${item.label} — ${item.description}`}
-                      onClick={() => setOpen(false)} // Close dropdown when item is clicked
-                    >
+                {group.items.map((item, idx) => {
+                  // Extract section ID from href (remove # if present)
+                  const sectionId = item.href.replace('#', '');
+                  
+                  return (
+                    <li key={item.key}>
+                      <button
+                        onClick={() => {
+                          if (onFeatureClick) {
+                            onFeatureClick(sectionId);
+                          }
+                          setOpen(false);
+                        }}
+                        className={cn(
+                          'group flex items-start gap-3 rounded-lg p-2 transition-colors w-full text-left',
+                          'hover:bg-muted focus:bg-muted focus:outline-none'
+                        )}
+                        aria-label={`${item.label} — ${item.description}`}
+                      >
                       <span className="mt-0.5 inline-flex h-9 w-9 items-center justify-center rounded-full bg-gradient-primary text-white">
                         <item.icon className="h-5 w-5" aria-hidden="true" />
                       </span>
@@ -62,9 +74,10 @@ export const FeaturesMegaMenu = forwardRef<FeaturesMegaMenuRef>((props, ref) => 
                         </span>
                         <span className="block text-xs text-muted-foreground truncate">{item.description}</span>
                       </span>
-                    </a>
+                    </button>
                   </li>
-                ))}
+                  );
+                })}
               </ul>
             </section>
           ))}

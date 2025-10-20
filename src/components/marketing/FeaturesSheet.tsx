@@ -8,9 +8,10 @@ import { Button } from '@/components/ui/button'
 type Props = {
   open: boolean
   onOpenChange: (open: boolean) => void
+  onFeatureClick?: (sectionId: string) => void
 }
 
-export function FeaturesSheet({ open, onOpenChange }: Props) {
+export function FeaturesSheet({ open, onOpenChange, onFeatureClick }: Props) {
   const [activeIdx, setActiveIdx] = useState(0)
   const [emblaRef, emblaApi] = useEmblaCarousel({ align: 'start', loop: false })
 
@@ -61,14 +62,22 @@ export function FeaturesSheet({ open, onOpenChange }: Props) {
               {featureGroups.map((group) => (
                 <div key={group.key} className="min-w-0 shrink-0 grow-0 basis-full px-4">
                   <ul className="divide-y">
-                    {group.items.map((item) => (
-                      <li key={item.key}>
-                        <a
-                          href={item.href.startsWith('#') ? item.href : `/features#${item.key}`}
-                          className="flex items-center gap-3 py-3"
-                          aria-label={`${item.label} — ${item.description}`}
-                          onClick={() => onOpenChange(false)}
-                        >
+                    {group.items.map((item) => {
+                      // Extract section ID from href (remove # if present)
+                      const sectionId = item.href.replace('#', '');
+                      
+                      return (
+                        <li key={item.key}>
+                          <button
+                            onClick={() => {
+                              if (onFeatureClick) {
+                                onFeatureClick(sectionId);
+                              }
+                              onOpenChange(false);
+                            }}
+                            className="flex items-center gap-3 py-3 w-full text-left"
+                            aria-label={`${item.label} — ${item.description}`}
+                          >
                           <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gradient-primary text-white">
                             <item.icon className="h-5 w-5" aria-hidden="true" />
                           </span>
@@ -76,9 +85,10 @@ export function FeaturesSheet({ open, onOpenChange }: Props) {
                             <span className="block text-[15px] font-semibold truncate">{item.label}</span>
                             <span className="block text-xs text-muted-foreground truncate">{item.description}</span>
                           </span>
-                        </a>
+                        </button>
                       </li>
-                    ))}
+                      );
+                    })}
                   </ul>
                 </div>
               ))}

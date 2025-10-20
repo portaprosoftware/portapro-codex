@@ -312,7 +312,7 @@ export const Landing: React.FC = () => {
               <LandingLogo />
             </div>
             <div className="hidden lg:block">
-              <FeaturesMegaMenu ref={featuresMegaMenuRef} />
+              <FeaturesMegaMenu ref={featuresMegaMenuRef} onFeatureClick={scrollToSection} />
             </div>
           </div>
           
@@ -385,7 +385,7 @@ export const Landing: React.FC = () => {
           </div>}
       </header>
 
-      <FeaturesSheet open={featuresSheetOpen} onOpenChange={setFeaturesSheetOpen} />
+      <FeaturesSheet open={featuresSheetOpen} onOpenChange={setFeaturesSheetOpen} onFeatureClick={scrollToSection} />
 
 
       {/* Hero Section - Blue */}
