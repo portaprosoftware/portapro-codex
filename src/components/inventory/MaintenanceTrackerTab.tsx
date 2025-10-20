@@ -315,8 +315,8 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
       </div>
 
       {/* Badge Below Card */}
-      <div className="flex items-center gap-2">
-        <Badge className="bg-gradient-to-r from-orange-600 to-orange-500 text-white font-bold">
+      <div className="flex flex-col gap-2">
+        <Badge className="bg-gradient-to-r from-orange-600 to-orange-500 text-white font-bold w-fit">
           {maintenanceItems?.length || 0} {maintenanceItems?.length === 1 ? 'Unit' : 'Units'}
         </Badge>
         <span className="text-sm text-gray-900">currently in maintenance</span>
@@ -342,8 +342,8 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
       )}
 
       {/* Search and Filters */}
-      <div className="flex items-center gap-4">
-        <div className="flex-[3] relative">
+      <div className="flex flex-col gap-4">
+        <div className="relative">
           <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <Input
             placeholder="Search by unit code, tool number, maintenance reason, or notes..."
