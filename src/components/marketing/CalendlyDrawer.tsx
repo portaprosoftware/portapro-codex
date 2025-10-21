@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 
 interface CalendlyDrawerProps {
@@ -7,15 +7,30 @@ interface CalendlyDrawerProps {
 }
 
 export function CalendlyDrawer({ open, onOpenChange }: CalendlyDrawerProps) {
+  const [scriptLoaded, setScriptLoaded] = useState(false);
+
   useEffect(() => {
-    // Load Calendly script dynamically when drawer opens
-    if (open && !document.querySelector('script[src*="calendly"]')) {
-      const script = document.createElement('script');
-      script.src = 'https://assets.calendly.com/assets/external/widget.js';
-      script.async = true;
-      document.body.appendChild(script);
+    // Check if script already exists
+    const existingScript = document.querySelector('script[src*="calendly"]');
+    
+    if (existingScript) {
+      setScriptLoaded(true);
+      return;
     }
-  }, [open]);
+
+    // Load Calendly script
+    const script = document.createElement('script');
+    script.src = 'https://assets.calendly.com/assets/external/widget.js';
+    script.async = true;
+    script.onload = () => {
+      setScriptLoaded(true);
+    };
+    document.body.appendChild(script);
+
+    return () => {
+      // Don't remove the script on unmount to allow reuse
+    };
+  }, []);
 
   if (!open) return null;
 
@@ -42,12 +57,21 @@ export function CalendlyDrawer({ open, onOpenChange }: CalendlyDrawerProps) {
         </div>
 
         {/* Calendly Embed */}
-        <div className="h-[calc(100%-64px)] overflow-hidden">
-          <div
-            className="calendly-inline-widget w-full h-full"
-            data-url="https://calendly.com/portapro/portapro-software-demo?hide_event_type_details=1&hide_gdpr_banner=1"
-            style={{ minWidth: '320px', height: '100%' }}
-          />
+        <div className="h-[calc(100%-64px)] w-full">
+          {scriptLoaded ? (
+            <div
+              className="calendly-inline-widget"
+              data-url="https://calendly.com/portapro/portapro-software-demo?hide_event_type_details=1&hide_gdpr_banner=1"
+              style={{ minWidth: '320px', width: '100%', height: '100%' }}
+            />
+          ) : (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                <p className="text-muted-foreground">Loading calendar...</p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>
