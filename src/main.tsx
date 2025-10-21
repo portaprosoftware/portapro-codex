@@ -13,11 +13,21 @@ import { Toaster } from '@/components/ui/sonner';
 // Development vs Production settings
 const isDevelopment = import.meta.env.DEV;
 
-// Clerk configuration: explicit domain to avoid redirect issues
-const CLERK_PUBLISHABLE_KEY = (import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined) || (isDevelopment ? "pk_test_YWN0dWFsLW11dHQtOTEuY2xlcmsuYWNjb3VudHMuZGV2JA" : "");
+// Clerk configuration: Host-based key selection
+const PROD_HOSTS = new Set(['portaprosoftware.com', 'www.portaprosoftware.com']);
+const hostname = window.location.hostname;
+const useProdKey = PROD_HOSTS.has(hostname);
 
-if (!CLERK_PUBLISHABLE_KEY && !isDevelopment) {
-  console.error('Missing VITE_CLERK_PUBLISHABLE_KEY in production.');
+// Select appropriate Clerk key based on hostname
+const prodKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY_PROD || import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+const devKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY_DEV || "pk_test_YWN0dWFsLW11dHQtOTEuY2xlcmsuYWNjb3VudHMuZGV2JA";
+const CLERK_PUBLISHABLE_KEY = useProdKey ? prodKey : devKey;
+
+// Log Clerk mode without exposing keys
+console.info(`Clerk mode: ${useProdKey ? 'PRODUCTION' : 'DEVELOPMENT'} (${hostname})`);
+
+if (!CLERK_PUBLISHABLE_KEY) {
+  console.error('Missing Clerk publishable key.');
 }
 
 const queryClient = new QueryClient({
