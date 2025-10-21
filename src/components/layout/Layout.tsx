@@ -103,35 +103,24 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           <MobileNavDrawer />
           <Logo showText={true} />
         </div>
+        <UserButton 
+          appearance={{
+            elements: {
+              userButtonAvatarBox: "w-10 h-10",
+              userButtonPopoverCard: "shadow-lg"
+            }
+          }}
+        />
       </header>
       <main className="flex-1 overflow-y-auto p-2 pt-20 pb-20">
         {children}
       </main>
-      <footer className="flex h-16 shrink-0 items-center justify-between border-t bg-gray-50 px-6 fixed bottom-0 left-0 right-0 z-50 pb-2">
-        <div className="flex items-center gap-2 mt-0.5">
-          <UserButton 
-            appearance={{
-              elements: {
-                userButtonAvatarBox: "w-10 h-10",
-                userButtonPopoverCard: "shadow-lg"
-              }
-            }}
-          />
-          {user && (
-            <div className="text-sm text-gray-600 truncate max-w-[200px]">
-              {user.firstName || user.emailAddresses?.[0]?.emailAddress || 'User'}
-            </div>
-          )}
-        </div>
-        
-        <div className="flex-1"></div>
-        
+      <footer className="flex h-12 shrink-0 items-center justify-center border-t bg-gray-50 px-6 fixed bottom-0 left-0 right-0 z-50">
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors bg-transparent border-0 cursor-pointer ml-auto mt-0.5"
+          className="flex items-center justify-center text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors bg-transparent border-0 cursor-pointer"
         >
-          Top
-          <ArrowUp className="w-5.5 h-5.5" />
+          <ArrowUp className="w-6 h-6" />
         </button>
         
         <Button
