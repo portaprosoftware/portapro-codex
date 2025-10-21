@@ -100,7 +100,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   // Mobile layout with bottom-up drawer
   return (
     <div className="min-h-screen flex flex-col w-full" style={{ backgroundColor: '#f9fafb' }}>
-      <header className="flex h-16 shrink-0 items-center justify-between border-b bg-gray-50 pl-2 fixed top-0 left-0 right-0 z-50" style={{ paddingRight: '10%' }}>
+      <header className="flex h-16 shrink-0 items-center justify-between border-b bg-gray-50 pl-2 fixed top-0 left-0 right-0 z-50" style={{ paddingRight: '5%' }}>
         <div className="flex items-center gap-2">
           <MobileNavDrawer />
           <Logo showText={true} />
@@ -109,6 +109,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           <button
             onClick={() => setNotificationsOpen(true)}
             className="flex items-center justify-center text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors bg-transparent border-0 cursor-pointer"
+            style={{ marginRight: '10%' }}
           >
             <Bell className="w-6 h-6" />
           </button>
@@ -119,6 +120,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                 userButtonPopoverCard: "shadow-lg"
               }
             }}
+            afterSignOutUrl="/"
           />
         </div>
       </header>
