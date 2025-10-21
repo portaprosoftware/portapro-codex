@@ -527,8 +527,8 @@ export const Landing: React.FC = () => {
       <section id="about" className="py-6 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="text-center">
-            <p className="text-sm text-muted-foreground">
-              Tired of juggling your day-to-day across 10 systems? <span className="font-normal">PortaPro puts it all in one place. Fully mobile and fairly priced.</span>
+            <p className="text-base text-muted-foreground">
+              <span className="font-bold">Tired of juggling your day-to-day across 10 systems?</span> PortaPro puts it all in one place. Fully mobile and fairly priced.
             </p>
           </div>
         </div>
