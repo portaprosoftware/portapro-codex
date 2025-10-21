@@ -73,14 +73,19 @@ const queryClient = new QueryClient({
 // Make queryClient globally available for error boundary
 (window as any).queryClient = queryClient;
 
-// One-time cache clear for PWA icon update
-const BUILD_ID = '2025-10-20-pwa-update';
-const storedBuildId = localStorage.getItem('__build_id');
-if (storedBuildId !== BUILD_ID) {
-  console.log('Build ID changed - clearing caches for fresh PWA icons');
-  clearAllCaches().then(() => {
-    localStorage.setItem('__build_id', BUILD_ID);
+// TEMPORARY: Force-unregister all service workers and clear caches
+// TODO: Remove this snippet after one deploy cycle
+if (typeof window !== "undefined" && "serviceWorker" in navigator) {
+  navigator.serviceWorker.getRegistrations().then(regs => {
+    regs.forEach(r => r.unregister());
+    console.log('🧹 Force-unregistered all service workers');
   });
+  if (window.caches?.keys) {
+    caches.keys().then(keys => {
+      keys.forEach(k => caches.delete(k));
+      console.log('🗑️ Cleared all caches');
+    });
+  }
 }
 
 createRoot(document.getElementById("root")!).render(
