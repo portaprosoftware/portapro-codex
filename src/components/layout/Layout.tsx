@@ -100,7 +100,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   // Mobile layout with bottom-up drawer
   return (
     <div className="min-h-screen flex flex-col w-full" style={{ backgroundColor: '#f9fafb' }}>
-      <header className="flex h-16 shrink-0 items-center justify-between border-b bg-gray-50 px-2 fixed top-0 left-0 right-0 z-50">
+      <header className="flex h-16 shrink-0 items-center justify-between border-b bg-gray-50 fixed top-0 left-0 right-0 z-50" style={{ paddingLeft: '20%', paddingRight: '20%' }}>
         <div className="flex items-center gap-2">
           <MobileNavDrawer />
           <Logo showText={true} />
@@ -119,7 +119,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       <main className="flex-1 overflow-y-auto p-2 pt-20 pb-20">
         {children}
       </main>
-      <footer className="flex h-12 shrink-0 items-center justify-between border-t bg-gray-50 px-2 fixed bottom-0 left-0 right-0 z-50">
+      <footer className="flex h-12 shrink-0 items-center justify-between border-t bg-gray-50 fixed bottom-0 left-0 right-0 z-50" style={{ paddingLeft: '20%', paddingRight: '20%' }}>
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           className="flex items-center justify-center text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors bg-transparent border-0 cursor-pointer"
