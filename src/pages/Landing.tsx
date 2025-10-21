@@ -2033,13 +2033,9 @@ export const Landing: React.FC = () => {
                         </p>
                       </div>
                     </div>
-                    <p className="text-[15px] text-muted-foreground leading-relaxed mb-6">
+                    <p className="text-[15px] text-muted-foreground leading-relaxed">
                       Join our private online community to swap tips, ask questions, and talk business with others who do what you do.
                     </p>
-                    <button className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm bg-gradient-to-r from-primary to-primary/90 text-white hover:shadow-md hover:scale-[1.02] transition-all">
-                      Join the Community
-                      <ExternalLink className="w-4 h-4" />
-                    </button>
                   </div>
                   
                   {/* Real-World Operators Card */}
@@ -2055,19 +2051,9 @@ export const Landing: React.FC = () => {
                         </p>
                       </div>
                     </div>
-                    <p className="text-[15px] text-muted-foreground leading-relaxed mb-6">
+                    <p className="text-[15px] text-muted-foreground leading-relaxed">
                       Explore where PortaPro is being used—from local family-owned companies to large regional fleets. Hear their stories and learn from their playbooks.
                     </p>
-                    <div className="flex flex-wrap gap-3">
-                      <button className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm bg-muted text-foreground hover:bg-muted/80 border border-border transition-all">
-                        View the Map
-                        <ExternalLink className="w-4 h-4" />
-                      </button>
-                      <button className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm bg-muted text-foreground hover:bg-muted/80 border border-border transition-all">
-                        User Stories
-                        <ExternalLink className="w-4 h-4" />
-                      </button>
-                    </div>
                   </div>
                   
                   {/* Shape the Future Card */}
@@ -2086,18 +2072,12 @@ export const Landing: React.FC = () => {
                     <p className="text-[15px] text-muted-foreground leading-relaxed mb-6">
                       Submit ideas, vote on features, and follow what's coming next on our public roadmap. Your voice directly impacts what we build.
                     </p>
-                    <div className="flex flex-wrap gap-3">
-                      <button className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm bg-muted text-foreground hover:bg-muted/80 border border-border transition-all">
-                        View Roadmap
-                        <ExternalLink className="w-4 h-4" />
-                      </button>
-                      <button 
-                        onClick={() => setIsFeatureModalOpen(true)}
-                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm bg-gradient-to-r from-primary to-primary/90 text-white hover:shadow-md hover:scale-[1.02] transition-all"
-                      >
-                        Submit Feature Idea
-                      </button>
-                    </div>
+                    <button 
+                      onClick={() => setIsFeatureModalOpen(true)}
+                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm bg-gradient-to-r from-primary to-primary/90 text-white hover:shadow-md hover:scale-[1.02] transition-all"
+                    >
+                      Submit Feature Idea
+                    </button>
                   </div>
                   
                   {/* Bottom CTA */}

@@ -14,20 +14,13 @@ export default function Community() {
       icon: Users,
       title: "Community Hub",
       subtitle: "Connect with Other Operators",
-      description: "Join our private online community to swap tips, ask questions, and talk business with others who do what you do.",
-      buttons: [
-        { label: "Join the Community", href: "#", primary: true }
-      ]
+      description: "Join our private online community to swap tips, ask questions, and talk business with others who do what you do."
     },
     {
       icon: MapPin,
       title: "Real-World Operators",
       subtitle: "See PortaPro in Action",
-      description: "Explore where PortaPro is being used—from local family-owned companies to large regional fleets. Hear their stories and learn from their playbooks.",
-      buttons: [
-        { label: "View the Map", href: "#", primary: false },
-        { label: "User Stories", href: "#", primary: false }
-      ]
+      description: "Explore where PortaPro is being used—from local family-owned companies to large regional fleets. Hear their stories and learn from their playbooks."
     },
     {
       icon: Lightbulb,
@@ -35,8 +28,7 @@ export default function Community() {
       subtitle: "Share Ideas & Influence the Product",
       description: "Submit ideas, vote on features, and follow what's coming next on our public roadmap. Your voice directly impacts what we build.",
       buttons: [
-        { label: "View Roadmap", href: "#", primary: false },
-        { label: "Submit Feature Idea", href: "#", primary: true }
+        { label: "Submit Feature Idea", action: () => setIsFeatureModalOpen(true), primary: true }
       ]
     }
   ];
@@ -97,25 +89,22 @@ export default function Community() {
                     </p>
                   </div>
                 </div>
-                <p className="text-[15px] sm:text-base text-muted-foreground leading-relaxed mb-6">
+                <p className="text-[15px] sm:text-base text-muted-foreground leading-relaxed">
                   {card.description}
                 </p>
-                <div className="flex flex-wrap gap-3">
-                  {card.buttons.map((button, btnIndex) => (
-                    <button
-                      key={btnIndex}
-                      onClick={() => button.label === "Submit Feature Idea" && setIsFeatureModalOpen(true)}
-                      className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all ${
-                        button.primary
-                          ? 'bg-gradient-to-r from-primary to-primary/90 text-white hover:shadow-md hover:scale-[1.02]'
-                          : 'bg-muted text-foreground hover:bg-muted/80 border border-border'
-                      }`}
-                    >
-                      {button.label}
-                      {button.label !== "Submit Feature Idea" && <ExternalLink className="w-4 h-4" />}
-                    </button>
-                  ))}
-                </div>
+                {card.buttons && (
+                  <div className="flex flex-wrap gap-3 mt-6">
+                    {card.buttons.map((button, btnIndex) => (
+                      <button
+                        key={btnIndex}
+                        onClick={button.action}
+                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all bg-gradient-to-r from-primary to-primary/90 text-white hover:shadow-md hover:scale-[1.02]"
+                      >
+                        {button.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </EnhancedCard>
           ))}
