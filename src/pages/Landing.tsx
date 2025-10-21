@@ -1224,6 +1224,8 @@ export const Landing: React.FC = () => {
                 <a href="/about" onClick={(e) => { e.preventDefault(); setAboutSliderOpen(true); }} className="block hover:text-white text-left">About</a>
                 
                 <a href="/blog" onClick={(e) => { e.preventDefault(); setBlogSliderOpen(true); }} className="block hover:text-white text-left">Blog</a>
+                
+                <a href="https://join.com/companies/portaprosoftwarecom/15069050?utm_medium=social_sharing&utm_source=copy_link" target="_blank" rel="noopener noreferrer" className="block hover:text-white text-left">Careers</a>
               </div>
             </div>
             <div className="space-y-3 sm:space-y-4">
