@@ -100,7 +100,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   // Mobile layout with bottom-up drawer
   return (
     <div className="min-h-screen flex flex-col w-full" style={{ backgroundColor: '#f9fafb' }}>
-      <header className="flex h-16 shrink-0 items-center justify-between border-b bg-gray-50 fixed top-0 left-0 right-0 z-50" style={{ paddingLeft: '20%', paddingRight: '20%' }}>
+      <header className="flex h-16 shrink-0 items-center justify-between border-b bg-gray-50 pl-2 fixed top-0 left-0 right-0 z-50" style={{ paddingRight: '10%' }}>
         <div className="flex items-center gap-2">
           <MobileNavDrawer />
           <Logo showText={true} />
