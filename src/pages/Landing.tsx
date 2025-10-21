@@ -224,50 +224,11 @@ export const Landing: React.FC = () => {
   const [requestInfoFormOpen, setRequestInfoFormOpen] = useState(false);
   const [featuresSheetOpen, setFeaturesSheetOpen] = useState(false);
   const [selectedBlogPost, setSelectedBlogPost] = useState<string | null>(null);
-  const [calendlyOpen, setCalendlyOpen] = useState(false);
   const featuresMegaMenuRef = useRef<{
     triggerOpen: () => void;
   } | null>(null);
   const isMobile = useIsMobile();
-  const calendlyContainerRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    if (!calendlyOpen) return;
-
-    const init = () => {
-      const w = window as any;
-      if (w.Calendly && calendlyContainerRef.current) {
-        calendlyContainerRef.current.innerHTML = '';
-        w.Calendly.initInlineWidget({
-          url: 'https://calendly.com/portapro/portapro-software-demo?hide_event_type_details=1&hide_gdpr_banner=1',
-          parentElement: calendlyContainerRef.current,
-        });
-        
-        // Retry once if empty (defensive against slow script load)
-        setTimeout(() => {
-          if (calendlyContainerRef.current && !calendlyContainerRef.current.querySelector('iframe')) {
-            init();
-          }
-        }, 500);
-      }
-    };
-
-    if (!(window as any).Calendly) {
-      const s = document.createElement('script');
-      s.src = 'https://assets.calendly.com/assets/external/widget.js';
-      s.async = true;
-      s.onload = init;
-      document.body.appendChild(s);
-    } else {
-      init();
-    }
-
-    return () => {
-      if (calendlyContainerRef.current) {
-        calendlyContainerRef.current.innerHTML = '';
-      }
-    };
-  }, [calendlyOpen]);
 
   // Date string used across sections
   const todayStr = new Date().toISOString().split('T')[0];
@@ -277,10 +238,6 @@ export const Landing: React.FC = () => {
     setRequestInfoFormOpen(true);
   };
 
-  // Handle Calendly popup
-  const handleScheduleDemo = () => {
-    setCalendlyOpen(true);
-  };
   const scrollToSection = (sectionId: string) => {
     setTimeout(() => {
       const element = document.getElementById(sectionId);
@@ -377,7 +334,6 @@ export const Landing: React.FC = () => {
               </SignInButton>
               <Button 
                 className="bg-gradient-blue text-white text-sm font-medium"
-                onClick={handleScheduleDemo}
               >
                 <Laptop className="w-4 h-4 mr-2" />
                 Schedule Demo
@@ -418,7 +374,6 @@ export const Landing: React.FC = () => {
                 <Button 
                   className="w-full bg-gradient-blue text-white text-sm font-medium"
                   onClick={() => {
-                    handleScheduleDemo();
                     setMobileMenuOpen(false);
                   }}
                 >
@@ -463,7 +418,6 @@ export const Landing: React.FC = () => {
                   variant="outline" 
                   size="default" 
                   className="font-medium px-6 py-3 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200 w-full sm:w-auto flex items-center justify-center min-w-[160px]"
-                  onClick={handleScheduleDemo}
                 >
                   <Laptop className="w-4 h-4 mr-2" />
                   Schedule Demo
@@ -1204,7 +1158,6 @@ export const Landing: React.FC = () => {
                   <div className="flex flex-col sm:flex-row gap-3 mt-4">
                     <Button 
                       className="flex-1 bg-gradient-blue text-white hover:bg-blue-700 font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
-                      onClick={handleScheduleDemo}
                     >
                       <Laptop className="w-4 h-4 mr-2" />
                       Schedule Demo
@@ -2512,19 +2465,8 @@ export const Landing: React.FC = () => {
         </div>}
 
 
-      {/* Calendly Popup Widget */}
-      {calendlyOpen && <div className="fixed inset-0 z-[9998] flex items-center justify-center bg-black/50 p-4">
-          <div className="relative z-[9999] bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-auto" role="dialog" aria-modal="true">
-            <button onClick={() => setCalendlyOpen(false)} className="absolute top-4 right-4 z-[10001] p-2 rounded-full bg-white/90 hover:bg-white shadow-lg transition-colors">
-              <X className="w-5 h-5 text-gray-700" />
-            </button>
-            <div className="w-full h-[min(90vh,700px)] min-h-[500px]">
-              <div ref={calendlyContainerRef} className="relative z-[10000] w-full h-full" style={{ minWidth: '320px' }} />
-            </div>
-          </div>
-        </div>}
       
-      <FeatureIdeaModal 
+      <FeatureIdeaModal
         isOpen={isFeatureModalOpen} 
         onClose={() => setIsFeatureModalOpen(false)} 
       />
