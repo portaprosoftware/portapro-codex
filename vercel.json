@@ -8,5 +8,8 @@
       "destination": "https://meetings.dialpad.com/portapro-tyler",
       "permanent": false
     }
+  ],
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

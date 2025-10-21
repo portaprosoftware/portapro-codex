@@ -70,11 +70,6 @@ const App = () => {
   // Enable PWA standalone mode behaviors (zoom lock, gesture blocking)
   usePWAStandalone();
 
-  // Determine hash-based redirect for production custom domain
-  const HASH_HOSTS = new Set(['www.portaprosoftware.com', 'portaprosoftware.com']);
-  const isHashHost = import.meta.env.PROD && HASH_HOSTS.has(window.location.hostname);
-  const dashboardRedirect = isHashHost ? '/#/dashboard' : '/dashboard';
-
   return (
     <ErrorBoundary>
       <RouterSelector>
@@ -135,7 +130,7 @@ const App = () => {
                 </Layout>
               </SignedIn>
               <SignedOut>
-                <RedirectToSignIn redirectUrl={dashboardRedirect} />
+                <RedirectToSignIn redirectUrl="/dashboard" />
               </SignedOut>
             </>
           } />

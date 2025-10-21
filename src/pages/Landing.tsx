@@ -230,11 +230,6 @@ export const Landing: React.FC = () => {
   } | null>(null);
   const isMobile = useIsMobile();
 
-  // Determine hash-based redirect for production custom domain
-  const HASH_HOSTS = new Set(['www.portaprosoftware.com', 'portaprosoftware.com']);
-  const isHashHost = import.meta.env.PROD && HASH_HOSTS.has(window.location.hostname);
-  const dashboardRedirect = isHashHost ? '/#/dashboard' : '/dashboard';
-
   // Date string used across sections
   const todayStr = new Date().toISOString().split('T')[0];
 
@@ -336,8 +331,8 @@ export const Landing: React.FC = () => {
             <div className="flex items-center gap-4">
               <SignInButton 
                 mode="redirect" 
-                forceRedirectUrl={dashboardRedirect}
-                fallbackRedirectUrl={dashboardRedirect}
+                forceRedirectUrl="/dashboard"
+                fallbackRedirectUrl="/dashboard"
               >
                 <Button variant="ghost" className="text-sm font-medium shadow-none hover:shadow-none">Sign In</Button>
               </SignInButton>
@@ -376,8 +371,8 @@ export const Landing: React.FC = () => {
               <div className="flex flex-col gap-2 pt-4 border-t">
                 <SignInButton 
                   mode="redirect" 
-                  forceRedirectUrl={dashboardRedirect}
-                  fallbackRedirectUrl={dashboardRedirect}
+                  forceRedirectUrl="/dashboard"
+                  fallbackRedirectUrl="/dashboard"
                 >
                   <Button variant="outline" className="w-full font-medium bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground shadow-none hover:shadow-none">Sign In</Button>
                 </SignInButton>
