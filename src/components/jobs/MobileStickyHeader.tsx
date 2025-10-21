@@ -16,7 +16,7 @@ export const MobileStickyHeader: React.FC<MobileStickyHeaderProps> = ({
   onAddJob
 }) => {
   return (
-    <div className="md:hidden sticky top-0 z-50 bg-white border-b border-border shadow-sm">
+    <div className="md:hidden sticky top-16 z-40 bg-white border-b border-border shadow-sm">
       <div className="flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-3">
           <Calendar className="w-5 h-5 text-primary" />
