@@ -238,6 +238,16 @@ export const Landing: React.FC = () => {
     setRequestInfoFormOpen(true);
   };
 
+  // Handle Calendly popup
+  const handleScheduleDemo = () => {
+    const w = window as any;
+    if (w.Calendly) {
+      w.Calendly.initPopupWidget({
+        url: 'https://calendly.com/portapro/portapro-software-demo?hide_event_type_details=1&hide_gdpr_banner=1'
+      });
+    }
+  };
+
   const scrollToSection = (sectionId: string) => {
     setTimeout(() => {
       const element = document.getElementById(sectionId);
@@ -332,6 +342,13 @@ export const Landing: React.FC = () => {
               >
                 <Button variant="ghost" className="text-sm font-medium shadow-none hover:shadow-none">Sign In</Button>
               </SignInButton>
+              <Button 
+                className="bg-gradient-blue text-white text-sm font-medium"
+                onClick={handleScheduleDemo}
+              >
+                <Laptop className="w-4 h-4 mr-2" />
+                Schedule Demo
+              </Button>
             </div>
           </div>
 
@@ -368,6 +385,16 @@ export const Landing: React.FC = () => {
                 <Button 
                   className="w-full bg-gradient-blue text-white text-sm font-medium"
                   onClick={() => {
+                    handleScheduleDemo();
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  <Laptop className="w-4 h-4 mr-2" />
+                  Schedule Demo
+                </Button>
+                <Button 
+                  className="w-full bg-gradient-blue text-white text-sm font-medium"
+                  onClick={() => {
                     handleRequestInfo();
                     setMobileMenuOpen(false);
                   }}
@@ -399,6 +426,15 @@ export const Landing: React.FC = () => {
               </div>
               
               <div className="flex flex-col sm:flex-row gap-2">
+                <Button 
+                  variant="outline" 
+                  size="default" 
+                  className="font-medium px-6 py-3 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200 w-full sm:w-auto flex items-center justify-center min-w-[160px]"
+                  onClick={handleScheduleDemo}
+                >
+                  <Laptop className="w-4 h-4 mr-2" />
+                  Schedule Demo
+                </Button>
                 <Button variant="outline" size="default" className="font-medium px-6 py-3 bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground hover:shadow-lg hover:-translate-y-1 transition-all duration-200 w-full sm:w-auto flex items-center justify-center min-w-[160px]" onClick={handleRequestInfo}>
                   <Phone className="w-4 h-4 mr-2" />
                   Request Information
@@ -1133,6 +1169,13 @@ export const Landing: React.FC = () => {
                       </li>)}
                   </ul>
                   <div className="flex flex-col sm:flex-row gap-3 mt-4">
+                    <Button 
+                      className="flex-1 bg-gradient-blue text-white hover:bg-blue-700 font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
+                      onClick={handleScheduleDemo}
+                    >
+                      <Laptop className="w-4 h-4 mr-2" />
+                      Schedule Demo
+                    </Button>
                     <Button 
                       variant="outline"
                       className="flex-1 bg-white text-foreground hover:bg-gray-50 font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
