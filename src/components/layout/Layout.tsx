@@ -107,12 +107,12 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       <main className="flex-1 overflow-y-auto p-2 pt-20 pb-20">
         {children}
       </main>
-      <footer className="flex h-16 shrink-0 items-center justify-between border-t bg-gray-50 px-6 fixed bottom-0 left-0 right-0 z-50">
-        <div className="flex items-center gap-2">
+      <footer className="flex h-16 shrink-0 items-center justify-between border-t bg-gray-50 px-6 fixed bottom-0 left-0 right-0 z-50 pb-2">
+        <div className="flex items-center gap-2 -mt-1">
           <UserButton 
             appearance={{
               elements: {
-                userButtonAvatarBox: "w-9 h-9",
+                userButtonAvatarBox: "w-10 h-10",
                 userButtonPopoverCard: "shadow-lg"
               }
             }}
@@ -128,9 +128,9 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors bg-transparent border-0 cursor-pointer ml-auto"
+          className="flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors bg-transparent border-0 cursor-pointer ml-auto -mt-1"
         >
-          <ArrowUp className="w-5 h-5" />
+          <ArrowUp className="w-5.5 h-5.5" />
           Top
         </button>
         
