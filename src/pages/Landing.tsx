@@ -41,6 +41,7 @@ import { AlertTriangle, Package, Droplets, ClipboardCheck, Megaphone } from 'luc
 import { FeaturesMegaMenu } from '@/components/marketing/FeaturesMegaMenu';
 import { FeaturesSheet } from '@/components/marketing/FeaturesSheet';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { CalendlyDrawer } from '@/components/marketing/CalendlyDrawer';
 
 // Demo content arrays for carousels - empty to be populated
 const aiScanningMedia: string[] = [];
@@ -224,6 +225,7 @@ export const Landing: React.FC = () => {
   const [requestInfoFormOpen, setRequestInfoFormOpen] = useState(false);
   const [featuresSheetOpen, setFeaturesSheetOpen] = useState(false);
   const [selectedBlogPost, setSelectedBlogPost] = useState<string | null>(null);
+  const [calendlyDrawerOpen, setCalendlyDrawerOpen] = useState(false);
   const featuresMegaMenuRef = useRef<{
     triggerOpen: () => void;
   } | null>(null);
@@ -236,6 +238,11 @@ export const Landing: React.FC = () => {
   // Handle questions form
   const handleRequestInfo = () => {
     setRequestInfoFormOpen(true);
+  };
+
+  // Handle schedule demo
+  const handleScheduleDemo = () => {
+    setCalendlyDrawerOpen(true);
   };
 
   const scrollToSection = (sectionId: string) => {
@@ -334,6 +341,7 @@ export const Landing: React.FC = () => {
               </SignInButton>
               <Button 
                 className="bg-gradient-blue text-white text-sm font-medium"
+                onClick={handleScheduleDemo}
               >
                 <Laptop className="w-4 h-4 mr-2" />
                 Schedule Demo
@@ -373,7 +381,10 @@ export const Landing: React.FC = () => {
                 </SignInButton>
                 <Button 
                   className="w-full bg-gradient-blue text-white text-sm font-medium"
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={() => {
+                    handleScheduleDemo();
+                    setMobileMenuOpen(false);
+                  }}
                 >
                   <Laptop className="w-4 h-4 mr-2" />
                   Schedule Demo
@@ -2472,6 +2483,11 @@ export const Landing: React.FC = () => {
       <JoinCommunityModal 
         isOpen={isJoinCommunityModalOpen} 
         onClose={() => setIsJoinCommunityModalOpen(false)} 
+      />
+
+      <CalendlyDrawer
+        open={calendlyDrawerOpen}
+        onOpenChange={setCalendlyDrawerOpen}
       />
     </div>;
 };
