@@ -2,6 +2,7 @@ import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useTodayInCompanyTimezone } from '@/hooks/useCompanyTimezone';
 import { useUserRole } from '@/hooks/useUserRole';
 import { UserButton, useUser } from '@clerk/clerk-react';
 import { Logo } from '@/components/ui/logo';
@@ -53,19 +54,22 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
     return () => window.removeEventListener('resize', checkIsDesktop);
   }, []);
 
+  // Get today's date in company timezone
+  const { today: todayInCompanyTZ } = useTodayInCompanyTimezone();
+
   // Fetch today's jobs count for badge
   const { data: todaysJobsCount } = useQuery({
-    queryKey: ['todays-jobs-count'],
+    queryKey: ['todays-jobs-count', todayInCompanyTZ],
     queryFn: async () => {
-      const today = new Date().toISOString().split('T')[0];
       const { data, error } = await supabase
         .from('jobs')
         .select('id', { count: 'exact' })
-        .eq('scheduled_date', today);
+        .eq('scheduled_date', todayInCompanyTZ);
       
       if (error) throw error;
       return data?.length || 0;
-    }
+    },
+    enabled: !!todayInCompanyTZ,
   });
 
   const getVisibleItems = (items: NavigationItem[]) => {
