@@ -26,7 +26,7 @@ export interface NavigationItem {
 export const coreItems: NavigationItem[] = [
   { 
     title: 'Dashboard', 
-    url: '/', 
+    url: '/dashboard', 
     icon: LayoutDashboard
   },
 ];
