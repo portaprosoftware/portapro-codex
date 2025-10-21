@@ -1,8 +1,10 @@
 {
+  "id": "/",
   "name": "PortaPro Software",
   "short_name": "PortaPro",
   "description": "Powering Portable Sanitation",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "orientation": "portrait-primary",
