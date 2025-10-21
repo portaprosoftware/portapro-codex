@@ -229,6 +229,39 @@ export const Landing: React.FC = () => {
     triggerOpen: () => void;
   } | null>(null);
   const isMobile = useIsMobile();
+  const calendlyContainerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!calendlyOpen) return;
+
+    const init = () => {
+      const w = window as any;
+      if (w.Calendly && calendlyContainerRef.current) {
+        // Clear previous content to avoid duplicates
+        calendlyContainerRef.current.innerHTML = '';
+        w.Calendly.initInlineWidget({
+          url: 'https://calendly.com/portapro/portapro-software-demo?hide_event_type_details=1&hide_gdpr_banner=1',
+          parentElement: calendlyContainerRef.current,
+        });
+      }
+    };
+
+    if (!(window as any).Calendly) {
+      const s = document.createElement('script');
+      s.src = 'https://assets.calendly.com/assets/external/widget.js';
+      s.async = true;
+      s.onload = init;
+      document.body.appendChild(s);
+    } else {
+      init();
+    }
+
+    return () => {
+      if (calendlyContainerRef.current) {
+        calendlyContainerRef.current.innerHTML = '';
+      }
+    };
+  }, [calendlyOpen]);
 
   // Date string used across sections
   const todayStr = new Date().toISOString().split('T')[0];
@@ -2480,10 +2513,7 @@ export const Landing: React.FC = () => {
               <X className="w-5 h-5 text-gray-700" />
             </button>
             <div className="w-full h-[700px] min-h-[500px]">
-              {/* Calendly inline widget begin */}
-              <div className="calendly-inline-widget" data-url="https://calendly.com/portapro/portapro-software-demo?hide_event_type_details=1&hide_gdpr_banner=1" style={{ minWidth: '320px', height: '700px' }}></div>
-              <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
-              {/* Calendly inline widget end */}
+              <div ref={calendlyContainerRef} className="calendly-inline-widget" style={{ minWidth: '320px', height: '700px' }} />
             </div>
           </div>
         </div>}
