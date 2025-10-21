@@ -7,8 +7,9 @@ import { Logo } from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
 import { useUserRole } from "@/hooks/useUserRole";
 import { UserButton, useUser } from "@clerk/clerk-react";
-import { Settings, ArrowUp } from "lucide-react";
+import { Settings, ArrowUp, Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import "@/utils/authCleanup"; // Load auth cleanup utilities
 
 interface LayoutProps {
@@ -18,6 +19,7 @@ interface LayoutProps {
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [mounted, setMounted] = useState(false);
   const [activeSection, setActiveSection] = useState<string>('/');
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const { user } = useUser();
   const navigate = useNavigate();
   
@@ -117,7 +119,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       <main className="flex-1 overflow-y-auto p-2 pt-20 pb-20">
         {children}
       </main>
-      <footer className="flex h-12 shrink-0 items-center justify-center border-t bg-gray-50 px-6 fixed bottom-0 left-0 right-0 z-50">
+      <footer className="flex h-12 shrink-0 items-center justify-between border-t bg-gray-50 px-2 fixed bottom-0 left-0 right-0 z-50">
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           className="flex items-center justify-center text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors bg-transparent border-0 cursor-pointer"
@@ -125,15 +127,24 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           <ArrowUp className="w-6 h-6" />
         </button>
         
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate('/settings')}
-          className="hidden lg:flex items-center gap-2"
+        <button
+          onClick={() => setNotificationsOpen(true)}
+          className="flex items-center justify-center text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors bg-transparent border-0 cursor-pointer"
         >
-          <Settings className="w-5 h-5 text-gray-600" />
-        </Button>
+          <Bell className="w-6 h-6" />
+        </button>
       </footer>
+
+      <Drawer open={notificationsOpen} onOpenChange={setNotificationsOpen}>
+        <DrawerContent className="h-[75vh]">
+          <DrawerHeader>
+            <DrawerTitle>Notifications</DrawerTitle>
+          </DrawerHeader>
+          <div className="p-4">
+            <p className="text-gray-500 text-center">No notifications yet</p>
+          </div>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 };
