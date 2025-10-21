@@ -2480,7 +2480,10 @@ export const Landing: React.FC = () => {
               <X className="w-5 h-5 text-gray-700" />
             </button>
             <div className="w-full h-[700px] min-h-[500px]">
-              {/* Calendly widget will be added here */}
+              {/* Calendly inline widget begin */}
+              <div className="calendly-inline-widget" data-url="https://calendly.com/portapro/portapro-software-demo?hide_event_type_details=1&hide_gdpr_banner=1" style={{ minWidth: '320px', height: '700px' }}></div>
+              <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
+              {/* Calendly inline widget end */}
             </div>
           </div>
         </div>}
