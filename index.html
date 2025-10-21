@@ -28,80 +28,95 @@
     <meta name="msapplication-config" content="/browserconfig.xml">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     
-    <!-- Calendly badge widget begin -->
-    <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
+    <!-- Calendly badge widget + in-modal close button -->
+    <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet" />
     <script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>
 
-    <style>
-      /* Make the popup card a positioning context */
-      .calendly-overlay .calendly-popup-content { position: relative !important; }
+    <script>
+      // --- init your badge as-is ---
+      window.addEventListener('load', function () {
+        Calendly.initBadgeWidget({
+          url: 'https://calendly.com/portapro/portapro-software-demo?hide_event_type_details=1&hide_gdpr_banner=1',
+          text: '',
+          color: '#0069ff',
+          textColor: '#ffffff',
+          branding: false
+        });
+      });
 
-      /* Hide Calendly's default viewport-corner close control (class names may vary by version) */
-      .calendly-popup-close,
-      .calendly-close-overlay {
-        display: none !important;
-      }
+      // --- observe DOM for Calendly popup, then patch styles + inject our button ---
+      (function mountCalendlyInsideClose(){
+        const injectOnce = () => {
+          const overlay = document.querySelector('.calendly-overlay');
+          const popup   = document.querySelector('.calendly-overlay .calendly-popup');
+          const card    = document.querySelector('.calendly-overlay .calendly-popup-content');
 
-      /* Our in-card close button */
-      .pp-calendly-close {
-        position: absolute;
-        top: 10px;
-        right: 12px;
-        width: 32px;
-        height: 32px;
-        line-height: 32px;
-        text-align: center;
-        font-size: 18px;
-        font-weight: 600;
-        border-radius: 9999px;
-        border: 1px solid rgba(0,0,0,.08);
-        background: #ffffff;
-        cursor: pointer;
-        z-index: 999999;           /* keep above Calendly internals */
-        box-shadow: 0 2px 8px rgba(0,0,0,.08);
-        user-select: none;
-      }
-      .pp-calendly-close:hover { filter: brightness(0.96); }
-    </style>
+          if (!overlay || !popup || !card) return false;
 
-    <script type="text/javascript">
-      // When the popup opens, inject an in-card close button
-      (function attachCalendlyCloseInsideCard(){
-        const observer = new MutationObserver(() => {
-          const popup = document.querySelector('.calendly-overlay .calendly-popup');               // popup wrapper
-          const content = document.querySelector('.calendly-overlay .calendly-popup-content');     // white card
+          // 1) Add final-win style tag so our rules beat Calendly's
+          if (!document.getElementById('pp-calendly-overrides')) {
+            const css = `
+              /* Hide Calendly's fixed/viewport close controls */
+              .calendly-overlay .calendly-popup-close,
+              .calendly-overlay .calendly-close-overlay {
+                display: none !important;
+              }
+              /* Make the popup (and the white card) positioning contexts */
+              .calendly-overlay .calendly-popup,
+              .calendly-overlay .calendly-popup-content {
+                position: relative !important;
+              }
+              /* Our in-card close button */
+              .pp-calendly-close {
+                position: absolute;
+                top: 12px;
+                right: 12px;
+                width: 32px;
+                height: 32px;
+                line-height: 30px;
+                text-align: center;
+                font-size: 18px;
+                font-weight: 600;
+                border-radius: 9999px;
+                border: 1px solid rgba(0,0,0,.08);
+                background: #fff;
+                cursor: pointer;
+                z-index: 999999; /* above iframe */
+                box-shadow: 0 2px 8px rgba(0,0,0,.08);
+                user-select: none;
+              }
+              .pp-calendly-close:hover { filter: brightness(0.96); }
+            `.trim();
+            const styleTag = document.createElement('style');
+            styleTag.id = 'pp-calendly-overrides';
+            styleTag.appendChild(document.createTextNode(css));
+            document.head.appendChild(styleTag);
+          }
 
-          if (popup && content && !content.querySelector('.pp-calendly-close')) {
+          // 2) Add our close button once per popup open
+          if (!card.querySelector('.pp-calendly-close')) {
             const btn = document.createElement('button');
             btn.className = 'pp-calendly-close';
-            btn.setAttribute('type', 'button');
+            btn.type = 'button';
             btn.setAttribute('aria-label', 'Close scheduling popup');
-            btn.innerHTML = '×';
-
-            const closePopup = () => {
+            btn.textContent = '×';
+            btn.addEventListener('click', function(){
               if (window.Calendly && typeof Calendly.closePopupWidget === 'function') {
                 Calendly.closePopupWidget();
               } else {
-                // Fallback: remove overlay if API isn't present for some reason
-                const overlay = document.querySelector('.calendly-overlay');
-                if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+                overlay?.remove();
               }
-            };
-
-            btn.addEventListener('click', closePopup);
-            content.appendChild(btn);
-
-            // Optional: also allow ESC to close
-            document.addEventListener('keydown', function escHandler(e){
-              if (e.key === 'Escape') closePopup();
-            }, { once: true });
+            });
+            card.appendChild(btn);
           }
-        });
+          return true;
+        };
 
-        observer.observe(document.documentElement, { childList: true, subtree: true });
+        // Watch for the popup appearing each time the badge is clicked
+        const mo = new MutationObserver(() => injectOnce());
+        mo.observe(document.documentElement, { childList: true, subtree: true });
       })();
     </script>
-    <!-- Calendly badge widget end -->
     
     <!-- Wistia Scripts -->
     <script src="https://fast.wistia.com/player.js" async></script>
