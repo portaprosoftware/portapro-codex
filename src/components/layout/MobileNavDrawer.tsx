@@ -124,7 +124,7 @@ export function MobileNavDrawer() {
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
         <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-          <AlignLeft className="h-6 w-6 text-gray-700" />
+          <AlignLeft className="h-7 w-7 text-gray-700" />
         </button>
       </DrawerTrigger>
       <DrawerContent className="h-[85vh] max-h-[85vh] flex flex-col z-[60] rounded-t-2xl shadow-2xl">

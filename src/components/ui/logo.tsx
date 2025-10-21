@@ -27,13 +27,13 @@ export const Logo: React.FC<LogoProps> = ({
 
   return (
     <div className={`flex items-center shrink-0 ${className}`}>
-      <div className="h-8 min-h-[32px] max-h-[32px] w-auto flex items-center justify-start overflow-hidden">
+      <div className="h-9 min-h-[35px] max-h-[35px] w-auto flex items-center justify-start overflow-hidden">
         {variant === 'footer' ? (
           <img 
             src="/lovable-uploads/bd35069b-599f-4b57-88be-7574eda2adf8.png?v=6" 
             alt="PortaPro logo" 
-            height={32}
-            className="h-8 min-h-[32px] max-h-[32px] w-auto object-contain shrink-0" 
+            height={35}
+            className="h-9 min-h-[35px] max-h-[35px] w-auto object-contain shrink-0" 
             loading="eager"
             decoding="sync"
           />
@@ -42,8 +42,8 @@ export const Logo: React.FC<LogoProps> = ({
             <img 
               src={companySettings.company_logo} 
               alt="Company logo" 
-              height={32}
-              className="h-8 min-h-[32px] max-h-[32px] w-auto object-contain shrink-0" 
+              height={35}
+              className="h-9 min-h-[35px] max-h-[35px] w-auto object-contain shrink-0" 
               loading="eager"
               decoding="sync"
             />
@@ -51,8 +51,8 @@ export const Logo: React.FC<LogoProps> = ({
             <img 
               src="/lovable-uploads/bd35069b-599f-4b57-88be-7574eda2adf8.png?v=6" 
               alt="PortaPro logo" 
-              height={32}
-              className="h-8 min-h-[32px] max-h-[32px] w-auto object-contain shrink-0" 
+              height={35}
+              className="h-9 min-h-[35px] max-h-[35px] w-auto object-contain shrink-0" 
               loading="eager"
               decoding="sync"
             />
