@@ -103,14 +103,16 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           <MobileNavDrawer />
           <Logo showText={true} />
         </div>
-        <UserButton 
-          appearance={{
-            elements: {
-              userButtonAvatarBox: "w-10 h-10",
-              userButtonPopoverCard: "shadow-lg"
-            }
-          }}
-        />
+        <div className="flex items-center">
+          <UserButton 
+            appearance={{
+              elements: {
+                userButtonAvatarBox: "w-10 h-10",
+                userButtonPopoverCard: "shadow-lg"
+              }
+            }}
+          />
+        </div>
       </header>
       <main className="flex-1 overflow-y-auto p-2 pt-20 pb-20">
         {children}
