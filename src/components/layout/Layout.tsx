@@ -105,7 +105,13 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           <MobileNavDrawer />
           <Logo showText={true} />
         </div>
-        <div className="flex items-center">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => setNotificationsOpen(true)}
+            className="flex items-center justify-center text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors bg-transparent border-0 cursor-pointer"
+          >
+            <Bell className="w-6 h-6" />
+          </button>
           <UserButton 
             appearance={{
               elements: {
@@ -119,19 +125,12 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       <main className="flex-1 overflow-y-auto p-2 pt-20 pb-20">
         {children}
       </main>
-      <footer className="flex h-12 shrink-0 items-center justify-between border-t bg-gray-50 fixed bottom-0 left-0 right-0 z-50" style={{ paddingLeft: '20%', paddingRight: '20%' }}>
+      <footer className="flex h-12 shrink-0 items-center justify-center border-t bg-gray-50 fixed bottom-0 left-0 right-0 z-50" style={{ paddingLeft: '20%', paddingRight: '20%' }}>
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           className="flex items-center justify-center text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors bg-transparent border-0 cursor-pointer"
         >
           <ArrowUp className="w-6 h-6" />
-        </button>
-        
-        <button
-          onClick={() => setNotificationsOpen(true)}
-          className="flex items-center justify-center text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors bg-transparent border-0 cursor-pointer"
-        >
-          <Bell className="w-6 h-6" />
         </button>
       </footer>
 
