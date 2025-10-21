@@ -111,7 +111,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             className="flex items-center justify-center text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors bg-transparent border-0 cursor-pointer"
             style={{ marginRight: '10%' }}
           >
-            <Bell className="w-6 h-6" />
+            <Bell className="w-[26px] h-[26px]" />
           </button>
           <UserButton 
             appearance={{
