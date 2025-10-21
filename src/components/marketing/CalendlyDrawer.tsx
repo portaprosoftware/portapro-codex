@@ -31,7 +31,7 @@ export function CalendlyDrawer({ open, onOpenChange }: CalendlyDrawerProps) {
         <div className="flex-1 overflow-y-auto p-4">
           <div
             className="calendly-inline-widget w-full h-full"
-            data-url="https://calendly.com/your-username/demo"
+            data-url="https://calendly.com/portapro/portapro-software-demo?hide_event_type_details=1&hide_gdpr_banner=1"
             style={{ minWidth: '320px', height: '100%' }}
           />
         </div>
