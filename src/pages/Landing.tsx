@@ -237,12 +237,18 @@ export const Landing: React.FC = () => {
     const init = () => {
       const w = window as any;
       if (w.Calendly && calendlyContainerRef.current) {
-        // Clear previous content to avoid duplicates
         calendlyContainerRef.current.innerHTML = '';
         w.Calendly.initInlineWidget({
           url: 'https://calendly.com/portapro/portapro-software-demo?hide_event_type_details=1&hide_gdpr_banner=1',
           parentElement: calendlyContainerRef.current,
         });
+        
+        // Retry once if empty (defensive against slow script load)
+        setTimeout(() => {
+          if (calendlyContainerRef.current && !calendlyContainerRef.current.querySelector('iframe')) {
+            init();
+          }
+        }, 500);
       }
     };
 
@@ -2507,13 +2513,13 @@ export const Landing: React.FC = () => {
 
 
       {/* Calendly Popup Widget */}
-      {calendlyOpen && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="relative bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-hidden">
-            <button onClick={() => setCalendlyOpen(false)} className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/90 hover:bg-white shadow-lg transition-colors">
+      {calendlyOpen && <div className="fixed inset-0 z-[9998] flex items-center justify-center bg-black/50 p-4">
+          <div className="relative z-[9999] bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-auto" role="dialog" aria-modal="true">
+            <button onClick={() => setCalendlyOpen(false)} className="absolute top-4 right-4 z-[10001] p-2 rounded-full bg-white/90 hover:bg-white shadow-lg transition-colors">
               <X className="w-5 h-5 text-gray-700" />
             </button>
-            <div className="w-full h-[700px] min-h-[500px]">
-              <div ref={calendlyContainerRef} className="calendly-inline-widget" style={{ minWidth: '320px', height: '700px' }} />
+            <div className="w-full h-[min(90vh,700px)] min-h-[500px]">
+              <div ref={calendlyContainerRef} className="relative z-[10000] w-full h-full" style={{ minWidth: '320px' }} />
             </div>
           </div>
         </div>}

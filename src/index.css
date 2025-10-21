@@ -294,6 +294,16 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  /* Calendly Widget Overrides - Force proper sizing and visibility */
+  .calendly-inline-widget,
+  .calendly-inline-widget iframe {
+    width: 100% !important;
+    height: 100% !important;
+    display: block !important;
+    position: relative;
+    z-index: 1;
+  }
 }
 
 /* Typography */
