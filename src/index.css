@@ -106,6 +106,10 @@
     --transition-fast: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
     --transition-bounce: all 400ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
     --transition-spring: all 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    
+    /* iOS Native Sheet System */
+    --inset-b: env(safe-area-inset-bottom);
+    --sheet-spring: all 240ms cubic-bezier(0.2, 0.75, 0.25, 1.1);
 
     /* Job Status Colors (H, S%, L%) - Updated to match new color scheme */
     --status-delivery: 214 83% 53%;        /* Blue (#3B82F6) */
@@ -196,6 +200,65 @@
   /* Prevent long text from breaking layout */
   * {
     word-break: break-word;
+  }
+  
+  /* iOS Native Sheet Styles */
+  .ios-sheet {
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.18);
+    backdrop-filter: saturate(160%) blur(12px);
+    -webkit-backdrop-filter: saturate(160%) blur(12px);
+    will-change: transform;
+    transition: var(--sheet-spring);
+  }
+  
+  .ios-sheet__grabber {
+    width: 36px;
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.18);
+    margin: 8px auto 12px;
+  }
+  
+  .ios-sheet__content {
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+    padding-bottom: calc(16px + var(--inset-b));
+  }
+  
+  .ios-sheet__content::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Mobile-specific tighter margins for native feel */
+  @media (max-width: 480px) {
+    .page-container {
+      padding: 8px 12px;
+    }
+    
+    .card {
+      border-radius: 14px;
+    }
+    
+    /* iOS-style list items */
+    .nav-list-item {
+      min-height: 52px;
+      padding: 12px 16px;
+    }
+    
+    .nav-list-item .icon {
+      width: 22px;
+      height: 22px;
+    }
+    
+    .nav-section-header {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      margin: 12px 0;
+    }
   }
   
   /* Emoji icons should appear bold and prominent */

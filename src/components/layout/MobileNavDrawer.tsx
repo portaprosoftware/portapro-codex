@@ -29,6 +29,19 @@ export function MobileNavDrawer() {
   const { hasStaffAccess, hasAdminAccess, isOwner } = useUserRole();
   const location = useLocation();
   const [open, setOpen] = React.useState(false);
+  
+  // Haptic feedback for iOS native feel
+  const haptic = (type: 'light' | 'medium' | 'heavy' = 'light') => {
+    const duration = type === 'heavy' ? 30 : type === 'medium' ? 20 : 10;
+    (window as any).navigator?.vibrate?.(duration);
+  };
+  
+  // Trigger haptic on open/close
+  React.useEffect(() => {
+    if (open) {
+      haptic('medium');
+    }
+  }, [open]);
 
   // Get today's date in company timezone
   const { today: todayInCompanyTZ } = useTodayInCompanyTimezone();
@@ -87,24 +100,27 @@ export function MobileNavDrawer() {
   };
 
   const NavSection: React.FC<{ title?: string; items: NavigationItem[] }> = ({ title, items }) => (
-    <div className="mb-6">
-      {title && <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-3">{title}</h3>}
-      <div className="space-y-1">
+    <div className="mb-4">
+      {title && <h3 className="nav-section-header text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-4">{title}</h3>}
+      <div className="space-y-0.5">
         {items.map((item) => {
           const active = isActive(item.url);
           return (
             <NavLink
               key={item.title}
               to={item.url}
-              onClick={() => setOpen(false)}
+              onClick={() => {
+                haptic('light');
+                setOpen(false);
+              }}
               className={cn(
-                "flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all",
+                "nav-list-item flex items-center gap-3 px-4 py-3 text-sm font-medium transition-all",
                 active 
-                  ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white shadow-md" 
-                  : "text-gray-700 hover:bg-gray-100"
+                  ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white shadow-sm" 
+                  : "text-gray-700 active:bg-gray-100"
               )}
             >
-              <item.icon className={cn("h-5 w-5 flex-shrink-0", active && "text-white")} />
+              <item.icon className={cn("icon h-5.5 w-5.5 flex-shrink-0", active && "text-white")} />
               <span className="flex-1">{item.title}</span>
               {item.badge && (
                 <span className={cn(
@@ -127,12 +143,13 @@ export function MobileNavDrawer() {
           <AlignLeft className="h-7 w-7 text-gray-700" />
         </button>
       </DrawerTrigger>
-      <DrawerContent className="h-[85vh] max-h-[85vh] flex flex-col z-[60] rounded-t-2xl shadow-2xl">
-        <DrawerHeader className="border-b pb-2 pt-2">
+      <DrawerContent className="ios-sheet h-[85vh] max-h-[85vh] flex flex-col z-[60] bg-white/95">
+        <DrawerHeader className="pb-0 pt-0">
+          <div className="ios-sheet__grabber" />
           <DrawerTitle className="sr-only">Navigation Menu</DrawerTitle>
         </DrawerHeader>
         
-        <nav className="flex-1 overflow-y-auto px-4 pt-4 pb-[max(16px,env(safe-area-inset-bottom))]">
+        <nav className="ios-sheet__content flex-1 overflow-y-auto pt-2">
           {visibleCoreItems.length > 0 && <NavSection items={visibleCoreItems} />}
           {visibleDayToDayItems.length > 0 && <NavSection title="DAY-TO-DAY" items={visibleDayToDayItems} />}
           {visibleInventoryItems.length > 0 && <NavSection title="INVENTORY" items={visibleInventoryItems} />}
