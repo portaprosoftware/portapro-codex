@@ -144,7 +144,7 @@ const handler = async (req: Request): Promise<Response> => {
                   </div>
                   
                   <div style="margin-top: 20px; text-align: center;">
-                    <a href="https://unpnuonbndubcuzxfnmg.supabase.co" style="display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+                    <a href="${Deno.env.get('SUPABASE_URL')}" style="display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">
                       View in PortaPro Dashboard
                     </a>
                   </div>
