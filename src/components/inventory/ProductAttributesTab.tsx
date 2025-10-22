@@ -83,16 +83,17 @@ export const ProductAttributesTab: React.FC<ProductAttributesTabProps> = ({ prod
     }
   });
 
-  const filteredAttributes = attributes.filter(attr => {
+  const filteredAttributes = attributes.filter((attr): attr is { id: string; name: string; values: string[]; required: boolean } => {
+    const typedAttr = attr as { id: string; name: string; values: string[]; required: boolean };
     if (searchQuery) {
-      return attr.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-             attr.values.some(value => value.toLowerCase().includes(searchQuery.toLowerCase()));
+      return typedAttr.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+             typedAttr.values.some(value => value.toLowerCase().includes(searchQuery.toLowerCase()));
     }
     if (attributeFilter === "required") {
-      return attr.required;
+      return typedAttr.required;
     }
     if (attributeFilter === "optional") {
-      return !attr.required;
+      return !typedAttr.required;
     }
     return true;
   });

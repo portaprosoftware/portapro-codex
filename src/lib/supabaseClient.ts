@@ -1,7 +1,7 @@
 // ✅ Use environment variables instead of hardcoding Supabase credentials.
 // ✅ Safe for multiple deployments (each Vercel project can use different DB).
 import { createClient } from '@supabase/supabase-js';
-import type { Database } from './types';
+import type { Database } from '@/integrations/supabase/types';
 
 // Pull from Vite environment variables (these MUST be set in Vercel)
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;

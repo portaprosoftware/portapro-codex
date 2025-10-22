@@ -336,7 +336,7 @@ export function useCreateJob() {
                 }, {} as Record<string, number>);
                 for (const [prodId, qty] of Object.entries(counts)) {
                   const prev = productQtyMap.get(prodId) || 0;
-                  productQtyMap.set(prodId, prev + qty);
+                  productQtyMap.set(prodId, prev + (qty as number));
                 }
                 console.log('Updated productQtyMap with lookup results:', Object.fromEntries(productQtyMap));
               } else {

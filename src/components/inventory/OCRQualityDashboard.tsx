@@ -151,11 +151,17 @@ export const OCRQualityDashboard: React.FC = () => {
         return acc;
       }, {} as Record<string, any>);
 
-      return Object.entries(vendorStats).map(([vendorId, stats]) => ({
-        vendorId,
-        ...stats,
-        qualityScore: (stats.verified / stats.total) * 100
-      }));
+      return Object.entries(vendorStats).map(([vendorId, stats]) => {
+        const typedStats = stats as { total: number; verified: number; avgConfidence: number; confidenceSum: number };
+        return {
+          vendorId,
+          total: typedStats.total,
+          verified: typedStats.verified,
+          avgConfidence: typedStats.avgConfidence,
+          confidenceSum: typedStats.confidenceSum,
+          qualityScore: (typedStats.verified / typedStats.total) * 100
+        };
+      });
     },
     staleTime: 30000 // Cache for 30 seconds
   });

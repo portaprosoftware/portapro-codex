@@ -71,8 +71,9 @@ export const AdvancedConsumableAnalytics: React.FC = () => {
         total + (item.on_hand_qty || 0) * (item.unit_cost || 0), 0) || 0;
 
       const stockTrends = Object.values(adjustmentsByDate).map(trend => ({
-        ...trend,
-        stock_value: currentStockValue // Simplified - could track daily balances
+        date: trend.date,
+        stock_value: currentStockValue, // Simplified - could track daily balances
+        usage_cost: trend.usage_cost
       }));
 
       // 3. Top Consumables by usage (based on stock adjustments)
@@ -94,10 +95,11 @@ export const AdvancedConsumableAnalytics: React.FC = () => {
       const topConsumables = Object.entries(consumableUsage)
         .map(([id, usage]) => {
           const consumable = consumableNames?.find(c => c.id === id);
+          const typedUsage = usage as { quantity: number; cost: number };
           return {
             name: consumable?.name || 'Unknown',
-            quantity: usage.quantity,
-            cost: usage.cost
+            quantity: typedUsage.quantity,
+            cost: typedUsage.cost
           };
         })
         .sort((a, b) => b.cost - a.cost)
@@ -177,10 +179,10 @@ export const AdvancedConsumableAnalytics: React.FC = () => {
       const usageByJob = Object.values(usageByJobType);
 
       const analyticsData: AdvancedAnalyticsData = {
-        usageByCategory: usageByCategory.length > 0 ? usageByCategory : [
+        usageByCategory: usageByCategory.length > 0 ? usageByCategory as Array<{ category: string; value: number; cost: number }> : [
           { category: 'No Data', value: 0, cost: 0 }
         ],
-        usageByJob: usageByJob.length > 0 ? usageByJob : [
+        usageByJob: usageByJob.length > 0 ? usageByJob as Array<{ job_type: string; usage: number; cost: number }> : [
           { job_type: 'No Data', usage: 0, cost: 0 }
         ],
         stockTrends: stockTrends.length > 0 ? stockTrends : [
