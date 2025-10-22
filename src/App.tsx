@@ -66,11 +66,6 @@ import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
 import Security from './pages/Security';
 
-// --- domain gating for root vs subdomains ---
-const ROOT_DOMAINS = new Set(["portaprosoftware.com", "www.portaprosoftware.com"]);
-const hostname = typeof window !== "undefined" ? window.location.hostname : "";
-const isRootDomain = ROOT_DOMAINS.has(hostname);
-
 const App = () => {
   // Enable PWA standalone mode behaviors (zoom lock, gesture blocking)
   usePWAStandalone();
@@ -80,22 +75,18 @@ const App = () => {
       <RouterSelector>
         <div className="min-h-screen bg-background font-sans antialiased">
           <Routes>
-            {/* Root route – show Landing on main domain, force login on customer subdomains */}
+            {/* Root route – works on all domains */}
             <Route
               path="/"
               element={
-                isRootDomain ? (
-                  <Landing />
-                ) : (
-                  <>
-                    <SignedIn>
-                      <Navigate to="/dashboard" replace />
-                    </SignedIn>
-                    <SignedOut>
-                      <RedirectToSignIn redirectUrl="/dashboard" />
-                    </SignedOut>
-                  </>
-                )
+                <>
+                  <SignedIn>
+                    <Navigate to="/dashboard" replace />
+                  </SignedIn>
+                  <SignedOut>
+                    <Auth />
+                  </SignedOut>
+                </>
               }
             />
 
