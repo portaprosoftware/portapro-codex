@@ -119,19 +119,33 @@ const App = () => {
           </Route>
 
           {/* Root route - forward to login (or dashboard if already signed in) */}
+// Add this near the top of the file (outside App component or inside it before return):
+const ROOT_DOMAINS = new Set(["portaprosoftware.com", "www.portaprosoftware.com"]);
+const isRootDomain = ROOT_DOMAINS.has(window.location.hostname);
+
+// ...
+
+{/* Root route – show Landing on main domain, force login on customer subdomains */}
 <Route
   path="/"
   element={
-    <>
-      <SignedIn>
-        <Navigate to="/dashboard" replace />
-      </SignedIn>
-      <SignedOut>
-        <RedirectToSignIn redirectUrl="/dashboard" />
-      </SignedOut>
-    </>
+    isRootDomain ? (
+      // ✅ Main marketing site → show Landing page normally
+      <Landing />
+    ) : (
+      // ✅ Customer subdomains → force login or send to dashboard
+      <>
+        <SignedIn>
+          <Navigate to="/dashboard" replace />
+        </SignedIn>
+        <SignedOut>
+          <RedirectToSignIn redirectUrl="/dashboard" />
+        </SignedOut>
+      </>
+    )
   }
 />
+
 
           
           {/* Dashboard route - requires authentication */}
