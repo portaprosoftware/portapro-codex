@@ -9,6 +9,9 @@ verify_jwt = false
 [functions.get_role]
 verify_jwt = false
 
+[functions.invite-user]
+verify_jwt = false
+
 [functions.stripe-payment-intent]
 verify_jwt = false
 

@@ -8,27 +8,39 @@ export type AppRole = 'owner' | 'dispatcher' | 'admin' | 'driver' | 'viewer' | '
 
 export function useUserRole() {
   const { user, isLoaded } = useUser();
+  const [retryCount, setRetryCount] = React.useState(0);
 
   // Query the user_roles table to get the actual role from Supabase
   const { data: supabaseRole, isLoading: roleLoading } = useQuery({
-    queryKey: ['user-role', user?.id],
+    queryKey: ['user-role', user?.id, retryCount],
     queryFn: async () => {
       if (!user?.id) return null;
 
+      // Add exponential backoff to handle cold starts
+      const delay = (attempt: number) => new Promise(resolve => setTimeout(resolve, Math.min(300 * Math.pow(1.5, attempt), 2000)));
+      
       // PRIMARY: Try edge function first (bypasses RLS with service role)
-      try {
-        const { data, error } = await supabase.functions.invoke('get_role', {
-          body: { clerkUserId: user.id },
-        });
-
-        if (!error && data?.success && data?.role) {
-          if (import.meta.env.DEV) {
-            console.info('useUserRole: Edge function success', data.role);
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          if (attempt > 0) {
+            await delay(attempt - 1);
           }
-          return data.role as AppRole;
+
+          const { data, error } = await supabase.functions.invoke('get_role', {
+            body: { clerkUserId: user.id },
+          });
+
+          if (!error && data?.success && data?.role) {
+            if (import.meta.env.DEV) {
+              console.info('useUserRole: Edge function success', data.role);
+            }
+            return data.role as AppRole;
+          }
+        } catch (edgeError) {
+          if (attempt === 2) {
+            console.warn('useUserRole: Edge function failed after retries, trying direct DB lookup', edgeError);
+          }
         }
-      } catch (edgeError) {
-        console.warn('useUserRole: Edge function failed, trying direct DB lookup', edgeError);
       }
 
       // FALLBACK: Direct Supabase query with retry
@@ -59,8 +71,8 @@ export function useUserRole() {
       return roleData?.role as AppRole | null;
     },
     enabled: isLoaded && !!user,
-    retry: 2,
-    retryDelay: 500,
+    retry: 1,
+    retryDelay: 1000,
   });
 
   // Priority: Supabase role > Clerk publicMetadata role > unknown
