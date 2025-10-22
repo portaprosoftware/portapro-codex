@@ -43,11 +43,18 @@ export function CalendlyDrawer({ open, onOpenChange }: CalendlyDrawerProps) {
 
         {/* Calendly Embed */}
         <div className="h-[calc(100%-64px)] overflow-hidden">
+          {/* Calendly inline widget begin */}
           <div
-            className="calendly-inline-widget w-full h-full"
+            className="calendly-inline-widget"
             data-url="https://calendly.com/portapro/portapro-software-demo?hide_event_type_details=1&hide_gdpr_banner=1"
-            style={{ minWidth: '320px', height: '100%' }}
+            style={{ minWidth: '320px', height: '700px' }}
           />
+          <script
+            type="text/javascript"
+            src="https://assets.calendly.com/assets/external/widget.js"
+            async
+          ></script>
+          {/* Calendly inline widget end */}
         </div>
       </div>
     </>
