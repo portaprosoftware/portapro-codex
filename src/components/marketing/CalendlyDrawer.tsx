@@ -28,7 +28,7 @@ export function CalendlyDrawer({ open, onOpenChange }: CalendlyDrawerProps) {
       />
       
       {/* Drawer */}
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 z-50 w-[50%] max-w-[900px] h-[75vh] md:w-[50%] md:h-[75vh] max-md:w-full max-md:h-full bg-white rounded-t-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.12)] overflow-hidden animate-slide-in-bottom">
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 z-50 w-full h-full lg:w-[50%] lg:max-w-[900px] lg:h-[75vh] bg-white rounded-t-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.12)] overflow-hidden animate-slide-in-bottom">
         {/* Header with close button */}
         <div className="flex items-center justify-between p-4 border-b bg-white">
           <h2 className="text-lg font-semibold text-foreground">Schedule a Demo</h2>
