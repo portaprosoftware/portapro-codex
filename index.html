@@ -1,38 +1,39 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    
-    <!-- PWA and iOS Native Feel -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    
-    <!-- Favicons -->
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png">
-    <link rel="shortcut icon" type="image/png" href="/favicon.png">
-    
-    <!-- Apple touch icon for iOS PWA -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png">
-    
-    <!-- Chrome PWA icons for macOS -->
-    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
-    
-    <link rel="manifest" href="/site.webmanifest">
-    <meta name="apple-mobile-web-app-title" content="PortaPro">
-    <meta name="msapplication-TileColor" content="#ffffff">
-    <meta name="msapplication-config" content="/browserconfig.xml">
+
+    <!-- PWA and iOS Native App Support -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="PortaPro" />
+
+    <!-- ✅ Favicon (Browser tab, bookmarks, favorites) -->
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
+    <link rel="shortcut icon" href="/favicon.png" />
+
+    <!-- ✅ Apple Touch Icon (Home screen icon only for iOS) -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png" />
+
+    <!-- ✅ PWA Manifest (Only for installable apps) -->
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#ffffff" />
+
+    <!-- Windows/Edge tiles -->
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta name="msapplication-config" content="/browserconfig.xml" />
+
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    
+
     <!-- Wistia Scripts -->
     <script src="https://fast.wistia.com/player.js" async></script>
     <script src="https://fast.wistia.com/embed/6qvo6ezwgi.js" async type="module"></script>
     <script src="https://fast.wistia.com/embed/a2finp2l33.js" async type="module"></script>
-    
+
+    <!-- SEO + Social -->
     <title>PortaPro Software - Powering Portable Sanitation</title>
     <meta name="description" content="Powering Portable Sanitation" />
     <meta name="author" content="PortaPro" />
@@ -42,31 +43,25 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="/" />
     <meta property="og:site_name" content="PortaPro" />
-    
+
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="PortaPro Software" />
     <meta name="twitter:description" content="Mobile tech app for portable toilet rental service" />
 
     <style>
-      /* PWA safe area support */
-      .safe-area-top {
-        padding-top: env(safe-area-inset-top);
-      }
-      .safe-area-bottom {
-        padding-bottom: env(safe-area-inset-bottom);
-      }
-      
-      /* Mobile optimizations - native app feel */
+      /* Safe area for iOS devices */
+      .safe-area-top { padding-top: env(safe-area-inset-top); }
+      .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom); }
+
+      /* Mobile native look & feel */
       @media (max-width: 768px) {
         body {
           -webkit-touch-callout: none;
           -webkit-user-select: none;
           -webkit-tap-highlight-color: transparent;
-          /* Minimum 16px font to prevent auto-zoom on input focus */
-          font-size: 16px;
+          font-size: 16px; /* Prevents input zoom */
         }
-        
-        /* Prevent input zoom on iOS */
+
         input, textarea, select {
           font-size: 16px !important;
         }
