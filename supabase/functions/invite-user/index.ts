@@ -14,6 +14,8 @@ interface InviteUserRequest {
   phone?: string;
   invitedBy: string;
   environment?: 'development' | 'production';
+  redirectBase?: string;
+  organizationId?: string;
 }
 
 const clerkSecretKeyProd = Deno.env.get('CLERK_SECRET_KEY');
@@ -41,7 +43,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.log('Starting user invitation process...');
     
     const requestBody: InviteUserRequest = await req.json();
-    const { email, firstName, lastName, role, phone, invitedBy, environment } = requestBody;
+    const { email, firstName, lastName, role, phone, invitedBy, environment, redirectBase, organizationId } = requestBody;
 
     // Determine which Clerk key to use
     let clerkSecretKey: string | undefined;
@@ -79,15 +81,59 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Inviting user: ${firstName} ${lastName} (${email}) with role: ${role}`);
 
-    // Get the origin from request headers to construct redirect URL
-    const origin = req.headers.get('origin') || req.headers.get('referer')?.split('/').slice(0, 3).join('/') || '';
+    // Use explicit redirectBase from client, fallback to headers
+    const origin = redirectBase || req.headers.get('origin') || req.headers.get('referer')?.split('/').slice(0, 3).join('/') || '';
+    
+    if (!origin) {
+      console.error('No redirect base available');
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: 'No redirect URL could be determined. Please try again.'
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate redirect URL hostname for security
     const redirectUrl = `${origin}/dashboard`;
     
-    console.log('Redirect URL:', redirectUrl);
+    try {
+      const url = new URL(redirectUrl);
+      if (!url.hostname.endsWith('portaprosoftware.com') && !url.hostname.includes('localhost')) {
+        console.error('Invalid redirect hostname:', url.hostname);
+        return new Response(
+          JSON.stringify({
+            success: false,
+            error: 'Invalid redirect URL'
+          }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    } catch (e) {
+      console.error('Invalid redirect URL format:', redirectUrl);
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Invalid redirect URL format'
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    console.log('Using redirect URL:', redirectUrl);
+    console.log('Organization ID:', organizationId || 'none (global invitation)');
 
-    // Create Clerk invitation using Clerk Invitations API
-    console.log('Creating Clerk invitation...');
-    const clerkResponse = await fetch('https://api.clerk.com/v1/invitations', {
+    // Create Clerk invitation using appropriate API endpoint
+    const isOrgInvitation = !!organizationId;
+    const invitationEndpoint = isOrgInvitation
+      ? `https://api.clerk.com/v1/organizations/${organizationId}/invitations`
+      : 'https://api.clerk.com/v1/invitations';
+    
+    console.log(`Creating Clerk invitation via ${isOrgInvitation ? 'Organization' : 'Global'} API...`);
+    console.log('Endpoint:', invitationEndpoint);
+    
+    const clerkResponse = await fetch(invitationEndpoint, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${clerkSecretKey}`,
@@ -130,11 +176,13 @@ const handler = async (req: Request): Promise<Response> => {
         invitation_token: clerkInvitation.id, // Use Clerk invitation ID
         clerk_user_id: null, // Will be set when user accepts
         sent_at: new Date().toISOString(),
-        invitation_type: 'clerk_invitation',
+        invitation_type: isOrgInvitation ? 'clerk_org_invitation' : 'clerk_invitation',
         metadata: {
           created_via: 'admin_invite',
           clerk_invitation_id: clerkInvitation.id,
           redirect_url: redirectUrl,
+          organization_id: organizationId || null,
+          invitation_endpoint: invitationEndpoint,
         }
       })
       .select()

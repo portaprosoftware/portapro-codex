@@ -9,6 +9,8 @@ interface InviteUserData {
   lastName: string;
   role: string;
   phone?: string;
+  organizationId?: string;
+  redirectBase?: string;
 }
 
 interface InviteUserResponse {
@@ -38,7 +40,8 @@ export const useInviteUser = () => {
         body: {
           ...userData,
           invitedBy: user.id,
-          environment: import.meta.env.DEV ? 'development' : 'production'
+          environment: import.meta.env.DEV ? 'development' : 'production',
+          redirectBase: window.location.origin
         }
       });
 
