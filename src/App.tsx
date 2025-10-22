@@ -84,7 +84,7 @@ const App = () => {
                     <Navigate to="/dashboard" replace />
                   </SignedIn>
                   <SignedOut>
-                    <Auth />
+                    <Landing />
                   </SignedOut>
                 </>
               }
