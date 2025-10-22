@@ -73,21 +73,6 @@ const queryClient = new QueryClient({
 // Make queryClient globally available for error boundary
 (window as any).queryClient = queryClient;
 
-// TEMPORARY: Force-unregister all service workers and clear caches
-// TODO: Remove this snippet after one deploy cycle
-if (typeof window !== "undefined" && "serviceWorker" in navigator) {
-  navigator.serviceWorker.getRegistrations().then(regs => {
-    regs.forEach(r => r.unregister());
-    console.log('🧹 Force-unregistered all service workers');
-  });
-  if (window.caches?.keys) {
-    caches.keys().then(keys => {
-      keys.forEach(k => caches.delete(k));
-      console.log('🗑️ Cleared all caches');
-    });
-  }
-}
-
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
