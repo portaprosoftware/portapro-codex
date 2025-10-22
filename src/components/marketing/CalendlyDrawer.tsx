@@ -76,11 +76,11 @@ export function CalendlyDrawer({ open, onOpenChange }: CalendlyDrawerProps) {
         </div>
 
         {/* Calendly Embed */}
-        <div className="h-[calc(100%-64px)] overflow-hidden">
+        <div className="w-full h-[calc(100%-64px)]">
           <div
             ref={containerRef}
-            className="w-full h-full"
-            style={{ minWidth: '320px' }}
+            className="w-full"
+            style={{ minWidth: '320px', height: '100%' }}
           />
         </div>
       </div>
