@@ -18,10 +18,13 @@ const PROD_HOSTS = new Set(['portaprosoftware.com', 'www.portaprosoftware.com'])
 const hostname = window.location.hostname;
 const useProdKey = PROD_HOSTS.has(hostname);
 
-// Select appropriate Clerk key based on hostname
-const prodKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY_PROD || import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
-const devKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY_DEV || "pk_test_YWN0dWFsLW11dHQtOTEuY2xlcmsuYWNjb3VudHMuZGV2JA";
-const CLERK_PUBLISHABLE_KEY = useProdKey ? prodKey : devKey;
+// ✅ Always pull Clerk key from environment (set in Vercel)
+const CLERK_PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
+if (!CLERK_PUBLISHABLE_KEY) {
+  throw new Error("❌ Missing Clerk publishable key. Set NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY in your environment.");
+}
+
 
 // Log Clerk mode without exposing keys
 console.info(`Clerk mode: ${useProdKey ? 'PRODUCTION' : 'DEVELOPMENT'} (${hostname})`);
