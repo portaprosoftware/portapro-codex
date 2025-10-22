@@ -68,7 +68,20 @@ export const useClerkProfileSync = () => {
     },
     onError: (error: any) => {
       console.error('❌ Profile sync error:', error);
-      toast.error('User profile not found. Please contact support.');
+      
+      // Detect network/CORS errors and show a softer message
+      const isCorsOrNetworkError = 
+        error?.name === 'FunctionsFetchError' || 
+        error?.message?.includes('Failed to send a request to the Edge Function') ||
+        error?.message?.includes('CORS') ||
+        error?.message?.includes('network');
+      
+      if (isCorsOrNetworkError) {
+        console.warn('⏳ Sync delayed due to network/CORS issue - will retry');
+        // No destructive toast for transient errors
+      } else {
+        toast.error('Unable to sync profile. Please try again.');
+      }
     },
     onSuccess: (data) => {
       if (data?.profileId) {
