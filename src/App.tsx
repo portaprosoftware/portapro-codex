@@ -118,8 +118,21 @@ const App = () => {
             <Route path="profile" element={<DriverProfilePage />} />
           </Route>
 
-          {/* Root route - always show landing page */}
-          <Route path="/" element={<Landing />} />
+          {/* Root route - forward to login (or dashboard if already signed in) */}
+<Route
+  path="/"
+  element={
+    <>
+      <SignedIn>
+        <Navigate to="/dashboard" replace />
+      </SignedIn>
+      <SignedOut>
+        <RedirectToSignIn redirectUrl="/dashboard" />
+      </SignedOut>
+    </>
+  }
+/>
+
           
           {/* Dashboard route - requires authentication */}
           <Route path="/dashboard" element={
