@@ -57,7 +57,6 @@ import ProductItemDetail from './pages/ProductItemDetail';
 import { ComingSoon } from './pages/ComingSoon';
 import { Help } from './pages/Help';
 import CustomerPortalPage from './pages/CustomerPortalPage';
-import PKPass from './pages/PKPass';
 
 import Features from './pages/Features';
 import About from './pages/About';
@@ -94,9 +93,6 @@ const App = () => {
             {/* Public QR Scan Routes */}
             <Route path="/scan/:unitId" element={<ScanFeedback />} />
             <Route path="/consumable-request/:consumableId" element={<ConsumableRequestPage />} />
-            
-            {/* Apple Wallet Pass Route */}
-            <Route path="/pkpass" element={<PKPass />} />
 
             {/* Public Payment Routes */}
             <Route path="/payment/:invoiceId" element={<PublicPayment />} />
