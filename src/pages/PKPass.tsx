@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Download, Wallet } from 'lucide-react';
-import { toast } from 'sonner';
 
 const PKPass = () => {
   const [passUrl, setPassUrl] = useState<string | null>(null);
