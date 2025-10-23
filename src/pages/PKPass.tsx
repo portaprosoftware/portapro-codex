@@ -9,27 +9,13 @@ const PKPass = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchPassUrl = async () => {
-      try {
-        // Get the public URL for the .pkpass file
-        const { data } = supabase.storage
-          .from('wallet-passes')
-          .getPublicUrl('portapro-wallet.pkpass');
-        
-        if (data?.publicUrl) {
-          setPassUrl(data.publicUrl);
-          // Automatically trigger download on mount
-          window.location.href = data.publicUrl;
-        }
-      } catch (error) {
-        console.error('Error fetching wallet pass:', error);
-        toast.error('Failed to load wallet pass');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPassUrl();
+    // Serve the .pkpass file directly from public folder
+    const passUrl = '/halloween.pkpass';
+    setPassUrl(passUrl);
+    setLoading(false);
+    
+    // Automatically trigger download on mount
+    window.location.href = passUrl;
   }, []);
 
   const handleDownload = () => {
