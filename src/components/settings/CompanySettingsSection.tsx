@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Building2, Edit, Mail, MapPin, Phone, Clock, Percent } from "lucide-react";
+import { Building2, Edit, Mail, MapPin, Phone, Clock, Percent, DollarSign } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { CompanySettingsModal } from "@/components/settings/CompanySettingsModal";
 import { CustomerSupportEmailModal } from "@/components/settings/CustomerSupportEmailModal";
@@ -135,6 +135,22 @@ export function CompanySettingsSection() {
                   <span className="text-sm text-muted-foreground">Phone:</span>
                   <p className="text-sm">{formatPhoneNumber(companySettings?.company_phone)}</p>
                 </div>
+              </div>
+
+              {/* Default Delivery Fee */}
+              <div className="space-y-2 mt-4">
+                <h4 className="font-medium text-foreground flex items-center space-x-2">
+                  <DollarSign className="w-4 h-4" />
+                  <span>Default Delivery Fee</span>
+                  <span className="font-bold text-foreground">
+                    ${companySettings?.default_delivery_fee !== undefined
+                      ? companySettings.default_delivery_fee.toFixed(2)
+                      : "0.00"}
+                  </span>
+                </h4>
+                <p className="text-xs text-muted-foreground pl-6">
+                  Default fee applied to deliveries when enabled
+                </p>
               </div>
             </div>
 
