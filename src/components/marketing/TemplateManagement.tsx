@@ -316,7 +316,7 @@ export const TemplateManagement: React.FC = () => {
         {/* Email Templates */}
         <Collapsible open={emailUserExpanded} onOpenChange={setEmailUserExpanded}>
           <CollapsibleTrigger asChild>
-            <Button variant="ghost" className="w-full justify-between p-4 h-auto bg-white border border-gray-200 hover:bg-gray-50 rounded-lg">
+            <Button variant="ghost" className="w-full justify-between p-4 h-auto bg-gray-100 border border-gray-200 hover:bg-gray-200 rounded-lg">
               <div className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-gray-900" />
                 <span className="text-xl font-semibold text-gray-900">Email Templates</span>
@@ -346,7 +346,7 @@ export const TemplateManagement: React.FC = () => {
         {/* SMS Templates */}
         <Collapsible open={smsUserExpanded} onOpenChange={setSmsUserExpanded}>
           <CollapsibleTrigger asChild>
-            <Button variant="ghost" className="w-full justify-between p-4 h-auto bg-white border border-gray-200 hover:bg-gray-50 rounded-lg">
+            <Button variant="ghost" className="w-full justify-between p-4 h-auto bg-gray-100 border border-gray-200 hover:bg-gray-200 rounded-lg">
               <div className="flex items-center gap-3">
                 <MessageSquare className="w-5 h-5 text-gray-900" />
                 <span className="text-xl font-semibold text-gray-900">SMS Templates</span>
