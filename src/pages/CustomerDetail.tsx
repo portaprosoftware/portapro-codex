@@ -93,7 +93,7 @@ export default function CustomerDetail() {
                     size="sm"
                     className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold border-0"
                   >
-                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    <ArrowLeft className="w-4 h-4 mr-1" />
                     Customer List
                   </Button>
                 </Link>
@@ -111,11 +111,6 @@ export default function CustomerDetail() {
                   </BreadcrumbList>
                 </Breadcrumb>
               </div>
-              
-              {/* Customer name */}
-              <h1 className="text-3xl font-bold text-gray-900 leading-tight">
-                {customer.name}
-              </h1>
             </div>
           </div>
           
