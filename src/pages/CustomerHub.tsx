@@ -48,7 +48,7 @@ const getCustomerTypeGradient = (type: string) => {
 };
 
 type SortDirection = 'asc' | 'desc' | 'default';
-type SortColumn = 'customer' | 'type' | 'jobs' | 'balance' | null;
+type SortColumn = 'customer' | 'type' | 'last_delivery' | null;
 
 const CustomerHub: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -89,6 +89,50 @@ const CustomerHub: React.FC = () => {
     },
   });
 
+  // Fetch last delivery date for each customer
+  const { data: lastDeliveriesData = new Map() } = useQuery({
+    queryKey: ['customer-last-deliveries'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('jobs')
+        .select('customer_id, scheduled_date, actual_completion_time')
+        .eq('job_type', 'delivery')
+        .eq('status', 'completed')
+        .order('scheduled_date', { ascending: false });
+      
+      if (error) throw error;
+      
+      // Get the most recent delivery for each customer
+      const deliveryMap = new Map<string, string>();
+      data?.forEach(job => {
+        if (!deliveryMap.has(job.customer_id)) {
+          deliveryMap.set(job.customer_id, job.scheduled_date || job.actual_completion_time);
+        }
+      });
+      
+      return deliveryMap;
+    },
+  });
+
+  // Calculate days since last delivery
+  const calculateDaysSince = (date: string | null): number | null => {
+    if (!date) return null;
+    const deliveryDate = new Date(date);
+    const today = new Date();
+    const diffTime = Math.abs(today.getTime() - deliveryDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
+  // Get color class based on days since delivery
+  const getDaysColorClass = (days: number | null): string => {
+    if (days === null) return 'text-gray-400';
+    if (days <= 30) return 'text-green-600 font-semibold';
+    if (days <= 60) return 'text-yellow-600 font-semibold';
+    if (days <= 90) return 'text-orange-600 font-semibold';
+    return 'text-red-600 font-semibold';
+  };
+
   // Create sortable header component
   const SortableHeader = ({ column, children, className = "" }: { 
     column: SortColumn; 
@@ -118,7 +162,18 @@ const CustomerHub: React.FC = () => {
 
   // Filter and sort customers
   const filteredAndSortedCustomers = useMemo(() => {
-    let filtered = customersData.filter(customer => {
+    // First, enrich customers with last delivery data
+    const enrichedCustomers = customersData.map(customer => {
+      const lastDeliveryDate = lastDeliveriesData.get(customer.id);
+      const daysSinceDelivery = calculateDaysSince(lastDeliveryDate);
+      return {
+        ...customer,
+        last_delivery_date: lastDeliveryDate,
+        days_since_last_delivery: daysSinceDelivery
+      };
+    });
+
+    let filtered = enrichedCustomers.filter(customer => {
       const matchesSearch = customer.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            customer.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            customer.phone?.includes(searchTerm);
@@ -142,6 +197,11 @@ const CustomerHub: React.FC = () => {
             const typeB = b.customer_type || '';
             comparison = typeA.localeCompare(typeB);
             break;
+          case 'last_delivery':
+            const daysA = a.days_since_last_delivery ?? Number.MAX_SAFE_INTEGER;
+            const daysB = b.days_since_last_delivery ?? Number.MAX_SAFE_INTEGER;
+            comparison = daysA - daysB;
+            break;
         }
         
         return sortDirection === 'asc' ? comparison : -comparison;
@@ -149,7 +209,7 @@ const CustomerHub: React.FC = () => {
     }
 
     return filtered;
-  }, [customersData, searchTerm, selectedType, sortColumn, sortDirection]);
+  }, [customersData, lastDeliveriesData, searchTerm, selectedType, sortColumn, sortDirection]);
 
 
   return (
@@ -286,7 +346,7 @@ const CustomerHub: React.FC = () => {
                 <SortableHeader column="type">Type</SortableHeader>
                 <TableHead className="font-medium text-gray-900">Phone</TableHead>
                 <TableHead className="font-medium text-gray-900">Email</TableHead>
-                <TableHead className="font-medium text-gray-900">Actions</TableHead>
+                <SortableHeader column="last_delivery">Days Since Last Delivery</SortableHeader>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -328,11 +388,13 @@ const CustomerHub: React.FC = () => {
                     <TableCell>{formatPhoneNumber(customer.phone) || '-'}</TableCell>
                     <TableCell>{customer.email || '-'}</TableCell>
                     <TableCell>
-                      <Link to={`/customers/${customer.id}`}>
-                        <Button variant="ghost" size="sm">
-                          <Eye className="w-4 h-4" />
-                        </Button>
-                      </Link>
+                      {customer.days_since_last_delivery !== null ? (
+                        <span className={getDaysColorClass(customer.days_since_last_delivery)}>
+                          {customer.days_since_last_delivery} {customer.days_since_last_delivery === 1 ? 'day' : 'days'}
+                        </span>
+                      ) : (
+                        <span className="text-gray-400">Never</span>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))
@@ -399,11 +461,23 @@ const CustomerHub: React.FC = () => {
                               <span className="text-base">{customer.email}</span>
                             </a>
                           )}
+
+                          {/* Last Delivery Info */}
+                          <div className="flex items-center gap-2 text-gray-700 min-h-[44px] -ml-2 pl-2 pt-1 border-t mt-3">
+                            <span className="text-sm text-gray-600">Last Delivery:</span>
+                            {customer.days_since_last_delivery !== null ? (
+                              <span className={`text-sm ${getDaysColorClass(customer.days_since_last_delivery)}`}>
+                                {customer.days_since_last_delivery} {customer.days_since_last_delivery === 1 ? 'day' : 'days'} ago
+                              </span>
+                            ) : (
+                              <span className="text-sm text-gray-400">Never</span>
+                            )}
+                          </div>
                         </div>
                       </div>
                       
-                      {/* Chevron Icon */}
-                      <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0 mt-1" />
+                      {/* Arrow Icon */}
+                      <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
                     </div>
                   </EnhancedCard>
                 </Link>
