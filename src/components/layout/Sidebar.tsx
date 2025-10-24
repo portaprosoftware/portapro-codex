@@ -13,6 +13,7 @@ import {
   LogOut,
   Droplets,
   ClipboardCheck,
+  CircleDollarSign,
 } from "lucide-react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useClerk, useUser, UserButton } from "@clerk/clerk-react";
@@ -48,7 +49,7 @@ const Sidebar = () => {
     { icon: Droplets, label: "Consumables", path: "/consumables" },
     { icon: FileText, label: "Purchase Orders", path: "/purchase-orders" },
     { icon: Users, label: "Customer Hub", path: "/customer-hub" },
-    { icon: FileText, label: "Quotes & Invoices", path: "/quotes-invoices" },
+    { icon: CircleDollarSign, label: "Quotes & Invoices", path: "/quotes-invoices" },
     { icon: Truck, label: "Fleet Management", path: "/fleet-management" },
     { icon: ClipboardCheck, label: "Services Hub", path: "/maintenance-hub" },
     { icon: BarChart3, label: "Analytics", path: "/analytics" },

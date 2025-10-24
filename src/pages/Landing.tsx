@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { FeatureIdeaModal } from '@/components/ui/feature-idea-modal';
 import { JoinCommunityModal } from '@/components/ui/join-community-modal';
 import { SignInButton, SignUpButton } from '@clerk/clerk-react';
-import { ArrowRight, Play, CheckCircle, Truck, Users, BarChart3, ClipboardList, MapPin, Calendar, DollarSign, Zap, Building2, FileText, Smartphone, Heart, Phone, Mail, Menu, X, Camera, Eye, Compass, Database, Shield, Clock, BellRing, Wrench, CalendarClock, Gauge, HardHat, Route, CloudOff, QrCode, Laptop, RefreshCcw, PiggyBank, Toilet, Wallet, WalletMinimal, HandCoins, MonitorSmartphone, ExternalLink, Lightbulb } from 'lucide-react';
+import { ArrowRight, Play, CheckCircle, Truck, Users, BarChart3, ClipboardList, MapPin, Calendar, DollarSign, Zap, Building2, FileText, Smartphone, Heart, Phone, Mail, Menu, X, Camera, Eye, Compass, Database, Shield, Clock, BellRing, Wrench, CalendarClock, Gauge, HardHat, Route, CloudOff, QrCode, Laptop, RefreshCcw, PiggyBank, Toilet, Wallet, WalletMinimal, HandCoins, MonitorSmartphone, ExternalLink, Lightbulb, CircleDollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -79,7 +79,7 @@ const coreFeatures = [{
 }, {
   title: "Quotes & Payments",
   description: "Build quotes with services and supplies, collect deposits online.",
-  icon: DollarSign,
+  icon: CircleDollarSign,
   href: "#quotes"
 }, {
   title: "Driver Mobile App",
@@ -192,7 +192,7 @@ const whyPortaPro = [{
 }, {
   title: "Affordable Plans",
   description: "Start small, scale up—no hidden fees.",
-  icon: DollarSign
+  icon: CircleDollarSign
 }, {
   title: "Friendly Support",
   description: "Email, chat, or call our team anytime.",
