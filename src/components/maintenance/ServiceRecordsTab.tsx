@@ -140,222 +140,224 @@ export const ServiceRecordsTab: React.FC<ServiceRecordsTabProps> = ({ onLogPastS
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h2 className="text-xl font-semibold text-gray-900">Service Records</h2>
-          <p className="text-gray-600">Service records appear after jobs or work orders are completed using a service</p>
+    <Card className="bg-white rounded-2xl shadow-sm">
+      <div className="p-6 space-y-6">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900">Service Records</h2>
+            <p className="text-gray-600">Service records appear after jobs or work orders are completed using a service</p>
+          </div>
+          <Button 
+            variant="outline" 
+            className="border-blue-500 text-blue-600 hover:bg-blue-50"
+            onClick={onLogPastService}
+          >
+            <Clock className="w-4 h-4 mr-2" />
+            Log Past Service
+          </Button>
         </div>
-        <Button 
-          variant="outline" 
-          className="border-blue-500 text-blue-600 hover:bg-blue-50"
-          onClick={onLogPastService}
-        >
-          <Clock className="w-4 h-4 mr-2" />
-          Log Past Service
-        </Button>
-      </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          title="Total Records"
-          value={counts.total}
-          icon={FileText}
-          gradientFrom="#3366FF"
-          gradientTo="#6699FF"
-          iconBg="#3366FF"
-          subtitleColor="text-blue-600"
-        />
-        
-        <StatCard
-          title="Completed"
-          value={counts.completed}
-          icon={CheckCircle}
-          gradientFrom="#10B981"
-          gradientTo="#34D399"
-          iconBg="#10B981"
-          subtitleColor="text-green-600"
-        />
-        
-        <StatCard
-          title="In Progress"
-          value={counts.inProgress}
-          icon={Clock}
-          gradientFrom="#8B5CF6"
-          gradientTo="#A78BFA"
-          iconBg="#8B5CF6"
-          subtitleColor="text-purple-600"
-        />
-        
-        <StatCard
-          title="Manual Entries"
-          value={counts.manual}
-          icon={AlertTriangle}
-          gradientFrom="#F59E0B"
-          gradientTo="#FBBF24"
-          iconBg="#F59E0B"
-          subtitleColor="text-amber-600"
-        />
-      </div>
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard
+            title="Total Records"
+            value={counts.total}
+            icon={FileText}
+            gradientFrom="#3366FF"
+            gradientTo="#6699FF"
+            iconBg="#3366FF"
+            subtitleColor="text-blue-600"
+          />
+          
+          <StatCard
+            title="Completed"
+            value={counts.completed}
+            icon={CheckCircle}
+            gradientFrom="#10B981"
+            gradientTo="#34D399"
+            iconBg="#10B981"
+            subtitleColor="text-green-600"
+          />
+          
+          <StatCard
+            title="In Progress"
+            value={counts.inProgress}
+            icon={Clock}
+            gradientFrom="#8B5CF6"
+            gradientTo="#A78BFA"
+            iconBg="#8B5CF6"
+            subtitleColor="text-purple-600"
+          />
+          
+          <StatCard
+            title="Manual Entries"
+            value={counts.manual}
+            icon={AlertTriangle}
+            gradientFrom="#F59E0B"
+            gradientTo="#FBBF24"
+            iconBg="#F59E0B"
+            subtitleColor="text-amber-600"
+          />
+        </div>
 
-      {/* Filters */}
-      <Card className="p-4">
-        <div className="flex flex-wrap gap-4 items-center">
-          <div className="flex-1 max-w-md">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <Input
-                placeholder="Search by record #, customer, or job #..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
+        {/* Filters */}
+        <Card className="p-4">
+          <div className="flex flex-wrap gap-4 items-center">
+            <div className="flex-1 max-w-md">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Input
+                  placeholder="Search by record #, customer, or job #..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
             </div>
-          </div>
 
-          <Select value={serviceFilter} onValueChange={setServiceFilter}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="Filter by service" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Services</SelectItem>
-              <SelectItem value="cleaning">Cleaning</SelectItem>
-              <SelectItem value="maintenance">Maintenance</SelectItem>
-              <SelectItem value="inspection">Inspection</SelectItem>
-              <SelectItem value="repair">Repair</SelectItem>
-            </SelectContent>
-          </Select>
+            <Select value={serviceFilter} onValueChange={setServiceFilter}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Filter by service" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Services</SelectItem>
+                <SelectItem value="cleaning">Cleaning</SelectItem>
+                <SelectItem value="maintenance">Maintenance</SelectItem>
+                <SelectItem value="inspection">Inspection</SelectItem>
+                <SelectItem value="repair">Repair</SelectItem>
+              </SelectContent>
+            </Select>
 
-          <Select value={sourceFilter} onValueChange={setSourceFilter}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="Filter by source" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Sources</SelectItem>
-              <SelectItem value="job">From Jobs</SelectItem>
-              <SelectItem value="manual">Manual Entry</SelectItem>
-            </SelectContent>
-          </Select>
+            <Select value={sourceFilter} onValueChange={setSourceFilter}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Filter by source" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Sources</SelectItem>
+                <SelectItem value="job">From Jobs</SelectItem>
+                <SelectItem value="manual">Manual Entry</SelectItem>
+              </SelectContent>
+            </Select>
 
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="Filter by status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Statuses</SelectItem>
-              <SelectItem value="completed">Completed</SelectItem>
-              <SelectItem value="in_progress">In Progress</SelectItem>
-              <SelectItem value="open">Open</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </Card>
-
-      {/* Records Table */}
-      {filteredRecords.length === 0 ? (
-        <Card className="p-12 text-center">
-          <div className="max-w-md mx-auto">
-            <FileText className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No service records found</h3>
-            <p className="text-gray-600">
-              {searchTerm || serviceFilter !== "all" || sourceFilter !== "all" || statusFilter !== "all"
-                ? "Try adjusting your search or filter criteria."
-                : "Service records appear after jobs or work orders are completed using a service."}
-            </p>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Filter by status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Statuses</SelectItem>
+                <SelectItem value="completed">Completed</SelectItem>
+                <SelectItem value="in_progress">In Progress</SelectItem>
+                <SelectItem value="open">Open</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </Card>
-      ) : (
-        <Card className="rounded-2xl shadow-md">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b">
-                <tr>
-                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Record #</th>
-                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Date</th>
-                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Service</th>
-                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Customer</th>
-                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Source</th>
-                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Status</th>
-                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {filteredRecords.map((record, index) => (
-                  <tr 
-                    key={record.id} 
-                    className={`hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`}
-                  >
-                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                      {record.report_number || `SVC-${record.id.slice(0, 8)}`}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {new Date(record.created_at).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {record.services?.name || record.maintenance_report_templates?.template_type || 'General Service'}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {record.jobs?.customers?.name || 'N/A'}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      <div className="flex items-center gap-2">
-                        <span>{getSourceLabel(record)}</span>
-                        {record.auto_generated && (
-                          <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700">
-                            Auto
-                          </Badge>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <Badge className={`capitalize ${getStatusColor(record.status)}`}>
-                        {record.status.replace('_', ' ')}
-                      </Badge>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
-                          <Eye className="w-4 h-4 mr-1" />
-                          View
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-blue-600 hover:text-blue-700"
-                          onClick={async () => {
-                            try {
-                              const { data, error } = await supabase.functions.invoke('generate-service-pdf', {
-                                body: { reportId: record.id }
-                              });
-                              if (error) throw error;
-                              
-                              const blob = new Blob([data], { type: 'application/pdf' });
-                              const url = window.URL.createObjectURL(blob);
-                              const a = document.createElement('a');
-                              a.href = url;
-                              a.download = `service-report-${record.report_number || record.id}.pdf`;
-                              a.click();
-                              window.URL.revokeObjectURL(url);
-                              toast.success("PDF downloaded successfully");
-                            } catch (error) {
-                              toast.error("Failed to generate PDF");
-                              console.error(error);
-                            }
-                          }}
-                        >
-                          <Download className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </td>
+
+        {/* Records Table */}
+        {filteredRecords.length === 0 ? (
+          <Card className="p-12 text-center">
+            <div className="max-w-md mx-auto">
+              <FileText className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No service records found</h3>
+              <p className="text-gray-600">
+                {searchTerm || serviceFilter !== "all" || sourceFilter !== "all" || statusFilter !== "all"
+                  ? "Try adjusting your search or filter criteria."
+                  : "Service records appear after jobs or work orders are completed using a service."}
+              </p>
+            </div>
+          </Card>
+        ) : (
+          <Card className="rounded-2xl shadow-md">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 border-b">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Record #</th>
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Date</th>
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Service</th>
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Customer</th>
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Source</th>
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Status</th>
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Card>
-      )}
-    </div>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {filteredRecords.map((record, index) => (
+                    <tr 
+                      key={record.id} 
+                      className={`hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`}
+                    >
+                      <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                        {record.report_number || `SVC-${record.id.slice(0, 8)}`}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600">
+                        {new Date(record.created_at).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600">
+                        {record.services?.name || record.maintenance_report_templates?.template_type || 'General Service'}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600">
+                        {record.jobs?.customers?.name || 'N/A'}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600">
+                        <div className="flex items-center gap-2">
+                          <span>{getSourceLabel(record)}</span>
+                          {record.auto_generated && (
+                            <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700">
+                              Auto
+                            </Badge>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <Badge className={`capitalize ${getStatusColor(record.status)}`}>
+                          {record.status.replace('_', ' ')}
+                        </Badge>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex gap-2">
+                          <Button variant="outline" size="sm">
+                            <Eye className="w-4 h-4 mr-1" />
+                            View
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-blue-600 hover:text-blue-700"
+                            onClick={async () => {
+                              try {
+                                const { data, error } = await supabase.functions.invoke('generate-service-pdf', {
+                                  body: { reportId: record.id }
+                                });
+                                if (error) throw error;
+                                
+                                const blob = new Blob([data], { type: 'application/pdf' });
+                                const url = window.URL.createObjectURL(blob);
+                                const a = document.createElement('a');
+                                a.href = url;
+                                a.download = `service-report-${record.report_number || record.id}.pdf`;
+                                a.click();
+                                window.URL.revokeObjectURL(url);
+                                toast.success("PDF downloaded successfully");
+                              } catch (error) {
+                                toast.error("Failed to generate PDF");
+                                console.error(error);
+                              }
+                            }}
+                          >
+                            <Download className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+        )}
+      </div>
+    </Card>
   );
 };

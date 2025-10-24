@@ -184,7 +184,8 @@ export const ServiceCatalogTab: React.FC = () => {
   }
 
   return (
-    <div className="space-y-4 lg:space-y-6">
+    <Card className="bg-white rounded-2xl shadow-sm">
+      <div className="p-6 space-y-4 lg:space-y-6">
       {/* Header */}
       <div className="flex flex-col gap-4">
         {/* Title + View Toggle Row */}
@@ -579,6 +580,7 @@ export const ServiceCatalogTab: React.FC = () => {
         isOpen={templateAssignmentService !== null}
         onClose={() => setTemplateAssignmentService(null)}
       />
-    </div>
+      </div>
+    </Card>
   );
 };
