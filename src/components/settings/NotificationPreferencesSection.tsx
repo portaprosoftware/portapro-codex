@@ -74,12 +74,17 @@ export function NotificationPreferencesSection() {
         .from("notification_preferences")
         .select("*")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
       
-      if (error && error.code !== "PGRST116") throw error;
+      if (error) {
+        console.error("Error fetching notification preferences:", error);
+        return null;
+      }
       return data;
     },
     enabled: !!user?.id,
+    retry: false,
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
   });
 
   const form = useForm<NotificationFormData>({
