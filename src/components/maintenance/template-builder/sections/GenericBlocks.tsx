@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -109,10 +109,24 @@ interface GenericBlockCardProps {
 }
 
 export const GenericBlockCard: React.FC<GenericBlockCardProps> = ({ block, onAdd }) => {
+  const [isSelected, setIsSelected] = useState(false);
+
+  const handleCardClick = () => {
+    setIsSelected(!isSelected);
+  };
+
+  const handleAddClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onAdd(block.type);
+    setIsSelected(false);
+  };
+
   return (
     <Card 
-      className="cursor-pointer hover:shadow-md transition-all group border hover:border-primary/50"
-      onClick={() => onAdd(block.type)}
+      className={`cursor-pointer hover:shadow-md transition-all group border ${
+        isSelected ? 'border-primary bg-primary/5' : 'hover:border-primary/50'
+      }`}
+      onClick={handleCardClick}
     >
       <CardHeader className="pb-3">
         <div className="flex items-start gap-3">
@@ -127,6 +141,18 @@ export const GenericBlockCard: React.FC<GenericBlockCardProps> = ({ block, onAdd
           </div>
         </div>
       </CardHeader>
+      <CardContent className="pt-0">
+        <button
+          onClick={handleAddClick}
+          className={`text-sm font-medium transition-all ${
+            isSelected 
+              ? 'text-primary underline' 
+              : 'text-muted-foreground group-hover:text-primary group-hover:underline'
+          }`}
+        >
+          Click to add →
+        </button>
+      </CardContent>
     </Card>
   );
 };
