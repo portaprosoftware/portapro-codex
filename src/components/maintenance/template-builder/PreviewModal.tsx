@@ -27,8 +27,22 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[95vw] w-full h-[95vh] p-0 gap-0 z-[100]">
+    <Dialog open={isOpen} onOpenChange={onClose} modal={true}>
+      <DialogContent 
+        className="max-w-[95vw] w-full h-[95vh] p-0 gap-0 z-[100] bg-background"
+        onPointerDownOutside={(e) => {
+          // Only close if clicking the overlay, not the content
+          if ((e.target as HTMLElement).hasAttribute('data-radix-dialog-overlay')) {
+            onClose();
+          } else {
+            e.preventDefault();
+          }
+        }}
+        onInteractOutside={(e) => {
+          // Prevent closing when interacting with content
+          e.preventDefault();
+        }}
+      >
         {/* Header - 64px height */}
         <DialogHeader className="px-6 h-16 border-b sticky top-0 bg-background z-10 flex flex-row items-center justify-between">
           <DialogTitle>Live Preview</DialogTitle>
@@ -56,7 +70,7 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
         </DialogHeader>
 
         {/* Preview Content */}
-        <div className="flex-1 overflow-auto p-6">
+        <div className="flex-1 overflow-auto p-6 bg-background">
           {hasError ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <p className="text-muted-foreground mb-4">Failed to load preview</p>
