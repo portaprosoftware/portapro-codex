@@ -44,10 +44,6 @@ export default function StorageSites() {
   const [selectedSiteForActions, setSelectedSiteForActions] = useState<StorageLocation | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-  useEffect(() => {
-    document.title = 'Storage Sites | PortaPro';
-  }, []);
-
   if (!hasAdminAccess) {
     return <Navigate to="/dashboard" replace />;
   }

@@ -16,10 +16,6 @@ export default function MaintenancePage() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [expandedProducts, setExpandedProducts] = useState<string[]>([]);
 
-  useEffect(() => {
-    document.title = "Maintenance Overview | PortaPro";
-  }, []);
-
   // Fetch maintenance statistics
   const { data: maintenanceStats } = useQuery({
     queryKey: ["maintenance-stats"],

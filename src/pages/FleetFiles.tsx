@@ -45,10 +45,6 @@ export default function FleetFiles() {
   const { toast } = useToast();
   const { getToken } = useAuth();
   const queryClient = useQueryClient();
-  
-  useEffect(() => {
-    document.title = "Fleet Documents & Photos | PortaPro";
-  }, []);
 
   // Fetch vehicles
   const { data: vehicles } = useQuery({

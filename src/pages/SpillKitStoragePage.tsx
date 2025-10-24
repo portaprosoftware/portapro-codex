@@ -25,10 +25,6 @@ export default function SpillKitStoragePage() {
 
   const showStockView = location.hash === "#stock";
 
-  useEffect(() => {
-    document.title = "Spill Kit Storage Locations | PortaPro";
-  }, []);
-
   const { data: locations, isLoading } = useQuery({
     queryKey: ['spill_kit_storage_locations'],
     queryFn: async () => {

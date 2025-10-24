@@ -239,10 +239,6 @@ const FleetTruckStock: React.FC = () => {
     return item?.balance_qty || 0;
   }, [consumableId, inventoryData]);
 
-  useEffect(() => {
-    document.title = 'Truck Stock | PortaPro';
-  }, []);
-
   return (
     <FleetLayout>
       <div className="space-y-6">

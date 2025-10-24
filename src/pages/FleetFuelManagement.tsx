@@ -30,10 +30,6 @@ export const FleetFuelManagement: React.FC = () => {
   const vehicleId = searchParams.get('vehicle');
   const returnTo = searchParams.get('returnTo');
   const [activeTab, setActiveTab] = useState(getInitialTab(tabParam));
-  
-  useEffect(() => {
-    document.title = 'Fuel Management | PortaPro';
-  }, []);
 
   // Fetch vehicle details if vehicleId is present
   const { data: vehicle } = useQuery({

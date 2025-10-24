@@ -26,10 +26,6 @@ export default function TeamManagement() {
   // Extract tab from URL or default to 'users'
   const currentTab = isDriverDetail ? 'driver' : (location.pathname.split('/').pop() as TeamTab) || 'users';
   
-  useEffect(() => {
-    document.title = 'Team Management | PortaPro';
-  }, []);
-  
   // Only redirect drivers if we're fully loaded and confirmed as driver
   useEffect(() => {
     if (isLoaded && isDriver && user) {

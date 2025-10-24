@@ -11,10 +11,6 @@ export default function FleetMaintenancePage() {
   const [searchParams] = useSearchParams();
   const vehicleId = searchParams.get('vehicle');
   const returnTo = searchParams.get('returnTo');
-  
-  useEffect(() => {
-    document.title = "Fleet Maintenance | PortaPro";
-  }, []);
 
   // Fetch vehicle details if vehicleId is present
   const { data: vehicle } = useQuery({

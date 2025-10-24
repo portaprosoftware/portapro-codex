@@ -2,9 +2,8 @@ import React, { useEffect } from 'react'
 import { featureGroups } from '@/data/featuresCatalog'
 
 export default function Features() {
-  // SEO: title + description
+  // SEO: meta description only
   useEffect(() => {
-    document.title = 'Features - PortaPro'
     const meta = document.querySelector('meta[name="description"]') || (() => {
       const m = document.createElement('meta');
       m.setAttribute('name', 'description');
