@@ -152,19 +152,10 @@ const QuotesInvoices: React.FC = () => {
                 />
               </div>
 
-              {/* Date Filters - Desktop */}
-              <div className="hidden lg:block">
-                <QuoteDateFilters 
-                  dateRange={dateRange}
-                  onDateRangeChange={setDateRange}
-                />
-              </div>
-
               {/* Quotes Section */}
               <div className="space-y-4">
                 {/* Header - Desktop */}
                 <div className="hidden lg:flex items-center justify-between">
-                  <h2 className="text-lg font-bold text-foreground">All Quotes</h2>
                   <div className="flex items-center space-x-2">
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -206,8 +197,7 @@ const QuotesInvoices: React.FC = () => {
 
                 {/* Header - Mobile */}
                 <div className="lg:hidden space-y-3">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-lg font-bold text-foreground">All Quotes</h2>
+                  <div className="flex items-center justify-end">
                     <MobileMoreMenu
                       type="quotes"
                       onExport={() => setShowQuoteExport(true)}
@@ -225,6 +215,14 @@ const QuotesInvoices: React.FC = () => {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full min-h-[44px] text-base"
+                  />
+                </div>
+
+                {/* Date Filters - Desktop */}
+                <div className="hidden lg:block">
+                  <QuoteDateFilters 
+                    dateRange={dateRange}
+                    onDateRangeChange={setDateRange}
                   />
                 </div>
 
@@ -270,19 +268,10 @@ const QuotesInvoices: React.FC = () => {
                 />
               </div>
 
-              {/* Date Filters - Desktop */}
-              <div className="hidden lg:block">
-                <QuoteDateFilters 
-                  dateRange={dateRange}
-                  onDateRangeChange={setDateRange}
-                />
-              </div>
-
               {/* Invoices Section */}
               <div className="space-y-4">
                 {/* Header - Desktop */}
                 <div className="hidden lg:flex items-center justify-between">
-                  <h2 className="text-lg font-bold text-foreground">All Invoices</h2>
                   <div className="flex items-center space-x-2">
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -324,8 +313,7 @@ const QuotesInvoices: React.FC = () => {
 
                 {/* Header - Mobile */}
                 <div className="lg:hidden space-y-3">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-lg font-bold text-foreground">All Invoices</h2>
+                  <div className="flex items-center justify-end">
                     <MobileMoreMenu
                       type="invoices"
                       onExport={() => setShowInvoiceExport(true)}
@@ -343,6 +331,14 @@ const QuotesInvoices: React.FC = () => {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full min-h-[44px] text-base"
+                  />
+                </div>
+
+                {/* Date Filters - Desktop */}
+                <div className="hidden lg:block">
+                  <QuoteDateFilters 
+                    dateRange={dateRange}
+                    onDateRangeChange={setDateRange}
                   />
                 </div>
 
