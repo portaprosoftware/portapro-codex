@@ -346,10 +346,10 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
         <CardContent className="p-4 sm:p-5 pt-2">
           <div className="flex flex-wrap items-center gap-2 mb-2">
             <Badge 
-              className={`px-3 py-1.5 rounded-full text-sm font-medium border-0 ${
+              className={`px-3 py-1.5 rounded-full text-sm font-bold border-0 ${
                 customer.deposit_required === false 
                   ? "bg-emerald-100 text-emerald-700" 
-                  : "bg-red-100 text-red-700"
+                  : "bg-gradient-to-r from-red-500 to-red-600 text-white"
               }`}
             >
               {customer.deposit_required === false ? "No Deposit" : "Deposit Required"}
