@@ -53,7 +53,7 @@ export const ServiceReportTemplatesTab = () => {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Service Report Templates</CardTitle>
+              <CardTitle className="text-xl">Service Report Templates</CardTitle>
               <CardDescription>
                 Create and manage customizable templates for field service reports
               </CardDescription>
