@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { FileText, Download, Trash2, Upload, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { DocumentCard } from './DocumentCard';
@@ -40,6 +41,7 @@ export const CustomerDocumentsTab: React.FC<CustomerDocumentsTabProps> = ({ cust
   const [docName, setDocName] = useState<string>('');
   const [uploading, setUploading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
 
   const { data: docs, isLoading } = useQuery({
     queryKey: ['customer-documents', customerId],
@@ -93,6 +95,7 @@ export const CustomerDocumentsTab: React.FC<CustomerDocumentsTabProps> = ({ cust
       toast({ title: 'Uploaded', description: 'Document uploaded successfully.' });
       setDocName('');
       setSelectedFile(null);
+      setUploadDialogOpen(false);
       queryClient.invalidateQueries({ queryKey: ['customer-documents', customerId] });
     } catch (e: any) {
       console.error('Customer document upload error:', e);
@@ -160,100 +163,104 @@ export const CustomerDocumentsTab: React.FC<CustomerDocumentsTabProps> = ({ cust
 
   return (
     <div className="space-y-6 overflow-x-hidden px-4 lg:px-0">
-      {canViewCustomerDocs && (
-        <Card className="bg-card rounded-2xl shadow-sm border">
-          <CardHeader>
-            <CardTitle className="text-lg">Upload Document</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Vertical Stack on Mobile */}
-            <div className="flex flex-col gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="doc-type">Document Type</Label>
-                <Select value={docType} onValueChange={setDocType}>
-                  <SelectTrigger id="doc-type" className="min-h-[44px]">
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="contract">Contract</SelectItem>
-                    <SelectItem value="signed_document">Signed Document</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="doc-name">Document Name (optional)</Label>
-                <Input
-                  id="doc-name"
-                  placeholder="e.g., Master Services Agreement"
-                  value={docName}
-                  onChange={(e) => setDocName(e.target.value)}
-                  className="min-h-[44px] text-base"
-                />
-              </div>
-            </div>
-
-            {/* File Selection */}
-            <div className="space-y-3">
-              <input
-                ref={fileRef}
-                type="file"
-                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-                className="hidden"
-                onChange={(e) => {
-                  const f = e.target.files?.[0];
-                  if (f) {
-                    setSelectedFile(f);
-                    onUpload(f);
-                  }
-                }}
-                disabled={uploading}
-              />
-              
-              {selectedFile && !uploading ? (
-                <div className="flex items-center gap-2 p-3 rounded-lg border bg-muted/50">
-                  <FileText className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                  <span className="text-sm flex-1 truncate">{selectedFile.name}</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0"
-                    onClick={() => {
-                      setSelectedFile(null);
-                      if (fileRef.current) fileRef.current.value = '';
-                    }}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              ) : (
-                <Button
-                  type="button"
-                  onClick={() => fileRef.current?.click()}
-                  disabled={uploading}
-                  className="w-full min-h-[44px] bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
-                >
-                  <Upload className="w-4 h-4 mr-2" />
-                  {uploading ? 'Uploading...' : 'Choose File & Upload'}
-                </Button>
-              )}
-              
-              <p className="text-xs text-muted-foreground">
-                Supported: PDF, JPG, PNG, DOC, DOCX (max ~10MB recommended)
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
       <Card className="bg-card rounded-2xl shadow-sm border">
         <CardHeader>
-          <div className="flex flex-col gap-2">
-            <CardTitle className="text-lg">Customer Documents</CardTitle>
-            <div className="text-sm text-muted-foreground break-words">
-              Total files: {(docs || []).length} • Size: {(totalSize / (1024 * 1024)).toFixed(1)} MB
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-lg">Customer Documents</CardTitle>
+              <div className="text-sm text-muted-foreground break-words mt-1">
+                Total files: {(docs || []).length} • Size: {(totalSize / (1024 * 1024)).toFixed(1)} MB
+              </div>
             </div>
+            {canViewCustomerDocs && (
+              <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button size="sm" className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white">
+                    <Upload className="w-4 h-4 mr-2" />
+                    Upload
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[500px]">
+                  <DialogHeader>
+                    <DialogTitle>Upload Document</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4 pt-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="doc-type">Document Type</Label>
+                      <Select value={docType} onValueChange={setDocType}>
+                        <SelectTrigger id="doc-type">
+                          <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="contract">Contract</SelectItem>
+                          <SelectItem value="signed_document">Signed Document</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="doc-name">Document Name (optional)</Label>
+                      <Input
+                        id="doc-name"
+                        placeholder="e.g., Master Services Agreement"
+                        value={docName}
+                        onChange={(e) => setDocName(e.target.value)}
+                      />
+                    </div>
+
+                    <div className="space-y-3">
+                      <input
+                        ref={fileRef}
+                        type="file"
+                        accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                        className="hidden"
+                        onChange={(e) => {
+                          const f = e.target.files?.[0];
+                          if (f) {
+                            setSelectedFile(f);
+                            onUpload(f);
+                          }
+                        }}
+                        disabled={uploading}
+                      />
+                      
+                      {selectedFile && !uploading ? (
+                        <div className="flex items-center gap-2 p-3 rounded-lg border bg-muted/50">
+                          <FileText className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                          <span className="text-sm flex-1 truncate">{selectedFile.name}</span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0"
+                            onClick={() => {
+                              setSelectedFile(null);
+                              if (fileRef.current) fileRef.current.value = '';
+                            }}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <Button
+                          type="button"
+                          onClick={() => fileRef.current?.click()}
+                          disabled={uploading}
+                          className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
+                        >
+                          <Upload className="w-4 h-4 mr-2" />
+                          {uploading ? 'Uploading...' : 'Choose File & Upload'}
+                        </Button>
+                      )}
+                      
+                      <p className="text-xs text-muted-foreground">
+                        Supported: PDF, JPG, PNG, DOC, DOCX (max ~10MB recommended)
+                      </p>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            )}
           </div>
         </CardHeader>
         <CardContent>
@@ -272,7 +279,7 @@ export const CustomerDocumentsTab: React.FC<CustomerDocumentsTabProps> = ({ cust
               </p>
               {canViewCustomerDocs && (
                 <Button
-                  onClick={() => fileRef.current?.click()}
+                  onClick={() => setUploadDialogOpen(true)}
                   className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
                 >
                   <Upload className="w-4 h-4 mr-2" />
