@@ -144,9 +144,9 @@ export const CustomerSegments: React.FC = () => {
           <div className="mb-6">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-lg">
                   <Users className="h-5 w-5" />
-                  Customer Segments ({segments.length})
+                  Smart Segments ({segments.length})
                 </CardTitle>
                 <p className="text-sm text-muted-foreground mt-1">
                   Create and manage customer segments for targeted marketing.

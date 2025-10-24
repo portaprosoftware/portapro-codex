@@ -563,7 +563,7 @@ export const ScheduledCampaigns: React.FC = () => {
       
       <Card>
         <CardHeader>
-          <CardTitle className="font-inter flex items-center gap-2 text-lg">
+          <CardTitle className="font-inter flex items-center gap-2 text-base">
             <CalendarIcon className="w-5 h-5" />
             Scheduled Campaigns ({scheduledCampaigns.length})
             {filtersHook.hasActiveFilters && (
