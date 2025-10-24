@@ -141,14 +141,14 @@ export const TemplateManagement: React.FC = () => {
           </div>
           
           <div className="flex items-center gap-2">
-            <Badge variant="secondary" className="text-xs">
+            <Badge variant="secondary" className="text-xs capitalize">
               {template.category}
             </Badge>
             <Badge 
               variant={template.source === 'system' ? 'default' : 'info'}
-              className="text-xs"
+              className="text-xs capitalize"
             >
-              {template.source === 'system' ? 'system' : 'user'}
+              {template.source === 'system' ? 'System' : 'User'}
             </Badge>
           </div>
           
