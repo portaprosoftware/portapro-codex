@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { X, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
 import { EnhancedTemplate, BuilderStep, EnhancedSection, SectionBlockType, LogicRules, Permissions, OutputConfig } from './types';
 import { StepNavigation } from './StepNavigation';
@@ -31,6 +32,7 @@ export const BottomSheetWizard: React.FC<BottomSheetWizardProps> = ({
   const [completedSteps, setCompletedSteps] = useState<BuilderStep[]>([]);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [showCloseConfirm, setShowCloseConfirm] = useState(false);
 
   // Template state
   const [name, setName] = useState('');
@@ -129,14 +131,20 @@ export const BottomSheetWizard: React.FC<BottomSheetWizardProps> = ({
 
   const handleClose = () => {
     if (hasUnsavedChanges) {
-      if (confirm('You have unsaved changes. Are you sure you want to close?')) {
-        onClose();
-        resetForm();
-      }
+      setShowCloseConfirm(true);
     } else {
-      onClose();
-      resetForm();
+      confirmClose();
     }
+  };
+
+  const confirmClose = () => {
+    setShowCloseConfirm(false);
+    onClose();
+    resetForm();
+  };
+
+  const cancelClose = () => {
+    setShowCloseConfirm(false);
   };
 
   const resetForm = () => {
@@ -328,6 +336,22 @@ export const BottomSheetWizard: React.FC<BottomSheetWizardProps> = ({
           </div>
         </div>
       </SheetContent>
+
+      {/* Confirmation Dialog */}
+      <AlertDialog open={showCloseConfirm} onOpenChange={setShowCloseConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>You have unsaved changes</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to close? Your unsaved changes will be lost.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={cancelClose}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmClose}>Close</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Preview Modal - opens above drawer */}
       <PreviewModal

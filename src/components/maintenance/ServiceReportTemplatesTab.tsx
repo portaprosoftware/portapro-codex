@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Plus, Edit, Copy, Trash2, FileText, Loader2 } from 'lucide-react';
 import { BottomSheetWizard } from './template-builder/BottomSheetWizard';
 import { useTemplates } from '@/hooks/useTemplates';
@@ -11,6 +12,7 @@ import { toast } from 'sonner';
 export const ServiceReportTemplatesTab = () => {
   const [isWizardOpen, setIsWizardOpen] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<EnhancedTemplate | undefined>();
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   
   const { templates, isLoading, createTemplate, updateTemplate, deleteTemplate, cloneTemplate } = useTemplates();
 
@@ -34,8 +36,13 @@ export const ServiceReportTemplatesTab = () => {
   };
 
   const handleDeleteTemplate = async (id: string) => {
-    if (confirm('Are you sure you want to delete this template?')) {
-      await deleteTemplate.mutateAsync(id);
+    setDeleteConfirmId(id);
+  };
+
+  const confirmDelete = async () => {
+    if (deleteConfirmId) {
+      await deleteTemplate.mutateAsync(deleteConfirmId);
+      setDeleteConfirmId(null);
     }
   };
 
@@ -144,6 +151,24 @@ export const ServiceReportTemplatesTab = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!deleteConfirmId} onOpenChange={() => setDeleteConfirmId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Template</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this template? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <BottomSheetWizard
         isOpen={isWizardOpen}
