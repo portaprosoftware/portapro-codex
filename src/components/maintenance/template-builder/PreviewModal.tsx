@@ -32,7 +32,8 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }} modal={true}>
-      <DialogContent 
+      <DialogContent
+        hideCloseButton
         className="max-w-[95vw] w-full h-[95vh] p-0 border-t-4 border-t-primary flex flex-col"
         onPointerDownOutside={(e) => {
           if ((e.target as HTMLElement).hasAttribute('data-radix-dialog-overlay')) {
