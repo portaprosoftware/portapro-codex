@@ -296,8 +296,8 @@ export const FleetOverview: React.FC = () => {
       {/* Vehicle Controls Section */}
       <div className="bg-white rounded-lg border shadow-sm p-4 lg:p-6">
         {/* Controls */}
-        <div className="flex flex-col gap-3 lg:gap-4 mb-4 lg:mb-6">
-          {/* Search - Full width on mobile */}
+        <div className="flex flex-col lg:flex-row gap-3 lg:gap-4 mb-4 lg:mb-6">
+          {/* Search - Full width on mobile, flex on desktop */}
           <div className="flex-1">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -321,47 +321,44 @@ export const FleetOverview: React.FC = () => {
             </div>
           </div>
           
-          {/* View Mode + Add Vehicle Row */}
-          <div className="flex items-center gap-3">
-            {/* View Mode */}
-            <div className="flex border rounded-md">
-              <button
-                onClick={() => setViewMode("grid")}
-                className={cn(
-                  "px-3 py-2 text-sm font-medium rounded-l-md transition-colors min-h-[44px]",
-                  viewMode === "grid"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-background hover:bg-muted"
-                )}
-                aria-label="Grid view"
-                aria-pressed={viewMode === "grid"}
-              >
-                <Grid className="h-4 w-4" />
-              </button>
-              <button
-                onClick={() => setViewMode("list")}
-                className={cn(
-                  "px-3 py-2 text-sm font-medium rounded-r-md transition-colors min-h-[44px]",
-                  viewMode === "list"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-background hover:bg-muted"
-                )}
-                aria-label="List view"
-                aria-pressed={viewMode === "list"}
-              >
-                <List className="h-4 w-4" />
-              </button>
-            </div>
-            
-            {/* Add Vehicle - Desktop */}
-            <Button
-              onClick={() => setIsAddVehicleModalOpen(true)}
-              className="hidden lg:flex bg-gradient-primary text-white flex-1"
+          {/* View Mode Toggle */}
+          <div className="flex border rounded-md">
+            <button
+              onClick={() => setViewMode("grid")}
+              className={cn(
+                "px-3 py-2 text-sm font-medium rounded-l-md transition-colors min-h-[44px]",
+                viewMode === "grid"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-background hover:bg-muted"
+              )}
+              aria-label="Grid view"
+              aria-pressed={viewMode === "grid"}
             >
-              <Plus className="h-4 w-4 mr-2" />
-              Add Vehicle
-            </Button>
+              <Grid className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => setViewMode("list")}
+              className={cn(
+                "px-3 py-2 text-sm font-medium rounded-r-md transition-colors min-h-[44px]",
+                viewMode === "list"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-background hover:bg-muted"
+              )}
+              aria-label="List view"
+              aria-pressed={viewMode === "list"}
+            >
+              <List className="h-4 w-4" />
+            </button>
           </div>
+          
+          {/* Add Vehicle Button */}
+          <Button
+            onClick={() => setIsAddVehicleModalOpen(true)}
+            className="bg-gradient-primary text-white"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add Vehicle
+          </Button>
         </div>
 
 
