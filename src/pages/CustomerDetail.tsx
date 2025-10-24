@@ -70,12 +70,12 @@ export default function CustomerDetail() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Mobile-friendly header */}
-      <div className="border-b border-border bg-card">
-        <div className="container mx-auto px-4 py-3 md:px-6 md:py-4">
-          {/* Breadcrumb - smaller on mobile */}
-          <Breadcrumb className="mb-3 md:mb-0">
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-none px-2 md:px-4 py-4 space-y-6">
+        {/* Header Card */}
+        <div className="bg-white rounded-lg border shadow-sm p-4 md:p-6">
+          {/* Breadcrumb */}
+          <Breadcrumb className="mb-4">
             <BreadcrumbList className="text-xs md:text-sm">
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
@@ -89,70 +89,69 @@ export default function CustomerDetail() {
             </BreadcrumbList>
           </Breadcrumb>
           
-          {/* Stacked layout on mobile */}
-          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:mt-4">
-            {/* Back button and title stack */}
-            <div className="flex flex-col gap-3 flex-1">
-              <Link to="/customer-hub" className="w-full md:w-auto">
-                <Button 
-                  size="sm"
-                  className="w-full md:w-auto bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium px-3 py-2 rounded-md border-0 h-11 md:h-auto"
-                >
-                  <ArrowLeft className="w-4 h-4 mr-1.5" />
-                  Customer Hub
-                </Button>
-              </Link>
+          {/* Back button and customer info */}
+          <div className="flex flex-col gap-4 mb-6">
+            <Link to="/customer-hub" className="w-full md:w-auto">
+              <Button 
+                size="sm"
+                className="w-full md:w-auto bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium px-3 py-2 rounded-md border-0"
+              >
+                <ArrowLeft className="w-4 h-4 mr-1.5" />
+                Customer Hub
+              </Button>
+            </Link>
+            
+            {/* Customer name and metadata */}
+            <div className="flex flex-col gap-2">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
+                {customer.name}
+              </h1>
               
-              {/* Customer name and metadata */}
-              <div className="flex flex-col gap-2">
-                <h1 className="text-2xl md:text-3xl font-bold text-foreground leading-tight">
-                  {customer.name}
-                </h1>
+              {/* Key metadata */}
+              <div className="flex flex-wrap items-center gap-2 text-sm md:text-base">
+                <Badge className={getCustomerTypeColor(customer.customer_type)}>
+                  {formatCategoryDisplay((customer as any).type || customer.customer_type || 'Customer')}
+                </Badge>
                 
-                {/* Key metadata - wraps nicely on mobile */}
-                <div className="flex flex-wrap items-center gap-2 text-sm md:text-base">
-                  <Badge className={getCustomerTypeColor(customer.customer_type)}>
-                    {formatCategoryDisplay((customer as any).type || customer.customer_type || 'Customer')}
-                  </Badge>
-                  
-                  {customer.email && (
-                    <a 
-                      href={`mailto:${customer.email}`}
-                      className="text-muted-foreground hover:text-primary flex items-center gap-1"
-                    >
-                      <Mail className="w-3.5 h-3.5" />
-                      <span className="hidden sm:inline">{customer.email}</span>
-                    </a>
-                  )}
-                  
-                  {customer.phone && (
-                    <a 
-                      href={`tel:${customer.phone}`}
-                      className="text-muted-foreground hover:text-primary flex items-center gap-1"
-                    >
-                      <Phone className="w-3.5 h-3.5" />
-                      <span>{formatPhoneNumber(customer.phone)}</span>
-                    </a>
-                  )}
-                </div>
+                {customer.email && (
+                  <a 
+                    href={`mailto:${customer.email}`}
+                    className="text-gray-600 hover:text-blue-600 flex items-center gap-1"
+                  >
+                    <Mail className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">{customer.email}</span>
+                  </a>
+                )}
+                
+                {customer.phone && (
+                  <a 
+                    href={`tel:${customer.phone}`}
+                    className="text-gray-600 hover:text-blue-600 flex items-center gap-1"
+                  >
+                    <Phone className="w-3.5 h-3.5" />
+                    <span>{formatPhoneNumber(customer.phone)}</span>
+                  </a>
+                )}
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Content with horizontal padding */}
-      <div className="container mx-auto px-4 py-4 md:px-6 md:py-6">
-        <CustomerStatsSection customerId={id!} />
-        <CustomerTabs customer={{
-          ...customer,
-          customer_type: customer.customer_type as any || 'not_selected',
-          service_street: (customer as any).service_street || customer.address?.split(',')[0] || '',
-          service_street2: (customer as any).service_street2 || '',
-          service_city: (customer as any).service_city || customer.address?.split(',')[1]?.trim() || '',
-          service_state: (customer as any).service_state || customer.address?.split(',')[2]?.trim() || '',
-          service_zip: (customer as any).service_zip || customer.address?.split(',')[3]?.trim() || '',
-        }} />
+          {/* Stats Section */}
+          <CustomerStatsSection customerId={id!} />
+        </div>
+
+        {/* Content Card */}
+        <div className="bg-white rounded-lg border shadow-sm">
+          <CustomerTabs customer={{
+            ...customer,
+            customer_type: customer.customer_type as any || 'not_selected',
+            service_street: (customer as any).service_street || customer.address?.split(',')[0] || '',
+            service_street2: (customer as any).service_street2 || '',
+            service_city: (customer as any).service_city || customer.address?.split(',')[1]?.trim() || '',
+            service_state: (customer as any).service_state || customer.address?.split(',')[2]?.trim() || '',
+            service_zip: (customer as any).service_zip || customer.address?.split(',')[3]?.trim() || '',
+          }} />
+        </div>
       </div>
     </div>
   );
