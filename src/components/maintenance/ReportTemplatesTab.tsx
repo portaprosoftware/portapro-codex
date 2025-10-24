@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { BottomSheetTemplateBuilder } from "./BottomSheetTemplateBuilder";
+import { EnhancedTemplateBuilder } from "./template-builder/EnhancedTemplateBuilder";
 import { TemplatePreviewModal } from "./TemplatePreviewModal";
 import { Plus, FileText, Edit, Trash2, Search, Grid, List, MoreVertical, Copy, X } from "lucide-react";
 import { toast } from "sonner";
@@ -455,14 +455,19 @@ export const ReportTemplatesTab: React.FC = () => {
         </Card>
       )}
 
-      {/* Template Builder Bottom Sheet */}
-      <BottomSheetTemplateBuilder
-        templateId={selectedTemplate}
+      {/* Enhanced Template Builder */}
+      <EnhancedTemplateBuilder
         isOpen={!!selectedTemplate || isCreating}
-        isCreating={isCreating}
         onClose={() => {
           setSelectedTemplate(null);
           setIsCreating(false);
+        }}
+        onSave={(template) => {
+          console.log('Template saved:', template);
+          queryClient.invalidateQueries({ queryKey: ["maintenance-report-templates"] });
+          setSelectedTemplate(null);
+          setIsCreating(false);
+          toast.success("Template saved successfully");
         }}
       />
 
