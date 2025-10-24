@@ -37,7 +37,7 @@ import { FleetManagementShowcase } from '@/components/marketing/FleetManagementS
 import { ConsolidatedFleetCard } from '@/components/marketing/ConsolidatedFleetCard';
 import { CompanyAnalyticsShowcase } from '@/components/marketing/CompanyAnalyticsShowcase';
 import { TeamManagementShowcase } from '@/components/marketing/TeamManagementShowcase';
-import { AlertTriangle, Package, Droplets, ClipboardCheck, Megaphone } from 'lucide-react';
+import { AlertTriangle, Package, SoapDispenserDroplet, ClipboardCheck, Megaphone } from 'lucide-react';
 import { FeaturesMegaMenu } from '@/components/marketing/FeaturesMegaMenu';
 import { FeaturesSheet } from '@/components/marketing/FeaturesSheet';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -115,12 +115,12 @@ const managementFeatures = [{
 const servicesFeatures = [{
   title: "Inventory & Supplies",
   description: "Track units and consumables across multiple storage sites.",
-  icon: Package,
+  icon: Toilet,
   href: "#inventory"
 }, {
   title: "Consumables",
   description: "Manage toilet paper, sanitizer, and cleaning supplies inventory.",
-  icon: Droplets,
+  icon: SoapDispenserDroplet,
   href: "#consumables"
 }, {
   title: "Services Hub",
