@@ -362,6 +362,7 @@ const CustomerHub: React.FC = () => {
                       >
                         <Truck className="h-3.5 w-3.5 text-gray-500" />
                       </Button>
+                      <span className="text-xs text-gray-500 mr-2">Select truck to hide data.</span>
                       Days Since Last Delivery
                     </div>
                   </SortableHeader>
