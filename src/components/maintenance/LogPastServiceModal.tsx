@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,6 +12,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { CalendarIcon, Save, X, Upload } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
+import type { Database } from "@/integrations/supabase/types";
 
 interface LogPastServiceModalProps {
   isOpen: boolean;
@@ -81,16 +82,27 @@ export const LogPastServiceModal: React.FC<LogPastServiceModalProps> = ({
       }
 
       // First, create a completed job record for history
-      const jobData = {
+      // Construct completion timestamp from serviceDate + serviceTime
+      const completionAt = new Date(
+        new Date(serviceDate).setHours(
+          parseInt(serviceTime.split(':')[0]),
+          parseInt(serviceTime.split(':')[1]),
+          0, 0
+        )
+      ).toISOString();
+
+      const jobData: Database['public']['Tables']['jobs']['Insert'] = {
         customer_id: formData.customer_id,
         job_type: 'service',
         status: 'completed',
         scheduled_date: format(serviceDate, 'yyyy-MM-dd'),
         scheduled_time: serviceTime,
-        actual_completion_time: new Date().toISOString(),
-        notes: `Past service logged: ${formData.notes}`,
+        actual_completion_time: completionAt,
+        notes: formData.notes ? `Past service logged: ${formData.notes}` : null,
         service_id: formData.service_id,
       };
+
+      console.log('Inserting job payload:', jobData);
 
       const { data: job, error: jobError } = await supabase
         .from('jobs')
@@ -98,7 +110,10 @@ export const LogPastServiceModal: React.FC<LogPastServiceModalProps> = ({
         .select()
         .single();
 
-      if (jobError) throw jobError;
+      if (jobError) {
+        console.error('Job insert error:', jobError);
+        throw jobError;
+      }
 
       // Then create the service record
       const reportData = {
@@ -127,12 +142,13 @@ export const LogPastServiceModal: React.FC<LogPastServiceModalProps> = ({
           status: 'completed',
           completion_percentage: 100,
           report_data: reportData,
-          created_at: new Date(serviceDate.getTime() + 
-            parseInt(serviceTime.split(':')[0]) * 60 * 60 * 1000 + 
-            parseInt(serviceTime.split(':')[1]) * 60 * 1000).toISOString(),
+          created_at: completionAt,
         }]);
 
-      if (reportError) throw reportError;
+      if (reportError) {
+        console.error('Report insert error:', reportError);
+        throw reportError;
+      }
 
       // TODO: Handle photo uploads if needed
       if (formData.photos.length > 0) {
@@ -148,9 +164,10 @@ export const LogPastServiceModal: React.FC<LogPastServiceModalProps> = ({
       onClose();
       resetForm();
     },
-    onError: (error) => {
-      toast.error('Failed to log past service');
-      console.error(error);
+    onError: (error: any) => {
+      const errorMessage = error?.message || 'Failed to log past service';
+      toast.error(errorMessage);
+      console.error('Service log mutation error:', error);
     }
   });
 
@@ -191,6 +208,9 @@ export const LogPastServiceModal: React.FC<LogPastServiceModalProps> = ({
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Log Past Service</DialogTitle>
+          <DialogDescription>
+            Record a past service with customer, date/time, and optional notes/photos.
+          </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">

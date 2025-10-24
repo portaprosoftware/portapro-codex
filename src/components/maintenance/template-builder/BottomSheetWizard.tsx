@@ -104,13 +104,13 @@ export const BottomSheetWizard: React.FC<BottomSheetWizardProps> = ({
     }
   };
 
-  const handleAddSection = (blockType: SectionBlockType, selectedFeatures?: string[]) => {
+  const handleAddSection = async (blockType: SectionBlockType, selectedFeatures?: string[]) => {
     const allBlocks = [...industryBlocks, ...genericBlocks];
     const block = allBlocks.find((b) => b.type === blockType);
     
     if (block) {
-      // Import field generator
-      const { generateFieldsForBlock } = require('./utils/fieldGenerator');
+      // Import field generator dynamically
+      const { generateFieldsForBlock } = await import('./utils/fieldGenerator');
       const fields = generateFieldsForBlock(blockType, selectedFeatures);
       
       const newSection: EnhancedSection = {
