@@ -12,82 +12,28 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     mode === "development" && componentTagger(),
-    VitePWA({
-      registerType: 'autoUpdate',
-      includeAssets: ['favicon.png', 'apple-touch-icon.png', 'robots.txt'],
-      manifest: {
-        name: 'PortaPro Software',
-        short_name: 'PortaPro',
-        description: 'Powering Portable Sanitation',
-        theme_color: '#ffffff',
-        background_color: '#ffffff',
-        display: 'standalone',
-        orientation: 'portrait',
-        scope: '/',
-        start_url: '/',
-        icons: [
-          {
-            src: '/pwa-192x192.png',
-            sizes: '192x192',
-            type: 'image/png',
-            purpose: 'any'
-          },
-          {
-            src: '/pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any'
-          },
-          {
-            src: '/pwa-maskable-192x192.png',
-            sizes: '192x192',
-            type: 'image/png',
-            purpose: 'maskable'
-          },
-          {
-            src: '/pwa-maskable-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'maskable'
-          },
-          {
-            src: '/apple-touch-icon.png',
-            sizes: '180x180',
-            type: 'image/png',
-            purpose: 'apple touch icon'
-          }
-        ]
-      },
-      workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'google-fonts-cache',
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
-          }
-        ]
-      }
-    })
+    // PWA temporarily disabled until proper icons are added to /public
+    // VitePWA({
+    //   registerType: 'autoUpdate',
+    //   includeAssets: ['favicon.png', 'apple-touch-icon.png', 'robots.txt'],
+    //   manifest: {
+    //     name: 'PortaPro Software',
+    //     short_name: 'PortaPro',
+    //     description: 'Powering Portable Sanitation',
+    //     theme_color: '#ffffff',
+    //     background_color: '#ffffff',
+    //     display: 'standalone',
+    //     orientation: 'portrait',
+    //     scope: '/',
+    //     start_url: '/',
+    //     icons: []
+    //   }
+    // })
   ].filter(Boolean),
 
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-
-      // ✅ This ensures ANY import from '@/integrations/supabase/client'
-      // resolves to your env-based client instead.
-      "@/integrations/supabase/client":
-        path.resolve(__dirname, "./src/lib/supabaseClient.ts"),
     },
   },
 
