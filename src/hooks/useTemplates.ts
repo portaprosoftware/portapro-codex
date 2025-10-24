@@ -3,8 +3,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { useUser } from '@clerk/clerk-react';
 import { EnhancedTemplate } from '@/components/maintenance/template-builder/types';
 import { toast } from 'sonner';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
+import { useOrganizationId } from './useOrganizationId';
 
 interface TemplateDB extends DBSchema {
   templates: {
@@ -38,22 +39,31 @@ const initDB = async (): Promise<IDBPDatabase<TemplateDB>> => {
 export const useTemplates = () => {
   const { user } = useUser();
   const queryClient = useQueryClient();
-  const organizationId = user?.publicMetadata?.organizationId as string;
+  const { orgId, source } = useOrganizationId();
+  const fallbackWarningShown = useRef(false);
+
+  // Show fallback warning once per session
+  useEffect(() => {
+    if (source && source !== 'clerk' && !fallbackWarningShown.current) {
+      toast.warning('Using fallback organization ID. Set Clerk publicMetadata.organizationId for multi-tenant setup.');
+      fallbackWarningShown.current = true;
+    }
+  }, [source]);
 
   const { data: templates, isLoading } = useQuery({
-    queryKey: ['service-report-templates', organizationId],
+    queryKey: ['service-report-templates', orgId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('service_report_templates')
         .select('*')
-        .eq('organization_id', organizationId)
+        .eq('organization_id', orgId)
         .eq('is_active', true)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
       return data as any[];
     },
-    enabled: !!organizationId,
+    enabled: !!orgId,
   });
 
   // Cache templates and automation rules for offline use
@@ -71,11 +81,11 @@ export const useTemplates = () => {
             });
             
             // Cache automation rules if they exist
-            if (template.template_data?.logic_rules) {
+            if (template.logic_rules) {
               await tx.objectStore('automation-rules').put({
                 template_id: template.id,
-                logic_rules: template.template_data.logic_rules,
-                fee_catalog: template.template_data.fee_catalog || [],
+                logic_rules: template.logic_rules,
+                fee_catalog: template.logic_rules?.fee_catalog || [],
                 cached_at: new Date().toISOString(),
               });
             }
@@ -103,6 +113,10 @@ export const useTemplates = () => {
 
   const createTemplate = useMutation({
     mutationFn: async (template: Omit<EnhancedTemplate, 'id' | 'created_at' | 'updated_at'>) => {
+      if (!orgId) {
+        throw new Error('Organization ID is missing. Please refresh and try again.');
+      }
+
       const { data, error } = await supabase
         .from('service_report_templates')
         .insert({
@@ -116,7 +130,7 @@ export const useTemplates = () => {
           logic_rules: template.logic_rules as any,
           permissions: template.permissions as any,
           output_config: template.output_config as any,
-          organization_id: organizationId,
+          organization_id: orgId,
           created_by: user?.id,
         } as any)
         .select()
@@ -186,6 +200,10 @@ export const useTemplates = () => {
 
   const cloneTemplate = useMutation({
     mutationFn: async (sourceId: string) => {
+      if (!orgId) {
+        throw new Error('Organization ID is missing. Please refresh and try again.');
+      }
+
       const source = templates?.find((t: any) => t.id === sourceId);
       if (!source) throw new Error('Template not found');
 
@@ -193,7 +211,7 @@ export const useTemplates = () => {
         ...source,
         name: `${source.name} (Copy)`,
         is_default_for_type: false,
-        organization_id: organizationId,
+        organization_id: orgId,
         created_by: user?.id,
       };
 
