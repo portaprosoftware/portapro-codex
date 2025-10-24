@@ -114,7 +114,7 @@ const managementFeatures = [{
 // Services & Operations - Section 3 (Blue background)
 const servicesFeatures = [{
   title: "Inventory & Supplies",
-  description: "Track units and consumables across multiple storage sites.",
+  description: "Track units across multiple sites and storage locations.",
   icon: Toilet,
   href: "#inventory"
 }, {
