@@ -34,25 +34,27 @@ export const StorageSitesNavigation: React.FC<StorageSitesNavigationProps> = ({ 
   return (
     <div className="bg-white border border-gray-200 rounded-2xl shadow-sm">
       <div className="p-6">
-        <div className="mb-4">
-          <h1 className="text-2xl font-semibold text-gray-900 font-inter">
-            Storage Garages
-          </h1>
-          <p className="text-gray-600 mt-1">
-            Manage storage garages and view garage analytics
-          </p>
-          {/* Desktop button */}
-          <div className="mt-4 hidden lg:block">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
+          <div className="min-w-0 flex-1">
+            <h1 className="text-2xl font-semibold text-gray-900 font-inter">
+              Storage Garages
+            </h1>
+            <p className="text-gray-600 mt-1">
+              Manage storage garages and view garage analytics
+            </p>
+          </div>
+          {/* Desktop button - aligned to the right */}
+          <div className="hidden sm:block">
             <Button onClick={onAddStorage} className="bg-gradient-to-r from-blue-700 to-blue-800 text-white hover:from-blue-800 hover:to-blue-900 gap-2">
               <Plus className="h-4 w-4" />
               Add Storage Garage
             </Button>
           </div>
-          {/* Mobile/Tablet button */}
-          <div className="mt-4 lg:hidden">
+          {/* Mobile button - full width */}
+          <div className="sm:hidden w-full">
             <Button onClick={onAddStorage} className="w-full bg-gradient-to-r from-blue-700 to-blue-800 text-white hover:from-blue-800 hover:to-blue-900 gap-2">
               <Plus className="h-4 w-4" />
-              Garage
+              Add Storage Garage
             </Button>
           </div>
         </div>
