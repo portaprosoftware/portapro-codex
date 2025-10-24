@@ -14,13 +14,14 @@ import {
   Search, 
   MoreHorizontal,
   Plus,
-  Download
+  Download,
+  FileStack
 } from 'lucide-react';
 import { FloatingActionButton } from '@/components/ui/floating-action-button';
 import { QuotesTable } from '@/components/quotes/QuotesTable';
 import { InvoicesTable } from '@/components/quotes/InvoicesTable';
 import { NewQuoteWizard } from '@/components/quotes/NewQuoteWizard';
-import { QuoteDraftManagement } from '@/components/quotes/QuoteDraftManagement';
+import { QuoteDraftsModal } from '@/components/quotes/QuoteDraftsModal';
 import { InvoiceCreationWizard } from '@/components/quotes/InvoiceCreationWizard';
 import { QuotesExportModal } from '@/components/quotes/QuotesExportModal';
 import { InvoicesExportModal } from '@/components/invoices/InvoicesExportModal';
@@ -43,6 +44,7 @@ const QuotesInvoices: React.FC = () => {
   const [showQuickBooksInvoiceExport, setShowQuickBooksInvoiceExport] = useState(false);
   const [showQuoteWizard, setShowQuoteWizard] = useState(false);
   const [showInvoiceWizard, setShowInvoiceWizard] = useState(false);
+  const [showDraftsModal, setShowDraftsModal] = useState(false);
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [activeQuickFilter, setActiveQuickFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string | undefined>();
@@ -186,6 +188,14 @@ const QuotesInvoices: React.FC = () => {
                       Export to QuickBooks
                     </Button>
                     <Button 
+                      variant="outline"
+                      onClick={() => setShowDraftsModal(true)}
+                      className="border-gray-300 text-gray-700 hover:bg-gray-50 hidden lg:flex"
+                    >
+                      <FileStack className="h-4 w-4 mr-2" />
+                      View Drafts
+                    </Button>
+                    <Button 
                       onClick={() => setShowQuoteWizard(true)}
                       className="bg-blue-600 hover:bg-blue-700 text-white hidden lg:flex"
                     >
@@ -228,9 +238,6 @@ const QuotesInvoices: React.FC = () => {
 
                 <QuotesTable searchTerm={searchTerm} dateRange={dateRange} />
               </div>
-
-              {/* Quote Drafts Section */}
-              <QuoteDraftManagement />
             </div>
           )}
 
@@ -380,6 +387,12 @@ const QuotesInvoices: React.FC = () => {
       <InvoiceCreationWizard 
         isOpen={showInvoiceWizard} 
         onClose={() => setShowInvoiceWizard(false)} 
+      />
+
+      {/* Quote Drafts Modal */}
+      <QuoteDraftsModal 
+        open={showDraftsModal}
+        onOpenChange={setShowDraftsModal}
       />
 
       {/* Floating Action Button - visible on mobile/tablet only */}
