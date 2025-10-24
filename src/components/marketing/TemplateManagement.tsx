@@ -315,12 +315,12 @@ export const TemplateManagement: React.FC = () => {
       <div className="space-y-6">
         {/* Email Templates */}
         <div className="space-y-4">
-          <div className="flex items-center gap-3 bg-gradient-to-r from-blue-600 to-blue-700 p-4 rounded-lg">
-            <h2 className="text-xl font-semibold text-white flex items-center gap-2">
-              <Mail className="w-5 h-5 text-white" />
+          <div className="flex items-center gap-3 bg-white border border-gray-200 p-4 rounded-lg">
+            <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+              <Mail className="w-5 h-5 text-gray-900" />
               Email Templates
             </h2>
-            <span className="text-xs text-white/90">System generated templates cannot be edited or deleted.</span>
+            <span className="text-xs text-gray-600">System generated templates cannot be edited or deleted.</span>
           </div>
           
           {/* Email User Templates */}
@@ -346,12 +346,12 @@ export const TemplateManagement: React.FC = () => {
 
         {/* SMS Templates */}
         <div className="space-y-4">
-          <div className="flex items-center gap-3 bg-gradient-to-r from-blue-600 to-blue-700 p-4 rounded-lg">
-            <h2 className="text-xl font-semibold text-white flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-white" />
+          <div className="flex items-center gap-3 bg-white border border-gray-200 p-4 rounded-lg">
+            <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+              <MessageSquare className="w-5 h-5 text-gray-900" />
               SMS Templates
             </h2>
-            <span className="text-xs text-white/90">System generated templates cannot be edited or deleted.</span>
+            <span className="text-xs text-gray-600">System generated templates cannot be edited or deleted.</span>
           </div>
           
           {/* SMS User Templates */}
