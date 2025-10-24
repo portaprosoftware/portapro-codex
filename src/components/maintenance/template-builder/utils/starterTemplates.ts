@@ -81,15 +81,9 @@ export const starterTemplates: EnhancedTemplate[] = [
     ],
     logic_rules: {
       per_unit_loop: true,
-      auto_requirements: [
-        { condition: 'status = Not Serviced', field: 'notes', action: 'require' },
-        { condition: 'status = Not Serviced OR condition includes Damage', field: 'photos', action: 'require' },
-      ],
+      auto_requirements: [],
       default_values: {},
-      fee_suggestions: [
-        { condition: 'condition includes Blocked', fee_name: 'Blocked Access Fee', fee_amount: 50 },
-        { condition: 'condition includes Tipped', fee_name: 'Tipped Unit Fee', fee_amount: 75 },
-      ],
+      fee_suggestions: [],
     },
     permissions: {
       tech_editable_fields: ['*'],

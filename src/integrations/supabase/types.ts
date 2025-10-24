@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      auto_requirement_presets: {
+        Row: {
+          auto_actions: Json
+          conditions: Json
+          created_at: string
+          description: string | null
+          evidence_requirements: Json
+          id: string
+          is_active: boolean | null
+          name: string
+          organization_id: string | null
+          preset_type: string
+          required_fields: Json
+          updated_at: string
+        }
+        Insert: {
+          auto_actions?: Json
+          conditions?: Json
+          created_at?: string
+          description?: string | null
+          evidence_requirements?: Json
+          id?: string
+          is_active?: boolean | null
+          name: string
+          organization_id?: string | null
+          preset_type: string
+          required_fields?: Json
+          updated_at?: string
+        }
+        Update: {
+          auto_actions?: Json
+          conditions?: Json
+          created_at?: string
+          description?: string | null
+          evidence_requirements?: Json
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          organization_id?: string | null
+          preset_type?: string
+          required_fields?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       automation_requests: {
         Row: {
           admin_email: string
@@ -3054,6 +3099,45 @@ export type Database = {
         }
         Relationships: []
       }
+      fee_catalog: {
+        Row: {
+          category: string | null
+          created_at: string
+          default_amount: number
+          description: string | null
+          gl_code: string | null
+          id: string
+          name: string
+          organization_id: string | null
+          taxable: boolean | null
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          default_amount: number
+          description?: string | null
+          gl_code?: string | null
+          id?: string
+          name: string
+          organization_id?: string | null
+          taxable?: boolean | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          default_amount?: number
+          description?: string | null
+          gl_code?: string | null
+          id?: string
+          name?: string
+          organization_id?: string | null
+          taxable?: boolean | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       filter_preset_usage: {
         Row: {
           filter_modifications: Json | null
@@ -5804,6 +5888,87 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      maintenance_tasks: {
+        Row: {
+          assigned_to: string | null
+          attachments: Json | null
+          automation_rule_id: string | null
+          completed_at: string | null
+          created_at: string
+          created_by: string | null
+          customer_id: string | null
+          description: string | null
+          due_date: string | null
+          id: string
+          job_id: string | null
+          metadata: Json | null
+          priority: string | null
+          site_id: string | null
+          status: string | null
+          task_number: string | null
+          title: string
+          unit_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          attachments?: Json | null
+          automation_rule_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          job_id?: string | null
+          metadata?: Json | null
+          priority?: string | null
+          site_id?: string | null
+          status?: string | null
+          task_number?: string | null
+          title: string
+          unit_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          attachments?: Json | null
+          automation_rule_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          job_id?: string | null
+          metadata?: Json | null
+          priority?: string | null
+          site_id?: string | null
+          status?: string | null
+          task_number?: string | null
+          title?: string
+          unit_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maintenance_tasks_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maintenance_tasks_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       maintenance_technicians: {
         Row: {
