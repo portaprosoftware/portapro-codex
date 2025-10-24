@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { ServiceAddressesSection } from './ServiceAddressesSection';
+import { AddServiceLocationModal } from './AddServiceLocationModal';
 import { MapPin, Navigation, Trash2, Search, Target, Plus, Edit, Layers, Home, ChevronDown, ChevronRight, MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -1277,14 +1278,15 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
 
 export function ServiceLocationTab({ customerId }: ServiceLocationTabProps) {
   const [activeTab, setActiveTab] = useState('addresses');
+  const [isAddLocationModalOpen, setIsAddLocationModalOpen] = useState(false);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="bg-card rounded-2xl p-4 sm:p-6">
-        <h3 className="text-lg font-semibold text-foreground mb-3">Service Locations</h3>
+        <h3 className="text-lg font-semibold text-foreground mb-4">Service Locations</h3>
         
         {/* Mobile Dropdown (< 1024px) */}
-        <div className="mb-6 lg:hidden">
+        <div className="mb-4 lg:hidden">
           <label htmlFor="view-mode-select" className="text-sm font-medium text-muted-foreground block mb-2">
             View Mode
           </label>
@@ -1309,8 +1311,8 @@ export function ServiceLocationTab({ customerId }: ServiceLocationTabProps) {
           </Select>
         </div>
 
-        {/* Desktop Toggle Switch (≥ 1024px) */}
-        <div className="mb-4 hidden lg:flex">
+        {/* Desktop: Toggle + Description + Button in one row (≥ 1024px) */}
+        <div className="mb-3 hidden lg:flex lg:items-center lg:justify-between lg:gap-4">
           <div className="bg-gray-100 p-1 rounded-lg flex">
             <button
               onClick={() => setActiveTab('addresses')}
@@ -1335,6 +1337,19 @@ export function ServiceLocationTab({ customerId }: ServiceLocationTabProps) {
               Drop Map Pins
             </button>
           </div>
+          
+          <div className="flex items-center gap-3 flex-1 justify-end">
+            <p className="text-sm text-muted-foreground hidden xl:block">
+              Manage physical addresses for customers with multiple service locations.
+            </p>
+            <Button 
+              onClick={() => setIsAddLocationModalOpen(true)}
+              className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold flex-shrink-0"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Add Location
+            </Button>
+          </div>
         </div>
         
         {/* Active Tab Content */}
@@ -1346,6 +1361,13 @@ export function ServiceLocationTab({ customerId }: ServiceLocationTabProps) {
           )}
         </div>
       </div>
+      
+      <AddServiceLocationModal
+        isOpen={isAddLocationModalOpen}
+        onClose={() => setIsAddLocationModalOpen(false)}
+        customerId={customerId}
+        onSuccess={() => setIsAddLocationModalOpen(false)}
+      />
     </div>
   );
 }

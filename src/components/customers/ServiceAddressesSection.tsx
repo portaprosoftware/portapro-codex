@@ -66,24 +66,9 @@ export function ServiceAddressesSection({ customerId }: ServiceAddressesSectionP
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start lg:items-center gap-3">
-        <div className="lg:order-2 lg:flex-1 lg:flex lg:justify-end lg:items-center lg:gap-3">
-          <p className="text-sm text-muted-foreground">
-            Manage physical addresses for customers with multiple service locations.
-          </p>
-          <Button 
-            onClick={() => setIsAddModalOpen(true)}
-            className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold w-full sm:w-auto lg:flex-shrink-0 min-h-[44px]"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Add Location
-          </Button>
-        </div>
-      </div>
-
+    <div className="space-y-3">
       {serviceLocations && serviceLocations.length > 0 ? (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {serviceLocations.map((location) => (
             <ServiceLocationCard
               key={location.id}
