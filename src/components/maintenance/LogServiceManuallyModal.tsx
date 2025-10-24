@@ -131,9 +131,30 @@ export const LogServiceManuallyModal: React.FC<LogServiceManuallyModalProps> = (
         }
       };
 
+      // Only include template_id and customer_id if they have values
+      const insertData: any = {
+        report_number: reportData.report_number,
+        service_id: reportData.service_id,
+        status: reportData.status,
+        actual_completion: reportData.actual_completion,
+        completion_percentage: reportData.completion_percentage,
+        auto_generated: reportData.auto_generated,
+        report_data: reportData.report_data,
+      };
+
+      if (formData.template_id) {
+        insertData.template_id = formData.template_id;
+      }
+      if (formData.customer_id) {
+        insertData.customer_id = formData.customer_id;
+      }
+      if (formData.technician) {
+        insertData.assigned_technician = formData.technician;
+      }
+
       const { error } = await supabase
         .from('maintenance_reports')
-        .insert([reportData]);
+        .insert([insertData]);
       
       if (error) throw error;
     },
