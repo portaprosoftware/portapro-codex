@@ -10,17 +10,17 @@ export const PhonePreview: React.FC<PhonePreviewProps> = ({ template }) => {
   return (
     <div className="flex justify-center">
       {/* Phone Frame */}
-      <div className="w-[375px] h-[667px] bg-background border-8 border-foreground/20 rounded-[2.5rem] shadow-2xl overflow-hidden">
-        {/* Phone Notch */}
-        <div className="h-6 bg-foreground/20 rounded-b-2xl mx-auto w-40" />
-        
+      <div className="w-[375px] h-[667px] bg-background border-8 border-foreground/20 rounded-[2.5rem] shadow-2xl overflow-hidden relative">
         {/* Screen Content */}
         <div className="h-full bg-white overflow-y-auto pb-20">
-          {/* Header */}
-          <div className="sticky top-0 bg-gradient-to-r from-primary to-primary/80 text-white p-4 shadow-md z-10">
+          {/* Header - extends into notch area */}
+          <div className="sticky top-0 bg-gradient-to-r from-primary to-primary/80 text-white pt-8 pb-4 px-4 shadow-md z-10 rounded-t-[2rem]">
             <h2 className="font-bold text-lg">{template.name || 'Service Report'}</h2>
             <p className="text-xs opacity-90 capitalize">{template.template_type || 'Template'}</p>
           </div>
+          
+          {/* Phone Notch - overlays the header */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 h-6 bg-foreground/20 rounded-b-2xl w-40 z-20" />
 
           {/* Form Sections */}
           <div className="p-4 space-y-4">
