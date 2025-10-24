@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { StatCard } from "@/components/ui/StatCard";
 import { LogServiceManuallyModal } from "@/components/maintenance/LogServiceManuallyModal";
-import { Search, FileText, Clock, CheckCircle, AlertTriangle, Download, Eye } from "lucide-react";
+import { Search, FileText, ClipboardClock, Clock, CheckCircle, AlertTriangle, Download, Eye } from "lucide-react";
 import { toast } from "sonner";
 
 interface ServiceRecord {
@@ -150,7 +150,7 @@ export const ServiceRecordsTab: React.FC = () => {
             variant="gradient"
             onClick={() => setShowManualLogModal(true)}
           >
-            <Clock className="w-4 h-4 mr-2" />
+            <ClipboardClock className="w-4 h-4 mr-2" />
             Log Service Manually
           </Button>
         </div>

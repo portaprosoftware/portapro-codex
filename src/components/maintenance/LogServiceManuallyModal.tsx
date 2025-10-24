@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle, X } from "lucide-react";
 import { toast } from "sonner";
 import { useUser } from "@clerk/clerk-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface LogServiceManuallyModalProps {
   isOpen: boolean;
@@ -23,6 +29,7 @@ export const LogServiceManuallyModal: React.FC<LogServiceManuallyModalProps> = (
 }) => {
   const queryClient = useQueryClient();
   const { user } = useUser();
+  const isMobile = useIsMobile();
   const [formData, setFormData] = useState({
     service_id: "",
     completion_date: new Date().toISOString().split('T')[0],
@@ -209,13 +216,14 @@ export const LogServiceManuallyModal: React.FC<LogServiceManuallyModalProps> = (
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Log Service Manually</DialogTitle>
-        </DialogHeader>
+    <Drawer open={isOpen} onOpenChange={onClose}>
+      <DrawerContent className={isMobile ? "h-[100vh]" : "h-[50vh]"}>
+        <DrawerHeader className="border-b pb-3">
+          <DrawerTitle>Log Service Manually</DrawerTitle>
+        </DrawerHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="overflow-y-auto px-4 py-4">
+          <form onSubmit={handleSubmit} className="space-y-6">
           {/* Basic Information */}
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -360,7 +368,8 @@ export const LogServiceManuallyModal: React.FC<LogServiceManuallyModalProps> = (
             </Button>
           </div>
         </form>
-      </DialogContent>
-    </Dialog>
+        </div>
+      </DrawerContent>
+    </Drawer>
   );
 };
