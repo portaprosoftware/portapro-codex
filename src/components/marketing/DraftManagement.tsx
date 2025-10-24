@@ -76,8 +76,8 @@ export const DraftManagement: React.FC = () => {
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
-                      <AlertTriangle className="w-5 h-5 text-red-600" />
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-red-600 border-2 border-white shadow-md flex items-center justify-center">
+                      <AlertTriangle className="w-5 h-5 text-white" />
                     </div>
                     <div>
                       <AlertDialogTitle className="font-inter">Delete All Drafts</AlertDialogTitle>
@@ -143,8 +143,15 @@ export const DraftManagement: React.FC = () => {
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle className="font-inter">Delete Draft</AlertDialogTitle>
-                        <AlertDialogDescription className="font-inter">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-red-600 border-2 border-white shadow-md flex items-center justify-center">
+                            <AlertTriangle className="w-5 h-5 text-white" />
+                          </div>
+                          <div>
+                            <AlertDialogTitle className="font-inter">Delete Draft</AlertDialogTitle>
+                          </div>
+                        </div>
+                        <AlertDialogDescription className="font-inter mt-2">
                           Are you sure you want to delete this campaign draft? This action cannot be undone.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
