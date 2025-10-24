@@ -140,33 +140,38 @@ export const CustomerSegments: React.FC = () => {
             </div>
       ) : (
         <>
-          {/* Header with Search and Create Button */}
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                Customer Segments ({segments.length})
-              </CardTitle>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="relative w-64">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search segments..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-background border-input z-10"
-                />
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery('')}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground hover:text-foreground"
-                  >
-                    ×
-                  </button>
-                )}
+          {/* Header with Description, Search and Create Button */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="h-5 w-5" />
+                  Customer Segments ({segments.length})
+                </CardTitle>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Create and manage customer segments for targeted marketing.
+                </p>
               </div>
-              <SmartSegmentBuilder />
+              <div className="flex items-center gap-3">
+                <div className="relative w-64">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search segments..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 bg-background border-input z-10"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground hover:text-foreground"
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
+                <SmartSegmentBuilder />
+              </div>
             </div>
           </div>
           {/* Segments Table */}
