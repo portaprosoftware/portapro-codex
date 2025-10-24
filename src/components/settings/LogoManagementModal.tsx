@@ -47,10 +47,27 @@ export function LogoManagementModal({ isOpen, onClose, currentLogo }: LogoManage
       return publicUrl;
     },
     onSuccess: async (logoUrl) => {
+      // First, get the existing company settings ID
+      const { data: existingSettings, error: fetchError } = await supabase
+        .from("company_settings")
+        .select("id")
+        .limit(1)
+        .maybeSingle();
+
+      if (fetchError) {
+        console.error('Error fetching company settings:', fetchError);
+        throw fetchError;
+      }
+
+      if (!existingSettings) {
+        throw new Error('No company settings found');
+      }
+
       // Update the company settings with the new logo URL
       const { data, error } = await supabase
         .from("company_settings")
         .update({ company_logo: logoUrl })
+        .eq('id', existingSettings.id)
         .select("company_logo, company_name")
         .single();
 
