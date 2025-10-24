@@ -4,6 +4,7 @@ import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
 import { RouterSelector } from './components/RouterSelector';
 import { useUserRole } from './hooks/useUserRole';
 import { usePWAStandalone } from './hooks/usePWAStandalone';
+import { useCompanyTitle } from './hooks/useCompanyTitle';
 import { Layout } from './components/layout/Layout';
 import { ErrorBoundary } from './components/ui/error-boundary';
 import { Landing } from './pages/Landing';
@@ -69,6 +70,9 @@ import Security from './pages/Security';
 const App = () => {
   // Enable PWA standalone mode behaviors (zoom lock, gesture blocking)
   usePWAStandalone();
+  
+  // Set browser tab title to company name
+  useCompanyTitle();
 
   return (
     <ErrorBoundary>
