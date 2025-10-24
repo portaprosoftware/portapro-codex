@@ -350,11 +350,10 @@ const CustomerHub: React.FC = () => {
                 {showLastDelivery && (
                   <SortableHeader column="last_delivery" className="text-right">
                     <div className="flex items-center justify-end gap-1">
-                      Days Since Last Delivery
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-6 w-6 p-0 hover:bg-gray-200 ml-1"
+                        className="h-6 w-6 p-0 hover:bg-gray-200 mr-1"
                         onClick={(e) => {
                           e.stopPropagation();
                           setShowLastDelivery(false);
@@ -363,6 +362,7 @@ const CustomerHub: React.FC = () => {
                       >
                         <Truck className="h-3.5 w-3.5 text-gray-500" />
                       </Button>
+                      Days Since Last Delivery
                     </div>
                   </SortableHeader>
                 )}
