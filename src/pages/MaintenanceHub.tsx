@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 export default function MaintenanceHub() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'catalog' | 'templates' | 'records'>('catalog');
+  const [activeTab, setActiveTab] = useState<'catalog' | 'templates' | 'records'>('records');
   const [showLogPastService, setShowLogPastService] = useState(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
