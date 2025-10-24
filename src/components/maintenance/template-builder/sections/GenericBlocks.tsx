@@ -105,7 +105,7 @@ export const genericBlocks: GenericBlock[] = [
 
 interface GenericBlockCardProps {
   block: GenericBlock;
-  onAdd: (blockType: SectionBlockType) => void;
+  onAdd: (blockType: SectionBlockType, selectedFeatures?: string[]) => void;
 }
 
 export const GenericBlockCard: React.FC<GenericBlockCardProps> = ({ block, onAdd }) => {
@@ -117,7 +117,7 @@ export const GenericBlockCard: React.FC<GenericBlockCardProps> = ({ block, onAdd
 
   const handleAddClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onAdd(block.type);
+    onAdd(block.type, []); // Generic blocks have no features
     setIsSelected(false);
   };
 

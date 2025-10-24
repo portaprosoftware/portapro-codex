@@ -10,7 +10,7 @@ import { GenericBlockCard, genericBlocks } from '../sections/GenericBlocks';
 
 interface SectionsStepProps {
   sections: EnhancedSection[];
-  onAddSection: (blockType: SectionBlockType) => void;
+  onAddSection: (blockType: SectionBlockType, selectedFeatures?: string[]) => void;
   onRemoveSection: (sectionId: string) => void;
   onReorderSections: (sections: EnhancedSection[]) => void;
 }

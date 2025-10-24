@@ -82,20 +82,31 @@ export const industryBlocks: IndustryBlock[] = [
 
 interface IndustryBlockCardProps {
   block: IndustryBlock;
-  onAdd: (blockType: SectionBlockType) => void;
+  onAdd: (blockType: SectionBlockType, selectedFeatures: string[]) => void;
 }
 
 export const IndustryBlockCard: React.FC<IndustryBlockCardProps> = ({ block, onAdd }) => {
   const [isSelected, setIsSelected] = useState(false);
+  const [selectedFeatures, setSelectedFeatures] = useState<string[]>(block.features);
 
   const handleCardClick = () => {
     setIsSelected(!isSelected);
   };
 
+  const toggleFeature = (feature: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedFeatures(prev => 
+      prev.includes(feature) 
+        ? prev.filter(f => f !== feature)
+        : [...prev, feature]
+    );
+  };
+
   const handleAddClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onAdd(block.type);
+    onAdd(block.type, selectedFeatures);
     setIsSelected(false);
+    setSelectedFeatures(block.features); // Reset to all features
   };
 
   return (
@@ -126,7 +137,16 @@ export const IndustryBlockCard: React.FC<IndustryBlockCardProps> = ({ block, onA
       <CardContent className="pt-0">
         <div className="flex flex-wrap gap-1.5">
           {block.features.map((feature) => (
-            <Badge key={feature} variant="outline" className="text-xs font-normal">
+            <Badge 
+              key={feature} 
+              variant={selectedFeatures.includes(feature) ? "default" : "outline"}
+              className={`text-xs font-normal cursor-pointer transition-all ${
+                selectedFeatures.includes(feature) 
+                  ? 'bg-gradient-to-r from-primary to-primary/80 text-white font-bold' 
+                  : 'hover:border-primary'
+              }`}
+              onClick={(e) => toggleFeature(feature, e)}
+            >
               {feature}
             </Badge>
           ))}

@@ -104,18 +104,22 @@ export const BottomSheetWizard: React.FC<BottomSheetWizardProps> = ({
     }
   };
 
-  const handleAddSection = (blockType: SectionBlockType) => {
+  const handleAddSection = (blockType: SectionBlockType, selectedFeatures?: string[]) => {
     const allBlocks = [...industryBlocks, ...genericBlocks];
     const block = allBlocks.find((b) => b.type === blockType);
     
     if (block) {
+      // Import field generator
+      const { generateFieldsForBlock } = require('./utils/fieldGenerator');
+      const fields = generateFieldsForBlock(blockType, selectedFeatures);
+      
       const newSection: EnhancedSection = {
         id: `section-${Date.now()}`,
         type: blockType,
         title: block.title,
         description: block.description,
         repeat_for_each: blockType === 'per_unit_loop',
-        fields: [],
+        fields: fields,
       };
       setSections([...sections, newSection]);
     }
