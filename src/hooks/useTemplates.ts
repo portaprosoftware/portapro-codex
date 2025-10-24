@@ -4,6 +4,36 @@ import { useUser } from '@clerk/clerk-react';
 import { EnhancedTemplate } from '@/components/maintenance/template-builder/types';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
+import { openDB, DBSchema, IDBPDatabase } from 'idb';
+
+interface TemplateDB extends DBSchema {
+  templates: {
+    key: string;
+    value: any & { cached_at: string };
+  };
+  'automation-rules': {
+    key: string;
+    value: {
+      template_id: string;
+      logic_rules: any;
+      fee_catalog: any[];
+      cached_at: string;
+    };
+  };
+}
+
+const initDB = async (): Promise<IDBPDatabase<TemplateDB>> => {
+  return openDB<TemplateDB>('maintenance-templates-db', 2, {
+    upgrade(db, oldVersion) {
+      if (!db.objectStoreNames.contains('templates')) {
+        db.createObjectStore('templates', { keyPath: 'id' });
+      }
+      if (oldVersion < 2 && !db.objectStoreNames.contains('automation-rules')) {
+        db.createObjectStore('automation-rules', { keyPath: 'template_id' });
+      }
+    },
+  });
+};
 
 export const useTemplates = () => {
   const { user } = useUser();
@@ -26,32 +56,46 @@ export const useTemplates = () => {
     enabled: !!organizationId,
   });
 
-  // Cache templates for offline use
+  // Cache templates and automation rules for offline use
   useEffect(() => {
     if (templates && templates.length > 0) {
-      const cacheData = {
-        templates,
-        timestamp: new Date().toISOString(),
+      const cacheTemplates = async () => {
+        try {
+          const db = await initDB();
+          const tx = db.transaction(['templates', 'automation-rules'], 'readwrite');
+          
+          for (const template of templates) {
+            await tx.objectStore('templates').put({ 
+              ...template, 
+              cached_at: new Date().toISOString() 
+            });
+            
+            // Cache automation rules if they exist
+            if (template.template_data?.logic_rules) {
+              await tx.objectStore('automation-rules').put({
+                template_id: template.id,
+                logic_rules: template.template_data.logic_rules,
+                fee_catalog: template.template_data.fee_catalog || [],
+                cached_at: new Date().toISOString(),
+              });
+            }
+          }
+          await tx.done;
+        } catch (error) {
+          console.error('Failed to cache templates:', error);
+        }
       };
-      localStorage.setItem('cached_templates', JSON.stringify(cacheData));
+      
+      cacheTemplates();
     }
   }, [templates]);
 
   // Get cached templates when offline
-  const getCachedTemplates = (): any[] => {
+  const getCachedTemplates = async (): Promise<any[]> => {
     try {
-      const cached = localStorage.getItem('cached_templates');
-      if (!cached) return [];
-      
-      const { templates: cachedTemplates, timestamp } = JSON.parse(cached);
-      const cacheAge = Date.now() - new Date(timestamp).getTime();
-      const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
-      
-      // Return cached data if less than 24 hours old
-      if (cacheAge < TWENTY_FOUR_HOURS) {
-        return cachedTemplates;
-      }
-      return [];
+      const db = await initDB();
+      const cachedTemplates = await db.getAll('templates');
+      return cachedTemplates || [];
     } catch {
       return [];
     }
@@ -176,7 +220,7 @@ export const useTemplates = () => {
   });
 
   return { 
-    templates: templates || getCachedTemplates(), 
+    templates: templates || [], 
     isLoading, 
     createTemplate, 
     updateTemplate, 
