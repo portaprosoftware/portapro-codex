@@ -76,12 +76,6 @@ export const DefaultValuesBuilder: React.FC<DefaultValuesBuilderProps> = ({
           </div>
         </div>
       </div>
-
-      <div className="p-3 rounded-lg border border-dashed bg-blue-50 dark:bg-blue-950/20">
-        <p className="text-xs text-center text-muted-foreground">
-          ✨ Advanced default value mapping coming soon
-        </p>
-      </div>
     </div>
   );
 };

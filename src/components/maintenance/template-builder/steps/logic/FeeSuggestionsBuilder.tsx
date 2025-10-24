@@ -245,11 +245,6 @@ export const FeeSuggestionsBuilder: React.FC<FeeSuggestionsBuilderProps> = ({
           ))}
         </TabsContent>
       </Tabs>
-
-      <Button variant="outline" size="sm" className="w-full gap-2" disabled>
-        <Plus className="w-4 h-4" />
-        Add Custom Fee Rule (Coming Soon)
-      </Button>
     </div>
   );
 };
