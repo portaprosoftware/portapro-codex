@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
 import { EnhancedTemplate, BuilderStep, EnhancedSection, SectionBlockType, LogicRules, Permissions, OutputConfig } from './types';
 import { StepNavigation } from './StepNavigation';
 import { BasicsStep } from './steps/BasicsStep';
@@ -10,6 +10,7 @@ import { LogicStep } from './steps/LogicStep';
 import { PermissionsStep } from './steps/PermissionsStep';
 import { OutputStep } from './steps/OutputStep';
 import { ReviewStep } from './steps/ReviewStep';
+import { PreviewModal } from './PreviewModal';
 import { industryBlocks } from './sections/IndustryBlocks';
 import { genericBlocks } from './sections/GenericBlocks';
 
@@ -29,6 +30,7 @@ export const BottomSheetWizard: React.FC<BottomSheetWizardProps> = ({
   const [currentStep, setCurrentStep] = useState<BuilderStep>(1);
   const [completedSteps, setCompletedSteps] = useState<BuilderStep[]>([]);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   // Template state
   const [name, setName] = useState('');
@@ -209,6 +211,14 @@ export const BottomSheetWizard: React.FC<BottomSheetWizardProps> = ({
           <h2 className="text-xl font-semibold">Create New Template</h2>
           <div className="flex items-center gap-2">
             <Button 
+              variant="outline"
+              onClick={() => setIsPreviewOpen(true)}
+              className="gap-2"
+            >
+              <Eye className="w-4 h-4" />
+              Live Preview
+            </Button>
+            <Button 
               onClick={handlePublish} 
               disabled={!canPublish()}
             >
@@ -315,6 +325,13 @@ export const BottomSheetWizard: React.FC<BottomSheetWizardProps> = ({
           </div>
         </div>
       </SheetContent>
+
+      {/* Preview Modal - opens above drawer */}
+      <PreviewModal
+        isOpen={isPreviewOpen}
+        onClose={() => setIsPreviewOpen(false)}
+        template={currentTemplate}
+      />
     </Sheet>
   );
 };
