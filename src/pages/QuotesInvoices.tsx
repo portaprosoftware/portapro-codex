@@ -85,303 +85,324 @@ const QuotesInvoices: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-none px-6 py-6 space-y-6">
-      {/* Page Header with Navigation Pills */}
-      <div className="bg-white rounded-lg border shadow-sm p-6">
-        <div className="space-y-4">
+      <div className="max-w-[1200px] mx-auto px-4 py-6 space-y-3">
+        
+        {/* Page Header Card */}
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
           <div>
             <h1 className="text-2xl font-semibold text-gray-900 font-inter">Quotes & Invoices Management</h1>
             <p className="text-base text-gray-600 font-inter mt-1">Create and manage quotes and invoices with inventory and maintenance services</p>
           </div>
-          
-          {/* Quotes & Invoices Sub-Navigation Pills */}
-          <div className="flex items-center space-x-4">
-            <div className="enterprise-tabs">
-              <TabNav ariaLabel="Quotes and Invoices">
-                <TabNav.Item 
-                  to="#" 
-                  isActive={activeTab === 'quotes'}
-                  onClick={() => setActiveTab('quotes')}
-                >
-                  <FileText className="w-4 h-4" />
-                  Quotes
-                </TabNav.Item>
-                <TabNav.Item 
-                  to="#" 
-                  isActive={activeTab === 'invoices'}
-                  onClick={() => setActiveTab('invoices')}
-                >
-                  <DollarSign className="w-4 h-4" />
-                  Invoices
-                </TabNav.Item>
-              </TabNav>
-            </div>
-          </div>
         </div>
-      </div>
 
-      {/* Conditional Content Based on Active Tab */}
-      {activeTab === 'quotes' && (
-        <div className="space-y-6">
-
-          {/* Quote Metrics Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-            <KpiCard
-              title={`Total Quote Value (${quoteMetrics?.year || new Date().getFullYear()} YTD)`}
-              value={formatCurrency(quoteMetrics?.total_value)}
-              icon={TrendingUp}
-              gradient="bg-gradient-to-r from-blue-600 to-blue-800"
-              onClick={() => {
-                setStatusFilter(undefined);
-                setActiveQuickFilter('all');
-              }}
-            />
-            <KpiCard
-              title={`Pending Value (${quoteMetrics?.year || new Date().getFullYear()} YTD)`}
-              value={formatCurrency(quoteMetrics?.pending_value)}
-              icon={FileText}
-              gradient="bg-gradient-to-r from-yellow-500 to-yellow-700"
-              onClick={() => {
-                setStatusFilter('sent');
-                setActiveQuickFilter('all');
-              }}
-              subtitle="Tap to filter"
-            />
-            <KpiCard
-              title={`Accepted Value (${quoteMetrics?.year || new Date().getFullYear()} YTD)`}
-              value={formatCurrency(quoteMetrics?.accepted_value)}
-              icon={DollarSign}
-              gradient="bg-gradient-to-r from-green-600 to-green-800"
-              onClick={() => {
-                setStatusFilter('accepted');
-                setActiveQuickFilter('all');
-              }}
-              subtitle="Tap to filter"
-            />
+        {/* Main Content Card */}
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+          {/* Quotes & Invoices Tab Navigation */}
+          <div className="border-b border-gray-200 mb-4 -mx-6 px-6">
+            <TabNav ariaLabel="Quotes and Invoices">
+              <TabNav.Item 
+                to="#" 
+                isActive={activeTab === 'quotes'}
+                onClick={() => setActiveTab('quotes')}
+              >
+                <FileText className="w-4 h-4" />
+                Quotes
+              </TabNav.Item>
+              <TabNav.Item 
+                to="#" 
+                isActive={activeTab === 'invoices'}
+                onClick={() => setActiveTab('invoices')}
+              >
+                <DollarSign className="w-4 h-4" />
+                Invoices
+              </TabNav.Item>
+            </TabNav>
           </div>
 
-          {/* Date Filters - Mobile Drawer */}
-          <div className="lg:hidden px-4">
-            <MobileDateFilterDrawer
-              dateRange={dateRange}
-              onDateRangeChange={setDateRange}
-              activeFilter={activeQuickFilter}
-              onActiveFilterChange={setActiveQuickFilter}
-            />
-          </div>
+          {/* Conditional Content Based on Active Tab */}
+          {activeTab === 'quotes' && (
+            <div className="space-y-4">
 
-          {/* Date Filters - Desktop */}
-          <div className="hidden lg:block">
-            <QuoteDateFilters 
-              dateRange={dateRange}
-              onDateRangeChange={setDateRange}
-            />
-          </div>
+              {/* Quote Metrics Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <KpiCard
+                  title={`Total Quote Value (${quoteMetrics?.year || new Date().getFullYear()} YTD)`}
+                  value={formatCurrency(quoteMetrics?.total_value)}
+                  icon={TrendingUp}
+                  gradient="bg-gradient-to-r from-blue-600 to-blue-800"
+                  onClick={() => {
+                    setStatusFilter(undefined);
+                    setActiveQuickFilter('all');
+                  }}
+                />
+                <KpiCard
+                  title={`Pending Value (${quoteMetrics?.year || new Date().getFullYear()} YTD)`}
+                  value={formatCurrency(quoteMetrics?.pending_value)}
+                  icon={FileText}
+                  gradient="bg-gradient-to-r from-yellow-500 to-yellow-700"
+                  onClick={() => {
+                    setStatusFilter('sent');
+                    setActiveQuickFilter('all');
+                  }}
+                  subtitle="Tap to filter"
+                />
+                <KpiCard
+                  title={`Accepted Value (${quoteMetrics?.year || new Date().getFullYear()} YTD)`}
+                  value={formatCurrency(quoteMetrics?.accepted_value)}
+                  icon={DollarSign}
+                  gradient="bg-gradient-to-r from-green-600 to-green-800"
+                  onClick={() => {
+                    setStatusFilter('accepted');
+                    setActiveQuickFilter('all');
+                  }}
+                  subtitle="Tap to filter"
+                />
+              </div>
 
-          {/* Quotes Section */}
-          <div className="space-y-4">
-            {/* Header - Desktop */}
-            <div className="hidden lg:flex items-center justify-between">
-              <h2 className="text-lg font-bold text-foreground">All Quotes</h2>
-              <div className="flex items-center space-x-2">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              {/* Date Filters - Mobile Drawer */}
+              <div className="lg:hidden">
+                <MobileDateFilterDrawer
+                  dateRange={dateRange}
+                  onDateRangeChange={setDateRange}
+                  activeFilter={activeQuickFilter}
+                  onActiveFilterChange={setActiveQuickFilter}
+                />
+              </div>
+
+              {/* Date Filters - Desktop */}
+              <div className="hidden lg:block">
+                <QuoteDateFilters 
+                  dateRange={dateRange}
+                  onDateRangeChange={setDateRange}
+                />
+              </div>
+
+              {/* Quotes Section */}
+              <div className="space-y-4">
+                {/* Header - Desktop */}
+                <div className="hidden lg:flex items-center justify-between">
+                  <h2 className="text-lg font-bold text-foreground">All Quotes</h2>
+                  <div className="flex items-center space-x-2">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search quotes..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10 w-64"
+                      />
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setShowQuoteExport(true)}
+                      className="border-blue-600 text-blue-600 hover:bg-blue-50"
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      Export
+                    </Button>
+                    <Button 
+                      onClick={() => setShowQuickBooksQuoteExport(true)}
+                      style={{ 
+                        background: 'linear-gradient(to right, #059669, #047857)',
+                        color: 'white',
+                        border: 'none'
+                      }}
+                      className="hover:opacity-90 font-bold transition-opacity"
+                    >
+                      Export to QuickBooks
+                    </Button>
+                    <Button 
+                      onClick={() => setShowQuoteWizard(true)}
+                      className="bg-blue-600 hover:bg-blue-700 text-white hidden lg:flex"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Create Quote
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Header - Mobile */}
+                <div className="lg:hidden space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-bold text-foreground">All Quotes</h2>
+                    <MobileMoreMenu
+                      type="quotes"
+                      onExport={() => setShowQuoteExport(true)}
+                      onQuickBooksExport={() => setShowQuickBooksQuoteExport(true)}
+                    />
+                  </div>
+                  {statusFilter && (
+                    <ActiveFilterChip
+                      label={`Status: ${statusFilter.charAt(0).toUpperCase() + statusFilter.slice(1)}`}
+                      onClear={() => setStatusFilter(undefined)}
+                    />
+                  )}
                   <Input
                     placeholder="Search quotes..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 w-64"
+                    className="w-full min-h-[44px] text-base"
                   />
                 </div>
-                <Button 
-                  variant="outline" 
-                  onClick={() => setShowQuoteExport(true)}
-                  className="border-blue-600 text-blue-600 hover:bg-blue-50"
-                >
-                  <Download className="h-4 w-4 mr-2" />
-                  Export
-                </Button>
-                <Button 
-                  onClick={() => setShowQuickBooksQuoteExport(true)}
-                  style={{ 
-                    background: 'linear-gradient(to right, #059669, #047857)',
-                    color: 'white',
-                    border: 'none'
+
+                <QuotesTable searchTerm={searchTerm} dateRange={dateRange} />
+              </div>
+
+              {/* Quote Drafts Section */}
+              <QuoteDraftManagement />
+            </div>
+          )}
+
+          {activeTab === 'invoices' && (
+            <div className="space-y-4">
+              {/* Invoice Metrics Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <KpiCard
+                  title={`Total Invoice Value (${invoiceMetrics?.year || new Date().getFullYear()} YTD)`}
+                  value={formatCurrency(invoiceMetrics?.total_value)}
+                  icon={TrendingUp}
+                  gradient="bg-gradient-to-r from-blue-600 to-blue-800"
+                  onClick={() => {
+                    setStatusFilter(undefined);
+                    setActiveQuickFilter('all');
                   }}
-                  className="hover:opacity-90 font-bold transition-opacity"
-                >
-                  Export to QuickBooks
-                </Button>
-                <Button 
-                  onClick={() => setShowQuoteWizard(true)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white hidden lg:flex"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create Quote
-                </Button>
-              </div>
-            </div>
-
-            {/* Header - Mobile */}
-            <div className="lg:hidden space-y-3 px-4">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-bold text-foreground">All Quotes</h2>
-                <MobileMoreMenu
-                  type="quotes"
-                  onExport={() => setShowQuoteExport(true)}
-                  onQuickBooksExport={() => setShowQuickBooksQuoteExport(true)}
+                />
+                <KpiCard
+                  title={`Unpaid Value (${invoiceMetrics?.year || new Date().getFullYear()} YTD)`}
+                  value={formatCurrency(invoiceMetrics?.unpaid_value)}
+                  icon={FileText}
+                  gradient="bg-gradient-to-r from-yellow-500 to-yellow-700"
+                  onClick={() => {
+                    setStatusFilter('unpaid');
+                    setActiveQuickFilter('all');
+                  }}
+                  subtitle="Tap to filter"
+                />
+                <KpiCard
+                  title={`Paid Value (${invoiceMetrics?.year || new Date().getFullYear()} YTD)`}
+                  value={formatCurrency(invoiceMetrics?.paid_value)}
+                  icon={DollarSign}
+                  gradient="bg-gradient-to-r from-green-600 to-green-800"
+                  onClick={() => {
+                    setStatusFilter('paid');
+                    setActiveQuickFilter('all');
+                  }}
+                  subtitle="Tap to filter"
                 />
               </div>
-              {statusFilter && (
-                <ActiveFilterChip
-                  label={`Status: ${statusFilter.charAt(0).toUpperCase() + statusFilter.slice(1)}`}
-                  onClear={() => setStatusFilter(undefined)}
+
+              {/* Date Filters - Mobile Drawer */}
+              <div className="lg:hidden">
+                <MobileDateFilterDrawer
+                  dateRange={dateRange}
+                  onDateRangeChange={setDateRange}
+                  activeFilter={activeQuickFilter}
+                  onActiveFilterChange={setActiveQuickFilter}
                 />
-              )}
-              <Input
-                placeholder="Search quotes..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full min-h-[44px] text-base"
-              />
-            </div>
+              </div>
 
-            <QuotesTable searchTerm={searchTerm} dateRange={dateRange} />
-          </div>
+              {/* Date Filters - Desktop */}
+              <div className="hidden lg:block">
+                <QuoteDateFilters 
+                  dateRange={dateRange}
+                  onDateRangeChange={setDateRange}
+                />
+              </div>
 
-          {/* Quote Drafts Section */}
-          <QuoteDraftManagement />
-        </div>
-      )}
+              {/* Invoices Section */}
+              <div className="space-y-4">
+                {/* Header - Desktop */}
+                <div className="hidden lg:flex items-center justify-between">
+                  <h2 className="text-lg font-bold text-foreground">All Invoices</h2>
+                  <div className="flex items-center space-x-2">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search invoices..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10 w-64"
+                      />
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setShowInvoiceExport(true)}
+                      className="border-blue-600 text-blue-600 hover:bg-blue-50"
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      Export
+                    </Button>
+                    <Button 
+                      onClick={() => setShowQuickBooksInvoiceExport(true)}
+                      style={{ 
+                        background: 'linear-gradient(to right, #059669, #047857)',
+                        color: 'white',
+                        border: 'none'
+                      }}
+                      className="hover:opacity-90 font-bold transition-opacity"
+                    >
+                      Export to QuickBooks
+                    </Button>
+                    <Button 
+                      onClick={() => setShowInvoiceWizard(true)}
+                      className="bg-blue-600 hover:bg-blue-700 text-white hidden lg:flex"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Create Invoice
+                    </Button>
+                  </div>
+                </div>
 
-      {activeTab === 'invoices' && (
-        <div className="space-y-6">
-          {/* Invoice Metrics Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-            <KpiCard
-              title={`Total Invoice Value (${invoiceMetrics?.year || new Date().getFullYear()} YTD)`}
-              value={formatCurrency(invoiceMetrics?.total_value)}
-              icon={TrendingUp}
-              gradient="bg-gradient-to-r from-blue-600 to-blue-800"
-              onClick={() => {
-                setStatusFilter(undefined);
-                setActiveQuickFilter('all');
-              }}
-            />
-            <KpiCard
-              title={`Unpaid Value (${invoiceMetrics?.year || new Date().getFullYear()} YTD)`}
-              value={formatCurrency(invoiceMetrics?.unpaid_value)}
-              icon={FileText}
-              gradient="bg-gradient-to-r from-yellow-500 to-yellow-700"
-              onClick={() => {
-                setStatusFilter('unpaid');
-                setActiveQuickFilter('all');
-              }}
-              subtitle="Tap to filter"
-            />
-            <KpiCard
-              title={`Paid Value (${invoiceMetrics?.year || new Date().getFullYear()} YTD)`}
-              value={formatCurrency(invoiceMetrics?.paid_value)}
-              icon={DollarSign}
-              gradient="bg-gradient-to-r from-green-600 to-green-800"
-              onClick={() => {
-                setStatusFilter('paid');
-                setActiveQuickFilter('all');
-              }}
-              subtitle="Tap to filter"
-            />
-          </div>
-
-          {/* Date Filters - Mobile Drawer */}
-          <div className="lg:hidden px-4">
-            <MobileDateFilterDrawer
-              dateRange={dateRange}
-              onDateRangeChange={setDateRange}
-              activeFilter={activeQuickFilter}
-              onActiveFilterChange={setActiveQuickFilter}
-            />
-          </div>
-
-          {/* Date Filters - Desktop */}
-          <div className="hidden lg:block">
-            <QuoteDateFilters 
-              dateRange={dateRange}
-              onDateRangeChange={setDateRange}
-            />
-          </div>
-
-          {/* Invoices Section */}
-          <div className="space-y-4">
-            {/* Header - Desktop */}
-            <div className="hidden lg:flex items-center justify-between">
-              <h2 className="text-lg font-bold text-foreground">All Invoices</h2>
-              <div className="flex items-center space-x-2">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                {/* Header - Mobile */}
+                <div className="lg:hidden space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-bold text-foreground">All Invoices</h2>
+                    <MobileMoreMenu
+                      type="invoices"
+                      onExport={() => setShowInvoiceExport(true)}
+                      onQuickBooksExport={() => setShowQuickBooksInvoiceExport(true)}
+                    />
+                  </div>
+                  {statusFilter && (
+                    <ActiveFilterChip
+                      label={`Status: ${statusFilter.charAt(0).toUpperCase() + statusFilter.slice(1)}`}
+                      onClear={() => setStatusFilter(undefined)}
+                    />
+                  )}
                   <Input
                     placeholder="Search invoices..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 w-64"
+                    className="w-full min-h-[44px] text-base"
                   />
                 </div>
-                <Button 
-                  variant="outline" 
-                  onClick={() => setShowInvoiceExport(true)}
-                  className="border-blue-600 text-blue-600 hover:bg-blue-50"
-                >
-                  <Download className="h-4 w-4 mr-2" />
-                  Export
-                </Button>
-                <Button 
-                  onClick={() => setShowQuickBooksInvoiceExport(true)}
-                  style={{ 
-                    background: 'linear-gradient(to right, #059669, #047857)',
-                    color: 'white',
-                    border: 'none'
-                  }}
-                  className="hover:opacity-90 font-bold transition-opacity"
-                >
-                  Export to QuickBooks
-                </Button>
-                <Button 
-                  onClick={() => setShowInvoiceWizard(true)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white hidden lg:flex"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create Invoice
-                </Button>
+
+                <InvoicesTable searchTerm={searchTerm} dateRange={dateRange} />
               </div>
             </div>
-
-            {/* Header - Mobile */}
-            <div className="lg:hidden space-y-3 px-4">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-bold text-foreground">All Invoices</h2>
-                <MobileMoreMenu
-                  type="invoices"
-                  onExport={() => setShowInvoiceExport(true)}
-                  onQuickBooksExport={() => setShowQuickBooksInvoiceExport(true)}
-                />
-              </div>
-              {statusFilter && (
-                <ActiveFilterChip
-                  label={`Status: ${statusFilter.charAt(0).toUpperCase() + statusFilter.slice(1)}`}
-                  onClear={() => setStatusFilter(undefined)}
-                />
-              )}
-              <Input
-                placeholder="Search invoices..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full min-h-[44px] text-base"
-              />
-            </div>
-
-            <InvoicesTable searchTerm={searchTerm} dateRange={dateRange} />
-          </div>
+          )}
         </div>
-      )}
+
+        {/* Floating Action Button - visible on mobile/tablet only */}
+        <div className="lg:hidden">
+          {activeTab === 'quotes' && (
+            <FloatingActionButton
+              icon={Plus}
+              onClick={() => setShowQuoteWizard(true)}
+              variant="primary"
+              tooltip="Create Quote"
+            />
+          )}
+          {activeTab === 'invoices' && (
+            <FloatingActionButton
+              icon={Plus}
+              onClick={() => setShowInvoiceWizard(true)}
+              variant="success"
+              tooltip="Create Invoice"
+            />
+          )}
+        </div>
+      </div>
 
       {/* Export Modals */}
       <QuotesExportModal 
@@ -414,27 +435,6 @@ const QuotesInvoices: React.FC = () => {
         isOpen={showInvoiceWizard} 
         onClose={() => setShowInvoiceWizard(false)} 
       />
-
-      {/* Floating Action Button - visible on mobile/tablet only */}
-      <div className="lg:hidden">
-        {activeTab === 'quotes' && (
-          <FloatingActionButton
-            icon={Plus}
-            onClick={() => setShowQuoteWizard(true)}
-            variant="primary"
-            tooltip="Create Quote"
-          />
-        )}
-        {activeTab === 'invoices' && (
-          <FloatingActionButton
-            icon={Plus}
-            onClick={() => setShowInvoiceWizard(true)}
-            variant="success"
-            tooltip="Create Invoice"
-          />
-        )}
-      </div>
-      </div>
     </div>
   );
 };
