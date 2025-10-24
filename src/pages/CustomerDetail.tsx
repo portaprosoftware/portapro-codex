@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, Mail, Phone } from 'lucide-react';
@@ -7,12 +7,20 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { CustomerStatsSection } from '@/components/customers/CustomerStatsSection';
-import { CustomerTabs } from '@/components/customers/CustomerTabs';
+import { CustomerTabNavigation } from '@/components/customers/CustomerTabs';
+import { CustomerOverviewTab } from '@/components/customers/CustomerOverviewTab';
+import { CustomerContactsTab } from '@/components/customers/CustomerContactsTab';
+import { ServiceLocationTab } from '@/components/customers/ServiceLocationTab';
+import { CustomerJobsAndReportsTab } from '@/components/customers/CustomerJobsAndReportsTab';
+import { CustomerFinancialTab } from '@/components/customers/CustomerFinancialTab';
+import { CustomerCommunicationTab } from '@/components/customers/CustomerCommunicationTab';
+import { CustomerDocumentsTab } from '@/components/customers/CustomerDocumentsTab';
 import { formatCategoryDisplay } from '@/lib/categoryUtils';
 import { formatPhoneNumber } from '@/lib/utils';
 
 export default function CustomerDetail() {
   const { id } = useParams<{ id: string }>();
+  const [activeTab, setActiveTab] = useState('overview');
 
   const { data: customer, isLoading } = useQuery({
     queryKey: ['customer', id],
@@ -72,7 +80,7 @@ export default function CustomerDetail() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-[1200px] mx-auto px-4 py-6 space-y-6">
-        {/* Header Card with Customer Info */}
+        {/* Header Card with Customer Info and Tab Navigation */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 pb-4">
           {/* Top Row: Breadcrumb, Back Button, and Customer Name */}
           <div className="flex flex-col md:flex-row md:items-center gap-4 mb-4">
@@ -112,7 +120,7 @@ export default function CustomerDetail() {
           </div>
           
           {/* Customer metadata */}
-          <div className="flex flex-wrap items-center gap-2 text-base">
+          <div className="flex flex-wrap items-center gap-2 text-base mb-6">
             <Badge className={getCustomerTypeColor(customer.customer_type)}>
               {formatCategoryDisplay((customer as any).type || customer.customer_type || 'Customer')}
             </Badge>
@@ -137,6 +145,14 @@ export default function CustomerDetail() {
               </a>
             )}
           </div>
+          
+          {/* Tab Navigation at bottom of header card */}
+          <div className="border-t pt-4 mt-2">
+            <CustomerTabNavigation 
+              activeTab={activeTab} 
+              onTabChange={setActiveTab} 
+            />
+          </div>
         </div>
 
         {/* Stats Card */}
@@ -145,8 +161,8 @@ export default function CustomerDetail() {
         </div>
 
         {/* Content Card */}
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-          <CustomerTabs customer={{
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+          {activeTab === 'overview' && <CustomerOverviewTab customer={{
             ...customer,
             customer_type: customer.customer_type as any || 'not_selected',
             service_street: (customer as any).service_street || customer.address?.split(',')[0] || '',
@@ -154,7 +170,13 @@ export default function CustomerDetail() {
             service_city: (customer as any).service_city || customer.address?.split(',')[1]?.trim() || '',
             service_state: (customer as any).service_state || customer.address?.split(',')[2]?.trim() || '',
             service_zip: (customer as any).service_zip || customer.address?.split(',')[3]?.trim() || '',
-          }} />
+          }} />}
+          {activeTab === 'contacts' && <CustomerContactsTab customerId={id!} />}
+          {activeTab === 'locations' && <ServiceLocationTab customerId={id!} />}
+          {activeTab === 'jobs-reports' && <CustomerJobsAndReportsTab customerId={id!} />}
+          {activeTab === 'financial' && <CustomerFinancialTab customerId={id!} />}
+          {activeTab === 'communication' && <CustomerCommunicationTab customerId={id!} />}
+          {activeTab === 'documents' && <CustomerDocumentsTab customerId={id!} />}
         </div>
       </div>
     </div>
