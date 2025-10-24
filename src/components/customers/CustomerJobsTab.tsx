@@ -6,7 +6,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Eye, Edit, Filter, FileText, CheckCircle, Clock, Briefcase } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Eye, Edit, Filter, FileText, CheckCircle, Clock, Briefcase, MoreVertical, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { JobCard } from './JobCard';
 
@@ -198,19 +199,36 @@ export function CustomerJobsTab({ customerId }: CustomerJobsTabProps) {
                     {formatCurrency(job.total_price)}
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Button variant="ghost" size="sm">
-                        <Eye className="w-4 h-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm">
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      {job.maintenance_reports && job.maintenance_reports.length > 0 && (
-                        <Button variant="ghost" size="sm" title="View Reports">
-                          <FileText className="w-4 h-4" />
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <MoreVertical className="h-4 w-4" />
                         </Button>
-                      )}
-                    </div>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-48 bg-white z-50">
+                        <DropdownMenuItem 
+                          onClick={() => console.log('View job:', job.id)}
+                          className="cursor-pointer"
+                        >
+                          <Eye className="mr-2 h-4 w-4" />
+                          <span>View</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => console.log('Edit job:', job.id)}
+                          className="cursor-pointer"
+                        >
+                          <Edit className="mr-2 h-4 w-4" />
+                          <span>Edit</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => console.log('Delete job:', job.id)}
+                          className="cursor-pointer text-red-600"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          <span>Delete</span>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))

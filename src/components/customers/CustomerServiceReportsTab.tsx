@@ -6,7 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { FileText, Download, Eye, Search, Calendar, ExternalLink } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { FileText, Download, Eye, Search, Calendar, ExternalLink, MoreVertical, Edit, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ServiceReportCard } from './ServiceReportCard';
 
@@ -245,19 +246,36 @@ export function CustomerServiceReportsTab({ customerId }: CustomerServiceReports
                       )}
                     </div>
 
-                    <div className="flex items-center gap-2 ml-4">
-                      <Button variant="outline" size="sm">
-                        <Eye className="w-4 h-4 mr-2" />
-                        View
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        <Download className="w-4 h-4 mr-2" />
-                        PDF
-                      </Button>
-                      <Button variant="ghost" size="sm">
-                        <ExternalLink className="w-4 h-4" />
-                      </Button>
-                    </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-48 bg-white z-50">
+                        <DropdownMenuItem 
+                          onClick={() => console.log('View report:', report.id)}
+                          className="cursor-pointer"
+                        >
+                          <Eye className="mr-2 h-4 w-4" />
+                          <span>View</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => console.log('Edit report:', report.id)}
+                          className="cursor-pointer"
+                        >
+                          <Edit className="mr-2 h-4 w-4" />
+                          <span>Edit</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => console.log('Delete report:', report.id)}
+                          className="cursor-pointer text-red-600"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          <span>Delete</span>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
 
                   {report.completion_percentage < 100 && (
