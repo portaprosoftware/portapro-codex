@@ -91,7 +91,23 @@ export const LogPastServiceModal: React.FC<LogPastServiceModalProps> = ({
         )
       ).toISOString();
 
+      // Generate unique job number via RPC
+      const { data: jobNumber, error: numberError } = await supabase
+        .rpc('get_next_job_number', { job_type_param: 'service' });
+
+      if (numberError) {
+        console.error('Job number generation error:', numberError);
+        throw new Error('Could not generate job number. Please try again.');
+      }
+
+      if (!jobNumber) {
+        throw new Error('Failed to generate job number.');
+      }
+
+      console.log('Generated job number:', jobNumber);
+
       const jobData: Database['public']['Tables']['jobs']['Insert'] = {
+        job_number: jobNumber,
         customer_id: formData.customer_id,
         job_type: 'service',
         status: 'completed',
@@ -100,19 +116,58 @@ export const LogPastServiceModal: React.FC<LogPastServiceModalProps> = ({
         actual_completion_time: completionAt,
         notes: formData.notes ? `Past service logged: ${formData.notes}` : null,
         service_id: formData.service_id,
+        timezone: 'America/New_York',
       };
 
       console.log('Inserting job payload:', jobData);
 
-      const { data: job, error: jobError } = await supabase
-        .from('jobs')
-        .insert([jobData])
-        .select()
-        .single();
+      // Insert job with retry logic for duplicate key violations
+      let job;
+      let attempts = 0;
+      const maxAttempts = 2;
 
-      if (jobError) {
-        console.error('Job insert error:', jobError);
-        throw jobError;
+      while (attempts < maxAttempts) {
+        attempts++;
+
+        const { data: jobData2, error: jobError } = await supabase
+          .from('jobs')
+          .insert([jobData])
+          .select()
+          .single();
+
+        if (!jobError) {
+          job = jobData2;
+          break;
+        }
+
+        // Check if it's a duplicate key error
+        const isDuplicateError = jobError.code === '23505' || 
+          jobError.message?.includes('duplicate key') ||
+          jobError.message?.includes('idx_jobs_job_number');
+
+        if (isDuplicateError && attempts < maxAttempts) {
+          console.warn(`Duplicate job number detected (attempt ${attempts}). Retrying with new number...`);
+          
+          // Fetch a fresh job number and retry
+          const { data: retryJobNumber, error: retryNumberError } = await supabase
+            .rpc('get_next_job_number', { job_type_param: 'service' });
+
+          if (retryNumberError || !retryJobNumber) {
+            console.error('Retry job number generation error:', retryNumberError);
+            throw new Error('Could not generate job number on retry.');
+          }
+
+          jobData.job_number = retryJobNumber;
+          console.log('Retrying with new job number:', retryJobNumber);
+        } else {
+          // Not a duplicate error or out of retries
+          console.error('Job insert error:', jobError);
+          throw jobError;
+        }
+      }
+
+      if (!job) {
+        throw new Error('Failed to create job after multiple attempts.');
       }
 
       // Then create the service record
@@ -165,7 +220,14 @@ export const LogPastServiceModal: React.FC<LogPastServiceModalProps> = ({
       resetForm();
     },
     onError: (error: any) => {
-      const errorMessage = error?.message || 'Failed to log past service';
+      let errorMessage = 'Failed to log past service';
+      
+      if (error?.message) {
+        errorMessage = error.message;
+      } else if (error?.code === '23505') {
+        errorMessage = 'Job number collision occurred. Please try again.';
+      }
+      
       toast.error(errorMessage);
       console.error('Service log mutation error:', error);
     }
