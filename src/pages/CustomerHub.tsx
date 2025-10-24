@@ -1,7 +1,7 @@
 
 import React, { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Upload, Plus, Search, Filter, Eye, EyeOff, ChevronUp, ChevronDown, ChevronsUpDown, ChevronRight, Phone, Mail, Check, Truck } from "lucide-react";
+import { Upload, Plus, Search, Filter, Eye, EyeOff, ChevronUp, ChevronDown, ChevronsUpDown, ChevronRight, Phone, Mail, Check, Truck, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -349,11 +349,23 @@ const CustomerHub: React.FC = () => {
                 <TableHead className="font-medium text-gray-900">Email</TableHead>
                 {showLastDelivery && (
                   <SortableHeader column="last_delivery" className="text-right">
-                    <div className="flex items-center justify-end gap-1">
+                    <div className="flex items-center justify-end gap-1.5">
+                      Days Since Last Delivery
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-6 w-6 p-0 hover:bg-gray-200 mr-1"
+                        className="h-5 w-5 p-0 hover:bg-gray-200"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                        }}
+                        title="Select truck to hide data."
+                      >
+                        <Info className="h-3.5 w-3.5 text-gray-500" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-5 w-5 p-0 hover:bg-gray-200"
                         onClick={(e) => {
                           e.stopPropagation();
                           setShowLastDelivery(false);
@@ -362,8 +374,6 @@ const CustomerHub: React.FC = () => {
                       >
                         <Truck className="h-3.5 w-3.5 text-gray-500" />
                       </Button>
-                      <span className="text-xs text-gray-500 mr-2">Select truck to hide data.</span>
-                      Days Since Last Delivery
                     </div>
                   </SortableHeader>
                 )}
