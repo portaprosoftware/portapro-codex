@@ -7,8 +7,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { FileText, DollarSign, Clock, Eye, Download } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { FileText, DollarSign, Clock, Eye, MoreHorizontal, CreditCard } from 'lucide-react';
 import { format } from 'date-fns';
+import { ViewQuoteModal } from '@/components/quotes/ViewQuoteModal';
+import { InvoiceDetailModal } from '@/components/quotes/InvoiceDetailModal';
+import { CollectPaymentModal } from '@/components/quotes/CollectPaymentModal';
+import { getInvoiceStatusBadgeVariant } from '@/lib/statusBadgeUtils';
 
 interface CustomerFinancialTabProps {
   customerId: string;
@@ -16,6 +21,9 @@ interface CustomerFinancialTabProps {
 
 export function CustomerFinancialTab({ customerId }: CustomerFinancialTabProps) {
   const [activeTab, setActiveTab] = useState('quotes');
+  const [selectedQuoteId, setSelectedQuoteId] = useState<string>('');
+  const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
+  const [selectedInvoiceForPayment, setSelectedInvoiceForPayment] = useState<any>(null);
 
   // Fetch quotes
   const { data: quotes = [], isLoading: quotesLoading } = useQuery({
@@ -61,24 +69,27 @@ export function CustomerFinancialTab({ customerId }: CustomerFinancialTabProps) 
     }).format(amount);
   };
 
-  const getQuoteStatusColor = (status: string) => {
-    switch (status) {
-      case 'pending': return 'bg-yellow-500';
-      case 'accepted': return 'bg-green-500';
-      case 'rejected': return 'bg-red-500';
-      case 'expired': return 'bg-gray-500';
-      default: return 'bg-blue-500';
-    }
+  const getQuoteStatusBadge = (status: string) => {
+    const statusConfig = {
+      pending: { label: 'Pending', className: 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-medium border-0' },
+      accepted: { label: 'Accepted', className: 'bg-gradient-to-r from-green-500 to-green-600 text-white font-medium border-0' },
+      rejected: { label: 'Rejected', className: 'bg-gradient-to-r from-red-500 to-red-600 text-white font-medium border-0' },
+      expired: { label: 'Expired', className: 'bg-gradient-to-r from-gray-500 to-gray-600 text-white font-medium border-0' },
+    };
+    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
+    return <Badge className={config.className}>{config.label}</Badge>;
   };
 
-  const getInvoiceStatusColor = (status: string) => {
-    switch (status) {
-      case 'paid': return 'bg-green-500';
-      case 'unpaid': return 'bg-red-500';
-      case 'overdue': return 'bg-orange-500';
-      case 'cancelled': return 'bg-gray-500';
-      default: return 'bg-blue-500';
-    }
+  const getInvoiceStatusBadge = (status: string) => {
+    const variant = getInvoiceStatusBadgeVariant(status as any);
+    const statusLabels = {
+      paid: 'Paid',
+      unpaid: 'Unpaid',
+      overdue: 'Overdue',
+      cancelled: 'Cancelled',
+      partial: 'Partial',
+    };
+    return <Badge variant={variant} className="font-medium">{statusLabels[status as keyof typeof statusLabels] || status}</Badge>;
   };
 
   return (
@@ -182,22 +193,25 @@ export function CustomerFinancialTab({ customerId }: CustomerFinancialTabProps) 
                       <TableCell>{format(new Date(quote.created_at), 'MMM d, yyyy')}</TableCell>
                       <TableCell className="font-medium">{formatCurrency(quote.total_amount)}</TableCell>
                       <TableCell>
-                        <Badge className={`text-white ${getQuoteStatusColor(quote.status)}`}>
-                          {quote.status}
-                        </Badge>
+                        {getQuoteStatusBadge(quote.status)}
                       </TableCell>
                       <TableCell>
                         {quote.expiration_date ? format(new Date(quote.expiration_date), 'MMM d, yyyy') : '-'}
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Button variant="ghost" size="sm">
-                            <Eye className="w-4 h-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <Download className="w-4 h-4" />
-                          </Button>
-                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-48">
+                            <DropdownMenuItem onClick={() => setSelectedQuoteId(quote.id)}>
+                              <Eye className="mr-2 h-4 w-4" />
+                              View Quote
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </TableCell>
                     </TableRow>
                   ))
@@ -238,22 +252,34 @@ export function CustomerFinancialTab({ customerId }: CustomerFinancialTabProps) 
                       <TableCell>{format(new Date(invoice.created_at), 'MMM d, yyyy')}</TableCell>
                       <TableCell className="font-medium">{formatCurrency(invoice.amount)}</TableCell>
                       <TableCell>
-                        <Badge className={`text-white ${getInvoiceStatusColor(invoice.status)}`}>
-                          {invoice.status}
-                        </Badge>
+                        {getInvoiceStatusBadge(invoice.status)}
                       </TableCell>
                       <TableCell>
                         {invoice.due_date ? format(new Date(invoice.due_date), 'MMM d, yyyy') : '-'}
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Button variant="ghost" size="sm">
-                            <Eye className="w-4 h-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <Download className="w-4 h-4" />
-                          </Button>
-                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-48">
+                            <DropdownMenuItem onClick={() => setSelectedInvoice(invoice)}>
+                              <Eye className="mr-2 h-4 w-4" />
+                              View Details
+                            </DropdownMenuItem>
+                            {(invoice.status === 'unpaid' || invoice.status === 'overdue') && (
+                              <DropdownMenuItem 
+                                className="text-blue-600 focus:text-blue-600"
+                                onClick={() => setSelectedInvoiceForPayment(invoice)}
+                              >
+                                <CreditCard className="mr-2 h-4 w-4" />
+                                Collect Payment
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </TableCell>
                     </TableRow>
                   ))
@@ -264,6 +290,25 @@ export function CustomerFinancialTab({ customerId }: CustomerFinancialTabProps) 
           </Tabs>
         </div>
       </div>
+
+      {/* Modals */}
+      <ViewQuoteModal
+        isOpen={!!selectedQuoteId}
+        onClose={() => setSelectedQuoteId('')}
+        quoteId={selectedQuoteId}
+      />
+      <InvoiceDetailModal
+        isOpen={!!selectedInvoice}
+        onClose={() => setSelectedInvoice(null)}
+        invoice={selectedInvoice}
+      />
+      {selectedInvoiceForPayment && (
+        <CollectPaymentModal
+          invoice={selectedInvoiceForPayment}
+          isOpen={!!selectedInvoiceForPayment}
+          onClose={() => setSelectedInvoiceForPayment(null)}
+        />
+      )}
     </div>
   );
 }
