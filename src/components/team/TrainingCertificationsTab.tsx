@@ -275,7 +275,7 @@ export function TrainingCertificationsTab() {
           {/* Certification Categories */}
           <Card>
             <CardHeader>
-              <CardTitle>Certification Categories</CardTitle>
+              <CardTitle className="text-lg">Certification Categories</CardTitle>
               <CardDescription>Manage different types of certifications and training</CardDescription>
             </CardHeader>
             <CardContent>

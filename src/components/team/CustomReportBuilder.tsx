@@ -261,7 +261,7 @@ export function CustomReportBuilder() {
         <TabsContent value="create" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Report Configuration</CardTitle>
+              <CardTitle className="text-lg">Report Configuration</CardTitle>
               <CardDescription>
                 Configure the basic settings for your custom report
               </CardDescription>
@@ -474,7 +474,7 @@ export function CustomReportBuilder() {
           {/* Preview Section - Now under configuration */}
           <Card>
             <CardHeader>
-              <CardTitle>Report Preview</CardTitle>
+              <CardTitle className="text-lg">Report Preview</CardTitle>
               <CardDescription>
                 Generate and preview your custom report
               </CardDescription>

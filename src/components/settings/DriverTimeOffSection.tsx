@@ -175,7 +175,7 @@ export function DriverTimeOffSection({
               {/* Time Off Requests */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Time Off Requests ({timeOffRequests?.length || 0})</CardTitle>
+                  <CardTitle className="text-lg">Time Off Requests ({timeOffRequests?.length || 0})</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {timeOffRequests?.length === 0 ? <div className="text-center py-12">

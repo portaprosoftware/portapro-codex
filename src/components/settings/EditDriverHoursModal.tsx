@@ -203,7 +203,7 @@ export function EditDriverHoursModal({ driverId, onClose }: EditDriverHoursModal
 
           {/* Daily Schedule */}
           <div>
-            <Label className="text-base font-medium mb-3 block">Weekly Schedule</Label>
+            <Label className="text-sm font-medium mb-3 block">Weekly Schedule</Label>
             <div className="space-y-3">
               {DAYS.map((day, index) => {
                 const daySchedule = schedule[index];
