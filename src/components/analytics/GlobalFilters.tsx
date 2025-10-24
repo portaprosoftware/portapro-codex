@@ -50,9 +50,9 @@ export const GlobalFilters: React.FC<GlobalFiltersProps> = ({
   const previousPeriodText = `${format(previousPeriodStart, 'MMM d')} - ${format(previousPeriodEnd, 'MMM d, yyyy')}`;
 
   return (
-    <div className="space-y-4 mb-6">
+    <div className="space-y-4">
       {/* Desktop Date Range */}
-      <Card className="hidden lg:block p-4 bg-gray-50 border border-gray-200 rounded-xl">
+      <div className="hidden lg:block p-4 bg-gray-50 border border-gray-200 rounded-xl">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           {/* Left side - Date picker and quick ranges */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
@@ -133,10 +133,10 @@ export const GlobalFilters: React.FC<GlobalFiltersProps> = ({
             </div>
           </div>
         </div>
-      </Card>
+      </div>
 
       {/* Mobile/Tablet Date Range - Collapsible */}
-      <Card className="lg:hidden p-4 bg-gray-50 border border-gray-200 rounded-xl">
+      <div className="lg:hidden p-4 bg-gray-50 border border-gray-200 rounded-xl">
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
           <CollapsibleTrigger asChild>
             <Button variant="ghost" className="w-full justify-between min-h-[44px] p-0">
@@ -185,11 +185,11 @@ export const GlobalFilters: React.FC<GlobalFiltersProps> = ({
             </div>
           </CollapsibleContent>
         </Collapsible>
-      </Card>
+      </div>
 
       {/* Active Filters - Always visible if filters exist */}
       {savedFilters.length > 0 && (
-        <Card className="p-3 bg-white border border-gray-200 rounded-lg">
+        <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
           <div className="flex items-center justify-between gap-3 overflow-x-auto">
             <div className="flex items-center gap-2 flex-1 min-w-0">
               <Filter className="w-4 h-4 text-gray-500 flex-shrink-0" />
@@ -220,7 +220,7 @@ export const GlobalFilters: React.FC<GlobalFiltersProps> = ({
               Clear
             </Button>
           </div>
-        </Card>
+        </div>
       )}
     </div>
   );

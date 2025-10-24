@@ -167,24 +167,23 @@ const Analytics = () => {
         </div>
       </div>
 
-      {/* Global Filters */}
-      <GlobalFilters
-        dateRange={dateRange}
-        onDateRangeChange={setDateRange}
-        savedFilters={savedFilters}
-        onRemoveFilter={(filter) => setSavedFilters(prev => prev.filter(f => f !== filter))}
-        onResetAll={() => {
-          setDateRange({
-            from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-            to: new Date()
-          });
-          setSavedFilters([]);
-        }}
-      />
-
-
-      {/* Main Content */}
+      {/* Main Content - Single White Card */}
       <div className="space-y-6 bg-white rounded-xl p-4 md:p-6 border shadow-sm">
+        {/* Global Filters */}
+        <GlobalFilters
+          dateRange={dateRange}
+          onDateRangeChange={setDateRange}
+          savedFilters={savedFilters}
+          onRemoveFilter={(filter) => setSavedFilters(prev => prev.filter(f => f !== filter))}
+          onResetAll={() => {
+            setDateRange({
+              from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+              to: new Date()
+            });
+            setSavedFilters([]);
+          }}
+        />
+        
         {renderActiveSection()}
       </div>
 
