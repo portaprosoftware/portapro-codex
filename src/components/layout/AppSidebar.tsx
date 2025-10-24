@@ -126,7 +126,7 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
                     to={item.url}
                     onClick={() => onSectionChange?.(item.url)}
                     className={cn(
-                      "flex items-center gap-3 px-3 py-2 text-sm transition-colors",
+                      "flex items-center gap-3 px-3 py-1 text-sm transition-colors",
                       isActive && "text-white [&_*]:text-white"
                     )}
                   >
@@ -154,7 +154,7 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
         </div>
       </SidebarHeader>
 
-      <SidebarContent className="px-2 py-2">
+      <SidebarContent className="px-2 py-1">
         <NavSection items={visibleCoreItems} />
         {visibleDayToDayItems.length > 0 && (
           <NavSection title="DAY-TO-DAY" items={visibleDayToDayItems} />
