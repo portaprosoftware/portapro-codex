@@ -153,10 +153,10 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
   );
 
   return (
-    <div className="space-y-3 md:space-y-6">
+    <div className="space-y-2 md:space-y-3">
       {/* Contact Information */}
       <Card className="rounded-xl md:rounded-2xl">
-        <CardHeader className="flex flex-row items-center justify-between p-4 md:p-6">
+        <CardHeader className="flex flex-row items-center justify-between p-3 md:p-4">
           <CardTitle className="text-base md:text-lg font-semibold">Contact Information</CardTitle>
           <Button
             onClick={() => setShowEditModal(true)}
@@ -167,7 +167,7 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
             <span className="hidden md:inline">Edit</span>
           </Button>
         </CardHeader>
-        <CardContent className="space-y-3 p-4 md:p-6">
+        <CardContent className="space-y-2 p-3 md:p-4">
           {/* Mobile: Stacked layout, Desktop: Grid */}
           <div className="space-y-3 md:space-y-0 md:grid md:grid-cols-2 md:gap-4">
             <div className="space-y-1">
@@ -201,7 +201,7 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
               </a>
             </div>
           </div>
-          <div className="flex justify-between items-center border-t pt-3 md:pt-4 text-sm md:text-base">
+          <div className="flex justify-between items-center border-t pt-2 text-sm md:text-base">
             <span className="text-muted-foreground">Customer Since</span>
             <span className="text-foreground font-medium">
               {new Date(customer.created_at).toLocaleDateString()}
@@ -213,13 +213,13 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
       {/* General Notes Card */}
       {customer.notes && (
         <Card className="rounded-2xl">
-          <CardHeader>
+          <CardHeader className="p-3 md:p-4">
             <CardTitle className="text-lg font-semibold flex items-center">
               <FileText className="w-5 h-5 mr-2" />
               General Notes
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-3 md:p-4 pt-0">
             <div className="relative">
               <p className="text-foreground whitespace-pre-wrap">
                 {customer.notes.length > 300 ? (
@@ -245,14 +245,14 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
 
       {/* Service Address */}
       <Card className="rounded-2xl border border-slate-200">
-        <CardHeader className="p-4 sm:p-5 pb-2">
+        <CardHeader className="p-3 sm:p-4 pb-1">
           <CardTitle className="text-base font-semibold flex items-center mb-1">
             <MapPin className="w-[18px] h-[18px] mr-2" />
             Service Address
           </CardTitle>
           <p className="text-xs text-muted-foreground">Synced with service location</p>
         </CardHeader>
-        <CardContent className="p-4 sm:p-5 pt-2 space-y-3">
+        <CardContent className="p-3 sm:p-4 pt-2 space-y-2">
           <div className="flex items-start justify-between gap-3">
             <p className="text-sm text-slate-800 break-words flex-1">{serviceAddress}</p>
             {customer.service_street && (
@@ -306,10 +306,10 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
 
       {/* Billing Address */}
       <Card className="rounded-2xl border border-slate-200">
-        <CardHeader className="p-4 sm:p-5 pb-2">
+        <CardHeader className="p-3 sm:p-4 pb-1">
           <CardTitle className="text-base font-semibold">Billing Address</CardTitle>
         </CardHeader>
-        <CardContent className="p-4 sm:p-5 pt-2">
+        <CardContent className="p-3 sm:p-4 pt-2">
           <div className="flex items-start justify-between gap-3">
             <p className="text-sm text-slate-800 break-words flex-1">{billingAddress}</p>
             <button
@@ -326,7 +326,7 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
 
       {/* Deposit Status */}
       <Card className="rounded-2xl border border-slate-200">
-        <CardHeader className="p-4 sm:p-5 pb-2">
+        <CardHeader className="p-3 sm:p-4 pb-1">
           <div className="flex items-start justify-between">
             <h3 className="text-base font-semibold leading-tight">
               Deposit<br className="sm:hidden"/>
@@ -343,7 +343,7 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
             </Button>
           </div>
         </CardHeader>
-        <CardContent className="p-4 sm:p-5 pt-2">
+        <CardContent className="p-3 sm:p-4 pt-2">
           <div className="flex flex-wrap items-center gap-2 mb-2">
             <Badge 
               className={`px-3 py-1.5 rounded-full text-sm font-bold border-0 ${
@@ -381,13 +381,13 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
 
       {/* Delete Customer Card */}
       <Card className="border-gray-200 bg-gray-100 rounded-xl md:rounded-2xl">
-        <CardHeader className="pb-3 p-4 md:p-6">
+        <CardHeader className="pb-2 p-3 md:p-4">
           <CardTitle className="text-black text-base md:text-lg flex items-center gap-2">
             <AlertTriangle className="h-4 w-4 md:h-5 md:w-5 text-gray-600" />
             Delete Customer Profile
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-4 md:p-6 pt-0">
+        <CardContent className="p-3 md:p-4 pt-0">
           <p className="text-sm text-gray-600 mb-4">
             Permanently delete this customer and all associated data. This action cannot be undone.
           </p>
