@@ -312,7 +312,7 @@ export const TemplateManagement: React.FC = () => {
       <div className="space-y-6">
         {/* Email Templates */}
         <div className="space-y-4">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 bg-gray-100 p-4 rounded-lg">
             <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
               <Mail className="w-5 h-5 text-blue-500" />
               Email Templates
@@ -343,7 +343,7 @@ export const TemplateManagement: React.FC = () => {
 
         {/* SMS Templates */}
         <div className="space-y-4">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 bg-gray-100 p-4 rounded-lg">
             <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
               <MessageSquare className="w-5 h-5 text-green-500" />
               SMS Templates
