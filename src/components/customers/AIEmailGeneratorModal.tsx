@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -34,12 +35,39 @@ const TONE_OPTIONS = [
 ];
 
 export function AIEmailGeneratorModal({ isOpen, onClose, customerId }: AIEmailGeneratorModalProps) {
+  const queryClient = useQueryClient();
   const [emailType, setEmailType] = useState('');
   const [tone, setTone] = useState('');
   const [subject, setSubject] = useState('');
   const [content, setContent] = useState('');
   const [customPrompt, setCustomPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+
+  const sendEmailMutation = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase.functions.invoke('send-customer-email', {
+        body: {
+          customerId,
+          subject,
+          content,
+        },
+      });
+
+      if (error) throw error;
+      if (data.error) throw new Error(data.error);
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['customer-communications', customerId] });
+      toast.success('Email sent successfully!');
+      resetForm();
+      onClose();
+    },
+    onError: (error: Error) => {
+      console.error('Failed to send email:', error);
+      toast.error(`Failed to send email: ${error.message}`);
+    },
+  });
 
   const handleGenerate = async () => {
     if (!customPrompt.trim()) {
@@ -96,9 +124,11 @@ The Team`;
   };
 
   const handleSend = () => {
-    // TODO: Implement email sending
-    console.log('Sending email:', { emailType, tone, subject, content, customerId });
-    onClose();
+    if (!subject || !content) {
+      toast.error('Please generate an email first');
+      return;
+    }
+    sendEmailMutation.mutate();
   };
 
   const resetForm = () => {
@@ -215,13 +245,13 @@ The Team`;
               <div className="flex items-center gap-3 pt-4">
                 <Button
                   onClick={handleSend}
-                  disabled={!subject || !content}
+                  disabled={!subject || !content || sendEmailMutation.isPending}
                   className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
                 >
                   <Send className="w-4 h-4 mr-2" />
-                  Send Email
+                  {sendEmailMutation.isPending ? 'Sending...' : 'Send Email'}
                 </Button>
-                <Button variant="outline" onClick={handleGenerate} disabled={isGenerating}>
+                <Button variant="outline" onClick={handleGenerate} disabled={isGenerating || sendEmailMutation.isPending}>
                   Regenerate
                 </Button>
               </div>

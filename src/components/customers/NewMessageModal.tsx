@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,6 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Mail, MessageSquare, Send } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface NewMessageModalProps {
   isOpen: boolean;
@@ -15,6 +18,7 @@ interface NewMessageModalProps {
 }
 
 export function NewMessageModal({ isOpen, onClose, customerId }: NewMessageModalProps) {
+  const queryClient = useQueryClient();
   const [messageType, setMessageType] = useState('email');
   const [emailSubject, setEmailSubject] = useState('');
   const [emailContent, setEmailContent] = useState('');
@@ -22,15 +26,45 @@ export function NewMessageModal({ isOpen, onClose, customerId }: NewMessageModal
   const [phoneNumber, setPhoneNumber] = useState('');
   const [emailAddress, setEmailAddress] = useState('');
 
+  const sendEmailMutation = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase.functions.invoke('send-customer-email', {
+        body: {
+          customerId,
+          subject: emailSubject,
+          content: emailContent,
+          emailAddress: emailAddress || undefined,
+        },
+      });
+
+      if (error) throw error;
+      if (data.error) throw new Error(data.error);
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['customer-communications', customerId] });
+      toast.success('Email sent successfully!');
+      resetForm();
+      onClose();
+    },
+    onError: (error: Error) => {
+      console.error('Failed to send email:', error);
+      toast.error(`Failed to send email: ${error.message}`);
+    },
+  });
+
   const handleSendEmail = () => {
-    // TODO: Implement email sending
-    console.log('Sending email:', { emailSubject, emailContent, emailAddress, customerId });
-    onClose();
+    if (!emailSubject || !emailContent) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+    sendEmailMutation.mutate();
   };
 
   const handleSendSMS = () => {
     // TODO: Implement SMS sending
     console.log('Sending SMS:', { smsContent, phoneNumber, customerId });
+    toast.info('SMS sending coming soon!');
     onClose();
   };
 
@@ -99,13 +133,13 @@ export function NewMessageModal({ isOpen, onClose, customerId }: NewMessageModal
             <div className="flex items-center gap-3 pt-4">
               <Button
                 onClick={handleSendEmail}
-                disabled={!emailAddress || !emailSubject || !emailContent}
+                disabled={!emailSubject || !emailContent || sendEmailMutation.isPending}
                 className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
               >
                 <Send className="w-4 h-4 mr-2" />
-                Send Email
+                {sendEmailMutation.isPending ? 'Sending...' : 'Send Email'}
               </Button>
-              <Button variant="outline" onClick={handleClose}>
+              <Button variant="outline" onClick={handleClose} disabled={sendEmailMutation.isPending}>
                 Cancel
               </Button>
             </div>
