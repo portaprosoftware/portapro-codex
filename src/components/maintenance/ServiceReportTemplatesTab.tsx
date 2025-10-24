@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Plus, Edit, Copy, Trash2, FileText, Loader2 } from 'lucide-react';
-import { BottomSheetWizard } from './template-builder/BottomSheetWizard';
+import { EnhancedTemplateBuilder } from './template-builder/EnhancedTemplateBuilder';
 import { useTemplates } from '@/hooks/useTemplates';
 import { EnhancedTemplate } from './template-builder/types';
 import { toast } from 'sonner';
@@ -170,7 +170,7 @@ export const ServiceReportTemplatesTab = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      <BottomSheetWizard
+      <EnhancedTemplateBuilder
         isOpen={isWizardOpen}
         onClose={() => {
           setIsWizardOpen(false);
