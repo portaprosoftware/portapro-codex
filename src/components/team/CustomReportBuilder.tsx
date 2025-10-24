@@ -235,7 +235,7 @@ export function CustomReportBuilder() {
         <div className="space-y-6">
           <div className="flex justify-between items-center">
             <div>
-              <h2 className="text-2xl font-bold">Custom Report Builder</h2>
+              <h2 className="text-xl font-bold">Custom Report Builder</h2>
               <p className="text-muted-foreground">
                 Create custom reports and analytics dashboards
               </p>

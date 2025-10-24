@@ -147,7 +147,7 @@ export function TrainingCertificationsTab() {
           {/* Header */}
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-bold">Training & Certifications</h2>
+              <h2 className="text-xl font-bold">Training & Certifications</h2>
               <p className="text-muted-foreground">Manage team training requirements and certification tracking</p>
             </div>
             <div className="flex items-center gap-2">

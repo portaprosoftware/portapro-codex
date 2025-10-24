@@ -102,7 +102,7 @@ export function DriverTimeOffSection({
           <div>
             <div className="flex items-center justify-between mb-6">
               <div className="flex-1">
-                <h1 className="font-bold text-2xl">Driver Time Off Management</h1>
+                <h1 className="font-bold text-xl">Driver Time Off Management</h1>
                 <p className="text-muted-foreground">Review and manage driver time-off requests</p>
               </div>
               
