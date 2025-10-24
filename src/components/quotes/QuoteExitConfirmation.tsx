@@ -59,6 +59,9 @@ export const QuoteExitConfirmation: React.FC<QuoteExitConfirmationProps> = ({
         </div>
 
         <AlertDialogFooter>
+          <AlertDialogCancel onClick={onClose} disabled={isSaving}>
+            Continue Editing
+          </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleSaveAndExit}
             disabled={!draftName.trim() || isSaving}
@@ -66,9 +69,6 @@ export const QuoteExitConfirmation: React.FC<QuoteExitConfirmationProps> = ({
           >
             {isSaving ? 'Saving...' : 'Save Draft'}
           </AlertDialogAction>
-          <AlertDialogCancel onClick={onClose} disabled={isSaving}>
-            Continue Editing
-          </AlertDialogCancel>
           <AlertDialogAction
             onClick={onDeleteAndExit}
             disabled={isSaving}
