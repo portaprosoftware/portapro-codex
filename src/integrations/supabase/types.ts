@@ -1466,7 +1466,7 @@ export type Database = {
           customer_id: string
           geocoding_attempted_at: string | null
           geocoding_status: string | null
-          gps_coordinates: unknown | null
+          gps_coordinates: unknown
           id: string
           image_url: string | null
           is_active: boolean | null
@@ -1491,7 +1491,7 @@ export type Database = {
           customer_id: string
           geocoding_attempted_at?: string | null
           geocoding_status?: string | null
-          gps_coordinates?: unknown | null
+          gps_coordinates?: unknown
           id?: string
           image_url?: string | null
           is_active?: boolean | null
@@ -1516,7 +1516,7 @@ export type Database = {
           customer_id?: string
           geocoding_attempted_at?: string | null
           geocoding_status?: string | null
-          gps_coordinates?: unknown | null
+          gps_coordinates?: unknown
           id?: string
           image_url?: string | null
           is_active?: boolean | null
@@ -2745,7 +2745,7 @@ export type Database = {
           engine_hours: number | null
           id: string
           items: Json
-          location_gps: unknown | null
+          location_gps: unknown
           major_defect_present: boolean
           odometer_miles: number | null
           out_of_service_flag: boolean
@@ -2768,7 +2768,7 @@ export type Database = {
           engine_hours?: number | null
           id?: string
           items?: Json
-          location_gps?: unknown | null
+          location_gps?: unknown
           major_defect_present?: boolean
           odometer_miles?: number | null
           out_of_service_flag?: boolean
@@ -2791,7 +2791,7 @@ export type Database = {
           engine_hours?: number | null
           id?: string
           items?: Json
-          location_gps?: unknown | null
+          location_gps?: unknown
           major_defect_present?: boolean
           odometer_miles?: number | null
           out_of_service_flag?: boolean
@@ -3482,7 +3482,7 @@ export type Database = {
           city: string | null
           created_at: string
           default_cost_per_gallon: number | null
-          gps_coordinates: unknown | null
+          gps_coordinates: unknown
           id: string
           is_active: boolean
           name: string
@@ -3498,7 +3498,7 @@ export type Database = {
           city?: string | null
           created_at?: string
           default_cost_per_gallon?: number | null
-          gps_coordinates?: unknown | null
+          gps_coordinates?: unknown
           id?: string
           is_active?: boolean
           name: string
@@ -3514,7 +3514,7 @@ export type Database = {
           city?: string | null
           created_at?: string
           default_cost_per_gallon?: number | null
-          gps_coordinates?: unknown | null
+          gps_coordinates?: unknown
           id?: string
           is_active?: boolean
           name?: string
@@ -3830,7 +3830,7 @@ export type Database = {
           fire_code_permit_number: string | null
           fuel_grade: string | null
           fuel_type: Database["public"]["Enums"]["fuel_type"]
-          gps_coordinates: unknown | null
+          gps_coordinates: unknown
           id: string
           initial_stick_reading: number | null
           installation_date: string | null
@@ -3871,7 +3871,7 @@ export type Database = {
           fire_code_permit_number?: string | null
           fuel_grade?: string | null
           fuel_type: Database["public"]["Enums"]["fuel_type"]
-          gps_coordinates?: unknown | null
+          gps_coordinates?: unknown
           id?: string
           initial_stick_reading?: number | null
           installation_date?: string | null
@@ -3912,7 +3912,7 @@ export type Database = {
           fire_code_permit_number?: string | null
           fuel_grade?: string | null
           fuel_type?: Database["public"]["Enums"]["fuel_type"]
-          gps_coordinates?: unknown | null
+          gps_coordinates?: unknown
           id?: string
           initial_stick_reading?: number | null
           installation_date?: string | null
@@ -5561,7 +5561,7 @@ export type Database = {
           estimated_completion: string | null
           id: string
           job_id: string | null
-          location_coordinates: unknown | null
+          location_coordinates: unknown
           priority_level: string | null
           report_data: Json
           report_number: string | null
@@ -5590,7 +5590,7 @@ export type Database = {
           estimated_completion?: string | null
           id?: string
           job_id?: string | null
-          location_coordinates?: unknown | null
+          location_coordinates?: unknown
           priority_level?: string | null
           report_data: Json
           report_number?: string | null
@@ -5619,7 +5619,7 @@ export type Database = {
           estimated_completion?: string | null
           id?: string
           job_id?: string | null
-          location_coordinates?: unknown | null
+          location_coordinates?: unknown
           priority_level?: string | null
           report_data?: Json
           report_number?: string | null
@@ -7172,7 +7172,7 @@ export type Database = {
           id: string
           interior_features: string[] | null
           item_code: string
-          last_known_location: unknown | null
+          last_known_location: unknown
           last_location_update: string | null
           last_maintenance_update: string | null
           location: string | null
@@ -7214,7 +7214,7 @@ export type Database = {
           id?: string
           interior_features?: string[] | null
           item_code: string
-          last_known_location?: unknown | null
+          last_known_location?: unknown
           last_location_update?: string | null
           last_maintenance_update?: string | null
           location?: string | null
@@ -7256,7 +7256,7 @@ export type Database = {
           id?: string
           interior_features?: string[] | null
           item_code?: string
-          last_known_location?: unknown | null
+          last_known_location?: unknown
           last_location_update?: string | null
           last_maintenance_update?: string | null
           location?: string | null
@@ -8449,7 +8449,7 @@ export type Database = {
         Row: {
           checklist_id: string | null
           created_at: string
-          gps: unknown | null
+          gps: unknown
           id: string
           job_id: string | null
           notes: string | null
@@ -8463,7 +8463,7 @@ export type Database = {
         Insert: {
           checklist_id?: string | null
           created_at?: string
-          gps?: unknown | null
+          gps?: unknown
           id?: string
           job_id?: string | null
           notes?: string | null
@@ -8477,7 +8477,7 @@ export type Database = {
         Update: {
           checklist_id?: string | null
           created_at?: string
-          gps?: unknown | null
+          gps?: unknown
           id?: string
           job_id?: string | null
           notes?: string | null
@@ -8753,6 +8753,68 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      service_report_templates: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          is_default_for_type: boolean | null
+          logic_rules: Json
+          name: string
+          organization_id: string
+          output_config: Json
+          permissions: Json
+          sections: Json
+          template_type: Database["public"]["Enums"]["template_type"]
+          updated_at: string
+          version: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_default_for_type?: boolean | null
+          logic_rules?: Json
+          name: string
+          organization_id: string
+          output_config?: Json
+          permissions?: Json
+          sections?: Json
+          template_type: Database["public"]["Enums"]["template_type"]
+          updated_at?: string
+          version?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_default_for_type?: boolean | null
+          logic_rules?: Json
+          name?: string
+          organization_id?: string
+          output_config?: Json
+          permissions?: Json
+          sections?: Json
+          template_type?: Database["public"]["Enums"]["template_type"]
+          updated_at?: string
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_report_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       service_reports: {
         Row: {
@@ -9046,7 +9108,7 @@ export type Database = {
           driver_id: string
           environmental_impact: string | null
           estimated_volume: number | null
-          gps_coordinates: unknown | null
+          gps_coordinates: unknown
           id: string
           immediate_action_taken: string | null
           incident_date: string
@@ -9082,7 +9144,7 @@ export type Database = {
           driver_id: string
           environmental_impact?: string | null
           estimated_volume?: number | null
-          gps_coordinates?: unknown | null
+          gps_coordinates?: unknown
           id?: string
           immediate_action_taken?: string | null
           incident_date: string
@@ -9118,7 +9180,7 @@ export type Database = {
           driver_id?: string
           environmental_impact?: string | null
           estimated_volume?: number | null
-          gps_coordinates?: unknown | null
+          gps_coordinates?: unknown
           id?: string
           immediate_action_taken?: string | null
           incident_date?: string
@@ -9171,7 +9233,7 @@ export type Database = {
           immediate_actions: string | null
           job_id: string | null
           linked_work_order_id: string | null
-          location_gps: unknown | null
+          location_gps: unknown
           location_text: string | null
           material_type: string | null
           occurred_at: string
@@ -9198,7 +9260,7 @@ export type Database = {
           immediate_actions?: string | null
           job_id?: string | null
           linked_work_order_id?: string | null
-          location_gps?: unknown | null
+          location_gps?: unknown
           location_text?: string | null
           material_type?: string | null
           occurred_at?: string
@@ -9225,7 +9287,7 @@ export type Database = {
           immediate_actions?: string | null
           job_id?: string | null
           linked_work_order_id?: string | null
-          location_gps?: unknown | null
+          location_gps?: unknown
           location_text?: string | null
           material_type?: string | null
           occurred_at?: string
@@ -9857,7 +9919,7 @@ export type Database = {
           custom_street2: string | null
           custom_zip: string | null
           description: string | null
-          gps_coordinates: unknown | null
+          gps_coordinates: unknown
           id: string
           is_active: boolean | null
           is_default: boolean | null
@@ -9880,7 +9942,7 @@ export type Database = {
           custom_street2?: string | null
           custom_zip?: string | null
           description?: string | null
-          gps_coordinates?: unknown | null
+          gps_coordinates?: unknown
           id?: string
           is_active?: boolean | null
           is_default?: boolean | null
@@ -9903,7 +9965,7 @@ export type Database = {
           custom_street2?: string | null
           custom_zip?: string | null
           description?: string | null
-          gps_coordinates?: unknown | null
+          gps_coordinates?: unknown
           id?: string
           is_active?: boolean | null
           is_default?: boolean | null
@@ -11282,7 +11344,7 @@ export type Database = {
           gps_enabled: boolean | null
           id: string
           insurance_expiry: string | null
-          last_known_location: unknown | null
+          last_known_location: unknown
           last_location_update: string | null
           license_plate: string
           maintenance_interval_miles: number | null
@@ -11316,7 +11378,7 @@ export type Database = {
           gps_enabled?: boolean | null
           id?: string
           insurance_expiry?: string | null
-          last_known_location?: unknown | null
+          last_known_location?: unknown
           last_location_update?: string | null
           license_plate: string
           maintenance_interval_miles?: number | null
@@ -11350,7 +11412,7 @@ export type Database = {
           gps_enabled?: boolean | null
           id?: string
           insurance_expiry?: string | null
-          last_known_location?: unknown | null
+          last_known_location?: unknown
           last_location_update?: string | null
           license_plate?: string
           maintenance_interval_miles?: number | null
@@ -12014,26 +12076,11 @@ export type Database = {
         Args: { job_type_param: string; job_uuid: string }
         Returns: boolean
       }
-      auto_fix_storage_location_issues: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
-      auto_populate_location_coordinates: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      backup_compliance_documents: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
-      batch_geocode_existing_locations: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
-      batch_geocode_service_locations: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
+      auto_fix_storage_location_issues: { Args: never; Returns: Json }
+      auto_populate_location_coordinates: { Args: never; Returns: undefined }
+      backup_compliance_documents: { Args: never; Returns: Json }
+      batch_geocode_existing_locations: { Args: never; Returns: Json }
+      batch_geocode_service_locations: { Args: never; Returns: Json }
       bulk_update_service_status: {
         Args: {
           new_status: string
@@ -12066,12 +12113,9 @@ export type Database = {
         Args: { end_date?: string; start_date?: string }
         Returns: Json
       }
-      calculate_report_metrics: {
-        Args:
-          | Record<PropertyKey, never>
-          | { end_date?: string; start_date?: string }
-        Returns: Json
-      }
+      calculate_report_metrics:
+        | { Args: never; Returns: Json }
+        | { Args: { end_date?: string; start_date?: string }; Returns: Json }
       calculate_revenue_analytics: {
         Args: { end_date: string; start_date: string }
         Returns: Json
@@ -12080,58 +12124,30 @@ export type Database = {
         Args: { segment_id: string }
         Returns: number
       }
-      calculate_smart_segment_size: {
-        Args: { rules_json: Json } | { segment_type: string }
-        Returns: number
-      }
+      calculate_smart_segment_size:
+        | { Args: { segment_type: string }; Returns: number }
+        | { Args: { rules_json: Json }; Returns: number }
       calculate_tank_cost_per_gallon: {
         Args: { tank_uuid: string }
         Returns: number
       }
-      can_delete_user: {
-        Args: { profile_identifier: string }
-        Returns: Json
-      }
-      check_and_flag_overdue_jobs: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      can_delete_user: { Args: { profile_identifier: string }; Returns: Json }
+      check_and_flag_overdue_jobs: { Args: never; Returns: undefined }
       check_fuel_grade_mismatch: {
         Args: { delivered_grade: string; tank_uuid: string }
         Returns: Json
       }
-      check_spcc_compliance: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      check_tank_inspections_due: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      check_tank_low_inventory: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      check_spcc_compliance: { Args: never; Returns: undefined }
+      check_tank_inspections_due: { Args: never; Returns: undefined }
+      check_tank_low_inventory: { Args: never; Returns: undefined }
       check_unit_availability: {
         Args: { end_date: string; start_date: string; unit_id: string }
         Returns: boolean
       }
-      cleanup_duplicate_service_locations: {
-        Args: Record<PropertyKey, never>
-        Returns: number
-      }
-      cleanup_expired_invitations: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      cleanup_failed_geocoding: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
-      cleanup_old_activity_logs: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      cleanup_duplicate_service_locations: { Args: never; Returns: number }
+      cleanup_expired_invitations: { Args: never; Returns: undefined }
+      cleanup_failed_geocoding: { Args: never; Returns: Json }
+      cleanup_old_activity_logs: { Args: never; Returns: undefined }
       clerk_user_has_role: {
         Args: { clerk_user_id: string; required_role: string }
         Returns: boolean
@@ -12140,10 +12156,7 @@ export type Database = {
         Args: { clerk_user_id: string; required_role: string }
         Returns: boolean
       }
-      clerk_user_is_admin: {
-        Args: { clerk_user_id: string }
-        Returns: boolean
-      }
+      clerk_user_is_admin: { Args: { clerk_user_id: string }; Returns: boolean }
       complete_work_order: {
         Args: { _closed_by?: string; work_order_uuid: string }
         Returns: Json
@@ -12152,10 +12165,7 @@ export type Database = {
         Args: { convert_qty: number; product_uuid: string }
         Returns: Json
       }
-      create_default_service_locations: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      create_default_service_locations: { Args: never; Returns: undefined }
       create_template_version: {
         Args: {
           change_details_data?: Json
@@ -12175,23 +12185,26 @@ export type Database = {
         Args: { dismiss_reason?: string; invoice_uuid: string }
         Returns: boolean
       }
-      ensure_user_registered: {
-        Args:
-          | {
-              clerk_user_id: string
-              user_email?: string
-              user_first_name?: string
-              user_last_name?: string
-            }
-          | {
+      ensure_user_registered:
+        | {
+            Args: {
               clerk_user_id_param: string
               email_param?: string
               first_name_param?: string
               last_name_param?: string
               role_param?: string
             }
-        Returns: string
-      }
+            Returns: string
+          }
+        | {
+            Args: {
+              clerk_user_id: string
+              user_email?: string
+              user_first_name?: string
+              user_last_name?: string
+            }
+            Returns: string
+          }
       export_incident_data: {
         Args: {
           end_date?: string
@@ -12227,14 +12240,8 @@ export type Database = {
         }
         Returns: Json
       }
-      fix_orphaned_equipment_assignments: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
-      force_delete_user: {
-        Args: { profile_identifier: string }
-        Returns: Json
-      }
+      fix_orphaned_equipment_assignments: { Args: never; Returns: Json }
+      force_delete_user: { Args: { profile_identifier: string }; Returns: Json }
       generate_customer_portal_token: {
         Args: { customer_uuid: string }
         Returns: string
@@ -12252,10 +12259,7 @@ export type Database = {
         }
         Returns: string
       }
-      generate_invitation_token: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      generate_invitation_token: { Args: never; Returns: string }
       generate_invoice_from_quote: {
         Args: { quote_uuid: string }
         Returns: string
@@ -12268,10 +12272,7 @@ export type Database = {
         Args: { category_prefix: string }
         Returns: string
       }
-      generate_jobs_from_quote: {
-        Args: { quote_uuid: string }
-        Returns: Json
-      }
+      generate_jobs_from_quote: { Args: { quote_uuid: string }; Returns: Json }
       generate_report_number: {
         Args: { template_type: string }
         Returns: string
@@ -12292,14 +12293,8 @@ export type Database = {
         }
         Returns: string
       }
-      generate_storage_location_report: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
-      generate_vendor_id: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      generate_storage_location_report: { Args: never; Returns: Json }
+      generate_vendor_id: { Args: never; Returns: string }
       geocode_and_create_service_location: {
         Args: {
           p_city: string
@@ -12330,10 +12325,7 @@ export type Database = {
           vehicle_type: string
         }[]
       }
-      get_compliance_notification_counts: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
+      get_compliance_notification_counts: { Args: never; Returns: Json }
       get_comprehensive_stock_breakdown: {
         Args: { product_uuid?: string }
         Returns: {
@@ -12361,7 +12353,7 @@ export type Database = {
         }[]
       }
       get_consumables_with_location_stock: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           category: string
           id: string
@@ -12375,18 +12367,9 @@ export type Database = {
           unit_price: number
         }[]
       }
-      get_current_user_role: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      get_current_user_role_safe: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      get_current_user_role_simple: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      get_current_user_role: { Args: never; Returns: string }
+      get_current_user_role_safe: { Args: never; Returns: string }
+      get_current_user_role_simple: { Args: never; Returns: string }
       get_customer_categories: {
         Args: { customer_uuid: string }
         Returns: {
@@ -12415,7 +12398,7 @@ export type Database = {
         }[]
       }
       get_customer_type_counts: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           both_count: number
           customer_type: string
@@ -12425,7 +12408,7 @@ export type Database = {
         }[]
       }
       get_drivers_with_hours: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           first_name: string
           id: string
@@ -12441,14 +12424,8 @@ export type Database = {
         Args: { product_type_id: string }
         Returns: Json
       }
-      get_invoice_metrics: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
-      get_invoice_metrics_ytd: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
+      get_invoice_metrics: { Args: never; Returns: Json }
+      get_invoice_metrics_ytd: { Args: never; Returns: Json }
       get_invoice_payment_totals: {
         Args: { invoice_uuid: string }
         Returns: Json
@@ -12475,36 +12452,21 @@ export type Database = {
           status: string
         }[]
       }
-      get_maintenance_analytics: {
-        Args: { days_back?: number }
-        Returns: Json
-      }
-      get_maintenance_kpis: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
+      get_maintenance_analytics: { Args: { days_back?: number }; Returns: Json }
+      get_maintenance_kpis: { Args: never; Returns: Json }
       get_maintenance_metrics: {
         Args: { end_date: string; start_date: string }
         Returns: Json
       }
-      get_next_invoice_number: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      get_next_job_number: {
-        Args: { job_type_param: string }
-        Returns: string
-      }
-      get_next_quote_number: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      get_next_invoice_number: { Args: never; Returns: string }
+      get_next_job_number: { Args: { job_type_param: string }; Returns: string }
+      get_next_quote_number: { Args: never; Returns: string }
       get_next_template_version: {
         Args: { template_uuid: string }
         Returns: number
       }
       get_overdue_invoices: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           amount: number
           created_at: string
@@ -12518,12 +12480,9 @@ export type Database = {
           invoice_number: string
         }[]
       }
-      get_overdue_invoices_count: {
-        Args: Record<PropertyKey, never>
-        Returns: number
-      }
+      get_overdue_invoices_count: { Args: never; Returns: number }
       get_overdue_padlocked_units: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           days_overdue: number
           item_code: string
@@ -12534,7 +12493,7 @@ export type Database = {
         }[]
       }
       get_overdue_spill_kit_checks: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           compliance_status: string
           days_overdue: number
@@ -12571,14 +12530,8 @@ export type Database = {
         }
         Returns: Json
       }
-      get_quote_metrics: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
-      get_quote_metrics_ytd: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
+      get_quote_metrics: { Args: never; Returns: Json }
+      get_quote_metrics_ytd: { Args: never; Returns: Json }
       get_recent_fuel_logs: {
         Args: { limit_count?: number }
         Returns: {
@@ -12616,18 +12569,9 @@ export type Database = {
           template_name: string
         }[]
       }
-      get_system_wide_availability: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
-      get_technician_availability: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
-      get_template_analytics: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
+      get_system_wide_availability: { Args: never; Returns: Json }
+      get_technician_availability: { Args: never; Returns: Json }
+      get_template_analytics: { Args: never; Returns: Json }
       get_template_statistics: {
         Args: { template_uuid: string }
         Returns: Json
@@ -12678,10 +12622,7 @@ export type Database = {
           open_work_orders: number
         }[]
       }
-      get_vehicle_summary: {
-        Args: { p_vehicle_id: string }
-        Returns: Json
-      }
+      get_vehicle_summary: { Args: { p_vehicle_id: string }; Returns: Json }
       handle_padlock_operation: {
         Args: {
           code_reference?: string
@@ -12728,20 +12669,14 @@ export type Database = {
         Returns: Json
       }
       migrate_consumable_stock_to_locations: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           migrated_consumables: number
           total_stock_migrated: number
         }[]
       }
-      migrate_consumables_to_default_location: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
-      migrate_customer_zip_codes: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
+      migrate_consumables_to_default_location: { Args: never; Returns: Json }
+      migrate_customer_zip_codes: { Args: never; Returns: Json }
       open_work_order_for_defect: {
         Args: { _opened_by?: string; defect_uuid: string }
         Returns: string
@@ -12750,26 +12685,11 @@ export type Database = {
         Args: { category_prefix: string }
         Returns: string
       }
-      purge_non_owner_users: {
-        Args: { owner_clerk_id: string }
-        Returns: Json
-      }
-      purge_users_except: {
-        Args: { p_owner_clerk_id: string }
-        Returns: Json
-      }
-      quote_has_job: {
-        Args: { quote_uuid: string }
-        Returns: boolean
-      }
-      refresh_revenue_analytics_cache: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      refresh_vendor_compliance_alerts: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      purge_non_owner_users: { Args: { owner_clerk_id: string }; Returns: Json }
+      purge_users_except: { Args: { p_owner_clerk_id: string }; Returns: Json }
+      quote_has_job: { Args: { quote_uuid: string }; Returns: boolean }
+      refresh_revenue_analytics_cache: { Args: never; Returns: undefined }
+      refresh_vendor_compliance_alerts: { Args: never; Returns: undefined }
       report_padlock_incident: {
         Args: {
           description_param: string
@@ -12834,10 +12754,7 @@ export type Database = {
         Args: { p_driver_id: string; p_notification_type: string }
         Returns: boolean
       }
-      soft_delete_quote: {
-        Args: { quote_uuid: string }
-        Returns: boolean
-      }
+      soft_delete_quote: { Args: { quote_uuid: string }; Returns: boolean }
       sync_clerk_profile: {
         Args: {
           clerk_user_id_param: string
@@ -12852,22 +12769,19 @@ export type Database = {
         Args: { consumable_uuid: string }
         Returns: undefined
       }
-      sync_product_stock_totals: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
-      track_template_usage: {
-        Args:
-          | {
+      sync_product_stock_totals: { Args: never; Returns: Json }
+      track_template_usage:
+        | {
+            Args: {
               customer_uuid?: string
               job_uuid?: string
               report_uuid?: string
               template_uuid: string
               user_uuid?: string
             }
-          | { template_uuid: string }
-        Returns: undefined
-      }
+            Returns: undefined
+          }
+        | { Args: { template_uuid: string }; Returns: boolean }
       transition_report_status: {
         Args: {
           new_status: string
@@ -12895,10 +12809,7 @@ export type Database = {
         }
         Returns: Json
       }
-      update_overdue_invoices: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      update_overdue_invoices: { Args: never; Returns: undefined }
       update_tank_level: {
         Args: {
           p_change_amount: number
@@ -12911,10 +12822,7 @@ export type Database = {
         }
         Returns: Json
       }
-      user_has_role_safe: {
-        Args: { required_role: string }
-        Returns: boolean
-      }
+      user_has_role_safe: { Args: { required_role: string }; Returns: boolean }
       user_has_role_simple: {
         Args: { required_role: string }
         Returns: boolean
@@ -12927,10 +12835,7 @@ export type Database = {
           customer_name: string
         }[]
       }
-      validate_storage_location_integrity: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
+      validate_storage_location_integrity: { Args: never; Returns: Json }
       verify_delivery: {
         Args: { delivery_uuid: string; verified_by_user: string }
         Returns: boolean
@@ -12992,6 +12897,13 @@ export type Database = {
         | "sanitizer_stand"
         | "accessories"
         | "custom"
+      template_type:
+        | "delivery"
+        | "service"
+        | "pickup"
+        | "repair"
+        | "inspection"
+        | "event"
       work_order_priority: "low" | "normal" | "high" | "critical"
       work_order_source:
         | "dvir_defect"
@@ -13195,6 +13107,14 @@ export const Constants = {
         "sanitizer_stand",
         "accessories",
         "custom",
+      ],
+      template_type: [
+        "delivery",
+        "service",
+        "pickup",
+        "repair",
+        "inspection",
+        "event",
       ],
       work_order_priority: ["low", "normal", "high", "critical"],
       work_order_source: [
