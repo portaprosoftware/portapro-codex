@@ -138,7 +138,7 @@ export const LogServiceManuallyModal: React.FC<LogServiceManuallyModalProps> = (
         }
       };
 
-      // Only include template_id and customer_id if they have values
+      // Build insert payload (template_id and customer_id are required)
       const insertData: any = {
         report_number: reportData.report_number,
         service_id: reportData.service_id,
@@ -147,14 +147,10 @@ export const LogServiceManuallyModal: React.FC<LogServiceManuallyModalProps> = (
         completion_percentage: reportData.completion_percentage,
         auto_generated: reportData.auto_generated,
         report_data: reportData.report_data,
+        template_id: formData.template_id,
+        customer_id: formData.customer_id,
       };
 
-      if (formData.template_id) {
-        insertData.template_id = formData.template_id;
-      }
-      if (formData.customer_id) {
-        insertData.customer_id = formData.customer_id;
-      }
       if (formData.technician) {
         insertData.assigned_technician = formData.technician;
       }
@@ -182,15 +178,21 @@ export const LogServiceManuallyModal: React.FC<LogServiceManuallyModalProps> = (
       });
     },
     onError: (error) => {
-      toast.error('Failed to log service');
+      const msg = (error as any)?.message || 'Unknown error';
+      toast.error(`Failed to log service: ${msg}`);
       console.error(error);
     }
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.service_id) {
-      toast.error('Please select a service');
+    if (!formData.service_id || !formData.customer_id || !formData.template_id) {
+      const missing = [
+        !formData.service_id ? 'Service' : null,
+        !formData.customer_id ? 'Customer' : null,
+        !formData.template_id ? 'Template' : null,
+      ].filter(Boolean).join(', ');
+      toast.error(`Please complete required fields: ${missing}`);
       return;
     }
     saveManualLogMutation.mutate();
@@ -266,12 +268,12 @@ export const LogServiceManuallyModal: React.FC<LogServiceManuallyModalProps> = (
           {/* Service Details */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="customer">Customer (Optional)</Label>
+              <Label htmlFor="customer">Customer *</Label>
               <Select
                 value={formData.customer_id}
                 onValueChange={(value) => setFormData(prev => ({ ...prev, customer_id: value }))}
               >
-                <SelectTrigger>
+                <SelectTrigger aria-required>
                   <SelectValue placeholder="Select customer" />
                 </SelectTrigger>
                 <SelectContent>
@@ -307,13 +309,13 @@ export const LogServiceManuallyModal: React.FC<LogServiceManuallyModalProps> = (
 
           {/* Report Template */}
           <div>
-            <Label htmlFor="template">Service Report Template (Optional)</Label>
+            <Label htmlFor="template">Service Report Template *</Label>
             <Select
               value={formData.template_id}
               onValueChange={(value) => setFormData(prev => ({ ...prev, template_id: value }))}
             >
-              <SelectTrigger>
-                <SelectValue placeholder="Select a report template or leave blank" />
+              <SelectTrigger aria-required>
+                <SelectValue placeholder="Select a report template" />
               </SelectTrigger>
               <SelectContent>
                 {templates?.map((template) => (

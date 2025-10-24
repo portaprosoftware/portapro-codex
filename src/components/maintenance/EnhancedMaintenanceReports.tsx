@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { FileText, Eye, Download, Camera } from "lucide-react";
@@ -128,6 +128,9 @@ export const EnhancedMaintenanceReports: React.FC<EnhancedMaintenanceReportsProp
             <DialogTitle>
               Maintenance Report: {reportDetail?.report_number || "N/A"}
             </DialogTitle>
+            <DialogDescription className="sr-only">
+              Detailed view of a maintenance report including status and metadata.
+            </DialogDescription>
           </DialogHeader>
 
           {reportDetail && (
