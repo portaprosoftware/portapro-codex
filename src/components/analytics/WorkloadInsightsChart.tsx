@@ -107,41 +107,41 @@ export const WorkloadInsightsChart: React.FC<WorkloadInsightsChartProps> = ({ da
     <div className="space-y-6">
       {/* Key Insights */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-blue-50 p-3 rounded-lg">
-          <div className="flex items-center gap-2 text-blue-700">
+        <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-3 rounded-lg border-0">
+          <div className="flex items-center gap-2 text-white">
             <Clock className="w-4 h-4" />
-            <span className="text-sm font-medium">Peak Hour</span>
+            <span className="text-sm font-bold">Peak Hour</span>
           </div>
-          <div className="text-lg font-bold text-blue-900">
+          <div className="text-lg font-bold text-white">
             {insights.peakHour || 'N/A'}
           </div>
-          <div className="text-xs text-blue-600">
+          <div className="text-xs text-white">
             {insights.peakJobs || 0} jobs
           </div>
         </div>
         
-        <div className="bg-green-50 p-3 rounded-lg">
-          <div className="flex items-center gap-2 text-green-700">
+        <div className="bg-gradient-to-br from-green-500 to-green-600 p-3 rounded-lg border-0">
+          <div className="flex items-center gap-2 text-white">
             <Users className="w-4 h-4" />
-            <span className="text-sm font-medium">Active Drivers</span>
+            <span className="text-sm font-bold">Active Drivers</span>
           </div>
-          <div className="text-lg font-bold text-green-900">
+          <div className="text-lg font-bold text-white">
             {insights.activeDrivers || 0}
           </div>
-          <div className="text-xs text-green-600">
+          <div className="text-xs text-white">
             {insights.avgJobsPerDriver || 0} avg jobs
           </div>
         </div>
         
-        <div className="bg-purple-50 p-3 rounded-lg">
-          <div className="flex items-center gap-2 text-purple-700">
+        <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-3 rounded-lg border-0">
+          <div className="flex items-center gap-2 text-white">
             <TrendingUp className="w-4 h-4" />
-            <span className="text-sm font-medium">Total Jobs</span>
+            <span className="text-sm font-bold">Total Jobs</span>
           </div>
-          <div className="text-lg font-bold text-purple-900">
+          <div className="text-lg font-bold text-white">
             {insights.totalJobs || 0}
           </div>
-          <div className="text-xs text-purple-600">
+          <div className="text-xs text-white">
             This period
           </div>
         </div>
