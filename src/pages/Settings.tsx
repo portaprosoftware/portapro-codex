@@ -60,8 +60,8 @@ export default function Settings() {
       case 'company':
         return (
           <div className="space-y-6">
-            <LogoManagementSection />
             <CompanySettingsSection />
+            <LogoManagementSection />
           </div>
         );
       case 'business-hours':
