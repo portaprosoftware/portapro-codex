@@ -1,7 +1,10 @@
 import { EnhancedTemplate } from '../types';
 
-export const starterTemplates: Omit<EnhancedTemplate, 'id' | 'created_at' | 'updated_at'>[] = [
+export const starterTemplates: EnhancedTemplate[] = [
   {
+    id: '1',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
     name: 'Weekly Route Service (Per-Unit Loop)',
     description: 'Standard service template with per-unit scanning and tracking',
     template_type: 'service',
@@ -102,6 +105,9 @@ export const starterTemplates: Omit<EnhancedTemplate, 'id' | 'created_at' | 'upd
     },
   },
   {
+    id: '2',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
     name: 'Delivery & Setup',
     description: 'Unit delivery and site setup checklist',
     template_type: 'delivery',
@@ -147,6 +153,9 @@ export const starterTemplates: Omit<EnhancedTemplate, 'id' | 'created_at' | 'upd
     },
   },
   {
+    id: '3',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
     name: 'Event Service & Reconciliation',
     description: 'Event setup and unit count reconciliation',
     template_type: 'event',
@@ -191,6 +200,9 @@ export const starterTemplates: Omit<EnhancedTemplate, 'id' | 'created_at' | 'upd
     },
   },
   {
+    id: '4',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
     name: 'Pickup / Removal',
     description: 'Unit pickup and site cleanup',
     template_type: 'pickup',
@@ -231,6 +243,9 @@ export const starterTemplates: Omit<EnhancedTemplate, 'id' | 'created_at' | 'upd
     },
   },
   {
+    id: '5',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
     name: 'Repair Ticket',
     description: 'Unit repair and parts tracking',
     template_type: 'repair',
@@ -271,6 +286,9 @@ export const starterTemplates: Omit<EnhancedTemplate, 'id' | 'created_at' | 'upd
     },
   },
   {
+    id: '6',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
     name: 'Site Survey / Pre-Event Walkthrough',
     description: 'Initial site assessment before service',
     template_type: 'inspection',

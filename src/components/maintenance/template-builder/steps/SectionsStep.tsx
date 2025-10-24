@@ -1,4 +1,5 @@
 import React from 'react';
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -21,6 +22,16 @@ export const SectionsStep: React.FC<SectionsStepProps> = ({
   onRemoveSection,
   onReorderSections,
 }) => {
+  const handleDragEnd = (result: DropResult) => {
+    if (!result.destination) return;
+
+    const items = Array.from(sections);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    onReorderSections(items);
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Left: Section Library */}
@@ -83,46 +94,67 @@ export const SectionsStep: React.FC<SectionsStepProps> = ({
                 <p className="text-xs mt-1">Click a block from the left to get started</p>
               </div>
             ) : (
-              <div className="space-y-2">
-                {sections.map((section, index) => (
-                  <div
-                    key={section.id}
-                    className="flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors group"
-                  >
-                    {/* Drag handle */}
-                    <button className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground">
-                      <GripVertical className="w-4 h-4" />
-                    </button>
-
-                    {/* Section info */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-sm font-medium truncate">
-                          {section.title}
-                        </span>
-                        {section.repeat_for_each && (
-                          <Badge className="bg-gradient-to-r from-primary to-primary/80 text-white text-xs">
-                            Per-Unit Loop
-                          </Badge>
-                        )}
-                      </div>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {section.fields.length} field{section.fields.length !== 1 ? 's' : ''}
-                      </p>
-                    </div>
-
-                    {/* Delete button */}
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10"
-                      onClick={() => onRemoveSection(section.id)}
+              <DragDropContext onDragEnd={handleDragEnd}>
+                <Droppable droppableId="sections">
+                  {(provided) => (
+                    <div
+                      {...provided.droppableProps}
+                      ref={provided.innerRef}
+                      className="space-y-2"
                     >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
+                      {sections.map((section, index) => (
+                        <Draggable key={section.id} draggableId={section.id} index={index}>
+                          {(provided, snapshot) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              className={`flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors group ${
+                                snapshot.isDragging ? 'shadow-lg' : ''
+                              }`}
+                            >
+                              {/* Drag handle */}
+                              <button
+                                {...provided.dragHandleProps}
+                                className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground"
+                              >
+                                <GripVertical className="w-4 h-4" />
+                              </button>
+
+                              {/* Section info */}
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className="text-sm font-medium truncate">
+                                    {section.title}
+                                  </span>
+                                  {section.repeat_for_each && (
+                                    <Badge className="bg-gradient-to-r from-primary to-primary/80 text-white text-xs">
+                                      Per-Unit Loop
+                                    </Badge>
+                                  )}
+                                </div>
+                                <p className="text-xs text-muted-foreground truncate">
+                                  {section.fields.length} field{section.fields.length !== 1 ? 's' : ''}
+                                </p>
+                              </div>
+
+                              {/* Delete button */}
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10"
+                                onClick={() => onRemoveSection(section.id)}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </DragDropContext>
             )}
           </CardContent>
         </Card>
