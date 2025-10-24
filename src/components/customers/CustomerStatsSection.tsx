@@ -1,7 +1,7 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, DollarSign, FileText, MapPin, ChevronRight } from 'lucide-react';
+import { Calendar, DollarSign, FileText, MapPin, ChevronRight, Receipt } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { StatCard } from '@/components/ui/StatCard';
 import { Button } from '@/components/ui/button';
@@ -95,10 +95,10 @@ export function CustomerStatsSection({ customerId }: CustomerStatsSectionProps) 
       <StatCard
         title="Outstanding Balance"
         value={`$${stats?.outstandingBalance.toLocaleString() || '0'}`}
-        icon={DollarSign}
-        gradientFrom="#10B981"
-        gradientTo="#059669"
-        iconBg="#10B981"
+        icon={Receipt}
+        gradientFrom="#EF4444"
+        gradientTo="#DC2626"
+        iconBg="#EF4444"
         delay={100}
       />
       
