@@ -49,7 +49,7 @@ export const DonutChart: React.FC<DonutChartProps> = ({ data, title, height = 30
   const total = data.reduce((sum, item) => sum + item.value, 0);
 
   return (
-    <Card className="p-6 rounded-2xl shadow-md border-l-4 border-purple-500">
+    <Card className="p-6 rounded-xl shadow-md border-l-4 border-purple-500">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
       
       <div className="relative">

@@ -69,7 +69,7 @@ export const CohortAnalysisChart: React.FC<CohortAnalysisChartProps> = ({ dateRa
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-2xl shadow-md p-6 border-l-4 border-green-500">
+      <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-green-500">
         <h3 className="text-lg font-semibold mb-4">Cohort Analysis</h3>
         <div className="flex items-center justify-center h-48">
           <div className="text-gray-500">Loading cohort data...</div>
@@ -79,7 +79,7 @@ export const CohortAnalysisChart: React.FC<CohortAnalysisChartProps> = ({ dateRa
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-md p-6 border-l-4 border-green-500">
+    <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-green-500">
       <h3 className="text-lg font-semibold mb-4">Cohort Analysis</h3>
       <p className="text-sm text-gray-600 mb-4">Customer retention by acquisition month</p>
       

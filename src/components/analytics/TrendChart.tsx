@@ -42,7 +42,7 @@ export const TrendChart: React.FC<TrendChartProps> = ({ data, title, height = 30
   };
 
   return (
-    <Card className="p-6 rounded-2xl shadow-md border-l-4 border-blue-500">
+    <Card className="p-6 rounded-xl shadow-md border-l-4 border-blue-500">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
         <div className="flex space-x-2">

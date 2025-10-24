@@ -52,7 +52,7 @@ export const GlobalFilters: React.FC<GlobalFiltersProps> = ({
   return (
     <div className="space-y-4 mb-6">
       {/* Desktop Date Range */}
-      <Card className="hidden lg:block p-4 bg-gray-50 border border-gray-200 rounded-2xl">
+      <Card className="hidden lg:block p-4 bg-gray-50 border border-gray-200 rounded-xl">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           {/* Left side - Date picker and quick ranges */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
@@ -136,7 +136,7 @@ export const GlobalFilters: React.FC<GlobalFiltersProps> = ({
       </Card>
 
       {/* Mobile/Tablet Date Range - Collapsible */}
-      <Card className="lg:hidden p-4 bg-gray-50 border border-gray-200 rounded-2xl">
+      <Card className="lg:hidden p-4 bg-gray-50 border border-gray-200 rounded-xl">
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
           <CollapsibleTrigger asChild>
             <Button variant="ghost" className="w-full justify-between min-h-[44px] p-0">

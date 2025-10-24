@@ -80,9 +80,9 @@ const Analytics = () => {
   };
 
   return (
-    <div className="max-w-none px-2 md:px-4 py-4 min-h-screen bg-gray-50 overflow-x-hidden">
+    <div className="max-w-none px-2 md:px-4 py-4 md:py-6 min-h-screen bg-gray-50 overflow-x-hidden">
       {/* Header */}
-      <div className="bg-white rounded-2xl border shadow-sm p-4 md:p-6 mb-6">
+      <div className="bg-white rounded-xl border shadow-sm p-4 md:p-6 mb-6">
         <div className="flex flex-col gap-4 mb-6">
           <div className="flex items-center justify-between">
             <div>
@@ -184,7 +184,7 @@ const Analytics = () => {
 
 
       {/* Main Content */}
-      <div className="space-y-6 bg-white rounded-2xl p-4 md:p-6 border shadow-sm">
+      <div className="space-y-6 bg-white rounded-xl p-4 md:p-6 border shadow-sm">
         {renderActiveSection()}
       </div>
 

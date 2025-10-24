@@ -82,7 +82,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({ dateRange }) => {
 
   if (isLoading) {
     return (
-      <Card className="p-6 rounded-2xl shadow-md border-l-4 border-green-500">
+      <Card className="p-6 rounded-xl shadow-md border-l-4 border-green-500">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
         <div className="space-y-4">
           {Array.from({ length: 5 }).map((_, i) => (
@@ -102,7 +102,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({ dateRange }) => {
   }
 
   return (
-    <Card className="p-6 rounded-2xl shadow-md border-l-4 border-green-500">
+    <Card className="p-6 rounded-xl shadow-md border-l-4 border-green-500">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
       
       <div className="space-y-4 max-h-80 overflow-y-auto">

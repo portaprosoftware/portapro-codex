@@ -35,7 +35,7 @@ export const AgingAnalysisChart: React.FC<AgingAnalysisChartProps> = ({ data, ti
   };
 
   return (
-    <Card className="p-6 rounded-2xl shadow-md border-l-4 border-blue-500">
+    <Card className="p-6 rounded-xl shadow-md border-l-4 border-blue-500">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
       
       <ResponsiveContainer width="100%" height={height}>
