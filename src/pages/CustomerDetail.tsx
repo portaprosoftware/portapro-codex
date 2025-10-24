@@ -82,41 +82,41 @@ export default function CustomerDetail() {
       <div className="max-w-none px-2 md:px-4 py-6 space-y-6">
         {/* Header Card with Customer Info and Tab Navigation */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 pb-4">
-          {/* Top Row: Breadcrumb, Back Button, and Customer Name */}
+          {/* Top Row: Back Button, Breadcrumb, and Customer Name */}
           <div className="flex flex-col md:flex-row md:items-center gap-4 mb-4">
-            {/* Left side: Breadcrumb and Customer Name */}
+            {/* Left side: Back Button, Breadcrumb and Customer Name */}
             <div className="flex-1 min-w-0">
-              {/* Breadcrumb */}
-              <Breadcrumb className="mb-2">
-                <BreadcrumbList className="text-sm">
-                  <BreadcrumbItem>
-                    <BreadcrumbLink asChild>
-                      <Link to="/customer-hub">Customer Hub</Link>
-                    </BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator />
-                  <BreadcrumbItem>
-                    <BreadcrumbPage>{customer.name}</BreadcrumbPage>
-                  </BreadcrumbItem>
-                </BreadcrumbList>
-              </Breadcrumb>
+              {/* Breadcrumb with Back Button */}
+              <div className="flex items-center gap-2 mb-2">
+                <Link to="/customer-hub">
+                  <Button 
+                    size="sm"
+                    variant="ghost"
+                    className="h-auto p-0 hover:bg-transparent text-blue-600 hover:text-blue-700"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                  </Button>
+                </Link>
+                <Breadcrumb>
+                  <BreadcrumbList className="text-sm">
+                    <BreadcrumbItem>
+                      <BreadcrumbLink asChild>
+                        <Link to="/customer-hub">Customer Hub</Link>
+                      </BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                      <BreadcrumbPage>{customer.name}</BreadcrumbPage>
+                    </BreadcrumbItem>
+                  </BreadcrumbList>
+                </Breadcrumb>
+              </div>
               
               {/* Customer name */}
               <h1 className="text-3xl font-bold text-gray-900 leading-tight">
                 {customer.name}
               </h1>
             </div>
-            
-            {/* Right side: Back Button */}
-            <Link to="/customer-hub" className="w-full md:w-auto">
-              <Button 
-                size="sm"
-                className="w-full md:w-auto bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium px-3 py-2 rounded-md border-0"
-              >
-                <ArrowLeft className="w-4 h-4 mr-1.5" />
-                Customer Hub
-              </Button>
-            </Link>
           </div>
           
           {/* Customer metadata */}
