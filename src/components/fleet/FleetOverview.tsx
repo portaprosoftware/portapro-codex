@@ -224,9 +224,12 @@ export const FleetOverview: React.FC = () => {
                     <h3 className="text-base lg:text-lg font-semibold truncate">Spill Kit Compliance</h3>
                     <span className="text-xs lg:text-sm text-muted-foreground hidden sm:inline">DOT/OSHA compliance monitoring</span>
                   </div>
+                  <span className="text-xs text-muted-foreground hidden lg:inline mr-2">
+                    {isSpillKitCollapsed ? 'Click to expand' : 'Click to collapse'}
+                  </span>
                   <ChevronDown 
                     className={cn(
-                      "h-4 w-4 transition-transform flex-shrink-0 lg:ml-auto",
+                      "h-4 w-4 transition-transform flex-shrink-0",
                       isSpillKitCollapsed && "rotate-180"
                     )} 
                     aria-label={isSpillKitCollapsed ? 'Expand' : 'Collapse'}
