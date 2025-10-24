@@ -220,8 +220,8 @@ export const BottomSheetWizard: React.FC<BottomSheetWizardProps> = ({
         side="bottom" 
         className="h-screen w-full p-0 flex flex-col"
       >
-        {/* Sticky Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b bg-background sticky top-0 z-10">
+        {/* Sticky Header - 64px height */}
+        <div className="flex items-center justify-between px-6 h-16 border-b bg-background sticky top-0 z-10">
           <h2 className="text-xl font-semibold">Create New Template</h2>
           <div className="flex items-center gap-2">
             <Button variant="outline" onClick={handleSaveDraft}>
@@ -244,16 +244,14 @@ export const BottomSheetWizard: React.FC<BottomSheetWizardProps> = ({
           </div>
         </div>
 
-        {/* Scrollable Content */}
-        <div className="flex-1 overflow-auto px-6 py-6">
+        {/* Scrollable Content - 24px padding, 20-24px section spacing */}
+        <div className="flex-1 overflow-auto p-6 space-y-6">
           {/* Step Navigation */}
-          <div className="mb-8">
-            <StepNavigation
-              currentStep={currentStep}
-              onStepClick={handleStepClick}
-              completedSteps={completedSteps}
-            />
-          </div>
+          <StepNavigation
+            currentStep={currentStep}
+            onStepClick={handleStepClick}
+            completedSteps={completedSteps}
+          />
 
           {/* Step Content */}
           <div className="max-w-7xl mx-auto">
@@ -312,8 +310,8 @@ export const BottomSheetWizard: React.FC<BottomSheetWizardProps> = ({
           </div>
         </div>
 
-        {/* Sticky Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t bg-background sticky bottom-0 z-10">
+        {/* Sticky Footer - 64px height */}
+        <div className="flex items-center justify-between px-6 h-16 border-t bg-background sticky bottom-0 z-10">
           <span className="text-sm text-muted-foreground">
             Step {currentStep} of 6
           </span>
