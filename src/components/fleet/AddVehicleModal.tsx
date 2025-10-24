@@ -5,11 +5,11 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import {
   Form,
   FormControl,
@@ -177,14 +177,17 @@ export const AddVehicleModal: React.FC<AddVehicleModalProps> = ({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Add New Vehicle</DialogTitle>
-        </DialogHeader>
+    <Sheet open={isOpen} onOpenChange={onClose}>
+      <SheetContent side="bottom" className="h-screen overflow-y-auto p-0">
+        <div className="sticky top-0 bg-background border-b z-10 p-6">
+          <SheetHeader>
+            <SheetTitle>Add New Vehicle</SheetTitle>
+          </SheetHeader>
+        </div>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="p-6 max-w-2xl mx-auto">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             {/* Vehicle Image Upload */}
             <div className="space-y-2">
               <FormLabel>Vehicle Image</FormLabel>
@@ -570,7 +573,7 @@ export const AddVehicleModal: React.FC<AddVehicleModalProps> = ({
               )}
             />
 
-            <div className="flex gap-3 justify-end">
+            <div className="flex gap-3 justify-end sticky bottom-0 bg-background border-t pt-4 -mx-6 px-6 pb-6">
               <Button type="button" variant="outline" onClick={onClose}>
                 Cancel
               </Button>
@@ -580,7 +583,8 @@ export const AddVehicleModal: React.FC<AddVehicleModalProps> = ({
             </div>
           </form>
         </Form>
-      </DialogContent>
+        </div>
+      </SheetContent>
 
       {/* Vehicle Type Selector Modal */}
       <VehicleTypeSelector
@@ -589,6 +593,6 @@ export const AddVehicleModal: React.FC<AddVehicleModalProps> = ({
         onTypeSelect={handleVehicleTypeSelect}
         selectedTypeId={selectedVehicleType}
       />
-    </Dialog>
+    </Sheet>
   );
 };
