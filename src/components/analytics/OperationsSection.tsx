@@ -3,7 +3,8 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { StatCard } from '@/components/ui/StatCard';
-import { Truck, Package, Wrench, ClipboardList } from 'lucide-react';
+import { Truck, Wrench, MapPin } from 'lucide-react';
+import { Toilet } from 'lucide-react';
 import { format, subDays, differenceInDays } from 'date-fns';
 import { OperationsTrendChart } from './OperationsTrendChart';
 import { WorkloadInsightsChart } from './WorkloadInsightsChart';
@@ -118,10 +119,10 @@ export const OperationsSection: React.FC<OperationsSectionProps> = ({ dateRange 
         <StatCard
           title="Pickups"
           value={operations?.pickups || 0}
-          icon={Package}
-          gradientFrom="#10b981"
-          gradientTo="#059669"
-          iconBg="#33CC66"
+          icon={Toilet}
+          gradientFrom="#c2410c"
+          gradientTo="#92400e"
+          iconBg="#c2410c"
           subtitle={
             <div className="space-y-1">
               <span className={`font-semibold ${getChangeColor(operations?.changes?.pickups || 0)}`}>
@@ -136,9 +137,9 @@ export const OperationsSection: React.FC<OperationsSectionProps> = ({ dateRange 
           title="Services"
           value={operations?.services || 0}
           icon={Wrench}
-          gradientFrom="#f59e0b"
-          gradientTo="#d97706"
-          iconBg="#FF9933"
+          gradientFrom="#9333ea"
+          gradientTo="#7e22ce"
+          iconBg="#9333ea"
           subtitle={
             <span className={`font-semibold ${getChangeColor(operations?.changes?.services || 0)}`}>
               {formatPercentage(operations?.changes?.services || 0)} vs last period
@@ -149,10 +150,10 @@ export const OperationsSection: React.FC<OperationsSectionProps> = ({ dateRange 
         <StatCard
           title="Surveys"
           value={operations?.surveys || 0}
-          icon={ClipboardList}
-          gradientFrom="#8b5cf6"
-          gradientTo="#7c3aed"
-          iconBg="#8B5CF6"
+          icon={MapPin}
+          gradientFrom="#991b1b"
+          gradientTo="#7f1d1d"
+          iconBg="#991b1b"
           subtitle={
             <span className={`font-semibold ${getChangeColor(operations?.changes?.surveys || 0)}`}>
               {formatPercentage(operations?.changes?.surveys || 0)} vs last period
