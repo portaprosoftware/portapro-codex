@@ -10,6 +10,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Eye, Edit, Filter, FileText, CheckCircle, Clock, Briefcase, MoreVertical, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { JobCard } from './JobCard';
+import { ViewJobModal } from './job-modals/ViewJobModal';
+import { EditJobModal } from './job-modals/EditJobModal';
+import { DeleteJobModal } from './job-modals/DeleteJobModal';
 
 interface CustomerJobsTabProps {
   customerId: string;
@@ -32,6 +35,10 @@ const JOB_TYPES = {
 
 export function CustomerJobsTab({ customerId }: CustomerJobsTabProps) {
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [selectedJob, setSelectedJob] = useState<any>(null);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const { data: jobs = [], isLoading } = useQuery({
     queryKey: ['customer-jobs', customerId, statusFilter],
@@ -63,6 +70,21 @@ export function CustomerJobsTab({ customerId }: CustomerJobsTabProps) {
       style: 'currency',
       currency: 'USD'
     }).format(amount);
+  };
+
+  const handleViewJob = (job: any) => {
+    setSelectedJob(job);
+    setViewModalOpen(true);
+  };
+
+  const handleEditJob = (job: any) => {
+    setSelectedJob(job);
+    setEditModalOpen(true);
+  };
+
+  const handleDeleteJob = (job: any) => {
+    setSelectedJob(job);
+    setDeleteModalOpen(true);
   };
 
   return (
@@ -207,21 +229,21 @@ export function CustomerJobsTab({ customerId }: CustomerJobsTabProps) {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-48 bg-white z-50">
                         <DropdownMenuItem 
-                          onClick={() => console.log('View job:', job.id)}
+                          onClick={() => handleViewJob(job)}
                           className="cursor-pointer"
                         >
                           <Eye className="mr-2 h-4 w-4" />
                           <span>View</span>
                         </DropdownMenuItem>
                         <DropdownMenuItem 
-                          onClick={() => console.log('Edit job:', job.id)}
+                          onClick={() => handleEditJob(job)}
                           className="cursor-pointer"
                         >
                           <Edit className="mr-2 h-4 w-4" />
                           <span>Edit</span>
                         </DropdownMenuItem>
                         <DropdownMenuItem 
-                          onClick={() => console.log('Delete job:', job.id)}
+                          onClick={() => handleDeleteJob(job)}
                           className="cursor-pointer text-red-600"
                         >
                           <Trash2 className="mr-2 h-4 w-4" />
@@ -236,6 +258,25 @@ export function CustomerJobsTab({ customerId }: CustomerJobsTabProps) {
           </TableBody>
         </Table>
       </div>
+
+      {/* Modals */}
+      <ViewJobModal 
+        open={viewModalOpen} 
+        onOpenChange={setViewModalOpen} 
+        job={selectedJob} 
+      />
+      <EditJobModal 
+        open={editModalOpen} 
+        onOpenChange={setEditModalOpen} 
+        job={selectedJob}
+        customerId={customerId}
+      />
+      <DeleteJobModal 
+        open={deleteModalOpen} 
+        onOpenChange={setDeleteModalOpen} 
+        job={selectedJob}
+        customerId={customerId}
+      />
     </div>
   );
 }
