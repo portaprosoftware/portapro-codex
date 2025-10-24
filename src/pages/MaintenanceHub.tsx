@@ -8,7 +8,7 @@ import { ServiceCatalogTab } from "@/components/maintenance/ServiceCatalogTab";
 import { ServiceReportTemplatesTab } from "@/components/maintenance/ServiceReportTemplatesTab";
 import { ServiceRecordsTab } from "@/components/maintenance/ServiceRecordsTab";
 import { LogPastServiceModal } from "@/components/maintenance/LogPastServiceModal";
-import { Calendar, ClipboardList, CheckCircle, FileText, ChevronDown, NotepadTextDashed } from "lucide-react";
+import { Calendar, ClipboardList, CheckCircle, FileText, ChevronDown, FileCog } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 
@@ -40,7 +40,7 @@ export default function MaintenanceHub() {
       case 'records':
         return CheckCircle;
       case 'templates':
-        return NotepadTextDashed;
+        return FileCog;
       default:
         return ClipboardList;
     }
@@ -97,7 +97,7 @@ export default function MaintenanceHub() {
                   isActive={activeTab === 'templates'}
                   onClick={() => setActiveTab('templates')}
                 >
-                  <NotepadTextDashed className="h-4 w-4" />
+                  <FileCog className="h-4 w-4" />
                   Report Templates
                 </TabNav.Item>
               </TabNav>
@@ -165,7 +165,7 @@ export default function MaintenanceHub() {
                     )}
                   >
                     <div className="flex items-center gap-3">
-                      <NotepadTextDashed className="h-5 w-5" />
+                      <FileCog className="h-5 w-5" />
                       <span className="text-base">Report Templates</span>
                     </div>
                   </button>
