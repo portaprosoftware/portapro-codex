@@ -72,18 +72,6 @@ export default function MaintenanceHub() {
             </div>
           </div>
           
-          {/* "Log Past Service" Button - Full width on mobile */}
-          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-            <Button 
-              variant="outline" 
-              className="border-blue-500 text-blue-600 hover:bg-blue-50 w-full sm:w-auto min-h-[44px]"
-              onClick={() => setShowLogPastService(true)}
-            >
-              <Calendar className="w-4 h-4 mr-2" />
-              Log Past Service
-            </Button>
-          </div>
-          
           {/* Desktop Navigation Pills */}
           <div className="hidden lg:flex items-center space-x-4">
             <div className="enterprise-tabs">
@@ -199,7 +187,7 @@ export default function MaintenanceHub() {
         )}
 
         {activeTab === 'records' && (
-          <ServiceRecordsTab />
+          <ServiceRecordsTab onLogPastService={() => setShowLogPastService(true)} />
         )}
       </div>
 

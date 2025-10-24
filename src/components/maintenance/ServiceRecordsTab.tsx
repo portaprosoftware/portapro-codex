@@ -37,7 +37,11 @@ interface ServiceRecord {
   };
 }
 
-export const ServiceRecordsTab: React.FC = () => {
+interface ServiceRecordsTabProps {
+  onLogPastService: () => void;
+}
+
+export const ServiceRecordsTab: React.FC<ServiceRecordsTabProps> = ({ onLogPastService }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [serviceFilter, setServiceFilter] = useState("all");
   const [sourceFilter, setSourceFilter] = useState("all");
@@ -143,6 +147,14 @@ export const ServiceRecordsTab: React.FC = () => {
           <h2 className="text-xl font-semibold text-gray-900">Service Records</h2>
           <p className="text-gray-600">Service records appear after jobs or work orders are completed using a service</p>
         </div>
+        <Button 
+          variant="outline" 
+          className="border-blue-500 text-blue-600 hover:bg-blue-50"
+          onClick={onLogPastService}
+        >
+          <Clock className="w-4 h-4 mr-2" />
+          Log Past Service
+        </Button>
       </div>
 
       {/* Summary Cards */}
