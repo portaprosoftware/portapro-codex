@@ -529,65 +529,64 @@ export const SimpleConsumablesInventory: React.FC = () => {
         {/* Content based on active tab */}
         {activeTab === 'inventory' ? (
           <div className="space-y-4 md:space-y-6">
-            {/* Inventory Summary Cards */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-              <div style={{ background: 'linear-gradient(135deg, hsl(210, 15%, 94%), hsl(210, 15%, 98%))' }} className="rounded-xl border border-gray-200 shadow-sm p-4 md:p-6">
-                <div className="flex items-center justify-between">
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs md:text-sm font-medium text-muted-foreground mb-1">Total Items</p>
-                    <p className="text-xl md:text-2xl font-bold text-foreground">{filteredConsumables.length}</p>
-                  </div>
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shrink-0">
-                    <Package className="w-5 h-5 md:w-6 md:h-6 text-white stroke-2" />
-                  </div>
-                </div>
-              </div>
-
-              <div style={{ background: 'linear-gradient(135deg, hsl(210, 15%, 94%), hsl(210, 15%, 98%))' }} className="rounded-xl border border-gray-200 shadow-sm p-4 md:p-6">
-                <div className="flex items-center justify-between">
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs md:text-sm font-medium text-muted-foreground mb-1">Total Value</p>
-                    <p className="text-lg md:text-2xl font-bold text-foreground truncate">
-                      ${filteredConsumables.reduce((sum, c) => sum + (c.on_hand_qty * c.unit_cost), 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </p>
-                  </div>
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center shrink-0">
-                    <DollarSign className="w-5 h-5 md:w-6 md:h-6 text-white stroke-2" />
-                  </div>
-                </div>
-              </div>
-
-              <div style={{ background: 'linear-gradient(135deg, hsl(210, 15%, 94%), hsl(210, 15%, 98%))' }} className="rounded-xl border border-gray-200 shadow-sm p-4 md:p-6">
-                <div className="flex items-center justify-between">
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs md:text-sm font-medium text-muted-foreground mb-1">Low Stock</p>
-                    <p className="text-xl md:text-2xl font-bold text-foreground">
-                      {filteredConsumables.filter(c => c.on_hand_qty <= c.reorder_threshold && c.on_hand_qty > 0).length}
-                    </p>
-                  </div>
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center shrink-0">
-                    <AlertTriangle className="w-5 h-5 md:w-6 md:h-6 text-white stroke-2" />
-                  </div>
-                </div>
-              </div>
-
-              <div style={{ background: 'linear-gradient(135deg, hsl(210, 15%, 94%), hsl(210, 15%, 98%))' }} className="rounded-xl border border-gray-200 shadow-sm p-4 md:p-6">
-                <div className="flex items-center justify-between">
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs md:text-sm font-medium text-muted-foreground mb-1">Out of Stock</p>
-                    <p className="text-xl md:text-2xl font-bold text-foreground">
-                      {filteredConsumables.filter(c => c.on_hand_qty <= 0).length}
-                    </p>
-                  </div>
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center shrink-0">
-                    <AlertTriangle className="w-5 h-5 md:w-6 md:h-6 text-white stroke-2" />
-                  </div>
-                </div>
-              </div>
-            </div>
-
             <div className="bg-white rounded-xl border shadow-sm">
-            <div className="p-4 md:p-6">
+            <div className="p-4 md:p-6 space-y-6">
+              {/* Inventory Summary Cards */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+                <div style={{ background: 'linear-gradient(135deg, hsl(210, 15%, 94%), hsl(210, 15%, 98%))' }} className="rounded-xl border border-gray-200 shadow-sm p-4 md:p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs md:text-sm font-medium text-muted-foreground mb-1">Total Items</p>
+                      <p className="text-xl md:text-2xl font-bold text-foreground">{filteredConsumables.length}</p>
+                    </div>
+                    <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shrink-0">
+                      <Package className="w-5 h-5 md:w-6 md:h-6 text-white stroke-2" />
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ background: 'linear-gradient(135deg, hsl(210, 15%, 94%), hsl(210, 15%, 98%))' }} className="rounded-xl border border-gray-200 shadow-sm p-4 md:p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs md:text-sm font-medium text-muted-foreground mb-1">Total Value</p>
+                      <p className="text-lg md:text-2xl font-bold text-foreground truncate">
+                        ${filteredConsumables.reduce((sum, c) => sum + (c.on_hand_qty * c.unit_cost), 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </p>
+                    </div>
+                    <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center shrink-0">
+                      <DollarSign className="w-5 h-5 md:w-6 md:h-6 text-white stroke-2" />
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ background: 'linear-gradient(135deg, hsl(210, 15%, 94%), hsl(210, 15%, 98%))' }} className="rounded-xl border border-gray-200 shadow-sm p-4 md:p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs md:text-sm font-medium text-muted-foreground mb-1">Low Stock</p>
+                      <p className="text-xl md:text-2xl font-bold text-foreground">
+                        {filteredConsumables.filter(c => c.on_hand_qty <= c.reorder_threshold && c.on_hand_qty > 0).length}
+                      </p>
+                    </div>
+                    <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center shrink-0">
+                      <AlertTriangle className="w-5 h-5 md:w-6 md:h-6 text-white stroke-2" />
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ background: 'linear-gradient(135deg, hsl(210, 15%, 94%), hsl(210, 15%, 98%))' }} className="rounded-xl border border-gray-200 shadow-sm p-4 md:p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs md:text-sm font-medium text-muted-foreground mb-1">Out of Stock</p>
+                      <p className="text-xl md:text-2xl font-bold text-foreground">
+                        {filteredConsumables.filter(c => c.on_hand_qty <= 0).length}
+                      </p>
+                    </div>
+                    <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center shrink-0">
+                      <AlertTriangle className="w-5 h-5 md:w-6 md:h-6 text-white stroke-2" />
+                    </div>
+                  </div>
+                </div>
+              </div>
               <h2 className="text-base md:text-lg font-semibold text-gray-900 mb-4">Inventory</h2>
               
               {isLoading ? (

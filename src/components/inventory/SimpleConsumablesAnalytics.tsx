@@ -188,60 +188,64 @@ export const SimpleConsumablesAnalytics: React.FC<SimpleConsumablesAnalyticsProp
 
   return (
     <div className="space-y-6">
-      {/* Analytics Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div style={{ background: 'linear-gradient(135deg, hsl(210, 15%, 94%), hsl(210, 15%, 98%))' }} className="rounded-lg border border-gray-200 shadow-sm p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground mb-1">Total Items</p>
-              <p className="text-2xl font-bold text-foreground">{totalItems}</p>
-            </div>
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-              <Package className="w-6 h-6 text-white stroke-2" />
-            </div>
-          </div>
-        </div>
-
-        <div style={{ background: 'linear-gradient(135deg, hsl(210, 15%, 94%), hsl(210, 15%, 98%))' }} className="rounded-lg border border-gray-200 shadow-sm p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground mb-1">Total Inventory Value</p>
-              <p className="text-2xl font-bold text-foreground">
-                ${totalValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </p>
-            </div>
-            <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
-              <DollarSign className="w-6 h-6 text-white stroke-2" />
-            </div>
-          </div>
-        </div>
-
-        <div style={{ background: 'linear-gradient(135deg, hsl(210, 15%, 94%), hsl(210, 15%, 98%))' }} className="rounded-lg border border-gray-200 shadow-sm p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground mb-1">Low Stock Alerts</p>
-              <p className="text-2xl font-bold text-foreground">{lowStockItems}</p>
-            </div>
-            <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
-              <AlertTriangle className="w-6 h-6 text-white stroke-2" />
-            </div>
-          </div>
-        </div>
-
-        <div style={{ background: 'linear-gradient(135deg, hsl(210, 15%, 94%), hsl(210, 15%, 98%))' }} className="rounded-lg border border-gray-200 shadow-sm p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground mb-1">Out of Stock</p>
-              <p className="text-2xl font-bold text-foreground">{outOfStockItems}</p>
-            </div>
-            <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center">
-              <AlertTriangle className="w-6 h-6 text-white stroke-2" />
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Analytics Table */}
+      <Card>
+        <CardContent className="p-4 md:p-6 space-y-6">
+          {/* Analytics Summary Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div style={{ background: 'linear-gradient(135deg, hsl(210, 15%, 94%), hsl(210, 15%, 98%))' }} className="rounded-lg border border-gray-200 shadow-sm p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-1">Total Items</p>
+                  <p className="text-2xl font-bold text-foreground">{totalItems}</p>
+                </div>
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                  <Package className="w-6 h-6 text-white stroke-2" />
+                </div>
+              </div>
+            </div>
+
+            <div style={{ background: 'linear-gradient(135deg, hsl(210, 15%, 94%), hsl(210, 15%, 98%))' }} className="rounded-lg border border-gray-200 shadow-sm p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-1">Total Inventory Value</p>
+                  <p className="text-2xl font-bold text-foreground">
+                    ${totalValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </p>
+                </div>
+                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
+                  <DollarSign className="w-6 h-6 text-white stroke-2" />
+                </div>
+              </div>
+            </div>
+
+            <div style={{ background: 'linear-gradient(135deg, hsl(210, 15%, 94%), hsl(210, 15%, 98%))' }} className="rounded-lg border border-gray-200 shadow-sm p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-1">Low Stock Alerts</p>
+                  <p className="text-2xl font-bold text-foreground">{lowStockItems}</p>
+                </div>
+                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
+                  <AlertTriangle className="w-6 h-6 text-white stroke-2" />
+                </div>
+              </div>
+            </div>
+
+            <div style={{ background: 'linear-gradient(135deg, hsl(210, 15%, 94%), hsl(210, 15%, 98%))' }} className="rounded-lg border border-gray-200 shadow-sm p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-1">Out of Stock</p>
+                  <p className="text-2xl font-bold text-foreground">{outOfStockItems}</p>
+                </div>
+                <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center">
+                  <AlertTriangle className="w-6 h-6 text-white stroke-2" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
