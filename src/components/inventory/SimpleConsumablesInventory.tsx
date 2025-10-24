@@ -405,115 +405,6 @@ export const SimpleConsumablesInventory: React.FC = () => {
               </Select>
             </div>
           </div>
-
-          {/* Filters */}
-          <div className="mt-4">
-            {/* Mobile: Collapsible Filters */}
-            <div className="md:hidden">
-              <Collapsible open={filtersOpen} onOpenChange={setFiltersOpen}>
-                <CollapsibleTrigger asChild>
-                  <Button variant="outline" className="w-full justify-between h-12">
-                    <span className="flex items-center gap-2">
-                      <Filter className="w-4 h-4" />
-                      Filters
-                      {activeFilterCount > 0 && (
-                        <Badge className="bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold">
-                          {activeFilterCount}
-                        </Badge>
-                      )}
-                    </span>
-                    {filtersOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                  </Button>
-                </CollapsibleTrigger>
-                <CollapsibleContent className="mt-3 space-y-3">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                    <Input
-                      placeholder="Search by name, SKU..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10 h-12 text-base"
-                    />
-                  </div>
-                  <CategorySelect
-                    value={categoryFilter}
-                    onValueChange={setCategoryFilter}
-                    placeholder="All categories"
-                  />
-                  {activeFilterCount > 0 && (
-                    <Button 
-                      variant="outline" 
-                      onClick={() => {
-                        setSearchTerm('');
-                        setCategoryFilter('');
-                      }}
-                      className="w-full"
-                    >
-                      Clear All Filters
-                    </Button>
-                  )}
-                </CollapsibleContent>
-              </Collapsible>
-            </div>
-
-            {/* Desktop: Inline Filters */}
-            <div className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-3">
-              <div>
-                <label className="block text-sm text-gray-600 mb-1">Search</label>
-                <div className="relative flex gap-2">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                    <Input
-                      placeholder="Search by name, SKU, category..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => setShowBarcodeScanner(true)}
-                    className="shrink-0"
-                    title="Scan barcode to search"
-                  >
-                    <ScanLine className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm text-gray-600 mb-1">Category</label>
-                <div className="flex items-center gap-2">
-                  <div className="w-full">
-                    <CategorySelect
-                      value={categoryFilter}
-                      onValueChange={setCategoryFilter}
-                      placeholder="All categories"
-                    />
-                  </div>
-                  {categoryFilter && (
-                    <Button variant="outline" size="sm" onClick={() => setCategoryFilter('')}>
-                      Clear
-                    </Button>
-                  )}
-                </div>
-              </div>
-              {(searchTerm.trim() || categoryFilter) && (
-                <div className="flex items-end">
-                  <Button 
-                    variant="outline" 
-                    onClick={() => {
-                      setSearchTerm('');
-                      setCategoryFilter('');
-                    }}
-                    className="mb-0"
-                  >
-                    Clear All Filters
-                  </Button>
-                </div>
-              )}
-            </div>
-          </div>
         </div>
 
         {/* Mobile FAB */}
@@ -531,6 +422,114 @@ export const SimpleConsumablesInventory: React.FC = () => {
           <div className="space-y-4 md:space-y-6">
             <div className="bg-white rounded-xl border shadow-sm">
             <div className="p-4 md:p-6 space-y-6">
+              {/* Filters */}
+              <div>
+                {/* Mobile: Collapsible Filters */}
+                <div className="md:hidden">
+                  <Collapsible open={filtersOpen} onOpenChange={setFiltersOpen}>
+                    <CollapsibleTrigger asChild>
+                      <Button variant="outline" className="w-full justify-between h-12">
+                        <span className="flex items-center gap-2">
+                          <Filter className="w-4 h-4" />
+                          Filters
+                          {activeFilterCount > 0 && (
+                            <Badge className="bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold">
+                              {activeFilterCount}
+                            </Badge>
+                          )}
+                        </span>
+                        {filtersOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                      </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="mt-3 space-y-3">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                        <Input
+                          placeholder="Search by name, SKU..."
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                          className="pl-10 h-12 text-base"
+                        />
+                      </div>
+                      <CategorySelect
+                        value={categoryFilter}
+                        onValueChange={setCategoryFilter}
+                        placeholder="All categories"
+                      />
+                      {activeFilterCount > 0 && (
+                        <Button 
+                          variant="outline" 
+                          onClick={() => {
+                            setSearchTerm('');
+                            setCategoryFilter('');
+                          }}
+                          className="w-full"
+                        >
+                          Clear All Filters
+                        </Button>
+                      )}
+                    </CollapsibleContent>
+                  </Collapsible>
+                </div>
+
+                {/* Desktop: Inline Filters */}
+                <div className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-sm text-gray-600 mb-1">Search</label>
+                    <div className="relative flex gap-2">
+                      <div className="relative flex-1">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                        <Input
+                          placeholder="Search by name, SKU, category..."
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                          className="pl-10"
+                        />
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => setShowBarcodeScanner(true)}
+                        className="shrink-0"
+                        title="Scan barcode to search"
+                      >
+                        <ScanLine className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-600 mb-1">Category</label>
+                    <div className="flex items-center gap-2">
+                      <div className="w-full">
+                        <CategorySelect
+                          value={categoryFilter}
+                          onValueChange={setCategoryFilter}
+                          placeholder="All categories"
+                        />
+                      </div>
+                      {categoryFilter && (
+                        <Button variant="outline" size="sm" onClick={() => setCategoryFilter('')}>
+                          Clear
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                  {(searchTerm.trim() || categoryFilter) && (
+                    <div className="flex items-end">
+                      <Button 
+                        variant="outline" 
+                        onClick={() => {
+                          setSearchTerm('');
+                          setCategoryFilter('');
+                        }}
+                        className="mb-0"
+                      >
+                        Clear All Filters
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
               {/* Inventory Summary Cards */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
                 <div style={{ background: 'linear-gradient(135deg, hsl(210, 15%, 94%), hsl(210, 15%, 98%))' }} className="rounded-xl border border-gray-200 shadow-sm p-4 md:p-6">
