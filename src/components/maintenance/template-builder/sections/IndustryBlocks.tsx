@@ -87,7 +87,7 @@ interface IndustryBlockCardProps {
 
 export const IndustryBlockCard: React.FC<IndustryBlockCardProps> = ({ block, onAdd }) => {
   const [isSelected, setIsSelected] = useState(false);
-  const [selectedFeatures, setSelectedFeatures] = useState<string[]>(block.features);
+  const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
 
   const handleCardClick = () => {
     setIsSelected(!isSelected);
@@ -106,7 +106,7 @@ export const IndustryBlockCard: React.FC<IndustryBlockCardProps> = ({ block, onA
     e.stopPropagation();
     onAdd(block.type, selectedFeatures);
     setIsSelected(false);
-    setSelectedFeatures(block.features); // Reset to all features
+    setSelectedFeatures([]); // Reset to empty
   };
 
   return (
