@@ -33,17 +33,6 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
 
           return (
             <li key={step.number} className="relative flex-1">
-              {/* Connector line */}
-              {index < steps.length - 1 && (
-                <div
-                  className={cn(
-                    "absolute top-5 left-1/2 w-full h-0.5 -translate-y-1/2",
-                    isCompleted ? "bg-primary" : "bg-border"
-                  )}
-                  aria-hidden="true"
-                />
-              )}
-
               {/* Step button */}
               <button
                 onClick={() => isClickable && onStepClick(step.number as BuilderStep)}
