@@ -15,8 +15,7 @@ import {
   Bell, 
   DollarSign,
   ChevronDown,
-  Building2,
-  ShieldCheck
+  Building2
 } from "lucide-react";
 import { CompanySettingsSection } from "@/components/settings/CompanySettingsSection";
 import { LogoManagementSection } from "@/components/settings/LogoManagementSection";
@@ -24,16 +23,13 @@ import { BusinessHoursSection } from "@/components/settings/BusinessHoursSection
 import { UserManagementSection } from "@/components/settings/UserManagementSection";
 import { NotificationPreferencesSection } from "@/components/settings/NotificationPreferencesSection";
 import { PricingRulesSection } from "@/components/settings/PricingRulesSection";
-
-import { SanitationComplianceSettings } from "@/components/settings/SanitationComplianceSettings";
 import { useUserRole } from "@/hooks/useUserRole";
 
 type SettingsSection = 
   | 'company'
   | 'business-hours' 
   | 'notifications' 
-  | 'pricing-rules'
-  | 'sanitation-compliance';
+  | 'pricing-rules';
 
 export default function Settings() {
   const { hasAdminAccess } = useUserRole();
@@ -55,7 +51,6 @@ export default function Settings() {
     { key: 'notifications' as const, label: 'Notifications', icon: Bell },
     { key: 'pricing-rules' as const, label: 'Pricing Rules', icon: DollarSign },
     { key: 'business-hours' as const, label: 'Business Hours', icon: Clock },
-    { key: 'sanitation-compliance' as const, label: 'Sanitation & Compliance', icon: ShieldCheck },
   ];
 
   const currentSection = settingsSections.find(section => section.key === activeSection);
@@ -75,8 +70,6 @@ export default function Settings() {
         return <NotificationPreferencesSection />;
       case 'pricing-rules':
         return <PricingRulesSection />;
-      case 'sanitation-compliance':
-        return <SanitationComplianceSettings />;
       default:
         return null;
     }
