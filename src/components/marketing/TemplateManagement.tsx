@@ -311,69 +311,67 @@ export const TemplateManagement: React.FC = () => {
       {/* Divider */}
       <div className="border-t" />
 
-      {/* Templates Display - Organized by Type and Source */}
+      {/* Templates Display - Organized by Type */}
       <div className="space-y-6">
         {/* Email Templates */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-3 bg-white border border-gray-200 p-4 rounded-lg">
-            <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-              <Mail className="w-5 h-5 text-gray-900" />
-              Email Templates
-            </h2>
-            <span className="text-xs text-gray-600">System generated templates cannot be edited or deleted.</span>
-          </div>
-          
-          {/* Email User Templates */}
-          {sourceFilter === 'user' && renderCollapsibleSection(
-            "User Created",
-            <Badge variant="info" className="text-xs">User</Badge>,
-            emailUser,
-            emailUserExpanded,
-            setEmailUserExpanded
-          )}
-          
-          {/* Email System Templates */}
-          {sourceFilter === 'system' && (
-            renderCollapsibleSection(
-              "System Generated",
-              <Badge variant="default" className="text-xs">System</Badge>,
-              emailSystem,
-              emailSystemExpanded,
-              setEmailSystemExpanded
-            )
-          )}
-        </div>
+        <Collapsible open={emailUserExpanded} onOpenChange={setEmailUserExpanded}>
+          <CollapsibleTrigger asChild>
+            <Button variant="ghost" className="w-full justify-between p-4 h-auto bg-white border border-gray-200 hover:bg-gray-50 rounded-lg">
+              <div className="flex items-center gap-3">
+                <Mail className="w-5 h-5 text-gray-900" />
+                <span className="text-xl font-semibold text-gray-900">Email Templates</span>
+                <Badge variant="secondary" className="ml-2">
+                  {sourceFilter === 'user' ? emailUser.length : emailSystem.length}
+                </Badge>
+                <span className="text-xs text-gray-600">System generated templates cannot be edited or deleted.</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-500">expand / collapse</span>
+                {emailUserExpanded ? <ChevronUp className="h-4 w-4 text-gray-600" /> : <ChevronDown className="h-4 w-4 text-gray-600" />}
+              </div>
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="space-y-2 mt-4">
+            {sourceFilter === 'user' && emailUser.length === 0 && (
+              <p className="text-sm text-gray-500 text-center py-8">No user email templates found</p>
+            )}
+            {sourceFilter === 'system' && emailSystem.length === 0 && (
+              <p className="text-sm text-gray-500 text-center py-8">No system email templates found</p>
+            )}
+            {sourceFilter === 'user' && emailUser.map(renderTemplateItem)}
+            {sourceFilter === 'system' && emailSystem.map(renderTemplateItem)}
+          </CollapsibleContent>
+        </Collapsible>
 
         {/* SMS Templates */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-3 bg-white border border-gray-200 p-4 rounded-lg">
-            <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-gray-900" />
-              SMS Templates
-            </h2>
-            <span className="text-xs text-gray-600">System generated templates cannot be edited or deleted.</span>
-          </div>
-          
-          {/* SMS User Templates */}
-          {sourceFilter === 'user' && renderCollapsibleSection(
-            "User Created",
-            <Badge variant="info" className="text-xs">User</Badge>,
-            smsUser,
-            smsUserExpanded,
-            setSmsUserExpanded
-          )}
-          
-          {/* SMS System Templates */}
-          {sourceFilter === 'system' && (
-            renderCollapsibleSection(
-              "System Generated", 
-              <Badge variant="default" className="text-xs">System</Badge>,
-              smsSystem,
-              smsSystemExpanded,
-              setSmsSystemExpanded
-            )
-          )}
-        </div>
+        <Collapsible open={smsUserExpanded} onOpenChange={setSmsUserExpanded}>
+          <CollapsibleTrigger asChild>
+            <Button variant="ghost" className="w-full justify-between p-4 h-auto bg-white border border-gray-200 hover:bg-gray-50 rounded-lg">
+              <div className="flex items-center gap-3">
+                <MessageSquare className="w-5 h-5 text-gray-900" />
+                <span className="text-xl font-semibold text-gray-900">SMS Templates</span>
+                <Badge variant="secondary" className="ml-2">
+                  {sourceFilter === 'user' ? smsUser.length : smsSystem.length}
+                </Badge>
+                <span className="text-xs text-gray-600">System generated templates cannot be edited or deleted.</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-500">expand / collapse</span>
+                {smsUserExpanded ? <ChevronUp className="h-4 w-4 text-gray-600" /> : <ChevronDown className="h-4 w-4 text-gray-600" />}
+              </div>
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="space-y-2 mt-4">
+            {sourceFilter === 'user' && smsUser.length === 0 && (
+              <p className="text-sm text-gray-500 text-center py-8">No user SMS templates found</p>
+            )}
+            {sourceFilter === 'system' && smsSystem.length === 0 && (
+              <p className="text-sm text-gray-500 text-center py-8">No system SMS templates found</p>
+            )}
+            {sourceFilter === 'user' && smsUser.map(renderTemplateItem)}
+            {sourceFilter === 'system' && smsSystem.map(renderTemplateItem)}
+          </CollapsibleContent>
+        </Collapsible>
       </div>
       </div>
 
