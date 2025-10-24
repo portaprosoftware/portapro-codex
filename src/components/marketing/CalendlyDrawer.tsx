@@ -79,7 +79,7 @@ export function CalendlyDrawer({ open, onOpenChange }: CalendlyDrawerProps) {
         <div className="w-full h-[calc(100%-64px)]">
           <div
             ref={containerRef}
-            className="w-full"
+            className="w-full h-full"
             style={{ minWidth: '320px', height: '100%' }}
           />
         </div>
