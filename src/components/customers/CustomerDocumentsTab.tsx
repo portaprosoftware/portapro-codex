@@ -219,13 +219,12 @@ export const CustomerDocumentsTab: React.FC<CustomerDocumentsTabProps> = ({ cust
                           const f = e.target.files?.[0];
                           if (f) {
                             setSelectedFile(f);
-                            onUpload(f);
                           }
                         }}
                         disabled={uploading}
                       />
                       
-                      {selectedFile && !uploading ? (
+                      {selectedFile ? (
                         <div className="flex items-center gap-2 p-3 rounded-lg border bg-muted/50">
                           <FileText className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                           <span className="text-sm flex-1 truncate">{selectedFile.name}</span>
@@ -237,6 +236,7 @@ export const CustomerDocumentsTab: React.FC<CustomerDocumentsTabProps> = ({ cust
                               setSelectedFile(null);
                               if (fileRef.current) fileRef.current.value = '';
                             }}
+                            disabled={uploading}
                           >
                             <X className="h-4 w-4" />
                           </Button>
@@ -246,16 +246,28 @@ export const CustomerDocumentsTab: React.FC<CustomerDocumentsTabProps> = ({ cust
                           type="button"
                           onClick={() => fileRef.current?.click()}
                           disabled={uploading}
-                          className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
+                          variant="outline"
+                          className="w-full"
                         >
                           <Upload className="w-4 h-4 mr-2" />
-                          {uploading ? 'Uploading...' : 'Choose File & Upload'}
+                          Choose File
                         </Button>
                       )}
                       
                       <p className="text-xs text-muted-foreground">
                         Supported: PDF, JPG, PNG, DOC, DOCX (max ~10MB recommended)
                       </p>
+
+                      {selectedFile && (
+                        <Button
+                          onClick={() => selectedFile && onUpload(selectedFile)}
+                          disabled={uploading || !selectedFile}
+                          className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
+                        >
+                          <Upload className="w-4 h-4 mr-2" />
+                          {uploading ? 'Uploading...' : 'Upload Document'}
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </DialogContent>
