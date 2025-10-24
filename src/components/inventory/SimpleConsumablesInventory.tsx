@@ -776,7 +776,7 @@ export const SimpleConsumablesInventory: React.FC = () => {
                            </div>
                          </TableHead>
                         <TableHead className="hidden md:table-cell">Locations</TableHead>
-                        <TableHead className="w-16">Actions</TableHead>
+                        <TableHead className="w-16"></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
