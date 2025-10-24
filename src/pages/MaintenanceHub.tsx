@@ -77,20 +77,20 @@ export default function MaintenanceHub() {
             <div className="enterprise-tabs">
               <TabNav ariaLabel="Services views">
                 <TabNav.Item 
-                  to="/maintenance-hub?tab=catalog" 
-                  isActive={activeTab === 'catalog'}
-                  onClick={() => setActiveTab('catalog')}
-                >
-                  <ClipboardList className="h-4 w-4" />
-                  Service Catalog
-                </TabNav.Item>
-                <TabNav.Item 
                   to="/maintenance-hub?tab=records" 
                   isActive={activeTab === 'records'}
                   onClick={() => setActiveTab('records')}
                 >
                   <CheckCircle className="h-4 w-4" />
                   Completed Records & Reports
+                </TabNav.Item>
+                <TabNav.Item 
+                  to="/maintenance-hub?tab=catalog" 
+                  isActive={activeTab === 'catalog'}
+                  onClick={() => setActiveTab('catalog')}
+                >
+                  <ClipboardList className="h-4 w-4" />
+                  Service Catalog
                 </TabNav.Item>
                 <TabNav.Item 
                   to="/maintenance-hub?tab=templates" 
@@ -128,20 +128,6 @@ export default function MaintenanceHub() {
                 </SheetHeader>
                 <div className="mt-6 space-y-2">
                   <button
-                    onClick={() => handleTabChange('catalog')}
-                    className={cn(
-                      "w-full flex items-center justify-between px-4 py-3 rounded-lg text-left transition-all min-h-[56px]",
-                      activeTab === 'catalog'
-                        ? "bg-primary text-primary-foreground font-semibold"
-                        : "hover:bg-muted text-foreground"
-                    )}
-                  >
-                    <div className="flex items-center gap-3">
-                      <ClipboardList className="h-5 w-5" />
-                      <span className="text-base">Service Catalog</span>
-                    </div>
-                  </button>
-                  <button
                     onClick={() => handleTabChange('records')}
                     className={cn(
                       "w-full flex items-center justify-between px-4 py-3 rounded-lg text-left transition-all min-h-[56px]",
@@ -153,6 +139,20 @@ export default function MaintenanceHub() {
                     <div className="flex items-center gap-3">
                       <CheckCircle className="h-5 w-5" />
                       <span className="text-base">Completed Records & Reports</span>
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => handleTabChange('catalog')}
+                    className={cn(
+                      "w-full flex items-center justify-between px-4 py-3 rounded-lg text-left transition-all min-h-[56px]",
+                      activeTab === 'catalog'
+                        ? "bg-primary text-primary-foreground font-semibold"
+                        : "hover:bg-muted text-foreground"
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <ClipboardList className="h-5 w-5" />
+                      <span className="text-base">Service Catalog</span>
                     </div>
                   </button>
                   <button
