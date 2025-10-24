@@ -45,41 +45,41 @@ export function DepositAnalyticsCard({ dateRange }: DepositAnalyticsCardProps) {
       <div className="space-y-6">
         {/* Summary Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-4 rounded-lg bg-gradient-to-br from-green-50 to-green-100 border border-green-200">
+          <div className="p-4 rounded-lg bg-gradient-to-br from-green-500 to-green-600 border-0">
             <div className="flex items-center gap-2 mb-2">
-              <CheckCircle className="h-4 w-4 text-green-700" />
-              <p className="text-sm font-medium text-green-900">Collected</p>
+              <CheckCircle className="h-4 w-4 text-white" />
+              <p className="text-sm font-bold text-white">Collected</p>
             </div>
-            <p className="text-2xl font-bold text-green-700">
+            <p className="text-2xl font-bold text-white">
               ${metrics.total_deposits_collected.toFixed(2)}
             </p>
-            <p className="text-xs text-green-600 mt-1">
+            <p className="text-xs text-white mt-1">
               {breakdown.find(b => b.status === 'paid')?.count || 0} deposits
             </p>
           </div>
 
-          <div className="p-4 rounded-lg bg-gradient-to-br from-yellow-50 to-yellow-100 border border-yellow-200">
+          <div className="p-4 rounded-lg bg-gradient-to-br from-yellow-500 to-yellow-600 border-0">
             <div className="flex items-center gap-2 mb-2">
-              <AlertCircle className="h-4 w-4 text-yellow-700" />
-              <p className="text-sm font-medium text-yellow-900">Pending</p>
+              <AlertCircle className="h-4 w-4 text-white" />
+              <p className="text-sm font-bold text-white">Pending</p>
             </div>
-            <p className="text-2xl font-bold text-yellow-700">
+            <p className="text-2xl font-bold text-white">
               ${metrics.total_deposits_pending.toFixed(2)}
             </p>
-            <p className="text-xs text-yellow-600 mt-1">
+            <p className="text-xs text-white mt-1">
               {breakdown.find(b => b.status === 'pending')?.count || 0} deposits
             </p>
           </div>
 
-          <div className="p-4 rounded-lg bg-gradient-to-br from-red-50 to-red-100 border border-red-200">
+          <div className="p-4 rounded-lg bg-gradient-to-br from-red-500 to-red-600 border-0">
             <div className="flex items-center gap-2 mb-2">
-              <AlertCircle className="h-4 w-4 text-red-700" />
-              <p className="text-sm font-medium text-red-900">Overdue</p>
+              <AlertCircle className="h-4 w-4 text-white" />
+              <p className="text-sm font-bold text-white">Overdue</p>
             </div>
-            <p className="text-2xl font-bold text-red-700">
+            <p className="text-2xl font-bold text-white">
               ${metrics.total_deposits_overdue.toFixed(2)}
             </p>
-            <p className="text-xs text-red-600 mt-1">
+            <p className="text-xs text-white mt-1">
               {breakdown.find(b => b.status === 'overdue')?.count || 0} deposits
             </p>
           </div>
