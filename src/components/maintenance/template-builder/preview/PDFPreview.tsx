@@ -19,8 +19,8 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({ template }) => {
           <div className="border-b-4 border-primary p-6 bg-gradient-to-r from-primary/5 to-primary/10">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-2xl font-bold text-foreground">PortaPro</h1>
-                <p className="text-sm text-muted-foreground">Powering Portable Sanitation</p>
+                <h1 className="text-2xl font-bold text-foreground">Company Name & Logo</h1>
+                <p className="text-sm text-muted-foreground">Your Company Tagline Here</p>
               </div>
               <Badge className="bg-gradient-to-r from-primary to-primary/80 text-white capitalize">
                 {template.template_type || 'Service'} Report
