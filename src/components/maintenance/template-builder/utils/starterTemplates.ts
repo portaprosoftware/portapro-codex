@@ -1,4 +1,5 @@
 import { EnhancedTemplate } from '../types';
+import { DEFAULT_PERMISSIONS } from '../steps/permissions/defaultPermissions';
 
 export const starterTemplates: EnhancedTemplate[] = [
   {
@@ -86,8 +87,7 @@ export const starterTemplates: EnhancedTemplate[] = [
       fee_suggestions: [],
     },
     permissions: {
-      tech_editable_fields: ['*'],
-      office_editable_fields: ['*', 'fees', 'notes'],
+      ...DEFAULT_PERMISSIONS,
       internal_only_fields: ['gps', 'timestamp'],
     },
     output_config: {
@@ -133,11 +133,7 @@ export const starterTemplates: EnhancedTemplate[] = [
       default_values: {},
       fee_suggestions: [],
     },
-    permissions: {
-      tech_editable_fields: ['*'],
-      office_editable_fields: ['*'],
-      internal_only_fields: [],
-    },
+    permissions: DEFAULT_PERMISSIONS,
     output_config: {
       pdf_layout: 'summary_first',
       customer_pdf_fields: ['*'],
@@ -180,11 +176,7 @@ export const starterTemplates: EnhancedTemplate[] = [
       default_values: {},
       fee_suggestions: [],
     },
-    permissions: {
-      tech_editable_fields: ['*'],
-      office_editable_fields: ['*'],
-      internal_only_fields: [],
-    },
+    permissions: DEFAULT_PERMISSIONS,
     output_config: {
       pdf_layout: 'summary_first',
       customer_pdf_fields: ['*'],
@@ -223,11 +215,7 @@ export const starterTemplates: EnhancedTemplate[] = [
       default_values: {},
       fee_suggestions: [],
     },
-    permissions: {
-      tech_editable_fields: ['*'],
-      office_editable_fields: ['*'],
-      internal_only_fields: [],
-    },
+    permissions: DEFAULT_PERMISSIONS,
     output_config: {
       pdf_layout: 'summary_first',
       customer_pdf_fields: ['*'],
@@ -266,11 +254,7 @@ export const starterTemplates: EnhancedTemplate[] = [
       default_values: {},
       fee_suggestions: [],
     },
-    permissions: {
-      tech_editable_fields: ['*'],
-      office_editable_fields: ['*'],
-      internal_only_fields: [],
-    },
+    permissions: DEFAULT_PERMISSIONS,
     output_config: {
       pdf_layout: 'summary_first',
       customer_pdf_fields: ['issue_codes', 'resolution', 'photos'],
@@ -311,11 +295,7 @@ export const starterTemplates: EnhancedTemplate[] = [
       default_values: {},
       fee_suggestions: [],
     },
-    permissions: {
-      tech_editable_fields: ['*'],
-      office_editable_fields: ['*'],
-      internal_only_fields: [],
-    },
+    permissions: DEFAULT_PERMISSIONS,
     output_config: {
       pdf_layout: 'summary_first',
       customer_pdf_fields: ['*'],

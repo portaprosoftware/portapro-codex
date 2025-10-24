@@ -14,6 +14,7 @@ import { ReviewStep } from './steps/ReviewStep';
 import { PreviewModal } from './PreviewModal';
 import { industryBlocks } from './sections/IndustryBlocks';
 import { genericBlocks } from './sections/GenericBlocks';
+import { DEFAULT_PERMISSIONS } from './steps/permissions/defaultPermissions';
 
 interface BottomSheetWizardProps {
   isOpen: boolean;
@@ -45,11 +46,7 @@ export const BottomSheetWizard: React.FC<BottomSheetWizardProps> = ({
     default_values: {},
     fee_suggestions: [],
   });
-  const [permissions, setPermissions] = useState<Permissions>({
-    tech_editable_fields: ['*'],
-    office_editable_fields: ['*'],
-    internal_only_fields: [],
-  });
+  const [permissions, setPermissions] = useState<Permissions>(DEFAULT_PERMISSIONS);
   const [outputConfig, setOutputConfig] = useState<OutputConfig>({
     pdf_layout: 'summary_first',
     customer_pdf_fields: [],
@@ -159,7 +156,7 @@ export const BottomSheetWizard: React.FC<BottomSheetWizardProps> = ({
     setTemplateType('service');
     setSections([]);
     setLogicRules({ per_unit_loop: false, auto_requirements: [], default_values: {}, fee_suggestions: [] });
-    setPermissions({ tech_editable_fields: ['*'], office_editable_fields: ['*'], internal_only_fields: [] });
+    setPermissions(DEFAULT_PERMISSIONS);
     setOutputConfig({ pdf_layout: 'summary_first', customer_pdf_fields: [], internal_pdf_fields: [], photo_grid_columns: 2, watermark: '', show_brand_header: true });
     setVersion('1.0');
     setIsDefaultForType(false);

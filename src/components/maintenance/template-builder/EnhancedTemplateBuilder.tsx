@@ -11,6 +11,7 @@ import { PermissionsStep } from './steps/PermissionsStep';
 import { OutputStep } from './steps/OutputStep';
 import { ReviewStep } from './steps/ReviewStep';
 import { PreviewPanel } from './preview/PreviewPanel';
+import { DEFAULT_PERMISSIONS } from './steps/permissions/defaultPermissions';
 
 interface EnhancedTemplateBuilderProps {
   isOpen: boolean;
@@ -40,11 +41,7 @@ export const EnhancedTemplateBuilder: React.FC<EnhancedTemplateBuilderProps> = (
     default_values: {},
     fee_suggestions: [],
   });
-  const [permissions, setPermissions] = useState(initialTemplate?.permissions || {
-    tech_editable_fields: ['*'],
-    office_editable_fields: ['*'],
-    internal_only_fields: [],
-  });
+  const [permissions, setPermissions] = useState(initialTemplate?.permissions || DEFAULT_PERMISSIONS);
   const [outputConfig, setOutputConfig] = useState(initialTemplate?.output_config || {
     pdf_layout: 'summary_first' as const,
     customer_pdf_fields: [],

@@ -140,9 +140,41 @@ export interface LogicRules {
 }
 
 export interface Permissions {
+  // Field editing permissions
   tech_editable_fields: string[];
   office_editable_fields: string[];
   internal_only_fields: string[];
+  
+  // Fee permissions
+  fee_permissions: {
+    tech_can_see_suggestions: boolean;
+    tech_can_add_remove_fees: boolean;
+    tech_can_edit_amounts: boolean;
+    office_can_edit_amounts: boolean;
+    require_note_on_fee_removal: boolean;
+  };
+  
+  // Report stage permissions
+  stage_permissions: {
+    lock_after_submit: boolean;
+    office_can_edit_submitted: boolean;
+    lock_after_customer_send: boolean;
+    admin_can_reopen: boolean;
+  };
+  
+  // Photo permissions
+  photo_permissions: {
+    allow_internal_only_photos: boolean;
+    office_can_hide_photos: boolean;
+    log_photo_redactions: boolean;
+  };
+  
+  // Delete/void permissions
+  delete_void_permissions: {
+    admin_can_delete: boolean;
+    office_can_void: boolean;
+    require_deletion_reason: boolean;
+  };
 }
 
 export interface OutputConfig {
