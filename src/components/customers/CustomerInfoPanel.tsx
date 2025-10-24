@@ -359,9 +359,9 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
               Company Default
             </Badge>
             
-            <span className="text-lg sm:text-xl font-semibold ml-auto">
+            <Badge className="px-3 py-1.5 rounded-full text-lg font-bold bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 ml-auto">
               {customer.custom_deposit_percentage ?? companySettings?.default_deposit_percentage ?? 25}%
-            </span>
+            </Badge>
           </div>
           
           <p className="text-xs text-muted-foreground">
