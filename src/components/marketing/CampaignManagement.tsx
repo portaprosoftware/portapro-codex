@@ -37,9 +37,9 @@ export const CampaignManagement: React.FC = () => {
   };
 
   return (
-    <div className="space-y-4 md:space-y-6">
+    <div className="space-y-6">
       {/* Campaign Creation Card */}
-      <div className="bg-white rounded-2xl border shadow-sm p-4 md:p-6">
+      <div className="bg-white rounded-xl border shadow-sm p-4 md:p-6">
         <div className="flex flex-col gap-4">
           <div>
             <h2 className="text-lg font-semibold text-gray-900 font-inter">Create Campaign</h2>
@@ -83,7 +83,7 @@ export const CampaignManagement: React.FC = () => {
       </div>
 
       {/* Campaign Analytics */}
-      <div className="bg-white rounded-2xl border shadow-sm p-4 md:p-6">
+      <div className="bg-white rounded-xl border shadow-sm p-4 md:p-6">
         <h2 className="text-lg font-semibold text-gray-900 font-inter mb-4">Campaign Performance</h2>
         <CampaignAnalytics />
       </div>
@@ -145,7 +145,7 @@ const CustomerTypesOverview: React.FC = () => {
   };
 
   return (
-    <div className="bg-white rounded-2xl border shadow-sm p-4 md:p-6">
+    <div className="bg-white rounded-xl border shadow-sm p-4 md:p-6">
       <h2 className="text-lg font-semibold text-gray-900 font-inter mb-4">Customer Types</h2>
       <div className="flex flex-wrap gap-3">
         {customerTypes.map((type) => (
