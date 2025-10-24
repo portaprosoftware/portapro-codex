@@ -218,12 +218,6 @@ export const BottomSheetWizard: React.FC<BottomSheetWizardProps> = ({
               <Eye className="w-4 h-4" />
               Live Preview
             </Button>
-            <Button 
-              onClick={handlePublish} 
-              disabled={!canPublish()}
-            >
-              Publish Template
-            </Button>
             <Button
               variant="ghost"
               size="icon"
@@ -315,13 +309,22 @@ export const BottomSheetWizard: React.FC<BottomSheetWizardProps> = ({
               <ChevronLeft className="h-4 w-4 mr-1" />
               Back
             </Button>
-            <Button
-              onClick={handleNext}
-              disabled={!canGoNext() || currentStep === 6}
-            >
-              Next
-              <ChevronRight className="h-4 w-4 ml-1" />
-            </Button>
+            {currentStep === 6 ? (
+              <Button
+                onClick={handlePublish}
+                disabled={!canPublish()}
+              >
+                Publish Template
+              </Button>
+            ) : (
+              <Button
+                onClick={handleNext}
+                disabled={!canGoNext()}
+              >
+                Next
+                <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
+            )}
           </div>
         </div>
       </SheetContent>
