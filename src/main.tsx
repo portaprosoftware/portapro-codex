@@ -9,20 +9,12 @@ import "./utils/devUtils.ts"; // Load dev utilities
 import { clearClerkCache } from "./utils/authCleanup";
 import { clearAllCaches } from "./utils/devUtils";
 import { Toaster } from "@/components/ui/sonner";
+import { env } from "./env.client";
 
 // -----------------------------------------------------------------------------
 // Environment (Vite): read ONLY from env; no host-based dev/prod switching
 // -----------------------------------------------------------------------------
-const CLERK_PUBLISHABLE_KEY =
-  import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ||
-  // optional fallback if you also deploy with NEXT_PUBLIC_* somewhere
-  (import.meta.env as any).NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
-
-if (!CLERK_PUBLISHABLE_KEY) {
-  throw new Error(
-    "❌ Missing Clerk publishable key. Set VITE_CLERK_PUBLISHABLE_KEY in your environment."
-  );
-}
+const CLERK_PUBLISHABLE_KEY = env.CLERK_PUBLISHABLE_KEY;
 
 // Gentle guard to avoid accidentally shipping a test key
 if (CLERK_PUBLISHABLE_KEY.startsWith("pk_test_")) {
@@ -35,7 +27,7 @@ if (CLERK_PUBLISHABLE_KEY.startsWith("pk_test_")) {
 // -----------------------------------------------------------------------------
 // React Query client
 // -----------------------------------------------------------------------------
-const isDevelopment = import.meta.env.DEV;
+const isDevelopment = env.isDev;
 
 const queryClient = new QueryClient({
   defaultOptions: {

@@ -9,26 +9,10 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
+  
   plugins: [
     react(),
     mode === "development" && componentTagger(),
-    // PWA temporarily disabled until proper icons are added to /public
-    // VitePWA({
-    //   registerType: 'autoUpdate',
-    //   includeAssets: ['favicon.png', 'apple-touch-icon.png', 'robots.txt'],
-    //   manifest: {
-    //     name: 'PortaPro Software',
-    //     short_name: 'PortaPro',
-    //     description: 'Powering Portable Sanitation',
-    //     theme_color: '#ffffff',
-    //     background_color: '#ffffff',
-    //     display: 'standalone',
-    //     orientation: 'portrait',
-    //     scope: '/',
-    //     start_url: '/',
-    //     icons: []
-    //   }
-    // })
   ].filter(Boolean),
 
   resolve: {
@@ -37,9 +21,49 @@ export default defineConfig(({ mode }) => ({
     },
   },
 
-  dedupe: ["react", "react-dom"],
+  build: {
+    sourcemap: false,
+    target: 'es2022',
+    chunkSizeWarningLimit: 2000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Core React
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          
+          // UI framework (Radix)
+          'ui-primitives': [
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-popover',
+            '@radix-ui/react-select',
+            '@radix-ui/react-tabs',
+            '@radix-ui/react-toast',
+          ],
+          
+          // Auth
+          'clerk': ['@clerk/clerk-react'],
+          
+          // Data & Query
+          'data-vendor': ['@tanstack/react-query', '@supabase/supabase-js'],
+          
+          // Note: PDF, maps, charts are dynamically imported - no manual chunk needed
+        },
+      },
+    },
+  },
 
   optimizeDeps: {
-    include: ["react", "react-dom"],
+    include: ['react', 'react-dom', '@clerk/clerk-react'],
+    exclude: [
+      // Heavy libraries that MUST be dynamically imported
+      'jspdf',
+      'jspdf-autotable',
+      'html2canvas',
+      'mapbox-gl',
+      'recharts',
+    ],
   },
+
+  dedupe: ['react', 'react-dom'],
 }));

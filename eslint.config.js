@@ -24,6 +24,32 @@ export default tseslint.config(
         { allowConstantExport: true },
       ],
       "@typescript-eslint/no-unused-vars": "off",
+      
+      // Prevent static imports of heavy libraries
+      "no-restricted-imports": ["error", {
+        "paths": [
+          {
+            "name": "jspdf",
+            "message": "❌ Use loadPdfLibs() from @/lib/loaders/pdf instead"
+          },
+          {
+            "name": "jspdf-autotable",
+            "message": "❌ Use loadPdfLibs() from @/lib/loaders/pdf instead"
+          },
+          {
+            "name": "html2canvas",
+            "message": "❌ Use loadPdfLibs() from @/lib/loaders/pdf instead"
+          },
+          {
+            "name": "mapbox-gl",
+            "message": "❌ Use loadMapboxLibs() from @/lib/loaders/map instead"
+          },
+          {
+            "name": "recharts",
+            "message": "❌ Use loadChartsLibs() from @/lib/loaders/charts instead"
+          }
+        ]
+      }]
     },
   }
 );
