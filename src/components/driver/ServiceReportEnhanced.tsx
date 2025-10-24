@@ -9,12 +9,14 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Camera, PenTool, Save, Send, ChevronLeft, ChevronRight, FileText, Wifi, WifiOff } from 'lucide-react';
+import { Camera, PenTool, Save, Send, ChevronLeft, ChevronRight, FileText, Wifi, WifiOff, CloudOff } from 'lucide-react';
 import { PhotoCapture } from './PhotoCapture';
 import { SignatureCapture } from './SignatureCapture';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useUser } from '@clerk/clerk-react';
+import { useEnhancedOffline } from '@/hooks/useEnhancedOffline';
+import { saveDraftReport, getDraftReport, savePendingReport } from '@/lib/serviceReportDB';
 
 interface FormField {
   id: string;
@@ -46,12 +48,12 @@ export const ServiceReportEnhanced: React.FC<ServiceReportEnhancedProps> = ({
   onComplete
 }) => {
   const { user } = useUser();
+  const { isOnline, addOfflineData, queueCount, isSyncing } = useEnhancedOffline();
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [sections, setSections] = useState<FormSection[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [completionPercentage, setCompletionPercentage] = useState(0);
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [isDirty, setIsDirty] = useState(false);
   
   // Photo/Signature capture states
@@ -59,6 +61,8 @@ export const ServiceReportEnhanced: React.FC<ServiceReportEnhancedProps> = ({
   const [showSignatureCapture, setShowSignatureCapture] = useState(false);
   const [currentFieldId, setCurrentFieldId] = useState<string>('');
   const [autoSaveTimer, setAutoSaveTimer] = useState<NodeJS.Timeout | null>(null);
+  const [photosData, setPhotosData] = useState<Array<{ fieldId: string; dataUrl: string }>>([]);
+  const [signaturesData, setSignaturesData] = useState<Array<{ fieldId: string; dataUrl: string }>>([]);
 
   // Sanitation feature gating
   const [sanitationEnabled, setSanitationEnabled] = useState(false);
@@ -68,19 +72,25 @@ export const ServiceReportEnhanced: React.FC<ServiceReportEnhancedProps> = ({
     // Initialize form based on templates
     initializeForm();
     
-    // Setup online/offline detection
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
+    // Load draft from IndexedDB if exists
+    const loadDraft = async () => {
+      const draft = await getDraftReport(jobId);
+      if (draft && draft.formData) {
+        setFormData(draft.formData);
+        if (draft.photos) setPhotosData(draft.photos);
+        if (draft.signatures) setSignaturesData(draft.signatures);
+        toast.info('Draft loaded');
+      }
+    };
     
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
+    if (open) {
+      loadDraft();
+    }
     
     return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
       if (autoSaveTimer) clearTimeout(autoSaveTimer);
     };
-  }, [templates, open]);
+  }, [templates, open, jobId]);
 
   useEffect(() => {
     calculateCompletionPercentage();
@@ -184,21 +194,20 @@ export const ServiceReportEnhanced: React.FC<ServiceReportEnhancedProps> = ({
   };
 
   const autoSave = async () => {
-    if (!isOnline) {
-      // Save to localStorage for offline support
-      localStorage.setItem(`draft_report_${jobId}`, JSON.stringify({
+    try {
+      await saveDraftReport({
+        id: jobId,
+        jobId,
+        templateId: templates[0]?.id || '',
         formData,
-        timestamp: new Date().toISOString()
-      }));
-      toast.info('Draft saved offline');
-    } else {
-      // Save to database
-      try {
-        // Simplified auto-save for demo
-        toast.success('Draft auto-saved');
-      } catch (error) {
-        console.error('Auto-save failed:', error);
-      }
+        photos: photosData,
+        signatures: signaturesData,
+        status: 'draft',
+        timestamp: new Date().toISOString(),
+      });
+      toast.info('Draft saved');
+    } catch (error) {
+      console.error('Auto-save failed:', error);
     }
     setIsDirty(false);
   };
@@ -220,12 +229,14 @@ export const ServiceReportEnhanced: React.FC<ServiceReportEnhancedProps> = ({
 
   const onPhotoComplete = (photoUrl: string) => {
     updateFieldValue(currentFieldId, photoUrl);
+    setPhotosData(prev => [...prev, { fieldId: currentFieldId, dataUrl: photoUrl }]);
     setShowPhotoCapture(false);
     setCurrentFieldId('');
   };
 
   const onSignatureComplete = (signatureUrl: string) => {
     updateFieldValue(currentFieldId, signatureUrl);
+    setSignaturesData(prev => [...prev, { fieldId: currentFieldId, dataUrl: signatureUrl }]);
     setShowSignatureCapture(false);
     setCurrentFieldId('');
   };
@@ -263,11 +274,86 @@ export const ServiceReportEnhanced: React.FC<ServiceReportEnhancedProps> = ({
     setIsSubmitting(true);
     
     try {
-      // Generate report number
-      const reportNumber = `RPT-${Date.now()}`;
-      console.log('Report completed:', reportNumber, formData);
+      if (!isOnline) {
+        // Queue for offline sync
+        const sanitationData = sanitationEnabled ? {
+          responses: {
+            sanitized_with_approved_chemicals: !!formData.sanitation_sanitized,
+            toilet_paper_stocked: !!formData.sanitation_tp_stocked,
+            hand_sanitizer_refilled: !!formData.sanitation_hs_refilled,
+            ventilation_clear: !!formData.sanitation_vent_clear,
+            no_visible_biohazards: !!formData.sanitation_no_biohazards,
+          },
+          photos: formData.sanitation_photo ? [formData.sanitation_photo] : [],
+          notes: formData.sanitation_notes || '',
+        } : null;
 
-      // 1) Save sanitation log if enabled
+        await savePendingReport({
+          id: jobId,
+          jobId,
+          templateId: templates[0]?.id || '',
+          formData,
+          photos: photosData,
+          signatures: signaturesData,
+          status: 'pending',
+          timestamp: new Date().toISOString(),
+        });
+
+        addOfflineData('service_report', {
+          jobId,
+          templateId: templates[0]?.id || '',
+          formData,
+          photos: photosData,
+          signatures: signaturesData,
+          sanitationEnabled,
+          sanitationChecklistId,
+          sanitationData,
+        }, user?.id || '');
+
+        toast.success('Report saved offline and will sync when connected');
+        onComplete();
+        onOpenChange(false);
+        return;
+      }
+
+      // Online submission
+      const reportNumber = `RPT-${Date.now()}`;
+
+      // Upload photos and signatures
+      const uploadedPhotos: string[] = [];
+      const uploadedSignatures: string[] = [];
+
+      for (const photo of photosData) {
+        const photoBlob = await fetch(photo.dataUrl).then(r => r.blob());
+        const photoPath = `${jobId}/${Date.now()}_${photo.fieldId}.jpg`;
+        const { data, error } = await supabase.storage
+          .from('service-reports')
+          .upload(photoPath, photoBlob);
+        
+        if (!error && data) {
+          const { data: { publicUrl } } = supabase.storage
+            .from('service-reports')
+            .getPublicUrl(photoPath);
+          uploadedPhotos.push(publicUrl);
+        }
+      }
+
+      for (const signature of signaturesData) {
+        const signatureBlob = await fetch(signature.dataUrl).then(r => r.blob());
+        const signaturePath = `${jobId}/${Date.now()}_${signature.fieldId}.png`;
+        const { data, error } = await supabase.storage
+          .from('service-reports')
+          .upload(signaturePath, signatureBlob);
+        
+        if (!error && data) {
+          const { data: { publicUrl } } = supabase.storage
+            .from('service-reports')
+            .getPublicUrl(signaturePath);
+          uploadedSignatures.push(publicUrl);
+        }
+      }
+
+      // Save sanitation log if enabled
       if (sanitationEnabled) {
         const responses = {
           sanitized_with_approved_chemicals: !!formData.sanitation_sanitized,
@@ -275,37 +361,26 @@ export const ServiceReportEnhanced: React.FC<ServiceReportEnhancedProps> = ({
           hand_sanitizer_refilled: !!formData.sanitation_hs_refilled,
           ventilation_clear: !!formData.sanitation_vent_clear,
           no_visible_biohazards: !!formData.sanitation_no_biohazards,
-          notes: formData.sanitation_notes || ''
-        } as Record<string, any>;
+        };
         const photos = formData.sanitation_photo ? [formData.sanitation_photo] : [];
 
-        const { error: sanitationError } = await supabase.from('sanitation_logs').insert({
+        await supabase.from('sanitation_logs').insert({
           job_id: jobId,
           product_item_id: null,
           checklist_id: sanitationChecklistId,
           responses,
           photos,
           technician_id: user?.id ?? null,
-          signed_at: null,
-          notes: formData.sanitation_notes || null
+          notes: formData.sanitation_notes || null,
         });
-
-        if (sanitationError) {
-          console.error('Sanitation log insert failed:', sanitationError);
-        }
       }
 
-      // 2) Update job status
-      const { error: jobError } = await supabase
+      // Update job status
+      await supabase
         .from('jobs')
-        .update({ status: 'completed' })
+        .update({ status: 'completed', actual_completion_time: new Date().toISOString() })
         .eq('id', jobId);
 
-      if (jobError) throw jobError;
-
-      // Clear draft from localStorage
-      localStorage.removeItem(`draft_report_${jobId}`);
-      
       toast.success('Service report completed successfully!');
       onComplete();
       onOpenChange(false);
@@ -465,6 +540,12 @@ export const ServiceReportEnhanced: React.FC<ServiceReportEnhancedProps> = ({
                   {isOnline ? <Wifi className="w-3 h-3 mr-1" /> : <WifiOff className="w-3 h-3 mr-1" />}
                   {isOnline ? 'Online' : 'Offline'}
                 </Badge>
+                {!isOnline && queueCount > 0 && (
+                  <Badge variant="outline">
+                    <CloudOff className="w-3 h-3 mr-1" />
+                    {queueCount} queued
+                  </Badge>
+                )}
                 {isDirty && (
                   <Badge variant="outline">
                     <Save className="w-3 h-3 mr-1" />

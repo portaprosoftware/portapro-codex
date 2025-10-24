@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useUser } from '@clerk/clerk-react';
 import { EnhancedTemplate } from '@/components/maintenance/template-builder/types';
 import { toast } from 'sonner';
+import { useEffect } from 'react';
 
 export const useTemplates = () => {
   const { user } = useUser();
@@ -24,6 +25,37 @@ export const useTemplates = () => {
     },
     enabled: !!organizationId,
   });
+
+  // Cache templates for offline use
+  useEffect(() => {
+    if (templates && templates.length > 0) {
+      const cacheData = {
+        templates,
+        timestamp: new Date().toISOString(),
+      };
+      localStorage.setItem('cached_templates', JSON.stringify(cacheData));
+    }
+  }, [templates]);
+
+  // Get cached templates when offline
+  const getCachedTemplates = (): any[] => {
+    try {
+      const cached = localStorage.getItem('cached_templates');
+      if (!cached) return [];
+      
+      const { templates: cachedTemplates, timestamp } = JSON.parse(cached);
+      const cacheAge = Date.now() - new Date(timestamp).getTime();
+      const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
+      
+      // Return cached data if less than 24 hours old
+      if (cacheAge < TWENTY_FOUR_HOURS) {
+        return cachedTemplates;
+      }
+      return [];
+    } catch {
+      return [];
+    }
+  };
 
   const createTemplate = useMutation({
     mutationFn: async (template: Omit<EnhancedTemplate, 'id' | 'created_at' | 'updated_at'>) => {
@@ -143,5 +175,13 @@ export const useTemplates = () => {
     },
   });
 
-  return { templates, isLoading, createTemplate, updateTemplate, deleteTemplate, cloneTemplate };
+  return { 
+    templates: templates || getCachedTemplates(), 
+    isLoading, 
+    createTemplate, 
+    updateTemplate, 
+    deleteTemplate, 
+    cloneTemplate,
+    getCachedTemplates 
+  };
 };

@@ -13,6 +13,9 @@ import { PhotoCapture } from './PhotoCapture';
 import { SignatureCapture } from './SignatureCapture';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useUser } from '@clerk/clerk-react';
+import { useEnhancedOffline } from '@/hooks/useEnhancedOffline';
+import { saveDraftReport, getDraftReport, savePendingReport } from '@/lib/serviceReportDB';
 import { 
   FileText, 
   Camera, 
@@ -21,7 +24,10 @@ import {
   ArrowLeft, 
   ArrowRight,
   Save,
-  Upload
+  Upload,
+  Wifi,
+  WifiOff,
+  CloudOff
 } from 'lucide-react';
 
 interface MaintenanceTemplate {
@@ -64,6 +70,8 @@ export const ServiceReportForm: React.FC<ServiceReportFormProps> = ({
   onComplete
 }) => {
   const { toast } = useToast();
+  const { user } = useUser();
+  const { isOnline, addOfflineData, queueCount } = useEnhancedOffline();
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [sections, setSections] = useState<FormSection[]>([]);
@@ -73,16 +81,67 @@ export const ServiceReportForm: React.FC<ServiceReportFormProps> = ({
   const [showSignature, setShowSignature] = useState(false);
   const [currentPhotoField, setCurrentPhotoField] = useState<string | null>(null);
   const [currentSignatureField, setCurrentSignatureField] = useState<string | null>(null);
+  const [photosData, setPhotosData] = useState<Array<{ fieldId: string; dataUrl: string }>>([]);
+  const [signaturesData, setSignaturesData] = useState<Array<{ fieldId: string; dataUrl: string }>>([]);
+  const [autoSaveTimer, setAutoSaveTimer] = useState<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (open && templates.length > 0) {
       initializeForm();
+      
+      // Load draft from IndexedDB
+      const loadDraft = async () => {
+        const draft = await getDraftReport(job.id);
+        if (draft && draft.formData) {
+          setFormData(draft.formData);
+          if (draft.photos) setPhotosData(draft.photos);
+          if (draft.signatures) setSignaturesData(draft.signatures);
+          toast({
+            title: "Draft Loaded",
+            description: "Your previous progress has been restored",
+          });
+        }
+      };
+      
+      loadDraft();
     }
-  }, [open, templates]);
+    
+    return () => {
+      if (autoSaveTimer) clearTimeout(autoSaveTimer);
+    };
+  }, [open, templates, job.id]);
 
   useEffect(() => {
     calculateCompletionPercentage();
   }, [formData, sections]);
+
+  // Auto-save functionality
+  useEffect(() => {
+    if (Object.keys(formData).length > 0) {
+      if (autoSaveTimer) {
+        clearTimeout(autoSaveTimer);
+      }
+      
+      const timer = setTimeout(async () => {
+        try {
+          await saveDraftReport({
+            id: job.id,
+            jobId: job.id,
+            templateId: templates[0]?.id || '',
+            formData,
+            photos: photosData,
+            signatures: signaturesData,
+            status: 'draft',
+            timestamp: new Date().toISOString(),
+          });
+        } catch (error) {
+          console.error('Auto-save failed:', error);
+        }
+      }, 2000);
+      
+      setAutoSaveTimer(timer);
+    }
+  }, [formData, photosData, signaturesData]);
 
   const initializeForm = () => {
     // Use the first template for now - could enhance to show selection if multiple
@@ -189,6 +248,7 @@ export const ServiceReportForm: React.FC<ServiceReportFormProps> = ({
   const onPhotoComplete = (photoUrl: string) => {
     if (currentPhotoField) {
       updateFieldValue(currentPhotoField, photoUrl);
+      setPhotosData(prev => [...prev, { fieldId: currentPhotoField, dataUrl: photoUrl }]);
     }
     setShowPhotoCapture(false);
     setCurrentPhotoField(null);
@@ -197,6 +257,7 @@ export const ServiceReportForm: React.FC<ServiceReportFormProps> = ({
   const onSignatureComplete = (signatureUrl: string) => {
     if (currentSignatureField) {
       updateFieldValue(currentSignatureField, signatureUrl);
+      setSignaturesData(prev => [...prev, { fieldId: currentSignatureField, dataUrl: signatureUrl }]);
     }
     setShowSignature(false);
     setCurrentSignatureField(null);
@@ -239,35 +300,99 @@ export const ServiceReportForm: React.FC<ServiceReportFormProps> = ({
     setIsSubmitting(true);
     try {
       const template = templates[0];
+
+      if (!isOnline) {
+        // Queue for offline sync
+        await savePendingReport({
+          id: job.id,
+          jobId: job.id,
+          templateId: template.id,
+          formData,
+          photos: photosData,
+          signatures: signaturesData,
+          status: 'pending',
+          timestamp: new Date().toISOString(),
+        });
+
+        addOfflineData('service_report', {
+          jobId: job.id,
+          templateId: template.id,
+          formData,
+          photos: photosData,
+          signatures: signaturesData,
+          customerId: job.customer_id,
+        }, user?.id || '');
+
+        toast({
+          title: "Report Saved Offline",
+          description: "Report will sync when connection is restored",
+        });
+
+        onComplete();
+        onClose();
+        return;
+      }
+
+      // Online submission - upload photos and signatures first
+      const uploadedPhotos: string[] = [];
+      const uploadedSignatures: string[] = [];
+
+      for (const photo of photosData) {
+        const photoBlob = await fetch(photo.dataUrl).then(r => r.blob());
+        const photoPath = `${job.id}/${Date.now()}_${photo.fieldId}.jpg`;
+        const { data, error } = await supabase.storage
+          .from('service-reports')
+          .upload(photoPath, photoBlob);
+        
+        if (!error && data) {
+          const { data: { publicUrl } } = supabase.storage
+            .from('service-reports')
+            .getPublicUrl(photoPath);
+          uploadedPhotos.push(publicUrl);
+        }
+      }
+
+      for (const signature of signaturesData) {
+        const signatureBlob = await fetch(signature.dataUrl).then(r => r.blob());
+        const signaturePath = `${job.id}/${Date.now()}_${signature.fieldId}.png`;
+        const { data, error } = await supabase.storage
+          .from('service-reports')
+          .upload(signaturePath, signatureBlob);
+        
+        if (!error && data) {
+          const { data: { publicUrl } } = supabase.storage
+            .from('service-reports')
+            .getPublicUrl(signaturePath);
+          uploadedSignatures.push(publicUrl);
+        }
+      }
       
       // Create maintenance report record
-      const { data: reportData, error: reportError } = await supabase
+      await supabase
         .from('maintenance_reports')
         .insert({
           job_id: job.id,
           template_id: template.id,
           report_number: `SVC-${Date.now().toString().slice(-6)}`,
-          report_data: formData,
+          report_data: {
+            ...formData,
+            uploaded_photos: uploadedPhotos,
+            uploaded_signatures: uploadedSignatures,
+          },
           status: 'completed',
           completed_at: new Date().toISOString(),
-          created_by: job.driver_id,
+          created_by: user?.id || job.driver_id,
           customer_id: job.customer_id
-        })
-        .select()
-        .single();
-
-      if (reportError) throw reportError;
+        });
 
       // Update job status to completed
-      const { error: jobError } = await supabase
+      await supabase
         .from('jobs')
         .update({ 
           status: 'completed',
           actual_completion_time: new Date().toISOString()
         })
         .eq('id', job.id);
-
-      if (jobError) throw jobError;
 
       toast({
         title: "Report Submitted",
@@ -433,9 +558,23 @@ export const ServiceReportForm: React.FC<ServiceReportFormProps> = ({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <FileText className="w-5 h-5" />
-            Service Report - {templates[0]?.name || 'General Report'}
+          <DialogTitle className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <FileText className="w-5 h-5" />
+              <span>Service Report - {templates[0]?.name || 'General Report'}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Badge variant={isOnline ? 'default' : 'destructive'}>
+                {isOnline ? <Wifi className="w-3 h-3 mr-1" /> : <WifiOff className="w-3 h-3 mr-1" />}
+                {isOnline ? 'Online' : 'Offline'}
+              </Badge>
+              {!isOnline && queueCount > 0 && (
+                <Badge variant="outline">
+                  <CloudOff className="w-3 h-3 mr-1" />
+                  {queueCount} queued
+                </Badge>
+              )}
+            </div>
           </DialogTitle>
         </DialogHeader>
 

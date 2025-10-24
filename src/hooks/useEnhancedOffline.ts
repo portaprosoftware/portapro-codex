@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 interface OfflineData {
   id: string;
-  type: 'dvir' | 'work_order' | 'job_update' | 'maintenance';
+  type: 'dvir' | 'work_order' | 'job_update' | 'maintenance' | 'service_report';
   data: any;
   timestamp: number;
   userId: string;
@@ -174,6 +174,100 @@ export function useEnhancedOffline() {
         await supabase
           .from('maintenance_updates')
           .insert(item.data);
+        break;
+
+      case 'service_report':
+        // Upload photos and signatures first
+        const uploadedPhotos: string[] = [];
+        const uploadedSignatures: string[] = [];
+
+        if (item.data.photos && item.data.photos.length > 0) {
+          for (const photo of item.data.photos) {
+            try {
+              const photoBlob = await fetch(photo.dataUrl).then(r => r.blob());
+              const photoPath = `${item.data.jobId}/${Date.now()}_${photo.fieldId}.jpg`;
+              const { data: photoData, error: photoError } = await supabase.storage
+                .from('service-reports')
+                .upload(photoPath, photoBlob);
+              
+              if (photoError) throw photoError;
+              if (photoData) {
+                const { data: { publicUrl } } = supabase.storage
+                  .from('service-reports')
+                  .getPublicUrl(photoPath);
+                uploadedPhotos.push(publicUrl);
+              }
+            } catch (error) {
+              console.error('Error uploading photo:', error);
+            }
+          }
+        }
+
+        if (item.data.signatures && item.data.signatures.length > 0) {
+          for (const signature of item.data.signatures) {
+            try {
+              const signatureBlob = await fetch(signature.dataUrl).then(r => r.blob());
+              const signaturePath = `${item.data.jobId}/${Date.now()}_${signature.fieldId}.png`;
+              const { data: signatureData, error: signatureError } = await supabase.storage
+                .from('service-reports')
+                .upload(signaturePath, signatureBlob);
+              
+              if (signatureError) throw signatureError;
+              if (signatureData) {
+                const { data: { publicUrl } } = supabase.storage
+                  .from('service-reports')
+                  .getPublicUrl(signaturePath);
+                uploadedSignatures.push(publicUrl);
+              }
+            } catch (error) {
+              console.error('Error uploading signature:', error);
+            }
+          }
+        }
+
+        // Create maintenance report
+        const { error: reportError } = await supabase
+          .from('maintenance_reports')
+          .insert({
+            job_id: item.data.jobId,
+            template_id: item.data.templateId,
+            report_number: `SVC-${Date.now().toString().slice(-6)}`,
+            report_data: {
+              ...item.data.formData,
+              uploaded_photos: uploadedPhotos,
+              uploaded_signatures: uploadedSignatures,
+            },
+            status: 'completed',
+            completed_at: new Date().toISOString(),
+            created_by: item.userId,
+            customer_id: item.data.customerId,
+          });
+
+        if (reportError) throw reportError;
+
+        // Update job status
+        const { error: jobUpdateError } = await supabase
+          .from('jobs')
+          .update({ 
+            status: 'completed',
+            actual_completion_time: new Date().toISOString()
+          })
+          .eq('id', item.data.jobId);
+
+        if (jobUpdateError) throw jobUpdateError;
+
+        // Create sanitation log if enabled
+        if (item.data.sanitationEnabled && item.data.sanitationData) {
+          await supabase.from('sanitation_logs').insert({
+            job_id: item.data.jobId,
+            product_item_id: null,
+            checklist_id: item.data.sanitationChecklistId,
+            responses: item.data.sanitationData.responses,
+            photos: item.data.sanitationData.photos,
+            technician_id: item.userId,
+            notes: item.data.sanitationData.notes,
+          });
+        }
         break;
     }
   };
