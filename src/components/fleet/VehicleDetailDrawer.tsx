@@ -47,9 +47,36 @@ import { VehicleDocumentsSummary } from './vehicle-tabs/VehicleDocumentsSummary'
 import { VehicleStockSummary } from './vehicle-tabs/VehicleStockSummary';
 import { useVehicleSummary } from '@/hooks/vehicle/useVehicleSummary';
 
-// Keep only Overview and Assignments as full tabs (lazy loaded)
-const VehicleOverviewTab = lazy(() => import('./vehicle-tabs/VehicleOverviewTab').then(m => ({ default: m.VehicleOverviewTab })));
-const VehicleAssignmentsTab = lazy(() => import('./vehicle-tabs/VehicleAssignmentsTab').then(m => ({ default: m.VehicleAssignmentsTab })));
+// Keep only Overview and Assignments as full tabs (lazy loaded with retry)
+const retryImport = <T,>(importFn: () => Promise<T>, retries = 3): Promise<T> => {
+  return importFn().catch((error) => {
+    if (retries > 0) {
+      console.log(`Retrying import... (${retries} attempts left)`);
+      return new Promise<T>((resolve) => {
+        setTimeout(() => {
+          resolve(retryImport(importFn, retries - 1));
+        }, 1000);
+      });
+    } else {
+      // Force a hard reload if all retries fail
+      console.error('Failed to load module after retries, reloading page...');
+      window.location.reload();
+      throw error;
+    }
+  });
+};
+
+const VehicleOverviewTab = lazy(() => 
+  retryImport(() => 
+    import('./vehicle-tabs/VehicleOverviewTab').then(m => ({ default: m.VehicleOverviewTab }))
+  )
+);
+
+const VehicleAssignmentsTab = lazy(() => 
+  retryImport(() =>
+    import('./vehicle-tabs/VehicleAssignmentsTab').then(m => ({ default: m.VehicleAssignmentsTab }))
+  )
+);
 
 interface Vehicle {
   id: string;
