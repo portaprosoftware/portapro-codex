@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Building2, Edit, Mail, MapPin, Phone, Clock, Percent, DollarSign } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -187,11 +188,11 @@ export function CompanySettingsSection() {
                 <h4 className="font-medium text-foreground flex items-center space-x-2">
                   <Percent className="w-4 h-4" />
                   <span>Default Deposit Percentage</span>
-                  <span className="font-bold text-foreground">
+                  <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold border-0">
                     {companySettings?.default_deposit_percentage !== undefined
                       ? `${companySettings.default_deposit_percentage}%`
                       : "25%"}
-                  </span>
+                  </Badge>
                 </h4>
                 <p className="text-xs text-muted-foreground pl-6">
                   Default percentage used for deposit collection on quotes and jobs
