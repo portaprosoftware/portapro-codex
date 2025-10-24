@@ -169,7 +169,7 @@ export const OperationsSection: React.FC<OperationsSectionProps> = ({ dateRange 
         </div>
         
         <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-orange-500">
-          <h3 className="text-lg font-semibold mb-4">Workload Insights</h3>
+          <h3 className="text-lg font-bold mb-4">Workload Insights</h3>
           <WorkloadInsightsChart dateRange={dateRange} />
         </div>
       </div>

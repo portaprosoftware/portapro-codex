@@ -37,7 +37,7 @@ export function DepositAnalyticsCard({ dateRange }: DepositAnalyticsCardProps) {
   return (
     <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-green-500">
       <div className="mb-4">
-        <h3 className="text-lg font-semibold flex items-center gap-2">
+        <h3 className="text-lg font-bold flex items-center gap-2">
           <DollarSign className="h-5 w-5" />
           Deposit Analytics
         </h3>
