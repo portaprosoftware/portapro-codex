@@ -127,32 +127,18 @@ const QuotesInvoices: React.FC = () => {
                   value={formatCurrency(quoteMetrics?.total_value)}
                   icon={TrendingUp}
                   gradient="bg-gradient-to-r from-blue-600 to-blue-800"
-                  onClick={() => {
-                    setStatusFilter(undefined);
-                    setActiveQuickFilter('all');
-                  }}
                 />
                 <KpiCard
                   title={`Pending Value (${quoteMetrics?.year || new Date().getFullYear()} YTD)`}
                   value={formatCurrency(quoteMetrics?.pending_value)}
                   icon={FileText}
                   gradient="bg-gradient-to-r from-yellow-500 to-yellow-700"
-                  onClick={() => {
-                    setStatusFilter('sent');
-                    setActiveQuickFilter('all');
-                  }}
-                  subtitle="Tap to filter"
                 />
                 <KpiCard
                   title={`Accepted Value (${quoteMetrics?.year || new Date().getFullYear()} YTD)`}
                   value={formatCurrency(quoteMetrics?.accepted_value)}
                   icon={DollarSign}
                   gradient="bg-gradient-to-r from-green-600 to-green-800"
-                  onClick={() => {
-                    setStatusFilter('accepted');
-                    setActiveQuickFilter('all');
-                  }}
-                  subtitle="Tap to filter"
                 />
               </div>
 
@@ -259,32 +245,18 @@ const QuotesInvoices: React.FC = () => {
                   value={formatCurrency(invoiceMetrics?.total_value)}
                   icon={TrendingUp}
                   gradient="bg-gradient-to-r from-blue-600 to-blue-800"
-                  onClick={() => {
-                    setStatusFilter(undefined);
-                    setActiveQuickFilter('all');
-                  }}
                 />
                 <KpiCard
                   title={`Unpaid Value (${invoiceMetrics?.year || new Date().getFullYear()} YTD)`}
                   value={formatCurrency(invoiceMetrics?.unpaid_value)}
                   icon={FileText}
                   gradient="bg-gradient-to-r from-yellow-500 to-yellow-700"
-                  onClick={() => {
-                    setStatusFilter('unpaid');
-                    setActiveQuickFilter('all');
-                  }}
-                  subtitle="Tap to filter"
                 />
                 <KpiCard
                   title={`Paid Value (${invoiceMetrics?.year || new Date().getFullYear()} YTD)`}
                   value={formatCurrency(invoiceMetrics?.paid_value)}
                   icon={DollarSign}
                   gradient="bg-gradient-to-r from-green-600 to-green-800"
-                  onClick={() => {
-                    setStatusFilter('paid');
-                    setActiveQuickFilter('all');
-                  }}
-                  subtitle="Tap to filter"
                 />
               </div>
 
