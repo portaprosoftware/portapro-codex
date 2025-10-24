@@ -227,8 +227,10 @@ export const TemplateManagement: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Search and Filters */}
-      <div className="flex flex-col sm:flex-row gap-4 items-end">
+      {/* Single White Card - All Template Content */}
+      <div className="bg-white rounded-xl border shadow-sm p-4 md:p-6 space-y-6">
+        {/* Search and Filters */}
+        <div className="flex flex-col sm:flex-row gap-4 items-end">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
           <Input
@@ -303,6 +305,9 @@ export const TemplateManagement: React.FC = () => {
         </Sheet>
       </div>
 
+      {/* Divider */}
+      <div className="border-t" />
+
       {/* Templates Display - Organized by Type and Source */}
       <div className="space-y-6">
         {/* Email Templates */}
@@ -366,6 +371,7 @@ export const TemplateManagement: React.FC = () => {
             )
           )}
         </div>
+      </div>
       </div>
 
       {/* Preview Modal */}

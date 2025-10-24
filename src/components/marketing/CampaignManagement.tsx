@@ -38,8 +38,9 @@ export const CampaignManagement: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Campaign Creation Card */}
-      <div className="bg-white rounded-xl border shadow-sm p-4 md:p-6">
+      {/* Single White Card - All Campaign Content */}
+      <div className="bg-white rounded-xl border shadow-sm p-4 md:p-6 space-y-6">
+        {/* Campaign Creation Section */}
         <div className="flex flex-col gap-4">
           <div>
             <h2 className="text-lg font-semibold text-gray-900 font-inter">Create Campaign</h2>
@@ -80,16 +81,22 @@ export const CampaignManagement: React.FC = () => {
             </div>
           </CustomModal>
         </div>
-      </div>
 
-      {/* Campaign Analytics */}
-      <div className="bg-white rounded-xl border shadow-sm p-4 md:p-6">
-        <h2 className="text-lg font-semibold text-gray-900 font-inter mb-4">Campaign Performance</h2>
-        <CampaignAnalytics />
-      </div>
+        {/* Divider */}
+        <div className="border-t" />
 
-      {/* Customer Types Overview */}
-      <CustomerTypesOverview />
+        {/* Campaign Analytics Section */}
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900 font-inter mb-4">Campaign Performance</h2>
+          <CampaignAnalytics />
+        </div>
+
+        {/* Divider */}
+        <div className="border-t" />
+
+        {/* Customer Types Section */}
+        <CustomerTypesOverview />
+      </div>
 
       {/* Simple Exit Confirmation */}
       <AlertDialog open={showExitConfirmation} onOpenChange={setShowExitConfirmation}>
@@ -145,7 +152,7 @@ const CustomerTypesOverview: React.FC = () => {
   };
 
   return (
-    <div className="bg-white rounded-xl border shadow-sm p-4 md:p-6">
+    <>
       <h2 className="text-lg font-semibold text-gray-900 font-inter mb-4">Customer Types</h2>
       <div className="flex flex-wrap gap-3">
         {customerTypes.map((type) => (
@@ -165,6 +172,6 @@ const CustomerTypesOverview: React.FC = () => {
           </button>
         ))}
       </div>
-    </div>
+    </>
   );
 };
