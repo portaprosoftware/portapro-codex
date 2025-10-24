@@ -217,7 +217,7 @@ export const LogServiceManuallyModal: React.FC<LogServiceManuallyModalProps> = (
 
   return (
     <Drawer open={isOpen} onOpenChange={onClose}>
-      <DrawerContent className={isMobile ? "h-[100vh]" : "h-[50vh]"}>
+      <DrawerContent className={isMobile ? "h-[100vh]" : "h-[75vh]"}>
         <DrawerHeader className="border-b pb-3">
           <DrawerTitle>Log Service Manually</DrawerTitle>
         </DrawerHeader>
