@@ -71,24 +71,24 @@ export default function CustomerDetail() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-none px-2 md:px-4 py-4 space-y-6">
-        {/* Header Card */}
-        <div className="bg-white rounded-lg border shadow-sm p-4 md:p-6">
-          {/* Breadcrumb */}
-          <Breadcrumb className="mb-4">
-            <BreadcrumbList className="text-xs md:text-sm">
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link to="/customer-hub">Customer Hub</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>{customer.name}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-          
+      <div className="max-w-[1200px] mx-auto px-4 py-6 space-y-6">
+        {/* Breadcrumb */}
+        <Breadcrumb>
+          <BreadcrumbList className="text-sm">
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link to="/customer-hub">Customer Hub</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{customer.name}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+
+        {/* Header Card with Customer Info */}
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
           {/* Back button and customer info */}
           <div className="flex flex-col gap-4 mb-6">
             <Link to="/customer-hub" className="w-full md:w-auto">
@@ -103,12 +103,12 @@ export default function CustomerDetail() {
             
             {/* Customer name and metadata */}
             <div className="flex flex-col gap-2">
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
+              <h1 className="text-3xl font-bold text-gray-900 leading-tight">
                 {customer.name}
               </h1>
               
               {/* Key metadata */}
-              <div className="flex flex-wrap items-center gap-2 text-sm md:text-base">
+              <div className="flex flex-wrap items-center gap-2 text-base">
                 <Badge className={getCustomerTypeColor(customer.customer_type)}>
                   {formatCategoryDisplay((customer as any).type || customer.customer_type || 'Customer')}
                 </Badge>
@@ -135,13 +135,15 @@ export default function CustomerDetail() {
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Stats Section */}
+        {/* Stats Card */}
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
           <CustomerStatsSection customerId={id!} />
         </div>
 
         {/* Content Card */}
-        <div className="bg-white rounded-lg border shadow-sm">
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
           <CustomerTabs customer={{
             ...customer,
             customer_type: customer.customer_type as any || 'not_selected',
