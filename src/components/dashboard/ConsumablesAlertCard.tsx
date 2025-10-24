@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useUserRole } from '@/hooks/useUserRole';
-import { Droplets, ExternalLink } from 'lucide-react';
+import { SoapDispenserDroplet, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const ConsumablesAlertCard: React.FC = () => {
@@ -92,7 +92,7 @@ export const ConsumablesAlertCard: React.FC = () => {
           {/* Left Section - Icon and Title */}
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-gradient-to-r from-orange-600 to-orange-700">
-              <Droplets className="w-6 h-6 text-white" strokeWidth={2.5} />
+              <SoapDispenserDroplet className="w-6 h-6 text-white" strokeWidth={2.5} />
             </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-900">Consumables Alert</h3>
