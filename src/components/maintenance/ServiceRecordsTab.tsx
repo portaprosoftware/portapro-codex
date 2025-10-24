@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { StatCard } from "@/components/ui/StatCard";
+import { LogServiceManuallyModal } from "@/components/maintenance/LogServiceManuallyModal";
 import { Search, FileText, Clock, CheckCircle, AlertTriangle, Download, Eye } from "lucide-react";
 import { toast } from "sonner";
 
@@ -42,6 +43,7 @@ export const ServiceRecordsTab: React.FC = () => {
   const [serviceFilter, setServiceFilter] = useState("all");
   const [sourceFilter, setSourceFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [showManualLogModal, setShowManualLogModal] = useState(false);
 
   const { data: serviceRecords, isLoading } = useQuery({
     queryKey: ['service-records'],
@@ -139,9 +141,18 @@ export const ServiceRecordsTab: React.FC = () => {
     <Card className="bg-white rounded-2xl shadow-sm">
       <div className="p-6 space-y-6">
         {/* Header */}
-        <div>
-          <h2 className="text-xl font-semibold text-gray-900">Service Records</h2>
-          <p className="text-gray-600">Service records appear after jobs or work orders are completed using a service</p>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900">Service Records</h2>
+            <p className="text-gray-600">Service records appear after jobs or work orders are completed using a service</p>
+          </div>
+          <Button 
+            variant="gradient"
+            onClick={() => setShowManualLogModal(true)}
+          >
+            <Clock className="w-4 h-4 mr-2" />
+            Log Service Manually
+          </Button>
         </div>
 
         {/* Summary Cards */}
@@ -344,6 +355,12 @@ export const ServiceRecordsTab: React.FC = () => {
           </Card>
         )}
       </div>
+
+      {/* Log Service Manually Modal */}
+      <LogServiceManuallyModal
+        isOpen={showManualLogModal}
+        onClose={() => setShowManualLogModal(false)}
+      />
     </Card>
   );
 };
