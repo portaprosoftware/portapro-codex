@@ -62,7 +62,7 @@ export const DraftManagement: React.FC = () => {
             {/* Header Section */}
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold font-inter">Campaign Drafts</h2>
+                <h2 className="text-lg font-semibold font-inter">Campaign Drafts</h2>
                 <p className="text-gray-600 font-inter">Resume or manage your saved campaign drafts</p>
               </div>
               <div className="flex items-center gap-3">
