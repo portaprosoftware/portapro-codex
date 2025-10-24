@@ -5,7 +5,7 @@ import {
   Users2, 
   Truck, 
   ClipboardCheck,
-  FileText,
+  CircleDollarSign,
   BarChart4,
   Settings,
   UserCog,
@@ -47,7 +47,7 @@ export const dayToDayItems: NavigationItem[] = [
   { 
     title: 'Quotes & Invoices', 
     url: '/quotes-invoices', 
-    icon: FileText,
+    icon: CircleDollarSign,
     permission: 'staff'
   },
 ];

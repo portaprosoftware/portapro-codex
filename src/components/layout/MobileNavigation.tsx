@@ -7,7 +7,7 @@ import {
   Users, 
   Truck, 
   Settings,
-  FileText,
+  CircleDollarSign,
   BarChart3,
   Menu
 } from 'lucide-react';
@@ -36,7 +36,7 @@ const navigationItems: MobileNavigationItem[] = [
   { title: 'Customers', href: '/customers', icon: Users, permission: 'staff' },
   { title: 'Inventory', href: '/inventory', icon: Package, permission: 'staff' },
   { title: 'Fleet', href: '/fleet', icon: Truck, permission: 'admin' },
-  { title: 'Quotes & Invoices', href: '/quotes-invoices', icon: FileText, permission: 'admin' },
+  { title: 'Quotes & Invoices', href: '/quotes-invoices', icon: CircleDollarSign, permission: 'admin' },
   { title: 'Analytics', href: '/analytics', icon: BarChart3, permission: 'admin' },
   { title: 'Settings', href: '/settings', icon: Settings, permission: 'owner' },
 ];

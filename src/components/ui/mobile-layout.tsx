@@ -1,6 +1,6 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Bell, User, Home, Calendar, Package, Settings, MoreHorizontal } from 'lucide-react';
+import { Bell, User, Home, Calendar, Package, Settings, MoreHorizontal, CircleDollarSign } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, DrawerTrigger } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
@@ -51,7 +51,7 @@ const MobileBottomNavigation: React.FC = () => {
     { title: "Customers", href: "/customers", icon: User, permission: 'staff' },
     { title: "Inventory", href: "/inventory", icon: Package, permission: 'staff' },
     { title: "Fleet", href: "/fleet", icon: Package, permission: 'admin' },
-    { title: "Quotes & Invoices", href: "/quotes-invoices", icon: Package, permission: 'admin' },
+    { title: "Quotes & Invoices", href: "/quotes-invoices", icon: CircleDollarSign, permission: 'admin' },
     { title: "Analytics", href: "/analytics", icon: Package, permission: 'admin' },
     { title: "Settings", href: "/settings", icon: Settings, permission: 'owner' },
   ].filter(item => {
