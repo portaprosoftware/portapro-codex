@@ -191,9 +191,9 @@ export const AutoRequirementsBuilder: React.FC<AutoRequirementsBuilderProps> = (
         {existingPresets.map((preset) => (
           <div
             key={preset.id}
-            className={`rounded-lg border ${
-              preset.is_active ? 'border-l-4 border-l-green-500 bg-card' : 'bg-muted/50'
-            } p-3`}
+            className={`rounded-lg border p-3 ${
+              preset.is_active ? 'bg-card' : 'bg-muted/50'
+            }`}
           >
             <div className="flex items-start gap-3">
               <Switch

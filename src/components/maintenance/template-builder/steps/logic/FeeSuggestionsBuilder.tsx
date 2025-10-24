@@ -263,7 +263,7 @@ const FeeRuleCard: React.FC<FeeRuleCardProps> = ({
   return (
     <div
       className={`rounded-lg border p-3 ${
-        fee.is_active ? 'border-l-4 border-l-green-500 bg-card' : 'bg-muted/50'
+        fee.is_active ? 'bg-card' : 'bg-muted/50'
       }`}
     >
       <div className="flex items-start gap-3">
