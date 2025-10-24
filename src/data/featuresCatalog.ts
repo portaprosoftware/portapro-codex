@@ -1,4 +1,4 @@
-import { LucideIcon, Package, Droplets, ClipboardCheck, ClipboardList, DollarSign, Smartphone, Truck, Users, BarChart3, Camera, Megaphone } from 'lucide-react'
+import { LucideIcon, Toilet, SoapDispenserDroplet, ClipboardCheck, ClipboardList, DollarSign, Smartphone, Truck, Users, BarChart3, Camera, Megaphone } from 'lucide-react'
 
 export type FeatureItem = {
   key: string
@@ -24,14 +24,14 @@ export const featureGroups: FeatureGroup[] = [
         key: 'inventory',
         label: 'Inventory & Supplies',
         description: 'Track units and consumables across multiple sites.',
-        icon: Package,
+        icon: Toilet,
         href: '#inventory',
       },
       {
         key: 'consumables',
         label: 'Consumables',
         description: 'Manage TP, sanitizer, deodorizer, and cleaning stock.',
-        icon: Droplets,
+        icon: SoapDispenserDroplet,
         href: '#consumables',
       },
       {
