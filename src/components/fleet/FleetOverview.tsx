@@ -187,9 +187,10 @@ export const FleetOverview: React.FC = () => {
 
   return (
     <div className="space-y-6 px-4 overflow-x-hidden">
-      {/* Page Header with Stats */}
-      <div className="bg-white rounded-lg border shadow-sm p-4 lg:p-6">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 lg:gap-4 mb-6">
+      {/* Stats and Compliance Card */}
+      <div className="bg-white rounded-xl border shadow-sm p-4 lg:p-6">
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 lg:gap-4">
           <div className="bg-card p-3 rounded-lg border shadow-sm text-center">
             <div className="text-xs lg:text-sm text-muted-foreground font-semibold truncate">Total Vehicles</div>
             <div className="text-2xl font-bold">{vehicles?.length || 0}</div>
@@ -208,93 +209,94 @@ export const FleetOverview: React.FC = () => {
           </div>
         </div>
 
-
         {/* Spill Kit Compliance Widget */}
-        <Collapsible
-          open={!isSpillKitCollapsed}
-          onOpenChange={(open) => setIsSpillKitCollapsed(!open)}
-          className="bg-white rounded-lg border shadow-sm relative"
-        >
-          <div className="p-4 lg:p-6">
-            <div className="flex items-start lg:items-center justify-between gap-3">
-              <CollapsibleTrigger className="flex items-center gap-2 lg:gap-3 hover:opacity-80 transition-opacity flex-1 min-w-0">
-                <PackageCheck className="h-5 w-5 flex-shrink-0" />
-                <div className="flex flex-col lg:flex-row lg:items-center gap-1 lg:gap-2 flex-1 min-w-0">
-                  <h3 className="text-base lg:text-lg font-semibold truncate">Spill Kit Compliance</h3>
-                  <span className="text-xs lg:text-sm text-muted-foreground hidden sm:inline">DOT/OSHA compliance monitoring</span>
-                </div>
-                <ChevronDown 
-                  className={cn(
-                    "h-4 w-4 transition-transform flex-shrink-0 lg:ml-auto",
-                    isSpillKitCollapsed && "rotate-180"
-                  )} 
-                  aria-label={isSpillKitCollapsed ? 'Expand' : 'Collapse'}
-                />
-              </CollapsibleTrigger>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => navigate('/fleet/compliance?tab=spill-kits')}
-                className="hidden lg:flex ml-4"
-              >
-                View Details
-              </Button>
-            </div>
-            
-            <CollapsibleContent>
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 pt-4 mt-4 border-t">
-                <div className="bg-card p-3 rounded-lg border shadow-sm">
-                  <div className="text-xs lg:text-sm text-muted-foreground truncate">Vehicles with Kits</div>
-                  <div className="text-xl lg:text-2xl font-bold flex items-center gap-2">
-                    <TruckIcon className="h-4 w-4 lg:h-5 lg:w-5 text-blue-600" />
-                    {spillKitStats?.totalVehiclesWithKits || 0}
+        <div className="mt-6">
+          <Collapsible
+            open={!isSpillKitCollapsed}
+            onOpenChange={(open) => setIsSpillKitCollapsed(!open)}
+            className="bg-white rounded-lg border shadow-sm relative"
+          >
+            <div className="p-4 lg:p-6">
+              <div className="flex items-start lg:items-center justify-between gap-3">
+                <CollapsibleTrigger className="flex items-center gap-2 lg:gap-3 hover:opacity-80 transition-opacity flex-1 min-w-0">
+                  <PackageCheck className="h-5 w-5 flex-shrink-0" />
+                  <div className="flex flex-col lg:flex-row lg:items-center gap-1 lg:gap-2 flex-1 min-w-0">
+                    <h3 className="text-base lg:text-lg font-semibold truncate">Spill Kit Compliance</h3>
+                    <span className="text-xs lg:text-sm text-muted-foreground hidden sm:inline">DOT/OSHA compliance monitoring</span>
                   </div>
-                </div>
-                
-                <div className="bg-card p-3 rounded-lg border shadow-sm">
-                  <div className="text-xs lg:text-sm text-muted-foreground truncate">Needing Inspection</div>
-                  <div className="text-xl lg:text-2xl font-bold text-orange-600 flex items-center gap-2">
-                    <AlertCircle className="h-4 w-4 lg:h-5 lg:w-5" />
-                    {spillKitStats?.needingInspection || 0}
-                  </div>
-                </div>
-                
-                <div className="bg-card p-3 rounded-lg border shadow-sm">
-                  <div className="text-xs lg:text-sm text-muted-foreground truncate">Missing/Expired Items</div>
-                  <div className="text-xl lg:text-2xl font-bold text-red-600 flex items-center gap-2">
-                    <AlertCircle className="h-4 w-4 lg:h-5 lg:w-5" />
-                    {spillKitStats?.vehiclesWithIssues || 0}
-                  </div>
-                </div>
-                
-                <div className="bg-card p-3 rounded-lg border shadow-sm">
-                  <div className="text-xs lg:text-sm text-muted-foreground truncate">Low Stock Items</div>
-                  <div className="text-xl lg:text-2xl font-bold text-yellow-600 flex items-center gap-2">
-                    <AlertCircle className="h-4 w-4 lg:h-5 lg:w-5" />
-                    {spillKitStats?.lowStockItems || 0}
-                  </div>
-                </div>
-              </div>
-              
-              {/* Mobile View Details Button */}
-              <div className="lg:hidden mt-4">
+                  <ChevronDown 
+                    className={cn(
+                      "h-4 w-4 transition-transform flex-shrink-0 lg:ml-auto",
+                      isSpillKitCollapsed && "rotate-180"
+                    )} 
+                    aria-label={isSpillKitCollapsed ? 'Expand' : 'Collapse'}
+                  />
+                </CollapsibleTrigger>
                 <Button 
-                  variant="ghost" 
+                  variant="outline" 
                   size="sm"
                   onClick={() => navigate('/fleet/compliance?tab=spill-kits')}
-                  className="w-full"
+                  className="hidden lg:flex ml-4"
                 >
                   View Details
                 </Button>
               </div>
-            </CollapsibleContent>
-          </div>
-        </Collapsible>
+              
+              <CollapsibleContent>
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 pt-4 mt-4 border-t">
+                  <div className="bg-card p-3 rounded-lg border shadow-sm">
+                    <div className="text-xs lg:text-sm text-muted-foreground truncate">Vehicles with Kits</div>
+                    <div className="text-xl lg:text-2xl font-bold flex items-center gap-2">
+                      <TruckIcon className="h-4 w-4 lg:h-5 lg:w-5 text-blue-600" />
+                      {spillKitStats?.totalVehiclesWithKits || 0}
+                    </div>
+                  </div>
+                  
+                  <div className="bg-card p-3 rounded-lg border shadow-sm">
+                    <div className="text-xs lg:text-sm text-muted-foreground truncate">Needing Inspection</div>
+                    <div className="text-xl lg:text-2xl font-bold text-orange-600 flex items-center gap-2">
+                      <AlertCircle className="h-4 w-4 lg:h-5 lg:w-5" />
+                      {spillKitStats?.needingInspection || 0}
+                    </div>
+                  </div>
+                  
+                  <div className="bg-card p-3 rounded-lg border shadow-sm">
+                    <div className="text-xs lg:text-sm text-muted-foreground truncate">Missing/Expired Items</div>
+                    <div className="text-xl lg:text-2xl font-bold text-red-600 flex items-center gap-2">
+                      <AlertCircle className="h-4 w-4 lg:h-5 lg:w-5" />
+                      {spillKitStats?.vehiclesWithIssues || 0}
+                    </div>
+                  </div>
+                  
+                  <div className="bg-card p-3 rounded-lg border shadow-sm">
+                    <div className="text-xs lg:text-sm text-muted-foreground truncate">Low Stock Items</div>
+                    <div className="text-xl lg:text-2xl font-bold text-yellow-600 flex items-center gap-2">
+                      <AlertCircle className="h-4 w-4 lg:h-5 lg:w-5" />
+                      {spillKitStats?.lowStockItems || 0}
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Mobile View Details Button */}
+                <div className="lg:hidden mt-4">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => navigate('/fleet/compliance?tab=spill-kits')}
+                    className="w-full"
+                  >
+                    View Details
+                  </Button>
+                </div>
+              </CollapsibleContent>
+            </div>
+          </Collapsible>
+        </div>
       </div>
 
 
-      {/* Vehicle Controls Section */}
-      <div className="bg-white rounded-lg border shadow-sm p-4 lg:p-6">
+      {/* Vehicle Controls and Filters Card */}
+      <div className="bg-white rounded-xl border shadow-sm p-4 lg:p-6">
         {/* Controls */}
         <div className="flex flex-col lg:flex-row gap-3 lg:gap-4 mb-4 lg:mb-6">
           {/* Search - Full width on mobile, flex on desktop */}
