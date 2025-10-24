@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { EnhancedCard } from "@/components/ui/enhanced-card";
 
 import { SimpleCustomerModal } from "@/components/customers/SimpleCustomerModal";
@@ -58,6 +59,7 @@ const CustomerHub: React.FC = () => {
   const [sortColumn, setSortColumn] = useState<SortColumn>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>('default');
   const [showLastDelivery, setShowLastDelivery] = useState(true);
+  const [showInfoPopover, setShowInfoPopover] = useState(false);
 
   // Handle column sorting
   const handleSort = (column: SortColumn) => {
@@ -351,17 +353,28 @@ const CustomerHub: React.FC = () => {
                   <SortableHeader column="last_delivery" className="text-right">
                     <div className="flex items-center justify-end gap-1.5">
                       Days Since Last Delivery
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-5 w-5 p-0 hover:bg-gray-200"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                        }}
-                        title="Select truck to hide data."
-                      >
-                        <Info className="h-3.5 w-3.5 text-gray-500" />
-                      </Button>
+                      <Popover open={showInfoPopover} onOpenChange={setShowInfoPopover}>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-5 w-5 p-0 hover:bg-gray-200"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setShowInfoPopover(!showInfoPopover);
+                            }}
+                          >
+                            <Info className="h-3.5 w-3.5 text-gray-500" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent 
+                          className="w-64 p-3 text-sm bg-white border shadow-lg z-50"
+                          side="top"
+                          align="end"
+                        >
+                          Select truck icon to hide this column data.
+                        </PopoverContent>
+                      </Popover>
                       <Button
                         variant="ghost"
                         size="sm"
