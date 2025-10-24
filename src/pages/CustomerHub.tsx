@@ -183,101 +183,103 @@ const CustomerHub: React.FC = () => {
           </div>
         </div>
 
-        {/* Filters & Search */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <h2 className="text-lg font-medium text-gray-900">All Customers</h2>
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-            {/* Mobile/Tablet: Drawer - Desktop: Select */}
-            <div className="flex items-center gap-2">
-              <Filter className="w-4 h-4 text-gray-500" />
-              
-              {/* Desktop Select (lg and up) */}
-              <div className="hidden lg:block">
-                <Select value={selectedType} onValueChange={setSelectedType}>
-                  <SelectTrigger className="w-40">
-                    <SelectValue placeholder="All Types" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Types</SelectItem>
-                    {Object.entries(CUSTOMER_TYPES).map(([key, type]) => (
-                      <SelectItem key={key} value={key}>
-                        {type.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+        {/* Customers List Card */}
+        <div className="bg-white rounded-lg border shadow-sm p-4 md:p-6">
+          {/* Filters & Search */}
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+            <h2 className="text-lg font-medium text-gray-900">All Customers</h2>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+              {/* Mobile/Tablet: Drawer - Desktop: Select */}
+              <div className="flex items-center gap-2">
+                <Filter className="w-4 h-4 text-gray-500" />
+                
+                {/* Desktop Select (lg and up) */}
+                <div className="hidden lg:block">
+                  <Select value={selectedType} onValueChange={setSelectedType}>
+                    <SelectTrigger className="w-40">
+                      <SelectValue placeholder="All Types" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Types</SelectItem>
+                      {Object.entries(CUSTOMER_TYPES).map(([key, type]) => (
+                        <SelectItem key={key} value={key}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-              {/* Mobile/Tablet Drawer (below lg) */}
-              <div className="lg:hidden w-full sm:w-40">
-                <Drawer>
-                  <DrawerTrigger asChild>
-                    <Button 
-                      variant="outline" 
-                      className="w-full justify-between h-10 text-base"
-                    >
-                      <span className="truncate">
-                        {selectedType === 'all' 
-                          ? 'All Types' 
-                          : CUSTOMER_TYPES[selectedType as keyof typeof CUSTOMER_TYPES]?.label || 'All Types'}
-                      </span>
-                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
-                  </DrawerTrigger>
-                  <DrawerContent className="max-h-[75vh]">
-                    <DrawerHeader className="border-b">
-                      <DrawerTitle className="text-lg">Customer Type</DrawerTitle>
-                    </DrawerHeader>
-                    <div className="overflow-y-auto p-4">
-                      <div className="space-y-1">
-                        {/* All Types Option */}
-                        <Button
-                          variant="ghost"
-                          className={`w-full justify-start h-12 text-base font-normal ${
-                            selectedType === 'all' ? 'bg-accent' : ''
-                          }`}
-                          onClick={() => setSelectedType('all')}
-                        >
-                          <Check className={`mr-2 h-5 w-5 ${selectedType === 'all' ? 'opacity-100' : 'opacity-0'}`} />
-                          All Types
-                        </Button>
-
-                        {/* Customer Type Options */}
-                        {Object.entries(CUSTOMER_TYPES).map(([key, type]) => (
+                {/* Mobile/Tablet Drawer (below lg) */}
+                <div className="lg:hidden w-full sm:w-40">
+                  <Drawer>
+                    <DrawerTrigger asChild>
+                      <Button 
+                        variant="outline" 
+                        className="w-full justify-between h-10 text-base"
+                      >
+                        <span className="truncate">
+                          {selectedType === 'all' 
+                            ? 'All Types' 
+                            : CUSTOMER_TYPES[selectedType as keyof typeof CUSTOMER_TYPES]?.label || 'All Types'}
+                        </span>
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </DrawerTrigger>
+                    <DrawerContent className="max-h-[75vh]">
+                      <DrawerHeader className="border-b">
+                        <DrawerTitle className="text-lg">Customer Type</DrawerTitle>
+                      </DrawerHeader>
+                      <div className="overflow-y-auto p-4">
+                        <div className="space-y-1">
+                          {/* All Types Option */}
                           <Button
-                            key={key}
                             variant="ghost"
                             className={`w-full justify-start h-12 text-base font-normal ${
-                              selectedType === key ? 'bg-accent' : ''
+                              selectedType === 'all' ? 'bg-accent' : ''
                             }`}
-                            onClick={() => setSelectedType(key)}
+                            onClick={() => setSelectedType('all')}
                           >
-                            <Check className={`mr-2 h-5 w-5 ${selectedType === key ? 'opacity-100' : 'opacity-0'}`} />
-                            {type.label}
+                            <Check className={`mr-2 h-5 w-5 ${selectedType === 'all' ? 'opacity-100' : 'opacity-0'}`} />
+                            All Types
                           </Button>
-                        ))}
+
+                          {/* Customer Type Options */}
+                          {Object.entries(CUSTOMER_TYPES).map(([key, type]) => (
+                            <Button
+                              key={key}
+                              variant="ghost"
+                              className={`w-full justify-start h-12 text-base font-normal ${
+                                selectedType === key ? 'bg-accent' : ''
+                              }`}
+                              onClick={() => setSelectedType(key)}
+                            >
+                              <Check className={`mr-2 h-5 w-5 ${selectedType === key ? 'opacity-100' : 'opacity-0'}`} />
+                              {type.label}
+                            </Button>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  </DrawerContent>
-                </Drawer>
+                    </DrawerContent>
+                  </Drawer>
+                </div>
+              </div>
+
+              <div className="relative w-full sm:w-auto">
+                <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <Input
+                  placeholder="Search customers..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 w-full sm:w-64 h-10 text-base"
+                />
               </div>
             </div>
-
-            <div className="relative w-full sm:w-auto">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <Input
-                placeholder="Search customers..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 w-full sm:w-64 h-10 text-base"
-              />
-            </div>
           </div>
-        </div>
 
-        {/* Desktop Table View (lg and up) */}
-        <div className="hidden lg:block bg-white rounded-lg border shadow-sm">
-          <Table>
+          {/* Desktop Table View (lg and up) */}
+          <div className="hidden lg:block">
+            <Table>
             <TableHeader>
               <TableRow>
                 <SortableHeader column="customer">Customer</SortableHeader>
@@ -339,77 +341,78 @@ const CustomerHub: React.FC = () => {
           </Table>
         </div>
 
-        {/* Mobile Card View (below lg) */}
-        <div className="lg:hidden space-y-4">
-          {isLoading ? (
-            <div className="text-center py-8 text-gray-500">
-              Loading customers...
-            </div>
-          ) : filteredAndSortedCustomers.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              No customers found
-            </div>
-          ) : (
-            filteredAndSortedCustomers.map((customer) => (
-              <Link 
-                key={customer.id} 
-                to={`/customers/${customer.id}`}
-                className="block"
-              >
-                <EnhancedCard 
-                  variant="default" 
-                  className="p-4 hover:shadow-lg transition-all active:scale-[0.98] cursor-pointer"
+          {/* Mobile Card View (below lg) */}
+          <div className="lg:hidden space-y-4">
+            {isLoading ? (
+              <div className="text-center py-8 text-gray-500">
+                Loading customers...
+              </div>
+            ) : filteredAndSortedCustomers.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                No customers found
+              </div>
+            ) : (
+              filteredAndSortedCustomers.map((customer) => (
+                <Link 
+                  key={customer.id} 
+                  to={`/customers/${customer.id}`}
+                  className="block"
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1 min-w-0">
-                      {/* Customer Name */}
-                      <h3 className="text-lg font-bold text-gray-900 mb-2 truncate">
-                        {customer.name}
-                      </h3>
-                      
-                      {/* Type Badge */}
-                      {customer.customer_type && CUSTOMER_TYPES[customer.customer_type as keyof typeof CUSTOMER_TYPES] && (
-                        <Badge className={`bg-gradient-to-r ${getCustomerTypeGradient(customer.customer_type)} text-white border-0 font-bold px-3 py-1 rounded-full mb-3 inline-block`}>
-                          {formatCategoryDisplay(customer.customer_type)}
-                        </Badge>
-                      )}
-                      
-                      {/* Contact Info */}
-                      <div className="space-y-2 mt-3">
-                        {customer.phone && (
-                          <a 
-                            href={`tel:${customer.phone}`} 
-                            className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors min-h-[44px] -ml-2 pl-2"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <Phone className="w-4 h-4 flex-shrink-0" />
-                            <span className="text-base">{formatPhoneNumber(customer.phone)}</span>
-                          </a>
+                  <EnhancedCard 
+                    variant="default" 
+                    className="p-4 hover:shadow-lg transition-all active:scale-[0.98] cursor-pointer"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        {/* Customer Name */}
+                        <h3 className="text-lg font-bold text-gray-900 mb-2 truncate">
+                          {customer.name}
+                        </h3>
+                        
+                        {/* Type Badge */}
+                        {customer.customer_type && CUSTOMER_TYPES[customer.customer_type as keyof typeof CUSTOMER_TYPES] && (
+                          <Badge className={`bg-gradient-to-r ${getCustomerTypeGradient(customer.customer_type)} text-white border-0 font-bold px-3 py-1 rounded-full mb-3 inline-block`}>
+                            {formatCategoryDisplay(customer.customer_type)}
+                          </Badge>
                         )}
                         
-                        {customer.email && (
-                          <a 
-                            href={`mailto:${customer.email}`} 
-                            className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors min-h-[44px] -ml-2 pl-2 break-all"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <Mail className="w-4 h-4 flex-shrink-0" />
-                            <span className="text-base">{customer.email}</span>
-                          </a>
-                        )}
+                        {/* Contact Info */}
+                        <div className="space-y-2 mt-3">
+                          {customer.phone && (
+                            <a 
+                              href={`tel:${customer.phone}`} 
+                              className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors min-h-[44px] -ml-2 pl-2"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Phone className="w-4 h-4 flex-shrink-0" />
+                              <span className="text-base">{formatPhoneNumber(customer.phone)}</span>
+                            </a>
+                          )}
+                          
+                          {customer.email && (
+                            <a 
+                              href={`mailto:${customer.email}`} 
+                              className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors min-h-[44px] -ml-2 pl-2 break-all"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Mail className="w-4 h-4 flex-shrink-0" />
+                              <span className="text-base">{customer.email}</span>
+                            </a>
+                          )}
+                        </div>
                       </div>
+                      
+                      {/* Chevron Icon */}
+                      <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0 mt-1" />
                     </div>
-                    
-                    {/* Chevron Icon */}
-                    <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0 mt-1" />
-                  </div>
-                </EnhancedCard>
-              </Link>
-            ))
-          )}
+                  </EnhancedCard>
+                </Link>
+              ))
+            )}
+          </div>
         </div>
 
-      <SimpleCustomerModal 
+        <SimpleCustomerModal
         isOpen={isAddModalOpen} 
         onClose={() => setIsAddModalOpen(false)} 
       />
