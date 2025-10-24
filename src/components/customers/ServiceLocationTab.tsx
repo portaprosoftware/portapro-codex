@@ -1281,7 +1281,7 @@ export function ServiceLocationTab({ customerId }: ServiceLocationTabProps) {
   return (
     <div className="space-y-6">
       <div className="bg-card rounded-2xl p-4 sm:p-6">
-        <h3 className="text-lg font-semibold text-foreground mb-4">Service Locations</h3>
+        <h3 className="text-lg font-semibold text-foreground mb-3">Service Locations</h3>
         
         {/* Mobile Dropdown (< 1024px) */}
         <div className="mb-6 lg:hidden">
@@ -1310,7 +1310,7 @@ export function ServiceLocationTab({ customerId }: ServiceLocationTabProps) {
         </div>
 
         {/* Desktop Toggle Switch (≥ 1024px) */}
-        <div className="mb-6 hidden lg:flex">
+        <div className="mb-4 hidden lg:flex">
           <div className="bg-gray-100 p-1 rounded-lg flex">
             <button
               onClick={() => setActiveTab('addresses')}
@@ -1338,7 +1338,7 @@ export function ServiceLocationTab({ customerId }: ServiceLocationTabProps) {
         </div>
         
         {/* Active Tab Content */}
-        <div className="mt-6">
+        <div className="mt-4">
           {activeTab === 'addresses' ? (
             <ServiceAddressesSection customerId={customerId} />
           ) : (
