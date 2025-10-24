@@ -25,7 +25,7 @@ export const GlobalFilters: React.FC<GlobalFiltersProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
-  const [isPeriodComparisonOpen, setIsPeriodComparisonOpen] = useState(true);
+  const [isPeriodComparisonOpen, setIsPeriodComparisonOpen] = useState(false);
   const quickRanges = [
     { label: 'Last 7 Days', days: 7 },
     { label: 'Last 30 Days', days: 30 },
@@ -118,7 +118,8 @@ export const GlobalFilters: React.FC<GlobalFiltersProps> = ({
         </div>
         
         {/* Period Comparison Info - Collapsible */}
-        <Collapsible open={isPeriodComparisonOpen} onOpenChange={setIsPeriodComparisonOpen}>
+        <div className="mt-4">
+          <Collapsible open={isPeriodComparisonOpen} onOpenChange={setIsPeriodComparisonOpen}>
           <CollapsibleTrigger asChild>
             <Button variant="ghost" className="w-full justify-between p-3 h-auto hover:bg-gray-100 rounded-lg">
               <div className="flex items-center gap-2">
@@ -145,6 +146,7 @@ export const GlobalFilters: React.FC<GlobalFiltersProps> = ({
             </div>
           </CollapsibleContent>
         </Collapsible>
+        </div>
       </div>
 
       {/* Mobile/Tablet Date Range - Collapsible */}
