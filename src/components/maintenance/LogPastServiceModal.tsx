@@ -87,7 +87,7 @@ export const LogPastServiceModal: React.FC<LogPastServiceModalProps> = ({
         status: 'completed',
         scheduled_date: format(serviceDate, 'yyyy-MM-dd'),
         scheduled_time: serviceTime,
-        actual_completion: new Date().toISOString(),
+        actual_completion_time: new Date().toISOString(),
         notes: `Past service logged: ${formData.notes}`,
         service_id: formData.service_id,
       };
