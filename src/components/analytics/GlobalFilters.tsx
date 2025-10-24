@@ -5,7 +5,6 @@ import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Calendar, ChevronDown, Filter, X, Info } from 'lucide-react';
-import { Card } from '@/components/ui/card';
 import { format, differenceInDays } from 'date-fns';
 import { cn } from '@/lib/utils';
 
@@ -26,6 +25,7 @@ export const GlobalFilters: React.FC<GlobalFiltersProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const [isPeriodComparisonOpen, setIsPeriodComparisonOpen] = useState(true);
   const quickRanges = [
     { label: 'Last 7 Days', days: 7 },
     { label: 'Last 30 Days', days: 30 },
@@ -117,22 +117,34 @@ export const GlobalFilters: React.FC<GlobalFiltersProps> = ({
           </div>
         </div>
         
-        {/* Period Comparison Info */}
-        <div className="mt-4 p-3 bg-white border border-gray-200 rounded-lg shadow-sm">
-          <div className="flex items-start gap-3">
-            <Info className="w-4 h-4 text-gray-600 mt-0.5 flex-shrink-0" />
-            <div className="text-sm">
-              <p className="font-medium text-gray-900 mb-1">Period Comparison</p>
-              <div className="text-gray-700 space-y-1">
-                <p><span className="font-medium">Current Period:</span> {currentPeriodText} ({periodLength + 1} days)</p>
-                <p><span className="font-medium">Previous Period:</span> {previousPeriodText} ({periodLength + 1} days)</p>
-                <p className="text-gray-600 text-xs mt-2">
-                  Percentage changes in metrics compare the current period to the previous period of equal length.
-                </p>
+        {/* Period Comparison Info - Collapsible */}
+        <Collapsible open={isPeriodComparisonOpen} onOpenChange={setIsPeriodComparisonOpen}>
+          <CollapsibleTrigger asChild>
+            <Button variant="ghost" className="w-full justify-between p-3 h-auto hover:bg-gray-100 rounded-lg">
+              <div className="flex items-center gap-2">
+                <Info className="w-4 h-4 text-gray-600 flex-shrink-0" />
+                <span className="font-medium text-gray-900 text-sm">Period Comparison</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-500">expand / collapse</span>
+                <ChevronDown className={cn("w-4 h-4 text-gray-600 transition-transform", isPeriodComparisonOpen && "rotate-180")} />
+              </div>
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div className="mt-2 p-3 bg-white border border-gray-200 rounded-lg shadow-sm">
+              <div className="text-sm">
+                <div className="text-gray-700 space-y-1">
+                  <p><span className="font-medium">Current Period:</span> {currentPeriodText} ({periodLength + 1} days)</p>
+                  <p><span className="font-medium">Previous Period:</span> {previousPeriodText} ({periodLength + 1} days)</p>
+                  <p className="text-gray-600 text-xs mt-2">
+                    Percentage changes in metrics compare the current period to the previous period of equal length.
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
+          </CollapsibleContent>
+        </Collapsible>
       </div>
 
       {/* Mobile/Tablet Date Range - Collapsible */}
@@ -170,19 +182,28 @@ export const GlobalFilters: React.FC<GlobalFiltersProps> = ({
               <ChevronDown className="w-3 h-3 ml-1" />
             </Button>
 
-            {/* Period Comparison Info */}
-            <div className="p-3 bg-white border border-gray-200 rounded-lg shadow-sm">
-              <div className="flex items-start gap-3">
-                <Info className="w-4 h-4 text-gray-600 mt-0.5 flex-shrink-0" />
-                <div className="text-xs">
-                  <p className="font-medium text-gray-900 mb-1">Period Comparison</p>
-                  <div className="text-gray-700 space-y-1">
-                    <p><span className="font-medium">Current:</span> {currentPeriodText} ({periodLength + 1}d)</p>
-                    <p><span className="font-medium">Previous:</span> {previousPeriodText} ({periodLength + 1}d)</p>
+            {/* Period Comparison Info - Collapsible */}
+            <Collapsible open={isPeriodComparisonOpen} onOpenChange={setIsPeriodComparisonOpen}>
+              <CollapsibleTrigger asChild>
+                <Button variant="ghost" className="w-full justify-between p-3 h-auto hover:bg-gray-100 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <Info className="w-4 h-4 text-gray-600 flex-shrink-0" />
+                    <span className="font-medium text-gray-900 text-xs">Period Comparison</span>
+                  </div>
+                  <ChevronDown className={cn("w-3 h-3 text-gray-600 transition-transform", isPeriodComparisonOpen && "rotate-180")} />
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <div className="mt-2 p-3 bg-white border border-gray-200 rounded-lg shadow-sm">
+                  <div className="text-xs">
+                    <div className="text-gray-700 space-y-1">
+                      <p><span className="font-medium">Current:</span> {currentPeriodText} ({periodLength + 1}d)</p>
+                      <p><span className="font-medium">Previous:</span> {previousPeriodText} ({periodLength + 1}d)</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
+              </CollapsibleContent>
+            </Collapsible>
           </CollapsibleContent>
         </Collapsible>
       </div>
