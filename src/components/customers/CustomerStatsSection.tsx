@@ -124,13 +124,13 @@ export function CustomerStatsSection({ customerId }: CustomerStatsSectionProps) 
           delay={300}
         />
       ) : (
-        <Card className="relative overflow-hidden transition-all duration-300 ease-out bg-gradient-to-b from-[#F6F9FF] to-white rounded-xl border border-gray-200 shadow-sm p-4 h-32">
+        <Card className="relative overflow-hidden transition-all duration-300 ease-out bg-gradient-to-b from-[#F6F9FF] to-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:-translate-y-1 p-5 md:p-4 min-h-[140px] md:h-32">
           <div className="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl bg-gradient-to-b from-purple-500 to-purple-700" />
           
           <div className="flex items-center justify-between h-full">
-            <div className="flex-1">
-              <div className="text-lg font-bold text-gray-900 mb-1">No upcoming jobs</div>
-              <div className="text-sm text-gray-600">Next Scheduled Job</div>
+            <div className="flex-1 min-w-0">
+              <div className="text-2xl md:text-xl font-bold text-gray-900 leading-tight mb-1">No upcoming jobs</div>
+              <div className="text-sm font-semibold text-gray-900 font-sans leading-tight">Next Scheduled Job</div>
             </div>
             
             <div className="w-12 h-12 rounded-lg flex items-center justify-center shadow-md flex-shrink-0 ml-3 bg-gradient-to-br from-purple-500 to-purple-700">
