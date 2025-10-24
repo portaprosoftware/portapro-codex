@@ -85,7 +85,7 @@ export function CustomerTabs({ customer }: CustomerTabsProps) {
   return (
     <div className="w-full">
       {/* Mobile/Tablet Drawer Navigation (< 1024px) */}
-      <div className="mb-6 lg:hidden">
+      <div className="mb-4 lg:hidden">
         <Label htmlFor="section-drawer" className="text-sm font-medium mb-2 block">
           Section
         </Label>
@@ -141,8 +141,8 @@ export function CustomerTabs({ customer }: CustomerTabsProps) {
         </Drawer>
       </div>
 
-      {/* Desktop Tab Navigation (>= 1024px) */}
-      <div className="mb-6 hidden lg:block">
+      {/* Desktop Tab Navigation (>= 1024px) - Inline with bottom border */}
+      <div className="mb-4 hidden lg:block border-b border-gray-200">
         <TabNav ariaLabel="Customer sections">
           <TabNav.Item 
             to="#overview" 
@@ -204,7 +204,7 @@ export function CustomerTabs({ customer }: CustomerTabsProps) {
       </div>
 
       {/* Active Tab Content */}
-      <div className="mt-6">
+      <div className="mt-4">
         {renderActiveTabContent()}
       </div>
     </div>

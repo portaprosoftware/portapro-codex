@@ -153,7 +153,7 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
   );
 
   return (
-    <div className="space-y-3 md:space-y-6">
+    <div className="space-y-4">
       {/* Contact Information */}
       <Card className="rounded-xl md:rounded-2xl">
         <CardHeader className="flex flex-row items-center justify-between p-4 md:p-6">
