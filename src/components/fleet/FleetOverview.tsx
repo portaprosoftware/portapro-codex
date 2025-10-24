@@ -187,8 +187,8 @@ export const FleetOverview: React.FC = () => {
 
   return (
     <div className="space-y-6 px-4 overflow-x-hidden">
-      {/* Stats and Compliance Card */}
-      <div className="bg-white rounded-xl border shadow-sm p-4 lg:p-6">
+      {/* Single White Card - All Content */}
+      <div className="bg-white rounded-xl border shadow-sm p-4 lg:p-6 space-y-6">
         {/* Stats Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 lg:gap-4">
           <div className="bg-card p-3 rounded-lg border shadow-sm text-center">
@@ -210,7 +210,7 @@ export const FleetOverview: React.FC = () => {
         </div>
 
         {/* Spill Kit Compliance Widget */}
-        <div className="mt-6">
+        <div>
           <Collapsible
             open={!isSpillKitCollapsed}
             onOpenChange={(open) => setIsSpillKitCollapsed(!open)}
@@ -292,13 +292,14 @@ export const FleetOverview: React.FC = () => {
             </div>
           </Collapsible>
         </div>
-      </div>
 
+        {/* Divider */}
+        <div className="border-t" />
 
-      {/* Vehicle Controls and Filters Card */}
-      <div className="bg-white rounded-xl border shadow-sm p-4 lg:p-6">
-        {/* Controls */}
-        <div className="flex flex-col lg:flex-row gap-3 lg:gap-4 mb-4 lg:mb-6">
+        {/* Vehicle Controls and Filters */}
+        <div className="space-y-4">
+          {/* Controls */}
+          <div className="flex flex-col lg:flex-row gap-3 lg:gap-4">
           {/* Search - Full width on mobile, flex on desktop */}
           <div className="flex-1">
             <div className="relative">
@@ -406,11 +407,13 @@ export const FleetOverview: React.FC = () => {
             );
           })}
         </div>
-      </div>
+        </div>
 
+        {/* Divider */}
+        <div className="border-t" />
 
-      {/* Vehicle Grid/List */}
-      <div className={cn(
+        {/* Vehicle Grid/List */}
+        <div className={cn(
         viewMode === "grid" 
           ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4" 
           : "space-y-3 lg:space-y-4"
@@ -423,10 +426,10 @@ export const FleetOverview: React.FC = () => {
             onManage={handleManageVehicle}
           />
         ))}
-      </div>
+        </div>
 
-      {filteredVehicles?.length === 0 && (
-        <div className="text-center py-12 bg-white rounded-lg border shadow-sm">
+        {filteredVehicles?.length === 0 && (
+          <div className="text-center py-12">
           <Truck className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
           <p className="text-base font-normal text-gray-500 mb-4">No vehicles found matching your criteria.</p>
           {searchQuery && (
@@ -437,8 +440,9 @@ export const FleetOverview: React.FC = () => {
               Clear filters
             </Button>
           )}
-        </div>
-      )}
+          </div>
+        )}
+      </div>
 
       {/* Floating Action Button - Mobile Only */}
       <button
