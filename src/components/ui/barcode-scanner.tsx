@@ -61,7 +61,7 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
             </ul>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div>
             <Input
               ref={inputRef}
               value={code}
@@ -69,16 +69,11 @@ export const BarcodeScannerModal: React.FC<BarcodeScannerModalProps> = ({
               onChange={(e) => setCode(e.target.value)}
               onKeyDown={handleKey}
             />
-            <Button onClick={submit}>Submit</Button>
-          </div>
-
-          <div className="flex items-center gap-2 text-xs">
-            <Badge variant="secondary">Camera access not required</Badge>
-            <span className="text-muted-foreground">Mobile scanning removed</span>
           </div>
 
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={onClose}>Close</Button>
+            <Button onClick={submit}>Submit</Button>
           </div>
         </div>
       </DialogContent>
