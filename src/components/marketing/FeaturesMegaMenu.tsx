@@ -50,11 +50,19 @@ export const FeaturesMegaMenu = forwardRef<FeaturesMegaMenuRef, FeaturesMegaMenu
                   return (
                     <li key={item.key}>
                       <button
-                        onClick={() => {
-                          if (onFeatureClick) {
-                            onFeatureClick(sectionId);
-                          }
+                        onClick={(e) => {
+                          // Close popover immediately
                           setOpen(false);
+                          
+                          // Remove focus from button to prevent scroll hijacking
+                          e.currentTarget.blur();
+                          
+                          // Defer scroll until after popover close animation
+                          if (onFeatureClick) {
+                            setTimeout(() => {
+                              onFeatureClick(sectionId);
+                            }, 50);
+                          }
                         }}
                         className={cn(
                           'group flex items-start gap-3 rounded-lg p-2 transition-colors w-full text-left',

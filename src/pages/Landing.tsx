@@ -246,20 +246,27 @@ export const Landing: React.FC = () => {
   };
 
   const scrollToSection = (sectionId: string) => {
+    // Increased delay to ensure popover closes fully before scrolling
     setTimeout(() => {
       const element = document.getElementById(sectionId);
       if (element) {
         const headerHeight = 56;
         const additionalOffset = 120;
-        const elementRect = element.getBoundingClientRect();
-        const absoluteElementTop = elementRect.top + window.pageYOffset;
-        const targetPosition = absoluteElementTop - headerHeight - additionalOffset;
-        window.scrollTo({
-          top: Math.max(0, targetPosition),
-          behavior: 'smooth'
+        
+        // Use requestAnimationFrame for smoother scroll timing
+        requestAnimationFrame(() => {
+          const elementRect = element.getBoundingClientRect();
+          const absoluteElementTop = elementRect.top + window.pageYOffset;
+          const targetPosition = absoluteElementTop - headerHeight - additionalOffset;
+          window.scrollTo({
+            top: Math.max(0, targetPosition),
+            behavior: 'smooth'
+          });
         });
+      } else {
+        console.warn(`Section with id "${sectionId}" not found`);
       }
-    }, 100);
+    }, 250);
   };
 
   // Team KPIs (live) for landing visualizations
