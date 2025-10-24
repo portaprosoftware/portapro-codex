@@ -21,18 +21,26 @@ serve(async (req) => {
       throw new Error('OpenAI API key not configured');
     }
 
+    console.log('Generating customer email with params:', { emailType, tone, customPromptLength: customPrompt?.length });
+
     // Build comprehensive prompt with typo correction
-    const systemPrompt = `You are an expert email assistant for a portable toilet rental company. Always correct any spelling or grammar mistakes in the user's text before rewriting. Create professional, ready-to-send emails that maintain the user's original intent while fixing any errors.`;
+    const systemPrompt = `You are an expert email assistant for a portable toilet rental company. Always correct any spelling or grammar mistakes in the user's text before rewriting. Create professional, ready-to-send emails that maintain the user's original intent while fixing any errors.
+
+Return ONLY valid JSON with "subject" and "content" fields. Do not wrap in markdown code blocks.`;
 
     const userPrompt = `First correct any spelling or grammar errors in the following text, then rewrite it as a ready-to-send email in a ${tone} tone for a ${emailType} email.
 
 User input (may contain typos): "${customPrompt}"
 
-Please generate:
-1. An appropriate subject line
-2. A complete email body that incorporates the corrected user input
+Generate a JSON response with:
+1. "subject": An appropriate subject line
+2. "content": A complete email body that incorporates the corrected user input
 
-The email should be professional yet ${tone}, appropriate for our portable toilet rental business, and ready to send to a customer.`;
+The email should be professional yet ${tone}, appropriate for our portable toilet rental business, and ready to send to a customer.
+
+Example format: {"subject": "Service Update for Your Account", "content": "Dear Customer,\\n\\nWe wanted to reach out...\\n\\nBest regards"}`;
+
+    console.log('Calling OpenAI API with gpt-5-mini-2025-08-07...');
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -41,61 +49,73 @@ The email should be professional yet ${tone}, appropriate for our portable toile
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-5-mini-2025-08-07',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
         ],
-        temperature: 0.7,
-        max_tokens: 1000,
+        max_completion_tokens: 1000,
+        response_format: { type: "json_object" }
       }),
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`OpenAI API error: ${errorData.error?.message || 'Unknown error'}`);
+      const errorText = await response.text();
+      console.error('OpenAI API error response:', errorText);
+      throw new Error(`OpenAI API error: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
+    console.log('OpenAI response received');
+    
     const generatedText = data.choices[0].message.content;
 
-    // Parse the response to extract subject and body
-    const lines = generatedText.split('\n');
-    let subject = '';
-    let content = '';
-    let isBody = false;
+    // Parse JSON response
+    let result;
+    try {
+      result = JSON.parse(generatedText);
+    } catch (parseError) {
+      console.error('Failed to parse JSON response:', parseError);
+      // Fallback parsing if JSON fails
+      const lines = generatedText.split('\n');
+      let subject = '';
+      let content = '';
+      let isBody = false;
 
-    for (const line of lines) {
-      if (line.toLowerCase().includes('subject:')) {
-        subject = line.replace(/subject:\s*/i, '').trim();
-      } else if (line.toLowerCase().includes('body:') || line.toLowerCase().includes('email:')) {
-        isBody = true;
-        continue;
-      } else if (isBody || (!subject && line.trim())) {
-        content += line + '\n';
+      for (const line of lines) {
+        if (line.toLowerCase().includes('subject:')) {
+          subject = line.replace(/subject:\s*/i, '').trim();
+        } else if (line.toLowerCase().includes('body:') || line.toLowerCase().includes('email:')) {
+          isBody = true;
+          continue;
+        } else if (isBody || (!subject && line.trim())) {
+          content += line + '\n';
+        }
       }
-    }
 
-    // If parsing fails, use the entire response as content and generate a simple subject
-    if (!subject) {
-      subject = `${emailType.charAt(0).toUpperCase() + emailType.slice(1)} - Important Update`;
-      content = generatedText;
-    }
+      if (!subject) {
+        subject = `${emailType.charAt(0).toUpperCase() + emailType.slice(1)} - Important Update`;
+        content = generatedText;
+      }
 
-    content = content.trim();
+      result = { subject: subject.trim(), content: content.trim() };
+    }
 
     console.log('Email generated successfully');
 
     return new Response(JSON.stringify({ 
-      subject: subject.trim(),
-      content: content,
+      subject: result.subject || `${emailType.charAt(0).toUpperCase() + emailType.slice(1)} - Important Update`,
+      content: result.content || generatedText,
       originalPrompt: customPrompt
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
     console.error('Error in generate-customer-email function:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ 
+      error: error.message,
+      details: error.toString()
+    }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
