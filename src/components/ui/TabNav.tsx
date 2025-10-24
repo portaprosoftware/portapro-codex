@@ -26,12 +26,13 @@ const TabNavItem: React.FC<TabNavItemProps> = ({ to, isActive, children, onClick
     <button
       type="button"
       className={cn(
-        "px-4 py-3 font-medium text-sm transition-all duration-200 font-inter relative",
+        "px-4 py-2 rounded-full font-medium text-sm transition-all duration-200 font-inter",
         "flex items-center gap-2",
         "focus:outline-none",
+        "transform hover:-translate-y-0.5",
         isActive 
-          ? "text-blue-600 font-semibold after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-blue-600" 
-          : "text-gray-600 hover:text-gray-900"
+          ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold shadow-sm" 
+          : "bg-white text-gray-700 border border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-gray-300 hover:shadow-sm"
       )}
       onClick={handleClick}
       aria-current={isActive ? "page" : undefined}
@@ -46,7 +47,7 @@ export const TabNav: React.FC<TabNavProps> & { Item: typeof TabNavItem } = ({
   children 
 }) => {
   return (
-    <nav aria-label={ariaLabel} className="flex items-center space-x-6 -mb-px">
+    <nav aria-label={ariaLabel} className="flex items-center space-x-1">
       {children}
     </nav>
   );
