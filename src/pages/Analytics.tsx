@@ -16,6 +16,7 @@ import { CustomersSection } from '@/components/analytics/CustomersSection';
 import { DriversSection } from '@/components/analytics/DriversSection';
 import { DepositsSection } from '@/components/analytics/DepositsSection';
 import { ReportBuilder } from '@/components/analytics/ReportBuilder';
+import { SavedReportsSection } from '@/components/analytics/SavedReportsSection';
 
 const Analytics = () => {
   const { hasAdminAccess } = useUserRole();
@@ -47,17 +48,13 @@ const Analytics = () => {
     { id: 'operations', label: 'Operations', icon: ClipboardList },
     { id: 'customers', label: 'Customers', icon: Users2 },
     { id: 'drivers', label: 'Drivers', icon: Gauge },
-    { id: 'reports', label: 'Reports', icon: FileText }
+    { id: 'reports', label: 'Saved Reports', icon: FileText }
   ];
 
   const handleTabClick = (tabId: string) => {
-    if (tabId === 'reports') {
-      navigate('/analytics/reports');
-    } else {
-      setActiveTab(tabId);
-      setIsReportBuilderOpen(false);
-      setTabSheetOpen(false);
-    }
+    setActiveTab(tabId);
+    setIsReportBuilderOpen(false);
+    setTabSheetOpen(false);
   };
 
   const renderActiveSection = () => {
@@ -74,6 +71,8 @@ const Analytics = () => {
         return <CustomersSection dateRange={dateRange} />;
       case 'drivers':
         return <DriversSection dateRange={dateRange} />;
+      case 'reports':
+        return <SavedReportsSection />;
       default:
         return <OverviewSection dateRange={dateRange} />;
     }
