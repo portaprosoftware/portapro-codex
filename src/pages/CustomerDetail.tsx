@@ -78,8 +78,8 @@ export default function CustomerDetail() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-6 py-6 space-y-6">
+    <div className="min-h-screen bg-gray-50 overflow-x-hidden">
+      <div className="max-w-none px-2 md:px-4 py-6 space-y-6">
         {/* Header Card with Customer Info and Tab Navigation */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 pb-4">
           {/* Top Row: Breadcrumb, Back Button, and Customer Name */}
