@@ -64,10 +64,13 @@ export const PhonePreview: React.FC<PhonePreviewProps> = ({ template }) => {
             )}
           </div>
 
-          {/* Submit Button */}
+          {/* Action Buttons */}
           {template.sections && template.sections.length > 0 && (
-            <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t">
-              <button className="w-full bg-gradient-to-r from-primary to-primary/80 text-white font-semibold py-3 rounded-lg">
+            <div className="p-4 space-y-2">
+              <button className="w-full border rounded-lg font-medium py-2.5 text-sm bg-background">
+                Save Draft
+              </button>
+              <button className="w-full bg-gradient-to-r from-primary to-primary/80 text-white font-semibold py-2.5 rounded-lg text-sm">
                 Submit Report
               </button>
             </div>
