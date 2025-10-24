@@ -125,41 +125,31 @@ export const CustomerSegments: React.FC = () => {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">Customer Segments</h2>
-          <p className="text-muted-foreground">
-            Create and manage customer segments for targeted marketing.
-          </p>
-        </div>
-        <SmartSegmentBuilder />
-      </div>
-
-      {/* Segments List */}
-      {segments.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-16">
-            <Users className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No segments yet</h3>
-            <p className="text-muted-foreground text-center mb-6">
-              Get started by creating your first customer segment.
-            </p>
-            <SmartSegmentBuilder />
-          </CardContent>
-        </Card>
+    <div className="space-y-6">
+      {/* Single White Card - All Content */}
+      <Card>
+        <CardContent className="p-4 md:p-6">
+          {segments.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16">
+              <Users className="h-12 w-12 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-semibold mb-2">No segments yet</h3>
+              <p className="text-muted-foreground text-center mb-6">
+                Get started by creating your first customer segment.
+              </p>
+              <SmartSegmentBuilder />
+            </div>
       ) : (
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5" />
-                  Customer Segments ({segments.length})
-                </CardTitle>
-              </div>
-              <div className="relative w-80">
+        <>
+          {/* Header with Search and Create Button */}
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                Customer Segments ({segments.length})
+              </CardTitle>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="relative w-64">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Search segments..."
@@ -176,121 +166,123 @@ export const CustomerSegments: React.FC = () => {
                   </button>
                 )}
               </div>
+              <SmartSegmentBuilder />
             </div>
-          </CardHeader>
-          <CardContent className="p-0">
-            {filteredAndSortedSegments.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-16">
-                <Users className="h-12 w-12 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No segments found</h3>
-                <p className="text-muted-foreground text-center mb-6">
-                  No segments match "{searchQuery}". Try adjusting your search criteria.
-                </p>
-                <Button 
-                  variant="outline" 
-                  onClick={() => setSearchQuery('')}
-                  className="mb-4"
-                >
-                  Clear Search
-                </Button>
-                <SmartSegmentBuilder />
-              </div>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead>Customers</TableHead>
-                    <TableHead>Created</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                {filteredAndSortedSegments.map((segment) => (
-                  <TableRow key={segment.id}>
-                    <TableCell className="font-medium">
-                      <div className="flex items-center gap-2">
-                        {segment.name}
-                        <Badge variant="outline" className="text-xs">
-                          Active
-                        </Badge>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="text-sm text-muted-foreground max-w-md truncate">
-                        {segment.description || 'No description provided'}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Users className="h-4 w-4 text-muted-foreground" />
-                        <span className="font-medium">
-                          {segment.customer_count.toLocaleString()}
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="text-sm text-muted-foreground">
-                        {new Date(segment.created_at).toLocaleDateString()}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="outline" size="sm">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="bg-background border z-50">
-                          <DropdownMenuItem onClick={() => handleViewSegment(segment)}>
-                            <Eye className="w-4 h-4 mr-2" />
-                            View Details
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleEditSegment(segment)}>
-                            <Edit className="w-4 h-4 mr-2" />
-                            Edit Segment
-                          </DropdownMenuItem>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <DropdownMenuItem
-                                onSelect={(e) => e.preventDefault()}
-                                className="text-red-600 focus:text-red-600 cursor-pointer"
+          </div>
+          {/* Segments Table */}
+          {filteredAndSortedSegments.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16">
+              <Users className="h-12 w-12 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-semibold mb-2">No segments found</h3>
+              <p className="text-muted-foreground text-center mb-6">
+                No segments match "{searchQuery}". Try adjusting your search criteria.
+              </p>
+              <Button 
+                variant="outline" 
+                onClick={() => setSearchQuery('')}
+                className="mb-4"
+              >
+                Clear Search
+              </Button>
+              <SmartSegmentBuilder />
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Description</TableHead>
+                  <TableHead>Customers</TableHead>
+                  <TableHead>Created</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+              {filteredAndSortedSegments.map((segment) => (
+                <TableRow key={segment.id}>
+                  <TableCell className="font-medium">
+                    <div className="flex items-center gap-2">
+                      {segment.name}
+                      <Badge variant="outline" className="text-xs">
+                        Active
+                      </Badge>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="text-sm text-muted-foreground max-w-md truncate">
+                      {segment.description || 'No description provided'}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                      <span className="font-medium">
+                        {segment.customer_count.toLocaleString()}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="text-sm text-muted-foreground">
+                      {new Date(segment.created_at).toLocaleDateString()}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm">
+                          <span className="sr-only">Open menu</span>
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="bg-background border z-50">
+                        <DropdownMenuItem onClick={() => handleViewSegment(segment)}>
+                          <Eye className="w-4 h-4 mr-2" />
+                          View Details
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleEditSegment(segment)}>
+                          <Edit className="w-4 h-4 mr-2" />
+                          Edit Segment
+                        </DropdownMenuItem>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <DropdownMenuItem
+                              onSelect={(e) => e.preventDefault()}
+                              className="text-red-600 focus:text-red-600 cursor-pointer"
+                            >
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              Delete Segment
+                            </DropdownMenuItem>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete Segment</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to delete "{segment.name}"? This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDeleteSegment(segment.id)}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                               >
-                                <Trash2 className="w-4 h-4 mr-2" />
-                                Delete Segment
-                              </DropdownMenuItem>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Delete Segment</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Are you sure you want to delete "{segment.name}"? This action cannot be undone.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => handleDeleteSegment(segment.id)}
-                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                >
-                                  Delete
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+              </TableBody>
+            </Table>
+          )}
+        </>
       )}
+        </CardContent>
+      </Card>
 
       {/* Edit Dialog */}
       {editingSegment && (
