@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { 
   Fuel, 
   DollarSign, 
@@ -13,7 +14,9 @@ import {
   Container,
   TruckIcon as MobileVendor,
   Calendar,
-  ArrowRight
+  ArrowRight,
+  ChevronDown,
+  ChevronRight
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
@@ -71,6 +74,7 @@ interface RecentLog {
 
 export const FuelOverviewTab: React.FC = () => {
   const navigate = useNavigate();
+  const [isSourceBreakdownOpen, setIsSourceBreakdownOpen] = useState(false);
 
   // Fetch last 30 days metrics
   const { data: metrics, isLoading: metricsLoading } = useQuery({
@@ -196,48 +200,64 @@ export const FuelOverviewTab: React.FC = () => {
 
       {/* Fuel Source Breakdown */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Fuel Source Breakdown</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center divide-x">
-            <div className="flex items-center justify-between p-4 flex-1">
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg">
-                  <Fuel className="h-5 w-5 text-white font-bold stroke-[2.5]" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">{metrics?.retailCount || 0}</p>
-                  <p className="text-sm font-semibold text-gray-700">Retail Stations</p>
+        <Collapsible open={isSourceBreakdownOpen} onOpenChange={setIsSourceBreakdownOpen}>
+          <CardHeader>
+            <CollapsibleTrigger asChild>
+              <div className="flex items-center justify-between cursor-pointer group">
+                <CardTitle className="text-lg">Fuel Source Breakdown</CardTitle>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+                  <span>Expand/Collapse</span>
+                  {isSourceBreakdownOpen ? (
+                    <ChevronDown className="h-4 w-4" />
+                  ) : (
+                    <ChevronRight className="h-4 w-4" />
+                  )}
                 </div>
               </div>
-            </div>
+            </CollapsibleTrigger>
+          </CardHeader>
+          <CollapsibleContent>
+            <CardContent>
+              <div className="flex items-center divide-x">
+                <div className="flex items-center justify-between p-4 flex-1">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg">
+                      <Fuel className="h-5 w-5 text-white font-bold stroke-[2.5]" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-gray-900">{metrics?.retailCount || 0}</p>
+                      <p className="text-sm font-semibold text-gray-700">Retail Stations</p>
+                    </div>
+                  </div>
+                </div>
 
-            <div className="flex items-center justify-between p-4 flex-1">
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-lg">
-                  <Container className="h-5 w-5 text-white font-bold stroke-[2.5]" />
+                <div className="flex items-center justify-between p-4 flex-1">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-lg">
+                      <Container className="h-5 w-5 text-white font-bold stroke-[2.5]" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-gray-900">{metrics?.yardTankCount || 0}</p>
+                      <p className="text-sm font-semibold text-gray-700">Yard Tank</p>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">{metrics?.yardTankCount || 0}</p>
-                  <p className="text-sm font-semibold text-gray-700">Yard Tank</p>
-                </div>
-              </div>
-            </div>
 
-            <div className="flex items-center justify-between p-4 flex-1">
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg">
-                  <MobileVendor className="h-5 w-5 text-white font-bold stroke-[2.5]" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">{metrics?.mobileCount || 0}</p>
-                  <p className="text-sm font-semibold text-gray-700">Mobile Vendor</p>
+                <div className="flex items-center justify-between p-4 flex-1">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg">
+                      <MobileVendor className="h-5 w-5 text-white font-bold stroke-[2.5]" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-gray-900">{metrics?.mobileCount || 0}</p>
+                      <p className="text-sm font-semibold text-gray-700">Mobile Vendor</p>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </CardContent>
+            </CardContent>
+          </CollapsibleContent>
+        </Collapsible>
       </Card>
 
       {/* Recent Activity */}
