@@ -381,7 +381,7 @@ export const AddVehicleModal: React.FC<AddVehicleModalProps> = ({
                           <SelectValue placeholder="Select fuel type" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
+                      <SelectContent className="z-[100]">
                         <SelectItem value="gasoline">Gasoline</SelectItem>
                         <SelectItem value="diesel">Diesel</SelectItem>
                         <SelectItem value="electric">Electric</SelectItem>
@@ -421,7 +421,7 @@ export const AddVehicleModal: React.FC<AddVehicleModalProps> = ({
                           <SelectValue placeholder="Select status" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
+                      <SelectContent className="z-[100]">
                         <SelectItem value="active">Active</SelectItem>
                         <SelectItem value="maintenance">Maintenance</SelectItem>
                         <SelectItem value="retired">Retired</SelectItem>
@@ -573,7 +573,7 @@ export const AddVehicleModal: React.FC<AddVehicleModalProps> = ({
               )}
             />
 
-            <div className="flex gap-3 justify-end sticky bottom-0 bg-background border-t pt-4 -mx-6 px-6 pb-6">
+            <div className="flex gap-3 justify-end sticky bottom-0 bg-background border-t pt-4 -mx-6 px-6 pb-6 z-10">
               <Button type="button" variant="outline" onClick={onClose}>
                 Cancel
               </Button>
