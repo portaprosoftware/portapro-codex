@@ -1,7 +1,7 @@
 
 import React, { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Upload, Plus, Search, Filter, Eye, ChevronUp, ChevronDown, ChevronsUpDown, ChevronRight, Phone, Mail, Check } from "lucide-react";
+import { Upload, Plus, Search, Filter, Eye, EyeOff, ChevronUp, ChevronDown, ChevronsUpDown, ChevronRight, Phone, Mail, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -57,6 +57,7 @@ const CustomerHub: React.FC = () => {
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [sortColumn, setSortColumn] = useState<SortColumn>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>('default');
+  const [showLastDelivery, setShowLastDelivery] = useState(true);
 
   // Handle column sorting
   const handleSort = (column: SortColumn) => {
@@ -346,7 +347,37 @@ const CustomerHub: React.FC = () => {
                 <SortableHeader column="type">Type</SortableHeader>
                 <TableHead className="font-medium text-gray-900">Phone</TableHead>
                 <TableHead className="font-medium text-gray-900">Email</TableHead>
-                <SortableHeader column="last_delivery">Days Since Last Delivery</SortableHeader>
+                {showLastDelivery && (
+                  <SortableHeader column="last_delivery">
+                    <div className="flex items-center gap-2">
+                      Days Since Last Delivery
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 w-6 p-0 hover:bg-gray-200"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowLastDelivery(false);
+                        }}
+                      >
+                        <EyeOff className="h-3.5 w-3.5 text-gray-500" />
+                      </Button>
+                    </div>
+                  </SortableHeader>
+                )}
+                {!showLastDelivery && (
+                  <TableHead className="font-medium text-gray-900 w-12">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 hover:bg-gray-200"
+                      onClick={() => setShowLastDelivery(true)}
+                      title="Show Days Since Last Delivery"
+                    >
+                      <Eye className="h-4 w-4 text-gray-500" />
+                    </Button>
+                  </TableHead>
+                )}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -387,15 +418,20 @@ const CustomerHub: React.FC = () => {
                     </TableCell>
                     <TableCell>{formatPhoneNumber(customer.phone) || '-'}</TableCell>
                     <TableCell>{customer.email || '-'}</TableCell>
-                    <TableCell>
-                      {customer.days_since_last_delivery !== null ? (
-                        <span className={getDaysColorClass(customer.days_since_last_delivery)}>
-                          {customer.days_since_last_delivery} {customer.days_since_last_delivery === 1 ? 'day' : 'days'}
-                        </span>
-                      ) : (
-                        <span className="text-gray-400">Never</span>
-                      )}
-                    </TableCell>
+                    {showLastDelivery && (
+                      <TableCell>
+                        {customer.days_since_last_delivery !== null ? (
+                          <span className={getDaysColorClass(customer.days_since_last_delivery)}>
+                            {customer.days_since_last_delivery} {customer.days_since_last_delivery === 1 ? 'day' : 'days'}
+                          </span>
+                        ) : (
+                          <span className="text-gray-400">Never</span>
+                        )}
+                      </TableCell>
+                    )}
+                    {!showLastDelivery && (
+                      <TableCell className="w-12" />
+                    )}
                   </TableRow>
                 ))
               )}
