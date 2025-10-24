@@ -130,23 +130,27 @@ export function CustomerFinancialTab({ customerId }: CustomerFinancialTabProps) 
 
       {/* Financial Records Tabs */}
       <div className="bg-card rounded-2xl border shadow-sm">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="w-full justify-start border-b border-border rounded-none bg-transparent p-0">
-            <TabsTrigger 
-              value="quotes" 
-              className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
-            >
-              Quotes ({quotes.length})
-            </TabsTrigger>
-            <TabsTrigger 
-              value="invoices"
-              className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
-            >
-              Invoices ({invoices.length})
-            </TabsTrigger>
-          </TabsList>
+        <div className="p-6 pb-0">
+          <h2 className="text-lg font-semibold font-inter">Financial Records</h2>
+          <p className="text-sm text-muted-foreground mb-4">View quotes and invoices for this customer</p>
+          
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="w-full justify-start bg-transparent p-0 h-auto gap-2">
+              <TabsTrigger 
+                value="quotes" 
+                className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium px-4 py-2 rounded-full data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:shadow-lg"
+              >
+                Quotes ({quotes.length})
+              </TabsTrigger>
+              <TabsTrigger 
+                value="invoices"
+                className="bg-gradient-to-r from-green-500 to-green-600 text-white font-medium px-4 py-2 rounded-full data-[state=active]:from-green-600 data-[state=active]:to-green-700 data-[state=active]:shadow-lg"
+              >
+                Invoices ({invoices.length})
+              </TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="quotes" className="p-6">
+          <TabsContent value="quotes" className="pt-6">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -202,7 +206,7 @@ export function CustomerFinancialTab({ customerId }: CustomerFinancialTabProps) 
             </Table>
           </TabsContent>
 
-          <TabsContent value="invoices" className="p-6">
+          <TabsContent value="invoices" className="pt-6">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -257,7 +261,8 @@ export function CustomerFinancialTab({ customerId }: CustomerFinancialTabProps) 
               </TableBody>
             </Table>
           </TabsContent>
-        </Tabs>
+          </Tabs>
+        </div>
       </div>
     </div>
   );
