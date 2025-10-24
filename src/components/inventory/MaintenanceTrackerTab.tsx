@@ -315,7 +315,7 @@ export const MaintenanceTrackerTab: React.FC<MaintenanceTrackerTabProps> = ({ pr
       </div>
 
       {/* Badge Below Card */}
-      <div className="flex flex-col gap-2">
+      <div className="flex items-center gap-2">
         <Badge className="bg-gradient-to-r from-orange-600 to-orange-500 text-white font-bold w-fit">
           {maintenanceItems?.length || 0} {maintenanceItems?.length === 1 ? 'Unit' : 'Units'}
         </Badge>
