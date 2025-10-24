@@ -106,7 +106,7 @@ export default function CustomerDetail() {
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                      <BreadcrumbPage>{customer.name}</BreadcrumbPage>
+                      <BreadcrumbPage className="text-xl font-bold">{customer.name}</BreadcrumbPage>
                     </BreadcrumbItem>
                   </BreadcrumbList>
                 </Breadcrumb>
