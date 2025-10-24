@@ -91,10 +91,10 @@ export default function CustomerDetail() {
                 <Link to="/customer-hub">
                   <Button 
                     size="sm"
-                    variant="ghost"
-                    className="h-auto p-0 hover:bg-transparent text-blue-600 hover:text-blue-700"
+                    className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold border-0"
                   >
-                    <ArrowLeft className="w-4 h-4" />
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    Customer List
                   </Button>
                 </Link>
                 <Breadcrumb>
