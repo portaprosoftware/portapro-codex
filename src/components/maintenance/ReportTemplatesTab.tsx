@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
+import { useTemplates } from "@/hooks/useTemplates";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +31,8 @@ export const ReportTemplatesTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"list" | "icons">("list");
   const [deleteConfirmTemplate, setDeleteConfirmTemplate] = useState<string | null>(null);
+  
+  const { createTemplate, updateTemplate } = useTemplates();
 
   const { data: templates, isLoading } = useQuery({
     queryKey: ["maintenance-report-templates"],
@@ -462,12 +465,20 @@ export const ReportTemplatesTab: React.FC = () => {
           setSelectedTemplate(null);
           setIsCreating(false);
         }}
-        onSave={(template) => {
-          console.log('Template saved:', template);
-          queryClient.invalidateQueries({ queryKey: ["maintenance-report-templates"] });
-          setSelectedTemplate(null);
-          setIsCreating(false);
-          toast.success("Template saved successfully");
+        onSave={async (template) => {
+          try {
+            if (selectedTemplate) {
+              // Editing existing template
+              await updateTemplate.mutateAsync({ id: selectedTemplate, ...template } as any);
+            } else {
+              // Creating new template
+              await createTemplate.mutateAsync(template as any);
+            }
+            setSelectedTemplate(null);
+            setIsCreating(false);
+          } catch (error) {
+            console.error('Failed to save template:', error);
+          }
         }}
       />
 
