@@ -31,7 +31,10 @@ export const OutputStep: React.FC<OutputStepProps> = ({ outputConfig, onOutputCo
                 onOutputConfigChange({ ...outputConfig, pdf_layout: value })
               }
             >
-              <div className="flex items-start space-x-3 p-3 rounded-lg border bg-card hover:bg-accent/50 cursor-pointer">
+              <div 
+                className="flex items-start space-x-3 p-3 rounded-lg border bg-card hover:bg-accent/50 cursor-pointer"
+                onClick={() => onOutputConfigChange({ ...outputConfig, pdf_layout: 'summary_first' })}
+              >
                 <RadioGroupItem value="summary_first" id="summary-first" />
                 <div className="flex-1">
                   <Label htmlFor="summary-first" className="cursor-pointer font-medium">
@@ -42,7 +45,10 @@ export const OutputStep: React.FC<OutputStepProps> = ({ outputConfig, onOutputCo
                   </p>
                 </div>
               </div>
-              <div className="flex items-start space-x-3 p-3 rounded-lg border bg-card hover:bg-accent/50 cursor-pointer">
+              <div 
+                className="flex items-start space-x-3 p-3 rounded-lg border bg-card hover:bg-accent/50 cursor-pointer"
+                onClick={() => onOutputConfigChange({ ...outputConfig, pdf_layout: 'per_unit_first' })}
+              >
                 <RadioGroupItem value="per_unit_first" id="per-unit-first" />
                 <div className="flex-1">
                   <Label htmlFor="per-unit-first" className="cursor-pointer font-medium">
