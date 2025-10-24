@@ -258,16 +258,14 @@ export const CustomerDocumentsTab: React.FC<CustomerDocumentsTabProps> = ({ cust
                         Supported: PDF, JPG, PNG, DOC, DOCX (max ~10MB recommended)
                       </p>
 
-                      {selectedFile && (
-                        <Button
-                          onClick={() => selectedFile && onUpload(selectedFile)}
-                          disabled={uploading || !selectedFile}
-                          className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
-                        >
-                          <Upload className="w-4 h-4 mr-2" />
-                          {uploading ? 'Uploading...' : 'Upload Document'}
-                        </Button>
-                      )}
+                      <Button
+                        onClick={() => selectedFile && onUpload(selectedFile)}
+                        disabled={uploading || !selectedFile}
+                        className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
+                      >
+                        <Upload className="w-4 h-4 mr-2" />
+                        {uploading ? 'Uploading...' : 'Upload Document'}
+                      </Button>
                     </div>
                   </div>
                 </DialogContent>
