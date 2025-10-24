@@ -72,25 +72,34 @@ export default function CustomerDetail() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-[1200px] mx-auto px-4 py-6 space-y-6">
-        {/* Breadcrumb */}
-        <Breadcrumb>
-          <BreadcrumbList className="text-sm">
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link to="/customer-hub">Customer Hub</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>{customer.name}</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-
         {/* Header Card with Customer Info */}
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-          {/* Back button and customer info */}
-          <div className="flex flex-col gap-4 mb-6">
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 pb-4">
+          {/* Top Row: Breadcrumb, Back Button, and Customer Name */}
+          <div className="flex flex-col md:flex-row md:items-center gap-4 mb-4">
+            {/* Left side: Breadcrumb and Customer Name */}
+            <div className="flex-1 min-w-0">
+              {/* Breadcrumb */}
+              <Breadcrumb className="mb-2">
+                <BreadcrumbList className="text-sm">
+                  <BreadcrumbItem>
+                    <BreadcrumbLink asChild>
+                      <Link to="/customer-hub">Customer Hub</Link>
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <BreadcrumbPage>{customer.name}</BreadcrumbPage>
+                  </BreadcrumbItem>
+                </BreadcrumbList>
+              </Breadcrumb>
+              
+              {/* Customer name */}
+              <h1 className="text-3xl font-bold text-gray-900 leading-tight">
+                {customer.name}
+              </h1>
+            </div>
+            
+            {/* Right side: Back Button */}
             <Link to="/customer-hub" className="w-full md:w-auto">
               <Button 
                 size="sm"
@@ -100,45 +109,38 @@ export default function CustomerDetail() {
                 Customer Hub
               </Button>
             </Link>
+          </div>
+          
+          {/* Customer metadata */}
+          <div className="flex flex-wrap items-center gap-2 text-base">
+            <Badge className={getCustomerTypeColor(customer.customer_type)}>
+              {formatCategoryDisplay((customer as any).type || customer.customer_type || 'Customer')}
+            </Badge>
             
-            {/* Customer name and metadata */}
-            <div className="flex flex-col gap-2">
-              <h1 className="text-3xl font-bold text-gray-900 leading-tight">
-                {customer.name}
-              </h1>
-              
-              {/* Key metadata */}
-              <div className="flex flex-wrap items-center gap-2 text-base">
-                <Badge className={getCustomerTypeColor(customer.customer_type)}>
-                  {formatCategoryDisplay((customer as any).type || customer.customer_type || 'Customer')}
-                </Badge>
-                
-                {customer.email && (
-                  <a 
-                    href={`mailto:${customer.email}`}
-                    className="text-gray-600 hover:text-blue-600 flex items-center gap-1"
-                  >
-                    <Mail className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline">{customer.email}</span>
-                  </a>
-                )}
-                
-                {customer.phone && (
-                  <a 
-                    href={`tel:${customer.phone}`}
-                    className="text-gray-600 hover:text-blue-600 flex items-center gap-1"
-                  >
-                    <Phone className="w-3.5 h-3.5" />
-                    <span>{formatPhoneNumber(customer.phone)}</span>
-                  </a>
-                )}
-              </div>
-            </div>
+            {customer.email && (
+              <a 
+                href={`mailto:${customer.email}`}
+                className="text-gray-600 hover:text-blue-600 flex items-center gap-1"
+              >
+                <Mail className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">{customer.email}</span>
+              </a>
+            )}
+            
+            {customer.phone && (
+              <a 
+                href={`tel:${customer.phone}`}
+                className="text-gray-600 hover:text-blue-600 flex items-center gap-1"
+              >
+                <Phone className="w-3.5 h-3.5" />
+                <span>{formatPhoneNumber(customer.phone)}</span>
+              </a>
+            )}
           </div>
         </div>
 
         {/* Stats Card */}
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 pb-4">
           <CustomerStatsSection customerId={id!} />
         </div>
 
