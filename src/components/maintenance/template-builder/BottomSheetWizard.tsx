@@ -283,6 +283,7 @@ export const BottomSheetWizard: React.FC<BottomSheetWizardProps> = ({
               <PermissionsStep
                 permissions={permissions}
                 onPermissionsChange={setPermissions}
+                sections={sections}
               />
             )}
 
@@ -290,6 +291,8 @@ export const BottomSheetWizard: React.FC<BottomSheetWizardProps> = ({
               <OutputStep
                 outputConfig={outputConfig}
                 onOutputConfigChange={setOutputConfig}
+                sections={sections}
+                permissions={permissions}
               />
             )}
 

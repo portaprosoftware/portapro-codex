@@ -180,12 +180,15 @@ export const EnhancedTemplateBuilder: React.FC<EnhancedTemplateBuilderProps> = (
                 <PermissionsStep
                   permissions={permissions}
                   onPermissionsChange={setPermissions}
+                  sections={sections}
                 />
               )}
               {currentStep === 5 && (
                 <OutputStep
                   outputConfig={outputConfig}
                   onOutputConfigChange={setOutputConfig}
+                  sections={sections}
+                  permissions={permissions}
                 />
               )}
               {currentStep === 6 && (
