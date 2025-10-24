@@ -215,7 +215,10 @@ export const TemplateManagement: React.FC = () => {
                 {templates.length}
               </Badge>
             </div>
-            {isExpanded ? <ChevronUp className="h-4 w-4 text-gray-600" /> : <ChevronDown className="h-4 w-4 text-gray-600" />}
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-500">expand / collapse</span>
+              {isExpanded ? <ChevronUp className="h-4 w-4 text-gray-600" /> : <ChevronDown className="h-4 w-4 text-gray-600" />}
+            </div>
           </Button>
         </CollapsibleTrigger>
         <CollapsibleContent className="space-y-2 mt-2">
@@ -323,7 +326,7 @@ export const TemplateManagement: React.FC = () => {
           {/* Email User Templates */}
           {sourceFilter === 'user' && renderCollapsibleSection(
             "User Created",
-            <Badge variant="info" className="text-xs">user</Badge>,
+            <Badge variant="info" className="text-xs">User</Badge>,
             emailUser,
             emailUserExpanded,
             setEmailUserExpanded
@@ -333,7 +336,7 @@ export const TemplateManagement: React.FC = () => {
           {sourceFilter === 'system' && (
             renderCollapsibleSection(
               "System Generated",
-              <Badge variant="default" className="text-xs">system</Badge>,
+              <Badge variant="default" className="text-xs">System</Badge>,
               emailSystem,
               emailSystemExpanded,
               setEmailSystemExpanded
@@ -354,7 +357,7 @@ export const TemplateManagement: React.FC = () => {
           {/* SMS User Templates */}
           {sourceFilter === 'user' && renderCollapsibleSection(
             "User Created",
-            <Badge variant="info" className="text-xs">user</Badge>,
+            <Badge variant="info" className="text-xs">User</Badge>,
             smsUser,
             smsUserExpanded,
             setSmsUserExpanded
@@ -364,7 +367,7 @@ export const TemplateManagement: React.FC = () => {
           {sourceFilter === 'system' && (
             renderCollapsibleSection(
               "System Generated", 
-              <Badge variant="default" className="text-xs">system</Badge>,
+              <Badge variant="default" className="text-xs">System</Badge>,
               smsSystem,
               smsSystemExpanded,
               setSmsSystemExpanded
