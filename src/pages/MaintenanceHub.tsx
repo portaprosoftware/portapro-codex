@@ -5,7 +5,7 @@ import { TabNav } from "@/components/ui/TabNav";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ServiceCatalogTab } from "@/components/maintenance/ServiceCatalogTab";
-import { ReportTemplatesTab } from "@/components/maintenance/ReportTemplatesTab";
+import { ServiceReportTemplatesTab } from "@/components/maintenance/ServiceReportTemplatesTab";
 import { ServiceRecordsTab } from "@/components/maintenance/ServiceRecordsTab";
 import { LogPastServiceModal } from "@/components/maintenance/LogPastServiceModal";
 import { Calendar, ClipboardList, CheckCircle, FileText, ChevronDown } from "lucide-react";
@@ -195,7 +195,7 @@ export default function MaintenanceHub() {
         )}
 
         {activeTab === 'templates' && (
-          <ReportTemplatesTab />
+          <ServiceReportTemplatesTab />
         )}
 
         {activeTab === 'records' && (
