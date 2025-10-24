@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { Eye, MoreHorizontal, CreditCard } from "lucide-react";
@@ -24,11 +24,41 @@ export const InvoicesTable = ({ searchTerm, dateRange }: InvoicesTableProps) => 
   const [showCreateInvoice, setShowCreateInvoice] = useState(false);
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(null);
   const [selectedInvoiceForPayment, setSelectedInvoiceForPayment] = useState<any>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 25;
   const queryClient = useQueryClient();
 
-  const { data: invoices = [], isLoading, error } = useQuery({
-    queryKey: ['invoices', searchTerm, dateRange],
+  // Fetch total count for pagination
+  const { data: totalCount = 0 } = useQuery({
+    queryKey: ['invoices-count', searchTerm, dateRange],
     queryFn: async () => {
+      let query = supabase
+        .from('invoices')
+        .select('*', { count: 'exact', head: true });
+
+      if (searchTerm) {
+        query = query.or(`invoice_number.ilike.%${searchTerm}%`);
+      }
+
+      if (dateRange?.from) {
+        query = query.gte('created_at', format(dateRange.from, 'yyyy-MM-dd'));
+      }
+      
+      if (dateRange?.to) {
+        query = query.lte('created_at', format(dateRange.to, 'yyyy-MM-dd') + ' 23:59:59');
+      }
+
+      const { count, error } = await query;
+      if (error) throw error;
+      return count || 0;
+    }
+  });
+
+  const { data: invoices = [], isLoading, error } = useQuery({
+    queryKey: ['invoices', searchTerm, dateRange, currentPage],
+    queryFn: async () => {
+      const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+      
       let query = supabase
         .from('invoices')
         .select(`
@@ -38,7 +68,8 @@ export const InvoicesTable = ({ searchTerm, dateRange }: InvoicesTableProps) => 
             email
           )
         `)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false})
+        .range(offset, offset + ITEMS_PER_PAGE - 1);
 
       if (searchTerm) {
         query = query.or(`invoice_number.ilike.%${searchTerm}%`);
@@ -57,6 +88,13 @@ export const InvoicesTable = ({ searchTerm, dateRange }: InvoicesTableProps) => 
       return data;
     }
   });
+
+  const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
+
+  // Reset to page 1 when filters change
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, dateRange]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -239,6 +277,59 @@ export const InvoicesTable = ({ searchTerm, dateRange }: InvoicesTableProps) => 
             )}
           </TableBody>
         </Table>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between px-4 py-4 border-t">
+            <div className="text-sm text-muted-foreground">
+              Showing {((currentPage - 1) * ITEMS_PER_PAGE) + 1} to {Math.min(currentPage * ITEMS_PER_PAGE, totalCount)} of {totalCount} invoices
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </Button>
+              <div className="flex items-center gap-1">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum;
+                  if (totalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (currentPage <= 3) {
+                    pageNum = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = currentPage - 2 + i;
+                  }
+                  
+                  return (
+                    <Button
+                      key={pageNum}
+                      variant={currentPage === pageNum ? "default" : "outline"}
+                      size="sm"
+                      className="w-8 h-8 p-0"
+                      onClick={() => setCurrentPage(pageNum)}
+                    >
+                      {pageNum}
+                    </Button>
+                  );
+                })}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Mobile Card View - visible on mobile/tablet */}

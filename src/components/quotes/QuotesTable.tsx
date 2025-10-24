@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { FileText, MoreHorizontal, BriefcaseIcon, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -25,12 +25,43 @@ export const QuotesTable = ({ searchTerm, dateRange }: QuotesTableProps) => {
   const [selectedQuoteForInvoice, setSelectedQuoteForInvoice] = useState<any>(null);
   const [showViewQuote, setShowViewQuote] = useState(false);
   const [selectedQuoteForView, setSelectedQuoteForView] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 25;
   const queryClient = useQueryClient();
   const convertQuoteToJob = useConvertQuoteToJob();
 
-  const { data: quotes, isLoading } = useQuery({
-    queryKey: ['quotes', searchTerm, dateRange],
+  // Fetch total count for pagination
+  const { data: totalCount = 0 } = useQuery({
+    queryKey: ['quotes-count', searchTerm, dateRange],
     queryFn: async () => {
+      let query = supabase
+        .from('quotes')
+        .select('*', { count: 'exact', head: true })
+        .neq('status', 'draft');
+
+      if (searchTerm) {
+        query = query.or(`quote_number.ilike.%${searchTerm}%,customers.name.ilike.%${searchTerm}%`);
+      }
+
+      if (dateRange?.from) {
+        query = query.gte('created_at', format(dateRange.from, 'yyyy-MM-dd'));
+      }
+      
+      if (dateRange?.to) {
+        query = query.lte('created_at', format(dateRange.to, 'yyyy-MM-dd') + ' 23:59:59');
+      }
+
+      const { count, error } = await query;
+      if (error) throw error;
+      return count || 0;
+    }
+  });
+
+  const { data: quotes, isLoading } = useQuery({
+    queryKey: ['quotes', searchTerm, dateRange, currentPage],
+    queryFn: async () => {
+      const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+      
       let query = supabase
         .from('quotes')
         .select(`
@@ -40,8 +71,9 @@ export const QuotesTable = ({ searchTerm, dateRange }: QuotesTableProps) => {
             email
           )
         `)
-        .neq('status', 'draft')  // Exclude draft quotes
-        .order('created_at', { ascending: false });
+        .neq('status', 'draft')
+        .order('created_at', { ascending: false })
+        .range(offset, offset + ITEMS_PER_PAGE - 1);
 
       if (searchTerm) {
         query = query.or(`quote_number.ilike.%${searchTerm}%,customers.name.ilike.%${searchTerm}%`);
@@ -60,6 +92,13 @@ export const QuotesTable = ({ searchTerm, dateRange }: QuotesTableProps) => {
       return data;
     }
   });
+
+  const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
+
+  // Reset to page 1 when filters change
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, dateRange]);
 
   const createInvoiceFromQuote = useMutation({
     mutationFn: async (quoteId: string) => {
@@ -220,9 +259,62 @@ export const QuotesTable = ({ searchTerm, dateRange }: QuotesTableProps) => {
           </TableBody>
         </Table>
         
-        {(!quotes || quotes.length === 0) && (
+        {(!quotes || quotes.length === 0) && !isLoading && (
           <div className="flex items-center justify-center h-32">
             <p className="text-muted-foreground">No quotes found</p>
+          </div>
+        )}
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between px-4 py-4 border-t">
+            <div className="text-sm text-muted-foreground">
+              Showing {((currentPage - 1) * ITEMS_PER_PAGE) + 1} to {Math.min(currentPage * ITEMS_PER_PAGE, totalCount)} of {totalCount} quotes
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </Button>
+              <div className="flex items-center gap-1">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum;
+                  if (totalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (currentPage <= 3) {
+                    pageNum = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = currentPage - 2 + i;
+                  }
+                  
+                  return (
+                    <Button
+                      key={pageNum}
+                      variant={currentPage === pageNum ? "default" : "outline"}
+                      size="sm"
+                      className="w-8 h-8 p-0"
+                      onClick={() => setCurrentPage(pageNum)}
+                    >
+                      {pageNum}
+                    </Button>
+                  );
+                })}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </Button>
+            </div>
           </div>
         )}
       </div>
