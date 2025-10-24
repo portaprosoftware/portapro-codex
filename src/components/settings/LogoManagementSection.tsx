@@ -74,9 +74,6 @@ export function LogoManagementSection() {
               )}
             </div>
             <div className="flex-1">
-              <h3 className="text-lg font-medium text-foreground">
-                {companyLogo?.company_name || "Company Logo"}
-              </h3>
               <p className="text-sm text-muted-foreground">
                 {companyLogo?.company_logo ? "Logo uploaded" : "No logo uploaded"}
               </p>
