@@ -84,7 +84,7 @@ export function DriverWorkingHoursSection({ onBack }: DriverWorkingHoursSectionP
           {/* Quick Setup Guide */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
+              <CardTitle className="flex items-center space-x-2 text-xl">
                 <CheckCircle className="w-5 h-5 text-green-600" />
                 <span>Quick Setup Guide</span>
               </CardTitle>
@@ -120,7 +120,7 @@ export function DriverWorkingHoursSection({ onBack }: DriverWorkingHoursSectionP
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center space-x-2">
+                <CardTitle className="flex items-center space-x-2 text-xl">
                   <Users className="w-5 h-5" />
                   <span>Drivers ({drivers?.length || 0})</span>
                 </CardTitle>

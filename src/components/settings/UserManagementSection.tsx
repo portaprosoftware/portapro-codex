@@ -436,7 +436,7 @@ export function UserManagementSection() {
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <div className="flex flex-col gap-2">
-                <CardTitle className="flex items-center space-x-2">
+                <CardTitle className="flex items-center space-x-2 text-xl">
                   <Users className="w-5 h-5" />
                   <span>User Management</span>
                 </CardTitle>

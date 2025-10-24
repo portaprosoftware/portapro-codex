@@ -36,7 +36,7 @@ export function CompanySettingsSection() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
+          <CardTitle className="flex items-center space-x-2 text-xl">
             <Building2 className="w-5 h-5" />
             <span>Company Settings</span>
           </CardTitle>

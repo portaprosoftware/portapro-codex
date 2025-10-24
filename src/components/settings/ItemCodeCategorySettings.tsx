@@ -127,7 +127,7 @@ export const ItemCodeCategorySettings: React.FC = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 text-xl">
           <Settings2 className="h-5 w-5" />
           Item Code Categories
         </CardTitle>

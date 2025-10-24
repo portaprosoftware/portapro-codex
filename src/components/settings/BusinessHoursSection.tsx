@@ -145,7 +145,7 @@ export function BusinessHoursSection() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
+          <CardTitle className="flex items-center space-x-2 text-xl">
             <Clock className="w-5 h-5" />
             <span>Business Hours</span>
           </CardTitle>
@@ -164,7 +164,7 @@ export function BusinessHoursSection() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center space-x-2">
+        <CardTitle className="flex items-center space-x-2 text-xl">
           <Clock className="w-5 h-5" />
           <span>Business Hours</span>
         </CardTitle>

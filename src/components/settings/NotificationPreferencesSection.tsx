@@ -152,7 +152,7 @@ export function NotificationPreferencesSection() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
+          <CardTitle className="flex items-center space-x-2 text-xl">
             <Bell className="w-5 h-5" />
             <span>Notification Preferences</span>
           </CardTitle>
@@ -180,7 +180,7 @@ export function NotificationPreferencesSection() {
       {/* Contact Information */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
+          <CardTitle className="flex items-center space-x-2 text-xl">
             <Bell className="w-5 h-5" />
             <span>Contact Information</span>
           </CardTitle>

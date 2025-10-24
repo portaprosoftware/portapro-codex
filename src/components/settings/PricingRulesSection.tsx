@@ -164,7 +164,7 @@ export function PricingRulesSection() {
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center space-x-2">
+          <CardTitle className="flex items-center space-x-2 text-xl">
             <DollarSign className="w-5 h-5" />
             <span>Pricing Rules</span>
             <Badge variant="secondary">{pricingRules.length} rules</Badge>
