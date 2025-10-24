@@ -133,10 +133,6 @@ export function CompanySettingsSection() {
                   <span className="text-sm text-muted-foreground">Phone:</span>
                   <p className="text-sm">{formatPhoneNumber(companySettings?.company_phone)}</p>
                 </div>
-                <div>
-                  <span className="text-sm text-muted-foreground">Support Email:</span>
-                  <p className="text-sm">{companySettings?.support_email || "Not set"}</p>
-                </div>
               </div>
             </div>
 
@@ -183,6 +179,38 @@ export function CompanySettingsSection() {
                   Default percentage used for deposit collection on quotes and jobs
                 </p>
               </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Support Email Card */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-lg">Customer Support Email</CardTitle>
+            <Button
+              variant="outline" 
+              size="sm"
+              onClick={() => setShowEditModal(true)}
+              className="flex items-center space-x-2"
+            >
+              <Edit className="w-4 h-4" />
+              <span>Edit</span>
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-start space-x-3">
+            <Mail className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+            <div className="space-y-2">
+              <p className="text-base font-semibold">
+                {companySettings?.support_email || "Not set"}
+              </p>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                This email address will be displayed to customers on all communications, including quote reminders, 
+                invoice notifications, and automated messages. Customers will see this as your official support contact.
+              </p>
             </div>
           </div>
         </CardContent>
