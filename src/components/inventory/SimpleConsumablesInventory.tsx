@@ -328,23 +328,37 @@ export const SimpleConsumablesInventory: React.FC = () => {
       <div className="max-w-none px-4 py-4 md:py-6 space-y-4 md:space-y-6">
         {/* Page Header */}
         <div className="bg-white rounded-xl border shadow-sm p-4 md:p-6">
-          <div className="flex flex-col gap-3">
-            <div>
+          {/* Desktop: Title and Buttons Layout */}
+          <div className="hidden lg:flex items-end justify-between gap-4">
+            <div className="flex-1">
               <h1 className="text-xl md:text-2xl font-semibold text-gray-900 font-inter">Consumables Management</h1>
               <p className="text-sm md:text-base text-gray-600 font-inter mt-1">Manage your consumable inventory with simplified location tracking</p>
             </div>
-            
-            {/* Mobile: Manage Categories as secondary button */}
-            <div className="lg:hidden">
-              <ConsumableCategoryManager />
-            </div>
-
-            {/* Desktop: Action Row */}
-            <div className="hidden lg:flex items-center gap-2">
+            <div className="flex items-center gap-2 shrink-0">
               <ConsumableCategoryManager />
               <Button 
                 onClick={() => setShowAddModal(true)}
                 className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold border-0 shadow-md"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add Consumable
+              </Button>
+            </div>
+          </div>
+
+          {/* Mobile: Stacked Layout */}
+          <div className="lg:hidden space-y-3">
+            <div>
+              <h1 className="text-xl font-semibold text-gray-900 font-inter">Consumables Management</h1>
+              <p className="text-sm text-gray-600 font-inter mt-1">Manage your consumable inventory with simplified location tracking</p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="flex-1">
+                <ConsumableCategoryManager />
+              </div>
+              <Button 
+                onClick={() => setShowAddModal(true)}
+                className="bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold border-0 shadow-md sm:w-auto"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Add Consumable
