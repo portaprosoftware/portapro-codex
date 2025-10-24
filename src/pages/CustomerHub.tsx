@@ -1,7 +1,7 @@
 
 import React, { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Upload, Plus, Search, Filter, Eye, EyeOff, ChevronUp, ChevronDown, ChevronsUpDown, ChevronRight, Phone, Mail, Check } from "lucide-react";
+import { Upload, Plus, Search, Filter, Eye, EyeOff, ChevronUp, ChevronDown, ChevronsUpDown, ChevronRight, Phone, Mail, Check, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -348,34 +348,37 @@ const CustomerHub: React.FC = () => {
                 <TableHead className="font-medium text-gray-900">Phone</TableHead>
                 <TableHead className="font-medium text-gray-900">Email</TableHead>
                 {showLastDelivery && (
-                  <SortableHeader column="last_delivery">
-                    <div className="flex items-center gap-2">
+                  <SortableHeader column="last_delivery" className="text-right">
+                    <div className="flex items-center justify-end gap-1">
                       Days Since Last Delivery
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-6 w-6 p-0 hover:bg-gray-200"
+                        className="h-6 w-6 p-0 hover:bg-gray-200 ml-1"
                         onClick={(e) => {
                           e.stopPropagation();
                           setShowLastDelivery(false);
                         }}
+                        title="Hide Days Since Last Delivery"
                       >
-                        <EyeOff className="h-3.5 w-3.5 text-gray-500" />
+                        <Truck className="h-3.5 w-3.5 text-gray-500" />
                       </Button>
                     </div>
                   </SortableHeader>
                 )}
                 {!showLastDelivery && (
-                  <TableHead className="font-medium text-gray-900 w-12">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 p-0 hover:bg-gray-200"
-                      onClick={() => setShowLastDelivery(true)}
-                      title="Show Days Since Last Delivery"
-                    >
-                      <Eye className="h-4 w-4 text-gray-500" />
-                    </Button>
+                  <TableHead className="font-medium text-gray-900 w-12 text-right">
+                    <div className="flex justify-end">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0 hover:bg-gray-200"
+                        onClick={() => setShowLastDelivery(true)}
+                        title="Show Days Since Last Delivery"
+                      >
+                        <Truck className="h-4 w-4 text-gray-500" />
+                      </Button>
+                    </div>
                   </TableHead>
                 )}
               </TableRow>
