@@ -109,8 +109,12 @@ export const SectionsStep: React.FC<SectionsStepProps> = ({
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               className={`flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors group ${
-                                snapshot.isDragging ? 'shadow-lg' : ''
+                                snapshot.isDragging ? 'shadow-lg border-primary bg-accent' : ''
                               }`}
+                              style={{
+                                ...provided.draggableProps.style,
+                                opacity: snapshot.isDragging ? 0.9 : 1,
+                              }}
                             >
                               {/* Drag handle */}
                               <button
@@ -127,7 +131,7 @@ export const SectionsStep: React.FC<SectionsStepProps> = ({
                                     {section.title}
                                   </span>
                                   {section.repeat_for_each && (
-                                    <Badge className="bg-gradient-to-r from-primary to-primary/80 text-white text-xs">
+                                    <Badge className="bg-gradient-to-r from-primary to-primary/80 text-white font-bold text-xs">
                                       Per-Unit Loop
                                     </Badge>
                                   )}
