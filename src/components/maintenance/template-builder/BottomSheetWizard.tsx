@@ -7,7 +7,7 @@ import { EnhancedTemplate, BuilderStep, EnhancedSection, SectionBlockType, Logic
 import { StepNavigation } from './StepNavigation';
 import { BasicsStep } from './steps/BasicsStep';
 import { SectionsStep } from './steps/SectionsStep';
-import { LogicStep } from './steps/LogicStep';
+import { LogicStepEnhanced } from './steps/LogicStepEnhanced';
 import { PermissionsStep } from './steps/PermissionsStep';
 import { OutputStep } from './steps/OutputStep';
 import { ReviewStep } from './steps/ReviewStep';
@@ -270,7 +270,7 @@ export const BottomSheetWizard: React.FC<BottomSheetWizardProps> = ({
             )}
 
             {currentStep === 3 && (
-              <LogicStep
+              <LogicStepEnhanced
                 logicRules={logicRules}
                 onLogicRulesChange={setLogicRules}
               />
