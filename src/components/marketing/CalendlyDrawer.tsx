@@ -16,12 +16,12 @@ export function CalendlyDrawer({ open, onOpenChange }: CalendlyDrawerProps) {
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="h-[90vh] max-h-[90vh]">
-        <DrawerHeader className="border-b pb-3 relative">
-          <DrawerTitle>Schedule a Demo</DrawerTitle>
+        <DrawerHeader className="border-b pb-6 pt-6 relative">
+          <DrawerTitle className="text-xl">Schedule a Demo</DrawerTitle>
           <Button
             variant="ghost"
             size="icon"
-            className="absolute right-4 top-3"
+            className="absolute right-4 top-4 bg-gray-100 hover:bg-gray-200"
             onClick={() => onOpenChange(false)}
           >
             <X className="h-4 w-4" />
