@@ -5,9 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Building2, Edit, Mail, MapPin, Phone, Clock, Percent } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { CompanySettingsModal } from "@/components/settings/CompanySettingsModal";
+import { CustomerSupportEmailModal } from "@/components/settings/CustomerSupportEmailModal";
 
 export function CompanySettingsSection() {
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showSupportEmailModal, setShowSupportEmailModal] = useState(false);
 
   const { data: companySettings, isLoading, error } = useQuery({
     queryKey: ["company-settings"],
@@ -192,7 +194,7 @@ export function CompanySettingsSection() {
             <Button
               variant="outline" 
               size="sm"
-              onClick={() => setShowEditModal(true)}
+              onClick={() => setShowSupportEmailModal(true)}
               className="flex items-center space-x-2"
             >
               <Edit className="w-4 h-4" />
@@ -220,6 +222,12 @@ export function CompanySettingsSection() {
         isOpen={showEditModal}
         onClose={() => setShowEditModal(false)}
         companySettings={companySettings}
+      />
+
+      <CustomerSupportEmailModal
+        isOpen={showSupportEmailModal}
+        onClose={() => setShowSupportEmailModal(false)}
+        currentEmail={companySettings?.support_email}
       />
     </>
   );
