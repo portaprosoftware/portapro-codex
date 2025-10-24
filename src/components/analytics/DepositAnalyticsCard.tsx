@@ -14,21 +14,19 @@ export function DepositAnalyticsCard({ dateRange }: DepositAnalyticsCardProps) {
 
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <div>
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2">
             <DollarSign className="h-5 w-5" />
             Deposit Analytics
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <Skeleton className="h-20 w-full" />
-            <Skeleton className="h-20 w-full" />
-            <Skeleton className="h-20 w-full" />
-          </div>
-        </CardContent>
-      </Card>
+          </h3>
+        </div>
+        <div className="space-y-4">
+          <Skeleton className="h-20 w-full" />
+          <Skeleton className="h-20 w-full" />
+          <Skeleton className="h-20 w-full" />
+        </div>
+      </div>
     );
   }
 
@@ -37,14 +35,14 @@ export function DepositAnalyticsCard({ dateRange }: DepositAnalyticsCardProps) {
   const { metrics, breakdown } = data;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-green-500">
+      <div className="mb-4">
+        <h3 className="text-lg font-semibold flex items-center gap-2">
           <DollarSign className="h-5 w-5" />
           Deposit Analytics
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-6">
+        </h3>
+      </div>
+      <div className="space-y-6">
         {/* Summary Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="p-4 rounded-lg bg-gradient-to-br from-green-50 to-green-100 border border-green-200">
@@ -120,7 +118,7 @@ export function DepositAnalyticsCard({ dateRange }: DepositAnalyticsCardProps) {
             </div>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

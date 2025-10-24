@@ -19,19 +19,17 @@ export function DepositRevenueBreakdown({ dateRange }: DepositRevenueBreakdownPr
 
   if (isLoading || !data) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-500">
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2">
             <DollarSign className="h-5 w-5" />
             Deposit Revenue Breakdown
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-[300px] flex items-center justify-center text-muted-foreground">
-            Loading...
-          </div>
-        </CardContent>
-      </Card>
+          </h3>
+        </div>
+        <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+          Loading...
+        </div>
+      </div>
     );
   }
 
@@ -45,31 +43,29 @@ export function DepositRevenueBreakdown({ dateRange }: DepositRevenueBreakdownPr
 
   if (chartData.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-500">
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2">
             <DollarSign className="h-5 w-5" />
             Deposit Revenue Breakdown
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-[300px] flex items-center justify-center text-muted-foreground">
-            No deposit data available
-          </div>
-        </CardContent>
-      </Card>
+          </h3>
+        </div>
+        <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+          No deposit data available
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-500">
+      <div className="mb-4">
+        <h3 className="text-lg font-semibold flex items-center gap-2">
           <DollarSign className="h-5 w-5" />
           Deposit Revenue Breakdown
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+        </h3>
+      </div>
+      <div>
         <ResponsiveContainer width="100%" height={300}>
           <PieChart>
             <Pie
@@ -109,7 +105,7 @@ export function DepositRevenueBreakdown({ dateRange }: DepositRevenueBreakdownPr
             </div>
           ))}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
