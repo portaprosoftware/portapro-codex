@@ -130,14 +130,7 @@ export function CustomerStatsSection({ customerId }: CustomerStatsSectionProps) 
           <div className="flex items-center justify-between h-full">
             <div className="flex-1">
               <div className="text-lg font-bold text-gray-900 mb-1">No upcoming jobs</div>
-              <div className="text-sm text-gray-600 mb-2">Next Scheduled Job</div>
-              <Button
-                size="sm"
-                onClick={() => navigate('/customer-hub')}
-                className="hidden md:inline-flex bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-medium text-xs px-3 py-1.5 h-auto"
-              >
-                Schedule Job
-              </Button>
+              <div className="text-sm text-gray-600">Next Scheduled Job</div>
             </div>
             
             <div className="w-12 h-12 rounded-lg flex items-center justify-center shadow-md flex-shrink-0 ml-3 bg-gradient-to-br from-purple-500 to-purple-700">
