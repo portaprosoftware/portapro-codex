@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -6,8 +6,11 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { OutputConfig, EnhancedSection, Permissions } from '../types';
-import { FileText, Lock } from 'lucide-react';
+import { FileText, Lock, ChevronDown, ChevronRight, Search } from 'lucide-react';
 
 interface OutputStepProps {
   outputConfig: OutputConfig;
@@ -22,6 +25,9 @@ export const OutputStep: React.FC<OutputStepProps> = ({
   sections,
   permissions 
 }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [openSections, setOpenSections] = useState<string[]>(sections.map(s => s.id));
+  
   // Extract all fields from sections
   const allFields = sections.flatMap(section => 
     section.fields.map(field => ({
@@ -58,6 +64,30 @@ export const OutputStep: React.FC<OutputStepProps> = ({
     });
   };
 
+  // Select all / deselect all handlers
+  const handleSelectAllCustomer = () => {
+    onOutputConfigChange({
+      ...outputConfig,
+      customer_pdf_fields: customerAvailableFields.map(f => f.id),
+    });
+  };
+
+  const handleDeselectAllCustomer = () => {
+    onOutputConfigChange({
+      ...outputConfig,
+      customer_pdf_fields: [],
+    });
+  };
+
+  // Toggle section collapse
+  const toggleSection = (sectionId: string) => {
+    setOpenSections(prev =>
+      prev.includes(sectionId)
+        ? prev.filter(id => id !== sectionId)
+        : [...prev, sectionId]
+    );
+  };
+
   // Initialize customer fields if empty (default to all non-internal fields)
   React.useEffect(() => {
     if (outputConfig.customer_pdf_fields.length === 0 && customerAvailableFields.length > 0) {
@@ -74,6 +104,16 @@ export const OutputStep: React.FC<OutputStepProps> = ({
     customerFields: section.fields.filter(f => !internalOnlyFieldIds.includes(f.id)),
     internalFields: section.fields.filter(f => internalOnlyFieldIds.includes(f.id)),
   }));
+
+  // Filter fields by search term
+  const filteredFieldsBySection = fieldsBySection.map(({ section, customerFields, internalFields }) => ({
+    section,
+    customerFields: customerFields.filter(field =>
+      field.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      field.placeholder?.toLowerCase().includes(searchTerm.toLowerCase())
+    ),
+    internalFields,
+  })).filter(({ customerFields }) => customerFields.length > 0);
 
   return (
     <div className="space-y-6">
@@ -171,46 +211,115 @@ export const OutputStep: React.FC<OutputStepProps> = ({
 
           {/* Customer PDF Fields Selection */}
           <div className="p-4 rounded-lg border bg-card">
-            <div className="flex items-center gap-2 mb-3">
-              <FileText className="w-4 h-4 text-primary" />
-              <h4 className="text-base font-semibold">Customer PDF Fields</h4>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <FileText className="w-4 h-4 text-primary" />
+                <h4 className="text-base font-semibold">Customer PDF Fields</h4>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleSelectAllCustomer}
+                  disabled={customerAvailableFields.length === 0}
+                >
+                  Select All
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleDeselectAllCustomer}
+                >
+                  Deselect All
+                </Button>
+              </div>
             </div>
             <p className="text-sm text-muted-foreground mb-4">
               Select which fields appear on customer-facing PDFs
             </p>
 
+            {/* Search Bar */}
+            <div className="relative mb-4">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                placeholder="Search fields..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+
             {customerAvailableFields.length === 0 ? (
               <div className="p-4 bg-muted/50 rounded text-center text-sm text-muted-foreground">
                 No customer-visible fields. All fields are marked as internal-only.
               </div>
+            ) : filteredFieldsBySection.length === 0 ? (
+              <div className="p-4 bg-muted/50 rounded text-center text-sm text-muted-foreground">
+                No fields match your search.
+              </div>
             ) : (
-              <div className="space-y-4">
-                {fieldsBySection.map(({ section, customerFields }) => (
-                  customerFields.length > 0 && (
-                    <div key={section.id} className="space-y-2">
-                      <h5 className="text-sm font-medium text-muted-foreground">
-                        {section.title}
-                      </h5>
-                      <div className="space-y-2 pl-4">
+              <div className="space-y-2">
+                {filteredFieldsBySection.map(({ section, customerFields }) => {
+                  const isOpen = openSections.includes(section.id);
+                  const selectedCount = customerFields.filter(f => 
+                    outputConfig.customer_pdf_fields.includes(f.id)
+                  ).length;
+                  
+                  return (
+                    <Collapsible
+                      key={section.id}
+                      open={isOpen}
+                      onOpenChange={() => toggleSection(section.id)}
+                    >
+                      <CollapsibleTrigger className="w-full">
+                        <div className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors">
+                          <div className="flex items-center gap-2">
+                            {isOpen ? (
+                              <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                            ) : (
+                              <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                            )}
+                            <h5 className="text-sm font-medium">{section.title}</h5>
+                            <Badge variant="outline" className="text-xs">
+                              {customerFields.length} fields
+                            </Badge>
+                          </div>
+                          <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold text-xs">
+                            {selectedCount} Selected
+                          </Badge>
+                        </div>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className="mt-2 ml-6 space-y-2">
                         {customerFields.map(field => (
-                          <div key={field.id} className="flex items-center gap-2">
+                          <div
+                            key={field.id}
+                            className="flex items-start gap-3 p-2 rounded hover:bg-accent/30 transition-colors"
+                          >
                             <Checkbox
                               id={`customer-${field.id}`}
                               checked={outputConfig.customer_pdf_fields.includes(field.id)}
                               onCheckedChange={() => toggleCustomerField(field.id)}
+                              className="mt-0.5"
                             />
-                            <Label
-                              htmlFor={`customer-${field.id}`}
-                              className="text-sm flex-1 cursor-pointer"
-                            >
-                              {field.label}
-                            </Label>
+                            <div className="flex-1">
+                              <Label
+                                htmlFor={`customer-${field.id}`}
+                                className="text-sm cursor-pointer block"
+                              >
+                                {field.label}
+                              </Label>
+                              {field.placeholder && (
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  {field.placeholder}
+                                </p>
+                              )}
+                            </div>
                           </div>
                         ))}
-                      </div>
-                    </div>
-                  )
-                ))}
+                      </CollapsibleContent>
+                    </Collapsible>
+                  );
+                })}
               </div>
             )}
 
