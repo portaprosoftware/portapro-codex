@@ -153,8 +153,7 @@ export const LogicStepEnhanced: React.FC<LogicStepProps> = ({
       {/* Fee Suggestions */}
       <Card className="border-l-4 border-l-green-500">
         <CardHeader className="pb-3">
-          <div className="flex items-center gap-2 mb-1">
-            <DollarSign className="w-5 h-5 text-green-500" />
+          <div className="mb-1">
             <CardTitle className="text-lg">Fee Suggestions</CardTitle>
           </div>
           <CardDescription>
@@ -177,8 +176,7 @@ export const LogicStepEnhanced: React.FC<LogicStepProps> = ({
       {/* Default Values */}
       <Card className="border-l-4 border-l-blue-500">
         <CardHeader className="pb-3">
-          <div className="flex items-center gap-2 mb-1">
-            <FileText className="w-5 h-5 text-blue-500" />
+          <div className="mb-1">
             <CardTitle className="text-lg">Default Values</CardTitle>
           </div>
           <CardDescription>
