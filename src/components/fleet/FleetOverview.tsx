@@ -186,7 +186,7 @@ export const FleetOverview: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6 px-4 overflow-x-hidden">
+    <div className="space-y-6 overflow-x-hidden">
       {/* Single White Card - All Content */}
       <div className="bg-white rounded-xl border shadow-sm p-4 lg:p-6 space-y-6">
         {/* Stats Grid */}
