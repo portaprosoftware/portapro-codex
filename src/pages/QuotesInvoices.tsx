@@ -85,7 +85,7 @@ const QuotesInvoices: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-[1200px] mx-auto px-4 py-6 space-y-6">
+      <div className="max-w-none px-6 py-6 space-y-6">
         {/* Page Header */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
           <h1 className="text-3xl font-bold text-gray-900">Quotes & Invoices Management</h1>
