@@ -31,15 +31,15 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
   return (
     <div className="space-y-6">
       {/* Validation Status */}
-      <Card className={isValid ? 'border-green-500/50 bg-green-50/50' : 'border-yellow-500/50 bg-yellow-50/50'}>
+      <Card className={isValid ? 'border-gray-200 bg-gray-100' : 'border-yellow-500/50 bg-yellow-50/50'}>
         <CardHeader>
           <div className="flex items-center gap-2">
             {isValid ? (
-              <CheckCircle className="w-5 h-5 text-green-600" />
+              <CheckCircle className="w-5 h-5 text-gray-700" />
             ) : (
               <AlertCircle className="w-5 h-5 text-yellow-600" />
             )}
-            <CardTitle className={isValid ? 'text-green-900' : 'text-yellow-900'}>
+            <CardTitle className={isValid ? 'text-gray-900' : 'text-yellow-900'}>
               {isValid ? 'Template Ready to Publish' : 'Template Incomplete'}
             </CardTitle>
           </div>
