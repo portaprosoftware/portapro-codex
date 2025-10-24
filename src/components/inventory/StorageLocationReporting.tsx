@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Card, CardContent } from "@/components/ui/card";
 import { StorageAnalyticsKPICards } from "./StorageAnalyticsKPICards";
 import { StorageAnalyticsLocationSection } from "./StorageAnalyticsLocationSection";
 import { Droplet, Package, Shield } from "lucide-react";
@@ -395,46 +396,51 @@ export function StorageLocationReporting() {
               <StorageAnalyticsKPICards summary={reportData.summary} />
             </div>
 
-            {/* Consumable Details by Location */}
-            <StorageAnalyticsLocationSection
-              title="Consumable Details by Location"
-              icon={Droplet}
-              iconColor="text-blue-600"
-              borderColor="border-l-blue-600"
-              data={reportData.consumable_details}
-              onExportPDF={exportToPDF}
-              onExportCSV={exportToCSV}
-              isExporting={isExporting}
-              showValue={true}
-              showCategory={true}
-            />
+            {/* Main Content Card */}
+            <Card className="bg-white border border-gray-200 rounded-2xl shadow-sm">
+              <CardContent className="p-6 space-y-6">
+                {/* Consumable Details by Location */}
+                <StorageAnalyticsLocationSection
+                  title="Consumable Details by Location"
+                  icon={Droplet}
+                  iconColor="text-blue-600"
+                  borderColor="border-l-blue-600"
+                  data={reportData.consumable_details}
+                  onExportPDF={exportToPDF}
+                  onExportCSV={exportToCSV}
+                  isExporting={isExporting}
+                  showValue={true}
+                  showCategory={true}
+                />
 
-            {/* Product Types by Location */}
-            <StorageAnalyticsLocationSection
-              title="Product Types by Location"
-              icon={Package}
-              iconColor="text-blue-600"
-              borderColor="border-l-blue-600"
-              data={reportData.product_details}
-              onExportPDF={exportToPDF}
-              onExportCSV={exportToCSV}
-              isExporting={isExporting}
-              showValue={false}
-            />
+                {/* Product Types by Location */}
+                <StorageAnalyticsLocationSection
+                  title="Product Types by Location"
+                  icon={Package}
+                  iconColor="text-blue-600"
+                  borderColor="border-l-blue-600"
+                  data={reportData.product_details}
+                  onExportPDF={exportToPDF}
+                  onExportCSV={exportToCSV}
+                  isExporting={isExporting}
+                  showValue={false}
+                />
 
-            {/* Spill Kits by Location */}
-            <StorageAnalyticsLocationSection
-              title="Spill Kits by Location"
-              icon={Shield}
-              iconColor="text-orange-600"
-              borderColor="border-l-orange-600"
-              data={reportData.spill_kit_details}
-              onExportPDF={exportToPDF}
-              onExportCSV={exportToCSV}
-              isExporting={isExporting}
-              showValue={true}
-              showItemType={true}
-            />
+                {/* Spill Kits by Location */}
+                <StorageAnalyticsLocationSection
+                  title="Spill Kits by Location"
+                  icon={Shield}
+                  iconColor="text-orange-600"
+                  borderColor="border-l-orange-600"
+                  data={reportData.spill_kit_details}
+                  onExportPDF={exportToPDF}
+                  onExportCSV={exportToCSV}
+                  isExporting={isExporting}
+                  showValue={true}
+                  showItemType={true}
+                />
+              </CardContent>
+            </Card>
           </>
         )}
       </div>
