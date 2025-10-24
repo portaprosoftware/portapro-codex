@@ -11,7 +11,7 @@ import {
   UserCog,
   Warehouse,
   Megaphone,
-  SprayCan,
+  Droplets,
 } from 'lucide-react';
 
 export interface NavigationItem {
@@ -62,7 +62,7 @@ export const inventoryItems: NavigationItem[] = [
   { 
     title: 'Consumables', 
     url: '/consumables', 
-    icon: SprayCan,
+    icon: Droplets,
     permission: 'staff'
   },
   { 
