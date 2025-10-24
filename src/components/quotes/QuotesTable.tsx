@@ -148,7 +148,7 @@ export const QuotesTable = ({ searchTerm, dateRange }: QuotesTableProps) => {
               <TableHead className="font-medium text-sm text-foreground">Amount</TableHead>
               <TableHead className="font-medium text-sm text-foreground">Status</TableHead>
               <TableHead className="font-medium text-sm text-foreground">Expiration</TableHead>
-              <TableHead className="font-medium text-sm text-foreground w-12">Actions</TableHead>
+              <TableHead className="font-medium text-sm text-foreground w-20 whitespace-nowrap">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
