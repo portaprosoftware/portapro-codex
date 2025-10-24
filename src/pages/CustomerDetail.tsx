@@ -128,19 +128,27 @@ export default function CustomerDetail() {
             {customer.email && (
               <a 
                 href={`mailto:${customer.email}`}
-                className="text-gray-600 hover:text-blue-600 flex items-center gap-1"
+                className="text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1 cursor-pointer transition-colors"
+                onClick={(e) => {
+                  // Ensure the link works by not preventing default
+                  console.log('Email clicked:', customer.email);
+                }}
               >
-                <Mail className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">{customer.email}</span>
+                <Mail className="w-3.5 h-3.5 flex-shrink-0" />
+                <span className="truncate">{customer.email}</span>
               </a>
             )}
             
             {customer.phone && (
               <a 
                 href={`tel:${customer.phone}`}
-                className="text-gray-600 hover:text-blue-600 flex items-center gap-1"
+                className="text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1 cursor-pointer transition-colors whitespace-nowrap"
+                onClick={(e) => {
+                  // Ensure the link works by not preventing default
+                  console.log('Phone clicked:', customer.phone);
+                }}
               >
-                <Phone className="w-3.5 h-3.5" />
+                <Phone className="w-3.5 h-3.5 flex-shrink-0" />
                 <span>{formatPhoneNumber(customer.phone)}</span>
               </a>
             )}
