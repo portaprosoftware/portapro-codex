@@ -7,7 +7,6 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { ServiceCatalogTab } from "@/components/maintenance/ServiceCatalogTab";
 import { ServiceReportTemplatesTab } from "@/components/maintenance/ServiceReportTemplatesTab";
 import { ServiceRecordsTab } from "@/components/maintenance/ServiceRecordsTab";
-import { LogPastServiceModal } from "@/components/maintenance/LogPastServiceModal";
 import { Calendar, ClipboardList, CheckCircle, FileText, ChevronDown, FileCog } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -16,7 +15,6 @@ export default function MaintenanceHub() {
   const location = useLocation();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'catalog' | 'templates' | 'records'>('records');
-  const [showLogPastService, setShowLogPastService] = useState(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   // Set the active tab based on URL params
@@ -187,15 +185,9 @@ export default function MaintenanceHub() {
         )}
 
         {activeTab === 'records' && (
-          <ServiceRecordsTab onLogPastService={() => setShowLogPastService(true)} />
+          <ServiceRecordsTab />
         )}
       </div>
-
-      {/* Modals */}
-      <LogPastServiceModal
-        isOpen={showLogPastService}
-        onClose={() => setShowLogPastService(false)}
-      />
     </div>
   );
 }
