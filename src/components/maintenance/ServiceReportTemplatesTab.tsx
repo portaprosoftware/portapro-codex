@@ -2,18 +2,15 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Copy, Trash2, FileText, Loader2, Eye } from 'lucide-react';
+import { Plus, Edit, Copy, Trash2, FileText, Loader2 } from 'lucide-react';
 import { BottomSheetWizard } from './template-builder/BottomSheetWizard';
-import { PreviewModal } from './template-builder/PreviewModal';
 import { useTemplates } from '@/hooks/useTemplates';
 import { EnhancedTemplate } from './template-builder/types';
 import { toast } from 'sonner';
 
 export const ServiceReportTemplatesTab = () => {
   const [isWizardOpen, setIsWizardOpen] = useState(false);
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<EnhancedTemplate | undefined>();
-  const [previewTemplate, setPreviewTemplate] = useState<Partial<EnhancedTemplate> | null>(null);
   
   const { templates, isLoading, createTemplate, updateTemplate, deleteTemplate, cloneTemplate } = useTemplates();
 
@@ -42,24 +39,6 @@ export const ServiceReportTemplatesTab = () => {
     }
   };
 
-  const handleOpenPreview = (template?: Partial<EnhancedTemplate>) => {
-    if (template) {
-      setPreviewTemplate(template);
-    } else {
-      setPreviewTemplate({
-        name: '',
-        description: '',
-        template_type: 'service',
-        sections: [],
-        logic_rules: { per_unit_loop: false, auto_requirements: [], default_values: {}, fee_suggestions: [] },
-        permissions: { tech_editable_fields: ['*'], office_editable_fields: ['*'], internal_only_fields: [] },
-        output_config: { pdf_layout: 'summary_first', customer_pdf_fields: [], internal_pdf_fields: [], photo_grid_columns: 2, watermark: '', show_brand_header: true },
-        version: '1.0',
-        is_default_for_type: false,
-      });
-    }
-    setIsPreviewOpen(true);
-  };
 
   return (
     <>
@@ -72,27 +51,17 @@ export const ServiceReportTemplatesTab = () => {
                 Create and manage customizable templates for field service reports
               </CardDescription>
             </div>
-            <div className="flex items-center gap-2">
-              <Button 
-                variant="outline"
-                onClick={() => handleOpenPreview()}
-                className="gap-2"
-              >
-                <Eye className="w-4 h-4" />
-                Live Preview
-              </Button>
-              <Button 
-                onClick={() => {
-                  setEditingTemplate(undefined);
-                  setIsWizardOpen(true);
-                }} 
-                className="gap-2"
-                disabled={isWizardOpen}
-              >
-                <Plus className="w-4 h-4" />
-                New Template
-              </Button>
-            </div>
+            <Button 
+              onClick={() => {
+                setEditingTemplate(undefined);
+                setIsWizardOpen(true);
+              }} 
+              className="gap-2"
+              disabled={isWizardOpen}
+            >
+              <Plus className="w-4 h-4" />
+              New Template
+            </Button>
           </div>
         </CardHeader>
         <CardContent>
@@ -127,15 +96,7 @@ export const ServiceReportTemplatesTab = () => {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button 
-                      variant="ghost" 
-                      size="icon"
-                      onClick={() => handleOpenPreview(template)}
-                      title="Preview template"
-                    >
-                      <Eye className="w-4 h-4" />
-                    </Button>
-                    <Button 
+                    <Button
                       variant="ghost" 
                       size="icon"
                       onClick={() => handleEditTemplate(template)}
@@ -193,14 +154,6 @@ export const ServiceReportTemplatesTab = () => {
         onSave={handleSaveTemplate}
         initialTemplate={editingTemplate}
       />
-
-      {previewTemplate && (
-        <PreviewModal
-          isOpen={isPreviewOpen}
-          onClose={() => setIsPreviewOpen(false)}
-          template={previewTemplate}
-        />
-      )}
     </>
   );
 };

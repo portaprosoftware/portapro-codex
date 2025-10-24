@@ -152,22 +152,6 @@ export const BottomSheetWizard: React.FC<BottomSheetWizardProps> = ({
     setHasUnsavedChanges(false);
   };
 
-  const handleSaveDraft = () => {
-    const template: Partial<EnhancedTemplate> = {
-      name: name || 'Untitled Template',
-      description,
-      template_type: templateType,
-      sections,
-      logic_rules: logicRules,
-      permissions,
-      output_config: outputConfig,
-      version,
-      is_default_for_type: isDefaultForType,
-      is_active: false,
-    };
-    onSave(template);
-    setHasUnsavedChanges(false);
-  };
 
   const handlePublish = () => {
     const template: Partial<EnhancedTemplate> = {
@@ -224,9 +208,6 @@ export const BottomSheetWizard: React.FC<BottomSheetWizardProps> = ({
         <div className="flex items-center justify-between px-6 h-16 border-b bg-background sticky top-0 z-10">
           <h2 className="text-xl font-semibold">Create New Template</h2>
           <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={handleSaveDraft}>
-              Save as Draft
-            </Button>
             <Button 
               onClick={handlePublish} 
               disabled={!canPublish()}
