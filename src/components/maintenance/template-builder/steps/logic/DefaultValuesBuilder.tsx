@@ -26,42 +26,42 @@ export const DefaultValuesBuilder: React.FC<DefaultValuesBuilderProps> = ({
 
             <div className="space-y-2 text-xs">
               <div className="flex items-start gap-2">
-                <Badge variant="outline" className="shrink-0">Job Data</Badge>
+                <Badge className="shrink-0 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold">Job Data</Badge>
                 <span className="text-muted-foreground">
                   Customer name, site address, contact info, PO number, route, tech name, truck ID
                 </span>
               </div>
 
               <div className="flex items-start gap-2">
-                <Badge variant="outline" className="shrink-0">Unit List</Badge>
+                <Badge className="shrink-0 bg-gradient-to-r from-purple-500 to-purple-600 text-white font-bold">Unit List</Badge>
                 <span className="text-muted-foreground">
                   All units assigned to the job with their type and last known status
                 </span>
               </div>
 
               <div className="flex items-start gap-2">
-                <Badge variant="outline" className="shrink-0">Consumables</Badge>
+                <Badge className="shrink-0 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold">Consumables</Badge>
                 <span className="text-muted-foreground">
                   Default blue (oz) and paper rolls per unit type (editable)
                 </span>
               </div>
 
               <div className="flex items-start gap-2">
-                <Badge variant="outline" className="shrink-0">Last Visit</Badge>
+                <Badge className="shrink-0 bg-gradient-to-r from-green-500 to-green-600 text-white font-bold">Last Visit</Badge>
                 <span className="text-muted-foreground">
                   Previous service data if within 21 days (unit-specific)
                 </span>
               </div>
 
               <div className="flex items-start gap-2">
-                <Badge variant="outline" className="shrink-0">Signature</Badge>
+                <Badge className="shrink-0 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white font-bold">Signature</Badge>
                 <span className="text-muted-foreground">
                   Site contact name pre-filled (if available)
                 </span>
               </div>
 
               <div className="flex items-start gap-2">
-                <Badge variant="outline" className="shrink-0">Timestamp</Badge>
+                <Badge className="shrink-0 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white font-bold">Timestamp</Badge>
                 <span className="text-muted-foreground">
                   Current date/time for service start (auto-captured)
                 </span>
@@ -77,9 +77,9 @@ export const DefaultValuesBuilder: React.FC<DefaultValuesBuilderProps> = ({
         </div>
       </div>
 
-      <div className="p-3 rounded-lg border border-dashed bg-muted/20">
+      <div className="p-3 rounded-lg border border-dashed bg-blue-50 dark:bg-blue-950/20">
         <p className="text-xs text-center text-muted-foreground">
-          Advanced default value mapping coming soon
+          ✨ Advanced default value mapping coming soon
         </p>
       </div>
     </div>

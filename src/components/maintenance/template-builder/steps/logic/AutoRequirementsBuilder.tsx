@@ -151,14 +151,28 @@ export const AutoRequirementsBuilder: React.FC<AutoRequirementsBuilderProps> = (
 
   if (existingPresets.length === 0) {
     return (
-      <div className="text-center py-8 space-y-4">
-        <p className="text-sm text-muted-foreground">
-          Load industry-standard presets to get started quickly
-        </p>
-        <Button onClick={initializePresets} className="gap-2">
-          <Plus className="w-4 h-4" />
-          Load Default Presets (7)
-        </Button>
+      <div className="space-y-4">
+        <div className="text-center py-6 space-y-4 border-2 border-dashed rounded-lg">
+          <p className="text-sm text-muted-foreground">
+            Load industry-standard presets to get started quickly
+          </p>
+          <Button onClick={initializePresets} className="gap-2 bg-gradient-to-r from-orange-500 to-orange-600">
+            <Plus className="w-4 h-4" />
+            Load Default Presets (7)
+          </Button>
+        </div>
+        <div className="p-4 rounded-lg bg-muted/30 text-xs text-muted-foreground">
+          <p className="font-medium mb-2">📋 Available Presets:</p>
+          <ul className="space-y-1 list-disc list-inside">
+            <li>Not Serviced → Reason + Photo + GPS</li>
+            <li>Damage/Issue → Photos + Task</li>
+            <li>Delivery/Setup → Placement Proof</li>
+            <li>Pickup/Removal → Final Area Photo</li>
+            <li>Event Service → Zone/Bank + Count Check</li>
+            <li>ADA Units → Access Checks</li>
+            <li>Spill/Incident → Compliance Form + Notify</li>
+          </ul>
+        </div>
       </div>
     );
   }

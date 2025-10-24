@@ -169,14 +169,35 @@ export const FeeSuggestionsBuilder: React.FC<FeeSuggestionsBuilderProps> = ({
 
   if (suggestions.length === 0) {
     return (
-      <div className="text-center py-8 space-y-4">
-        <p className="text-sm text-muted-foreground">
-          Load industry-standard fee suggestions based on common scenarios
-        </p>
-        <Button onClick={initializeFees} className="gap-2">
-          <Plus className="w-4 h-4" />
-          Load Default Fee Rules (10)
-        </Button>
+      <div className="space-y-4">
+        <div className="text-center py-6 space-y-4 border-2 border-dashed rounded-lg">
+          <p className="text-sm text-muted-foreground">
+            Load industry-standard fee suggestions based on common scenarios
+          </p>
+          <Button onClick={initializeFees} className="gap-2 bg-gradient-to-r from-green-500 to-green-600">
+            <Plus className="w-4 h-4" />
+            Load Default Fee Rules (10)
+          </Button>
+        </div>
+        <div className="p-4 rounded-lg bg-muted/30 text-xs text-muted-foreground">
+          <p className="font-medium mb-2">💰 Available Fee Rules:</p>
+          <div className="grid grid-cols-2 gap-2">
+            <ul className="space-y-1 list-disc list-inside">
+              <li>Blocked Access ($50)</li>
+              <li>Extra Blue/Deodorizer ($15)</li>
+              <li>Excess Waste ($25)</li>
+              <li>Relocation ($35)</li>
+              <li>Tipped Unit Recovery ($25)</li>
+            </ul>
+            <ul className="space-y-1 list-disc list-inside">
+              <li>Graffiti Removal ($35)</li>
+              <li>Frozen Tank ($20)</li>
+              <li>After-Hours ($40)</li>
+              <li>Damaged Lock ($8)</li>
+              <li>Anchor/Strap ($15)</li>
+            </ul>
+          </div>
+        </div>
       </div>
     );
   }
