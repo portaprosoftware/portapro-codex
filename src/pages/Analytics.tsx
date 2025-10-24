@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Calendar, ChevronDown, Filter, X, BarChart3, BarChart4, DollarSign, ClipboardList, Users2, Gauge, FileText, Menu } from 'lucide-react';
+import { Calendar, ChevronDown, Filter, X, BarChart3, BarChart4, DollarSign, ClipboardList, Users2, Gauge, FileText, Menu, Receipt, BanknoteIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { GlobalFilters } from '@/components/analytics/GlobalFilters';
 import { OverviewSection } from '@/components/analytics/OverviewSection';
@@ -43,8 +43,8 @@ const Analytics = () => {
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: BarChart4 },
-    { id: 'revenue', label: 'Revenue', icon: DollarSign },
-    { id: 'deposits', label: 'Deposits', icon: DollarSign },
+    { id: 'revenue', label: 'Revenue', icon: Receipt },
+    { id: 'deposits', label: 'Deposits', icon: BanknoteIcon },
     { id: 'operations', label: 'Operations', icon: ClipboardList },
     { id: 'customers', label: 'Customers', icon: Users2 },
     { id: 'drivers', label: 'Drivers', icon: Gauge },
