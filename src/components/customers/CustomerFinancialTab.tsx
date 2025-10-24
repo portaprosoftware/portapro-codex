@@ -135,16 +135,16 @@ export function CustomerFinancialTab({ customerId }: CustomerFinancialTabProps) 
           <p className="text-sm text-muted-foreground mb-4">View quotes and invoices for this customer</p>
           
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="w-full justify-start bg-transparent p-0 h-auto gap-2">
+            <TabsList className="inline-flex h-10 items-center justify-start rounded-lg bg-gray-100 p-1 text-muted-foreground">
               <TabsTrigger 
                 value="quotes" 
-                className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium px-4 py-2 rounded-full data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:shadow-lg"
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm bg-transparent text-black"
               >
                 Quotes ({quotes.length})
               </TabsTrigger>
               <TabsTrigger 
                 value="invoices"
-                className="bg-gradient-to-r from-green-500 to-green-600 text-white font-medium px-4 py-2 rounded-full data-[state=active]:from-green-600 data-[state=active]:to-green-700 data-[state=active]:shadow-lg"
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm bg-transparent text-black"
               >
                 Invoices ({invoices.length})
               </TabsTrigger>
