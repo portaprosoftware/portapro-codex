@@ -462,7 +462,7 @@ export const ScheduledCampaigns: React.FC = () => {
           <CardHeader>
             <CardTitle className="font-inter flex items-center gap-2">
               <CalendarIcon className="w-5 h-5" />
-              Scheduled Campaigns
+              Scheduled
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -562,17 +562,17 @@ export const ScheduledCampaigns: React.FC = () => {
       </Card>
       
       <Card>
-        <CardHeader>
-          <CardTitle className="font-inter flex items-center gap-2 text-sm">
-            <CalendarIcon className="w-5 h-5" />
-            Scheduled Campaigns ({scheduledCampaigns.length})
-            {filtersHook.hasActiveFilters && (
-              <Badge variant="secondary" className="ml-2">
-                Filtered
-              </Badge>
-            )}
-          </CardTitle>
-        </CardHeader>
+          <CardHeader>
+            <CardTitle className="font-inter flex items-center gap-2 text-sm">
+              <CalendarIcon className="w-5 h-5" />
+              Scheduled ({scheduledCampaigns.length})
+              {filtersHook.hasActiveFilters && (
+                <Badge variant="secondary" className="ml-2">
+                  Filtered
+                </Badge>
+              )}
+            </CardTitle>
+          </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
