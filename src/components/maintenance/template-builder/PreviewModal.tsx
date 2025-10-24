@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { X, RefreshCw } from 'lucide-react';
 import { EnhancedTemplate } from './types';
@@ -27,9 +27,9 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose} modal={true}>
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }} modal={true}>
       <DialogContent 
-        className="max-w-[95vw] w-full h-[95vh] p-0 gap-0 z-[100] bg-background"
+        className="max-w-[95vw] w-full h-[95vh] p-0 gap-0 bg-background"
         onPointerDownOutside={(e) => {
           // Only close if clicking the overlay, not the content
           if ((e.target as HTMLElement).hasAttribute('data-radix-dialog-overlay')) {
@@ -46,6 +46,7 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
         {/* Header - 64px height */}
         <DialogHeader className="px-6 h-16 border-b sticky top-0 bg-background z-10 flex flex-row items-center justify-between">
           <DialogTitle>Live Preview</DialogTitle>
+          <DialogDescription className="sr-only">Template live rendering preview</DialogDescription>
           <div className="flex items-center gap-2">
             {hasError && (
               <Button
