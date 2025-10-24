@@ -342,7 +342,7 @@ export const ProductOverview: React.FC<ProductOverviewProps> = ({ product, onDel
             </div>
             <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg">
               <span className="text-sm font-medium text-gray-600">Low Stock Threshold</span>
-              <Badge className="bg-gradient-to-r from-gray-500 to-gray-600 text-white font-bold text-base px-3 py-1">
+              <Badge className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-bold text-base px-3 py-1">
                 {product.low_stock_threshold}
               </Badge>
             </div>
