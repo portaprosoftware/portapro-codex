@@ -207,15 +207,15 @@ export const TemplateManagement: React.FC = () => {
     return (
       <Collapsible open={isExpanded} onOpenChange={setExpanded}>
         <CollapsibleTrigger asChild>
-          <Button variant="ghost" className="w-full justify-between p-4 h-auto">
+          <Button variant="ghost" className="w-full justify-between p-4 h-auto bg-gray-100 hover:bg-gray-200">
             <div className="flex items-center gap-3">
               {icon}
-              <span className="font-semibold text-lg">{title}</span>
+              <span className="font-semibold text-lg text-gray-700">{title}</span>
               <Badge variant="secondary" className="ml-2">
                 {templates.length}
               </Badge>
             </div>
-            {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            {isExpanded ? <ChevronUp className="h-4 w-4 text-gray-600" /> : <ChevronDown className="h-4 w-4 text-gray-600" />}
           </Button>
         </CollapsibleTrigger>
         <CollapsibleContent className="space-y-2 mt-2">
@@ -312,12 +312,12 @@ export const TemplateManagement: React.FC = () => {
       <div className="space-y-6">
         {/* Email Templates */}
         <div className="space-y-4">
-          <div className="flex items-center gap-3 bg-gray-100 p-4 rounded-lg">
-            <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-              <Mail className="w-5 h-5 text-blue-500" />
+          <div className="flex items-center gap-3 bg-gradient-to-r from-blue-600 to-blue-700 p-4 rounded-lg">
+            <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+              <Mail className="w-5 h-5 text-white" />
               Email Templates
             </h2>
-            <span className="text-xs text-muted-foreground">System generated templates cannot be edited or deleted.</span>
+            <span className="text-xs text-white/90">System generated templates cannot be edited or deleted.</span>
           </div>
           
           {/* Email User Templates */}
@@ -343,12 +343,12 @@ export const TemplateManagement: React.FC = () => {
 
         {/* SMS Templates */}
         <div className="space-y-4">
-          <div className="flex items-center gap-3 bg-gray-100 p-4 rounded-lg">
-            <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-green-500" />
+          <div className="flex items-center gap-3 bg-gradient-to-r from-blue-600 to-blue-700 p-4 rounded-lg">
+            <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+              <MessageSquare className="w-5 h-5 text-white" />
               SMS Templates
             </h2>
-            <span className="text-xs text-muted-foreground">System generated templates cannot be edited or deleted.</span>
+            <span className="text-xs text-white/90">System generated templates cannot be edited or deleted.</span>
           </div>
           
           {/* SMS User Templates */}
