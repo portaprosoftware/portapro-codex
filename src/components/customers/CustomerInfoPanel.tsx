@@ -253,20 +253,22 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
           <p className="text-xs text-muted-foreground">Synced with service location</p>
         </CardHeader>
         <CardContent className="p-4 sm:p-5 pt-2 space-y-3">
-          <p className="text-sm text-slate-800 break-words">{serviceAddress}</p>
+          <div className="flex items-start justify-between gap-3">
+            <p className="text-sm text-slate-800 break-words flex-1">{serviceAddress}</p>
+            {customer.service_street && (
+              <button
+                onClick={() => copyToClipboard(serviceAddress, 'Service address')}
+                className="text-sm text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1 flex-shrink-0"
+                aria-label="Copy address to clipboard"
+              >
+                <Copy className="w-3.5 h-3.5" />
+                Copy
+              </button>
+            )}
+          </div>
           
           {customer.service_street && (
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => copyToClipboard(serviceAddress, 'Service address')}
-                className="inline-flex items-center justify-center h-11 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50"
-                aria-label="Copy address to clipboard"
-              >
-                <Copy className="w-4 h-4 mr-2" />
-                Copy
-              </Button>
               <Button
                 variant="outline"
                 size="sm"
@@ -287,6 +289,16 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
                 <ExternalLink className="w-4 h-4 mr-2" />
                 Apple
               </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleMapLink(serviceAddress, 'waze')}
+                className="inline-flex items-center justify-center h-11 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50"
+                aria-label="Open in Waze"
+              >
+                <Navigation className="w-4 h-4 mr-2" />
+                Waze
+              </Button>
             </div>
           )}
         </CardContent>
@@ -297,20 +309,17 @@ export function CustomerInfoPanel({ customer }: CustomerInfoPanelProps) {
         <CardHeader className="p-4 sm:p-5 pb-2">
           <CardTitle className="text-base font-semibold">Billing Address</CardTitle>
         </CardHeader>
-        <CardContent className="p-4 sm:p-5 pt-2 space-y-3">
-          <p className="text-sm text-slate-800 break-words">{billingAddress}</p>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
-            <Button
-              variant="outline"
-              size="sm"
+        <CardContent className="p-4 sm:p-5 pt-2">
+          <div className="flex items-start justify-between gap-3">
+            <p className="text-sm text-slate-800 break-words flex-1">{billingAddress}</p>
+            <button
               onClick={() => copyToClipboard(billingAddress, 'Billing address')}
-              className="inline-flex items-center justify-center h-11 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50"
+              className="text-sm text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1 flex-shrink-0"
               aria-label="Copy address to clipboard"
             >
-              <Copy className="w-4 h-4 mr-2" />
+              <Copy className="w-3.5 h-3.5" />
               Copy
-            </Button>
+            </button>
           </div>
         </CardContent>
       </Card>
