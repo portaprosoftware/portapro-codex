@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { toast as shadToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -207,12 +208,10 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
               });
               
               // Show notification
-              import('@/hooks/use-toast').then(({ toast }) => {
-                toast({
-                  title: "Bulk quantity adjusted",
-                  description: `Reduced bulk selection from ${currentBulkQuantity} to ${adjustedQuantity} units due to specific unit selections.`,
-                  variant: adjustedQuantity === 0 ? "destructive" : "default"
-                });
+              shadToast({
+                title: "Bulk quantity adjusted",
+                description: `Reduced bulk selection from ${currentBulkQuantity} to ${adjustedQuantity} units due to specific unit selections.`,
+                variant: adjustedQuantity === 0 ? "destructive" : "default"
               });
             }
           }
