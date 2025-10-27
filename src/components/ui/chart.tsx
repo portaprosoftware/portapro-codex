@@ -1,5 +1,5 @@
 import * as React from "react"
-import * as RechartsPrimitive from "recharts"
+import { loadChartsLibs } from "@/lib/loaders/charts"
 
 import { cn } from "@/lib/utils"
 
@@ -36,13 +36,29 @@ const ChartContainer = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> & {
     config: ChartConfig
-    children: React.ComponentProps<
-      typeof RechartsPrimitive.ResponsiveContainer
-    >["children"]
+    children: React.ReactNode
   }
 >(({ id, className, children, config, ...props }, ref) => {
   const uniqueId = React.useId()
   const chartId = `chart-${id || uniqueId.replace(/:/g, "")}`
+  const [Recharts, setRecharts] = React.useState<any>(null)
+
+  React.useEffect(() => {
+    loadChartsLibs().then(setRecharts).catch(console.error)
+  }, [])
+
+  if (!Recharts) {
+    return (
+      <div ref={ref} className={cn("flex items-center justify-center min-h-[200px]", className)} {...props}>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2" />
+          <p className="text-sm text-muted-foreground">Loading chart...</p>
+        </div>
+      </div>
+    )
+  }
+
+  const ResponsiveContainer = Recharts.ResponsiveContainer;
 
   return (
     <ChartContext.Provider value={{ config }}>
@@ -56,9 +72,9 @@ const ChartContainer = React.forwardRef<
         {...props}
       >
         <ChartStyle id={chartId} config={config} />
-        <RechartsPrimitive.ResponsiveContainer>
+        <ResponsiveContainer>
           {children}
-        </RechartsPrimitive.ResponsiveContainer>
+        </ResponsiveContainer>
       </div>
     </ChartContext.Provider>
   )
@@ -98,18 +114,26 @@ ${colorConfig
   )
 }
 
-const ChartTooltip = RechartsPrimitive.Tooltip
+const ChartTooltip = React.forwardRef<any, any>((props, ref) => {
+  const [Recharts, setRecharts] = React.useState<any>(null)
+  React.useEffect(() => {
+    loadChartsLibs().then(setRecharts).catch(console.error)
+  }, [])
+  if (!Recharts) return null
+  const Tooltip = Recharts.Tooltip
+  return <Tooltip {...props} ref={ref} />
+})
+ChartTooltip.displayName = "ChartTooltip"
 
 const ChartTooltipContent = React.forwardRef<
   HTMLDivElement,
-  React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
-    React.ComponentProps<"div"> & {
-      hideLabel?: boolean
-      hideIndicator?: boolean
-      indicator?: "line" | "dot" | "dashed"
-      nameKey?: string
-      labelKey?: string
-    }
+  any & {
+    hideLabel?: boolean
+    hideIndicator?: boolean
+    indicator?: "line" | "dot" | "dashed"
+    nameKey?: string
+    labelKey?: string
+  }
 >(
   (
     {
@@ -254,12 +278,21 @@ const ChartTooltipContent = React.forwardRef<
 )
 ChartTooltipContent.displayName = "ChartTooltip"
 
-const ChartLegend = RechartsPrimitive.Legend
+const ChartLegend = React.forwardRef<any, any>((props, ref) => {
+  const [Recharts, setRecharts] = React.useState<any>(null)
+  React.useEffect(() => {
+    loadChartsLibs().then(setRecharts).catch(console.error)
+  }, [])
+  if (!Recharts) return null
+  const Legend = Recharts.Legend
+  return <Legend {...props} ref={ref} />
+})
+ChartLegend.displayName = "ChartLegend"
 
 const ChartLegendContent = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> &
-    Pick<RechartsPrimitive.LegendProps, "payload" | "verticalAlign"> & {
+    any & {
       hideIcon?: boolean
       nameKey?: string
     }

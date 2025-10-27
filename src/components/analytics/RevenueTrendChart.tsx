@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { loadChartsLibs } from '@/lib/loaders/charts';
 import { format, parseISO } from 'date-fns';
 
 interface RevenueTrendData {
@@ -17,6 +17,28 @@ interface RevenueTrendChartProps {
 }
 
 export const RevenueTrendChart: React.FC<RevenueTrendChartProps> = ({ data, title, height = 300 }) => {
+  const [Recharts, setRecharts] = useState<any>(null);
+
+  useEffect(() => {
+    loadChartsLibs().then(setRecharts).catch(console.error);
+  }, []);
+
+  if (!Recharts) {
+    return (
+      <Card className="p-6 rounded-xl shadow-md border-l-4 border-green-500">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
+        <div className="flex items-center justify-center h-[300px]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2" />
+            <p className="text-sm text-muted-foreground">Loading chart...</p>
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
+  const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } = Recharts;
+
   const formatXAxisLabel = (dateStr: string) => {
     try {
       const date = parseISO(dateStr);

@@ -1,7 +1,7 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { loadChartsLibs } from '@/lib/loaders/charts';
 
 interface DonutChartProps {
   data: Array<{
@@ -14,6 +14,28 @@ interface DonutChartProps {
 }
 
 export const DonutChart: React.FC<DonutChartProps> = ({ data, title, height = 300 }) => {
+  const [Recharts, setRecharts] = useState<any>(null);
+
+  useEffect(() => {
+    loadChartsLibs().then(setRecharts).catch(console.error);
+  }, []);
+
+  if (!Recharts) {
+    return (
+      <Card className="p-6 rounded-xl shadow-md border-l-4 border-purple-500">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
+        <div className="flex items-center justify-center h-[300px]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2" />
+            <p className="text-sm text-muted-foreground">Loading chart...</p>
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
+  const { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } = Recharts;
+
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
