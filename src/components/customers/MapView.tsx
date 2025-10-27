@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import { loadMapboxLibs } from '@/lib/loaders/map';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -33,9 +32,24 @@ interface MapViewProps {
 
 export function MapView({ pins, selectedLocation, onPinClick, className = "w-full h-full" }: MapViewProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
+  const map = useRef<any | null>(null);
+  const [mapboxgl, setMapboxgl] = useState<any>(null);
   const [mapboxToken, setMapboxToken] = useState<string>('');
   const { toast } = useToast();
+
+  // Load Mapbox library
+  useEffect(() => {
+    loadMapboxLibs()
+      .then(setMapboxgl)
+      .catch((err) => {
+        console.error('Failed to load Mapbox:', err);
+        toast({
+          title: "Map Error",
+          description: "Failed to load map library",
+          variant: "destructive"
+        });
+      });
+  }, []);
 
   // Fetch Mapbox token
   useEffect(() => {
@@ -59,9 +73,9 @@ export function MapView({ pins, selectedLocation, onPinClick, className = "w-ful
 
   // Initialize map
   useEffect(() => {
-    if (!mapContainer.current || !mapboxToken) return;
-
-    mapboxgl.accessToken = mapboxToken;
+    if (!mapContainer.current || !mapboxToken || !mapboxgl) return;
+    
+    // Token already configured by loader
     
     // Determine center point
     let center: [number, number] = [-81.8392, 41.3668]; // Default to Ohio
@@ -190,11 +204,10 @@ export function MapView({ pins, selectedLocation, onPinClick, className = "w-ful
       }
     }
 
-    // Cleanup
     return () => {
       map.current?.remove();
     };
-  }, [mapboxToken, pins, selectedLocation, onPinClick]);
+  }, [mapboxgl, mapboxToken, pins, selectedLocation, onPinClick]);
 
   return (
     <div className={className}>

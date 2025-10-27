@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import { loadMapboxLibs } from '@/lib/loaders/map';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useUser } from '@clerk/clerk-react';
@@ -9,9 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Navigation, Phone, MapPin, Clock, Calendar } from 'lucide-react';
 import { formatDateSafe } from '@/lib/dateUtils';
-
-// Mapbox access token
-const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoicG9ydGFwcm9zb2Z0d2FyZSIsImEiOiJjbWJybnBnMnIwY2x2Mm1wd3p2MWdqY2FnIn0.7ZIJ7ufeGtn-ufiOGJpq1Q';
 
 interface Job {
   id: string;
@@ -35,9 +31,17 @@ const statusColors = {
 export const DriverMapView: React.FC = () => {
   const { user } = useUser();
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
+  const map = useRef<any | null>(null);
+  const [mapboxgl, setMapboxgl] = useState<any>(null);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const { latitude, longitude } = useGeolocation();
+
+  // Load Mapbox library
+  useEffect(() => {
+    loadMapboxLibs()
+      .then(setMapboxgl)
+      .catch(console.error);
+  }, []);
 
   const { data: jobs, isLoading: jobsLoading, error: jobsError } = useQuery({
     queryKey: ['driver-jobs-map', user?.id],
@@ -92,10 +96,9 @@ export const DriverMapView: React.FC = () => {
   });
 
   useEffect(() => {
-    if (!mapContainer.current) return;
+    if (!mapContainer.current || !mapboxgl) return;
 
-    // Initialize map
-    mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
+    // Map is already initialized with token via loader
     
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
@@ -121,7 +124,7 @@ export const DriverMapView: React.FC = () => {
     return () => {
       map.current?.remove();
     };
-  }, [latitude, longitude]);
+  }, [mapboxgl, latitude, longitude]);
 
   useEffect(() => {
     if (!map.current || !jobs) return;
@@ -218,8 +221,8 @@ export const DriverMapView: React.FC = () => {
     );
   }
 
-  // No Mapbox token
-  if (!MAPBOX_ACCESS_TOKEN.includes('pk.')) {
+  // Loading or no Mapbox library
+  if (!mapboxgl) {
     return (
       <div className="flex items-center justify-center h-full bg-muted">
         <div className="text-center p-6">

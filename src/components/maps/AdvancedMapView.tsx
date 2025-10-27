@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import { loadMapboxLibs } from '@/lib/loaders/map';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -26,9 +25,6 @@ import {
   MessageSquare
 } from 'lucide-react';
 
-// For demo purposes, using a public Mapbox token
-const MAPBOX_TOKEN = 'pk.eyJ1IjoibG92YWJsZS1haS1kZW1vIiwiYSI6ImNseXFjZm83ejEyMGcya3F5YWJwa29wZ2MifQ.jqTCZzTueBu4oKq4s8Hf8Q';
-
 interface MapLocation {
   id: string;
   latitude: number;
@@ -49,7 +45,8 @@ interface RouteOptimization {
 
 export const AdvancedMapView: React.FC = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
+  const map = useRef<any | null>(null);
+  const [mapboxgl, setMapboxgl] = useState<any>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<MapLocation | null>(null);
   const [showTraffic, setShowTraffic] = useState(false);
@@ -59,6 +56,13 @@ export const AdvancedMapView: React.FC = () => {
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [mapStyle, setMapStyle] = useState<'streets' | 'satellite' | 'terrain'>('streets');
   const [realTimeTracking, setRealTimeTracking] = useState(true);
+
+  // Load Mapbox library
+  useEffect(() => {
+    loadMapboxLibs()
+      .then(setMapboxgl)
+      .catch(console.error);
+  }, []);
 
   // Fetch map locations (jobs, drivers, vehicles)
   const { data: locations, refetch: refetchLocations } = useQuery({
@@ -126,9 +130,9 @@ export const AdvancedMapView: React.FC = () => {
 
   // Initialize map
   useEffect(() => {
-    if (!mapContainer.current) return;
-
-    mapboxgl.accessToken = MAPBOX_TOKEN;
+    if (!mapContainer.current || !mapboxgl) return;
+    
+    // Token already configured by loader
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
@@ -157,7 +161,7 @@ export const AdvancedMapView: React.FC = () => {
     return () => {
       map.current?.remove();
     };
-  }, []);
+  }, [mapboxgl]);
 
   // Update map style
   useEffect(() => {

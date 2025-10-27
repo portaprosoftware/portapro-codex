@@ -1,32 +1,44 @@
 import { useEffect, useRef, useState } from 'react';
-import mapboxgl from 'mapbox-gl';
+import { loadMapboxLibs } from '@/lib/loaders/map';
 
 export interface MapboxState {
-  map: mapboxgl.Map | null;
+  map: any | null;
   mapContainer: React.RefObject<HTMLDivElement>;
   isLoading: boolean;
   error: string | null;
   mapboxToken: string;
   showTokenInput: boolean;
+  mapboxgl: any | null;
 }
 
 export const useInventoryMapboxInitializer = (): MapboxState => {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
+  const map = useRef<any | null>(null);
+  const [mapboxgl, setMapboxgl] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   // Use the public Mapbox token directly
   const mapboxToken = 'pk.eyJ1IjoicG9ydGFwcm9zb2Z0d2FyZSIsImEiOiJjbWJybnBnMnIwY2x2Mm1wd3p2MWdqY2FnIn0.7ZIJ7ufeGtn-ufiOGJpq1Q';
   const [showTokenInput, setShowTokenInput] = useState(false);
 
-  // Token is now set directly, no need to fetch
+  // Load Mapbox library
+  useEffect(() => {
+    loadMapboxLibs()
+      .then(setMapboxgl)
+      .catch((err) => {
+        console.error('Failed to load Mapbox:', err);
+        setError('Failed to load map library');
+        setIsLoading(false);
+      });
+  }, []);
 
-  // Initialize map when token is available
+  // Initialize map when library and token are available
   useEffect(() => {
     console.log('🗺️ useInventoryMapboxInitializer: Map initialization effect triggered');
     console.log('🗺️ useInventoryMapboxInitializer: State check:', {
       hasContainer: !!mapContainer.current,
       hasToken: !!mapboxToken,
+      hasMapboxgl: !!mapboxgl,
       showTokenInput,
       tokenLength: mapboxToken?.length,
       containerElement: mapContainer.current
@@ -38,9 +50,9 @@ export const useInventoryMapboxInitializer = (): MapboxState => {
       return;
     }
 
-    if (!mapboxToken) {
-      console.log('🗺️ useInventoryMapboxInitializer: No mapbox token, waiting...');
-      setIsLoading(false);
+    if (!mapboxgl) {
+      console.log('🗺️ useInventoryMapboxInitializer: Mapbox library not loaded yet, waiting...');
+      setIsLoading(true);
       return;
     }
 
@@ -51,8 +63,7 @@ export const useInventoryMapboxInitializer = (): MapboxState => {
     }
 
     try {
-      console.log('🗺️ useInventoryMapboxInitializer: Setting mapbox access token...');
-      mapboxgl.accessToken = mapboxToken;
+      console.log('🗺️ useInventoryMapboxInitializer: Mapbox already configured via loader');
 
       console.log('🗺️ useInventoryMapboxInitializer: Creating new Mapbox map...');
       map.current = new mapboxgl.Map({
@@ -87,7 +98,7 @@ export const useInventoryMapboxInitializer = (): MapboxState => {
       map.current?.remove();
       map.current = null;
     };
-  }, [mapboxToken, showTokenInput]);
+  }, [mapboxgl, mapboxToken, showTokenInput]);
 
   return {
     map: map.current,
@@ -95,6 +106,7 @@ export const useInventoryMapboxInitializer = (): MapboxState => {
     isLoading,
     error,
     mapboxToken,
-    showTokenInput
+    showTokenInput,
+    mapboxgl
   };
 };

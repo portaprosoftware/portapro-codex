@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react';
-import mapboxgl from 'mapbox-gl';
 
 export interface InventoryLocation {
   id: string;
@@ -26,7 +25,8 @@ export interface InventoryLocation {
 }
 
 interface UseInventoryMarkerManagerProps {
-  map: mapboxgl.Map | null;
+  map: any | null;
+  mapboxgl: any | null;
   locations: InventoryLocation[];
   onLocationSelect: (location: InventoryLocation) => void;
 }
@@ -41,14 +41,15 @@ const statusColors = {
 
 export const useInventoryMarkerManager = ({
   map,
+  mapboxgl,
   locations,
   onLocationSelect
 }: UseInventoryMarkerManagerProps) => {
-  const markersRef = useRef<mapboxgl.Marker[]>([]);
+  const markersRef = useRef<any[]>([]);
   const locationsHashRef = useRef<string>('');
 
   useEffect(() => {
-    if (!map || !locations?.length) return;
+    if (!map || !mapboxgl || !locations?.length) return;
 
     // Create hash of current locations to avoid unnecessary updates
     const newHash = JSON.stringify(locations.map(l => ({ id: l.id, lat: l.latitude, lng: l.longitude, status: l.status })));
@@ -116,7 +117,7 @@ export const useInventoryMarkerManager = ({
       markersRef.current.push(marker);
     });
 
-  }, [map, locations, onLocationSelect]);
+  }, [map, mapboxgl, locations, onLocationSelect]);
 
   // Cleanup on unmount
   useEffect(() => {
