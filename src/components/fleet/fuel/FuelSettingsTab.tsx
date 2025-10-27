@@ -18,8 +18,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { StateScroller } from '@/components/ui/state-scroller';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import { loadMapboxLibs } from '@/lib/loaders/map';
 import { geocodeAddress } from '@/services/geocoding';
 
 interface FuelSettings {
@@ -52,10 +51,11 @@ export const FuelSettingsTab: React.FC = () => {
   });
   const [mapCoordinates, setMapCoordinates] = useState<[number, number] | null>(null);
   const mapPreviewContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
-  const marker = useRef<mapboxgl.Marker | null>(null);
+  const map = useRef<any | null>(null);
+  const marker = useRef<any | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [mapboxgl, setMapboxgl] = useState<any>(null);
   const [mapboxToken, setMapboxToken] = useState<string>('');
 
   // Fetch fuel settings
@@ -79,6 +79,20 @@ export const FuelSettingsTab: React.FC = () => {
       setLocalSettings(settings);
     }
   }, [settings, localSettings]);
+
+  // Load Mapbox library
+  useEffect(() => {
+    loadMapboxLibs()
+      .then(setMapboxgl)
+      .catch((err) => {
+        console.error('Failed to load Mapbox:', err);
+        toast({
+          title: 'Map Configuration Error',
+          description: 'Failed to load map library',
+          variant: 'destructive'
+        });
+      });
+  }, []);
 
   // Fetch Mapbox token
   useEffect(() => {
@@ -241,8 +255,8 @@ export const FuelSettingsTab: React.FC = () => {
       return;
     }
 
-    if (!mapboxToken) {
-      console.log('🗺️ Preview map: No Mapbox token yet, waiting...');
+    if (!mapboxToken || !mapboxgl) {
+      console.log('🗺️ Preview map: No Mapbox token or library yet, waiting...');
       return;
     }
 
@@ -264,8 +278,6 @@ export const FuelSettingsTab: React.FC = () => {
     }
 
     try {
-      // Initialize new map
-      mapboxgl.accessToken = mapboxToken;
       console.log('🗺️ Preview map: Creating Mapbox instance...');
       
       map.current = new mapboxgl.Map({

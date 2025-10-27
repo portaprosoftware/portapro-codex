@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import { loadMapboxLibs } from '@/lib/loaders/map';
+import { env } from '@/env.client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -22,9 +22,10 @@ interface GPSPinDropperProps {
 
 export function GPSPinDropper({ pins, onPinsChange, className }: GPSPinDropperProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
-  const markers = useRef<{ [key: string]: mapboxgl.Marker }>({});
+  const map = useRef<any | null>(null);
+  const markers = useRef<{ [key: string]: any }>({});
   
+  const [mapboxgl, setMapboxgl] = useState<any>(null);
   const [isDropMode, setIsDropMode] = useState(false);
   const [searchAddress, setSearchAddress] = useState('');
   const [editingPinId, setEditingPinId] = useState<string | null>(null);
@@ -32,12 +33,18 @@ export function GPSPinDropper({ pins, onPinsChange, className }: GPSPinDropperPr
   const [mapLoaded, setMapLoaded] = useState(false);
   const [mapStyle, setMapStyle] = useState<'streets' | 'satellite'>('satellite');
 
+  // Load Mapbox library
+  useEffect(() => {
+    loadMapboxLibs()
+      .then(setMapboxgl)
+      .catch((err) => {
+        console.error('Failed to load Mapbox:', err);
+      });
+  }, []);
+
   // Initialize map
   useEffect(() => {
-    if (!mapContainer.current || map.current) return;
-
-    // You'll need to add MAPBOX_PUBLIC_TOKEN to environment variables
-    mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN || 'pk.eyJ1IjoibG92YWJsZS1kZXYiLCJhIjoiY201ZW53ZnFuMHZmMTJyczl5N2poYWxmcCJ9.placeholder';
+    if (!mapContainer.current || map.current || !mapboxgl) return;
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
@@ -122,11 +129,19 @@ export function GPSPinDropper({ pins, onPinsChange, className }: GPSPinDropperPr
   }, [pins]);
 
   const handleSearch = async () => {
-    if (!searchAddress || !map.current) return;
+    if (!searchAddress || !map.current || !mapboxgl) return;
 
     try {
+      const token = env.MAPBOX_TOKEN || await (async () => {
+        const response = await fetch(`${env.SUPABASE_URL}/functions/v1/get-mapbox-token`, {
+          headers: { 'Authorization': `Bearer ${env.SUPABASE_PUBLISHABLE_KEY}` }
+        });
+        const data = await response.json();
+        return data.token;
+      })();
+      
       const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(searchAddress)}.json?access_token=${mapboxgl.accessToken}`
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(searchAddress)}.json?access_token=${token}`
       );
       const data = await response.json();
 

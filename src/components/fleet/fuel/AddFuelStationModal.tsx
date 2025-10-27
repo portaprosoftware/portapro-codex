@@ -9,8 +9,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { MapPin, Loader2 } from 'lucide-react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import { loadMapboxLibs } from '@/lib/loaders/map';
 
 interface AddFuelStationModalProps {
   open: boolean;
@@ -25,8 +24,9 @@ export const AddFuelStationModal: React.FC<AddFuelStationModalProps> = ({
   const [zipCodeSearch, setZipCodeSearch] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
-  const markers = useRef<mapboxgl.Marker[]>([]);
+  const map = useRef<any | null>(null);
+  const markers = useRef<any[]>([]);
+  const [mapboxgl, setMapboxgl] = useState<any>(null);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -91,9 +91,23 @@ export const AddFuelStationModal: React.FC<AddFuelStationModalProps> = ({
     }
   });
 
+  // Load Mapbox library
+  useEffect(() => {
+    loadMapboxLibs()
+      .then(setMapboxgl)
+      .catch((err) => {
+        console.error('Failed to load Mapbox:', err);
+        toast({
+          title: 'Error',
+          description: 'Failed to load map',
+          variant: 'destructive'
+        });
+      });
+  }, []);
+
   // Initialize map when map tab is opened
   useEffect(() => {
-    if (!open || activeTab !== "map" || !mapContainer.current || map.current) return;
+    if (!open || activeTab !== "map" || !mapContainer.current || map.current || !mapboxgl) return;
 
     const initializeMap = async () => {
       try {
@@ -107,8 +121,6 @@ export const AddFuelStationModal: React.FC<AddFuelStationModalProps> = ({
           });
           return;
         }
-
-        mapboxgl.accessToken = tokenData.token;
         
         map.current = new mapboxgl.Map({
           container: mapContainer.current!,

@@ -5,8 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { getCustomerTypeColor, getCustomerTypeIcon } from '@/lib/customerTypeIcons';
 import { useIsMobile } from '@/hooks/use-mobile';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import { loadMapboxLibs } from '@/lib/loaders/map';
 import standardToiletUnit from '@/assets/standard-toilet-unit.png';
 import { 
   Package, 
@@ -210,14 +209,21 @@ interface Assignment {
 
 const AssignmentsMap = ({ assignments }: { assignments: Assignment[] }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
+  const map = useRef<any | null>(null);
+  const [mapboxgl, setMapboxgl] = useState<any>(null);
   const [isSatelliteView, setIsSatelliteView] = useState(false);
 
+  // Load Mapbox library
   useEffect(() => {
-    if (!mapContainer.current) return;
+    loadMapboxLibs()
+      .then(setMapboxgl)
+      .catch((err) => {
+        console.error('Failed to load Mapbox:', err);
+      });
+  }, []);
 
-    // Use a placeholder token - user needs to add their actual token
-    mapboxgl.accessToken = 'pk.eyJ1IjoicG9ydGFwcm9zb2Z0d2FyZSIsImEiOiJjbWJybnBnMnIwY2x2Mm1wd3p2MWdqY2FnIn0.7ZIJ7ufeGtn-ufiOGJpq1Q';
+  useEffect(() => {
+    if (!mapContainer.current || !mapboxgl) return;
     
     map.current = new mapboxgl.Map({
       container: mapContainer.current,

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import { loadMapboxLibs } from '@/lib/loaders/map';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -35,9 +34,10 @@ export function AddPinSlider({
   onPinAdded
 }: AddPinSliderProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
-  const currentMarker = useRef<mapboxgl.Marker | null>(null);
-  const addressMarker = useRef<mapboxgl.Marker | null>(null);
+  const map = useRef<any | null>(null);
+  const currentMarker = useRef<any | null>(null);
+  const addressMarker = useRef<any | null>(null);
+  const [mapboxgl, setMapboxgl] = useState<any>(null);
   const [mapboxToken, setMapboxToken] = useState<string>('');
   const [mapStyle, setMapStyle] = useState<'satellite' | 'street'>('satellite');
   const [isPinModeActive, setIsPinModeActive] = useState(false);
@@ -99,6 +99,16 @@ export function AddPinSlider({
     }
   }, [isOpen, mapboxToken, fullAddress, serviceLocation?.gps_coordinates]);
 
+  // Load Mapbox library
+  useEffect(() => {
+    loadMapboxLibs()
+      .then(setMapboxgl)
+      .catch((err) => {
+        console.error('Failed to load Mapbox:', err);
+        toast.error('Failed to load map');
+      });
+  }, []);
+
   // Fetch Mapbox token
   useEffect(() => {
     const fetchToken = async () => {
@@ -121,10 +131,7 @@ export function AddPinSlider({
 
   // Initialize map (copied exactly from working MapView)
   useEffect(() => {
-    if (!isOpen || !mapboxToken || !mapContainer.current) return;
-
-    // Set Mapbox access token
-    mapboxgl.accessToken = mapboxToken;
+    if (!isOpen || !mapboxToken || !mapContainer.current || !mapboxgl) return;
 
     // Determine center point (exact same logic as MapView)
     let center: [number, number] = [-81.8392, 41.3668]; // Default to Ohio

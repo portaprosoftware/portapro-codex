@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import { loadMapboxLibs } from '@/lib/loaders/map';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,10 +18,11 @@ interface AddPinModalProps {
 
 export function AddPinModal({ isOpen, onClose, serviceLocation, onPinAdded }: AddPinModalProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
-  const currentMarker = useRef<mapboxgl.Marker | null>(null);
-  const addressMarker = useRef<mapboxgl.Marker | null>(null);
+  const map = useRef<any | null>(null);
+  const currentMarker = useRef<any | null>(null);
+  const addressMarker = useRef<any | null>(null);
   
+  const [mapboxgl, setMapboxgl] = useState<any>(null);
   const [mapboxToken, setMapboxToken] = useState<string>('');
   const [mapStyle, setMapStyle] = useState<'satellite' | 'street'>('satellite');
   const [pinData, setPinData] = useState({
@@ -71,6 +71,16 @@ export function AddPinModal({ isOpen, onClose, serviceLocation, onPinAdded }: Ad
     }
   }, [isOpen, mapboxToken, fullAddress, serviceLocation?.gps_coordinates, addressCoordinates]);
 
+  // Load Mapbox library
+  useEffect(() => {
+    loadMapboxLibs()
+      .then(setMapboxgl)
+      .catch((err) => {
+        console.error('Failed to load Mapbox:', err);
+        toast.error('Failed to load map');
+      });
+  }, []);
+
   // Fetch Mapbox token
   useEffect(() => {
     const fetchToken = async () => {
@@ -92,10 +102,7 @@ export function AddPinModal({ isOpen, onClose, serviceLocation, onPinAdded }: Ad
 
   // Initialize map
   useEffect(() => {
-    if (!isOpen || !mapboxToken || !mapContainer.current) return;
-
-    // Set Mapbox access token
-    mapboxgl.accessToken = mapboxToken;
+    if (!isOpen || !mapboxToken || !mapContainer.current || !mapboxgl) return;
 
     // Default center - try multiple sources for location
     let center: [number, number] = [-98.5795, 39.8283]; // US center as fallback

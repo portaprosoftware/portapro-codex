@@ -10,8 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import { loadMapboxLibs } from '@/lib/loaders/map';
 import { supabase } from '@/integrations/supabase/client';
 
 interface ServiceLocationTabProps {
@@ -86,9 +85,10 @@ const normalizeToLngLat = (value: any): [number, number] | null => {
 
 const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
-  const markersRef = useRef<{ [key: string]: mapboxgl.Marker }>({});
-  const locationMarkersRef = useRef<{ [key: string]: mapboxgl.Marker }>({});
+  const map = useRef<any | null>(null);
+  const markersRef = useRef<{ [key: string]: any }>({});
+  const locationMarkersRef = useRef<{ [key: string]: any }>({});
+  const [mapboxgl, setMapboxgl] = useState<any>(null);
   const [mapboxToken, setMapboxToken] = useState('');
   const [pins, setPins] = useState<DropPin[]>([]);
   const [serviceLocations, setServiceLocations] = useState<ServiceLocation[]>([]);
@@ -158,6 +158,16 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
     }
   }, [customerId]);
 
+  // Load Mapbox library
+  useEffect(() => {
+    loadMapboxLibs()
+      .then(setMapboxgl)
+      .catch((err) => {
+        console.error('Failed to load Mapbox:', err);
+        setError('Failed to load map library');
+      });
+  }, []);
+
   useEffect(() => {
     const fetchMapboxToken = async () => {
       try {
@@ -187,10 +197,9 @@ const DropMapPinsSection = ({ customerId }: { customerId: string }) => {
   }, []);
 
   useEffect(() => {
-    if (!mapboxToken || !mapContainer.current || map.current) return;
+    if (!mapboxToken || !mapContainer.current || map.current || !mapboxgl) return;
 
     try {
-      mapboxgl.accessToken = mapboxToken;
       
       map.current = new mapboxgl.Map({
         container: mapContainer.current,

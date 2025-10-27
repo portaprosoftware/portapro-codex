@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import { loadMapboxLibs } from '@/lib/loaders/map';
+import { env } from '@/env.client';
 import { useCurrentInventoryLocations } from '@/hooks/useCurrentInventoryLocations';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -30,9 +30,10 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
 }) => {
   console.log('🟢 SIMPLE MAP VIEW: Component rendering');
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
-  const markersRef = useRef<mapboxgl.Marker[]>([]);
+  const map = useRef<any | null>(null);
+  const markersRef = useRef<any[]>([]);
   
+  const [mapboxgl, setMapboxgl] = useState<any>(null);
   const [mapboxToken, setMapboxToken] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [mapStyle, setMapStyle] = useState<'streets' | 'satellite'>('streets');
@@ -56,14 +57,23 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
 
   const totalInventory = inventoryLocations.reduce((total, location) => total + location.quantity, 0);
 
+  // Load Mapbox library
+  useEffect(() => {
+    loadMapboxLibs()
+      .then(setMapboxgl)
+      .catch((err) => {
+        console.error('Failed to load Mapbox:', err);
+      });
+  }, []);
+
   // Get Mapbox token
   useEffect(() => {
     const getToken = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-mapbox-token`, {
+        const response = await fetch(`${env.SUPABASE_URL}/functions/v1/get-mapbox-token`, {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`
+            'Authorization': `Bearer ${env.SUPABASE_PUBLISHABLE_KEY}`
           }
         });
         const data = await response.json();
@@ -86,10 +96,9 @@ export const SimpleInventoryMapView: React.FC<SimpleInventoryMapViewProps> = ({
 
   // Initialize map
   useEffect(() => {
-    if (!mapboxToken || !mapContainer.current || map.current) return;
+    if (!mapboxToken || !mapContainer.current || map.current || !mapboxgl) return;
 
     console.log('🗺️ Initializing Mapbox map...');
-    mapboxgl.accessToken = mapboxToken;
     
     map.current = new mapboxgl.Map({
       container: mapContainer.current,

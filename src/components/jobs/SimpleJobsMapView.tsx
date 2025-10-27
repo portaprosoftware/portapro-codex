@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import { loadMapboxLibs } from '@/lib/loaders/map';
+import { env } from '@/env.client';
 import { useJobs } from '@/hooks/useJobs';
 import { JobDetailModal } from '@/components/jobs/JobDetailModal';
 import { Button } from '@/components/ui/button';
@@ -39,9 +39,10 @@ export function SimpleJobsMapView({
   onMapModeChange
 }: SimpleJobsMapViewProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
-  const markersRef = useRef<mapboxgl.Marker[]>([]);
+  const map = useRef<any | null>(null);
+  const markersRef = useRef<any[]>([]);
   
+  const [mapboxgl, setMapboxgl] = useState<any>(null);
   const [mapboxToken, setMapboxToken] = useState<string>('');
   const [selectedJobsAtLocation, setSelectedJobsAtLocation] = useState<any[]>([]);
   const [selectedJobForModal, setSelectedJobForModal] = useState<string | null>(null);
@@ -144,14 +145,23 @@ export function SimpleJobsMapView({
   }, [selectedDate, selectedDateIsToday, radarEnabled]);
 
 
+  // Load Mapbox library
+  useEffect(() => {
+    loadMapboxLibs()
+      .then(setMapboxgl)
+      .catch((err) => {
+        console.error('Failed to load Mapbox:', err);
+      });
+  }, []);
+
   // Get Mapbox token
   useEffect(() => {
     const getToken = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-mapbox-token`, {
+        const response = await fetch(`${env.SUPABASE_URL}/functions/v1/get-mapbox-token`, {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`
+            'Authorization': `Bearer ${env.SUPABASE_PUBLISHABLE_KEY}`
           }
         });
         const data = await response.json();
@@ -172,9 +182,7 @@ export function SimpleJobsMapView({
 
   // Initialize map
   useEffect(() => {
-    if (!mapboxToken || !mapContainer.current || map.current) return;
-
-    mapboxgl.accessToken = mapboxToken;
+    if (!mapboxToken || !mapContainer.current || map.current || !mapboxgl) return;
     
     map.current = new mapboxgl.Map({
       container: mapContainer.current,

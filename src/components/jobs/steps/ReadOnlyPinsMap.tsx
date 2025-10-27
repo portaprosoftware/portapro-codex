@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import { loadMapboxLibs } from '@/lib/loaders/map';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { MapPin, Loader2, Maximize2, Minimize2, Search } from 'lucide-react';
@@ -47,12 +46,22 @@ export function ReadOnlyPinsMap({
   hidePinsList = false
 }: ReadOnlyPinsMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
+  const map = useRef<any | null>(null);
+  const [mapboxgl, setMapboxgl] = useState<any>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [mapStyle, setMapStyle] = useState<'streets' | 'satellite'>('satellite');
   const [searchQuery, setSearchQuery] = useState('');
-  const markersRef = useRef<mapboxgl.Marker[]>([]);
+  const markersRef = useRef<any[]>([]);
+
+  // Load Mapbox library
+  useEffect(() => {
+    loadMapboxLibs()
+      .then(setMapboxgl)
+      .catch((err) => {
+        console.error('Failed to load Mapbox:', err);
+      });
+  }, []);
 
   // Fetch Mapbox token
   const { data: tokenData } = useQuery({
@@ -99,9 +108,7 @@ export function ReadOnlyPinsMap({
 
   // Initialize map
   useEffect(() => {
-    if (!mapContainer.current || !tokenData?.token || map.current) return;
-
-    mapboxgl.accessToken = tokenData.token;
+    if (!mapContainer.current || !tokenData?.token || map.current || !mapboxgl) return;
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
