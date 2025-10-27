@@ -6,7 +6,7 @@ import { StorageAnalyticsKPICards } from "./StorageAnalyticsKPICards";
 import { StorageAnalyticsLocationSection } from "./StorageAnalyticsLocationSection";
 import { Droplet, Package, Shield } from "lucide-react";
 import { toast } from "sonner";
-import jsPDF from 'jspdf';
+import { loadPdfLibs } from '@/lib/loaders/pdf';
 
 interface LocationReportData {
   summary: {
@@ -262,6 +262,8 @@ export function StorageLocationReporting() {
     
     setIsExporting(true);
     try {
+      const { jsPDF } = await loadPdfLibs();
+      
       const pdf = new jsPDF();
       const pageWidth = pdf.internal.pageSize.getWidth();
       let yPosition = 20;

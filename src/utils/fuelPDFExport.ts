@@ -1,5 +1,4 @@
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import { loadPdfLibs } from '@/lib/loaders/pdf';
 import { VendorPerformance, CostPerMileMetrics, FleetMPGMetrics, SourceComparison } from '@/hooks/useFuelAnalytics';
 import { UnifiedFuelConsumption } from '@/hooks/useUnifiedFuelConsumption';
 
@@ -11,7 +10,7 @@ interface PDFExportOptions {
   companyLogo?: string;
 }
 
-const addHeader = (doc: jsPDF, options: PDFExportOptions) => {
+const addHeader = (doc: any, options: PDFExportOptions) => {
   const pageWidth = doc.internal.pageSize.getWidth();
   
   // Company name
@@ -51,7 +50,7 @@ const addHeader = (doc: jsPDF, options: PDFExportOptions) => {
   return yPos + 8;
 };
 
-const addFooter = (doc: jsPDF) => {
+const addFooter = (doc: any) => {
   const pageCount = doc.getNumberOfPages();
   const pageHeight = doc.internal.pageSize.getHeight();
   
@@ -68,10 +67,12 @@ const addFooter = (doc: jsPDF) => {
   }
 };
 
-export const exportVendorPerformanceToPDF = (
+export const exportVendorPerformanceToPDF = async (
   data: VendorPerformance[],
   options: PDFExportOptions
 ) => {
+  const { jsPDF, autoTable } = await loadPdfLibs();
+  
   const doc = new jsPDF();
   const startY = addHeader(doc, { ...options, title: 'Vendor Performance Report' });
   
@@ -96,10 +97,12 @@ export const exportVendorPerformanceToPDF = (
   doc.save(`vendor-performance_${Date.now()}.pdf`);
 };
 
-export const exportCostPerMileToPDF = (
+export const exportCostPerMileToPDF = async (
   data: CostPerMileMetrics,
   options: PDFExportOptions
 ) => {
+  const { jsPDF, autoTable } = await loadPdfLibs();
+  
   const doc = new jsPDF();
   const startY = addHeader(doc, { ...options, title: 'Cost Per Mile Report' });
   
@@ -133,10 +136,12 @@ export const exportCostPerMileToPDF = (
   doc.save(`cost-per-mile_${Date.now()}.pdf`);
 };
 
-export const exportFleetMPGToPDF = (
+export const exportFleetMPGToPDF = async (
   data: FleetMPGMetrics,
   options: PDFExportOptions
 ) => {
+  const { jsPDF, autoTable } = await loadPdfLibs();
+  
   const doc = new jsPDF();
   const startY = addHeader(doc, { ...options, title: 'Fleet MPG Report' });
   
@@ -170,10 +175,12 @@ export const exportFleetMPGToPDF = (
   doc.save(`fleet-mpg_${Date.now()}.pdf`);
 };
 
-export const exportSourceComparisonToPDF = (
+export const exportSourceComparisonToPDF = async (
   data: SourceComparison[],
   options: PDFExportOptions
 ) => {
+  const { jsPDF, autoTable } = await loadPdfLibs();
+  
   const doc = new jsPDF();
   const startY = addHeader(doc, { ...options, title: 'Fuel Source Comparison Report' });
   
@@ -196,7 +203,7 @@ export const exportSourceComparisonToPDF = (
   doc.save(`source-comparison_${Date.now()}.pdf`);
 };
 
-export const exportAnalyticsSummaryToPDF = (
+export const exportAnalyticsSummaryToPDF = async (
   data: {
     costPerMile: number;
     totalMiles: number;
@@ -207,6 +214,8 @@ export const exportAnalyticsSummaryToPDF = (
   },
   options: PDFExportOptions
 ) => {
+  const { jsPDF, autoTable } = await loadPdfLibs();
+  
   const doc = new jsPDF();
   const startY = addHeader(doc, { ...options, title: 'Fuel Analytics Summary' });
   
@@ -244,10 +253,12 @@ export const exportAnalyticsSummaryToPDF = (
   doc.save(`analytics-summary_${Date.now()}.pdf`);
 };
 
-export const exportTransactionsToPDF = (
+export const exportTransactionsToPDF = async (
   data: UnifiedFuelConsumption[],
   options: PDFExportOptions
 ) => {
+  const { jsPDF, autoTable } = await loadPdfLibs();
+  
   const doc = new jsPDF('landscape');
   const startY = addHeader(doc, { ...options, title: 'Fuel Transactions Report' });
   

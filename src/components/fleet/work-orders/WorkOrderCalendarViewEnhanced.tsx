@@ -26,7 +26,7 @@ import { WorkOrder } from "./types";
 import { format, isSameDay, parseISO, startOfMonth, endOfMonth, addMonths, subMonths, startOfWeek, endOfWeek, addDays } from "date-fns";
 import { AddWorkOrderDrawer } from "./AddWorkOrderDrawer";
 import { useToast } from "@/hooks/use-toast";
-import jsPDF from "jspdf";
+import { loadPdfLibs } from "@/lib/loaders/pdf";
 
 interface WorkOrderCalendarViewEnhancedProps {
   workOrders: WorkOrder[];
@@ -157,7 +157,9 @@ export const WorkOrderCalendarViewEnhanced: React.FC<WorkOrderCalendarViewEnhanc
   };
 
   // Print calendar
-  const handlePrintCalendar = () => {
+  const handlePrintCalendar = async () => {
+    const { jsPDF } = await loadPdfLibs();
+    
     const pdf = new jsPDF();
     pdf.text(`Work Orders Calendar - ${format(currentMonth, 'MMMM yyyy')}`, 20, 20);
     

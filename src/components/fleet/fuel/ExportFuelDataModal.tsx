@@ -11,8 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { MultiSelectVehicleFilter } from '../MultiSelectVehicleFilter';
 import { MultiSelectDriverFilter } from '../MultiSelectDriverFilter';
 import { supabase } from '@/integrations/supabase/client';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import { loadPdfLibs } from '@/lib/loaders/pdf';
 
 interface Vehicle {
   id: string;
@@ -154,7 +153,9 @@ export const ExportFuelDataModal: React.FC<ExportFuelDataModalProps> = ({
     URL.revokeObjectURL(url);
   };
 
-  const exportToPDF = (data: any[]) => {
+  const exportToPDF = async (data: any[]) => {
+    const { jsPDF, autoTable } = await loadPdfLibs();
+    
     const doc = new jsPDF();
     
     // Add title

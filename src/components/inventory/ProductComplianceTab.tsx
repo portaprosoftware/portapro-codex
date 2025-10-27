@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { formatDateSafe, addDaysToDate } from "@/lib/dateUtils";
 import { ShieldCheck, Clock, AlertTriangle, CheckCircle } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import jsPDF from "jspdf";
+import { loadPdfLibs } from "@/lib/loaders/pdf";
 
 interface ProductComplianceTabProps {
   productId: string;
@@ -169,8 +169,10 @@ export const ProductComplianceTab: React.FC<ProductComplianceTabProps> = ({ prod
     }
   };
 
-  const handleExportPdf = () => {
+  const handleExportPdf = async () => {
     try {
+      const { jsPDF } = await loadPdfLibs();
+      
       const doc = new jsPDF();
       const title = productName ? `Compliance - ${productName}` : "Compliance Report";
       doc.setFontSize(16);

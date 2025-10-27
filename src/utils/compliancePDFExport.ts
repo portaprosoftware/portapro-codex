@@ -1,5 +1,4 @@
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import { loadPdfLibs } from '@/lib/loaders/pdf';
 import { format } from 'date-fns';
 
 interface ComplianceSummaryData {
@@ -27,10 +26,12 @@ interface ComplianceSummaryData {
   }>;
 }
 
-export const exportComplianceSummaryToPDF = (
+export const exportComplianceSummaryToPDF = async (
   data: ComplianceSummaryData,
   companyName: string = 'PortaPro'
-) => {
+): Promise<void> => {
+  const { jsPDF, autoTable } = await loadPdfLibs();
+  
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
