@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
+import { ChartWrapper } from '@/components/analytics/ChartWrapper';
 import { TrendingUp, DollarSign, Package, AlertTriangle, Download, RefreshCw } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
@@ -315,24 +315,32 @@ export const AdvancedConsumableAnalytics: React.FC = () => {
             <CardTitle>Usage by Category</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={analyticsData?.usageByCategory}
-                  dataKey="value"
-                  nameKey="category"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={100}
-                  fill="#8884d8"
-                >
-                  {analyticsData?.usageByCategory.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+            <ChartWrapper>
+              {(Recharts) => {
+                const { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } = Recharts;
+                
+                return (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={analyticsData?.usageByCategory}
+                        dataKey="value"
+                        nameKey="category"
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={100}
+                        fill="#8884d8"
+                      >
+                        {analyticsData?.usageByCategory.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                );
+              }}
+            </ChartWrapper>
           </CardContent>
         </Card>
 
@@ -342,16 +350,24 @@ export const AdvancedConsumableAnalytics: React.FC = () => {
             <CardTitle>Stock Value & Usage Trends</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={analyticsData?.stockTrends}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip />
-                <Line type="monotone" dataKey="stock_value" stroke="#8884d8" name="Stock Value" />
-                <Line type="monotone" dataKey="usage_cost" stroke="#82ca9d" name="Daily Usage Cost" />
-              </LineChart>
-            </ResponsiveContainer>
+            <ChartWrapper>
+              {(Recharts) => {
+                const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } = Recharts;
+                
+                return (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={analyticsData?.stockTrends}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="date" />
+                      <YAxis />
+                      <Tooltip />
+                      <Line type="monotone" dataKey="stock_value" stroke="#8884d8" name="Stock Value" />
+                      <Line type="monotone" dataKey="usage_cost" stroke="#82ca9d" name="Daily Usage Cost" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                );
+              }}
+            </ChartWrapper>
           </CardContent>
         </Card>
 
@@ -361,16 +377,24 @@ export const AdvancedConsumableAnalytics: React.FC = () => {
             <CardTitle>Usage by Job Type</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={analyticsData?.usageByJob}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="job_type" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="usage" fill="#8884d8" name="Quantity Used" />
-                <Bar dataKey="cost" fill="#82ca9d" name="Cost ($)" />
-              </BarChart>
-            </ResponsiveContainer>
+            <ChartWrapper>
+              {(Recharts) => {
+                const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } = Recharts;
+                
+                return (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={analyticsData?.usageByJob}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="job_type" />
+                      <YAxis />
+                      <Tooltip />
+                      <Bar dataKey="usage" fill="#8884d8" name="Quantity Used" />
+                      <Bar dataKey="cost" fill="#82ca9d" name="Cost ($)" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                );
+              }}
+            </ChartWrapper>
           </CardContent>
         </Card>
 

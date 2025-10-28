@@ -16,7 +16,7 @@ import {
   Activity,
   Clock
 } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
+import { ChartWrapper } from '@/components/analytics/ChartWrapper';
 
 interface KPIData {
   revenue: number;
@@ -172,16 +172,24 @@ export const RealTimeKPIDashboard: React.FC<RealTimeKPIDashboardProps> = ({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={liveData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="timestamp" tickFormatter={(value) => new Date(value).toLocaleTimeString()} />
-                <YAxis />
-                <Tooltip labelFormatter={(value) => new Date(value).toLocaleTimeString()} />
-                <Line type="monotone" dataKey="revenue" stroke="#3B82F6" name="Revenue" />
-                <Line type="monotone" dataKey="jobs" stroke="#10B981" name="Jobs" />
-              </LineChart>
-            </ResponsiveContainer>
+            <ChartWrapper>
+              {(Recharts) => {
+                const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } = Recharts;
+                
+                return (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={liveData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="timestamp" tickFormatter={(value) => new Date(value).toLocaleTimeString()} />
+                      <YAxis />
+                      <Tooltip labelFormatter={(value) => new Date(value).toLocaleTimeString()} />
+                      <Line type="monotone" dataKey="revenue" stroke="#3B82F6" name="Revenue" />
+                      <Line type="monotone" dataKey="jobs" stroke="#10B981" name="Jobs" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                );
+              }}
+            </ChartWrapper>
           </CardContent>
         </Card>
 

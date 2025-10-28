@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Download, TrendingUp, Calendar, Package } from "lucide-react";
 import { format, parseISO, differenceInDays, subMonths, startOfMonth, endOfMonth } from "date-fns";
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { ChartWrapper } from '@/components/analytics/ChartWrapper';
 
 export function SpillKitExpirationReport() {
   const [dateRange] = useState({
@@ -219,57 +219,81 @@ export function SpillKitExpirationReport() {
       {/* Trend Chart */}
       <Card className="p-6">
         <h4 className="text-lg font-semibold mb-4">Expiration Status Trend</h4>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={reportData.trendData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Line type="monotone" dataKey="expired" stroke="#ef4444" name="Expired" />
-            <Line type="monotone" dataKey="expiringSoon" stroke="#f59e0b" name="Expiring Soon" />
-            <Line type="monotone" dataKey="ok" stroke="#10b981" name="OK" />
-          </LineChart>
-        </ResponsiveContainer>
+        <ChartWrapper>
+          {(Recharts) => {
+            const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } = Recharts;
+            
+            return (
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={reportData.trendData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line type="monotone" dataKey="expired" stroke="#ef4444" name="Expired" />
+                  <Line type="monotone" dataKey="expiringSoon" stroke="#f59e0b" name="Expiring Soon" />
+                  <Line type="monotone" dataKey="ok" stroke="#10b981" name="OK" />
+                </LineChart>
+              </ResponsiveContainer>
+            );
+          }}
+        </ChartWrapper>
       </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Category Breakdown */}
         <Card className="p-6">
           <h4 className="text-lg font-semibold mb-4">Items by Category</h4>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={reportData.categoryData}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
-                outerRadius={80}
-                fill="#8884d8"
-                dataKey="value"
-              >
-                {reportData.categoryData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
+          <ChartWrapper>
+            {(Recharts) => {
+              const { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } = Recharts;
+              
+              return (
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={reportData.categoryData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {reportData.categoryData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              );
+            }}
+          </ChartWrapper>
         </Card>
 
         {/* Top Replacements */}
         <Card className="p-6">
           <h4 className="text-lg font-semibold mb-4">Top Items Requiring Replacement</h4>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={reportData.replacementData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" angle={-45} textAnchor="end" height={100} />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="count" fill="#3b82f6" name="Replacement Count" />
-            </BarChart>
-          </ResponsiveContainer>
+          <ChartWrapper>
+            {(Recharts) => {
+              const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } = Recharts;
+              
+              return (
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={reportData.replacementData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" angle={-45} textAnchor="end" height={100} />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar dataKey="count" fill="#3b82f6" name="Replacement Count" />
+                  </BarChart>
+                </ResponsiveContainer>
+              );
+            }}
+          </ChartWrapper>
         </Card>
       </div>
 

@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { ChartWrapper } from '@/components/analytics/ChartWrapper';
 import { TrendingUp, TrendingDown, Package, DollarSign, AlertTriangle, Download } from 'lucide-react';
 
 export const ConsumablesReportsTab: React.FC = () => {
@@ -212,15 +212,23 @@ export const ConsumablesReportsTab: React.FC = () => {
                 <CardTitle>Top Consumed Items</CardTitle>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={usageData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="usage" fill="#3B82F6" />
-                  </BarChart>
-                </ResponsiveContainer>
+                <ChartWrapper>
+                  {(Recharts) => {
+                    const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } = Recharts;
+                    
+                    return (
+                      <ResponsiveContainer width="100%" height={300}>
+                        <BarChart data={usageData}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="name" />
+                          <YAxis />
+                          <Tooltip />
+                          <Bar dataKey="usage" fill="#3B82F6" />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    );
+                  }}
+                </ChartWrapper>
               </CardContent>
             </Card>
 
@@ -229,23 +237,31 @@ export const ConsumablesReportsTab: React.FC = () => {
                 <CardTitle>Usage by Category</CardTitle>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={categoryData}
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {categoryData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
+                <ChartWrapper>
+                  {(Recharts) => {
+                    const { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } = Recharts;
+                    
+                    return (
+                      <ResponsiveContainer width="100%" height={300}>
+                        <PieChart>
+                          <Pie
+                            data={categoryData}
+                            cx="50%"
+                            cy="50%"
+                            outerRadius={80}
+                            fill="#8884d8"
+                            dataKey="value"
+                          >
+                            {categoryData.map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={entry.color} />
+                            ))}
+                          </Pie>
+                          <Tooltip />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    );
+                  }}
+                </ChartWrapper>
               </CardContent>
             </Card>
           </div>
@@ -257,15 +273,23 @@ export const ConsumablesReportsTab: React.FC = () => {
               <CardTitle>Cost Analysis</CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={400}>
-                <BarChart data={usageData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="cost" fill="#10B981" />
-                </BarChart>
-              </ResponsiveContainer>
+              <ChartWrapper>
+                {(Recharts) => {
+                  const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } = Recharts;
+                  
+                  return (
+                    <ResponsiveContainer width="100%" height={400}>
+                      <BarChart data={usageData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Bar dataKey="cost" fill="#10B981" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  );
+                }}
+              </ChartWrapper>
             </CardContent>
           </Card>
         </TabsContent>

@@ -1,5 +1,6 @@
 
 import React, { useState, useMemo } from 'react';
+import { ChartWrapper } from '@/components/analytics/ChartWrapper';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
@@ -153,24 +154,32 @@ export const CampaignAnalytics: React.FC = () => {
             </div>
           </div>
           <div className="flex items-center justify-center">
-            <ResponsiveContainer width="100%" height={240}>
-              <PieChart>
-                <Pie
-                  data={channelData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={50}
-                  outerRadius={90}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {channelData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+            <ChartWrapper>
+              {(Recharts) => {
+                const { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } = Recharts;
+                
+                return (
+                  <ResponsiveContainer width="100%" height={240}>
+                    <PieChart>
+                      <Pie
+                        data={channelData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={50}
+                        outerRadius={90}
+                        paddingAngle={5}
+                        dataKey="value"
+                      >
+                        {channelData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                );
+              }}
+            </ChartWrapper>
           </div>
           <div className="flex flex-wrap justify-center gap-3 md:gap-4 mt-4">
             {channelData.map((channel) => (

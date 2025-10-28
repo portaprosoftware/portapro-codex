@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DatePickerWithRange } from '@/components/ui/DatePickerWithRange';
 import { DateRange } from 'react-day-picker';
-import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { ChartWrapper } from '@/components/analytics/ChartWrapper';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { TrendingUp, TrendingDown, DollarSign, Fuel, Gauge } from 'lucide-react';
@@ -250,24 +250,32 @@ export const FuelReportsTab: React.FC = () => {
                     </p>
                   </div>
                 ) : (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={trendData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" />
-                      <YAxis label={{ value: fuelUnitLabel, angle: -90, position: 'insideLeft' }} />
-                      <Tooltip 
-                        formatter={(value, name) => [
-                          name === 'gallons' ? `${value} ${fuelUnitAbbrev}` : `$${Number(value).toFixed(2)}`,
-                          name === 'gallons' ? fuelUnitLabel : 'Cost'
-                        ]}
-                      />
-                      <Bar 
-                        dataKey="gallons" 
-                        fill="#3366FF" 
-                        radius={[8, 8, 0, 0]}
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
+                  <ChartWrapper>
+                    {(Recharts) => {
+                      const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } = Recharts;
+                      
+                      return (
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart data={trendData}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="month" />
+                            <YAxis label={{ value: fuelUnitLabel, angle: -90, position: 'insideLeft' }} />
+                            <Tooltip 
+                              formatter={(value, name) => [
+                                name === 'gallons' ? `${value} ${fuelUnitAbbrev}` : `$${Number(value).toFixed(2)}`,
+                                name === 'gallons' ? fuelUnitLabel : 'Cost'
+                              ]}
+                            />
+                            <Bar 
+                              dataKey="gallons" 
+                              fill="#3366FF" 
+                              radius={[8, 8, 0, 0]}
+                            />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      );
+                    }}
+                  </ChartWrapper>
                 )}
               </div>
             </CardContent>
@@ -292,29 +300,37 @@ export const FuelReportsTab: React.FC = () => {
                     </p>
                   </div>
                 ) : (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={trendData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" />
-                      <YAxis />
-                      <Tooltip 
-                        formatter={(value, name) => [
-                          `$${Number(value).toFixed(name === 'avg_cost_per_gallon' ? 3 : 2)}`,
-                          name === 'cost' ? 'Total Cost' : 'Avg Cost/Gallon'
-                        ]}
-                      />
-                      <Bar 
-                        dataKey="cost" 
-                        fill="#22C55E" 
-                        radius={[8, 8, 0, 0]}
-                      />
-                      <Bar 
-                        dataKey="avg_cost_per_gallon" 
-                        fill="#F59E0B" 
-                        radius={[8, 8, 0, 0]}
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
+                  <ChartWrapper>
+                    {(Recharts) => {
+                      const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } = Recharts;
+                      
+                      return (
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart data={trendData}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="month" />
+                            <YAxis />
+                            <Tooltip 
+                              formatter={(value, name) => [
+                                `$${Number(value).toFixed(name === 'avg_cost_per_gallon' ? 3 : 2)}`,
+                                name === 'cost' ? 'Total Cost' : 'Avg Cost/Gallon'
+                              ]}
+                            />
+                            <Bar 
+                              dataKey="cost" 
+                              fill="#22C55E" 
+                              radius={[8, 8, 0, 0]}
+                            />
+                            <Bar 
+                              dataKey="avg_cost_per_gallon" 
+                              fill="#F59E0B" 
+                              radius={[8, 8, 0, 0]}
+                            />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      );
+                    }}
+                  </ChartWrapper>
                 )}
               </div>
             </CardContent>
@@ -404,28 +420,36 @@ export const FuelReportsTab: React.FC = () => {
               ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <div className="h-80">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={stationData?.slice(0, 5)}
-                          cx="50%"
-                          cy="50%"
-                          outerRadius={80}
-                          dataKey="cost"
-                          label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
-                        >
-                          {stationData?.slice(0, 5).map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                          ))}
-                        </Pie>
-                        <Tooltip 
-                          formatter={(value, name, props) => [
-                            `$${Number(value).toFixed(2)}`,
-                            props.payload.station
-                          ]}
-                        />
-                      </PieChart>
-                    </ResponsiveContainer>
+                    <ChartWrapper>
+                      {(Recharts) => {
+                        const { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } = Recharts;
+                        
+                        return (
+                          <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                              <Pie
+                                data={stationData?.slice(0, 5)}
+                                cx="50%"
+                                cy="50%"
+                                outerRadius={80}
+                                dataKey="cost"
+                                label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                              >
+                                {stationData?.slice(0, 5).map((entry, index) => (
+                                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                ))}
+                              </Pie>
+                              <Tooltip 
+                                formatter={(value, name, props) => [
+                                  `$${Number(value).toFixed(2)}`,
+                                  props.payload.station
+                                ]}
+                              />
+                            </PieChart>
+                          </ResponsiveContainer>
+                        );
+                      }}
+                    </ChartWrapper>
                   </div>
 
                   <div>

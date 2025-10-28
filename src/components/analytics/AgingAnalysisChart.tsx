@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card } from '@/components/ui/card';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { ChartWrapper } from '@/components/analytics/ChartWrapper';
 
 interface AgingData {
   range: string;
@@ -38,30 +38,38 @@ export const AgingAnalysisChart: React.FC<AgingAnalysisChartProps> = ({ data, ti
     <Card className="p-6 rounded-xl shadow-md border-l-4 border-blue-500">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
       
-      <ResponsiveContainer width="100%" height={height}>
-        <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-          <XAxis 
-            dataKey="range" 
-            stroke="#6b7280"
-            fontSize={12}
-            angle={-45}
-            textAnchor="end"
-            height={60}
-          />
-          <YAxis 
-            stroke="#6b7280" 
-            fontSize={12}
-            tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
-          />
-          <Tooltip content={<CustomTooltip />} />
-          <Bar 
-            dataKey="amount" 
-            fill="hsl(214, 83%, 53%)"
-            radius={[4, 4, 0, 0]}
-          />
-        </BarChart>
-      </ResponsiveContainer>
+      <ChartWrapper>
+        {(Recharts) => {
+          const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } = Recharts;
+          
+          return (
+            <ResponsiveContainer width="100%" height={height}>
+              <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis 
+                  dataKey="range" 
+                  stroke="#6b7280"
+                  fontSize={12}
+                  angle={-45}
+                  textAnchor="end"
+                  height={60}
+                />
+                <YAxis 
+                  stroke="#6b7280" 
+                  fontSize={12}
+                  tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+                />
+                <Tooltip content={<CustomTooltip />} />
+                <Bar 
+                  dataKey="amount" 
+                  fill="hsl(214, 83%, 53%)"
+                  radius={[4, 4, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          );
+        }}
+      </ChartWrapper>
       
       {/* Summary Stats */}
       <div className="mt-4 grid grid-cols-2 gap-4">

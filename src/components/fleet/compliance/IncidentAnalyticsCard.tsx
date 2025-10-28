@@ -2,7 +2,7 @@ import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { ChartWrapper } from '@/components/analytics/ChartWrapper';
 import { TrendingUp } from "lucide-react";
 
 export const IncidentAnalyticsCard: React.FC = () => {
@@ -38,19 +38,27 @@ export const IncidentAnalyticsCard: React.FC = () => {
       </CardHeader>
       <CardContent>
         {analytics && analytics.length > 0 ? (
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={analytics}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="Minor" fill="#22c55e" />
-              <Bar dataKey="Moderate" fill="#eab308" />
-              <Bar dataKey="Major" fill="#f97316" />
-              <Bar dataKey="Reportable" fill="#ef4444" />
-            </BarChart>
-          </ResponsiveContainer>
+          <ChartWrapper>
+            {(Recharts) => {
+              const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } = Recharts;
+              
+              return (
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={analytics}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="Minor" fill="#22c55e" />
+                    <Bar dataKey="Moderate" fill="#eab308" />
+                    <Bar dataKey="Major" fill="#f97316" />
+                    <Bar dataKey="Reportable" fill="#ef4444" />
+                  </BarChart>
+                </ResponsiveContainer>
+              );
+            }}
+          </ChartWrapper>
         ) : (
           <div className="text-center py-8 text-muted-foreground">
             No analytics data available

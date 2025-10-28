@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { format, eachDayOfInterval, differenceInDays } from 'date-fns';
 import { BarChart3, TrendingUp, Users, Calendar } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { ChartWrapper } from '@/components/analytics/ChartWrapper';
 
 interface DriverUtilizationChartProps {
   dateRange: { from: Date; to: Date };
@@ -151,36 +151,44 @@ export const DriverUtilizationChart: React.FC<DriverUtilizationChartProps> = ({ 
       {/* Chart */}
       <div className="h-64">
         {utilizationData?.chartData && utilizationData.chartData.length > 0 ? (
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={utilizationData.chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis 
-                dataKey="date" 
-                fontSize={12}
-                tick={{ fontSize: 12 }}
-                interval="preserveStartEnd"
-              />
-              <YAxis 
-                fontSize={12}
-                tick={{ fontSize: 12 }}
-                domain={[0, 100]}
-                tickFormatter={(value) => `${value}%`}
-                label={{ value: 'Utilization %', angle: -90, position: 'insideLeft' }}
-              />
-              <Tooltip content={<CustomTooltip />} />
-              <Bar 
-                dataKey="utilization_rate" 
-                fill="url(#orangeGradient)"
-                radius={[2, 2, 0, 0]}
-              />
-              <defs>
-                <linearGradient id="orangeGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#f59e0b" />
-                  <stop offset="100%" stopColor="#d97706" />
-                </linearGradient>
-              </defs>
-            </BarChart>
-          </ResponsiveContainer>
+          <ChartWrapper>
+            {(Recharts) => {
+              const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } = Recharts;
+              
+              return (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={utilizationData.chartData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                    <XAxis 
+                      dataKey="date" 
+                      fontSize={12}
+                      tick={{ fontSize: 12 }}
+                      interval="preserveStartEnd"
+                    />
+                    <YAxis 
+                      fontSize={12}
+                      tick={{ fontSize: 12 }}
+                      domain={[0, 100]}
+                      tickFormatter={(value) => `${value}%`}
+                      label={{ value: 'Utilization %', angle: -90, position: 'insideLeft' }}
+                    />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Bar 
+                      dataKey="utilization_rate" 
+                      fill="url(#orangeGradient)"
+                      radius={[2, 2, 0, 0]}
+                    />
+                    <defs>
+                      <linearGradient id="orangeGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#f59e0b" />
+                        <stop offset="100%" stopColor="#d97706" />
+                      </linearGradient>
+                    </defs>
+                  </BarChart>
+                </ResponsiveContainer>
+              );
+            }}
+          </ChartWrapper>
         ) : (
           <div className="flex items-center justify-center h-full text-gray-500">
             <div className="text-center">

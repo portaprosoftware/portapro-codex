@@ -1,6 +1,6 @@
 import React from "react";
 import { TrendingUp, DollarSign, Clock, CheckCircle, XCircle, Award } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+// Charts are not used in this component - removed import
 
 interface AdvancedStats {
   totalSessions: number;

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { ChartWrapper } from '@/components/analytics/ChartWrapper';
 import { format, parseISO } from 'date-fns';
 
 interface TrendChartProps {
@@ -65,25 +65,33 @@ export const TrendChart: React.FC<TrendChartProps> = ({ data, title, height = 30
         </div>
       </div>
       
-      <ResponsiveContainer width="100%" height={height}>
-        <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-          <XAxis 
-            dataKey="date" 
-            tickFormatter={formatXAxisLabel}
-            stroke="#6b7280"
-            fontSize={12}
-          />
-          <YAxis stroke="#6b7280" fontSize={12} />
-          <Tooltip content={<CustomTooltip />} />
-          <Legend />
-          <Bar dataKey="delivery" stackId="a" fill="hsl(214, 83%, 53%)" name="Delivery" radius={[0, 0, 0, 0]} />
-          <Bar dataKey="pickup" stackId="a" fill="hsl(32, 95%, 44%)" name="Pickup" radius={[0, 0, 0, 0]} />
-          <Bar dataKey="service" stackId="a" fill="hsl(259, 55%, 52%)" name="Service" radius={[0, 0, 0, 0]} />
-          <Bar dataKey="survey" stackId="a" fill="hsl(0, 74%, 35%)" name="Survey/Estimate" radius={[0, 0, 0, 0]} />
-          <Bar dataKey="partial-pickup" stackId="a" fill="hsl(25, 95%, 53%)" name="Partial Pickup" radius={[2, 2, 0, 0]} />
-        </BarChart>
-      </ResponsiveContainer>
+      <ChartWrapper>
+        {(Recharts) => {
+          const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } = Recharts;
+          
+          return (
+            <ResponsiveContainer width="100%" height={height}>
+              <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis 
+                  dataKey="date" 
+                  tickFormatter={formatXAxisLabel}
+                  stroke="#6b7280"
+                  fontSize={12}
+                />
+                <YAxis stroke="#6b7280" fontSize={12} />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend />
+                <Bar dataKey="delivery" stackId="a" fill="hsl(214, 83%, 53%)" name="Delivery" radius={[0, 0, 0, 0]} />
+                <Bar dataKey="pickup" stackId="a" fill="hsl(32, 95%, 44%)" name="Pickup" radius={[0, 0, 0, 0]} />
+                <Bar dataKey="service" stackId="a" fill="hsl(259, 55%, 52%)" name="Service" radius={[0, 0, 0, 0]} />
+                <Bar dataKey="survey" stackId="a" fill="hsl(0, 74%, 35%)" name="Survey/Estimate" radius={[0, 0, 0, 0]} />
+                <Bar dataKey="partial-pickup" stackId="a" fill="hsl(25, 95%, 53%)" name="Partial Pickup" radius={[2, 2, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          );
+        }}
+      </ChartWrapper>
     </Card>
   );
 };

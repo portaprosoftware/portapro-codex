@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { ChartWrapper } from '@/components/analytics/ChartWrapper';
 import { AlertTriangle, TrendingUp, Calendar, Package, Brain, Target } from 'lucide-react';
 import { RouteStockCheck } from '@/components/fleet/RouteStockCheck';
 export const ReorderAnalytics: React.FC = () => {
@@ -231,15 +231,23 @@ export const ReorderAnalytics: React.FC = () => {
             <CardTitle>Usage Trends</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={usageTrendData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
-                <Line type="monotone" dataKey="usage" stroke="#3B82F6" strokeWidth={2} />
-              </LineChart>
-            </ResponsiveContainer>
+            <ChartWrapper>
+              {(Recharts) => {
+                const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } = Recharts;
+                
+                return (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={usageTrendData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="month" />
+                      <YAxis />
+                      <Tooltip />
+                      <Line type="monotone" dataKey="usage" stroke="#3B82F6" strokeWidth={2} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                );
+              }}
+            </ChartWrapper>
           </CardContent>
         </Card>
 
@@ -248,15 +256,23 @@ export const ReorderAnalytics: React.FC = () => {
             <CardTitle>Top Usage Items</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={topUsageItems.slice(0, 5)}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="usage_rate" fill="#10B981" />
-              </BarChart>
-            </ResponsiveContainer>
+            <ChartWrapper>
+              {(Recharts) => {
+                const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } = Recharts;
+                
+                return (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={topUsageItems.slice(0, 5)}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Bar dataKey="usage_rate" fill="#10B981" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                );
+              }}
+            </ChartWrapper>
           </CardContent>
         </Card>
       </div>
