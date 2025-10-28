@@ -25,6 +25,16 @@ These variables are **required** and will cause the app to fail at startup if mi
 | `VITE_SUPABASE_URL` | [Supabase Dashboard](https://supabase.com/dashboard) → Settings → API | Database URL |
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | Supabase Dashboard → Settings → API → `anon` key | Database anonymous key |
 
+#### 🔐 Multi-Tenant Security
+
+**`VITE_ALLOWED_CLERK_ORG_SLUGS`** *(Required for production, optional for dev)*
+- **Purpose**: Comma-separated list of Clerk Organization slugs allowed to access this deployment
+- **Example**: `abc-rentals,smith-rentals` or `acme-corp`
+- **How to get it**: Clerk Dashboard → Organizations → [Your Org] → Settings → Organization slug
+- **Critical**: Without this in production, the app will block all access
+- **Dev mode**: If empty, all users are allowed for convenience
+- **Security**: Ensures users can only log in to deployments where they belong to the authorized organization(s)
+
 ### Server-Side (Secret)
 
 These variables are required for server-side operations (edge functions, API routes).

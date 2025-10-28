@@ -7,6 +7,7 @@ import { usePWAStandalone } from './hooks/usePWAStandalone';
 import { useCompanyTitle } from './hooks/useCompanyTitle';
 import { Layout } from './components/layout/Layout';
 import { ErrorBoundary } from './components/ui/error-boundary';
+import { TenantGuard } from './components/auth/TenantGuard';
 import { Landing } from './pages/Landing';
 import PublicPayment from './pages/PublicPayment';
 import PaymentSuccess from './pages/PaymentSuccess';
@@ -58,6 +59,7 @@ import ProductItemDetail from './pages/ProductItemDetail';
 import { ComingSoon } from './pages/ComingSoon';
 import { Help } from './pages/Help';
 import CustomerPortalPage from './pages/CustomerPortalPage';
+import Unauthorized from './pages/Unauthorized';
 
 import Features from './pages/Features';
 import About from './pages/About';
@@ -76,9 +78,10 @@ const App = () => {
 
   return (
     <ErrorBoundary>
-      <RouterSelector>
-        <div className="min-h-screen bg-background font-sans antialiased">
-          <Routes>
+      <TenantGuard>
+        <RouterSelector>
+          <div className="min-h-screen bg-background font-sans antialiased">
+            <Routes>
             {/* Root route – works on all domains */}
             <Route
               path="/"
@@ -117,6 +120,7 @@ const App = () => {
 
             {/* Authentication Routes */}
             <Route path="/auth" element={<Auth />} />
+            <Route path="/unauthorized" element={<Unauthorized />} />
 
             {/* Driver routes */}
             <Route
@@ -241,9 +245,10 @@ const App = () => {
                 </>
               }
             />
-          </Routes>
-        </div>
-      </RouterSelector>
+            </Routes>
+          </div>
+        </RouterSelector>
+      </TenantGuard>
     </ErrorBoundary>
   );
 }
