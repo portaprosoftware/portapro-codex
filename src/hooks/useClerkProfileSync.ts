@@ -45,7 +45,7 @@ export const useClerkProfileSync = () => {
 
       if (error) {
         console.error('❌ Profile sync edge function error:', error);
-        throw new Error(error.message || 'Failed to sync profile');
+        throw error; // Throw the actual error object to preserve type info
       }
 
       if (!data?.success) {
@@ -68,29 +68,42 @@ export const useClerkProfileSync = () => {
 
       return data;
     },
-    onError: (error: any) => {
-      console.error('❌ Profile sync error:', error);
-      
-      // Detect network/CORS errors and show a softer message
-      const isCorsOrNetworkError = 
+    retry: (failureCount, error: any) => {
+      // Check if it's a transient 5xx error from edge function
+      const isTransient = 
+        error?.name === 'FunctionsHttpError' ||
         error?.name === 'FunctionsFetchError' || 
         error?.message?.includes('Failed to send a request to the Edge Function') ||
         error?.message?.includes('CORS') ||
-        error?.message?.includes('network');
+        error?.message?.includes('network') ||
+        error?.message?.includes('non-2xx status code');
       
-      if (isCorsOrNetworkError) {
-        retryCountRef.current += 1;
-        
-        if (retryCountRef.current >= maxRetries) {
-          console.error('🛑 Profile sync failed after max retries. Edge functions may not be deployed.');
-          hasSyncedRef.current = true; // Stop further retries
-        } else {
-          const delay = Math.pow(2, retryCountRef.current) * 1000; // Exponential backoff
-          console.warn(`⏳ Sync retry ${retryCountRef.current}/${maxRetries} in ${delay}ms`);
-        }
+      // Retry up to maxRetries for transient errors
+      return isTransient && failureCount < maxRetries;
+    },
+    retryDelay: (attemptIndex) => {
+      // Exponential backoff: 1s, 2s, 4s, 8s
+      return Math.pow(2, attemptIndex) * 1000;
+    },
+    onError: (error: any, variables, context) => {
+      console.error('❌ Profile sync error after retries:', error);
+      
+      // Only show toast if it's not a transient error (those are retried automatically)
+      const isTransient = 
+        error?.name === 'FunctionsHttpError' ||
+        error?.name === 'FunctionsFetchError' || 
+        error?.message?.includes('Failed to send a request to the Edge Function') ||
+        error?.message?.includes('CORS') ||
+        error?.message?.includes('network') ||
+        error?.message?.includes('non-2xx status code');
+      
+      if (isTransient) {
+        console.error('🛑 Profile sync failed after max retries. Edge functions may not be deployed or database schema is missing.');
       } else {
         toast.error('Unable to sync profile. Please try again.');
       }
+      
+      hasSyncedRef.current = true; // Stop further attempts
     },
     onSuccess: (data) => {
       if (data?.profileId) {
