@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useClerk } from '@clerk/clerk-react';
 import { ShieldAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/ui/logo';
@@ -10,6 +11,11 @@ import { Logo } from '@/components/ui/logo';
  */
 const Unauthorized: React.FC = () => {
   const navigate = useNavigate();
+  const { signOut } = useClerk();
+
+  const handleSignInAgain = async () => {
+    await signOut({ redirectUrl: '/auth' });
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4">
@@ -50,7 +56,7 @@ const Unauthorized: React.FC = () => {
 
         <div className="flex flex-col sm:flex-row gap-3 pt-4">
           <Button
-            onClick={() => navigate('/auth')}
+            onClick={handleSignInAgain}
             className="flex-1"
           >
             Sign In Again

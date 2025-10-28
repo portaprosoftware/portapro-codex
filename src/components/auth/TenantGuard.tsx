@@ -36,7 +36,7 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
 
   // CRITICAL: Skip tenant check on public routes to prevent redirect loops
   const currentPath = window.location.pathname;
-  const isPublicRoute = currentPath === '/unauthorized' || currentPath === '/auth';
+  const isPublicRoute = currentPath === '/unauthorized' || currentPath === '/auth' || currentPath.startsWith('/auth/');
 
   useEffect(() => {
     const checkTenantAccess = async () => {
@@ -57,40 +57,62 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
         return;
       }
 
-      // Parse allowed org slugs from env (comma-separated)
-      const allowedSlugsRaw = env.ALLOWED_CLERK_ORG_SLUGS?.trim();
-      const allowedSlugs = allowedSlugsRaw 
+      // Parse allowed org slugs/IDs from env (comma-separated)
+      const allowedSlugsRaw = env.ALLOWED_CLERK_ORG_SLUGS?.trim() || '';
+      const allowedValues = allowedSlugsRaw 
         ? allowedSlugsRaw.split(',').map(s => s.trim()).filter(Boolean)
         : [];
+      
+      // Normalize: org IDs (org_xxx) stay as-is, slugs become lowercase
+      const normalizedAllowed = allowedValues.map(v => 
+        v.startsWith('org_') ? v : v.toLowerCase()
+      );
+
+      // DEV-ONLY: Deep diagnostic logging
+      if (env.isDev) {
+        console.log('🔍 TENANT GUARD DEBUG:', {
+          rawEnvValue: allowedSlugsRaw,
+          parsedValues: allowedValues,
+          normalizedAllowed,
+          userMemberships: (userMemberships?.data || []).map(m => ({
+            id: m.organization.id,
+            slug: m.organization.slug
+          })),
+          hostname: window.location.hostname,
+          currentPath
+        });
+      }
 
       // PRODUCTION SAFETY: Block if no allowed orgs configured
-      if (env.isProd && allowedSlugs.length === 0) {
+      if (env.isProd && normalizedAllowed.length === 0) {
         console.error('❌ CRITICAL: VITE_ALLOWED_CLERK_ORG_SLUGS not configured in production!');
         navigate('/unauthorized');
         return;
       }
 
       // DEV CONVENIENCE: Allow access if no orgs configured in development
-      if (env.isDev && allowedSlugs.length === 0) {
+      if (env.isDev && normalizedAllowed.length === 0) {
         console.warn('⚠️ DEV MODE: No VITE_ALLOWED_CLERK_ORG_SLUGS set, allowing all users');
         setIsChecking(false);
         setHasChecked(true);
         return;
       }
 
-      // Check if user belongs to any allowed organization
+      // Check if user belongs to any allowed organization (match by slug OR id)
       const memberships = userMemberships?.data || [];
-      const matchedMembership = memberships.find(membership => 
-        allowedSlugs.includes(membership.organization.slug)
-      );
+      const matchedMembership = memberships.find(membership => {
+        const orgSlugLc = membership.organization.slug?.toLowerCase() || '';
+        const orgId = membership.organization.id || '';
+        return normalizedAllowed.includes(orgSlugLc) || normalizedAllowed.includes(orgId);
+      });
 
       if (!matchedMembership) {
         // User doesn't belong to any allowed org - redirect to unauthorized
         console.warn('🚫 TENANT ACCESS DENIED:', {
           userId: user.id,
           email: user.primaryEmailAddress?.emailAddress,
-          userOrganizations: memberships.map(m => m.organization.slug),
-          allowedOrganizations: allowedSlugs,
+          userMemberships: memberships.map(m => ({ id: m.organization.id, slug: m.organization.slug })),
+          allowedNormalized: normalizedAllowed,
           deployment: window.location.hostname
         });
         
