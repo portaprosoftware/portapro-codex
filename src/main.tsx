@@ -1,5 +1,3 @@
-console.log('VITE_ALLOWED_CLERK_ORG_SLUGS:', import.meta.env.VITE_ALLOWED_CLERK_ORG_SLUGS);
-window.VITE_ALLOWED_CLERK_ORG_SLUGS = import.meta.env.VITE_ALLOWED_CLERK_ORG_SLUGS;
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { ClerkProvider } from "@clerk/clerk-react";
