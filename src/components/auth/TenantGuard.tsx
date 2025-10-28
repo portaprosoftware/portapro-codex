@@ -68,8 +68,10 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
         v.startsWith('org_') ? v : v.toLowerCase()
       );
 
-      // DEV-ONLY: Deep diagnostic logging
-      if (env.isDev) {
+      // DEBUG MODE: Activate with ?tenant_debug=1 (works in dev and prod)
+      const debugMode = env.isDev || new URLSearchParams(window.location.search).get('tenant_debug') === '1';
+      
+      if (debugMode) {
         console.log('🔍 TENANT GUARD DEBUG:', {
           rawEnvValue: allowedSlugsRaw,
           parsedValues: allowedValues,
@@ -79,7 +81,8 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
             slug: m.organization.slug
           })),
           hostname: window.location.hostname,
-          currentPath
+          currentPath,
+          debugModeActive: true
         });
       }
 
@@ -109,6 +112,7 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
       if (!matchedMembership) {
         // User doesn't belong to any allowed org - redirect to unauthorized
         console.warn('🚫 TENANT ACCESS DENIED:', {
+          rawEnvValue: allowedSlugsRaw,
           userId: user.id,
           email: user.primaryEmailAddress?.emailAddress,
           userMemberships: memberships.map(m => ({ id: m.organization.id, slug: m.organization.slug })),
