@@ -76,6 +76,8 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
           rawEnvValue: allowedSlugsRaw,
           parsedValues: allowedValues,
           normalizedAllowed,
+          activeOrgId: organization?.id || null,
+          activeOrgSlug: organization?.slug || null,
           userMemberships: (userMemberships?.data || []).map(m => ({
             id: m.organization.id,
             slug: m.organization.slug
@@ -109,12 +111,30 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
         return normalizedAllowed.includes(orgSlugLc) || normalizedAllowed.includes(orgId);
       });
 
-      if (!matchedMembership) {
+      // FALLBACK: If no membership found, check if active organization matches
+      // This handles cases where userMemberships might be empty but org context exists
+      let hasAccess = !!matchedMembership;
+      if (!matchedMembership && organization) {
+        const activeSlug = organization.slug?.toLowerCase() || '';
+        const activeId = organization.id || '';
+        hasAccess = normalizedAllowed.includes(activeSlug) || normalizedAllowed.includes(activeId);
+        
+        if (debugMode && hasAccess) {
+          console.info('✅ Access granted via active organization fallback:', {
+            activeOrgId: activeId,
+            activeOrgSlug: organization.slug
+          });
+        }
+      }
+
+      if (!hasAccess) {
         // User doesn't belong to any allowed org - redirect to unauthorized
         console.warn('🚫 TENANT ACCESS DENIED:', {
           rawEnvValue: allowedSlugsRaw,
           userId: user.id,
           email: user.primaryEmailAddress?.emailAddress,
+          activeOrgId: organization?.id || null,
+          activeOrgSlug: organization?.slug || null,
           userMemberships: memberships.map(m => ({ id: m.organization.id, slug: m.organization.slug })),
           allowedNormalized: normalizedAllowed,
           deployment: window.location.hostname
@@ -127,8 +147,8 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
         return;
       }
 
-      // User has access - set active org if not already active
-      if (organization?.id !== matchedMembership.organization.id) {
+      // User has access - set active org if not already active (only if we have a membership)
+      if (matchedMembership && organization?.id !== matchedMembership.organization.id) {
         console.info('✅ Setting active organization:', matchedMembership.organization.slug);
         await setActive({ organization: matchedMembership.organization.id });
       }

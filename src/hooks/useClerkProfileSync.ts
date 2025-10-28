@@ -8,6 +8,8 @@ export const useClerkProfileSync = () => {
   const { user, isLoaded } = useUser();
   const [isSynced, setIsSynced] = useState(false);
   const hasSyncedRef = useRef(false);
+  const retryCountRef = useRef(0);
+  const maxRetries = 4;
 
   const syncProfileMutation = useMutation({
     mutationFn: async (userData: {
@@ -77,8 +79,15 @@ export const useClerkProfileSync = () => {
         error?.message?.includes('network');
       
       if (isCorsOrNetworkError) {
-        console.warn('⏳ Sync delayed due to network/CORS issue - will retry');
-        // No destructive toast for transient errors
+        retryCountRef.current += 1;
+        
+        if (retryCountRef.current >= maxRetries) {
+          console.error('🛑 Profile sync failed after max retries. Edge functions may not be deployed.');
+          hasSyncedRef.current = true; // Stop further retries
+        } else {
+          const delay = Math.pow(2, retryCountRef.current) * 1000; // Exponential backoff
+          console.warn(`⏳ Sync retry ${retryCountRef.current}/${maxRetries} in ${delay}ms`);
+        }
       } else {
         toast.error('Unable to sync profile. Please try again.');
       }
