@@ -34,8 +34,19 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
   const [isChecking, setIsChecking] = useState(true);
   const [hasChecked, setHasChecked] = useState(false);
 
+  // CRITICAL: Skip tenant check on public routes to prevent redirect loops
+  const currentPath = window.location.pathname;
+  const isPublicRoute = currentPath === '/unauthorized' || currentPath === '/auth';
+
   useEffect(() => {
     const checkTenantAccess = async () => {
+      // SAFETY: Don't run guard on public routes (prevents redirect loops)
+      if (isPublicRoute) {
+        setIsChecking(false);
+        setHasChecked(true);
+        return;
+      }
+
       // Wait for Clerk to load
       if (!userLoaded || !orgListLoaded) return;
 
@@ -74,15 +85,19 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
       );
 
       if (!matchedMembership) {
-        // User doesn't belong to any allowed org - sign out and redirect
-        console.warn('🚫 User not authorized for this deployment:', {
+        // User doesn't belong to any allowed org - redirect to unauthorized
+        console.warn('🚫 TENANT ACCESS DENIED:', {
           userId: user.id,
-          userOrgs: memberships.map(m => m.organization.slug),
-          allowedOrgs: allowedSlugs
+          email: user.primaryEmailAddress?.emailAddress,
+          userOrganizations: memberships.map(m => m.organization.slug),
+          allowedOrganizations: allowedSlugs,
+          deployment: window.location.hostname
         });
         
-        // Redirect to unauthorized (user will need to sign out manually)
-        navigate('/unauthorized');
+        // Redirect to unauthorized page
+        navigate('/unauthorized', { replace: true });
+        setIsChecking(false);
+        setHasChecked(true);
         return;
       }
 
@@ -99,7 +114,7 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
     if (!hasChecked) {
       checkTenantAccess();
     }
-  }, [user, userLoaded, orgListLoaded, userMemberships, organization, navigate, hasChecked, setActive]);
+  }, [user, userLoaded, orgListLoaded, userMemberships, organization, navigate, hasChecked, setActive, isPublicRoute]);
 
   // Show loading state while checking
   if (isChecking || !userLoaded || !orgListLoaded) {

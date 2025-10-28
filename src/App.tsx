@@ -8,6 +8,7 @@ import { useCompanyTitle } from './hooks/useCompanyTitle';
 import { Layout } from './components/layout/Layout';
 import { ErrorBoundary } from './components/ui/error-boundary';
 import { TenantGuard } from './components/auth/TenantGuard';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { Landing } from './pages/Landing';
 import PublicPayment from './pages/PublicPayment';
 import PaymentSuccess from './pages/PaymentSuccess';
@@ -78,10 +79,9 @@ const App = () => {
 
   return (
     <ErrorBoundary>
-      <TenantGuard>
-        <RouterSelector>
-          <div className="min-h-screen bg-background font-sans antialiased">
-            <Routes>
+      <RouterSelector>
+        <div className="min-h-screen bg-background font-sans antialiased">
+          <Routes>
             {/* Root route – works on all domains */}
             <Route
               path="/"
@@ -122,12 +122,14 @@ const App = () => {
             <Route path="/auth" element={<Auth />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
 
-            {/* Driver routes */}
+            {/* Driver routes - protected with TenantGuard */}
             <Route
               path="/driver"
               element={
                 <SignedIn>
-                  <DriverLayout />
+                  <TenantGuard>
+                    <DriverLayout />
+                  </TenantGuard>
                 </SignedIn>
               }
             >
@@ -140,94 +142,80 @@ const App = () => {
               <Route path="profile" element={<DriverProfilePage />} />
             </Route>
 
-            {/* Dashboard route - requires authentication */}
-            <Route
-              path="/dashboard"
-              element={
-                <>
-                  <SignedIn>
-                    <Layout>
-                      <Dashboard />
-                    </Layout>
-                  </SignedIn>
-                  <SignedOut>
-                    <RedirectToSignIn redirectUrl="/dashboard" />
-                  </SignedOut>
-                </>
-              }
-            />
+            {/* Dashboard route - protected */}
+            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
 
             {/* Testing route - outside authentication for easy access */}
             <Route path="/testing" element={<TestingPage />} />
 
-            {/* Direct authenticated routes */}
-            <Route path="/jobs" element={<><SignedIn><Layout><Jobs /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/jobs/calendar" element={<><SignedIn><Layout><Jobs /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/jobs/dispatch" element={<><SignedIn><Layout><Jobs /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/jobs/map" element={<><SignedIn><Layout><Jobs /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/jobs/custom" element={<><SignedIn><Layout><Jobs /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/jobs/drafts" element={<><SignedIn><Layout><Jobs /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
+            {/* Protected Routes - All require authentication + organization membership */}
+            <Route path="/jobs" element={<ProtectedRoute><Jobs /></ProtectedRoute>} />
+            <Route path="/jobs/calendar" element={<ProtectedRoute><Jobs /></ProtectedRoute>} />
+            <Route path="/jobs/dispatch" element={<ProtectedRoute><Jobs /></ProtectedRoute>} />
+            <Route path="/jobs/map" element={<ProtectedRoute><Jobs /></ProtectedRoute>} />
+            <Route path="/jobs/custom" element={<ProtectedRoute><Jobs /></ProtectedRoute>} />
+            <Route path="/jobs/drafts" element={<ProtectedRoute><Jobs /></ProtectedRoute>} />
 
-            <Route path="/inventory" element={<><SignedIn><Layout><Inventory /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/inventory/products" element={<><SignedIn><Layout><Inventory /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/inventory/location-map" element={<><SignedIn><Layout><Inventory /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/inventory/code-categories" element={<><SignedIn><Layout><Inventory /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/inventory/maintenance" element={<><SignedIn><Layout><Inventory /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/inventory/items/:itemId" element={<><SignedIn><Layout><ProductItemDetail /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
+            <Route path="/inventory" element={<ProtectedRoute><Inventory /></ProtectedRoute>} />
+            <Route path="/inventory/products" element={<ProtectedRoute><Inventory /></ProtectedRoute>} />
+            <Route path="/inventory/location-map" element={<ProtectedRoute><Inventory /></ProtectedRoute>} />
+            <Route path="/inventory/code-categories" element={<ProtectedRoute><Inventory /></ProtectedRoute>} />
+            <Route path="/inventory/maintenance" element={<ProtectedRoute><Inventory /></ProtectedRoute>} />
+            <Route path="/inventory/items/:itemId" element={<ProtectedRoute><ProductItemDetail /></ProtectedRoute>} />
 
-            <Route path="/consumables" element={<><SignedIn><Layout><Consumables /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/purchase-orders" element={<><SignedIn><Layout><PurchaseOrders /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
+            <Route path="/consumables" element={<ProtectedRoute><Consumables /></ProtectedRoute>} />
+            <Route path="/purchase-orders" element={<ProtectedRoute><PurchaseOrders /></ProtectedRoute>} />
 
-            <Route path="/customer-hub" element={<><SignedIn><Layout><CustomerHub /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/customers" element={<><SignedIn><Layout><CustomerHub /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/customers/:id" element={<><SignedIn><Layout><CustomerDetail /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
+            <Route path="/customer-hub" element={<ProtectedRoute><CustomerHub /></ProtectedRoute>} />
+            <Route path="/customers" element={<ProtectedRoute><CustomerHub /></ProtectedRoute>} />
+            <Route path="/customers/:id" element={<ProtectedRoute><CustomerDetail /></ProtectedRoute>} />
 
-            <Route path="/quotes-invoices" element={<><SignedIn><Layout><QuotesInvoices /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
+            <Route path="/quotes-invoices" element={<ProtectedRoute><QuotesInvoices /></ProtectedRoute>} />
 
-            <Route path="/fleet-management" element={<><SignedIn><Layout><FleetManagement /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/fleet" element={<><SignedIn><Layout><FleetManagement /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/fleet/assignments" element={<><SignedIn><Layout><FleetAssignmentsPage /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/fleet/compliance" element={<><SignedIn><Layout><FleetCompliancePage /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/fleet/loads" element={<><SignedIn><Layout><FleetLoadsPage /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/fleet/analytics" element={<><SignedIn><Layout><FleetAnalyticsPage /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/fleet/capacity" element={<><SignedIn><Layout><FleetCapacityPage /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/fleet/compliance-reports" element={<><SignedIn><Layout><FleetComplianceReportsPage /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/fleet/fuel" element={<><SignedIn><Layout><FleetFuelManagement /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/fleet/files" element={<><SignedIn><Layout><FleetFiles /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/fleet/truck-stock" element={<><SignedIn><Layout><FleetTruckStock /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/fleet/maintenance" element={<><SignedIn><Layout><FleetMaintenancePage /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/fleet/spill-kit-inventory" element={<><SignedIn><Layout><SpillKitInventoryPage /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/fleet/spill-kit-storage" element={<><SignedIn><Layout><SpillKitStoragePage /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
+            <Route path="/fleet-management" element={<ProtectedRoute><FleetManagement /></ProtectedRoute>} />
+            <Route path="/fleet" element={<ProtectedRoute><FleetManagement /></ProtectedRoute>} />
+            <Route path="/fleet/assignments" element={<ProtectedRoute><FleetAssignmentsPage /></ProtectedRoute>} />
+            <Route path="/fleet/compliance" element={<ProtectedRoute><FleetCompliancePage /></ProtectedRoute>} />
+            <Route path="/fleet/loads" element={<ProtectedRoute><FleetLoadsPage /></ProtectedRoute>} />
+            <Route path="/fleet/analytics" element={<ProtectedRoute><FleetAnalyticsPage /></ProtectedRoute>} />
+            <Route path="/fleet/capacity" element={<ProtectedRoute><FleetCapacityPage /></ProtectedRoute>} />
+            <Route path="/fleet/compliance-reports" element={<ProtectedRoute><FleetComplianceReportsPage /></ProtectedRoute>} />
+            <Route path="/fleet/fuel" element={<ProtectedRoute><FleetFuelManagement /></ProtectedRoute>} />
+            <Route path="/fleet/files" element={<ProtectedRoute><FleetFiles /></ProtectedRoute>} />
+            <Route path="/fleet/truck-stock" element={<ProtectedRoute><FleetTruckStock /></ProtectedRoute>} />
+            <Route path="/fleet/maintenance" element={<ProtectedRoute><FleetMaintenancePage /></ProtectedRoute>} />
+            <Route path="/fleet/spill-kit-inventory" element={<ProtectedRoute><SpillKitInventoryPage /></ProtectedRoute>} />
+            <Route path="/fleet/spill-kit-storage" element={<ProtectedRoute><SpillKitStoragePage /></ProtectedRoute>} />
 
-            <Route path="/maintenance-hub" element={<><SignedIn><Layout><MaintenanceHub /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/maintenance" element={<><SignedIn><Layout><MaintenancePage /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
+            <Route path="/maintenance-hub" element={<ProtectedRoute><MaintenanceHub /></ProtectedRoute>} />
+            <Route path="/maintenance" element={<ProtectedRoute><MaintenancePage /></ProtectedRoute>} />
 
-            <Route path="/marketing" element={<><SignedIn><Layout><Marketing /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/marketing/templates" element={<><SignedIn><Layout><Marketing /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/marketing/campaigns" element={<><SignedIn><Layout><Marketing /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/marketing/scheduled" element={<><SignedIn><Layout><Marketing /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/marketing/segments" element={<><SignedIn><Layout><Marketing /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/marketing/drafts" element={<><SignedIn><Layout><Marketing /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
+            <Route path="/marketing" element={<ProtectedRoute><Marketing /></ProtectedRoute>} />
+            <Route path="/marketing/templates" element={<ProtectedRoute><Marketing /></ProtectedRoute>} />
+            <Route path="/marketing/campaigns" element={<ProtectedRoute><Marketing /></ProtectedRoute>} />
+            <Route path="/marketing/scheduled" element={<ProtectedRoute><Marketing /></ProtectedRoute>} />
+            <Route path="/marketing/segments" element={<ProtectedRoute><Marketing /></ProtectedRoute>} />
+            <Route path="/marketing/drafts" element={<ProtectedRoute><Marketing /></ProtectedRoute>} />
 
-            <Route path="/analytics" element={<><SignedIn><Layout><Analytics /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/analytics/reports" element={<><SignedIn><Layout><AnalyticsReports /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
+            <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+            <Route path="/analytics/reports" element={<ProtectedRoute><AnalyticsReports /></ProtectedRoute>} />
 
-            <Route path="/storage-sites" element={<><SignedIn><Layout><StorageSites /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
+            <Route path="/storage-sites" element={<ProtectedRoute><StorageSites /></ProtectedRoute>} />
 
-            <Route path="/team-management" element={<><SignedIn><Layout><TeamManagement /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/team-management/:tab" element={<><SignedIn><Layout><TeamManagement /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/team-management/driver/:driverId" element={<><SignedIn><Layout><TeamManagement /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/team-management/bulk-operations" element={<><SignedIn><Layout><TeamManagement /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/team-management/compliance" element={<><SignedIn><Layout><TeamManagement /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/team-management/reports" element={<><SignedIn><Layout><TeamManagement /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/team-management/forecasting" element={<><SignedIn><Layout><TeamManagement /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/team-management/notifications" element={<><SignedIn><Layout><TeamManagement /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
+            <Route path="/team-management" element={<ProtectedRoute><TeamManagement /></ProtectedRoute>} />
+            <Route path="/team-management/:tab" element={<ProtectedRoute><TeamManagement /></ProtectedRoute>} />
+            <Route path="/team-management/driver/:driverId" element={<ProtectedRoute><TeamManagement /></ProtectedRoute>} />
+            <Route path="/team-management/bulk-operations" element={<ProtectedRoute><TeamManagement /></ProtectedRoute>} />
+            <Route path="/team-management/compliance" element={<ProtectedRoute><TeamManagement /></ProtectedRoute>} />
+            <Route path="/team-management/reports" element={<ProtectedRoute><TeamManagement /></ProtectedRoute>} />
+            <Route path="/team-management/forecasting" element={<ProtectedRoute><TeamManagement /></ProtectedRoute>} />
+            <Route path="/team-management/notifications" element={<ProtectedRoute><TeamManagement /></ProtectedRoute>} />
 
-            <Route path="/settings" element={<><SignedIn><Layout><Settings /></Layout></SignedIn><SignedOut><Auth /></SignedOut></>} />
+            <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
 
-            {/* Customer Portal Route */}
-            <Route path="/portal" element={<><SignedIn><CustomerPortalPage /></SignedIn><SignedOut><Auth /></SignedOut></>} />
-            <Route path="/portal/:customerId" element={<><SignedIn><CustomerPortalPage /></SignedIn><SignedOut><Auth /></SignedOut></>} />
+            {/* Customer Portal Routes - Protected */}
+            <Route path="/portal" element={<><SignedIn><TenantGuard><CustomerPortalPage /></TenantGuard></SignedIn><SignedOut><Auth /></SignedOut></>} />
+            <Route path="/portal/:customerId" element={<><SignedIn><TenantGuard><CustomerPortalPage /></TenantGuard></SignedIn><SignedOut><Auth /></SignedOut></>} />
 
             {/* Catch all other routes */}
             <Route
@@ -246,9 +234,8 @@ const App = () => {
               }
             />
             </Routes>
-          </div>
-        </RouterSelector>
-      </TenantGuard>
+        </div>
+      </RouterSelector>
     </ErrorBoundary>
   );
 }
