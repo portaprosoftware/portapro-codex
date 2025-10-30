@@ -10,55 +10,10 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "12.2.3 (519615d)"
+    PostgrestVersion: "13.0.5"
   }
   public: {
     Tables: {
-      auto_requirement_presets: {
-        Row: {
-          auto_actions: Json
-          conditions: Json
-          created_at: string
-          description: string | null
-          evidence_requirements: Json
-          id: string
-          is_active: boolean | null
-          name: string
-          organization_id: string | null
-          preset_type: string
-          required_fields: Json
-          updated_at: string
-        }
-        Insert: {
-          auto_actions?: Json
-          conditions?: Json
-          created_at?: string
-          description?: string | null
-          evidence_requirements?: Json
-          id?: string
-          is_active?: boolean | null
-          name: string
-          organization_id?: string | null
-          preset_type: string
-          required_fields?: Json
-          updated_at?: string
-        }
-        Update: {
-          auto_actions?: Json
-          conditions?: Json
-          created_at?: string
-          description?: string | null
-          evidence_requirements?: Json
-          id?: string
-          is_active?: boolean | null
-          name?: string
-          organization_id?: string | null
-          preset_type?: string
-          required_fields?: Json
-          updated_at?: string
-        }
-        Relationships: []
-      }
       automation_requests: {
         Row: {
           admin_email: string
@@ -2073,6 +2028,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "disposal_manifests_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "disposal_manifests_vehicle_id_fkey"
             columns: ["vehicle_id"]
             isOneToOne: false
@@ -2432,66 +2394,6 @@ export type Database = {
           },
         ]
       }
-      driver_notification_preferences: {
-        Row: {
-          created_at: string | null
-          driver_id: string
-          dvir_reminder: boolean | null
-          email_notifications: boolean | null
-          id: string
-          in_app_notifications: boolean | null
-          job_assigned: boolean | null
-          job_cancelled: boolean | null
-          job_updated: boolean | null
-          message_received: boolean | null
-          quiet_hours_enabled: boolean | null
-          quiet_hours_end: string | null
-          quiet_hours_start: string | null
-          schedule_changed: boolean | null
-          sms_notifications: boolean | null
-          updated_at: string | null
-          vehicle_assigned: boolean | null
-        }
-        Insert: {
-          created_at?: string | null
-          driver_id: string
-          dvir_reminder?: boolean | null
-          email_notifications?: boolean | null
-          id?: string
-          in_app_notifications?: boolean | null
-          job_assigned?: boolean | null
-          job_cancelled?: boolean | null
-          job_updated?: boolean | null
-          message_received?: boolean | null
-          quiet_hours_enabled?: boolean | null
-          quiet_hours_end?: string | null
-          quiet_hours_start?: string | null
-          schedule_changed?: boolean | null
-          sms_notifications?: boolean | null
-          updated_at?: string | null
-          vehicle_assigned?: boolean | null
-        }
-        Update: {
-          created_at?: string | null
-          driver_id?: string
-          dvir_reminder?: boolean | null
-          email_notifications?: boolean | null
-          id?: string
-          in_app_notifications?: boolean | null
-          job_assigned?: boolean | null
-          job_cancelled?: boolean | null
-          job_updated?: boolean | null
-          message_received?: boolean | null
-          quiet_hours_enabled?: boolean | null
-          quiet_hours_end?: string | null
-          quiet_hours_start?: string | null
-          schedule_changed?: boolean | null
-          sms_notifications?: boolean | null
-          updated_at?: string | null
-          vehicle_assigned?: boolean | null
-        }
-        Relationships: []
-      }
       driver_ppe_info: {
         Row: {
           boot_size: string | null
@@ -2628,7 +2530,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "fk_driver_time_off_requests_driver_id"
+            foreignKeyName: "driver_time_off_requests_driver_id_fkey"
             columns: ["driver_id"]
             isOneToOne: false
             referencedRelation: "profiles"
@@ -3099,45 +3001,6 @@ export type Database = {
         }
         Relationships: []
       }
-      fee_catalog: {
-        Row: {
-          category: string | null
-          created_at: string
-          default_amount: number
-          description: string | null
-          gl_code: string | null
-          id: string
-          name: string
-          organization_id: string | null
-          taxable: boolean | null
-          updated_at: string
-        }
-        Insert: {
-          category?: string | null
-          created_at?: string
-          default_amount: number
-          description?: string | null
-          gl_code?: string | null
-          id?: string
-          name: string
-          organization_id?: string | null
-          taxable?: boolean | null
-          updated_at?: string
-        }
-        Update: {
-          category?: string | null
-          created_at?: string
-          default_amount?: number
-          description?: string | null
-          gl_code?: string | null
-          id?: string
-          name?: string
-          organization_id?: string | null
-          taxable?: boolean | null
-          updated_at?: string
-        }
-        Relationships: []
-      }
       filter_preset_usage: {
         Row: {
           filter_modifications: Json | null
@@ -3370,13 +3233,6 @@ export type Database = {
           vehicle_id?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "fuel_logs_driver_id_fkey"
-            columns: ["driver_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "fuel_logs_fuel_station_id_fkey"
             columns: ["fuel_station_id"]
@@ -3894,6 +3750,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "fuel_tank_level_history_performed_by_fkey"
+            columns: ["performed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "fuel_tank_level_history_tank_id_fkey"
             columns: ["tank_id"]
             isOneToOne: false
@@ -4254,6 +4117,68 @@ export type Database = {
           status?: string | null
         }
         Relationships: []
+      }
+      invitations: {
+        Row: {
+          clerk_invitation_id: string | null
+          clerk_status: number | null
+          created_at: string
+          created_by: string | null
+          email: string
+          env: string | null
+          error_message: string | null
+          id: string
+          metadata: Json
+          org_clerk_id: string | null
+          org_id: string | null
+          role: string | null
+          status: string
+          updated_at: string
+          welcome_email_sent_at: string | null
+        }
+        Insert: {
+          clerk_invitation_id?: string | null
+          clerk_status?: number | null
+          created_at?: string
+          created_by?: string | null
+          email: string
+          env?: string | null
+          error_message?: string | null
+          id?: string
+          metadata?: Json
+          org_clerk_id?: string | null
+          org_id?: string | null
+          role?: string | null
+          status?: string
+          updated_at?: string
+          welcome_email_sent_at?: string | null
+        }
+        Update: {
+          clerk_invitation_id?: string | null
+          clerk_status?: number | null
+          created_at?: string
+          created_by?: string | null
+          email?: string
+          env?: string | null
+          error_message?: string | null
+          id?: string
+          metadata?: Json
+          org_clerk_id?: string | null
+          org_id?: string | null
+          role?: string | null
+          status?: string
+          updated_at?: string
+          welcome_email_sent_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invitations_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       invoice_items: {
         Row: {
@@ -5027,13 +4952,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "fk_jobs_driver_id"
-            columns: ["driver_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "jobs_contact_id_fkey"
             columns: ["contact_id"]
             isOneToOne: false
@@ -5045,6 +4963,13 @@ export type Database = {
             columns: ["customer_id"]
             isOneToOne: false
             referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
@@ -5889,87 +5814,6 @@ export type Database = {
         }
         Relationships: []
       }
-      maintenance_tasks: {
-        Row: {
-          assigned_to: string | null
-          attachments: Json | null
-          automation_rule_id: string | null
-          completed_at: string | null
-          created_at: string
-          created_by: string | null
-          customer_id: string | null
-          description: string | null
-          due_date: string | null
-          id: string
-          job_id: string | null
-          metadata: Json | null
-          priority: string | null
-          site_id: string | null
-          status: string | null
-          task_number: string | null
-          title: string
-          unit_id: string | null
-          updated_at: string
-        }
-        Insert: {
-          assigned_to?: string | null
-          attachments?: Json | null
-          automation_rule_id?: string | null
-          completed_at?: string | null
-          created_at?: string
-          created_by?: string | null
-          customer_id?: string | null
-          description?: string | null
-          due_date?: string | null
-          id?: string
-          job_id?: string | null
-          metadata?: Json | null
-          priority?: string | null
-          site_id?: string | null
-          status?: string | null
-          task_number?: string | null
-          title: string
-          unit_id?: string | null
-          updated_at?: string
-        }
-        Update: {
-          assigned_to?: string | null
-          attachments?: Json | null
-          automation_rule_id?: string | null
-          completed_at?: string | null
-          created_at?: string
-          created_by?: string | null
-          customer_id?: string | null
-          description?: string | null
-          due_date?: string | null
-          id?: string
-          job_id?: string | null
-          metadata?: Json | null
-          priority?: string | null
-          site_id?: string | null
-          status?: string | null
-          task_number?: string | null
-          title?: string
-          unit_id?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "maintenance_tasks_customer_id_fkey"
-            columns: ["customer_id"]
-            isOneToOne: false
-            referencedRelation: "customers"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "maintenance_tasks_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "jobs"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       maintenance_technicians: {
         Row: {
           created_at: string
@@ -6704,6 +6548,75 @@ export type Database = {
         }
         Relationships: []
       }
+      org_invites: {
+        Row: {
+          created_at: string
+          email: string
+          env: string
+          id: number
+          org_clerk_id: string
+          org_name: string | null
+          org_slug: string | null
+          role: string
+          welcome_email_sent_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          env?: string
+          id?: never
+          org_clerk_id: string
+          org_name?: string | null
+          org_slug?: string | null
+          role?: string
+          welcome_email_sent_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          env?: string
+          id?: never
+          org_clerk_id?: string
+          org_name?: string | null
+          org_slug?: string | null
+          role?: string
+          welcome_email_sent_at?: string | null
+        }
+        Relationships: []
+      }
+      organizations: {
+        Row: {
+          clerk_org_id: string
+          created_at: string
+          env: string | null
+          id: string
+          metadata: Json
+          org_name: string | null
+          org_slug: string | null
+          updated_at: string
+        }
+        Insert: {
+          clerk_org_id: string
+          created_at?: string
+          env?: string | null
+          id?: string
+          metadata?: Json
+          org_name?: string | null
+          org_slug?: string | null
+          updated_at?: string
+        }
+        Update: {
+          clerk_org_id?: string
+          created_at?: string
+          env?: string | null
+          id?: string
+          metadata?: Json
+          org_name?: string | null
+          org_slug?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount: number
@@ -7122,6 +7035,13 @@ export type Database = {
           vehicle_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "ppe_compliance_records_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "ppe_compliance_records_vehicle_id_fkey"
             columns: ["vehicle_id"]
@@ -7804,6 +7724,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "profiles_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "profiles_supervisor_id_fkey"
             columns: ["supervisor_id"]
@@ -8919,68 +8846,6 @@ export type Database = {
         }
         Relationships: []
       }
-      service_report_templates: {
-        Row: {
-          created_at: string
-          created_by: string | null
-          description: string | null
-          id: string
-          is_active: boolean | null
-          is_default_for_type: boolean | null
-          logic_rules: Json
-          name: string
-          organization_id: string
-          output_config: Json
-          permissions: Json
-          sections: Json
-          template_type: Database["public"]["Enums"]["template_type"]
-          updated_at: string
-          version: string
-        }
-        Insert: {
-          created_at?: string
-          created_by?: string | null
-          description?: string | null
-          id?: string
-          is_active?: boolean | null
-          is_default_for_type?: boolean | null
-          logic_rules?: Json
-          name: string
-          organization_id: string
-          output_config?: Json
-          permissions?: Json
-          sections?: Json
-          template_type: Database["public"]["Enums"]["template_type"]
-          updated_at?: string
-          version?: string
-        }
-        Update: {
-          created_at?: string
-          created_by?: string | null
-          description?: string | null
-          id?: string
-          is_active?: boolean | null
-          is_default_for_type?: boolean | null
-          logic_rules?: Json
-          name?: string
-          organization_id?: string
-          output_config?: Json
-          permissions?: Json
-          sections?: Json
-          template_type?: Database["public"]["Enums"]["template_type"]
-          updated_at?: string
-          version?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "service_report_templates_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       service_reports: {
         Row: {
           created_at: string
@@ -9366,6 +9231,13 @@ export type Database = {
           witnesses_present?: boolean | null
         }
         Relationships: [
+          {
+            foreignKeyName: "spill_incident_reports_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "spill_incident_reports_vehicle_id_fkey"
             columns: ["vehicle_id"]
@@ -10684,7 +10556,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "fk_user_roles_user_id"
+            foreignKeyName: "user_roles_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: true
             referencedRelation: "profiles"
@@ -11055,6 +10927,13 @@ export type Database = {
           vehicle_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "vehicle_dvir_logs_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "vehicle_dvir_logs_vehicle_id_fkey"
             columns: ["vehicle_id"]
@@ -12915,10 +12794,6 @@ export type Database = {
           status: string
         }[]
       }
-      should_notify_driver: {
-        Args: { p_driver_id: string; p_notification_type: string }
-        Returns: boolean
-      }
       soft_delete_quote: { Args: { quote_uuid: string }; Returns: boolean }
       sync_clerk_profile: {
         Args: {
@@ -13007,7 +12882,13 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "dispatch" | "driver" | "dispatcher" | "owner"
+      app_role:
+        | "owner"
+        | "admin"
+        | "dispatch"
+        | "driver"
+        | "viewer"
+        | "dispatcher"
       consumable_category:
         | "sanitizer"
         | "deodorizer"
@@ -13062,13 +12943,6 @@ export type Database = {
         | "sanitizer_stand"
         | "accessories"
         | "custom"
-      template_type:
-        | "delivery"
-        | "service"
-        | "pickup"
-        | "repair"
-        | "inspection"
-        | "event"
       work_order_priority: "low" | "normal" | "high" | "critical"
       work_order_source:
         | "dvir_defect"
@@ -13213,7 +13087,14 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "dispatch", "driver", "dispatcher", "owner"],
+      app_role: [
+        "owner",
+        "admin",
+        "dispatch",
+        "driver",
+        "viewer",
+        "dispatcher",
+      ],
       consumable_category: [
         "sanitizer",
         "deodorizer",
@@ -13272,14 +13153,6 @@ export const Constants = {
         "sanitizer_stand",
         "accessories",
         "custom",
-      ],
-      template_type: [
-        "delivery",
-        "service",
-        "pickup",
-        "repair",
-        "inspection",
-        "event",
       ],
       work_order_priority: ["low", "normal", "high", "critical"],
       work_order_source: [
