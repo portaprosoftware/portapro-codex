@@ -5814,6 +5814,63 @@ export type Database = {
         }
         Relationships: []
       }
+      maintenance_tasks: {
+        Row: {
+          assigned_to: string | null
+          automation_rule_id: string | null
+          created_at: string
+          created_by: string | null
+          customer_id: string | null
+          description: string | null
+          due_date: string | null
+          id: string
+          job_id: string | null
+          metadata: Json | null
+          priority: string | null
+          site_id: string | null
+          status: string | null
+          title: string
+          unit_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          automation_rule_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          job_id?: string | null
+          metadata?: Json | null
+          priority?: string | null
+          site_id?: string | null
+          status?: string | null
+          title: string
+          unit_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          automation_rule_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          job_id?: string | null
+          metadata?: Json | null
+          priority?: string | null
+          site_id?: string | null
+          status?: string | null
+          title?: string
+          unit_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       maintenance_technicians: {
         Row: {
           created_at: string
@@ -8843,6 +8900,60 @@ export type Database = {
           point_name?: string
           service_location_id?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      service_report_templates: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          is_default_for_type: boolean | null
+          logic_rules: Json | null
+          name: string
+          organization_id: string | null
+          output_config: Json | null
+          permissions: Json | null
+          sections: Json | null
+          template_type: string | null
+          updated_at: string
+          version: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_default_for_type?: boolean | null
+          logic_rules?: Json | null
+          name: string
+          organization_id?: string | null
+          output_config?: Json | null
+          permissions?: Json | null
+          sections?: Json | null
+          template_type?: string | null
+          updated_at?: string
+          version?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_default_for_type?: boolean | null
+          logic_rules?: Json | null
+          name?: string
+          organization_id?: string | null
+          output_config?: Json | null
+          permissions?: Json | null
+          sections?: Json | null
+          template_type?: string | null
+          updated_at?: string
+          version?: string | null
         }
         Relationships: []
       }
