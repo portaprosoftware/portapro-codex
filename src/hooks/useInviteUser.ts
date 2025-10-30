@@ -40,14 +40,15 @@ export const useInviteUser = () => {
 
       // Automatically include organizationId from Clerk context if available
       const invitePayload = {
-        ...userData,
+        email: userData.email,
         organizationId: userData.organizationId || organization?.id,
-        invitedBy: user.id,
-        environment: import.meta.env.DEV ? 'development' : 'production',
-        redirectBase: window.location.origin
+        org_slug: organization?.slug || organization?.name?.toLowerCase().replace(/\s+/g, '-') || 'default',
+        org_name: organization?.name || 'Default Organization',
+        role: userData.role,
+        env: import.meta.env.DEV ? 'dev' : 'prod'
       };
 
-      const { data, error } = await supabase.functions.invoke('invite-user', {
+      const { data, error } = await supabase.functions.invoke('org-invite', {
         body: invitePayload
       });
 
