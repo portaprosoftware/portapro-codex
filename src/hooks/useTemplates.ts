@@ -53,7 +53,7 @@ export const useTemplates = () => {
   const { data: templates, isLoading } = useQuery({
     queryKey: ['service-report-templates', orgId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('service_report_templates')
         .select('*')
         .eq('organization_id', orgId)
@@ -117,7 +117,7 @@ export const useTemplates = () => {
         throw new Error('Organization ID is missing. Please refresh and try again.');
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('service_report_templates')
         .insert({
           name: template.name,
@@ -161,7 +161,7 @@ export const useTemplates = () => {
       if (template.permissions) updateData.permissions = template.permissions;
       if (template.output_config) updateData.output_config = template.output_config;
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('service_report_templates')
         .update(updateData)
         .eq('id', id)
@@ -182,7 +182,7 @@ export const useTemplates = () => {
 
   const deleteTemplate = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('service_report_templates')
         .update({ is_active: false })
         .eq('id', id);
@@ -219,7 +219,7 @@ export const useTemplates = () => {
       delete (cloned as any).created_at;
       delete (cloned as any).updated_at;
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('service_report_templates')
         .insert(cloned)
         .select()

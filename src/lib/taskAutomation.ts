@@ -28,7 +28,7 @@ export const createAutomatedTask = async (data: TaskCreationData) => {
 
   const taskDescription = `Auto-generated from: ${data.ruleName}\n\n${data.description}`;
 
-  const { data: task, error } = await supabase
+  const { data: task, error } = await (supabase as any)
     .from('maintenance_tasks')
     .insert({
       title: taskTitle,

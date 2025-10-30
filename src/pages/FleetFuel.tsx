@@ -205,9 +205,9 @@ export default function FleetFuel() {
                           </div>
                         </div>
                       </td>
-                      <td className="p-4">
-                        {log.profiles?.first_name} {log.profiles?.last_name}
-                      </td>
+                       <td className="p-4">
+                        {(log as any).profiles?.first_name} {(log as any).profiles?.last_name}
+                       </td>
                       <td className="p-4">{log.odometer_reading.toLocaleString()} mi</td>
                       <td className="p-4">{log.gallons_purchased} gal</td>
                       <td className="p-4">${log.cost_per_gallon.toFixed(2)}</td>
