@@ -1,25 +1,26 @@
 // supabase/functions/org-invite/index.ts
 // Purpose: Create real Clerk org invites + log to Supabase (PortaPro)
 
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'authorization, apikey, content-type, x-client-info, x-clerk-user-id',
+  'Vary': 'Origin',
 };
 
-// Create Supabase service client
+// Read secrets from Supabase environment
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 const clerkSecretKey = Deno.env.get("CLERK_SECRET_KEY");
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { 
-      headers: corsHeaders,
-      status: 204
+    return new Response(null, { 
+      status: 204,
+      headers: corsHeaders
     });
   }
 
@@ -30,8 +31,7 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ 
           success: false, 
-          status: "error",
-          message: "Missing CLERK_SECRET_KEY" 
+          error: "Missing CLERK_SECRET_KEY configuration" 
         }),
         { 
           status: 500, 
@@ -45,8 +45,7 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ 
           success: false, 
-          status: "error",
-          message: "Missing Supabase credentials" 
+          error: "Missing Supabase credentials" 
         }),
         { 
           status: 500, 
@@ -62,8 +61,7 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ 
           success: false, 
-          status: "error",
-          message: "Missing email or organizationId" 
+          error: "Missing required fields: email and organizationId" 
         }),
         { 
           status: 400, 
@@ -94,8 +92,7 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ 
           success: false, 
-          status: "error",
-          message: "Failed to create Clerk invite",
+          error: "Failed to create Clerk invite",
           detail: err 
         }),
         { 
@@ -133,8 +130,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: true,
-        status: "success",
-        message: "Invite created successfully",
+        message: "Invite created and logged",
         clerk_invite: clerkData,
       }),
       {
@@ -150,8 +146,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         success: false, 
-        status: "error",
-        message: "Internal Server Error",
+        error: "Internal Server Error",
         detail: err.message 
       }),
       { 
