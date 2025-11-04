@@ -112,9 +112,14 @@ export function UserManagementSection() {
         console.log('UserManagementSection - Processing user:', user.first_name, user.last_name);
         console.log('UserManagementSection - User roles data:', user.user_roles);
         
-        const current_role = Array.isArray(user.user_roles) 
+        let current_role = Array.isArray(user.user_roles) 
           ? user.user_roles[0]?.role 
           : user.user_roles?.role || null;
+        
+        // Normalize legacy "owner" to "org:owner" for display
+        if (current_role === 'owner') {
+          current_role = 'org:owner';
+        }
           
         console.log('UserManagementSection - Assigned current_role:', current_role);
         

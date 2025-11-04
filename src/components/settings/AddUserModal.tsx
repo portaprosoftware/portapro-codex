@@ -52,12 +52,16 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({ open, onOpenChange }
         phone: data.phone || undefined,
       };
       
-      await inviteUser.mutateAsync(inviteData);
+      const result = await inviteUser.mutateAsync(inviteData);
+      console.log('✅ Invite successful, closing modal:', result);
+      
+      // Only reset form and close modal on success
       form.reset();
       onOpenChange(false);
     } catch (error) {
       // Error handling is done in the hook
-      console.error('Failed to invite user:', error);
+      console.error('❌ Failed to invite user, keeping modal open:', error);
+      // Modal stays open so user can retry or fix the issue
     }
   };
 

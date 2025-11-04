@@ -57,14 +57,11 @@ export function EnhancedUserProfileCard({
   canDeleteUser
 }: EnhancedUserProfileCardProps) {
   const navigate = useNavigate();
-  const RoleIcon = roleIcons[user.current_role as keyof typeof roleIcons] || User;
+  
+  // Normalize legacy "owner" to "org:owner" for display
+  const normalizedRole = user.current_role === 'owner' ? 'org:owner' : user.current_role;
+  const RoleIcon = roleIcons[normalizedRole as keyof typeof roleIcons] || User;
   const initials = `${user.first_name?.[0] || ''}${user.last_name?.[0] || ''}`.toUpperCase();
-
-  // Debug logging
-  console.log('EnhancedUserProfileCard - User:', user.first_name, user.last_name);
-  console.log('EnhancedUserProfileCard - User role:', user.current_role);
-  console.log('EnhancedUserProfileCard - Is driver?', user.current_role === 'org:driver');
-  console.log('EnhancedUserProfileCard - Full user object:', user);
 
   return (
     <Card className={`h-full hover:shadow-lg transition-all duration-200 border-l-4 border-l-primary ${!user.is_active ? 'opacity-60' : ''}`}>
@@ -132,16 +129,16 @@ export function EnhancedUserProfileCard({
           <Badge 
             className={`text-white font-bold ${!user.is_active ? 'bg-gray-400' : ''}`}
             style={user.is_active ? { 
-              background: user.current_role === 'org:owner' ? 'linear-gradient(135deg, #8B5CF6, #A855F7)' :
-                         user.current_role === 'org:dispatcher' ? 'linear-gradient(135deg, #3B82F6, #2563EB)' :
-                         user.current_role === 'org:admin' ? 'linear-gradient(135deg, #10B981, #059669)' :
-                         user.current_role === 'org:driver' ? 'linear-gradient(135deg, #F59E0B, #D97706)' :
-                         user.current_role === 'org:customer' ? 'linear-gradient(135deg, #EF4444, #DC2626)' :
+              background: normalizedRole === 'org:owner' ? 'linear-gradient(135deg, #8B5CF6, #A855F7)' :
+                         normalizedRole === 'org:dispatcher' ? 'linear-gradient(135deg, #3B82F6, #2563EB)' :
+                         normalizedRole === 'org:admin' ? 'linear-gradient(135deg, #10B981, #059669)' :
+                         normalizedRole === 'org:driver' ? 'linear-gradient(135deg, #F59E0B, #D97706)' :
+                         normalizedRole === 'org:customer' ? 'linear-gradient(135deg, #EF4444, #DC2626)' :
                          'linear-gradient(135deg, #6B7280, #4B5563)'
             } : {}}
           >
             <RoleIcon className={`w-3 h-3 mr-1 ${!user.is_active ? 'text-gray-600' : ''}`} />
-            {roleLabels[user.current_role as keyof typeof roleLabels] || "No Role"}
+            {roleLabels[normalizedRole as keyof typeof roleLabels] || "No Role"}
           </Badge>
           
           <Badge 

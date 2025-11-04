@@ -60,10 +60,15 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Pass the role with org: prefix directly to Clerk
+    // Force org:owner as the only valid Clerk role (single-role org configuration)
+    const inputRole = role || '';
+    const clerkRole = 'org:owner';
+    console.log('org-invite: role mapping', { inputRole, clerkRole });
+
+    // Pass the normalized role to Clerk
     const result = await createClerkInvite(organizationId, {
       email_address: email,
-      role: role,
+      role: clerkRole,
     });
 
     if (!result.ok) {

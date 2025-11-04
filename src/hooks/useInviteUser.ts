@@ -16,13 +16,15 @@ interface InviteUserData {
 
 interface InviteUserResponse {
   success: boolean;
-  message: string;
+  message?: string;
   data?: {
-    clerkUserId: string;
-    invitationId: string;
-    email: string;
-    role: string;
-    emailSent: boolean;
+    id?: string;
+    email_address?: string;
+    email?: string;
+    role?: string;
+    role_name?: string;
+    organization_id?: string;
+    status?: string;
   };
   error?: string;
 }
@@ -59,31 +61,30 @@ export const useInviteUser = () => {
       }
 
       if (!data.success) {
-        throw new Error(data.error || 'Failed to invite user');
+        const errorMsg = data.error || data.detail?.body || 'Failed to invite user';
+        throw new Error(errorMsg);
       }
 
+      console.log('✅ org-invite success:', data);
       return data;
     },
     retry: (failureCount, error: any) => {
-      // Retry up to 3 times for transient 5xx errors
-      const isTransient = 
-        error?.name === 'FunctionsHttpError' ||
+      // Only retry on network/transient 5xx errors, not 400/404
+      const isNetworkError = 
         error?.name === 'FunctionsFetchError' || 
-        error?.message?.includes('Failed to send a request to the Edge Function') ||
-        error?.message?.includes('non-2xx status code');
+        error?.message?.includes('Failed to send a request to the Edge Function');
       
-      return isTransient && failureCount < 3;
+      const is5xxError = error?.context?.statusCode >= 500;
+      
+      return (isNetworkError || is5xxError) && failureCount < 3;
     },
     retryDelay: (attemptIndex) => {
       // Exponential backoff: 1s, 2s, 4s
       return Math.pow(2, attemptIndex) * 1000;
     },
     onSuccess: (data) => {
-      toast.success(
-        data.data?.emailSent 
-          ? `Invitation sent successfully to ${data.data.email}` 
-          : `User created successfully, but welcome email failed to send to ${data.data?.email}`
-      );
+      const email = data.data?.email_address || data.data?.email;
+      toast.success(`Invitation sent successfully to ${email}`);
       
       // Invalidate relevant queries to refresh the UI
       queryClient.invalidateQueries({ queryKey: ['users'] });
@@ -101,7 +102,16 @@ export const useInviteUser = () => {
           const body = typeof error.context.body === 'string' 
             ? JSON.parse(error.context.body) 
             : error.context.body;
-          errorMessage = body?.message || body?.error || errorMessage;
+          
+          // Extract Clerk error details if present
+          if (body?.detail?.body) {
+            const detail = typeof body.detail.body === 'string' 
+              ? JSON.parse(body.detail.body) 
+              : body.detail.body;
+            errorMessage = detail?.errors?.[0]?.long_message || detail?.errors?.[0]?.message || body.error || errorMessage;
+          } else {
+            errorMessage = body?.message || body?.error || errorMessage;
+          }
         } catch (e) {
           // Fall back to default message
         }
