@@ -111,7 +111,7 @@ const queryClient = useQueryClient();
           *,
           user_roles!inner(role)
         `)
-        .eq('user_roles.role', 'driver')
+        .eq('user_roles.role', 'org:driver' as any)
         .eq('is_active', true);
 
       if (error) throw error;

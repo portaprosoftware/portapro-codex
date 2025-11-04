@@ -38,27 +38,30 @@ const userFormSchema = z.object({
   last_name: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email address"),
   phone: z.string().optional(),
-  role: z.enum(["admin", "dispatcher", "driver"]),
+  role: z.enum(["org:admin", "org:dispatcher", "org:driver", "org:owner"]),
 });
 
 type UserFormData = z.infer<typeof userFormSchema>;
 
 const roleColors = {
-  admin: "bg-gradient-gold",
-  dispatcher: "bg-gradient-secondary", 
-  driver: "bg-gradient-green",
+  'org:admin': "bg-gradient-gold",
+  'org:dispatcher': "bg-gradient-secondary", 
+  'org:driver': "bg-gradient-green",
+  'org:owner': "bg-gradient-gold",
 };
 
 const roleLabels = {
-  admin: "Admin",
-  dispatcher: "Dispatcher",
-  driver: "Driver",
+  'org:admin': "Admin",
+  'org:dispatcher': "Dispatcher",
+  'org:driver': "Driver",
+  'org:owner': "Admin",
 };
 
 const roleIcons = {
-  admin: Crown,
-  dispatcher: Headphones,
-  driver: Truck,
+  'org:admin': Crown,
+  'org:dispatcher': Headphones,
+  'org:driver': Truck,
+  'org:owner': Crown,
 };
 
 // Define sort types
@@ -155,7 +158,7 @@ export function UserManagementSection() {
       last_name: "",
       email: "",
       phone: "",
-      role: "driver",
+      role: "org:driver",
     },
   });
 
@@ -198,7 +201,7 @@ export function UserManagementSection() {
         .from("user_roles")
         .insert({
           user_id: profileId,
-          role: data.role,
+          role: data.role as any, // Cast needed until Supabase types are regenerated with org: prefix
         });
 
       if (roleError) throw roleError;
@@ -390,8 +393,8 @@ export function UserManagementSection() {
             comparison = (a.last_name || '').localeCompare(b.last_name || '');
             break;
           case 'role':
-            // Sort order: admin → dispatcher → driver
-            const roleOrder = { admin: 1, dispatcher: 2, driver: 3 };
+            // Sort order: admin/owner → dispatcher → driver
+            const roleOrder = { 'org:admin': 1, 'org:owner': 1, 'org:dispatcher': 2, 'org:driver': 3 };
             const roleA = roleOrder[a.current_role as keyof typeof roleOrder] || 999;
             const roleB = roleOrder[b.current_role as keyof typeof roleOrder] || 999;
             comparison = roleA - roleB;

@@ -66,7 +66,7 @@ export const DriverSelectionModal: React.FC<DriverSelectionModalProps> = ({
           last_name,
           user_roles!inner(role)
         `)
-        .eq("user_roles.role", "driver")
+        .eq("user_roles.role", "org:driver" as any)
         .order("first_name");
 
       if (error) throw error;

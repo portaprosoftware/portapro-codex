@@ -39,7 +39,7 @@ export function DetailedDriverProfile() {
           driver_ppe_info(*)
         `)
         .eq('id', driverId)
-        .eq('user_roles.role', 'driver')
+        .eq('user_roles.role', 'org:driver' as any)
         .single();
 
       if (error) throw error;

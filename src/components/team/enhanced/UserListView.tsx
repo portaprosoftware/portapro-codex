@@ -51,19 +51,19 @@ interface UserListViewProps {
 }
 
 const roleIcons = {
-  owner: Crown,
-  dispatcher: Headphones,
-  driver: Truck,
-  customer: User,
-  admin: Shield,
+  'org:owner': Crown,
+  'org:dispatcher': Headphones,
+  'org:driver': Truck,
+  'org:customer': User,
+  'org:admin': Shield,
 };
 
 const roleLabels = {
-  owner: "Admin",
-  dispatcher: "Dispatcher",
-  driver: "Driver", 
-  customer: "Customer",
-  admin: "Admin",
+  'org:owner': "Admin",
+  'org:dispatcher': "Dispatcher",
+  'org:driver': "Driver", 
+  'org:customer': "Customer",
+  'org:admin': "Admin",
 };
 
 export function UserListView({ 
@@ -244,11 +244,11 @@ export function UserListView({
                   <Badge 
                     className={`text-white font-bold ${!user.is_active ? 'bg-gray-400' : ''}`}
                     style={user.is_active ? { 
-                      background: user.current_role === 'owner' ? 'linear-gradient(135deg, #8B5CF6, #A855F7)' :
-                                 user.current_role === 'dispatcher' ? 'linear-gradient(135deg, #3B82F6, #2563EB)' :
-                                 user.current_role === 'admin' ? 'linear-gradient(135deg, #F59E0B, #D97706)' :
-                                 user.current_role === 'driver' ? 'linear-gradient(135deg, #10B981, #059669)' :
-                                 user.current_role === 'customer' ? 'linear-gradient(135deg, #EF4444, #DC2626)' : 
+                      background: user.current_role === 'org:owner' ? 'linear-gradient(135deg, #8B5CF6, #A855F7)' :
+                                 user.current_role === 'org:dispatcher' ? 'linear-gradient(135deg, #3B82F6, #2563EB)' :
+                                 user.current_role === 'org:admin' ? 'linear-gradient(135deg, #F59E0B, #D97706)' :
+                                 user.current_role === 'org:driver' ? 'linear-gradient(135deg, #10B981, #059669)' :
+                                 user.current_role === 'org:customer' ? 'linear-gradient(135deg, #EF4444, #DC2626)' : 
                                  'linear-gradient(135deg, #6B7280, #4B5563)'
                     } : {}}
                   >
@@ -322,7 +322,7 @@ export function UserListView({
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      {user.current_role === 'driver' && (
+                      {user.current_role === 'org:driver' && (
                         <DropdownMenuItem asChild>
                           <Link to={`/team-management/driver/${user.id}`}>
                             <Truck className="w-4 h-4 mr-2" />

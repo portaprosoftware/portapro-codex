@@ -36,7 +36,7 @@ const Dashboard = () => {
   
   // Redirect drivers to the Driver app dashboard
   useEffect(() => {
-    if (role === 'driver') {
+    if (role === 'org:driver') {
       navigate('/driver', { replace: true });
     }
   }, [role, navigate]);
@@ -246,7 +246,7 @@ const Dashboard = () => {
             </p>
             {role && (
               <Badge className="bg-gradient-blue text-white font-bold text-xs">
-                Role: {role === 'owner' ? 'Admin' : role.charAt(0).toUpperCase() + role.slice(1)}
+                Role: {role === 'org:owner' ? 'Admin' : role.replace('org:', '').charAt(0).toUpperCase() + role.replace('org:', '').slice(1)}
               </Badge>
             )}
           </div>

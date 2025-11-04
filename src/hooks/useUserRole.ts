@@ -4,7 +4,7 @@ import { useUser } from '@clerk/clerk-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-export type AppRole = 'owner' | 'dispatcher' | 'admin' | 'driver' | 'viewer' | 'unknown';
+export type AppRole = 'org:owner' | 'org:dispatcher' | 'org:admin' | 'org:driver' | 'org:viewer' | 'unknown';
 
 export function useUserRole() {
   const { user, isLoaded } = useUser();
@@ -94,10 +94,10 @@ export function useUserRole() {
     hasLoggedRef.current = true;
   }
 
-  const isOwner = role === 'owner';
-  const isDispatcher = role === 'dispatcher';
-  const isAdmin = role === 'admin';
-  const isDriver = role === 'driver';
+  const isOwner = role === 'org:owner';
+  const isDispatcher = role === 'org:dispatcher';
+  const isAdmin = role === 'org:admin';
+  const isDriver = role === 'org:driver';
   
   const isLoggedIn = !!user;
   // TEMP OVERRIDE: unlock admin access while profile sync stabilizes

@@ -10,7 +10,7 @@ export function useDriverDirectory() {
       const { data, error } = await supabase
         .from("profiles")
         .select("id, first_name, last_name, email, clerk_user_id, user_roles!inner(role)")
-        .eq("user_roles.role", "driver");
+        .eq("user_roles.role", "org:driver" as any);
       if (error) throw error;
       // Ensure a consistent shape
       return (data || []).map((d: any) => ({

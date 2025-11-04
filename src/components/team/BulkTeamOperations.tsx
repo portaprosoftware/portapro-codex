@@ -26,11 +26,12 @@ interface TeamMember {
 
 const getRoleIcon = (role: string) => {
   switch (role) {
-    case 'admin':
+    case 'org:admin':
+    case 'org:owner':
       return Crown;
-    case 'dispatcher':
+    case 'org:dispatcher':
       return Headphones;
-    case 'driver':
+    case 'org:driver':
       return Truck;
     default:
       return Shield;
@@ -39,11 +40,12 @@ const getRoleIcon = (role: string) => {
 
 const getRoleColor = (role: string) => {
   switch (role) {
-    case 'admin':
+    case 'org:admin':
+    case 'org:owner':
       return { background: 'linear-gradient(135deg, #10B981, #059669)' }; // Green gradient
-    case 'dispatcher':
+    case 'org:dispatcher':
       return { background: 'linear-gradient(135deg, #3B82F6, #2563EB)' }; // Blue gradient
-    case 'driver':
+    case 'org:driver':
       return { background: 'linear-gradient(135deg, #F59E0B, #D97706)' }; // Orange gradient
     default:
       return { background: 'linear-gradient(135deg, #6B7280, #4B5563)' }; // Gray gradient
@@ -98,9 +100,10 @@ export function BulkTeamOperations() {
 
   // Group members by role for display
   const membersByRole = {
-    admin: allMembers.filter(m => m.role === 'admin'),
-    dispatcher: allMembers.filter(m => m.role === 'dispatcher'),
-    driver: allMembers.filter(m => m.role === 'driver')
+    'org:admin': allMembers.filter(m => m.role === 'org:admin'),
+    'org:dispatcher': allMembers.filter(m => m.role === 'org:dispatcher'),
+    'org:driver': allMembers.filter(m => m.role === 'org:driver'),
+    'org:owner': allMembers.filter(m => m.role === 'org:owner')
   };
 
   // Bulk reminder mutation
@@ -231,9 +234,10 @@ Bob,Johnson,bob.johnson@example.com,555-0125,admin,Main Office,2024-03-10`;
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Roles</SelectItem>
-                    <SelectItem value="admin">Admins</SelectItem>
-                    <SelectItem value="dispatcher">Dispatchers</SelectItem>
-                    <SelectItem value="driver">Drivers</SelectItem>
+                    <SelectItem value="org:admin">Admins</SelectItem>
+                    <SelectItem value="org:dispatcher">Dispatchers</SelectItem>
+                    <SelectItem value="org:driver">Drivers</SelectItem>
+                    <SelectItem value="org:owner">Owners</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

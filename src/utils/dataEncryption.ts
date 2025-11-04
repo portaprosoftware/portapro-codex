@@ -105,21 +105,21 @@ export class DataSecurity {
    */
   static shouldMaskData(
     dataType: 'license' | 'medical_card' | 'phone' | 'email',
-    userRole: 'admin' | 'dispatcher' | 'driver',
+    userRole: 'org:admin' | 'org:dispatcher' | 'org:driver',
     isOwnData: boolean
   ): boolean {
     // Admin can see everything
-    if (userRole === 'admin') {
+    if (userRole === 'org:admin') {
       return false;
     }
     
     // Drivers can see their own data
-    if (userRole === 'driver' && isOwnData) {
+    if (userRole === 'org:driver' && isOwnData) {
       return false;
     }
     
     // Dispatchers have limited access to sensitive data
-    if (userRole === 'dispatcher') {
+    if (userRole === 'org:dispatcher') {
       return ['license', 'medical_card'].includes(dataType);
     }
     

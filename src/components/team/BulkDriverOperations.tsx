@@ -48,7 +48,7 @@ export function BulkDriverOperations() {
           status,
           user_roles!inner(role)
         `)
-        .eq('user_roles.role', 'driver');
+        .eq('user_roles.role', 'org:driver' as any);
       
       if (error) throw error;
       return data.map(driver => ({

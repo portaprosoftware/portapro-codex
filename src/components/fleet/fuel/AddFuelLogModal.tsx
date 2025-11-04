@@ -152,7 +152,7 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
           last_name,
           user_roles!inner(role)
         `)
-        .eq('user_roles.role', 'driver')
+        .eq('user_roles.role', 'org:driver' as any)
         .eq('is_active', true)
         .order('first_name');
       

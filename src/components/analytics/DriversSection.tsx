@@ -35,7 +35,7 @@ export const DriversSection: React.FC<DriversSectionProps> = ({ dateRange }) => 
       const { data: allDrivers, error: driversError } = await supabase
         .from('user_roles')
         .select('user_id, clerk_user_id')
-        .eq('role', 'driver');
+        .eq('role', 'org:driver' as any);
 
       if (driversError) throw driversError;
 

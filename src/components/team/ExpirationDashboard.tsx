@@ -38,7 +38,7 @@ export function ExpirationDashboard({ className }: ExpirationDashboardProps) {
       const { data, error } = await supabase
         .from('profiles')
         .select('id, first_name, last_name, user_roles!inner(role)')
-        .eq('user_roles.role', 'driver');
+        .eq('user_roles.role', 'org:driver' as any);
       
       if (error) throw error;
       return data;
