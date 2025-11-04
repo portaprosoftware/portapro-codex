@@ -353,8 +353,8 @@ export function NotificationPreferencesSection() {
                     // Delivery Method Section - Visually Distinct
                     <div className="bg-gradient-to-br from-primary/5 via-primary/10 to-accent/5 p-6 rounded-xl border-2 border-primary/20">
                       <div className="flex items-center gap-3 mb-2">
-                        <div className="p-2 bg-primary/10 rounded-lg">
-                          <Bell className="h-5 w-5 text-primary" />
+                        <div className="p-2 bg-primary rounded-lg">
+                          <Bell className="h-5 w-5 text-white" />
                         </div>
                         <div>
                           <h3 className="text-lg font-bold text-foreground">
@@ -375,7 +375,7 @@ export function NotificationPreferencesSection() {
                               <FormItem className="flex items-center justify-between p-4 bg-background/80 backdrop-blur-sm border border-border/50 rounded-lg hover:border-primary/40 transition-colors">
                                  <div className="flex items-center gap-3">
                                   {item.icon && (
-                                    <div className="p-2.5 bg-gradient-to-br from-primary via-primary/90 to-accent rounded-lg shadow-md">
+                                    <div className="p-2.5 bg-primary rounded-lg shadow-md">
                                       <item.icon className="h-5 w-5 text-white" strokeWidth={2.5} />
                                     </div>
                                   )}
