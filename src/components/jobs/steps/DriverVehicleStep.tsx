@@ -7,6 +7,7 @@ import { StockVehicleSelectionModal } from '@/components/fleet/StockVehicleSelec
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock, Truck, User } from 'lucide-react';
+import { VehicleOOSWarning } from '@/components/dispatch/VehicleOOSWarning';
 
 interface AssignmentType {
   type: 'delivery' | 'pickup' | 'partial_pickup';
@@ -359,6 +360,9 @@ export const DriverVehicleStep: React.FC = () => {
                       <span className="text-sm text-muted-foreground">No vehicle assigned</span>
                     )}
                   </div>
+                  {assignmentData.vehicleId && (
+                    <VehicleOOSWarning vehicleId={assignmentData.vehicleId} />
+                  )}
                 </div>
               </CardContent>
             </Card>

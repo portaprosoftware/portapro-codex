@@ -40,6 +40,7 @@ import { TabSkeleton } from "./vehicle-tabs/TabSkeleton";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { DeleteConfirmationDialog } from '@/components/ui/delete-confirmation-dialog';
 import { useNavigate } from 'react-router-dom';
+import { OutOfServiceBanner } from './OutOfServiceBanner';
 
 // Import new lightweight summary components
 import { VehicleMaintenanceSummary } from './vehicle-tabs/VehicleMaintenanceSummary';
@@ -94,6 +95,7 @@ interface Vehicle {
   created_at: string;
   notes?: string;
   vehicle_image?: string;
+  out_of_service?: boolean;
 }
 
 interface VehicleDetailDrawerProps {
@@ -512,6 +514,15 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
         {/* Content */}
         <div className="flex-1 overflow-y-auto">
           <div className="p-4 sm:p-6">
+            {/* Out of Service Banner */}
+            {vehicle.out_of_service && (
+              <OutOfServiceBanner
+                vehicleId={vehicle.id}
+                vehicleName={`${vehicle.year} ${vehicle.make} ${vehicle.model} (${vehicle.license_plate})`}
+                onViewWorkOrders={() => handleTabChange('maintenance')}
+              />
+            )}
+
             <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4 sm:space-y-6">
               {/* Desktop Solid Tab Navigation */}
               <div className="hidden sm:block">

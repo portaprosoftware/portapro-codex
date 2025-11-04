@@ -3,7 +3,7 @@ import React from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Truck, MapPin, Calendar, Settings } from "lucide-react";
+import { Truck, MapPin, Calendar, Settings, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { getVehicleTypeDisplayName } from "@/lib/vehicleTypeUtils";
@@ -21,6 +21,7 @@ interface Vehicle {
   created_at: string;
   current_mileage?: number;
   vehicle_image?: string;
+  out_of_service?: boolean;
 }
 
 interface VehicleCardProps {
@@ -102,6 +103,12 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, viewMode, onM
           </div>
           
           <div className="flex items-center space-x-3">
+            {vehicle.out_of_service && (
+              <Badge variant="destructive" className="text-xs font-bold flex items-center gap-1">
+                <AlertTriangle className="h-3 w-3" />
+                Out of Service
+              </Badge>
+            )}
             <Badge className={cn("text-xs font-medium", getStatusClasses(vehicle.status))}>
               {getStatusDisplayText(vehicle.status)}
             </Badge>
@@ -156,9 +163,17 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, viewMode, onM
         
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium text-muted-foreground">Status:</span>
-          <Badge className={cn("text-xs font-medium", getStatusClasses(vehicle.status))}>
-            {getStatusDisplayText(vehicle.status)}
-          </Badge>
+          <div className="flex items-center gap-2">
+            {vehicle.out_of_service && (
+              <Badge variant="destructive" className="text-xs font-bold flex items-center gap-1">
+                <AlertTriangle className="h-3 w-3" />
+                OOS
+              </Badge>
+            )}
+            <Badge className={cn("text-xs font-medium", getStatusClasses(vehicle.status))}>
+              {getStatusDisplayText(vehicle.status)}
+            </Badge>
+          </div>
         </div>
       </div>
       
