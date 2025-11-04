@@ -64,6 +64,7 @@ import Unauthorized from './pages/Unauthorized';
 import { TechnicianDashboard } from './pages/TechnicianDashboard';
 import { TechnicianPhotoCapture } from './pages/TechnicianPhotoCapture';
 import TechnicianWorkOrderDetail from './pages/TechnicianWorkOrderDetail';
+import TechnicianWorkOrderComplete from './pages/TechnicianWorkOrderComplete';
 
 import Features from './pages/Features';
 import About from './pages/About';
@@ -220,6 +221,7 @@ const App = () => {
             <Route path="/technician" element={<ProtectedRoute><TechnicianDashboard /></ProtectedRoute>} />
             <Route path="/technician/photos/:workOrderId" element={<ProtectedRoute><TechnicianPhotoCapture /></ProtectedRoute>} />
             <Route path="/technician/details/:id" element={<ProtectedRoute><TechnicianWorkOrderDetail /></ProtectedRoute>} />
+            <Route path="/technician/complete/:id" element={<ProtectedRoute><TechnicianWorkOrderComplete /></ProtectedRoute>} />
 
             {/* Customer Portal Routes - Protected */}
             <Route path="/portal" element={<><SignedIn><TenantGuard><CustomerPortalPage /></TenantGuard></SignedIn><SignedOut><Auth /></SignedOut></>} />
