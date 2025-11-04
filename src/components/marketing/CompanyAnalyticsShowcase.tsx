@@ -20,8 +20,8 @@ export function CompanyAnalyticsShowcase() {
       <div className="container mx-auto max-w-7xl px-6">
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
           <CollapsibleTrigger className="w-full group">
-            <div className="mb-4 md:mb-6">
-              <div className="flex items-center justify-between">
+            <div className="mb-4 md:mb-6 text-center">
+              <div className="flex items-center justify-center gap-4">
                 <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight">
                   Company Analytics — Complete insights across your entire operation
                 </h2>
@@ -35,7 +35,7 @@ export function CompanyAnalyticsShowcase() {
                   <span className="text-sm text-muted-foreground">Click to expand</span>
                 </div>
               </div>
-              <p className="text-base md:text-lg text-muted-foreground max-w-3xl">
+              <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto mt-2">
                 Six comprehensive tabs with persistent date controls, 24+ KPIs and one-click reports.
               </p>
             </div>

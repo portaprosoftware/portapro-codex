@@ -65,9 +65,9 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
   return (
     <section id="customer-portal" className="py-8 bg-white">
       <div className="container mx-auto max-w-6xl px-6">
-        <header className="mb-8 space-y-2">
+        <header className="mb-8 space-y-2 text-center">
           <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Accounts & Portal</h2>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground max-w-3xl mx-auto">
             Manage customer accounts internally and give customers self-service access.
           </p>
         </header>

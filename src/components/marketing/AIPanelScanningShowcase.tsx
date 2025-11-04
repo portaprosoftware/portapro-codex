@@ -23,8 +23,8 @@ export const AIPanelScanningShowcase: React.FC = () => {
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="space-y-8">
       {/* Header */}
       <CollapsibleTrigger className="w-full group">
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
+        <div className="space-y-3 text-center">
+          <div className="flex items-center justify-center gap-4">
             <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Smart Panel Scanning</h2>
             <div className="flex items-center gap-2">
               <ChevronDown 
@@ -36,7 +36,7 @@ export const AIPanelScanningShowcase: React.FC = () => {
               <span className="text-sm text-muted-foreground">Click to expand</span>
             </div>
           </div>
-          <p className="text-muted-foreground text-lg max-w-2xl">Point, shoot, done. AI reads embossed plastic automatically.</p>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Point, shoot, done. AI reads embossed plastic automatically.</p>
         </div>
       </CollapsibleTrigger>
 

@@ -571,7 +571,7 @@ export const Landing: React.FC = () => {
       {/* Inventory & Supplies — Unified, Accurate, Effortless - White */}
       <section id="inventory" className="bg-white py-0">
         <div className="container mx-auto max-w-6xl px-[24px]">
-          <div className="mb-8">
+          <div className="mb-8 text-center">
             <h2 className="text-3xl lg:text-4xl font-bold text-foreground py-[18px]">Inventory & Supplies — Unified, Accurate, Effortless</h2>
             <p className="text-lg text-muted-foreground">Every unit has a dedicated tracking system for comprehensive inventory control and management.</p>
           </div>
@@ -918,9 +918,9 @@ export const Landing: React.FC = () => {
       {/* Fleet Management (includes Transport & Spill Compliance + DVIRs) - White */}
       <section id="fleet-management" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <div className="mb-8">
+          <div className="mb-8 text-center">
             <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Fleet Management & Compliance</h2>
-            <p className="text-lg text-muted-foreground">Complete vehicle tracking, maintenance, and compliance management</p>
+            <p className="text-lg text-muted-foreground mt-2">Complete vehicle tracking, maintenance, and compliance management</p>
           </div>
 
 
@@ -942,8 +942,8 @@ export const Landing: React.FC = () => {
           {/* Additional Fleet & Compliance Tools - Collapsible */}
           <Collapsible open={isFleetToolsOpen} onOpenChange={setIsFleetToolsOpen} className="mt-8">
             <CollapsibleTrigger className="w-full group">
-              <div className="mb-8">
-                <div className="flex items-center justify-between">
+              <div className="mb-8 text-center">
+                <div className="flex items-center justify-center gap-4">
                   <h3 className="text-2xl lg:text-3xl font-bold text-foreground">Additional Fleet & Compliance Tools</h3>
                   <div className="flex items-center gap-2">
                     <ChevronDown 
@@ -955,7 +955,7 @@ export const Landing: React.FC = () => {
                     <span className="text-sm text-muted-foreground">Click to expand</span>
                   </div>
                 </div>
-                <p className="text-base text-muted-foreground max-w-2xl mt-2">
+                <p className="text-base text-muted-foreground max-w-2xl mx-auto mt-2">
                   Comprehensive maintenance, fuel tracking, driver management, and compliance features
                 </p>
               </div>

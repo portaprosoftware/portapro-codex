@@ -14,8 +14,8 @@ export const ConsumablesShowcase: React.FC = () => {
       <div className="container mx-auto max-w-6xl px-4 md:px-6">
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
           <CollapsibleTrigger className="w-full mb-4 md:mb-8 group">
-            <div className="flex items-center justify-between">
-              <h2 className="text-3xl lg:text-4xl font-bold text-foreground text-left">
+            <div className="flex items-center justify-center gap-4">
+              <h2 className="text-3xl lg:text-4xl font-bold text-foreground text-center">
                 🧻 Consumables — Flexible & Transparent
               </h2>
               <div className="flex items-center gap-2">
