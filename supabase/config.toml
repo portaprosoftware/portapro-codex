@@ -50,3 +50,10 @@ verify_jwt = false
 
 [functions.trigger-comment-mention]
 verify_jwt = false
+
+[functions.check-invoice-reminders]
+verify_jwt = false
+
+[functions.check-maintenance-due]
+verify_jwt = false
+

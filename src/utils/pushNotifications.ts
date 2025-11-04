@@ -161,3 +161,175 @@ export async function sendNewMessageNotification(
     data: { fromUserName, type: 'new_message' },
   });
 }
+
+/**
+ * Helper function to send route schedule change notification
+ */
+export async function sendRouteScheduleChangeNotification(
+  userId: string,
+  changeType: string,
+  driverName: string,
+  jobNumber?: string
+) {
+  return sendPushNotification({
+    userId,
+    title: 'Route Schedule Changed',
+    body: `${changeType} for ${driverName}${jobNumber ? ` - Job ${jobNumber}` : ''}`,
+    notificationType: NotificationTypes.ROUTE_SCHEDULE_CHANGES,
+    url: '/jobs/dispatch',
+    data: { changeType, driverName, jobNumber, type: 'route_schedule_change' },
+  });
+}
+
+/**
+ * Helper function to send quote update notification
+ */
+export async function sendQuoteUpdateNotification(
+  userId: string,
+  quoteNumber: string,
+  status: string,
+  customerName: string
+) {
+  return sendPushNotification({
+    userId,
+    title: 'Quote Update',
+    body: `Quote ${quoteNumber} for ${customerName} is now ${status}`,
+    notificationType: NotificationTypes.CUSTOMER_UPDATES,
+    url: '/quotes',
+    data: { quoteNumber, status, customerName, type: 'quote_update' },
+  });
+}
+
+/**
+ * Helper function to send payment confirmation notification
+ */
+export async function sendPaymentConfirmationNotification(
+  userId: string,
+  amount: number,
+  customerName: string,
+  invoiceNumber?: string
+) {
+  return sendPushNotification({
+    userId,
+    title: 'Payment Received',
+    body: `$${amount.toFixed(2)} payment from ${customerName}${invoiceNumber ? ` for ${invoiceNumber}` : ''}`,
+    notificationType: NotificationTypes.PAYMENT_CONFIRMATIONS,
+    url: '/invoices',
+    data: { amount, customerName, invoiceNumber, type: 'payment_confirmation' },
+  });
+}
+
+/**
+ * Helper function to send low stock alert notification
+ */
+export async function sendLowStockAlertNotification(
+  userId: string,
+  itemName: string,
+  currentStock: number,
+  minStock: number
+) {
+  return sendPushNotification({
+    userId,
+    title: 'Low Stock Alert',
+    body: `${itemName} is low: ${currentStock} units (minimum ${minStock})`,
+    notificationType: NotificationTypes.INVENTORY_ALERTS,
+    url: '/inventory',
+    data: { itemName, currentStock, minStock, type: 'low_stock_alert' },
+  });
+}
+
+/**
+ * Helper function to send asset movement notification
+ */
+export async function sendAssetMovementNotification(
+  userId: string,
+  assetName: string,
+  movementType: string,
+  location?: string
+) {
+  return sendPushNotification({
+    userId,
+    title: 'Asset Movement',
+    body: `${assetName} has been ${movementType}${location ? ` at ${location}` : ''}`,
+    notificationType: NotificationTypes.DISPATCH_UPDATES,
+    url: '/inventory',
+    data: { assetName, movementType, location, type: 'asset_movement' },
+  });
+}
+
+/**
+ * Helper function to send vehicle status change notification
+ */
+export async function sendVehicleStatusChangeNotification(
+  userId: string,
+  vehicleName: string,
+  newStatus: string,
+  reason?: string
+) {
+  return sendPushNotification({
+    userId,
+    title: 'Vehicle Status Update',
+    body: `${vehicleName} is now ${newStatus}${reason ? ` - ${reason}` : ''}`,
+    notificationType: NotificationTypes.MAINTENANCE_ALERTS,
+    url: '/fleet',
+    data: { vehicleName, newStatus, reason, type: 'vehicle_status_change' },
+  });
+}
+
+/**
+ * Helper function to send driver check-in notification
+ */
+export async function sendDriverCheckInNotification(
+  userId: string,
+  driverName: string,
+  checkinType: string,
+  jobNumber?: string
+) {
+  return sendPushNotification({
+    userId,
+    title: 'Driver Check-In',
+    body: `${driverName} - ${checkinType}${jobNumber ? ` for Job ${jobNumber}` : ''}`,
+    notificationType: NotificationTypes.DISPATCH_UPDATES,
+    url: '/jobs/dispatch',
+    data: { driverName, checkinType, jobNumber, type: 'driver_checkin' },
+  });
+}
+
+/**
+ * Helper function to send new team member notification
+ */
+export async function sendNewTeamMemberNotification(
+  userId: string,
+  newMemberName: string,
+  role: string
+) {
+  return sendPushNotification({
+    userId,
+    title: 'New Team Member',
+    body: `${newMemberName} has joined as ${role}`,
+    notificationType: NotificationTypes.SYSTEM_UPDATES,
+    url: '/settings/team',
+    data: { newMemberName, role, type: 'new_team_member' },
+  });
+}
+
+/**
+ * Helper function to send comment mention notification
+ */
+export async function sendCommentMentionNotification(
+  userId: string,
+  mentionerName: string,
+  entityType: string,
+  commentPreview: string,
+  entityUrl?: string
+) {
+  return sendPushNotification({
+    userId,
+    title: `${mentionerName} mentioned you`,
+    body: `In ${entityType}: ${commentPreview}`,
+    notificationType: NotificationTypes.NEW_MESSAGES,
+    url: entityUrl || '/dashboard',
+    data: { mentionerName, entityType, commentPreview, type: 'comment_mention' },
+  });
+}
+
