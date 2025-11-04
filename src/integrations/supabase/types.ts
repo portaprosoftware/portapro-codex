@@ -6474,161 +6474,110 @@ export type Database = {
         Row: {
           asset_movement_email: boolean | null
           asset_movement_push: boolean | null
-          asset_movement_sms: boolean | null
           comment_mentions_email: boolean | null
           comment_mentions_push: boolean | null
-          comment_mentions_sms: boolean | null
           created_at: string | null
           driver_check_ins_email: boolean | null
           driver_check_ins_push: boolean | null
-          driver_check_ins_sms: boolean | null
           email: string | null
           id: string
           invoice_reminders_email: boolean | null
           invoice_reminders_push: boolean | null
-          invoice_reminders_sms: boolean | null
           job_assignments_push: boolean | null
           job_status_change_email: boolean | null
-          job_status_change_sms: boolean | null
           low_stock_alerts_email: boolean | null
           low_stock_alerts_push: boolean | null
-          low_stock_alerts_sms: boolean | null
           maintenance_alerts_push: boolean | null
           maintenance_email_7_day: boolean | null
           maintenance_email_day_of: boolean | null
           maintenance_mileage_email: boolean | null
-          maintenance_mileage_sms: boolean | null
-          maintenance_sms_7_day: boolean | null
-          maintenance_sms_day_of: boolean | null
           new_job_assigned_email: boolean | null
-          new_job_assigned_sms: boolean | null
           new_team_members_email: boolean | null
           new_team_members_push: boolean | null
-          new_team_members_sms: boolean | null
           overdue_job_email: boolean | null
           overdue_job_push: boolean | null
-          overdue_job_sms: boolean | null
           payment_confirmations_email: boolean | null
           payment_confirmations_push: boolean | null
-          payment_confirmations_sms: boolean | null
-          phone_number: string | null
           quote_invoice_email: boolean | null
-          quote_invoice_sms: boolean | null
           quote_updates_push: boolean | null
           route_schedule_changes_email: boolean | null
           route_schedule_changes_push: boolean | null
-          route_schedule_changes_sms: boolean | null
           updated_at: string | null
           user_id: string
           vehicle_status_changes_email: boolean | null
           vehicle_status_changes_push: boolean | null
-          vehicle_status_changes_sms: boolean | null
         }
         Insert: {
           asset_movement_email?: boolean | null
           asset_movement_push?: boolean | null
-          asset_movement_sms?: boolean | null
           comment_mentions_email?: boolean | null
           comment_mentions_push?: boolean | null
-          comment_mentions_sms?: boolean | null
           created_at?: string | null
           driver_check_ins_email?: boolean | null
           driver_check_ins_push?: boolean | null
-          driver_check_ins_sms?: boolean | null
           email?: string | null
           id?: string
           invoice_reminders_email?: boolean | null
           invoice_reminders_push?: boolean | null
-          invoice_reminders_sms?: boolean | null
           job_assignments_push?: boolean | null
           job_status_change_email?: boolean | null
-          job_status_change_sms?: boolean | null
           low_stock_alerts_email?: boolean | null
           low_stock_alerts_push?: boolean | null
-          low_stock_alerts_sms?: boolean | null
           maintenance_alerts_push?: boolean | null
           maintenance_email_7_day?: boolean | null
           maintenance_email_day_of?: boolean | null
           maintenance_mileage_email?: boolean | null
-          maintenance_mileage_sms?: boolean | null
-          maintenance_sms_7_day?: boolean | null
-          maintenance_sms_day_of?: boolean | null
           new_job_assigned_email?: boolean | null
-          new_job_assigned_sms?: boolean | null
           new_team_members_email?: boolean | null
           new_team_members_push?: boolean | null
-          new_team_members_sms?: boolean | null
           overdue_job_email?: boolean | null
           overdue_job_push?: boolean | null
-          overdue_job_sms?: boolean | null
           payment_confirmations_email?: boolean | null
           payment_confirmations_push?: boolean | null
-          payment_confirmations_sms?: boolean | null
-          phone_number?: string | null
           quote_invoice_email?: boolean | null
-          quote_invoice_sms?: boolean | null
           quote_updates_push?: boolean | null
           route_schedule_changes_email?: boolean | null
           route_schedule_changes_push?: boolean | null
-          route_schedule_changes_sms?: boolean | null
           updated_at?: string | null
           user_id: string
           vehicle_status_changes_email?: boolean | null
           vehicle_status_changes_push?: boolean | null
-          vehicle_status_changes_sms?: boolean | null
         }
         Update: {
           asset_movement_email?: boolean | null
           asset_movement_push?: boolean | null
-          asset_movement_sms?: boolean | null
           comment_mentions_email?: boolean | null
           comment_mentions_push?: boolean | null
-          comment_mentions_sms?: boolean | null
           created_at?: string | null
           driver_check_ins_email?: boolean | null
           driver_check_ins_push?: boolean | null
-          driver_check_ins_sms?: boolean | null
           email?: string | null
           id?: string
           invoice_reminders_email?: boolean | null
           invoice_reminders_push?: boolean | null
-          invoice_reminders_sms?: boolean | null
           job_assignments_push?: boolean | null
           job_status_change_email?: boolean | null
-          job_status_change_sms?: boolean | null
           low_stock_alerts_email?: boolean | null
           low_stock_alerts_push?: boolean | null
-          low_stock_alerts_sms?: boolean | null
           maintenance_alerts_push?: boolean | null
           maintenance_email_7_day?: boolean | null
           maintenance_email_day_of?: boolean | null
           maintenance_mileage_email?: boolean | null
-          maintenance_mileage_sms?: boolean | null
-          maintenance_sms_7_day?: boolean | null
-          maintenance_sms_day_of?: boolean | null
           new_job_assigned_email?: boolean | null
-          new_job_assigned_sms?: boolean | null
           new_team_members_email?: boolean | null
           new_team_members_push?: boolean | null
-          new_team_members_sms?: boolean | null
           overdue_job_email?: boolean | null
           overdue_job_push?: boolean | null
-          overdue_job_sms?: boolean | null
           payment_confirmations_email?: boolean | null
           payment_confirmations_push?: boolean | null
-          payment_confirmations_sms?: boolean | null
-          phone_number?: string | null
           quote_invoice_email?: boolean | null
-          quote_invoice_sms?: boolean | null
           quote_updates_push?: boolean | null
           route_schedule_changes_email?: boolean | null
           route_schedule_changes_push?: boolean | null
-          route_schedule_changes_sms?: boolean | null
           updated_at?: string | null
           user_id?: string
           vehicle_status_changes_email?: boolean | null
           vehicle_status_changes_push?: boolean | null
-          vehicle_status_changes_sms?: boolean | null
         }
         Relationships: []
       }
