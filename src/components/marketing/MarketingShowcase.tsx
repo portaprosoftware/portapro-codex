@@ -41,13 +41,13 @@ export const MarketingShowcase: React.FC = () => {
               <div className="flex items-center justify-center gap-4">
                 <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">Marketing</h2>
                 <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">Expand/Collapse</span>
                   <ChevronDown 
                     className={cn(
                       "w-8 h-8 text-primary transition-transform duration-300 ease-in-out",
                       isOpen && "rotate-180"
                     )}
                   />
-                  <span className="text-sm text-muted-foreground">Click to expand</span>
                 </div>
               </div>
               <p className="text-sm sm:text-base text-muted-foreground">

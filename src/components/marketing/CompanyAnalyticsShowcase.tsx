@@ -26,13 +26,13 @@ export function CompanyAnalyticsShowcase() {
                   Company Analytics — Complete insights across your entire operation
                 </h2>
                 <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">Expand/Collapse</span>
                   <ChevronDown 
                     className={cn(
                       "w-8 h-8 text-primary transition-transform duration-300 ease-in-out",
                       isOpen && "rotate-180"
                     )}
                   />
-                  <span className="text-sm text-muted-foreground">Click to expand</span>
                 </div>
               </div>
               <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto mt-2">
