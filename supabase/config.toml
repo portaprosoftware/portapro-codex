@@ -57,3 +57,7 @@ verify_jwt = false
 [functions.check-maintenance-due]
 verify_jwt = false
 
+[functions.send-test-notification]
+verify_jwt = false
+
+

@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useUserRole } from "@/hooks/useUserRole";
 import { PushSubscriptionCard } from "./PushSubscriptionCard";
+import { NotificationTestingCard } from "./NotificationTestingCard";
 
 const notificationSchema = z.object({
   // General - Delivery Methods
@@ -299,6 +300,9 @@ export function NotificationPreferencesSection() {
     <div className="space-y-6">
       {/* Push Subscription Management */}
       <PushSubscriptionCard />
+
+      {/* Notification Testing */}
+      <NotificationTestingCard />
 
       {/* Contact Information */}
       <Card>
