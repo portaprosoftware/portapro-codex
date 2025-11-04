@@ -97,15 +97,15 @@ const managementFeatures = [{
   icon: Truck,
   href: "#fleet-management"
 }, {
-  title: "Team Management",
-  description: "Schedule crews, track time, and manage roles and permissions.",
-  icon: Users,
-  href: "#team-management"
-}, {
   title: "Accounts & Portals",
   description: "Manage customer accounts internally and give customers self-service access.",
   icon: Users,
   href: "#customer-portal"
+}, {
+  title: "Team Management",
+  description: "Schedule crews, track time, and manage roles and permissions.",
+  icon: Users,
+  href: "#team-management"
 }, {
   title: "Company Analytics",
   description: "Complete insights across your entire operation with 6 tabs, 24+ KPIs, and one-click reports.",
