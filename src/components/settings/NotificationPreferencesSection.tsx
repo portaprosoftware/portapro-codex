@@ -8,7 +8,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormDescription } fr
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Bell, Save, Phone, Mail, MessageSquare, Send } from "lucide-react";
+import { Bell, Save, Phone, Mail, MessageSquare, Vibrate } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -63,7 +63,7 @@ const notificationCategories = [
     items: [
       { key: "email_notifications", label: "Email Notifications", description: "Receive notifications via email", icon: Mail },
       { key: "sms_notifications", label: "SMS Notifications", description: "Receive notifications via text message", icon: MessageSquare },
-      { key: "push_notifications", label: "Push Notifications", description: "Receive browser push notifications", icon: Send },
+      { key: "push_notifications", label: "Push Notifications", description: "Receive browser push notifications", icon: Vibrate },
     ]
   },
   {
@@ -373,10 +373,10 @@ export function NotificationPreferencesSection() {
                             name={item.key as keyof NotificationFormData}
                             render={({ field }) => (
                               <FormItem className="flex items-center justify-between p-4 bg-background/80 backdrop-blur-sm border border-border/50 rounded-lg hover:border-primary/40 transition-colors">
-                                <div className="flex items-center gap-3">
+                                 <div className="flex items-center gap-3">
                                   {item.icon && (
-                                    <div className="p-2 bg-primary/10 rounded-md">
-                                      <item.icon className="h-4 w-4 text-primary" />
+                                    <div className="p-2.5 bg-gradient-to-br from-primary via-primary/90 to-accent rounded-lg shadow-md">
+                                      <item.icon className="h-5 w-5 text-white" strokeWidth={2.5} />
                                     </div>
                                   )}
                                   <div className="space-y-0.5">
