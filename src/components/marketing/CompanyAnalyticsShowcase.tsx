@@ -24,7 +24,7 @@ export function CompanyAnalyticsShowcase() {
               <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight">
                 Analytics—Insights across your entire operation
               </h2>
-              <p className="text-base md:text-lg text-muted-foreground max-w-3xl text-left mx-auto">
+              <p className="text-base md:text-lg text-muted-foreground max-w-3xl text-left md:text-center mx-auto">
                 Six comprehensive tabs with persistent date controls, 24+ KPIs and one-click reports.
               </p>
               <div className="flex items-center justify-center gap-2 mt-4">

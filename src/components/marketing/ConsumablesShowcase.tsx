@@ -18,7 +18,7 @@ export const ConsumablesShowcase: React.FC = () => {
               <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
                 🧻 Consumables — Flexible & Transparent
               </h2>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              <p className="text-muted-foreground text-lg max-w-2xl mx-auto text-left md:text-center">
                 Bill for toilet paper, hand sanitizer, deodorizer, and more — your way.
               </p>
               <div className="flex items-center justify-center gap-2 mt-4">

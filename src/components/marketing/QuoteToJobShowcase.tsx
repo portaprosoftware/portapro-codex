@@ -15,7 +15,7 @@ export const QuoteToJobShowcase: React.FC = () => {
       <CollapsibleTrigger className="w-full group">
         <div className="space-y-3 px-4 text-center">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">Quote → Deposit → Job → Invoice, in one flow</h2>
-          <p className="text-muted-foreground text-base sm:text-lg max-w-3xl text-left mx-auto">
+          <p className="text-muted-foreground text-base sm:text-lg max-w-3xl text-left md:text-center mx-auto">
             Build a quote, send it to your customer, collect a deposit with Stripe, and auto-create the job with schedule and invoice.
           </p>
           <div className="flex items-center justify-center gap-2 mt-4">

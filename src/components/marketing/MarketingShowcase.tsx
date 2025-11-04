@@ -39,7 +39,7 @@ export const MarketingShowcase: React.FC = () => {
           <CollapsibleTrigger className="w-full group">
             <header className="mb-6 sm:mb-8 space-y-3 text-center">
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">Marketing</h2>
-              <p className="text-sm sm:text-base text-muted-foreground text-left max-w-3xl mx-auto">
+              <p className="text-sm sm:text-base text-muted-foreground text-left md:text-center max-w-3xl mx-auto">
                 Create, target, schedule, and measure. Unlimited texts + emails <span className="font-bold">included</span>. No hidden fees.
               </p>
               <div className="flex flex-wrap gap-2 pt-1 justify-center">

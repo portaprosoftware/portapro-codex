@@ -436,7 +436,7 @@ export const TeamManagementShowcase: React.FC = () => {
           <CollapsibleTrigger className="w-full group">
             <div className="mb-8 space-y-3 text-center">
               <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Team Management & Scheduling</h2>
-              <p className="text-lg text-muted-foreground text-left max-w-3xl mx-auto">Everything you need to manage people, time, and compliance</p>
+              <p className="text-lg text-muted-foreground text-left md:text-center max-w-3xl mx-auto">Everything you need to manage people, time, and compliance</p>
               <div className="flex items-center justify-center gap-2 mt-4">
                 <span className="text-sm text-muted-foreground">Expand</span>
                 <ChevronDown 
