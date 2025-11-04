@@ -15,10 +15,14 @@ import { WorkOrderCalendarViewEnhanced } from "./WorkOrderCalendarViewEnhanced";
 import { WorkOrderAnalyticsDashboard } from "./analytics/WorkOrderAnalyticsDashboard";
 import { AddWorkOrderDrawer } from "./AddWorkOrderDrawer";
 import { WorkOrderDetailDrawer } from "./WorkOrderDetailDrawer";
+import { BulkActionsDialog } from "./BulkActionsDialog";
+import { BulkActionBar } from "./BulkActionBar";
 import { useToast } from "@/hooks/use-toast";
 import { WorkOrder } from "./types";
 import { canMoveToStatus, getStatusTransitionMessage } from "@/lib/workOrderRules";
-import { exportWorkOrdersToCSV, exportWorkOrderToPDF } from "@/lib/workOrderExport";
+import { exportWorkOrderToPDF } from "@/lib/workOrderExport";
+import { exportWorkOrdersToCSV } from "@/utils/workOrderExport";
+import { useBulkWorkOrderActions } from "@/hooks/workOrders/useBulkWorkOrderActions";
 import { triggerWorkOrderStatusChangeNotification } from "@/utils/notificationTriggers";
 import {
   DropdownMenu,
@@ -55,6 +59,16 @@ export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = (
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [overdueOnly, setOverdueOnly] = useState(false);
   const [oosOnly, setOosOnly] = useState(false);
+
+  // Selection state
+  const [selectedWorkOrderIds, setSelectedWorkOrderIds] = useState<string[]>([]);
+  const [bulkActionDialog, setBulkActionDialog] = useState<{
+    open: boolean;
+    action: 'status' | 'assign' | 'priority' | 'delete' | null;
+  }>({ open: false, action: null });
+
+  // Bulk actions hook
+  const { bulkStatusChange, bulkAssign, bulkPriorityChange, bulkDelete } = useBulkWorkOrderActions();
 
   // Fetch work orders with enhanced data
   const { data: workOrders, isLoading, refetch } = useQuery({
@@ -288,19 +302,78 @@ export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = (
     setOosOnly(false);
   };
 
-  const handleBulkAction = (action: string, workOrderIds: string[]) => {
-    console.log(`Bulk ${action} for work orders:`, workOrderIds);
-    // TODO: Implement bulk actions
-    toast({
-      title: "Bulk Action",
-      description: `${action} action will be implemented for ${workOrderIds.length} work orders`
-    });
+  // Bulk action handler
+  const handleBulkAction = (action: 'status' | 'assign' | 'priority' | 'delete' | 'export', workOrderIds: string[]) => {
+    setSelectedWorkOrderIds(workOrderIds);
+    
+    if (action === 'export') {
+      // Export immediately without dialog
+      const workOrdersToExport = (workOrders || []).filter(wo => workOrderIds.includes(wo.id));
+      exportWorkOrdersToCSV(workOrdersToExport, `work-orders-${new Date().toISOString().split('T')[0]}.csv`);
+      toast({
+        title: "Export complete",
+        description: `${workOrderIds.length} work orders exported to CSV`
+      });
+    } else {
+      // Show dialog for other actions
+      setBulkActionDialog({ open: true, action });
+    }
   };
 
-  const handleBulkAssign = () => {
-    console.log('Bulk assign');
-    // TODO: Implement bulk assignment
+  const handleBulkActionConfirm = async (value?: string) => {
+    const { action } = bulkActionDialog;
+    
+    try {
+      switch (action) {
+        case 'status':
+          if (value) {
+            await bulkStatusChange.mutateAsync({ 
+              workOrderIds: selectedWorkOrderIds, 
+              newStatus: value 
+            });
+          }
+          break;
+        
+        case 'assign':
+          if (value) {
+            await bulkAssign.mutateAsync({ 
+              workOrderIds: selectedWorkOrderIds, 
+              assigneeId: value 
+            });
+          }
+          break;
+        
+        case 'priority':
+          if (value) {
+            await bulkPriorityChange.mutateAsync({ 
+              workOrderIds: selectedWorkOrderIds, 
+              newPriority: value 
+            });
+          }
+          break;
+        
+        case 'delete':
+          await bulkDelete.mutateAsync({ workOrderIds: selectedWorkOrderIds });
+          break;
+      }
+      
+      // Clear selection and close dialog
+      setSelectedWorkOrderIds([]);
+      setBulkActionDialog({ open: false, action: null });
+    } catch (error) {
+      console.error('Bulk action error:', error);
+    }
   };
+
+  const handleClearSelection = () => {
+    setSelectedWorkOrderIds([]);
+  };
+
+  const isProcessingBulkAction = 
+    bulkStatusChange.isPending || 
+    bulkAssign.isPending || 
+    bulkPriorityChange.isPending || 
+    bulkDelete.isPending;
 
   const handleExport = async () => {
     if (!workOrders || workOrders.length === 0) {
@@ -391,7 +464,6 @@ export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = (
         onSortOrderChange={setSortOrder}
         activeFiltersCount={getActiveFiltersCount()}
         onClearFilters={handleClearFilters}
-        onBulkAssign={handleBulkAssign}
         onExport={handleExport}
         hideAssetTypeFilter={!!vehicleId}
       />
@@ -448,6 +520,9 @@ export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = (
           onEdit={handleEdit}
           onViewDetails={handleViewDetails}
           onStatusChange={handleStatusChange}
+          onBulkAction={handleBulkAction}
+          selectedWorkOrderIds={selectedWorkOrderIds}
+          onSelectionChange={setSelectedWorkOrderIds}
         />
       )}
 
@@ -475,6 +550,25 @@ export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = (
       {view === 'analytics' && (
         <WorkOrderAnalyticsDashboard />
       )}
+
+      {/* Bulk Action Bar */}
+      <BulkActionBar
+        selectedCount={selectedWorkOrderIds.length}
+        onAction={(action) => handleBulkAction(action, selectedWorkOrderIds)}
+        onClear={handleClearSelection}
+        isProcessing={isProcessingBulkAction}
+      />
+
+      {/* Bulk Actions Dialog */}
+      <BulkActionsDialog
+        open={bulkActionDialog.open}
+        onOpenChange={(open) => setBulkActionDialog({ open, action: null })}
+        action={bulkActionDialog.action}
+        selectedCount={selectedWorkOrderIds.length}
+        onConfirm={handleBulkActionConfirm}
+        isProcessing={isProcessingBulkAction}
+        technicians={[]}
+      />
 
       {/* Add Work Order Drawer */}
       <AddWorkOrderDrawer

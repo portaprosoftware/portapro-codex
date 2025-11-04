@@ -30,7 +30,6 @@ interface WorkOrderFiltersProps {
   onSortOrderChange: (value: 'asc' | 'desc') => void;
   activeFiltersCount: number;
   onClearFilters: () => void;
-  onBulkAssign: () => void;
   onExport: () => void;
   hideAssetTypeFilter?: boolean;
 }
@@ -58,7 +57,6 @@ export const WorkOrderFilters: React.FC<WorkOrderFiltersProps> = ({
   onSortOrderChange,
   activeFiltersCount,
   onClearFilters,
-  onBulkAssign,
   onExport,
   hideAssetTypeFilter = false
 }) => {
@@ -88,10 +86,6 @@ export const WorkOrderFilters: React.FC<WorkOrderFiltersProps> = ({
         </div>
 
         <div className="flex items-center gap-2 ml-auto">
-          <Button variant="outline" size="sm" onClick={onBulkAssign}>
-            <UserPlus className="h-4 w-4 mr-2" />
-            Bulk Assign
-          </Button>
           <Button variant="outline" size="sm" onClick={onExport}>
             <Download className="h-4 w-4 mr-2" />
             Export
