@@ -37,6 +37,7 @@ import { FleetManagementShowcase } from '@/components/marketing/FleetManagementS
 import { ConsolidatedFleetCard } from '@/components/marketing/ConsolidatedFleetCard';
 import { CompanyAnalyticsShowcase } from '@/components/marketing/CompanyAnalyticsShowcase';
 import { TeamManagementShowcase } from '@/components/marketing/TeamManagementShowcase';
+import { ScrollAnimationWrapper } from '@/components/ui/ScrollAnimationWrapper';
 import { AlertTriangle, Package, SoapDispenserDroplet, ClipboardCheck, Megaphone } from 'lucide-react';
 import { FeaturesMegaMenu } from '@/components/marketing/FeaturesMegaMenu';
 import { FeaturesSheet } from '@/components/marketing/FeaturesSheet';
@@ -612,7 +613,9 @@ export const Landing: React.FC = () => {
 
           {/* Interactive Inventory Demo */}
           <div className="mb-12">
-            <InventoryManagementShowcase />
+            <ScrollAnimationWrapper>
+              <InventoryManagementShowcase />
+            </ScrollAnimationWrapper>
           </div>
 
           {/* QR & Photo Scanning - Full Width Section */}
@@ -768,7 +771,9 @@ export const Landing: React.FC = () => {
       </div>
 
       {/* Services Hub - White */}
-      <ServicesHubShowcase />
+      <ScrollAnimationWrapper>
+        <ServicesHubShowcase />
+      </ScrollAnimationWrapper>
 
       {/* Section Divider */}
       <div className="py-3 bg-white">
@@ -778,7 +783,9 @@ export const Landing: React.FC = () => {
       </div>
 
       {/* Marketing Tools - White */}
-      <MarketingShowcase />
+      <ScrollAnimationWrapper>
+        <MarketingShowcase />
+      </ScrollAnimationWrapper>
 
       {/* Section Divider */}
       <div className="py-3 bg-white">
@@ -788,7 +795,9 @@ export const Landing: React.FC = () => {
       </div>
 
       {/* Consumables - White */}
-      <ConsumablesShowcase />
+      <ScrollAnimationWrapper>
+        <ConsumablesShowcase />
+      </ScrollAnimationWrapper>
 
       {/* Group 2: Core Features - Blue */}
       <div id="core-workflow-features" />
@@ -820,7 +829,9 @@ export const Landing: React.FC = () => {
       {/* Driver Mobile App - White */}
       <section id="mobile-app" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <DriverAppShowcase />
+          <ScrollAnimationWrapper>
+            <DriverAppShowcase />
+          </ScrollAnimationWrapper>
         </div>
       </section>
 
@@ -834,7 +845,9 @@ export const Landing: React.FC = () => {
       {/* Job Wizard Showcase - White */}
       <section id="job-wizard" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <SmartWizardShowcase />
+          <ScrollAnimationWrapper>
+            <SmartWizardShowcase />
+          </ScrollAnimationWrapper>
           
           {/* Jobs: Calendar, Dispatch, Drag-Drop & Map Section */}
           <div className="mt-6 sm:mt-8">
@@ -870,7 +883,9 @@ export const Landing: React.FC = () => {
       {/* Quote-to-Job Flow - White */}
       <section id="quotes" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <QuoteToJobShowcase />
+          <ScrollAnimationWrapper>
+            <QuoteToJobShowcase />
+          </ScrollAnimationWrapper>
         </div>
       </section>
 
@@ -884,7 +899,9 @@ export const Landing: React.FC = () => {
       {/* Smart AI Panel Scanning Section - White */}
       <section id="ai-scanning" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <AIPanelScanningShowcase />
+          <ScrollAnimationWrapper>
+            <AIPanelScanningShowcase />
+          </ScrollAnimationWrapper>
         </div>
       </section>
 
@@ -925,7 +942,9 @@ export const Landing: React.FC = () => {
 
 
           {/* Consolidated Fleet Management */}
-          <ConsolidatedFleetCard />
+          <ScrollAnimationWrapper>
+            <ConsolidatedFleetCard />
+          </ScrollAnimationWrapper>
 
           {/* Fleet Management Showcase - Full Width */}
           <div className="col-span-full mt-8">
@@ -935,7 +954,9 @@ export const Landing: React.FC = () => {
                 Interactive Demo: Click the tabs below to explore different vehicle management features
               </p>
             </div>
-            <FleetManagementShowcase />
+            <ScrollAnimationWrapper delay={100}>
+              <FleetManagementShowcase />
+            </ScrollAnimationWrapper>
           </div>
 
 
@@ -1119,7 +1140,9 @@ export const Landing: React.FC = () => {
       </div>
 
       {/* Customer Accounts & Portals - White */}
-      <CustomerDashboardPortalShowcase />
+      <ScrollAnimationWrapper>
+        <CustomerDashboardPortalShowcase />
+      </ScrollAnimationWrapper>
 
       {/* Section Divider */}
       <div className="py-4 bg-white">
@@ -1129,7 +1152,9 @@ export const Landing: React.FC = () => {
       </div>
 
      {/* Team Management - White */}
-      <TeamManagementShowcase />
+      <ScrollAnimationWrapper>
+        <TeamManagementShowcase />
+      </ScrollAnimationWrapper>
 
       {/* Section Divider */}
       <div className="py-4 bg-white">
@@ -1139,7 +1164,9 @@ export const Landing: React.FC = () => {
       </div>
 
       {/* Company Analytics - White */}
-      <CompanyAnalyticsShowcase />
+      <ScrollAnimationWrapper>
+        <CompanyAnalyticsShowcase />
+      </ScrollAnimationWrapper>
 
 
 
