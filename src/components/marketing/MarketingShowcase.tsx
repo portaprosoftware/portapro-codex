@@ -37,20 +37,9 @@ export const MarketingShowcase: React.FC = () => {
       <div className="container mx-auto max-w-6xl px-4 sm:px-6">
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
           <CollapsibleTrigger className="w-full group">
-            <header className="mb-6 sm:mb-8 space-y-2 text-center">
-              <div className="flex items-center justify-center gap-4">
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">Marketing</h2>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">Expand/Collapse</span>
-                  <ChevronDown 
-                    className={cn(
-                      "w-8 h-8 text-primary transition-transform duration-300 ease-in-out",
-                      isOpen && "rotate-180"
-                    )}
-                  />
-                </div>
-              </div>
-              <p className="text-sm sm:text-base text-muted-foreground text-left">
+            <header className="mb-6 sm:mb-8 space-y-3 text-center">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">Marketing</h2>
+              <p className="text-sm sm:text-base text-muted-foreground text-left max-w-3xl mx-auto">
                 Create, target, schedule, and measure. Unlimited texts + emails <span className="font-bold">included</span>. No hidden fees.
               </p>
               <div className="flex flex-wrap gap-2 pt-1 justify-center">
@@ -60,6 +49,15 @@ export const MarketingShowcase: React.FC = () => {
                 <span className="inline-flex items-center gap-2 rounded-md bg-secondary/10 text-secondary-foreground px-2 sm:px-3 py-1 text-xs font-medium">
                   Schedule ahead or send now • Works with Smart Segments
                 </span>
+              </div>
+              <div className="flex items-center justify-center gap-2 mt-4">
+                <span className="text-sm text-muted-foreground">Expand</span>
+                <ChevronDown 
+                  className={cn(
+                    "w-6 h-6 text-primary transition-transform duration-300 ease-in-out",
+                    isOpen && "rotate-180"
+                  )}
+                />
               </div>
             </header>
           </CollapsibleTrigger>

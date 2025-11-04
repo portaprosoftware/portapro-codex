@@ -434,20 +434,18 @@ export const TeamManagementShowcase: React.FC = () => {
       <div className="container mx-auto max-w-6xl px-6">
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
           <CollapsibleTrigger className="w-full group">
-            <div className="mb-8 text-center">
-              <div className="flex items-center justify-center gap-4">
-                <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Team Management & Scheduling</h2>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">Expand/Collapse</span>
-                  <ChevronDown 
-                    className={cn(
-                      "w-8 h-8 text-primary transition-transform duration-300 ease-in-out",
-                      isOpen && "rotate-180"
-                    )}
-                  />
-                </div>
+            <div className="mb-8 space-y-3 text-center">
+              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Team Management & Scheduling</h2>
+              <p className="text-lg text-muted-foreground text-left max-w-3xl mx-auto">Everything you need to manage people, time, and compliance</p>
+              <div className="flex items-center justify-center gap-2 mt-4">
+                <span className="text-sm text-muted-foreground">Expand</span>
+                <ChevronDown 
+                  className={cn(
+                    "w-6 h-6 text-primary transition-transform duration-300 ease-in-out",
+                    isOpen && "rotate-180"
+                  )}
+                />
               </div>
-              <p className="text-lg text-muted-foreground mt-2 text-left">Everything you need to manage people, time, and compliance</p>
             </div>
           </CollapsibleTrigger>
 

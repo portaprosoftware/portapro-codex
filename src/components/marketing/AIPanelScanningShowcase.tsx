@@ -24,19 +24,17 @@ export const AIPanelScanningShowcase: React.FC = () => {
       {/* Header */}
       <CollapsibleTrigger className="w-full group">
         <div className="space-y-3 text-center">
-          <div className="flex items-center justify-center gap-4">
-            <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Smart Panel Scanning</h2>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Expand/Collapse</span>
-              <ChevronDown 
-                className={cn(
-                  "w-8 h-8 text-primary transition-transform duration-300 ease-in-out",
-                  isOpen && "rotate-180"
-                )}
-              />
-            </div>
-          </div>
+          <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Smart Panel Scanning</h2>
           <p className="text-muted-foreground text-lg max-w-2xl text-left">Point, shoot, done. AI reads embossed plastic automatically.</p>
+          <div className="flex items-center justify-center gap-2 mt-4">
+            <span className="text-sm text-muted-foreground">Expand</span>
+            <ChevronDown 
+              className={cn(
+                "w-6 h-6 text-primary transition-transform duration-300 ease-in-out",
+                isOpen && "rotate-180"
+              )}
+            />
+          </div>
         </div>
       </CollapsibleTrigger>
 

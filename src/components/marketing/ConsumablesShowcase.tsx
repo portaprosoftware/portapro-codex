@@ -14,15 +14,18 @@ export const ConsumablesShowcase: React.FC = () => {
       <div className="container mx-auto max-w-6xl px-4 md:px-6">
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
           <CollapsibleTrigger className="w-full mb-4 md:mb-8 group">
-            <div className="flex items-center justify-center gap-4">
-              <h2 className="text-3xl lg:text-4xl font-bold text-foreground text-center">
+            <div className="space-y-3 text-center">
+              <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
                 🧻 Consumables — Flexible & Transparent
               </h2>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">Expand/Collapse</span>
+              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                Bill for toilet paper, hand sanitizer, deodorizer, and more — your way.
+              </p>
+              <div className="flex items-center justify-center gap-2 mt-4">
+                <span className="text-sm text-muted-foreground">Expand</span>
                 <ChevronDown 
                   className={cn(
-                    "w-8 h-8 text-primary transition-transform duration-300 ease-in-out",
+                    "w-6 h-6 text-primary transition-transform duration-300 ease-in-out",
                     isOpen && "rotate-180"
                   )}
                 />
@@ -36,12 +39,8 @@ export const ConsumablesShowcase: React.FC = () => {
               style={{ animationDelay: '100ms' }}
             >
           <div className="grid lg:grid-cols-2 gap-6 lg:gap-12 items-start">
-            {/* Left column - Description and Features list */}
+            {/* Left column - Features list */}
             <div className="space-y-4 md:space-y-6">
-              <p className="text-muted-foreground">
-                Bill for toilet paper, hand sanitizer, deodorizer, and more — your way.
-              </p>
-              
               <ul className="space-y-3 md:space-y-4">
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />

@@ -13,22 +13,20 @@ export const QuoteToJobShowcase: React.FC = () => {
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="space-y-6 sm:space-y-10 overflow-hidden">
       <CollapsibleTrigger className="w-full group">
-        <div className="space-y-2 px-4 text-center">
-          <div className="flex items-center justify-center gap-4">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">Quote → Deposit → Job → Invoice, in one flow</h2>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Expand/Collapse</span>
-              <ChevronDown 
-                className={cn(
-                  "w-8 h-8 text-primary transition-transform duration-300 ease-in-out",
-                  isOpen && "rotate-180"
-                )}
-              />
-            </div>
-          </div>
-          <p className="text-muted-foreground text-base sm:text-lg max-w-3xl text-left">
+        <div className="space-y-3 px-4 text-center">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">Quote → Deposit → Job → Invoice, in one flow</h2>
+          <p className="text-muted-foreground text-base sm:text-lg max-w-3xl text-left mx-auto">
             Build a quote, send it to your customer, collect a deposit with Stripe, and auto-create the job with schedule and invoice.
           </p>
+          <div className="flex items-center justify-center gap-2 mt-4">
+            <span className="text-sm text-muted-foreground">Expand</span>
+            <ChevronDown 
+              className={cn(
+                "w-6 h-6 text-primary transition-transform duration-300 ease-in-out",
+                isOpen && "rotate-180"
+              )}
+            />
+          </div>
         </div>
       </CollapsibleTrigger>
 

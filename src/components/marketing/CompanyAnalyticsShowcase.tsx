@@ -20,24 +20,22 @@ export function CompanyAnalyticsShowcase() {
       <div className="container mx-auto max-w-7xl px-6">
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
           <CollapsibleTrigger className="w-full group">
-            <div className="mb-4 md:mb-6 text-center">
-              <div className="flex items-center justify-center gap-4">
-                <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight">
-                  Analytics—Insights across your entire operation
-                </h2>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">Expand/Collapse</span>
-                  <ChevronDown 
-                    className={cn(
-                      "w-8 h-8 text-primary transition-transform duration-300 ease-in-out",
-                      isOpen && "rotate-180"
-                    )}
-                  />
-                </div>
-              </div>
-              <p className="text-base md:text-lg text-muted-foreground max-w-3xl text-left mt-2">
+            <div className="mb-4 md:mb-6 space-y-3 text-center">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight">
+                Analytics—Insights across your entire operation
+              </h2>
+              <p className="text-base md:text-lg text-muted-foreground max-w-3xl text-left mx-auto">
                 Six comprehensive tabs with persistent date controls, 24+ KPIs and one-click reports.
               </p>
+              <div className="flex items-center justify-center gap-2 mt-4">
+                <span className="text-sm text-muted-foreground">Expand</span>
+                <ChevronDown 
+                  className={cn(
+                    "w-6 h-6 text-primary transition-transform duration-300 ease-in-out",
+                    isOpen && "rotate-180"
+                  )}
+                />
+              </div>
             </div>
           </CollapsibleTrigger>
 
