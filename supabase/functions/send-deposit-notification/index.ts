@@ -9,6 +9,21 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Helper function to get company email sender information
+async function getCompanyEmailSender(supabase: any): Promise<{ from: string }> {
+  const { data: settings } = await supabase
+    .from('company_settings')
+    .select('support_email, company_email, company_name')
+    .single();
+
+  const email = settings?.support_email || settings?.company_email || 'onboarding@resend.dev';
+  const name = settings?.company_name || 'PortaPro';
+  
+  return {
+    from: `${name} <${email}>`
+  };
+}
+
 interface DepositNotificationRequest {
   to: string;
   customerName: string;
@@ -148,16 +163,10 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const { data: companySettings } = await supabase
-      .from('company_settings')
-      .select('support_email, company_email, company_name')
-      .single();
-
-    const fromEmail = companySettings?.support_email || companySettings?.company_email || 'onboarding@resend.dev';
-    const fromName = companySettings?.company_name || 'PortaPro';
+    const { from } = await getCompanyEmailSender(supabase);
 
     const { data, error } = await resend.emails.send({
-      from: `${fromName} <${fromEmail}>`,
+      from: from,
       to: [to],
       subject,
       html,
