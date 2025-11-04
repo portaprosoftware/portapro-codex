@@ -14,6 +14,8 @@ import { AutoCarousel } from '@/components/ui/AutoCarousel';
 import { SchedulingGraphic } from '@/components/ui/SchedulingGraphic';
 import { FloatingActionButton } from '@/components/ui/floating-action-button';
 import { StatCard } from '@/components/ui/StatCard';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { StickyDemoBar } from '@/components/marketing/StickyDemoBar';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useEnhancedDrivers, useAllEnhancedUsers } from '@/hooks/useEnhancedDrivers';
@@ -538,9 +540,22 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
+      {/* Main Accordion: Everything You Need to Run Your Business */}
+      <div id="all-features" className="bg-white py-8">
+        <div className="container mx-auto max-w-6xl px-6">
+          <Accordion type="single" collapsible defaultValue="">
+            <AccordionItem value="all-features" className="border-none">
+              <AccordionTrigger className="text-3xl font-bold py-6 hover:no-underline [&[data-state=open]>svg]:rotate-180">
+                <div className="flex items-center gap-3">
+                  <Zap className="w-7 h-7 text-primary" />
+                  <span>Everything You Need to Run Your Business</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pt-6">
+
       {/* Group 1: Operations Features - Blue */}
       <div id="operations-features" />
-      <section id="features" className="py-8 bg-gradient-blue">
+      <section id="features" className="py-8 bg-gradient-blue rounded-xl mb-6">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-white mb-2">Operations Features</h2>
@@ -1112,6 +1127,12 @@ export const Landing: React.FC = () => {
 
       {/* Company Analytics - White */}
       <CompanyAnalyticsShowcase />
+
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+      </div>
 
 
 
@@ -2498,6 +2519,9 @@ export const Landing: React.FC = () => {
         open={calendlyDrawerOpen}
         onOpenChange={setCalendlyDrawerOpen}
       />
+
+      {/* Sticky Demo Bar at Bottom */}
+      <StickyDemoBar onScheduleDemo={handleScheduleDemo} />
     </div>;
 };
 export default Landing;
