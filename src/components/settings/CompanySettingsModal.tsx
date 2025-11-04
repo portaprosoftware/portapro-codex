@@ -25,7 +25,6 @@ const companySettingsSchema = z.object({
   company_state: z.string().min(1, "State is required"),
   company_zipcode: z.string().min(1, "Zipcode is required"),
   company_timezone: z.string().min(1, "Timezone is required"),
-  support_email: z.string().email("Invalid email address").optional().or(z.literal("")),
   default_deposit_percentage: z.number()
     .min(0, "Percentage must be at least 0")
     .max(100, "Percentage cannot exceed 100")
@@ -127,7 +126,6 @@ export function CompanySettingsModal({ isOpen, onClose, companySettings }: Compa
       company_state: companySettings?.company_state || "",
       company_zipcode: companySettings?.company_zipcode || "",
       company_timezone: companySettings?.company_timezone || "America/New_York",
-      support_email: companySettings?.support_email || "",
       default_deposit_percentage: companySettings?.default_deposit_percentage || 25,
       default_delivery_fee: companySettings?.default_delivery_fee || 0,
       auto_enable_delivery_fee: companySettings?.auto_enable_delivery_fee || false,
@@ -147,7 +145,6 @@ export function CompanySettingsModal({ isOpen, onClose, companySettings }: Compa
         company_state: companySettings.company_state || "",
         company_zipcode: companySettings.company_zipcode || "",
         company_timezone: companySettings.company_timezone || "America/New_York",
-        support_email: companySettings.support_email || "",
         default_deposit_percentage: companySettings.default_deposit_percentage || 25,
         default_delivery_fee: companySettings.default_delivery_fee || 0,
         auto_enable_delivery_fee: companySettings.auto_enable_delivery_fee || false,
@@ -393,27 +390,6 @@ export function CompanySettingsModal({ isOpen, onClose, companySettings }: Compa
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="support_email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Support Email</FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <Mail className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                            <Input 
-                              placeholder="support@example.com" 
-                              className="pl-10"
-                              {...field} 
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
                   <FormField
                     control={form.control}
                     name="default_deposit_percentage"
