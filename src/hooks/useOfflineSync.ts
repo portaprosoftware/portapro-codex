@@ -10,6 +10,7 @@ import {
   markPhotoSynced,
   updateSyncMetadata,
   getCacheStats,
+  queueOperation,
 } from '@/utils/indexedDB';
 import { uploadWorkOrderPhoto } from '@/utils/photoUpload';
 import { useOnlineStatus } from './useOnlineStatus';
@@ -203,11 +204,22 @@ export function useOfflineSync() {
     return () => clearInterval(interval);
   }, [isOnline, performSync]);
 
+  // Backward compatibility wrapper for driver code
+  const addToQueue = useCallback(async (action: any) => {
+    await queueOperation(action.type, action);
+    await updateStats();
+  }, [updateStats]);
+
   return {
     isOnline,
     isSyncing,
     syncProgress,
     stats,
     performSync,
+    addToQueue, // For backward compatibility with driver code
+    queueCount: stats.queuedOperations, // For backward compatibility
+    queuedActions: [], // For backward compatibility (legacy)
+    syncQueuedActions: performSync, // For backward compatibility
+    clearQueue: async () => {}, // For backward compatibility (unused)
   };
 }
