@@ -219,7 +219,7 @@ export function CompanySettingsSection() {
             </Button>
           </div>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           <div className="flex items-start space-x-3">
             <Mail className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
             <div className="space-y-2">
@@ -229,6 +229,19 @@ export function CompanySettingsSection() {
               <p className="text-sm text-muted-foreground leading-relaxed">
                 This email address will be displayed to customers on all communications, including quote reminders, 
                 invoice notifications, and automated messages. Customers will see this as your official support contact.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start space-x-3">
+            <Phone className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+            <div className="space-y-2">
+              <p className="text-base font-semibold">
+                {companySettings?.sms_from_number || "Not set"}
+              </p>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                This is the Twilio phone number that all SMS notifications will be sent from. 
+                All customers will receive text messages from this number.
               </p>
             </div>
           </div>
