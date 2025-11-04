@@ -72,28 +72,37 @@ Deno.serve(async (req) => {
 
     console.log("📨 Creating Clerk invite for:", email, "org:", organizationId, "role:", role);
 
-    // Step 1: Create Clerk org invite via API
-    const clerkRes = await fetch("https://api.clerk.com/v1/organization_invitations", {
+    // Step 1: Create Clerk org invite via correct BAPI endpoint
+    const clerkRes = await fetch(`https://api.clerk.com/v1/organizations/${organizationId}/invitations`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${clerkSecretKey}`,
         "Content-Type": "application/json",
+        "Accept": "application/json",
       },
       body: JSON.stringify({
         email_address: email,
-        organization_id: organizationId,
         role,
       }),
     });
 
     if (!clerkRes.ok) {
-      const err = await clerkRes.json().catch(() => ({}));
-      console.error("❌ Clerk invite failed:", err);
+      const errorText = await clerkRes.text().catch(() => "Unable to read error body");
+      console.error("❌ Clerk invite failed:", {
+        status: clerkRes.status,
+        statusText: clerkRes.statusText,
+        body: errorText
+      });
+      
       return new Response(
         JSON.stringify({ 
           success: false, 
           error: "Failed to create Clerk invite",
-          detail: err 
+          detail: {
+            status: clerkRes.status,
+            statusText: clerkRes.statusText,
+            body: errorText
+          }
         }),
         { 
           status: 500, 
@@ -105,7 +114,7 @@ Deno.serve(async (req) => {
     const clerkData = await clerkRes.json();
     console.log("✅ Clerk invite created:", clerkData.id);
 
-    // Step 2: Log the invite to Supabase (optional - creates audit trail)
+    // Step 2: Log the invite to Supabase (creates audit trail)
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     
     const { error: dbError } = await supabase.from("org_invites").insert([
@@ -118,7 +127,6 @@ Deno.serve(async (req) => {
         status: "invited",
         clerk_invite_id: clerkData.id,
         environment: env || "prod",
-        created_at: new Date().toISOString(),
       },
     ]);
 
