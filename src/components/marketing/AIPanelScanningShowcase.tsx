@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StatCard } from '@/components/ui/StatCard';
-import { Camera, Eye, CheckCircle } from 'lucide-react';
+import { Camera, Eye, CheckCircle, ChevronDown } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { cn } from "@/lib/utils";
 
 export const AIPanelScanningShowcase: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  
   const kpis = [
     { title: 'Scans this month', value: 328, icon: Camera },
     { title: 'Success rate', value: '98%', icon: Eye },
@@ -16,12 +20,24 @@ export const AIPanelScanningShowcase: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-8">
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="space-y-8">
       {/* Header */}
-      <header className="text-center space-y-3">
-        <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Smart Panel Scanning</h2>
-        <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Point, shoot, done. AI reads embossed plastic automatically.</p>
-      </header>
+      <CollapsibleTrigger className="w-full group">
+        <div className="text-center space-y-3">
+          <div className="flex items-center justify-center gap-4">
+            <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Smart Panel Scanning</h2>
+            <ChevronDown 
+              className={cn(
+                "w-8 h-8 text-primary transition-transform duration-300 ease-in-out",
+                isOpen && "rotate-180"
+              )}
+            />
+          </div>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Point, shoot, done. AI reads embossed plastic automatically.</p>
+        </div>
+      </CollapsibleTrigger>
+
+      <CollapsibleContent className="transition-all duration-300 ease-in-out data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down space-y-8">
 
       {/* KPIs */}
       <div className="grid sm:grid-cols-2 gap-6">
@@ -129,6 +145,7 @@ export const AIPanelScanningShowcase: React.FC = () => {
           ))}
         </div>
       </div>
-    </div>
+      </CollapsibleContent>
+    </Collapsible>
   );
 };
