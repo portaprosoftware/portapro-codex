@@ -6479,6 +6479,7 @@ export type Database = {
           created_at: string | null
           driver_check_ins_email: boolean | null
           driver_check_ins_sms: boolean | null
+          email: string | null
           id: string
           invoice_reminders_email: boolean | null
           invoice_reminders_sms: boolean | null
@@ -6518,6 +6519,7 @@ export type Database = {
           created_at?: string | null
           driver_check_ins_email?: boolean | null
           driver_check_ins_sms?: boolean | null
+          email?: string | null
           id?: string
           invoice_reminders_email?: boolean | null
           invoice_reminders_sms?: boolean | null
@@ -6557,6 +6559,7 @@ export type Database = {
           created_at?: string | null
           driver_check_ins_email?: boolean | null
           driver_check_ins_sms?: boolean | null
+          email?: string | null
           id?: string
           invoice_reminders_email?: boolean | null
           invoice_reminders_sms?: boolean | null

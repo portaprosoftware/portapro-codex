@@ -18,6 +18,7 @@ const notificationSchema = z.object({
   email_notifications: z.boolean(),
   sms_notifications: z.boolean(),
   push_notifications: z.boolean(),
+  email: z.string().email("Invalid email address").optional().or(z.literal("")),
   phone_number: z.string().optional(),
   
   // Jobs & Operations
@@ -132,6 +133,7 @@ export function NotificationPreferencesSection() {
       email_notifications: true,
       sms_notifications: false,
       push_notifications: true,
+      email: "",
       phone_number: "",
       
       // Jobs & Operations
@@ -174,6 +176,7 @@ export function NotificationPreferencesSection() {
         email_notifications: preferences.job_status_change_email ?? true,
         sms_notifications: preferences.job_status_change_sms ?? false,
         push_notifications: true,
+        email: preferences.email || "",
         phone_number: preferences.phone_number || "",
         
         // Jobs & Operations
@@ -221,6 +224,7 @@ export function NotificationPreferencesSection() {
           user_id: user.id,
           job_status_change_email: data.email_notifications,
           job_status_change_sms: data.sms_notifications,
+          email: data.email || null,
           phone_number: data.phone_number || null,
           
           // Jobs & Operations
@@ -311,7 +315,30 @@ export function NotificationPreferencesSection() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email Address</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                        <Input 
+                          type="email"
+                          placeholder="your.email@example.com" 
+                          className="pl-10"
+                          {...field} 
+                        />
+                      </div>
+                    </FormControl>
+                    <FormDescription>
+                      Email address for email notifications
+                    </FormDescription>
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="phone_number"
