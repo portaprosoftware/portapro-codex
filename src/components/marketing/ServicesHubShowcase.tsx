@@ -27,7 +27,7 @@ export const ServicesHubShowcase: React.FC = () => {
       <div className="container mx-auto max-w-6xl px-4 sm:px-6">
         <header className="mb-8 space-y-2 text-center">
           <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Service & Reporting Hub</h2>
-          <p className="text-muted-foreground max-w-3xl text-left">
+          <p className="text-muted-foreground max-w-3xl mx-auto text-left md:text-center">
             Schedule, document, and prove completion. Auto-assign service report templates when specific services are scheduled; drivers complete in the field—offline ready.
           </p>
         </header>
