@@ -725,19 +725,7 @@ export const Landing: React.FC = () => {
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start gap-2">
                     <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Bulk, individual, and hybrid tracking in one system</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
                     <span className="text-foreground">Date-range availability by location</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">QR codes & embossed-plastic AI reading</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Maintenance work orders with technician & cost tracking</span>
                   </li>
                 </ul>
                 
