@@ -31,11 +31,13 @@ import {
   User,
   Truck,
   AlertCircle,
-  Clock
+  Clock,
+  Download
 } from "lucide-react";
 import { format, differenceInHours } from "date-fns";
 import { SignatureButton } from "./SignatureButton";
 import { WorkOrder } from "./types";
+import { exportWorkOrderToPDF } from "@/lib/workOrderExport";
 
 interface WorkOrderDetailDrawerProps {
   workOrderId: string | null;
