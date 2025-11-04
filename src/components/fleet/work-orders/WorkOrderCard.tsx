@@ -3,9 +3,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
-import { Calendar, DollarSign, AlertTriangle, User, MoreVertical } from "lucide-react";
+import { Calendar, DollarSign, AlertTriangle, User, MoreVertical, CheckCircle2, Circle } from "lucide-react";
 import { format, differenceInDays } from "date-fns";
 import { getStatusBadgeVariant } from "@/lib/statusBadgeUtils";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface WorkOrderCardProps {
   workOrder: {
@@ -21,6 +22,8 @@ interface WorkOrderCardProps {
     total_cost?: number;
     out_of_service?: boolean;
     description?: string;
+    technician_signature_id?: string | null;
+    reviewer_signature_id?: string | null;
   };
   onEdit: (workOrder: any) => void;
   onViewDetails: (workOrder: any) => void;
@@ -38,6 +41,10 @@ export const WorkOrderCard: React.FC<WorkOrderCardProps> = ({
     return differenceInDays(today, dueDate);
   };
 
+  const isOverdue = () => {
+    return getDaysOverdue() > 0 && workOrder.status !== 'completed';
+  };
+
   const getAgingBadge = () => {
     const daysOpen = differenceInDays(new Date(), new Date(workOrder.opened_at));
     if (daysOpen < 3) return null;
@@ -48,6 +55,13 @@ export const WorkOrderCard: React.FC<WorkOrderCardProps> = ({
       return <Badge variant="secondary" className="text-xs">Aging</Badge>;
     }
     return null;
+  };
+
+  const hasSignatures = () => {
+    return {
+      technician: !!workOrder.technician_signature_id,
+      reviewer: !!workOrder.reviewer_signature_id,
+    };
   };
 
   const getPriorityColor = () => {
@@ -71,6 +85,8 @@ export const WorkOrderCard: React.FC<WorkOrderCardProps> = ({
     return sourceLabels[workOrder.source as keyof typeof sourceLabels] || workOrder.source;
   };
 
+  const signatures = hasSignatures();
+
   return (
     <Card className="relative group hover:shadow-md transition-shadow">
       <CardContent className="p-4">
@@ -83,8 +99,8 @@ export const WorkOrderCard: React.FC<WorkOrderCardProps> = ({
         {/* Header */}
         <div className="flex items-start justify-between mb-3">
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <h3 className="font-semibold text-sm truncate">
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
+              <h3 className="font-semibold text-sm text-primary">
                 {workOrder.work_order_number}
               </h3>
               <Badge variant="outline" className="text-xs">
@@ -105,13 +121,20 @@ export const WorkOrderCard: React.FC<WorkOrderCardProps> = ({
         </div>
 
         {/* Status and flags */}
-        <div className="flex items-center gap-2 mb-3">
+        <div className="flex items-center gap-2 mb-3 flex-wrap">
           <Badge variant={getStatusBadgeVariant(workOrder.status as any)} className="text-xs">
             {workOrder.status.replace(/_/g, ' ')}
           </Badge>
           {workOrder.out_of_service && (
-            <Badge variant="destructive" className="text-xs">
-              OOS
+            <Badge variant="destructive" className="text-xs font-bold flex items-center gap-1">
+              <AlertTriangle className="h-3 w-3" />
+              OUT OF SERVICE
+            </Badge>
+          )}
+          {isOverdue() && (
+            <Badge variant="destructive" className="text-xs font-bold flex items-center gap-1 animate-pulse">
+              <AlertTriangle className="h-3 w-3" />
+              {getDaysOverdue()}d OVERDUE
             </Badge>
           )}
           {getAgingBadge()}
@@ -156,6 +179,51 @@ export const WorkOrderCard: React.FC<WorkOrderCardProps> = ({
             </div>
           )}
         </div>
+
+        {/* Signature indicators */}
+        {(signatures.technician || signatures.reviewer) && (
+          <div className="flex items-center gap-2 mb-3">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-1 text-xs">
+                    {signatures.technician ? (
+                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                    ) : (
+                      <Circle className="h-4 w-4 text-muted-foreground" />
+                    )}
+                    <span className={signatures.technician ? "text-green-600 font-medium" : "text-muted-foreground"}>
+                      Tech
+                    </span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Technician Signature {signatures.technician ? 'Completed' : 'Pending'}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-1 text-xs">
+                    {signatures.reviewer ? (
+                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                    ) : (
+                      <Circle className="h-4 w-4 text-muted-foreground" />
+                    )}
+                    <span className={signatures.reviewer ? "text-green-600 font-medium" : "text-muted-foreground"}>
+                      Review
+                    </span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Reviewer Signature {signatures.reviewer ? 'Completed' : 'Pending'}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        )}
 
         {/* Cost and actions */}
         <div className="flex items-center justify-between">

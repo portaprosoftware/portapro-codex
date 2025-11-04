@@ -17,6 +17,8 @@ interface WorkOrder {
   total_cost?: number;
   out_of_service?: boolean;
   description?: string;
+  technician_signature_id?: string | null;
+  reviewer_signature_id?: string | null;
 }
 
 interface WorkOrderKanbanBoardProps {
