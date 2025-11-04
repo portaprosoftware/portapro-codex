@@ -82,7 +82,7 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
         </div>
 
         {/* Before & After Comparison Table */}
-        <div className="mb-12">
+        <div className="mb-6">
           <Card className="rounded-2xl border border-border shadow-lg overflow-hidden">
             <CardContent className="p-0">
               <div className="grid lg:grid-cols-2">
@@ -197,9 +197,9 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
         </div>
 
         {/* Customer Portal Hero Section */}
-        <div className="mb-6">
+        <div className="mb-4">
           {/* Header Content - Full Width */}
-          <div className="text-center mb-4">
+          <div className="text-center mb-2">
             
             {/* Feature Bullets - Responsive Grid */}
             <div className="grid md:grid-cols-3 gap-4 md:gap-6 max-w-4xl mx-auto">
