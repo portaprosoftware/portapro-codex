@@ -24,34 +24,46 @@ const notificationSchema = z.object({
   // Jobs & Operations
   job_assignments_email: z.boolean(),
   job_assignments_sms: z.boolean(),
+  job_assignments_push: z.boolean(),
   route_schedule_changes_email: z.boolean(),
   route_schedule_changes_sms: z.boolean(),
+  route_schedule_changes_push: z.boolean(),
   maintenance_alerts_email: z.boolean(),
   maintenance_alerts_sms: z.boolean(),
+  maintenance_alerts_push: z.boolean(),
   
   // Financial
   quote_updates_email: z.boolean(),
   quote_updates_sms: z.boolean(),
+  quote_updates_push: z.boolean(),
   invoice_reminders_email: z.boolean(),
   invoice_reminders_sms: z.boolean(),
+  invoice_reminders_push: z.boolean(),
   payment_confirmations_email: z.boolean(),
   payment_confirmations_sms: z.boolean(),
+  payment_confirmations_push: z.boolean(),
   
   // Inventory & Fleet
   low_stock_alerts_email: z.boolean(),
   low_stock_alerts_sms: z.boolean(),
+  low_stock_alerts_push: z.boolean(),
   asset_movement_email: z.boolean(),
   asset_movement_sms: z.boolean(),
+  asset_movement_push: z.boolean(),
   vehicle_status_changes_email: z.boolean(),
   vehicle_status_changes_sms: z.boolean(),
+  vehicle_status_changes_push: z.boolean(),
   
   // Team & Communication
   driver_check_ins_email: z.boolean(),
   driver_check_ins_sms: z.boolean(),
+  driver_check_ins_push: z.boolean(),
   new_team_members_email: z.boolean(),
   new_team_members_sms: z.boolean(),
+  new_team_members_push: z.boolean(),
   comment_mentions_email: z.boolean(),
   comment_mentions_sms: z.boolean(),
+  comment_mentions_push: z.boolean(),
 });
 
 type NotificationFormData = z.infer<typeof notificationSchema>;
@@ -139,34 +151,46 @@ export function NotificationPreferencesSection() {
       // Jobs & Operations
       job_assignments_email: true,
       job_assignments_sms: false,
+      job_assignments_push: false,
       route_schedule_changes_email: true,
       route_schedule_changes_sms: false,
+      route_schedule_changes_push: false,
       maintenance_alerts_email: true,
       maintenance_alerts_sms: false,
+      maintenance_alerts_push: false,
       
       // Financial
       quote_updates_email: true,
       quote_updates_sms: false,
+      quote_updates_push: false,
       invoice_reminders_email: true,
       invoice_reminders_sms: false,
+      invoice_reminders_push: false,
       payment_confirmations_email: true,
       payment_confirmations_sms: false,
+      payment_confirmations_push: false,
       
       // Inventory & Fleet
       low_stock_alerts_email: true,
       low_stock_alerts_sms: false,
+      low_stock_alerts_push: false,
       asset_movement_email: true,
       asset_movement_sms: false,
+      asset_movement_push: false,
       vehicle_status_changes_email: true,
       vehicle_status_changes_sms: false,
+      vehicle_status_changes_push: false,
       
       // Team & Communication
       driver_check_ins_email: true,
       driver_check_ins_sms: false,
+      driver_check_ins_push: false,
       new_team_members_email: false,
       new_team_members_sms: false,
+      new_team_members_push: false,
       comment_mentions_email: true,
       comment_mentions_sms: false,
+      comment_mentions_push: false,
     },
   });
 
@@ -182,34 +206,46 @@ export function NotificationPreferencesSection() {
         // Jobs & Operations
         job_assignments_email: preferences.new_job_assigned_email ?? true,
         job_assignments_sms: preferences.new_job_assigned_sms ?? false,
+        job_assignments_push: preferences.job_assignments_push ?? false,
         route_schedule_changes_email: preferences.route_schedule_changes_email ?? true,
         route_schedule_changes_sms: preferences.route_schedule_changes_sms ?? false,
+        route_schedule_changes_push: preferences.route_schedule_changes_push ?? false,
         maintenance_alerts_email: preferences.maintenance_email_7_day ?? true,
         maintenance_alerts_sms: preferences.maintenance_sms_7_day ?? false,
+        maintenance_alerts_push: preferences.maintenance_alerts_push ?? false,
         
         // Financial
         quote_updates_email: preferences.quote_invoice_email ?? true,
         quote_updates_sms: preferences.quote_invoice_sms ?? false,
+        quote_updates_push: preferences.quote_updates_push ?? false,
         invoice_reminders_email: preferences.invoice_reminders_email ?? true,
         invoice_reminders_sms: preferences.invoice_reminders_sms ?? false,
+        invoice_reminders_push: preferences.invoice_reminders_push ?? false,
         payment_confirmations_email: preferences.payment_confirmations_email ?? true,
         payment_confirmations_sms: preferences.payment_confirmations_sms ?? false,
+        payment_confirmations_push: preferences.payment_confirmations_push ?? false,
         
         // Inventory & Fleet
         low_stock_alerts_email: preferences.low_stock_alerts_email ?? true,
         low_stock_alerts_sms: preferences.low_stock_alerts_sms ?? false,
+        low_stock_alerts_push: preferences.low_stock_alerts_push ?? false,
         asset_movement_email: preferences.asset_movement_email ?? true,
         asset_movement_sms: preferences.asset_movement_sms ?? false,
+        asset_movement_push: preferences.asset_movement_push ?? false,
         vehicle_status_changes_email: preferences.vehicle_status_changes_email ?? true,
         vehicle_status_changes_sms: preferences.vehicle_status_changes_sms ?? false,
+        vehicle_status_changes_push: preferences.vehicle_status_changes_push ?? false,
         
         // Team & Communication
         driver_check_ins_email: preferences.driver_check_ins_email ?? true,
         driver_check_ins_sms: preferences.driver_check_ins_sms ?? false,
+        driver_check_ins_push: preferences.driver_check_ins_push ?? false,
         new_team_members_email: preferences.new_team_members_email ?? false,
         new_team_members_sms: preferences.new_team_members_sms ?? false,
+        new_team_members_push: preferences.new_team_members_push ?? false,
         comment_mentions_email: preferences.comment_mentions_email ?? true,
         comment_mentions_sms: preferences.comment_mentions_sms ?? false,
+        comment_mentions_push: preferences.comment_mentions_push ?? false,
       });
     }
   }, [preferences, form]);
@@ -230,34 +266,46 @@ export function NotificationPreferencesSection() {
           // Jobs & Operations
           new_job_assigned_email: data.job_assignments_email,
           new_job_assigned_sms: data.job_assignments_sms,
+          job_assignments_push: data.job_assignments_push,
           route_schedule_changes_email: data.route_schedule_changes_email,
           route_schedule_changes_sms: data.route_schedule_changes_sms,
+          route_schedule_changes_push: data.route_schedule_changes_push,
           maintenance_email_7_day: data.maintenance_alerts_email,
           maintenance_sms_7_day: data.maintenance_alerts_sms,
+          maintenance_alerts_push: data.maintenance_alerts_push,
           
           // Financial
           quote_invoice_email: data.quote_updates_email,
           quote_invoice_sms: data.quote_updates_sms,
+          quote_updates_push: data.quote_updates_push,
           invoice_reminders_email: data.invoice_reminders_email,
           invoice_reminders_sms: data.invoice_reminders_sms,
+          invoice_reminders_push: data.invoice_reminders_push,
           payment_confirmations_email: data.payment_confirmations_email,
           payment_confirmations_sms: data.payment_confirmations_sms,
+          payment_confirmations_push: data.payment_confirmations_push,
           
           // Inventory & Fleet
           low_stock_alerts_email: data.low_stock_alerts_email,
           low_stock_alerts_sms: data.low_stock_alerts_sms,
+          low_stock_alerts_push: data.low_stock_alerts_push,
           asset_movement_email: data.asset_movement_email,
           asset_movement_sms: data.asset_movement_sms,
+          asset_movement_push: data.asset_movement_push,
           vehicle_status_changes_email: data.vehicle_status_changes_email,
           vehicle_status_changes_sms: data.vehicle_status_changes_sms,
+          vehicle_status_changes_push: data.vehicle_status_changes_push,
           
           // Team & Communication
           driver_check_ins_email: data.driver_check_ins_email,
           driver_check_ins_sms: data.driver_check_ins_sms,
+          driver_check_ins_push: data.driver_check_ins_push,
           new_team_members_email: data.new_team_members_email,
           new_team_members_sms: data.new_team_members_sms,
+          new_team_members_push: data.new_team_members_push,
           comment_mentions_email: data.comment_mentions_email,
           comment_mentions_sms: data.comment_mentions_sms,
+          comment_mentions_push: data.comment_mentions_push,
         }, { onConflict: "user_id" });
       
       if (error) throw error;
@@ -447,8 +495,8 @@ export function NotificationPreferencesSection() {
                               </div>
                             </div>
                             
-                            {/* Email and SMS toggles */}
-                            <div className="grid grid-cols-2 gap-3 pl-4">
+                            {/* Email, SMS, and Push toggles */}
+                            <div className="grid grid-cols-3 gap-3 pl-4">
                               <FormField
                                 control={form.control}
                                 name={`${item.key}_email` as keyof NotificationFormData}
@@ -479,6 +527,27 @@ export function NotificationPreferencesSection() {
                                       <MessageSquare className="w-4 h-4 text-muted-foreground" />
                                       <FormLabel className="text-sm font-normal cursor-pointer">
                                         SMS
+                                      </FormLabel>
+                                    </div>
+                                    <FormControl>
+                                      <Switch
+                                        checked={field.value as boolean}
+                                        onCheckedChange={field.onChange}
+                                      />
+                                    </FormControl>
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <FormField
+                                control={form.control}
+                                name={`${item.key}_push` as keyof NotificationFormData}
+                                render={({ field }) => (
+                                  <FormItem className="flex items-center justify-between p-3 border border-border rounded-lg bg-background">
+                                    <div className="flex items-center gap-2">
+                                      <Vibrate className="w-4 h-4 text-muted-foreground" />
+                                      <FormLabel className="text-sm font-normal cursor-pointer">
+                                        Push
                                       </FormLabel>
                                     </div>
                                     <FormControl>
