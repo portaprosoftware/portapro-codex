@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { resolveTaxRate, normalizeZip } from '@/lib/tax';
+import { triggerInvoiceReminderNotification } from '@/utils/notificationTriggers';
 
 interface CreateInvoiceFromJobParams {
   jobId: string;
@@ -186,10 +187,37 @@ export function useCreateInvoiceFromJob() {
 
       return invoice;
     },
-    onSuccess: (invoice) => {
+    onSuccess: async (invoice) => {
       queryClient.invalidateQueries({ queryKey: ['invoices'] });
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
       toast.success(`Invoice ${invoice.invoice_number} created successfully from job!`);
+
+      // Trigger invoice reminder notification (async, don't block on error)
+      setTimeout(async () => {
+        try {
+          // Calculate days until due
+          const dueDate = new Date(invoice.due_date);
+          const today = new Date();
+          const daysUntilDue = Math.ceil((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
+          // Only send notification if due within 7 days or overdue
+          if (daysUntilDue <= 7) {
+            // Note: userId should be dynamically fetched from profiles with role org:admin
+            // For now, notifications will be sent to user IDs configured in notification_preferences
+            await triggerInvoiceReminderNotification({
+              invoiceId: invoice.id,
+              userId: 'system', // Placeholder - actual user resolved in edge function
+              invoiceNumber: invoice.invoice_number,
+              customerName: invoice.customer_name,
+              amount: invoice.amount,
+              dueDate: invoice.due_date,
+              daysOverdue: daysUntilDue < 0 ? Math.abs(daysUntilDue) : 0,
+            });
+          }
+        } catch (error) {
+          console.error('Failed to send invoice notification:', error);
+        }
+      }, 0);
     },
     onError: (error: Error) => {
       console.error('Error creating invoice from job:', error);

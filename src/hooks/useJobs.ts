@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { JobWizardData } from "@/contexts/JobWizardContext";
+import { triggerJobAssignmentNotification } from "@/utils/notificationTriggers";
 
 async function processJobConsumables(jobId: string, consumablesData: any) {
   const { billingMethod, items, selectedBundle, subscriptionEnabled } = consumablesData;
@@ -379,12 +380,43 @@ export function useCreateJob() {
 
       return newJob;
     },
-    onSuccess: (data) => {
+    onSuccess: async (data, variables) => {
       toast({
         title: "Job Created",
         description: `Job ${data.job_number} has been created successfully`,
       });
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
+
+      // Trigger job assignment notification if driver is assigned
+      if (data.driver_id) {
+        try {
+          // Get customer and driver information for notification
+          const { data: customer } = await supabase
+            .from('customers')
+            .select('name, service_street, service_city, service_state')
+            .eq('id', data.customer_id)
+            .single();
+
+          const locationAddress = customer 
+            ? [customer.service_street, customer.service_city, customer.service_state].filter(Boolean).join(', ')
+            : 'Location not specified';
+
+          await triggerJobAssignmentNotification({
+            jobId: data.id,
+            driverId: data.driver_id,
+            jobNumber: data.job_number,
+            customerName: customer?.name || 'Unknown Customer',
+            serviceType: data.job_type,
+            scheduledDate: data.scheduled_date,
+            scheduledTime: data.scheduled_time,
+            locationAddress,
+            specialInstructions: data.special_instructions,
+          });
+        } catch (error) {
+          console.error('Failed to send job assignment notification:', error);
+          // Don't fail the job creation if notification fails
+        }
+      }
     },
     onError: (error) => {
       toast({

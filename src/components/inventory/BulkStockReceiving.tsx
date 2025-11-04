@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { StorageLocationSelector } from './StorageLocationSelector';
 import { Plus, Trash2, Package } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { triggerLowStockAlertNotification } from '@/utils/notificationTriggers';
 
 interface BulkReceivingItem {
   consumable_id: string;
@@ -148,12 +149,48 @@ export const BulkStockReceiving: React.FC = () => {
 
       return receivingItems;
     },
-    onSuccess: (data) => {
+    onSuccess: async (data, variables) => {
       toast({
         title: "Success",
         description: `Successfully received ${data.length} items to storage location`,
       });
       handleReset();
+
+      // Check for low stock alerts after receiving (async, don't block)
+      setTimeout(async () => {
+        try {
+          for (const item of data) {
+            // Get updated consumable data with threshold
+            const consumableQuery = await supabase
+              .from('consumables')
+              .select('id, name, sku, on_hand_qty, reorder_threshold')
+              .eq('id', item.consumable_id)
+              .single();
+
+            const consumable = consumableQuery.data;
+            
+            if (consumable && consumable.on_hand_qty <= consumable.reorder_threshold) {
+              // Still low after receiving - trigger alert
+              const suggestedReorder = Math.max(
+                consumable.reorder_threshold * 2 - consumable.on_hand_qty,
+                consumable.reorder_threshold
+              );
+
+              await triggerLowStockAlertNotification({
+                itemId: consumable.id,
+                userIds: ['system'], // Placeholder - will be resolved in edge function
+                itemName: consumable.name,
+                itemSku: consumable.sku || undefined,
+                currentQuantity: consumable.on_hand_qty,
+                threshold: consumable.reorder_threshold,
+                suggestedReorderQty: suggestedReorder,
+              });
+            }
+          }
+        } catch (error) {
+          console.error('Failed to check low stock alerts:', error);
+        }
+      }, 0);
     },
     onError: (error: any) => {
       toast({

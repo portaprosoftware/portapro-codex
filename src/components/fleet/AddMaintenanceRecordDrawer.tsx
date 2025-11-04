@@ -24,6 +24,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { MaintenanceTaskSelector } from "./MaintenanceTaskSelector";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { triggerMaintenanceAlertNotification } from "@/utils/notificationTriggers";
 
 interface AddMaintenanceRecordDrawerProps {
   open: boolean;
@@ -141,7 +142,7 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
+    onSuccess: async (data) => {
       queryClient.invalidateQueries({ queryKey: ["maintenance-kpis"] });
       queryClient.invalidateQueries({ queryKey: ["overdue-maintenance"] });
       queryClient.invalidateQueries({ queryKey: ["upcoming-maintenance"] });
@@ -149,6 +150,39 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
       toast.success("Maintenance record created successfully");
       onOpenChange(false);
       resetForm();
+
+      // Trigger maintenance alert notification (async, don't block)
+      setTimeout(async () => {
+        try {
+          if (selectedVehicle && taskTypeName) {
+            // Determine priority based on scheduled date
+            const scheduledDateObj = data.scheduled_date ? new Date(data.scheduled_date) : new Date();
+            const today = new Date();
+            const daysUntilDue = Math.ceil((scheduledDateObj.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+            
+            let priority: 'routine' | 'urgent' | 'critical' = 'routine';
+            if (daysUntilDue < 0) {
+              priority = 'critical'; // Overdue
+            } else if (daysUntilDue <= 7) {
+              priority = 'urgent'; // Due within week
+            }
+
+            // Note: userIds should include fleet managers + assigned driver
+            // For now using placeholder - should be dynamically fetched
+            await triggerMaintenanceAlertNotification({
+              vehicleId: selectedVehicle.id,
+              userIds: ['system'], // Placeholder - will be resolved in edge function
+              vehicleName: selectedVehicle.license_plate || selectedVehicle.vehicle_type,
+              maintenanceType: taskTypeName,
+              priority,
+              dueDate: data.scheduled_date,
+              currentMileage: data.mileage_at_service || undefined,
+            });
+          }
+        } catch (error) {
+          console.error('Failed to send maintenance alert:', error);
+        }
+      }, 0);
     },
     onError: (error) => {
       console.error("Error creating maintenance record:", error);
