@@ -14,8 +14,6 @@ import { AutoCarousel } from '@/components/ui/AutoCarousel';
 import { SchedulingGraphic } from '@/components/ui/SchedulingGraphic';
 import { FloatingActionButton } from '@/components/ui/floating-action-button';
 import { StatCard } from '@/components/ui/StatCard';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { StickyDemoBar } from '@/components/marketing/StickyDemoBar';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useEnhancedDrivers, useAllEnhancedUsers } from '@/hooks/useEnhancedDrivers';
@@ -543,369 +541,255 @@ export const Landing: React.FC = () => {
       {/* Group 1: Operations Features - Blue */}
       <div id="operations-features" />
       <section id="features" className="py-8 bg-gradient-blue">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-white mb-2">Operations Features</h2>
+            <p className="text-white/80 text-lg">Comprehensive tools for inventory, services, and customer engagement</p>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {servicesFeatures.map((feature, index) => <Card key={index} className="group rounded-2xl border border-border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 focus-within:ring-2 focus-within:ring-primary/30">
+                <CardContent className="p-6 text-left">
+                  <div className="w-10 h-10 mx-auto mb-4 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
+                    <feature.icon className="w-5 h-5" strokeWidth={1.75} />
+                  </div>
+                  <h3 className="font-semibold text-lg mb-1 text-foreground">{feature.title}</h3>
+                  <p className="text-sm text-muted-foreground mb-3">{feature.description}</p>
+                  <button onClick={() => scrollToSection(feature.href.substring(1))} className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
+                    Learn More <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
+                  </button>
+                </CardContent>
+              </Card>)}
+          </div>
+        </div>
+      </section>
 
-                        {/* Mini-Accordion 1: Inventory Management */}
-                        <Accordion type="single" collapsible defaultValue="">
-                          <AccordionItem value="inventory" id="inventory" className="bg-white rounded-lg border-none">
-                            <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-muted/50 rounded-lg transition-all duration-300 [&[data-state=open]>div>svg]:rotate-180">
-                              <div className="flex items-center gap-3 text-left w-full">
-                                <Toilet className="w-5 h-5 text-primary flex-shrink-0 transition-transform duration-300" />
-                                <div className="flex-1">
-                                  <h4 className="font-semibold text-lg">Inventory Management</h4>
-                                  <p className="text-sm text-muted-foreground">Track units, supplies, and stock across locations</p>
-                                </div>
-                              </div>
-                            </AccordionTrigger>
-                            <AccordionContent className="px-4 py-2">
-                              <div className="container mx-auto max-w-6xl">
-                                <div className="text-center mb-8">
-                                  <h2 className="text-3xl lg:text-4xl font-bold text-foreground py-[18px]">Inventory & Supplies — Unified, Accurate, Effortless</h2>
-                                  <p className="text-lg text-muted-foreground">Every unit has a dedicated tracking system for comprehensive inventory control and management.</p>
-                                </div>
+      {/* Detailed Sections for Group 1: Operations Features */}
 
-                                {/* Feature List - 4 icon rows */}
-                                <div className="mb-8">
-                                  <div className="space-y-6 max-w-4xl mx-auto text-center">
-                                    <div className="grid md:grid-cols-2 gap-6">
-                                      <div className="space-y-3 text-left">
-                                        <div className="flex items-start gap-3">
-                                          <Database className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                                          <span className="text-foreground">Unified tracking system for all inventory types</span>
-                                        </div>
-                                        <div className="flex items-start gap-3">
-                                          <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                                          <span className="text-foreground">Multi-location stock allocation and transfers</span>
-                                        </div>
-                                      </div>
-                                      <div className="space-y-3 text-left">
-                                        <div className="flex items-start gap-3">
-                                          <Calendar className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                                          <span className="text-foreground">Date-range availability checking and reservations</span>
-                                        </div>
-                                        <div className="flex items-start gap-3">
-                                          <AlertTriangle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                                          <span className="text-foreground">Automatic low-stock alerts and reorder points</span>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
+      {/* Inventory & Supplies — Unified, Accurate, Effortless - White */}
+      <section id="inventory" className="bg-white py-0">
+        <div className="container mx-auto max-w-6xl px-[24px]">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl lg:text-4xl font-bold text-foreground py-[18px]">Inventory & Supplies — Unified, Accurate, Effortless</h2>
+            <p className="text-lg text-muted-foreground">Every unit has a dedicated tracking system for comprehensive inventory control and management.</p>
+          </div>
 
-                                {/* Inventory KPIs */}
-                                <div className="grid sm:grid-cols-2 gap-4 mb-12">
-                                  <StatCard title="Available Today" value="89" icon={CheckCircle} gradientFrom="#10B981" gradientTo="#047857" iconBg="bg-emerald-600" />
-                                  <StatCard title="Maintenance" value="3" icon={Wrench} gradientFrom="#F59E0B" gradientTo="#D97706" iconBg="bg-amber-600" />
-                                </div>
-
-                                {/* Interactive Inventory Demo */}
-                                <div className="mb-12">
-                                  <InventoryManagementShowcase />
-                                </div>
-
-                                {/* QR & Photo Scanning - Full Width Section */}
-                                <div className="mb-12">
-                                  <div className="text-center mb-8">
-                                    <h3 className="text-2xl font-bold text-foreground">QR & Photo Scanning</h3>
-                                    <p className="text-lg text-muted-foreground mt-2">Instant unit identification and documentation with mobile scanning capabilities.</p>
-                                    
-                                    {/* Feature List - Moved above cards */}
-                                    <div className="mt-6 flex justify-center">
-                                      <ul className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl">
-                                        <li className="flex items-start gap-3">
-                                          <Smartphone className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                                          <span className="text-foreground">Mobile QR code scanning for units</span>
-                                        </li>
-                                        <li className="flex items-start gap-3">
-                                          <Camera className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                                          <span className="text-foreground">Photo documentation for condition tracking</span>
-                                        </li>
-                                        <li className="flex items-start gap-3">
-                                          <CloudOff className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                                          <span className="text-foreground">Offline scanning with auto-sync capabilities</span>
-                                        </li>
-                                      </ul>
-                                    </div>
-                                  </div>
-                                  
-                                  <div className="grid lg:grid-cols-2 gap-12 items-center">
-                                    {/* Snap & Track Units Card */}
-                                    <div className="border rounded-lg p-6 bg-card">
-                                      <div className="mb-4">
-                                        <h4 className="text-base font-normal text-center">Snap & Track Units from Embedded Plastic Text Numbers</h4>
-                                      </div>
-                                      
-                                      <div className="grid md:grid-cols-2 gap-6 items-center">
-                                        <div className="flex flex-col items-center space-y-4">
-                                          <div className="rounded-lg overflow-hidden">
-                                            <img src="/lovable-uploads/4ba172a8-8093-4d4e-9143-53090809b31e.png" alt="Phone scanning embossed plastic text on portable toilet unit" className="w-full max-w-sm h-auto" />
-                                          </div>
-                                        </div>
-                                        
-                                        <div className="space-y-4">
-                                          <div className="space-y-3">
-                                            <div className="bg-gradient-green text-white px-3 py-1 rounded-full text-sm font-bold inline-block">
-                                              ✓ Successfully tracked
-                                            </div>
-                                            
-                                            <div className="space-y-2 text-sm">
-                                              <div><span className="font-medium">Vendor:</span> ABC Manufacturing</div>
-                                              <div><span className="font-medium">Tool No:</span> T-207788-1A</div>
-                                              <div><span className="font-medium">Vendor ID:</span> 32123</div>
-                                              <div><span className="font-medium">Mfg Date:</span> January 13, 2016</div>
-                                              <div><span className="font-medium">Plastic:</span> HDPE</div>
-                                            </div>
-                                          </div>
-                                          
-                                          <p className="text-sm text-muted-foreground">
-                                            Works offline — syncs later. Instant attach to units & jobs.
-                                          </p>
-                                        </div>
-                                      </div>
-                                    </div>
-
-                                    {/* QR Code Generator Section */}
-                                    <QRGenerator />
-                                  </div>
-                                </div>
-
-                                {/* Unit Maintenance & History - Full Width Section */}
-                                <div className="mb-12">
-                                  <div className="text-center mb-8">
-                                    <h3 className="text-2xl font-bold text-foreground">Unit Maintenance & History</h3>
-                                    <p className="text-lg text-muted-foreground mt-2">Comprehensive maintenance tracking with automated work order management.</p>
-                                    
-                                    {/* Feature List */}
-                                    <div className="mt-6 flex justify-center">
-                                      <ul className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl">
-                                        <li className="flex items-start gap-3">
-                                          <Smartphone className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                                          <span className="text-foreground">Mobile maintenance work order management</span>
-                                        </li>
-                                        <li className="flex items-start gap-3">
-                                          <FileText className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                                          <span className="text-foreground">Complete service history and cost tracking</span>
-                                        </li>
-                                        <li className="flex items-start gap-3">
-                                          <CalendarClock className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                                          <span className="text-foreground">Photo storage and task updates</span>
-                                        </li>
-                                      </ul>
-                                    </div>
-                                  </div>
-                                </div>
-
-                                {/* Why Teams Love PortaPro Section - Condensed */}
-                                <div className="max-w-4xl mx-auto mb-12">
-                                  <div className="bg-gray-50 border rounded-lg p-4">
-                                    <h3 className="text-lg font-bold text-foreground mb-4">🚀 Why Teams Love PortaPro Product Inventory</h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                      {/* ... keep existing code */}
-                                      <ul className="space-y-2 text-sm">
-                                        <li className="flex items-start gap-2">
-                                          <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                                          <span className="text-foreground">Bulk, individual, and hybrid tracking in one system</span>
-                                        </li>
-                                        <li className="flex items-start gap-2">
-                                          <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                                          <span className="text-foreground">Date-range availability by location</span>
-                                        </li>
-                                        <li className="flex items-start gap-2">
-                                          <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                                          <span className="text-foreground">QR codes & embossed-plastic AI reading</span>
-                                        </li>
-                                        <li className="flex items-start gap-2">
-                                          <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                                          <span className="text-foreground">Maintenance work orders with technician & cost tracking</span>
-                                        </li>
-                                      </ul>
-                                      
-                                      <ul className="space-y-2 text-sm">
-                                        <li className="flex items-start gap-2">
-                                          <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                                          <span className="text-foreground">Service history & automated scheduling</span>
-                                        </li>
-                                        <li className="flex items-start gap-2">
-                                          <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                                          <span className="text-foreground">Padlock & zip-tie drop-off notations</span>
-                                        </li>
-                                        <li className="flex items-start gap-2">
-                                          <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                                          <span className="text-foreground">Clear status at a glance — available, assigned, service</span>
-                                        </li>
-                                        <li className="flex items-start gap-2">
-                                          <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                                          <span className="text-foreground">Works offline: scan QR codes or unit serials, everything saves and syncs automatically once reconnected</span>
-                                        </li>
-                                      </ul>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </AccordionContent>
-                          </AccordionItem>
-                        </Accordion>
-
-                        {/* Mini-Accordion 2: Consumables */}
-                        <Accordion type="single" collapsible defaultValue="">
-                          <AccordionItem value="consumables" id="consumables" className="bg-white rounded-lg border-none">
-                            <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-muted/50 rounded-lg transition-all duration-300 [&[data-state=open]>div>svg]:rotate-180">
-                              <div className="flex items-center gap-3 text-left w-full">
-                                <SoapDispenserDroplet className="w-5 h-5 text-primary flex-shrink-0 transition-transform duration-300" />
-                                <div className="flex-1">
-                                  <h4 className="font-semibold text-lg">Consumables & Supplies</h4>
-                                  <p className="text-sm text-muted-foreground">Manage toilet paper, sanitizer, and cleaning supplies inventory</p>
-                                </div>
-                              </div>
-                            </AccordionTrigger>
-                            <AccordionContent className="px-4 py-2">
-                              <ConsumablesShowcase />
-                            </AccordionContent>
-                          </AccordionItem>
-                        </Accordion>
-
-                        {/* Mini-Accordion 3: Services Hub */}
-                        <Accordion type="single" collapsible defaultValue="">
-                          <AccordionItem value="services-hub" id="services-hub" className="bg-white rounded-lg border-none">
-                            <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-muted/50 rounded-lg transition-all duration-300 [&[data-state=open]>div>svg]:rotate-180">
-                              <div className="flex items-center gap-3 text-left w-full">
-                                <ClipboardCheck className="w-5 h-5 text-primary flex-shrink-0 transition-transform duration-300" />
-                                <div className="flex-1">
-                                  <h4 className="font-semibold text-lg">Services Hub</h4>
-                                  <p className="text-sm text-muted-foreground">Coordinate pumping, cleaning, and maintenance service operations</p>
-                                </div>
-                              </div>
-                            </AccordionTrigger>
-                            <AccordionContent className="px-4 py-2">
-                              <ServicesHubShowcase />
-                            </AccordionContent>
-                          </AccordionItem>
-                        </Accordion>
-
-                        {/* Mini-Accordion 4: Marketing Tools */}
-                        <Accordion type="single" collapsible defaultValue="">
-                          <AccordionItem value="marketing" id="marketing" className="bg-white rounded-lg border-none">
-                            <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-muted/50 rounded-lg transition-all duration-300 [&[data-state=open]>div>svg]:rotate-180">
-                              <div className="flex items-center gap-3 text-left w-full">
-                                <Megaphone className="w-5 h-5 text-primary flex-shrink-0 transition-transform duration-300" />
-                                <div className="flex-1">
-                                  <h4 className="font-semibold text-lg">Marketing Tools</h4>
-                                  <p className="text-sm text-muted-foreground">Customer communication, promotions, and lead generation features</p>
-                                </div>
-                              </div>
-                            </AccordionTrigger>
-                            <AccordionContent className="px-4 py-2">
-                              <MarketingShowcase />
-                            </AccordionContent>
-                          </AccordionItem>
-                        </Accordion>
-
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
+          {/* Feature List - 4 icon rows */}
+          <div className="mb-8">
+            <div className="space-y-6 max-w-4xl mx-auto text-center">
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-3 text-left">
+                  <div className="flex items-start gap-3">
+                    <Database className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Unified tracking system for all inventory types</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Multi-location stock allocation and transfers</span>
+                  </div>
                 </div>
-
-                {/* Category 2: Core Workflow Features */}
-                <div id="core-workflow-features" className="bg-gradient-blue rounded-xl p-6">
-                  <Accordion type="single" collapsible defaultValue="">
-                    <AccordionItem value="core" className="border-none">
-                      <AccordionTrigger className="text-2xl font-bold text-white hover:no-underline py-4 transition-all duration-300 [&[data-state=open]>div>svg]:rotate-180">
-                        <div className="flex items-center gap-3">
-                          <Zap className="w-6 h-6 transition-transform duration-300" />
-                          <span>Core Workflow Features</span>
-                        </div>
-                      </AccordionTrigger>
-                      <AccordionContent className="pt-4 space-y-4">
-
-                        {/* Mini-Accordion 5: AI Panel Scanning */}
-                        <Accordion type="single" collapsible defaultValue="">
-                          <AccordionItem value="ai-scanning" id="ai-scanning" className="bg-white rounded-lg border-none">
-                            <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-muted/50 rounded-lg transition-all duration-300 [&[data-state=open]>div>svg]:rotate-180">
-                              <div className="flex items-center gap-3 text-left w-full">
-                                <Camera className="w-5 h-5 text-primary flex-shrink-0 transition-transform duration-300" />
-                                <div className="flex-1">
-                                  <h4 className="font-semibold text-lg">Google Vision AI Panel Scanning</h4>
-                                  <p className="text-sm text-muted-foreground">Scan tool numbers and data directly from molded plastic panels</p>
-                                </div>
-                              </div>
-                            </AccordionTrigger>
-                            <AccordionContent className="px-4 py-2">
-                              <AIPanelScanningShowcase />
-                            </AccordionContent>
-                          </AccordionItem>
-                        </Accordion>
-
-                        {/* Mini-Accordion 6: Smart Job Wizard */}
-                        <Accordion type="single" collapsible defaultValue="">
-                          <AccordionItem value="job-wizard" id="job-wizard" className="bg-white rounded-lg border-none">
-                            <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-muted/50 rounded-lg transition-all duration-300 [&[data-state=open]>div>svg]:rotate-180">
-                              <div className="flex items-center gap-3 text-left w-full">
-                                <ClipboardList className="w-5 h-5 text-primary flex-shrink-0 transition-transform duration-300" />
-                                <div className="flex-1">
-                                  <h4 className="font-semibold text-lg">Smart Job Wizard</h4>
-                                  <p className="text-sm text-muted-foreground">Step-by-step job creation with delivery, pickups, crew, and invoicing</p>
-                                </div>
-                              </div>
-                            </AccordionTrigger>
-                            <AccordionContent className="px-4 py-2">
-                              <SmartWizardShowcase />
-                              <div className="mt-6 sm:mt-8">
-                                <h2 className="text-3xl font-bold text-center mb-8">Jobs: Calendar, Dispatch, Drag-Drop & Map</h2>
-                                <div className="flex justify-center">
-                                  <div className="w-full max-w-4xl">
-                                    <script src="https://fast.wistia.com/player.js" async></script>
-                                    <script src="https://fast.wistia.com/embed/7fdf1aomkc.js" async type="module"></script>
-                                    <style dangerouslySetInnerHTML={{__html: `wistia-player[media-id='7fdf1aomkc']:not(:defined) { background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/7fdf1aomkc/swatch'); display: block; filter: blur(5px); padding-top:50.42%; }`}} />
-                                    <wistia-player media-id="7fdf1aomkc" aspect="1.9834710743801653"></wistia-player>
-                                  </div>
-                                </div>
-                              </div>
-                            </AccordionContent>
-                          </AccordionItem>
-                        </Accordion>
-
-                        {/* Mini-Accordion 7: Quotes & Payments */}
-                        <Accordion type="single" collapsible defaultValue="">
-                          <AccordionItem value="quotes" id="quotes" className="bg-white rounded-lg border-none">
-                            <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-muted/50 rounded-lg transition-all duration-300 [&[data-state=open]>div>svg]:rotate-180">
-                              <div className="flex items-center gap-3 text-left w-full">
-                                <CircleDollarSign className="w-5 h-5 text-primary flex-shrink-0 transition-transform duration-300" />
-                                <div className="flex-1">
-                                  <h4 className="font-semibold text-lg">Quotes & Payments</h4>
-                                  <p className="text-sm text-muted-foreground">Build quotes with services and supplies, collect deposits online</p>
-                                </div>
-                              </div>
-                            </AccordionTrigger>
-                            <AccordionContent className="px-4 py-2">
-                              <QuoteToJobShowcase />
-                            </AccordionContent>
-                          </AccordionItem>
-                        </Accordion>
-
-                        {/* Mini-Accordion 8: Driver Mobile App */}
-                        <Accordion type="single" collapsible defaultValue="">
-                          <AccordionItem value="mobile-app" id="mobile-app" className="bg-white rounded-lg border-none">
-                            <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-muted/50 rounded-lg transition-all duration-300 [&[data-state=open]>div>svg]:rotate-180">
-                              <div className="flex items-center gap-3 text-left w-full">
-                                <Smartphone className="w-5 h-5 text-primary flex-shrink-0 transition-transform duration-300" />
-                                <div className="flex-1">
-                                  <h4 className="font-semibold text-lg">Driver Mobile App</h4>
-                                  <p className="text-sm text-muted-foreground">Offline-capable route navigation, job updates, and digital checklists</p>
-                                </div>
-                              </div>
-                            </AccordionTrigger>
-                            <AccordionContent className="px-4 py-2">
-                              <DriverAppShowcase />
-                            </AccordionContent>
-                          </AccordionItem>
-                        </Accordion>
-
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
+                <div className="space-y-3 text-left">
+                  <div className="flex items-start gap-3">
+                    <Calendar className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Date-range availability checking and reservations</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Automatic low-stock alerts and reorder points</span>
+                  </div>
                 </div>
+              </div>
+            </div>
+          </div>
 
-                {/* Category 3: Management Features */}
-                <div id="management-features" className="bg-gradient-blue rounded-xl p-6">
+          {/* Inventory KPIs */}
+          <div className="grid sm:grid-cols-2 gap-4 mb-12">
+            <StatCard title="Available Today" value="89" icon={CheckCircle} gradientFrom="#10B981" gradientTo="#047857" iconBg="bg-emerald-600" />
+            <StatCard title="Maintenance" value="3" icon={Wrench} gradientFrom="#F59E0B" gradientTo="#D97706" iconBg="bg-amber-600" />
+          </div>
+
+          {/* Interactive Inventory Demo */}
+          <div className="mb-12">
+            <InventoryManagementShowcase />
+          </div>
+
+          {/* QR & Photo Scanning - Full Width Section */}
+          <div className="mb-12">
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-bold text-foreground">QR & Photo Scanning</h3>
+              <p className="text-lg text-muted-foreground mt-2">Instant unit identification and documentation with mobile scanning capabilities.</p>
+              
+              {/* Feature List - Moved above cards */}
+              <div className="mt-6 flex justify-center">
+                <ul className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl">
+                  <li className="flex items-start gap-3">
+                    <Smartphone className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Mobile QR code scanning for units</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Camera className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Photo documentation for condition tracking</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CloudOff className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Offline scanning with auto-sync capabilities</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              {/* Snap & Track Units Card */}
+              <div className="border rounded-lg p-6 bg-card">
+                <div className="mb-4">
+                  <h4 className="text-base font-normal text-center">Snap & Track Units from Embedded Plastic Text Numbers</h4>
+                </div>
+                
+                <div className="grid md:grid-cols-2 gap-6 items-center">
+                  <div className="flex flex-col items-center space-y-4">
+                    <div className="rounded-lg overflow-hidden">
+                      <img src="/lovable-uploads/4ba172a8-8093-4d4e-9143-53090809b31e.png" alt="Phone scanning embossed plastic text on portable toilet unit" className="w-full max-w-sm h-auto" />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div className="space-y-3">
+                      <div className="bg-gradient-green text-white px-3 py-1 rounded-full text-sm font-bold inline-block">
+                        ✓ Successfully tracked
+                      </div>
+                      
+                      <div className="space-y-2 text-sm">
+                        <div><span className="font-medium">Vendor:</span> ABC Manufacturing</div>
+                        <div><span className="font-medium">Tool No:</span> T-207788-1A</div>
+                        <div><span className="font-medium">Vendor ID:</span> 32123</div>
+                        <div><span className="font-medium">Mfg Date:</span> January 13, 2016</div>
+                        <div><span className="font-medium">Plastic:</span> HDPE</div>
+                      </div>
+                    </div>
+                    
+                    <p className="text-sm text-muted-foreground">
+                      Works offline — syncs later. Instant attach to units & jobs.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* QR Code Generator Section */}
+              <QRGenerator />
+            </div>
+          </div>
+
+
+          {/* Unit Maintenance & History - Full Width Section */}
+          <div className="mb-12">
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-bold text-foreground">Unit Maintenance & History</h3>
+              <p className="text-lg text-muted-foreground mt-2">Comprehensive maintenance tracking with automated work order management.</p>
+              
+              {/* Feature List */}
+              <div className="mt-6 flex justify-center">
+                <ul className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl">
+                  <li className="flex items-start gap-3">
+                    <Smartphone className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Mobile maintenance work order management</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <FileText className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Complete service history and cost tracking</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CalendarClock className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Photo storage and task updates</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Why Teams Love PortaPro Section - Condensed */}
+          <div className="max-w-4xl mx-auto mb-12">
+            <div className="bg-gray-50 border rounded-lg p-4">
+              <h3 className="text-lg font-bold text-foreground mb-4">🚀 Why Teams Love PortaPro Product Inventory</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Left Column - First 4 items */}
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Bulk, individual, and hybrid tracking in one system</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Date-range availability by location</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">QR codes & embossed-plastic AI reading</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Maintenance work orders with technician & cost tracking</span>
+                  </li>
+                </ul>
+                
+                {/* Right Column - Last 4 items */}
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Service history & automated scheduling</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Padlock & zip-tie drop-off notations</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Clear status at a glance — available, assigned, service</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">Works offline: scan QR codes or unit serials, everything saves and syncs automatically once reconnected</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+
+      {/* Section Divider */}
+      <div className="bg-white py-[10px]">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="border-t-2 border-border"></div>
+        </div>
+      </div>
+
+      {/* Consumables - White */}
+      <ConsumablesShowcase />
+
+      {/* Section Divider */}
+      <div className="py-3 bg-white">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="border-t-2 border-border"></div>
+        </div>
+      </div>
+
+      {/* Services Hub - White */}
+      <ServicesHubShowcase />
+
+      {/* Section Divider */}
+      <div className="py-3 bg-white">
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="border-t-2 border-border"></div>
+        </div>
+      </div>
+
+      {/* Marketing Tools - White */}
+      <MarketingShowcase />
+
+      {/* Group 2: Core Features - Blue */}
+      <div id="core-workflow-features" />
+      <section className="py-8 bg-gradient-blue">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-white mb-2">Core Workflow Features</h2>
@@ -2614,9 +2498,6 @@ export const Landing: React.FC = () => {
         open={calendlyDrawerOpen}
         onOpenChange={setCalendlyDrawerOpen}
       />
-
-      {/* Sticky Demo Bar at Bottom */}
-      <StickyDemoBar onScheduleDemo={handleScheduleDemo} />
     </div>;
 };
 export default Landing;
