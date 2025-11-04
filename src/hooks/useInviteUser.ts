@@ -60,13 +60,16 @@ export const useInviteUser = () => {
         throw error;
       }
 
-      if (!data.success) {
-        const errorMsg = data.error || data.detail?.body || 'Failed to invite user';
+      // Normalize response (handle cases where Supabase client doesn't auto-parse JSON)
+      const response = typeof data === 'string' ? JSON.parse(data) : data;
+
+      if (!response.success) {
+        const errorMsg = response.error || response.detail?.body || 'Failed to invite user';
         throw new Error(errorMsg);
       }
 
-      console.log('✅ org-invite success:', data);
-      return data;
+      console.log('✅ org-invite success:', response);
+      return response;
     },
     retry: (failureCount, error: any) => {
       // Only retry on network/transient 5xx errors, not 400/404

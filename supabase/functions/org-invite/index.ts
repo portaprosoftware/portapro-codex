@@ -5,6 +5,11 @@ const corsHeaders = {
   Vary: "Origin",
 };
 
+const jsonHeaders = {
+  ...corsHeaders,
+  "Content-Type": "application/json",
+};
+
 async function createClerkInvite(organizationId, payload) {
   const res = await fetch(
     `https://api.clerk.com/v1/organizations/${organizationId}/invitations`,
@@ -45,7 +50,7 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") {
     return new Response(
       JSON.stringify({ success: false, error: "Method not allowed" }),
-      { status: 405, headers: corsHeaders }
+      { status: 405, headers: jsonHeaders }
     );
   }
 
@@ -56,7 +61,7 @@ Deno.serve(async (req) => {
     if (!organizationId || !email) {
       return new Response(
         JSON.stringify({ success: false, error: "Missing organizationId or email" }),
-        { status: 400, headers: corsHeaders }
+        { status: 400, headers: jsonHeaders }
       );
     }
 
@@ -78,13 +83,13 @@ Deno.serve(async (req) => {
           error: "Failed to create Clerk invite",
           detail: { status: result.status, body: result.detail },
         }),
-        { status: result.status, headers: corsHeaders }
+        { status: result.status, headers: jsonHeaders }
       );
     }
 
     return new Response(
       JSON.stringify({ success: true, data: result.data }),
-      { status: 200, headers: corsHeaders }
+      { status: 200, headers: jsonHeaders }
     );
   } catch (e) {
     console.error("❌ org-invite unhandled error", {
@@ -93,7 +98,7 @@ Deno.serve(async (req) => {
     });
     return new Response(
       JSON.stringify({ success: false, error: "Unhandled error" }),
-      { status: 500, headers: corsHeaders }
+      { status: 500, headers: jsonHeaders }
     );
   }
 });
