@@ -1,19 +1,35 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StatCard } from '@/components/ui/StatCard';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { CheckCircle, FileText, CreditCard, ClipboardList, ArrowRight, DollarSign } from 'lucide-react';
+import { CheckCircle, FileText, CreditCard, ClipboardList, ArrowRight, DollarSign, ChevronDown } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { cn } from "@/lib/utils";
 
 export const QuoteToJobShowcase: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  
   // KPIs removed as requested
 
   return (
-    <div className="space-y-6 sm:space-y-10 overflow-hidden">
-      <header className="space-y-2 text-center px-4">
-        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">Quote → Deposit → Job → Invoice, in one flow</h2>
-        <p className="text-muted-foreground text-base sm:text-lg max-w-3xl mx-auto">
-          Build a quote, send it to your customer, collect a deposit with Stripe, and auto-create the job with schedule and invoice.
-        </p>
-      </header>
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="space-y-6 sm:space-y-10 overflow-hidden">
+      <CollapsibleTrigger className="w-full group">
+        <div className="space-y-2 text-center px-4">
+          <div className="flex items-center justify-center gap-4">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">Quote → Deposit → Job → Invoice, in one flow</h2>
+            <ChevronDown 
+              className={cn(
+                "w-8 h-8 text-primary transition-transform duration-300 ease-in-out",
+                isOpen && "rotate-180"
+              )}
+            />
+          </div>
+          <p className="text-muted-foreground text-base sm:text-lg max-w-3xl mx-auto">
+            Build a quote, send it to your customer, collect a deposit with Stripe, and auto-create the job with schedule and invoice.
+          </p>
+        </div>
+      </CollapsibleTrigger>
+
+      <CollapsibleContent className="transition-all duration-300 ease-in-out data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down space-y-6 sm:space-y-10">
 
       <div className="flex flex-col gap-6 sm:gap-10 lg:grid lg:grid-cols-[1fr_1.4fr] lg:items-start px-4 sm:px-0">
         {/* Left: Highlights only */}
@@ -138,7 +154,8 @@ export const QuoteToJobShowcase: React.FC = () => {
         </main>
       </div>
 
-    </div>
+      </CollapsibleContent>
+    </Collapsible>
   );
 };
 
