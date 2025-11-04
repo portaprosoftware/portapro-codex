@@ -1,12 +1,16 @@
-import React from 'react';
-import { BarChart3, TrendingUp, DollarSign, Users, Truck, FileText, Download, Filter, Plus, Settings, Calendar, PieChart, BarChart, LineChart } from 'lucide-react';
+import React, { useState } from 'react';
+import { BarChart3, TrendingUp, DollarSign, Users, Truck, FileText, Download, Filter, Plus, Settings, Calendar, PieChart, BarChart, LineChart, ChevronDown } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { StatCard } from '@/components/ui/StatCard';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Sparkline } from '@/components/ui/Sparkline';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { cn } from "@/lib/utils";
 
 export function CompanyAnalyticsShowcase() {
+  const [isOpen, setIsOpen] = useState(false);
+  
   // Mock data for visualizations
   const jobsSparklineData = [45, 52, 49, 61, 58, 67, 72];
   const revenueSparklineData = [28000, 31000, 29500, 35000, 33000, 38000, 42000];
@@ -14,15 +18,27 @@ export function CompanyAnalyticsShowcase() {
   return (
     <section id="company-analytics" className="py-12 bg-white">
       <div className="container mx-auto max-w-7xl px-6">
-        <div className="text-center mb-4 md:mb-6">
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-4 leading-tight">
-            Company Analytics — Complete insights across your entire operation
-          </h2>
-          <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto">
-            Six comprehensive tabs with persistent date controls, 24+ KPIs and one-click reports.
-          </p>
-        </div>
+        <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+          <CollapsibleTrigger className="w-full group">
+            <div className="text-center mb-4 md:mb-6">
+              <div className="flex items-center justify-center gap-4">
+                <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-4 leading-tight">
+                  Company Analytics — Complete insights across your entire operation
+                </h2>
+                <ChevronDown 
+                  className={cn(
+                    "w-8 h-8 text-primary transition-transform duration-300 ease-in-out",
+                    isOpen && "rotate-180"
+                  )}
+                />
+              </div>
+              <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto">
+                Six comprehensive tabs with persistent date controls, 24+ KPIs and one-click reports.
+              </p>
+            </div>
+          </CollapsibleTrigger>
 
+          <CollapsibleContent className="transition-all duration-300 ease-in-out data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
         {/* Two-column layout: Image and One-Click Reports */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-4 md:mb-6">
           {/* Dashboard Cards Image */}
@@ -242,6 +258,8 @@ export function CompanyAnalyticsShowcase() {
             </CardContent>
           </Card>
         </div>
+          </CollapsibleContent>
+        </Collapsible>
       </div>
     </section>
   );
