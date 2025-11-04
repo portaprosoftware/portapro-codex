@@ -23,7 +23,7 @@ export function CompanyAnalyticsShowcase() {
             <div className="mb-4 md:mb-6 text-center">
               <div className="flex items-center justify-center gap-4">
                 <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight">
-                  Company Analytics — Complete insights across your entire operation
+                  Analytics—Insights across your entire operation
                 </h2>
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-muted-foreground">Expand/Collapse</span>
