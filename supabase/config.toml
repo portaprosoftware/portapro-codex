@@ -14,3 +14,15 @@ verify_jwt = false
 
 [functions.send-notification-email]
 verify_jwt = false
+
+[functions.trigger-job-assignment]
+verify_jwt = false
+
+[functions.trigger-invoice-reminder]
+verify_jwt = false
+
+[functions.trigger-maintenance-alert]
+verify_jwt = false
+
+[functions.trigger-low-stock-alert]
+verify_jwt = false
