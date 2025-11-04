@@ -135,6 +135,40 @@ export async function triggerLowStockAlertNotification(params: {
 }
 
 /**
+ * Trigger work order status change notification
+ */
+export async function triggerWorkOrderStatusChangeNotification(params: {
+  workOrderId: string;
+  workOrderNumber: string;
+  assetName: string;
+  oldStatus: string;
+  newStatus: string;
+  assigneeId?: string | null;
+  priority: string;
+  changedBy: string;
+  notes?: string;
+}) {
+  try {
+    console.log('[Notification] Triggering work order status change notification:', params);
+    
+    const { data, error } = await supabase.functions.invoke('trigger-work-order-status-change', {
+      body: params
+    });
+
+    if (error) {
+      console.error('[Notification] Error triggering work order status change:', error);
+      return { success: false, error };
+    }
+
+    console.log('[Notification] Work order status change notification sent successfully:', data);
+    return { success: true, data };
+  } catch (error) {
+    console.error('[Notification] Exception in triggerWorkOrderStatusChangeNotification:', error);
+    return { success: false, error };
+  }
+}
+
+/**
  * Trigger route/schedule change notification
  */
 export async function triggerRouteScheduleChangeNotification(params: {

@@ -272,6 +272,15 @@ export const WorkOrderDetailDrawer: React.FC<WorkOrderDetailDrawerProps> = ({
                 {isOverdue && (
                   <Badge variant="destructive">Overdue</Badge>
                 )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => exportWorkOrderToPDF(workOrder)}
+                  className="ml-auto"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Export PDF
+                </Button>
               </DrawerTitle>
               <DrawerDescription className="flex items-center gap-4 text-sm">
                 <span className="flex items-center gap-1">

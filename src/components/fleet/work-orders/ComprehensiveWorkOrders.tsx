@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Plus, Kanban, List, Calendar, Eye } from "lucide-react";
+import { Plus, Kanban, List, Calendar, Eye, FileDown, FileText } from "lucide-react";
 import { WorkOrderMetrics } from "./WorkOrderMetrics";
 import { WorkOrderFilters } from "./WorkOrderFilters";
 import { WorkOrderKanbanBoard } from "./WorkOrderKanbanBoard";
@@ -17,6 +17,14 @@ import { WorkOrderDetailDrawer } from "./WorkOrderDetailDrawer";
 import { useToast } from "@/hooks/use-toast";
 import { WorkOrder } from "./types";
 import { canMoveToStatus, getStatusTransitionMessage } from "@/lib/workOrderRules";
+import { exportWorkOrdersToCSV, exportWorkOrderToPDF } from "@/lib/workOrderExport";
+import { triggerWorkOrderStatusChangeNotification } from "@/utils/notificationTriggers";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface ComprehensiveWorkOrdersProps {
   vehicleId?: string;
@@ -147,6 +155,28 @@ export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = (
         changed_by: user?.id || 'unknown',
         note: historyMessage
       });
+
+      // Trigger notification for status change
+      if (user?.id && workOrder) {
+        try {
+          // Get asset name from the work order data
+          const assetName = (workOrder as any).asset_name || 'Unknown Asset';
+          
+          await triggerWorkOrderStatusChangeNotification({
+            workOrderId,
+            workOrderNumber: workOrder.work_order_number || 'Unknown',
+            assetName,
+            oldStatus: workOrder.status,
+            newStatus,
+            assigneeId: workOrder.assigned_to,
+            priority: workOrder.priority,
+            changedBy: user.id,
+            notes: historyMessage
+          });
+        } catch (error) {
+          console.error('Failed to send work order notification:', error);
+        }
+      }
       
       return { workOrder, newStatus };
     },
@@ -217,9 +247,30 @@ export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = (
     // TODO: Implement bulk assignment
   };
 
-  const handleExport = () => {
-    console.log('Export work orders');
-    // TODO: Implement export functionality
+  const handleExport = async () => {
+    if (!workOrders || workOrders.length === 0) {
+      toast({
+        title: "No data to export",
+        description: "There are no work orders to export",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      await exportWorkOrdersToCSV(workOrders);
+      toast({
+        title: "Export successful",
+        description: `Exported ${workOrders.length} work orders to CSV`
+      });
+    } catch (error) {
+      console.error('Export error:', error);
+      toast({
+        title: "Export failed",
+        description: "Failed to export work orders",
+        variant: "destructive"
+      });
+    }
   };
 
   if (isLoading) {
@@ -236,10 +287,26 @@ export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = (
             Manage maintenance work orders across your fleet
           </p>
         </div>
-        <Button onClick={() => setIsAddDrawerOpen(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          New Work Order
-        </Button>
+        <div className="flex items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">
+                <FileDown className="h-4 w-4 mr-2" />
+                Export
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={handleExport}>
+                <FileText className="h-4 w-4 mr-2" />
+                Export to CSV
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Button onClick={() => setIsAddDrawerOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            New Work Order
+          </Button>
+        </div>
       </div>
 
       {/* Metrics */}
