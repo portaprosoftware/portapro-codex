@@ -451,9 +451,11 @@ export const TeamManagementShowcase: React.FC = () => {
             </div>
           </CollapsibleTrigger>
 
-          <CollapsibleContent className="transition-all duration-300 ease-in-out data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+          <CollapsibleContent className="transition-all duration-500 ease-in-out data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
         {/* Team KPIs */}
-        <div className="grid sm:grid-cols-2 gap-4 mb-8">
+        <div className="grid sm:grid-cols-2 gap-4 mb-8 animate-fade-in"
+          style={{ animationDelay: '100ms' }}
+        >
           <StatCard 
             title="Approved Time Off" 
             value={1} 

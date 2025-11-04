@@ -40,10 +40,12 @@ export const AIPanelScanningShowcase: React.FC = () => {
         </div>
       </CollapsibleTrigger>
 
-      <CollapsibleContent className="transition-all duration-300 ease-in-out data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down space-y-8">
+      <CollapsibleContent className="transition-all duration-500 ease-in-out data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down space-y-8">
 
       {/* KPIs */}
-      <div className="grid sm:grid-cols-2 gap-6">
+      <div className="grid sm:grid-cols-2 gap-6 animate-fade-in"
+        style={{ animationDelay: '100ms' }}
+      >
         {kpis.map((k, i) => (
           <StatCard
             key={i}

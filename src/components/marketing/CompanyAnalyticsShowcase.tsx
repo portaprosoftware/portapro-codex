@@ -41,9 +41,11 @@ export function CompanyAnalyticsShowcase() {
             </div>
           </CollapsibleTrigger>
 
-          <CollapsibleContent className="transition-all duration-300 ease-in-out data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+          <CollapsibleContent className="transition-all duration-500 ease-in-out data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
         {/* Two-column layout: Image and One-Click Reports */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-4 md:mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-4 md:mb-6 animate-fade-in"
+          style={{ animationDelay: '100ms' }}
+        >
           {/* Dashboard Cards Image */}
           <div className="flex justify-center lg:justify-start">
             <img 

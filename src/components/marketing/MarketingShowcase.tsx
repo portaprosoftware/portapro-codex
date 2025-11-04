@@ -64,8 +64,10 @@ export const MarketingShowcase: React.FC = () => {
             </header>
           </CollapsibleTrigger>
 
-          <CollapsibleContent className="transition-all duration-300 ease-in-out data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
+          <CollapsibleContent className="transition-all duration-500 ease-in-out data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start animate-fade-in"
+          style={{ animationDelay: '100ms' }}
+        >
           {/* Left column: Video + Audience & Segments */}
           <div className="space-y-4 order-2 lg:order-1">
             {/* Video Demo - Mobile Responsive */}
