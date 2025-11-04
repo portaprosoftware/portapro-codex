@@ -69,10 +69,10 @@ const teamTimeOffMedia: string[] = [];
 const teamTrainingMedia: string[] = [];
 // Core Features - Section 1 (Blue background)
 const coreFeatures = [{
-  title: "Google Vision AI",
-  description: "Scan tool numbers and data directly from molded plastic panels.",
-  icon: Camera,
-  href: "#ai-scanning"
+  title: "Driver Mobile App",
+  description: "Offline-capable route navigation, job updates, and digital checklists.",
+  icon: Smartphone,
+  href: "#mobile-app"
 }, {
   title: "Smart Job Wizard",
   description: "Step-by-step job creation: delivery, pickups, crew, and invoicing.",
@@ -84,10 +84,10 @@ const coreFeatures = [{
   icon: CircleDollarSign,
   href: "#quotes"
 }, {
-  title: "Driver Mobile App",
-  description: "Offline-capable route navigation, job updates, and digital checklists.",
-  icon: Smartphone,
-  href: "#mobile-app"
+  title: "Google Vision AI",
+  description: "Scan tool numbers and data directly from molded plastic panels.",
+  icon: Camera,
+  href: "#ai-scanning"
 }];
 
 // Management Features - Section 2 (White background)
