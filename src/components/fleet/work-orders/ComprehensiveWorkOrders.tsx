@@ -12,6 +12,7 @@ import { WorkOrderKanbanBoard } from "./WorkOrderKanbanBoard";
 import { WorkOrderListView } from "./WorkOrderListView";
 import { WorkOrderCalendarViewEnhanced } from "./WorkOrderCalendarViewEnhanced";
 import { AddWorkOrderDrawer } from "./AddWorkOrderDrawer";
+import { WorkOrderDetailDrawer } from "./WorkOrderDetailDrawer";
 import { useToast } from "@/hooks/use-toast";
 import { WorkOrder } from "./types";
 
@@ -26,6 +27,8 @@ export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = (
   
   const [view, setView] = useState<'board' | 'list' | 'calendar'>('board');
   const [isAddDrawerOpen, setIsAddDrawerOpen] = useState(false);
+  const [detailDrawerOpen, setDetailDrawerOpen] = useState(false);
+  const [selectedWorkOrderId, setSelectedWorkOrderId] = useState<string | null>(null);
   
   // Filter states
   const [searchTerm, setSearchTerm] = useState('');
@@ -137,13 +140,13 @@ export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = (
   };
 
   const handleEdit = (workOrder: any) => {
-    console.log('Edit work order:', workOrder);
-    // TODO: Implement edit modal
+    setSelectedWorkOrderId(workOrder.id);
+    setDetailDrawerOpen(true);
   };
 
   const handleViewDetails = (workOrder: any) => {
-    console.log('View details for work order:', workOrder);
-    // TODO: Implement details drawer
+    setSelectedWorkOrderId(workOrder.id);
+    setDetailDrawerOpen(true);
   };
 
   const getActiveFiltersCount = () => {
@@ -306,6 +309,14 @@ export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = (
         onSuccess={() => refetch()}
         vehicleContextId={vehicleId || null}
         vehicleContextName={licensePlate || null}
+      />
+
+      {/* Work Order Detail Drawer */}
+      <WorkOrderDetailDrawer
+        workOrderId={selectedWorkOrderId}
+        open={detailDrawerOpen}
+        onOpenChange={setDetailDrawerOpen}
+        onSuccess={() => refetch()}
       />
     </div>
   );
