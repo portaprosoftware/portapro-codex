@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { FeatureIdeaModal } from '@/components/ui/feature-idea-modal';
 import { JoinCommunityModal } from '@/components/ui/join-community-modal';
 import { SignInButton, SignUpButton } from '@clerk/clerk-react';
-import { ArrowRight, Play, CheckCircle, Truck, Users, BarChart3, ClipboardList, MapPin, Calendar, DollarSign, Zap, Building2, FileText, Smartphone, Heart, Phone, Mail, Menu, X, Camera, Eye, Compass, Database, Shield, Clock, BellRing, Wrench, CalendarClock, Gauge, HardHat, Route, CloudOff, QrCode, Laptop, RefreshCcw, PiggyBank, Toilet, Wallet, WalletMinimal, HandCoins, MonitorSmartphone, ExternalLink, Lightbulb, CircleDollarSign } from 'lucide-react';
+import { ArrowRight, Play, CheckCircle, Truck, Users, BarChart3, ClipboardList, MapPin, Calendar, DollarSign, Zap, Building2, FileText, Smartphone, Heart, Phone, Mail, Menu, X, Camera, Eye, Compass, Database, Shield, Clock, BellRing, Wrench, CalendarClock, Gauge, HardHat, Route, CloudOff, QrCode, Laptop, RefreshCcw, PiggyBank, Toilet, Wallet, WalletMinimal, HandCoins, MonitorSmartphone, ExternalLink, Lightbulb, CircleDollarSign, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -42,6 +42,8 @@ import { FeaturesMegaMenu } from '@/components/marketing/FeaturesMegaMenu';
 import { FeaturesSheet } from '@/components/marketing/FeaturesSheet';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { CalendlyDrawer } from '@/components/marketing/CalendlyDrawer';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { cn } from "@/lib/utils";
 
 // Demo content arrays for carousels - empty to be populated
 const aiScanningMedia: string[] = [];
@@ -226,6 +228,7 @@ export const Landing: React.FC = () => {
   const [featuresSheetOpen, setFeaturesSheetOpen] = useState(false);
   const [selectedBlogPost, setSelectedBlogPost] = useState<string | null>(null);
   const [calendlyDrawerOpen, setCalendlyDrawerOpen] = useState(false);
+  const [isFleetToolsOpen, setIsFleetToolsOpen] = useState(false);
   const featuresMegaMenuRef = useRef<{
     triggerOpen: () => void;
   } | null>(null);
@@ -936,6 +939,26 @@ export const Landing: React.FC = () => {
           </div>
 
 
+          {/* Additional Fleet & Compliance Tools - Collapsible */}
+          <Collapsible open={isFleetToolsOpen} onOpenChange={setIsFleetToolsOpen} className="mt-8">
+            <CollapsibleTrigger className="w-full group">
+              <div className="text-center mb-8">
+                <div className="flex items-center justify-center gap-4">
+                  <h3 className="text-2xl lg:text-3xl font-bold text-foreground">Additional Fleet & Compliance Tools</h3>
+                  <ChevronDown 
+                    className={cn(
+                      "w-8 h-8 text-primary transition-transform duration-300 ease-in-out",
+                      isFleetToolsOpen && "rotate-180"
+                    )}
+                  />
+                </div>
+                <p className="text-base text-muted-foreground max-w-2xl mx-auto mt-2">
+                  Comprehensive maintenance, fuel tracking, driver management, and compliance features
+                </p>
+              </div>
+            </CollapsibleTrigger>
+
+            <CollapsibleContent className="transition-all duration-300 ease-in-out data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
           {/* Maintenance Notifications & Scheduling */}
           <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
             <div className="space-y-6 order-1 lg:order-2">
@@ -1080,6 +1103,8 @@ export const Landing: React.FC = () => {
             </div>
             <img src="/lovable-uploads/c021b264-552c-4a3e-b4c3-fcc1d6163147.png" alt="New DVIR form interface showing asset type selection, vehicle details, and defect reporting for fleet maintenance" className="w-full h-auto rounded-lg" />
           </div>
+            </CollapsibleContent>
+          </Collapsible>
         </div>
       </section>
 
