@@ -1115,8 +1115,8 @@ export const Landing: React.FC = () => {
         </div>
       </div>
 
-     {/* Team Management - White */}
-      <TeamManagementShowcase />
+      {/* Customer Accounts & Portals - White */}
+      <CustomerDashboardPortalShowcase />
 
       {/* Section Divider */}
       <div className="py-4 bg-white">
@@ -1125,8 +1125,8 @@ export const Landing: React.FC = () => {
         </div>
       </div>
 
-      {/* Customer Accounts & Portals - White */}
-      <CustomerDashboardPortalShowcase />
+     {/* Team Management - White */}
+      <TeamManagementShowcase />
 
       {/* Section Divider */}
       <div className="py-4 bg-white">
