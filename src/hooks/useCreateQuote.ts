@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { JobWizardData } from '@/contexts/JobWizardContext';
 import { resolveTaxRate, normalizeZip } from '@/lib/tax';
+import { triggerQuoteUpdateNotification } from '@/utils/notificationTriggers';
 
 interface CreateQuoteParams {
   wizardData: JobWizardData;

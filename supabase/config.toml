@@ -26,3 +26,27 @@ verify_jwt = false
 
 [functions.trigger-low-stock-alert]
 verify_jwt = false
+
+[functions.trigger-route-schedule-change]
+verify_jwt = false
+
+[functions.trigger-quote-update]
+verify_jwt = false
+
+[functions.trigger-payment-confirmation]
+verify_jwt = false
+
+[functions.trigger-asset-movement]
+verify_jwt = false
+
+[functions.trigger-vehicle-status-change]
+verify_jwt = false
+
+[functions.trigger-driver-checkin]
+verify_jwt = false
+
+[functions.trigger-new-team-member]
+verify_jwt = false
+
+[functions.trigger-comment-mention]
+verify_jwt = false

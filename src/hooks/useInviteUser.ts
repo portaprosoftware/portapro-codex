@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useUserRole } from './useUserRole';
 import { useOrganization } from '@clerk/clerk-react';
+import { triggerNewTeamMemberNotification } from '@/utils/notificationTriggers';
 
 interface InviteUserData {
   email: string;
@@ -85,9 +86,21 @@ export const useInviteUser = () => {
       // Exponential backoff: 1s, 2s, 4s
       return Math.pow(2, attemptIndex) * 1000;
     },
-    onSuccess: (data) => {
+    onSuccess: async (data, variables) => {
       const email = data.data?.email_address || data.data?.email;
       toast.success(`Invitation sent successfully to ${email}`);
+      
+      // Trigger new team member notification
+      if (data.data?.id) {
+        await triggerNewTeamMemberNotification({
+          newUserId: data.data.id,
+          newUserName: `${variables.firstName} ${variables.lastName}`,
+          newUserEmail: variables.email,
+          role: variables.role,
+          notifyTeam: true,
+          notifyUserIds: [] // Will fetch owners/admins in edge function
+        });
+      }
       
       // Invalidate relevant queries to refresh the UI
       queryClient.invalidateQueries({ queryKey: ['users'] });
