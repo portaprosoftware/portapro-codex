@@ -19,7 +19,7 @@ export const SmartWizardShowcase: React.FC = () => {
     <div className="space-y-6 sm:space-y-10">
       <header className="space-y-2 text-center">
         <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">Smart Job Wizard</h2>
-        <p className="text-muted-foreground text-base sm:text-lg max-w-3xl text-left">
+        <p className="text-muted-foreground text-base sm:text-lg max-w-3xl mx-auto text-left md:text-center">
           AI capacity planning, real-time availability, crew & vehicle assignment, and instant invoice — all in one flow.
         </p>
       </header>
