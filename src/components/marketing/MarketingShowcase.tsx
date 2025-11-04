@@ -50,7 +50,7 @@ export const MarketingShowcase: React.FC = () => {
                   Schedule ahead or send now • Works with Smart Segments
                 </span>
               </div>
-              <div className="flex items-center justify-center gap-2 mt-4">
+              <div className="inline-flex items-center justify-center gap-2 mt-4 px-4 py-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
                 <span className="text-sm text-muted-foreground">Expand</span>
                 <ChevronDown 
                   className={cn(

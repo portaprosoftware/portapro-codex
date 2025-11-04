@@ -27,7 +27,7 @@ export function CompanyAnalyticsShowcase() {
               <p className="text-base md:text-lg text-muted-foreground max-w-3xl text-left md:text-center mx-auto">
                 Six comprehensive tabs with persistent date controls, 24+ KPIs and one-click reports.
               </p>
-              <div className="flex items-center justify-center gap-2 mt-4">
+              <div className="inline-flex items-center justify-center gap-2 mt-4 px-4 py-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
                 <span className="text-sm text-muted-foreground">Expand</span>
                 <ChevronDown 
                   className={cn(

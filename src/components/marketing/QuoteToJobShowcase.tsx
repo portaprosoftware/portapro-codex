@@ -18,7 +18,7 @@ export const QuoteToJobShowcase: React.FC = () => {
           <p className="text-muted-foreground text-base sm:text-lg max-w-3xl text-left md:text-center mx-auto">
             Build a quote, send it to your customer, collect a deposit with Stripe, and auto-create the job with schedule and invoice.
           </p>
-          <div className="flex items-center justify-center gap-2 mt-4">
+          <div className="inline-flex items-center justify-center gap-2 mt-4 px-4 py-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
             <span className="text-sm text-muted-foreground">Expand</span>
             <ChevronDown 
               className={cn(
