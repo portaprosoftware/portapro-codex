@@ -36,7 +36,7 @@ export const AIPanelScanningShowcase: React.FC = () => {
               />
             </div>
           </div>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Point, shoot, done. AI reads embossed plastic automatically.</p>
+          <p className="text-muted-foreground text-lg max-w-2xl text-left">Point, shoot, done. AI reads embossed plastic automatically.</p>
         </div>
       </CollapsibleTrigger>
 

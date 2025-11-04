@@ -35,7 +35,7 @@ export function CompanyAnalyticsShowcase() {
                   />
                 </div>
               </div>
-              <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto mt-2">
+              <p className="text-base md:text-lg text-muted-foreground max-w-3xl text-left mt-2">
                 Six comprehensive tabs with persistent date controls, 24+ KPIs and one-click reports.
               </p>
             </div>

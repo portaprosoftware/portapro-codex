@@ -447,7 +447,7 @@ export const TeamManagementShowcase: React.FC = () => {
                   />
                 </div>
               </div>
-              <p className="text-lg text-muted-foreground mt-2">Everything you need to manage people, time, and compliance</p>
+              <p className="text-lg text-muted-foreground mt-2 text-left">Everything you need to manage people, time, and compliance</p>
             </div>
           </CollapsibleTrigger>
 

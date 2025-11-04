@@ -50,7 +50,7 @@ export const MarketingShowcase: React.FC = () => {
                   />
                 </div>
               </div>
-              <p className="text-sm sm:text-base text-muted-foreground">
+              <p className="text-sm sm:text-base text-muted-foreground text-left">
                 Create, target, schedule, and measure. Unlimited texts + emails <span className="font-bold">included</span>. No hidden fees.
               </p>
               <div className="flex flex-wrap gap-2 pt-1 justify-center">
