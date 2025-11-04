@@ -32,6 +32,7 @@ import {
   AlertOctagon,
   Frown,
   ExternalLink,
+  X,
 } from "lucide-react";
 
 // Mock customer data
@@ -97,8 +98,8 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
                   
                   <div className="space-y-4">
                     <div className="flex items-center gap-3">
-                      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-red-100">
-                        <span className="text-red-600 text-sm font-bold">❌</span>
+                      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-r from-red-500 to-red-600">
+                        <X className="w-4 h-4 text-white" strokeWidth={3} />
                       </div>
                       <div className="flex items-center gap-2">
                         <Phone className="w-4 h-4 text-red-500" />
@@ -107,8 +108,8 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
                     </div>
                     
                     <div className="flex items-center gap-3">
-                      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-red-100">
-                        <span className="text-red-600 text-sm font-bold">❌</span>
+                      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-r from-red-500 to-red-600">
+                        <X className="w-4 h-4 text-white" strokeWidth={3} />
                       </div>
                       <div className="flex items-center gap-2">
                         <FileText className="w-4 h-4 text-red-500" />
@@ -117,8 +118,8 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
                     </div>
                     
                     <div className="flex items-center gap-3">
-                      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-red-100">
-                        <span className="text-red-600 text-sm font-bold">❌</span>
+                      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-r from-red-500 to-red-600">
+                        <X className="w-4 h-4 text-white" strokeWidth={3} />
                       </div>
                       <div className="flex items-center gap-2">
                         <Camera className="w-4 h-4 text-red-500" />
@@ -127,8 +128,8 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
                     </div>
                     
                     <div className="flex items-center gap-3">
-                      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-red-100">
-                        <span className="text-red-600 text-sm font-bold">❌</span>
+                      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-r from-red-500 to-red-600">
+                        <X className="w-4 h-4 text-white" strokeWidth={3} />
                       </div>
                       <div className="flex items-center gap-2">
                         <MessageSquare className="w-4 h-4 text-red-500" />
