@@ -2,3 +2,9 @@ project_id = "kbqxyotasszslacozcey"
 
 [functions.org-invite]
 verify_jwt = false
+
+[functions.profile_sync]
+verify_jwt = false
+
+[functions.get_role]
+verify_jwt = false
