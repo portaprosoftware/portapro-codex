@@ -464,7 +464,6 @@ export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = (
         onSortOrderChange={setSortOrder}
         activeFiltersCount={getActiveFiltersCount()}
         onClearFilters={handleClearFilters}
-        onExport={handleExport}
         hideAssetTypeFilter={!!vehicleId}
       />
 

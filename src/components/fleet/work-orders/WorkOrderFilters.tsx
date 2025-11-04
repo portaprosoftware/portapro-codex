@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Search, Filter, Download, UserPlus, MoreHorizontal, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { Search, ArrowUp, ArrowDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface WorkOrderFiltersProps {
@@ -30,7 +30,6 @@ interface WorkOrderFiltersProps {
   onSortOrderChange: (value: 'asc' | 'desc') => void;
   activeFiltersCount: number;
   onClearFilters: () => void;
-  onExport: () => void;
   hideAssetTypeFilter?: boolean;
 }
 
@@ -57,7 +56,6 @@ export const WorkOrderFilters: React.FC<WorkOrderFiltersProps> = ({
   onSortOrderChange,
   activeFiltersCount,
   onClearFilters,
-  onExport,
   hideAssetTypeFilter = false
 }) => {
   return (
@@ -82,13 +80,6 @@ export const WorkOrderFilters: React.FC<WorkOrderFiltersProps> = ({
           )}
           <Button variant="outline" size="sm" onClick={onClearFilters}>
             Clear
-          </Button>
-        </div>
-
-        <div className="flex items-center gap-2 ml-auto">
-          <Button variant="outline" size="sm" onClick={onExport}>
-            <Download className="h-4 w-4 mr-2" />
-            Export
           </Button>
         </div>
       </div>
