@@ -343,6 +343,7 @@ export type Database = {
           quote_number_prefix: string | null
           return_prefix: string | null
           service_prefix: string | null
+          sms_from_number: string | null
           state_tax_rates: Json | null
           support_email: string | null
           survey_prefix: string | null
@@ -397,6 +398,7 @@ export type Database = {
           quote_number_prefix?: string | null
           return_prefix?: string | null
           service_prefix?: string | null
+          sms_from_number?: string | null
           state_tax_rates?: Json | null
           support_email?: string | null
           survey_prefix?: string | null
@@ -451,6 +453,7 @@ export type Database = {
           quote_number_prefix?: string | null
           return_prefix?: string | null
           service_prefix?: string | null
+          sms_from_number?: string | null
           state_tax_rates?: Json | null
           support_email?: string | null
           survey_prefix?: string | null

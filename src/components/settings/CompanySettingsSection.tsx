@@ -245,6 +245,7 @@ export function CompanySettingsSection() {
         isOpen={showSupportEmailModal}
         onClose={() => setShowSupportEmailModal(false)}
         currentEmail={companySettings?.support_email}
+        currentSmsNumber={companySettings?.sms_from_number}
       />
     </>
   );

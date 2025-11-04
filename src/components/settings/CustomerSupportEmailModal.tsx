@@ -22,11 +22,12 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Mail } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   support_email: z.string().email("Invalid email address").optional().or(z.literal("")),
+  sms_from_number: z.string().optional().or(z.literal("")),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -35,12 +36,14 @@ interface CustomerSupportEmailModalProps {
   isOpen: boolean;
   onClose: () => void;
   currentEmail?: string | null;
+  currentSmsNumber?: string | null;
 }
 
 export const CustomerSupportEmailModal: React.FC<CustomerSupportEmailModalProps> = ({
   isOpen,
   onClose,
   currentEmail,
+  currentSmsNumber,
 }) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -49,16 +52,18 @@ export const CustomerSupportEmailModal: React.FC<CustomerSupportEmailModalProps>
     resolver: zodResolver(formSchema),
     defaultValues: {
       support_email: currentEmail || "",
+      sms_from_number: currentSmsNumber || "",
     },
   });
 
   React.useEffect(() => {
-    if (isOpen && currentEmail !== undefined) {
+    if (isOpen) {
       form.reset({
         support_email: currentEmail || "",
+        sms_from_number: currentSmsNumber || "",
       });
     }
-  }, [isOpen, currentEmail, form]);
+  }, [isOpen, currentEmail, currentSmsNumber, form]);
 
   const updateEmailMutation = useMutation({
     mutationFn: async (data: FormData) => {
@@ -72,7 +77,10 @@ export const CustomerSupportEmailModal: React.FC<CustomerSupportEmailModalProps>
 
       const { error } = await supabase
         .from("company_settings")
-        .update({ support_email: data.support_email })
+        .update({ 
+          support_email: data.support_email,
+          sms_from_number: data.sms_from_number,
+        })
         .eq("id", settings.id);
 
       if (error) throw error;
@@ -81,7 +89,7 @@ export const CustomerSupportEmailModal: React.FC<CustomerSupportEmailModalProps>
       queryClient.invalidateQueries({ queryKey: ["company-settings"] });
       toast({
         title: "Success",
-        description: "Customer support email updated successfully",
+        description: "Customer contact information updated successfully",
       });
       onClose();
     },
@@ -89,7 +97,7 @@ export const CustomerSupportEmailModal: React.FC<CustomerSupportEmailModalProps>
       console.error("Error updating support email:", error);
       toast({
         title: "Error",
-        description: "Failed to update customer support email",
+        description: "Failed to update customer contact information",
         variant: "destructive",
       });
     },
@@ -105,10 +113,10 @@ export const CustomerSupportEmailModal: React.FC<CustomerSupportEmailModalProps>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Mail className="w-5 h-5" />
-            Customer Support Email
+            Customer Contact Information
           </DialogTitle>
           <DialogDescription>
-            Update the email address that customers will see on all communications
+            Update the contact information that customers will see on all communications
           </DialogDescription>
         </DialogHeader>
 
@@ -133,6 +141,31 @@ export const CustomerSupportEmailModal: React.FC<CustomerSupportEmailModalProps>
                   <FormDescription>
                     This email will be displayed to customers on quotes, invoices, reminders, 
                     and all automated messages. Make sure it's actively monitored.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="sms_from_number"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>SMS From Number</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                      <Input 
+                        placeholder="+1 (888) 721-3354" 
+                        className="pl-10"
+                        {...field} 
+                      />
+                    </div>
+                  </FormControl>
+                  <FormDescription>
+                    This is the Twilio phone number that all SMS notifications will be sent from.
+                    All customers will receive text messages from this number.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
