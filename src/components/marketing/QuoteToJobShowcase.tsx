@@ -14,7 +14,7 @@ export const QuoteToJobShowcase: React.FC = () => {
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="space-y-6 sm:space-y-10 overflow-hidden">
       <CollapsibleTrigger className="w-full group">
         <div className="space-y-2 px-4">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">Quote → Deposit → Job → Invoice, in one flow</h2>
             <div className="flex items-center gap-2">
               <ChevronDown 

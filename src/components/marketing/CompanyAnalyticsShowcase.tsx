@@ -21,11 +21,11 @@ export function CompanyAnalyticsShowcase() {
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
           <CollapsibleTrigger className="w-full group">
             <div className="mb-4 md:mb-6">
-              <div className="flex items-center gap-4">
-                <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-4 leading-tight">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight">
                   Company Analytics — Complete insights across your entire operation
                 </h2>
-                <div className="flex items-center gap-2 mb-4">
+                <div className="flex items-center gap-2">
                   <ChevronDown 
                     className={cn(
                       "w-8 h-8 text-primary transition-transform duration-300 ease-in-out",

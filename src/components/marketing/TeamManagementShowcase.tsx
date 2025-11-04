@@ -435,7 +435,7 @@ export const TeamManagementShowcase: React.FC = () => {
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
           <CollapsibleTrigger className="w-full group">
             <div className="mb-8">
-              <div className="flex items-center gap-4">
+              <div className="flex items-center justify-between">
                 <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Team Management & Scheduling</h2>
                 <div className="flex items-center gap-2">
                   <ChevronDown 

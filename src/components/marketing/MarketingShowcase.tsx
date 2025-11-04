@@ -38,7 +38,7 @@ export const MarketingShowcase: React.FC = () => {
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
           <CollapsibleTrigger className="w-full group">
             <header className="mb-6 sm:mb-8 space-y-2">
-              <div className="flex items-center gap-4">
+              <div className="flex items-center justify-between">
                 <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">Marketing</h2>
                 <div className="flex items-center gap-2">
                   <ChevronDown 

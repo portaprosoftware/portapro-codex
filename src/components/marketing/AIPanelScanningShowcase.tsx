@@ -24,7 +24,7 @@ export const AIPanelScanningShowcase: React.FC = () => {
       {/* Header */}
       <CollapsibleTrigger className="w-full group">
         <div className="space-y-3">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between">
             <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Smart Panel Scanning</h2>
             <div className="flex items-center gap-2">
               <ChevronDown 

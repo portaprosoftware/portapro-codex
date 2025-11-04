@@ -943,7 +943,7 @@ export const Landing: React.FC = () => {
           <Collapsible open={isFleetToolsOpen} onOpenChange={setIsFleetToolsOpen} className="mt-8">
             <CollapsibleTrigger className="w-full group">
               <div className="mb-8">
-                <div className="flex items-center gap-4">
+                <div className="flex items-center justify-between">
                   <h3 className="text-2xl lg:text-3xl font-bold text-foreground">Additional Fleet & Compliance Tools</h3>
                   <div className="flex items-center gap-2">
                     <ChevronDown 
