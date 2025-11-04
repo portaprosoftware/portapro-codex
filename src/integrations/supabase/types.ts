@@ -11641,6 +11641,47 @@ export type Database = {
         }
         Relationships: []
       }
+      work_order_history: {
+        Row: {
+          changed_at: string | null
+          changed_by: string
+          from_status: string | null
+          id: string
+          metadata: Json | null
+          note: string | null
+          to_status: string
+          work_order_id: string
+        }
+        Insert: {
+          changed_at?: string | null
+          changed_by: string
+          from_status?: string | null
+          id?: string
+          metadata?: Json | null
+          note?: string | null
+          to_status: string
+          work_order_id: string
+        }
+        Update: {
+          changed_at?: string | null
+          changed_by?: string
+          from_status?: string | null
+          id?: string
+          metadata?: Json | null
+          note?: string | null
+          to_status?: string
+          work_order_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_order_history_work_order_id_fkey"
+            columns: ["work_order_id"]
+            isOneToOne: false
+            referencedRelation: "work_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       work_order_items: {
         Row: {
           category: string | null
@@ -11882,6 +11923,47 @@ export type Database = {
           },
         ]
       }
+      work_order_signatures: {
+        Row: {
+          created_at: string | null
+          id: string
+          notes: string | null
+          signature_data: string
+          signature_type: string
+          signed_at: string | null
+          signed_by: string
+          work_order_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          signature_data: string
+          signature_type: string
+          signed_at?: string | null
+          signed_by: string
+          work_order_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          signature_data?: string
+          signature_type?: string
+          signed_at?: string | null
+          signed_by?: string
+          work_order_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_order_signatures_work_order_id_fkey"
+            columns: ["work_order_id"]
+            isOneToOne: false
+            referencedRelation: "work_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       work_orders: {
         Row: {
           asset_id: string
@@ -11893,8 +11975,11 @@ export type Database = {
           company_id: string | null
           created_at: string
           description: string | null
+          driver_verification_id: string | null
           driver_verification_required: boolean
           due_date: string | null
+          dvir_report_id: string | null
+          external_cost: number | null
           id: string
           labor_rate: number
           meter_close_hours: number | null
@@ -11903,15 +11988,25 @@ export type Database = {
           meter_open_miles: number | null
           opened_at: string
           opened_by: string | null
+          out_of_service: boolean | null
+          pm_schedule_id: string | null
+          po_number: string | null
           priority: Database["public"]["Enums"]["work_order_priority"]
           resolution_notes: string | null
+          return_to_service_at: string | null
+          reviewer_signature_id: string | null
           source: Database["public"]["Enums"]["work_order_source"]
+          source_context: string | null
           status: Database["public"]["Enums"]["work_order_status"]
           tax_amount: number
+          taxes_fees: number | null
+          technician_signature_id: string | null
           total_cost: number
           total_labor_hours: number
           total_parts_cost: number
           updated_at: string
+          vendor_id: string | null
+          work_order_number: string | null
         }
         Insert: {
           asset_id: string
@@ -11923,8 +12018,11 @@ export type Database = {
           company_id?: string | null
           created_at?: string
           description?: string | null
+          driver_verification_id?: string | null
           driver_verification_required?: boolean
           due_date?: string | null
+          dvir_report_id?: string | null
+          external_cost?: number | null
           id?: string
           labor_rate?: number
           meter_close_hours?: number | null
@@ -11933,15 +12031,25 @@ export type Database = {
           meter_open_miles?: number | null
           opened_at?: string
           opened_by?: string | null
+          out_of_service?: boolean | null
+          pm_schedule_id?: string | null
+          po_number?: string | null
           priority?: Database["public"]["Enums"]["work_order_priority"]
           resolution_notes?: string | null
+          return_to_service_at?: string | null
+          reviewer_signature_id?: string | null
           source: Database["public"]["Enums"]["work_order_source"]
+          source_context?: string | null
           status?: Database["public"]["Enums"]["work_order_status"]
           tax_amount?: number
+          taxes_fees?: number | null
+          technician_signature_id?: string | null
           total_cost?: number
           total_labor_hours?: number
           total_parts_cost?: number
           updated_at?: string
+          vendor_id?: string | null
+          work_order_number?: string | null
         }
         Update: {
           asset_id?: string
@@ -11953,8 +12061,11 @@ export type Database = {
           company_id?: string | null
           created_at?: string
           description?: string | null
+          driver_verification_id?: string | null
           driver_verification_required?: boolean
           due_date?: string | null
+          dvir_report_id?: string | null
+          external_cost?: number | null
           id?: string
           labor_rate?: number
           meter_close_hours?: number | null
@@ -11963,17 +12074,42 @@ export type Database = {
           meter_open_miles?: number | null
           opened_at?: string
           opened_by?: string | null
+          out_of_service?: boolean | null
+          pm_schedule_id?: string | null
+          po_number?: string | null
           priority?: Database["public"]["Enums"]["work_order_priority"]
           resolution_notes?: string | null
+          return_to_service_at?: string | null
+          reviewer_signature_id?: string | null
           source?: Database["public"]["Enums"]["work_order_source"]
+          source_context?: string | null
           status?: Database["public"]["Enums"]["work_order_status"]
           tax_amount?: number
+          taxes_fees?: number | null
+          technician_signature_id?: string | null
           total_cost?: number
           total_labor_hours?: number
           total_parts_cost?: number
           updated_at?: string
+          vendor_id?: string | null
+          work_order_number?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "work_orders_dvir_report_id_fkey"
+            columns: ["dvir_report_id"]
+            isOneToOne: false
+            referencedRelation: "dvir_reports"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_orders_pm_schedule_id_fkey"
+            columns: ["pm_schedule_id"]
+            isOneToOne: false
+            referencedRelation: "vehicle_pm_schedules"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -12498,6 +12634,7 @@ export type Database = {
       }
       generate_storage_location_report: { Args: never; Returns: Json }
       generate_vendor_id: { Args: never; Returns: string }
+      generate_work_order_number: { Args: never; Returns: string }
       geocode_and_create_service_location: {
         Args: {
           p_city: string
