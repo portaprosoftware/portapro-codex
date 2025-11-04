@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { triggerCommentMentionNotification } from '@/utils/notificationTriggers';
+import { parseUserMentions } from '@/utils/mentionParser';
 
 interface CustomerNote {
   id: string;
@@ -55,6 +57,16 @@ export function useCustomerNotes(customerId: string) {
         .single();
 
       if (error) throw error;
+      
+      // Check for @mentions and trigger notifications
+      const mentions = parseUserMentions(noteData.note_text);
+      if (mentions.length > 0 && data) {
+        // TODO: Fetch user IDs from usernames - for now just log
+        console.log('Mentioned users in customer note:', mentions);
+        // In production, you'd query users table to get user IDs from usernames
+        // then call triggerCommentMentionNotification for each mentioned user
+      }
+      
       return data;
     },
     onSuccess: () => {

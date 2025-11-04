@@ -16,7 +16,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useUser } from '@clerk/clerk-react';
 import { useEnhancedOffline } from '@/hooks/useEnhancedOffline';
 import { saveDraftReport, getDraftReport, savePendingReport } from '@/lib/serviceReportDB';
-import { 
+import { triggerAssetMovementNotification, triggerDriverCheckinNotification } from '@/utils/notificationTriggers';
+import {
   FileText, 
   Camera, 
   FileSignature, 
@@ -398,6 +399,29 @@ export const ServiceReportForm: React.FC<ServiceReportFormProps> = ({
         title: "Report Submitted",
         description: "Service report has been completed successfully",
       });
+
+      // Trigger asset movement notification (units were serviced)
+      if (job && user) {
+        await triggerAssetMovementNotification({
+          assetId: job.id,
+          assetName: `Job ${job.job_number}`,
+          movementType: 'returned',
+          jobNumber: job.job_number,
+          driverId: user.id,
+          notifyUserIds: [user.id],
+        });
+
+        // Trigger driver check-in notification (job completion)
+        await triggerDriverCheckinNotification({
+          driverId: user.id,
+          driverName: user.fullName || user.firstName || 'Driver',
+          checkinType: 'job_departure',
+          timestamp: new Date().toISOString(),
+          jobNumber: job.job_number,
+          notes: `Completed service report for job ${job.job_number}`,
+          notifyUserIds: [user.id],
+        });
+      }
 
       onComplete();
       onClose();

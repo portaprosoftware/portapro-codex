@@ -1,6 +1,8 @@
 import React, { useState, Suspense, lazy, useEffect } from "react";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useUser } from "@clerk/clerk-react";
+import { triggerVehicleStatusChangeNotification } from "@/utils/notificationTriggers";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -101,6 +103,7 @@ interface VehicleDetailDrawerProps {
 }
 
 export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicle, isOpen, onClose }) => {
+  const { user } = useUser();
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showDeletePhotoDialog, setShowDeletePhotoDialog] = useState(false);
@@ -191,13 +194,25 @@ export const VehicleDetailDrawer: React.FC<VehicleDetailDrawerProps> = ({ vehicl
         .single();
       
       if (error) throw error;
-      return result;
+      return { result, oldStatus: vehicle.status, newStatus: data.status };
     },
-    onSuccess: () => {
+    onSuccess: async ({ result, oldStatus, newStatus }) => {
       queryClient.invalidateQueries({ queryKey: ["vehicles"] });
       queryClient.invalidateQueries({ queryKey: ["vehicle", vehicle.id] });
       setIsEditing(false);
       toast.success("Vehicle updated successfully!");
+      
+      // Trigger notification if status changed
+      if (oldStatus !== newStatus && user) {
+        const vehicleName = `${result.make} ${result.model} (${result.license_plate})`;
+        await triggerVehicleStatusChangeNotification({
+          vehicleId: vehicle.id,
+          vehicleName,
+          oldStatus,
+          newStatus: newStatus as 'available' | 'in_use' | 'maintenance' | 'out_of_service',
+          notifyUserIds: [user.id],
+        });
+      }
     },
     onError: (error: any) => {
       toast.error(error.message || "Failed to update vehicle");

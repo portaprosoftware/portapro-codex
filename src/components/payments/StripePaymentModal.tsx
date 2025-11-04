@@ -11,6 +11,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, CheckCircle2, XCircle, CreditCard } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { triggerPaymentConfirmationNotification } from '@/utils/notificationTriggers';
+import { useUser } from '@clerk/clerk-react';
 
 interface StripePaymentModalProps {
   open: boolean;
@@ -41,6 +43,7 @@ export const StripePaymentModal: React.FC<StripePaymentModalProps> = ({
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const { toast } = useToast();
+  const { user } = useUser();
 
   const handlePayment = async () => {
     setIsProcessing(true);
@@ -86,6 +89,21 @@ export const StripePaymentModal: React.FC<StripePaymentModalProps> = ({
         title: 'Payment Successful',
         description: `${paymentType} of $${amount.toFixed(2)} has been processed.`,
       });
+
+      // Trigger payment confirmation notification
+      if (user) {
+        await triggerPaymentConfirmationNotification({
+          invoiceId: invoiceId || '',
+          customerId,
+          customerName: '', // Will be fetched in edge function
+          invoiceNumber: invoiceId ? `INV-${invoiceId.slice(0, 8)}` : '',
+          amount,
+          paymentMethod: 'card',
+          paymentDate: new Date().toISOString(),
+          notifyTeam: true,
+          teamUserIds: [user.id],
+        });
+      }
 
       if (onSuccess) {
         onSuccess(paymentId);

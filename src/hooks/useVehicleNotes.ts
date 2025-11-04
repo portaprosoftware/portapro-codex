@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { parseUserMentions } from '@/utils/mentionParser';
 
 interface VehicleNote {
   id: string;
@@ -55,6 +56,14 @@ export function useVehicleNotes(vehicleId: string) {
         .single();
 
       if (error) throw error;
+      
+      // Check for @mentions and trigger notifications
+      const mentions = parseUserMentions(noteData.note_text);
+      if (mentions.length > 0) {
+        console.log('Mentioned users in vehicle note:', mentions);
+        // In production, query users table to get user IDs from usernames
+      }
+      
       return data;
     },
     onSuccess: () => {
