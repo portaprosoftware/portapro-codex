@@ -26,12 +26,15 @@ export const AIPanelScanningShowcase: React.FC = () => {
         <div className="text-center space-y-3">
           <div className="flex items-center justify-center gap-4">
             <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Smart Panel Scanning</h2>
-            <ChevronDown 
-              className={cn(
-                "w-8 h-8 text-primary transition-transform duration-300 ease-in-out",
-                isOpen && "rotate-180"
-              )}
-            />
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Click to expand</span>
+              <ChevronDown 
+                className={cn(
+                  "w-8 h-8 text-primary transition-transform duration-300 ease-in-out",
+                  isOpen && "rotate-180"
+                )}
+              />
+            </div>
           </div>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Point, shoot, done. AI reads embossed plastic automatically.</p>
         </div>

@@ -40,12 +40,15 @@ export const MarketingShowcase: React.FC = () => {
             <header className="mb-6 sm:mb-8 space-y-2">
               <div className="flex items-center justify-center gap-4">
                 <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">Marketing</h2>
-                <ChevronDown 
-                  className={cn(
-                    "w-8 h-8 text-primary transition-transform duration-300 ease-in-out",
-                    isOpen && "rotate-180"
-                  )}
-                />
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">Click to expand</span>
+                  <ChevronDown 
+                    className={cn(
+                      "w-8 h-8 text-primary transition-transform duration-300 ease-in-out",
+                      isOpen && "rotate-180"
+                    )}
+                  />
+                </div>
               </div>
               <p className="text-sm sm:text-base text-muted-foreground">
                 Create, target, schedule, and measure. Unlimited texts + emails <span className="font-bold">included</span>. No hidden fees.

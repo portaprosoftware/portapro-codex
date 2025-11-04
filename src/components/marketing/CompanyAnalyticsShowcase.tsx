@@ -25,12 +25,15 @@ export function CompanyAnalyticsShowcase() {
                 <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-4 leading-tight">
                   Company Analytics — Complete insights across your entire operation
                 </h2>
-                <ChevronDown 
-                  className={cn(
-                    "w-8 h-8 text-primary transition-transform duration-300 ease-in-out",
-                    isOpen && "rotate-180"
-                  )}
-                />
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="text-sm text-muted-foreground">Click to expand</span>
+                  <ChevronDown 
+                    className={cn(
+                      "w-8 h-8 text-primary transition-transform duration-300 ease-in-out",
+                      isOpen && "rotate-180"
+                    )}
+                  />
+                </div>
               </div>
               <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto">
                 Six comprehensive tabs with persistent date controls, 24+ KPIs and one-click reports.

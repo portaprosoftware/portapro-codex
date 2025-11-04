@@ -945,12 +945,15 @@ export const Landing: React.FC = () => {
               <div className="text-center mb-8">
                 <div className="flex items-center justify-center gap-4">
                   <h3 className="text-2xl lg:text-3xl font-bold text-foreground">Additional Fleet & Compliance Tools</h3>
-                  <ChevronDown 
-                    className={cn(
-                      "w-8 h-8 text-primary transition-transform duration-300 ease-in-out",
-                      isFleetToolsOpen && "rotate-180"
-                    )}
-                  />
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">Click to expand</span>
+                    <ChevronDown 
+                      className={cn(
+                        "w-8 h-8 text-primary transition-transform duration-300 ease-in-out",
+                        isFleetToolsOpen && "rotate-180"
+                      )}
+                    />
+                  </div>
                 </div>
                 <p className="text-base text-muted-foreground max-w-2xl mx-auto mt-2">
                   Comprehensive maintenance, fuel tracking, driver management, and compliance features

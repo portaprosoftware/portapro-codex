@@ -18,12 +18,15 @@ export const ConsumablesShowcase: React.FC = () => {
               <h2 className="text-3xl lg:text-4xl font-bold text-foreground text-left">
                 🧻 Consumables — Flexible & Transparent
               </h2>
-              <ChevronDown 
-                className={cn(
-                  "w-8 h-8 text-primary transition-transform duration-300 ease-in-out",
-                  isOpen && "rotate-180"
-                )}
-              />
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">Click to expand</span>
+                <ChevronDown 
+                  className={cn(
+                    "w-8 h-8 text-primary transition-transform duration-300 ease-in-out",
+                    isOpen && "rotate-180"
+                  )}
+                />
+              </div>
             </div>
           </CollapsibleTrigger>
 
