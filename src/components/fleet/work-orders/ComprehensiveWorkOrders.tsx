@@ -6,12 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Plus, Kanban, List, Calendar, Eye, FileDown, FileText } from "lucide-react";
+import { Plus, Kanban, List, Calendar, Eye, FileDown, FileText, BarChart3 } from "lucide-react";
 import { WorkOrderMetrics } from "./WorkOrderMetrics";
 import { WorkOrderFilters } from "./WorkOrderFilters";
 import { WorkOrderKanbanBoard } from "./WorkOrderKanbanBoard";
 import { WorkOrderListView } from "./WorkOrderListView";
 import { WorkOrderCalendarViewEnhanced } from "./WorkOrderCalendarViewEnhanced";
+import { WorkOrderAnalyticsDashboard } from "./analytics/WorkOrderAnalyticsDashboard";
 import { AddWorkOrderDrawer } from "./AddWorkOrderDrawer";
 import { WorkOrderDetailDrawer } from "./WorkOrderDetailDrawer";
 import { useToast } from "@/hooks/use-toast";
@@ -36,7 +37,7 @@ export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = (
   const { user } = useUser();
   const queryClient = useQueryClient();
   
-  const [view, setView] = useState<'board' | 'list' | 'calendar'>('board');
+  const [view, setView] = useState<'board' | 'list' | 'calendar' | 'analytics'>('board');
   const [isAddDrawerOpen, setIsAddDrawerOpen] = useState(false);
   const [detailDrawerOpen, setDetailDrawerOpen] = useState(false);
   const [selectedWorkOrderId, setSelectedWorkOrderId] = useState<string | null>(null);
@@ -411,28 +412,34 @@ export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = (
               <Calendar className="h-4 w-4" />
               Calendar
             </TabsTrigger>
+            <TabsTrigger value="analytics" className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4" />
+              Analytics
+            </TabsTrigger>
           </TabsList>
         </Tabs>
         
-        <div className="flex items-center gap-6">
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="overdue-filter"
-              checked={overdueOnly}
-              onCheckedChange={setOverdueOnly}
-            />
-            <Label htmlFor="overdue-filter" className="text-sm">Overdue only</Label>
-          </div>
+        {view !== 'analytics' && (
+          <div className="flex items-center gap-6">
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="overdue-filter"
+                checked={overdueOnly}
+                onCheckedChange={setOverdueOnly}
+              />
+              <Label htmlFor="overdue-filter" className="text-sm">Overdue only</Label>
+            </div>
 
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="oos-filter"
-              checked={oosOnly}
-              onCheckedChange={setOosOnly}
-            />
-            <Label htmlFor="oos-filter" className="text-sm">Out of service</Label>
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="oos-filter"
+                checked={oosOnly}
+                onCheckedChange={setOosOnly}
+              />
+              <Label htmlFor="oos-filter" className="text-sm">Out of service</Label>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {view === 'board' && (
@@ -463,6 +470,10 @@ export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = (
           onStatusChange={handleStatusChange}
           onRefresh={() => refetch()}
         />
+      )}
+
+      {view === 'analytics' && (
+        <WorkOrderAnalyticsDashboard />
       )}
 
       {/* Add Work Order Drawer */}
