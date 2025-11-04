@@ -60,9 +60,18 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Map internal roles to Clerk roles
+    let clerkRole = role;
+    
+    // Match Lovable roles to Clerk roles
+    if (role === "admin" || role === "owner") clerkRole = "owner";
+    
+    // Optional fallback for now (to avoid future errors)
+    if (["dispatcher", "driver", "customer"].includes(role)) clerkRole = "owner";
+
     const result = await createClerkInvite(organizationId, {
       email_address: email,
-      role,
+      role: clerkRole,
     });
 
     if (!result.ok) {
