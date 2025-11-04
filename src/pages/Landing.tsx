@@ -817,10 +817,10 @@ export const Landing: React.FC = () => {
 
       {/* Detailed Sections for Group 2: Core Features */}
 
-      {/* Smart AI Panel Scanning Section - White */}
-      <section id="ai-scanning" className="py-8 bg-white">
+      {/* Driver Mobile App - White */}
+      <section id="mobile-app" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <AIPanelScanningShowcase />
+          <DriverAppShowcase />
         </div>
       </section>
 
@@ -881,10 +881,10 @@ export const Landing: React.FC = () => {
         </div>
       </div>
 
-      {/* Driver Mobile App - White */}
-      <section id="mobile-app" className="py-8 bg-white">
+      {/* Smart AI Panel Scanning Section - White */}
+      <section id="ai-scanning" className="py-8 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
-          <DriverAppShowcase />
+          <AIPanelScanningShowcase />
         </div>
       </section>
 
