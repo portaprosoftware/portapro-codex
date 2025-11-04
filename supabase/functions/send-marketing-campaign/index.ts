@@ -111,10 +111,10 @@ const handler = async (req: Request): Promise<Response> => {
         // Get company settings for from address
         const { data: companySettings } = await supabase
           .from("company_settings")
-          .select("company_name, company_email")
+          .select("support_email, company_email, company_name")
           .single();
 
-        const fromEmail = companySettings?.company_email || "noreply@company.com";
+        const fromEmail = companySettings?.support_email || companySettings?.company_email || "onboarding@resend.dev";
         const fromName = companySettings?.company_name || "Company";
 
         const emailResponse = await resend.emails.send({

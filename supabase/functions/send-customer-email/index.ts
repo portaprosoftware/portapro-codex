@@ -58,11 +58,11 @@ serve(async (req) => {
     // Get company settings for "from" email
     const { data: companySettings } = await supabase
       .from('company_settings')
-      .select('email, name')
+      .select('support_email, company_email, company_name')
       .single();
 
-    const fromEmail = companySettings?.email || 'onboarding@resend.dev';
-    const fromName = companySettings?.name || 'PortaPro';
+    const fromEmail = companySettings?.support_email || companySettings?.company_email || 'onboarding@resend.dev';
+    const fromName = companySettings?.company_name || 'PortaPro';
 
     console.log(`Sending email from ${fromName} <${fromEmail}> to ${toEmail}`);
 

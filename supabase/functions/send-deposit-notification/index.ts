@@ -1,4 +1,5 @@
 import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { Resend } from 'npm:resend@2.0.0';
 
 const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
@@ -142,8 +143,21 @@ serve(async (req) => {
         throw new Error(`Unknown notification type: ${type}`);
     }
 
+    // Get company settings for "from" email
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const { data: companySettings } = await supabase
+      .from('company_settings')
+      .select('support_email, company_email, company_name')
+      .single();
+
+    const fromEmail = companySettings?.support_email || companySettings?.company_email || 'onboarding@resend.dev';
+    const fromName = companySettings?.company_name || 'PortaPro';
+
     const { data, error } = await resend.emails.send({
-      from: 'PortaPro <notifications@resend.dev>',
+      from: `${fromName} <${fromEmail}>`,
       to: [to],
       subject,
       html,

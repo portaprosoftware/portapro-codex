@@ -118,11 +118,20 @@ serve(async (req) => {
       tanks as Tank[]
     );
 
+    // Get company settings for "from" email
+    const { data: companySettings } = await supabase
+      .from('company_settings')
+      .select('support_email, company_email, company_name')
+      .single();
+
+    const fromEmail = companySettings?.support_email || companySettings?.company_email || 'onboarding@resend.dev';
+    const fromName = companySettings?.company_name || 'PortaPro';
+
     // Send email
     console.log(`Sending email to: ${settings.notification_email}`);
     
     const { data: emailResult, error: emailError } = await resend.emails.send({
-      from: 'PortaPro Fuel Management <fuel@notifications.portapro.app>',
+      from: `${fromName} <${fromEmail}>`,
       to: [settings.notification_email],
       subject: `Fuel Management Alert: ${criticalAlerts.length} Critical, ${warningAlerts.length} Warnings`,
       html: emailHtml,
