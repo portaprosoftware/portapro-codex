@@ -7,49 +7,41 @@ import { TechnicianWorkOrderCard } from '@/components/technician/TechnicianWorkO
 import { SwipeableWorkOrderCard } from '@/components/technician/SwipeableWorkOrderCard';
 import { StatusChangeDialog } from '@/components/technician/StatusChangeDialog';
 import { TechnicianStats } from '@/components/technician/TechnicianStats';
+import { OfflineIndicator } from '@/components/technician/OfflineIndicator';
 import { Loader2, Wrench } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { useTechnicianWorkOrders } from '@/hooks/useTechnicianWorkOrders';
+import { useOnlineStatus } from '@/hooks/useOnlineStatus';
+import { queueOperation } from '@/utils/indexedDB';
 
 export const TechnicianDashboard: React.FC = () => {
   const { user } = useUser();
   const { toast } = useToast();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { isOnline } = useOnlineStatus();
   const [activeTab, setActiveTab] = useState<'assigned' | 'in_progress' | 'completed'>('assigned');
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
   const [selectedWorkOrder, setSelectedWorkOrder] = useState<any>(null);
 
-  // Fetch work orders assigned to current user
-  const { data: workOrders, isLoading, refetch } = useQuery({
-    queryKey: ['technician-work-orders', user?.id, activeTab],
-    queryFn: async () => {
-      if (!user?.id) return [];
+  // Fetch work orders with offline support
+  const { data: allWorkOrders = [], isLoading, refetch } = useTechnicianWorkOrders();
 
-      let query = supabase
-        .from('work_orders')
-        .select('*')
-        .eq('assigned_to', user.id)
-        .order('due_date', { ascending: true });
-
-      // Filter by status based on active tab
-      if (activeTab === 'assigned') {
-        query = query.in('status', ['open', 'awaiting_parts']);
-      } else if (activeTab === 'in_progress') {
-        query = query.eq('status', 'in_progress');
-      } else if (activeTab === 'completed') {
-        query = query.eq('status', 'completed');
-      }
-
-      const { data, error } = await query;
-      if (error) throw error;
-
-      return data || [];
-    },
-    enabled: !!user?.id,
-    staleTime: 1 * 60 * 1000, // 1 minute - refresh frequently for field work
-  });
+  // Filter work orders based on active tab
+  const workOrders = React.useMemo(() => {
+    if (!allWorkOrders) return [];
+    
+    if (activeTab === 'assigned') {
+      return allWorkOrders.filter((wo: any) => ['open', 'awaiting_parts'].includes(wo.status));
+    } else if (activeTab === 'in_progress') {
+      return allWorkOrders.filter((wo: any) => wo.status === 'in_progress');
+    } else if (activeTab === 'completed') {
+      return allWorkOrders.filter((wo: any) => wo.status === 'completed');
+    }
+    return allWorkOrders;
+  }, [allWorkOrders, activeTab]);
 
   // Update work order status mutation
   const updateStatusMutation = useMutation({
@@ -207,6 +199,9 @@ export const TechnicianDashboard: React.FC = () => {
         workOrderNumber={selectedWorkOrder?.work_order_number || ''}
         isProcessing={updateStatusMutation.isPending}
       />
+
+      {/* Offline Indicator */}
+      <OfflineIndicator />
     </div>
   );
 };
