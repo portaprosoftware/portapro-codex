@@ -334,9 +334,16 @@ export const ActivePMSchedulesList: React.FC<ActivePMSchedulesListProps> = ({ ve
           onSuccess={() => {
             setIsWorkOrderDrawerOpen(false);
             setSelectedScheduleForWO(null);
+            queryClient.invalidateQueries({ queryKey: ['comprehensive-work-orders'] });
           }}
           vehicleContextId={selectedScheduleForWO.vehicle_id}
-          pmTemplate={selectedScheduleForWO.pm_templates}
+          pmTemplate={{
+            id: selectedScheduleForWO.template_id,
+            name: selectedScheduleForWO.pm_templates?.name,
+            description: selectedScheduleForWO.pm_templates?.description,
+            next_due_date: selectedScheduleForWO.next_due_date,
+            current_meter: selectedScheduleForWO.current_mileage || selectedScheduleForWO.current_engine_hours
+          }}
         />
       )}
     </>

@@ -23,6 +23,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { useUser } from "@clerk/clerk-react";
 import { format } from "date-fns";
 import { WorkOrderChecklistSection } from "./WorkOrderChecklistSection";
 import { WorkOrderPartsSection } from "./WorkOrderPartsSection";
@@ -112,6 +113,7 @@ export const AddWorkOrderDrawer: React.FC<AddWorkOrderDrawerProps> = ({
   pmTemplate
 }) => {
   const { toast } = useToast();
+  const { user } = useUser();
   const queryClient = useQueryClient();
   const { trackEvent } = useAnalytics();
   const isVehicleContextLocked = !!vehicleContextId;
@@ -140,9 +142,28 @@ export const AddWorkOrderDrawer: React.FC<AddWorkOrderDrawerProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [partsWarning, setPartsWarning] = useState(false);
 
+  // Pre-fill form when PM template is provided
+  useEffect(() => {
+    if (pmTemplate && open) {
+      const dueDate = pmTemplate.next_due_date 
+        ? format(new Date(pmTemplate.next_due_date), 'yyyy-MM-dd')
+        : format(getDefaultDueDateForPriority('normal') || new Date(), 'yyyy-MM-dd');
+      
+      setForm(prev => ({
+        ...prev,
+        source: 'pm_schedule',
+        priority: 'normal',
+        due_date: dueDate,
+        description: `Preventive Maintenance: ${pmTemplate.name}\n\n${pmTemplate.description || 'Scheduled maintenance due'}`,
+        template_id: pmTemplate.id,
+        meter_at_open: pmTemplate.current_meter?.toString() || ''
+      }));
+    }
+  }, [pmTemplate, open]);
+
   // Auto-set due date when priority changes
   useEffect(() => {
-    if (form.priority && !form.due_date) {
+    if (form.priority && !form.due_date && !pmTemplate) {
       const defaultDate = getDefaultDueDateForPriority(form.priority);
       if (defaultDate) {
         setForm(prev => ({ 
@@ -151,7 +172,7 @@ export const AddWorkOrderDrawer: React.FC<AddWorkOrderDrawerProps> = ({
         }));
       }
     }
-  }, [form.priority]);
+  }, [form.priority, pmTemplate]);
 
   // Check for parts shortages
   useEffect(() => {
