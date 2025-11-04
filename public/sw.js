@@ -191,41 +191,74 @@ async function syncToSupabase(data, table) {
 
 // Push notification event
 self.addEventListener('push', event => {
-  if (!event.data) return;
+  console.log('Push notification received:', event);
   
-  const data = event.data.json();
-  const options = {
-    body: data.body,
-    icon: '/icon-192x192.png',
-    badge: '/icon-192x192.png',
-    tag: data.tag || 'default',
-    requireInteraction: data.requireInteraction || false,
-    actions: data.actions || []
+  let notificationData = {
+    title: 'PortaPro Notification',
+    body: 'You have a new notification',
+    icon: '/icon-192.png',
+    badge: '/icon-96.png',
+    data: {}
   };
-  
+
+  if (event.data) {
+    try {
+      const payload = event.data.json();
+      notificationData = {
+        title: payload.title || notificationData.title,
+        body: payload.body || notificationData.body,
+        icon: payload.icon || notificationData.icon,
+        badge: payload.badge || notificationData.badge,
+        data: payload.data || {},
+        tag: payload.tag,
+        requireInteraction: payload.requireInteraction || false,
+        actions: payload.actions || []
+      };
+    } catch (e) {
+      console.error('Error parsing push notification:', e);
+      notificationData.body = event.data.text();
+    }
+  }
+
   event.waitUntil(
-    self.registration.showNotification(data.title, options)
+    self.registration.showNotification(notificationData.title, {
+      body: notificationData.body,
+      icon: notificationData.icon,
+      badge: notificationData.badge,
+      data: notificationData.data,
+      tag: notificationData.tag,
+      requireInteraction: notificationData.requireInteraction,
+      actions: notificationData.actions,
+      vibrate: [200, 100, 200]
+    })
   );
 });
 
 // Notification click event
 self.addEventListener('notificationclick', event => {
+  console.log('Notification clicked:', event);
   event.notification.close();
+
+  const urlToOpen = event.notification.data?.url || '/dashboard';
   
-  // Handle notification action clicks
-  if (event.action) {
-    switch (event.action) {
-      case 'view_job':
-        event.waitUntil(clients.openWindow(`/jobs/${event.notification.tag}`));
-        break;
-      case 'view_dvir':
-        event.waitUntil(clients.openWindow('/fleet/dvir'));
-        break;
-      default:
-        event.waitUntil(clients.openWindow('/'));
-    }
-  } else {
-    // Default click action
-    event.waitUntil(clients.openWindow('/'));
-  }
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      // Check if there's already a window open
+      for (const client of clientList) {
+        if (client.url.includes(urlToOpen.split('?')[0]) && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      // Open new window if none found
+      if (clients.openWindow) {
+        return clients.openWindow(urlToOpen);
+      }
+    })
+  );
+});
+
+// Notification close event
+self.addEventListener('notificationclose', event => {
+  console.log('Notification closed:', event);
+  // Optional: track notification dismissals for analytics
 });

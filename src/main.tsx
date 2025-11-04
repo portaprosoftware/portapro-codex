@@ -74,6 +74,22 @@ const queryClient = new QueryClient({
 (window as any).queryClient = queryClient;
 
 // -----------------------------------------------------------------------------
+// Service Worker Registration (for push notifications and offline support)
+// -----------------------------------------------------------------------------
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker
+      .register('/sw.js')
+      .then((registration) => {
+        console.log('✅ Service Worker registered:', registration.scope);
+      })
+      .catch((error) => {
+        console.error('❌ Service Worker registration failed:', error);
+      });
+  });
+}
+
+// -----------------------------------------------------------------------------
 // Mount
 // -----------------------------------------------------------------------------
 createRoot(document.getElementById("root")!).render(

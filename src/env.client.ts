@@ -16,6 +16,7 @@ const optionalClientEnv = [
   'VITE_SENTRY_DSN',
   'VITE_GA_MEASUREMENT_ID',
   'VITE_ALLOWED_CLERK_ORG_SLUGS',
+  'VITE_VAPID_PUBLIC_KEY',
 ] as const;
 
 type RequiredClientEnv = (typeof requiredClientEnv)[number];
@@ -44,6 +45,7 @@ export const env = {
   SENTRY_DSN: import.meta.env.VITE_SENTRY_DSN as string | undefined,
   GA_MEASUREMENT_ID: import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined,
   ALLOWED_CLERK_ORG_SLUGS: import.meta.env.VITE_ALLOWED_CLERK_ORG_SLUGS as string | undefined,
+  VAPID_PUBLIC_KEY: import.meta.env.VITE_VAPID_PUBLIC_KEY as string | undefined,
   
   // Special flags
   isDev: import.meta.env.DEV,

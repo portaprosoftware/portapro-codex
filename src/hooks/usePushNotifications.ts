@@ -11,7 +11,7 @@ interface PushSubscription {
   };
 }
 
-const VAPID_PUBLIC_KEY = 'BEl62iUYgUivxIkv69yViEuiBIa40HticCqJBXbqceej9F3ePBdOQMJ2SPwQPsHmV4Lf2P4V8zS2MnKQUcbE'; // You'll need to generate this
+const VAPID_PUBLIC_KEY = 'BPb-fTRYNWef_k8mTIj15aasi9e-1RVHBQ34KseTUsbNHQ3TFefIclNWybnHl_YZHLqJNOlm_8ddmYIKlTNPHo4';
 
 function urlBase64ToUint8Array(base64String: string) {
   const padding = '='.repeat((4 - base64String.length % 4) % 4);
