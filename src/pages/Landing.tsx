@@ -120,11 +120,6 @@ const servicesFeatures = [{
   icon: Toilet,
   href: "#inventory"
 }, {
-  title: "Consumables",
-  description: "Manage toilet paper, sanitizer, and cleaning supplies inventory.",
-  icon: SoapDispenserDroplet,
-  href: "#consumables"
-}, {
   title: "Services Hub",
   description: "Coordinate pumping, cleaning, and maintenance service operations.",
   icon: ClipboardCheck,
@@ -134,6 +129,11 @@ const servicesFeatures = [{
   description: "Customer communication, promotions, and lead generation features.",
   icon: Megaphone,
   href: "#marketing"
+}, {
+  title: "Consumables",
+  description: "Manage toilet paper, sanitizer, and cleaning supplies inventory.",
+  icon: SoapDispenserDroplet,
+  href: "#consumables"
 }];
 
 // Job Wizard Steps
