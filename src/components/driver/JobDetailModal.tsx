@@ -33,6 +33,7 @@ import {
 import { PhotoCapture } from './PhotoCapture';
 import { SignatureCapture } from './SignatureCapture';
 import { ServiceReportForm } from './ServiceReportForm';
+import { VoiceNoteInput } from './VoiceNoteInput';
 import { useToast } from '@/hooks/use-toast';
 import { getDualJobStatusInfo } from '@/lib/jobStatusUtils';
 import { supabase } from '@/integrations/supabase/client';
@@ -799,11 +800,12 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <Textarea
-                    placeholder="Add job notes..."
+                  <VoiceNoteInput
                     value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
+                    onChange={setNotes}
+                    placeholder="Add job notes..."
                     rows={3}
+                    maxLength={500}
                   />
                   <Button 
                     onClick={handleAddNotes}

@@ -25,6 +25,7 @@ import {
 import SignatureCanvas from 'react-signature-canvas';
 import { PhotoGallery } from '@/components/technician/PhotoGallery';
 import { MobileCamera } from '@/components/technician/MobileCamera';
+import { VoiceRecorder } from '@/components/shared/VoiceRecorder';
 import { uploadWorkOrderPhoto, fetchWorkOrderPhotos, deleteWorkOrderPhoto } from '@/utils/photoUpload';
 import { useUser } from '@clerk/clerk-react';
 
@@ -60,6 +61,7 @@ export default function TechnicianWorkOrderComplete() {
   const [completionNotes, setCompletionNotes] = useState('');
   const [signatureData, setSignatureData] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isVoiceRecording, setIsVoiceRecording] = useState(false);
 
   // Fetch work order details
   const { data: workOrder, isLoading } = useQuery({
@@ -616,7 +618,7 @@ export default function TechnicianWorkOrderComplete() {
                 </div>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <Label>Work Summary</Label>
                 <Textarea
                   placeholder="Describe the work completed, any issues found, and recommendations..."
@@ -628,6 +630,21 @@ export default function TechnicianWorkOrderComplete() {
                 <p className="text-xs text-muted-foreground">
                   {completionNotes.length} / 500 characters
                 </p>
+
+                {/* Voice Input */}
+                <div className="pt-3 border-t">
+                  <Label className="mb-3 block">Or use voice input</Label>
+                  <VoiceRecorder
+                    isRecording={isVoiceRecording}
+                    onRecordingChange={setIsVoiceRecording}
+                    onTranscript={(text) => {
+                      setCompletionNotes(prev => {
+                        const newText = prev ? `${prev} ${text}` : text;
+                        return newText.slice(0, 500); // Respect character limit
+                      });
+                    }}
+                  />
+                </div>
               </div>
             </Card>
 

@@ -16,6 +16,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
+import { VoiceNoteInput } from './VoiceNoteInput';
 
 interface EditDriverProfileDialogProps {
   isOpen: boolean;
@@ -167,13 +168,13 @@ export function EditDriverProfileDialog({ isOpen, onClose, driver }: EditDriverP
 
           {/* Notes */}
           <div className="space-y-2">
-            <Label htmlFor="notes">Notes</Label>
-            <Textarea
-              id="notes"
+            <VoiceNoteInput
               value={formData.notes}
-              onChange={(e) => handleInputChange('notes', e.target.value)}
-              rows={3}
+              onChange={(value) => handleInputChange('notes', value)}
+              label="Notes"
               placeholder="Additional notes about this driver..."
+              rows={3}
+              maxLength={500}
             />
           </div>
 
