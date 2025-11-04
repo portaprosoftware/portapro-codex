@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { 
   Drawer, 
   DrawerContent, 
@@ -22,10 +23,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { format } from "date-fns";
 import { WorkOrderChecklistSection } from "./WorkOrderChecklistSection";
 import { WorkOrderPartsSection } from "./WorkOrderPartsSection";
 import { WorkOrderLaborSection } from "./WorkOrderLaborSection";
 import { WorkOrderSignOffSection } from "./WorkOrderSignOffSection";
+import { 
+  getDefaultDueDateForPriority, 
+  shouldAutoSetAwaitingParts, 
+  getShortParts,
+  validateWorkOrder
+} from "@/lib/workOrderRules";
 
 interface AddWorkOrderDrawerProps {
   open: boolean;
@@ -130,6 +138,39 @@ export const AddWorkOrderDrawer: React.FC<AddWorkOrderDrawerProps> = ({
 
   const [newTask, setNewTask] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [partsWarning, setPartsWarning] = useState(false);
+
+  // Auto-set due date when priority changes
+  useEffect(() => {
+    if (form.priority && !form.due_date) {
+      const defaultDate = getDefaultDueDateForPriority(form.priority);
+      if (defaultDate) {
+        setForm(prev => ({ 
+          ...prev, 
+          due_date: format(defaultDate, 'yyyy-MM-dd')
+        }));
+      }
+    }
+  }, [form.priority]);
+
+  // Check for parts shortages
+  useEffect(() => {
+    if (form.parts.length > 0) {
+      const hasShortages = shouldAutoSetAwaitingParts(form.parts);
+      setPartsWarning(hasShortages);
+      
+      if (hasShortages) {
+        const shortParts = getShortParts(form.parts);
+        toast({
+          title: "Parts shortage detected",
+          description: `${shortParts.length} part(s) have insufficient stock. Work order may need to wait for parts.`,
+          variant: "default"
+        });
+      }
+    } else {
+      setPartsWarning(false);
+    }
+  }, [form.parts]);
 
   const handleAddTask = () => {
     if (newTask.trim()) {
@@ -149,10 +190,12 @@ export const AddWorkOrderDrawer: React.FC<AddWorkOrderDrawerProps> = ({
   };
 
   const handleSubmit = async () => {
-    if (!form.asset_id || !form.description) {
+    // Validate work order
+    const validation = validateWorkOrder(form);
+    if (!validation.allowed) {
       toast({
-        title: "Required fields missing",
-        description: "Please fill in asset and description",
+        title: "Validation failed",
+        description: validation.reason,
         variant: "destructive"
       });
       return;
@@ -250,6 +293,15 @@ export const AddWorkOrderDrawer: React.FC<AddWorkOrderDrawerProps> = ({
         
         if (laborError) throw laborError;
       }
+
+      // Insert initial history record
+      await supabase.from('work_order_history').insert({
+        work_order_id: workOrder.id,
+        from_status: null,
+        to_status: 'open',
+        changed_by: 'system',
+        note: `Work order created from ${form.source}`
+      });
 
       // Invalidate relevant queries
       queryClient.invalidateQueries({ queryKey: ['work-orders'] });
@@ -528,6 +580,24 @@ export const AddWorkOrderDrawer: React.FC<AddWorkOrderDrawerProps> = ({
             onChange={(parts) => setForm(prev => ({ ...prev, parts }))}
             vehicleId={form.asset_id}
           />
+
+          {/* Parts Shortage Warning */}
+          {partsWarning && form.parts.length > 0 && (
+            <Alert variant="default" className="border-yellow-500 bg-yellow-50">
+              <AlertTriangle className="h-4 w-4 text-yellow-600" />
+              <AlertTitle className="text-yellow-800">Parts Shortage Detected</AlertTitle>
+              <AlertDescription className="text-yellow-700">
+                Some parts have insufficient stock. This work order may automatically be set to "Awaiting Parts" status.
+                <ul className="mt-2 space-y-1">
+                  {getShortParts(form.parts).map((part, idx) => (
+                    <li key={idx} className="text-xs">
+                      • {part.part_name}: Need {part.quantity}, have {part.on_hand_qty || 0}
+                    </li>
+                  ))}
+                </ul>
+              </AlertDescription>
+            </Alert>
+          )}
 
           {/* E) Labor */}
           <WorkOrderLaborSection

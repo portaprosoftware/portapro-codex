@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useUser } from "@clerk/clerk-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
@@ -15,6 +16,7 @@ import { AddWorkOrderDrawer } from "./AddWorkOrderDrawer";
 import { WorkOrderDetailDrawer } from "./WorkOrderDetailDrawer";
 import { useToast } from "@/hooks/use-toast";
 import { WorkOrder } from "./types";
+import { canMoveToStatus, getStatusTransitionMessage } from "@/lib/workOrderRules";
 
 interface ComprehensiveWorkOrdersProps {
   vehicleId?: string;
@@ -23,6 +25,7 @@ interface ComprehensiveWorkOrdersProps {
 
 export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = ({ vehicleId, licensePlate }) => {
   const { toast } = useToast();
+  const { user } = useUser();
   const queryClient = useQueryClient();
   
   const [view, setView] = useState<'board' | 'list' | 'calendar'>('board');
@@ -105,10 +108,27 @@ export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = (
     refetchOnWindowFocus: false
   });
 
-  // Status change mutation
+  // Status change mutation with validation and history tracking
   const statusChangeMutation = useMutation({
     mutationFn: async ({ workOrderId, newStatus }: { workOrderId: string; newStatus: string }) => {
-      const { error } = await supabase
+      // Fetch full work order details for validation
+      const { data: workOrder, error: fetchError } = await supabase
+        .from('work_orders')
+        .select('*, work_order_parts(*), work_order_signatures(*)')
+        .eq('id', workOrderId)
+        .single();
+      
+      if (fetchError) throw fetchError;
+      if (!workOrder) throw new Error("Work order not found");
+      
+      // Validate business rules
+      const validation = canMoveToStatus(workOrder, newStatus);
+      if (!validation.allowed) {
+        throw new Error(validation.reason || "Cannot change status");
+      }
+      
+      // Update status
+      const { error: updateError } = await supabase
         .from('work_orders')
         .update({ 
           status: newStatus as "open" | "awaiting_parts" | "in_progress" | "vendor" | "on_hold" | "ready_for_verification" | "completed",
@@ -116,20 +136,32 @@ export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = (
         })
         .eq('id', workOrderId);
       
-      if (error) throw error;
+      if (updateError) throw updateError;
+      
+      // Insert history record
+      const historyMessage = getStatusTransitionMessage(workOrder.status, newStatus);
+      await supabase.from('work_order_history').insert({
+        work_order_id: workOrderId,
+        from_status: workOrder.status,
+        to_status: newStatus,
+        changed_by: user?.id || 'unknown',
+        note: historyMessage
+      });
+      
+      return { workOrder, newStatus };
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["comprehensive-work-orders"] });
       toast({
         title: "Status updated",
-        description: "Work order status has been updated successfully"
+        description: `Work order moved to ${data.newStatus.replace('_', ' ')}`
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Error updating status:', error);
       toast({
-        title: "Error",
-        description: "Failed to update work order status",
+        title: "Cannot change status",
+        description: error.message || "Failed to update work order status",
         variant: "destructive"
       });
     }
