@@ -11923,6 +11923,50 @@ export type Database = {
           },
         ]
       }
+      work_order_photos: {
+        Row: {
+          caption: string | null
+          file_size: number | null
+          id: string
+          mime_type: string | null
+          photo_type: string
+          storage_path: string
+          uploaded_at: string | null
+          uploaded_by: string | null
+          work_order_id: string
+        }
+        Insert: {
+          caption?: string | null
+          file_size?: number | null
+          id?: string
+          mime_type?: string | null
+          photo_type: string
+          storage_path: string
+          uploaded_at?: string | null
+          uploaded_by?: string | null
+          work_order_id: string
+        }
+        Update: {
+          caption?: string | null
+          file_size?: number | null
+          id?: string
+          mime_type?: string | null
+          photo_type?: string
+          storage_path?: string
+          uploaded_at?: string | null
+          uploaded_by?: string | null
+          work_order_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_order_photos_work_order_id_fkey"
+            columns: ["work_order_id"]
+            isOneToOne: false
+            referencedRelation: "work_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       work_order_signatures: {
         Row: {
           created_at: string | null
