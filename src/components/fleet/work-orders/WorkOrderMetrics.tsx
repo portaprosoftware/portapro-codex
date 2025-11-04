@@ -2,7 +2,7 @@ import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { StatCard } from "@/components/ui/StatCard";
-import { AlertTriangle, Clock, Package, DollarSign } from "lucide-react";
+import { AlertTriangle, CalendarClock, Bolt, Clock, DollarSign } from "lucide-react";
 
 interface WorkOrderMetrics {
   open: number;
@@ -56,7 +56,7 @@ export const WorkOrderMetrics: React.FC = () => {
       <StatCard
         title="Awaiting Parts"
         value={metrics?.awaiting_parts || 0}
-        icon={Package}
+        icon={Bolt}
         gradientFrom="hsl(var(--warning))"
         gradientTo="hsl(var(--warning))"
         iconBg="hsl(var(--warning))"
@@ -74,10 +74,10 @@ export const WorkOrderMetrics: React.FC = () => {
       <StatCard
         title="Avg Age"
         value={`${metrics?.average_age_days || 0}d`}
-        icon={Clock}
-        gradientFrom="hsl(var(--muted))"
-        gradientTo="hsl(var(--muted))"
-        iconBg="hsl(var(--muted))"
+        icon={CalendarClock}
+        gradientFrom="hsl(var(--warning))"
+        gradientTo="hsl(var(--warning))"
+        iconBg="hsl(var(--warning))"
         animateValue={!isLoading}
       />
       <StatCard
