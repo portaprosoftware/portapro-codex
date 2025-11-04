@@ -61,6 +61,7 @@ import { ComingSoon } from './pages/ComingSoon';
 import { Help } from './pages/Help';
 import CustomerPortalPage from './pages/CustomerPortalPage';
 import Unauthorized from './pages/Unauthorized';
+import { TechnicianDashboard } from './pages/TechnicianDashboard';
 
 import Features from './pages/Features';
 import About from './pages/About';
@@ -212,6 +213,9 @@ const App = () => {
             <Route path="/team-management/notifications" element={<ProtectedRoute><TeamManagement /></ProtectedRoute>} />
 
             <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+
+            {/* Technician Mobile Routes */}
+            <Route path="/technician" element={<ProtectedRoute><TechnicianDashboard /></ProtectedRoute>} />
 
             {/* Customer Portal Routes - Protected */}
             <Route path="/portal" element={<><SignedIn><TenantGuard><CustomerPortalPage /></TenantGuard></SignedIn><SignedOut><Auth /></SignedOut></>} />
