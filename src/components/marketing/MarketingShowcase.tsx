@@ -38,7 +38,7 @@ export const MarketingShowcase: React.FC = () => {
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
           <CollapsibleTrigger className="w-full group">
             <header className="mb-6 sm:mb-8 space-y-2">
-              <div className="flex items-center justify-center gap-4">
+              <div className="flex items-center gap-4">
                 <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">Marketing</h2>
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-muted-foreground">Click to expand</span>
@@ -53,7 +53,7 @@ export const MarketingShowcase: React.FC = () => {
               <p className="text-sm sm:text-base text-muted-foreground">
                 Create, target, schedule, and measure. Unlimited texts + emails <span className="font-bold">included</span>. No hidden fees.
               </p>
-              <div className="flex flex-wrap gap-2 pt-1 justify-center">
+              <div className="flex flex-wrap gap-2 pt-1">
                 <span className="inline-flex items-center gap-2 rounded-md bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold px-2 sm:px-3 py-1 text-xs">
                   <Sparkles className="w-3 h-3" /> AI builder drafts subject + body in seconds
                 </span>
