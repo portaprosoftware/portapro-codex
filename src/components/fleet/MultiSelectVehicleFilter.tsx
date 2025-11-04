@@ -159,6 +159,10 @@ export const MultiSelectVehicleFilter: React.FC<MultiSelectVehicleFilterProps> =
             <Button variant="outline" size="sm" onClick={handleClearAll}>
               Clear All
             </Button>
+            <Button size="sm" onClick={() => onOpenChange(false)}>
+              <CheckCircle className="h-4 w-4 mr-1" />
+              Apply Filter
+            </Button>
           </div>
 
           {/* Selected Vehicles Summary */}
