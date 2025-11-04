@@ -12,6 +12,7 @@ import { Bell, Save, Mail, Vibrate } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useUserRole } from "@/hooks/useUserRole";
+import { PushSubscriptionCard } from "./PushSubscriptionCard";
 
 const notificationSchema = z.object({
   // General - Delivery Methods
@@ -296,6 +297,9 @@ export function NotificationPreferencesSection() {
 
   return (
     <div className="space-y-6">
+      {/* Push Subscription Management */}
+      <PushSubscriptionCard />
+
       {/* Contact Information */}
       <Card>
         <CardHeader>
