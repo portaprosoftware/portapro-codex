@@ -38,6 +38,7 @@ import { ConsolidatedFleetCard } from '@/components/marketing/ConsolidatedFleetC
 import { CompanyAnalyticsShowcase } from '@/components/marketing/CompanyAnalyticsShowcase';
 import { TeamManagementShowcase } from '@/components/marketing/TeamManagementShowcase';
 import { ScrollAnimationWrapper } from '@/components/ui/ScrollAnimationWrapper';
+import { ParallaxWrapper } from '@/components/ui/ParallaxWrapper';
 import { AlertTriangle, Package, SoapDispenserDroplet, ClipboardCheck, Megaphone } from 'lucide-react';
 import { FeaturesMegaMenu } from '@/components/marketing/FeaturesMegaMenu';
 import { FeaturesSheet } from '@/components/marketing/FeaturesSheet';
@@ -419,8 +420,12 @@ export const Landing: React.FC = () => {
 
 
       {/* Hero Section - Blue */}
-      <section className="py-4 md:py-6 bg-gradient-blue text-white">
-        <div className="container mx-auto max-w-full px-12 lg:px-20">
+      <section className="relative py-4 md:py-6 bg-gradient-blue text-white overflow-hidden">
+        <ParallaxWrapper speed={0.3} direction="down" className="absolute inset-0 pointer-events-none">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-primary/10" />
+        </ParallaxWrapper>
+        
+        <div className="container relative mx-auto max-w-full px-12 lg:px-20">
           <div className="grid lg:grid-cols-2 gap-12 items-center max-w-8xl mx-auto">
             <div className="space-y-4">
               <div className="space-y-4">
@@ -488,13 +493,13 @@ export const Landing: React.FC = () => {
               </div>
             </div>
             
-            <div>
+            <ParallaxWrapper speed={0.2} direction="up">
               <img src="/lovable-uploads/0b9e4b76-5c94-4466-b77f-93a65d668f43.png" alt="PortaPro Dashboard Preview" loading="lazy" decoding="async" className="w-full max-w-3xl mx-auto lg:max-w-none transform scale-[1.0125]" />
-            </div>
+            </ParallaxWrapper>
           </div>
           
             {/* Proof Bar - moved to blue background */}
-            <div className="container mx-auto max-w-6xl px-6 mt-6">
+            <ParallaxWrapper speed={0.15} direction="up" className="container mx-auto max-w-6xl px-6 mt-6">
               <div className="sr-only">Proof Bar</div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
                 <article className="rounded-2xl border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm h-full">
@@ -527,7 +532,7 @@ export const Landing: React.FC = () => {
                   <p className="text-sm text-muted-foreground">Complete assistance whenever you need it.</p>
                 </article>
               </div>
-            </div>
+            </ParallaxWrapper>
         </div>
       </section>
 
