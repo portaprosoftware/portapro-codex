@@ -767,8 +767,8 @@ export const Landing: React.FC = () => {
         </div>
       </div>
 
-      {/* Consumables - White */}
-      <ConsumablesShowcase />
+      {/* Marketing Tools - White */}
+      <MarketingShowcase />
 
       {/* Section Divider */}
       <div className="py-3 bg-white">
@@ -787,8 +787,8 @@ export const Landing: React.FC = () => {
         </div>
       </div>
 
-      {/* Marketing Tools - White */}
-      <MarketingShowcase />
+      {/* Consumables - White */}
+      <ConsumablesShowcase />
 
       {/* Group 2: Core Features - Blue */}
       <div id="core-workflow-features" />
