@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { CampaignConfirmationDemo } from "./CampaignConfirmationDemo";
 import { StatCard } from "@/components/ui/StatCard";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,10 @@ import {
   CalendarClock,
   Send,
   CheckCircle,
+  ChevronDown,
 } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { cn } from "@/lib/utils";
 
 // Declare custom element for TypeScript
 declare global {
@@ -27,24 +30,38 @@ declare global {
 }
 
 export const MarketingShowcase: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  
   return (
     <section id="marketing" className="py-6 bg-white overflow-hidden">
       <div className="container mx-auto max-w-6xl px-4 sm:px-6">
-        <header className="mb-6 sm:mb-8 space-y-2">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">Marketing</h2>
-          <p className="text-sm sm:text-base text-muted-foreground">
-            Create, target, schedule, and measure. Unlimited texts + emails <span className="font-bold">included</span>. No hidden fees.
-          </p>
-          <div className="flex flex-wrap gap-2 pt-1">
-            <span className="inline-flex items-center gap-2 rounded-md bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold px-2 sm:px-3 py-1 text-xs">
-              <Sparkles className="w-3 h-3" /> AI builder drafts subject + body in seconds
-            </span>
-            <span className="inline-flex items-center gap-2 rounded-md bg-secondary/10 text-secondary-foreground px-2 sm:px-3 py-1 text-xs font-medium">
-              Schedule ahead or send now • Works with Smart Segments
-            </span>
-          </div>
-        </header>
+        <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+          <CollapsibleTrigger className="w-full group">
+            <header className="mb-6 sm:mb-8 space-y-2">
+              <div className="flex items-center justify-center gap-4">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">Marketing</h2>
+                <ChevronDown 
+                  className={cn(
+                    "w-8 h-8 text-primary transition-transform duration-300 ease-in-out",
+                    isOpen && "rotate-180"
+                  )}
+                />
+              </div>
+              <p className="text-sm sm:text-base text-muted-foreground">
+                Create, target, schedule, and measure. Unlimited texts + emails <span className="font-bold">included</span>. No hidden fees.
+              </p>
+              <div className="flex flex-wrap gap-2 pt-1 justify-center">
+                <span className="inline-flex items-center gap-2 rounded-md bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold px-2 sm:px-3 py-1 text-xs">
+                  <Sparkles className="w-3 h-3" /> AI builder drafts subject + body in seconds
+                </span>
+                <span className="inline-flex items-center gap-2 rounded-md bg-secondary/10 text-secondary-foreground px-2 sm:px-3 py-1 text-xs font-medium">
+                  Schedule ahead or send now • Works with Smart Segments
+                </span>
+              </div>
+            </header>
+          </CollapsibleTrigger>
 
+          <CollapsibleContent className="transition-all duration-300 ease-in-out data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
           {/* Left column: Video + Audience & Segments */}
           <div className="space-y-4 order-2 lg:order-1">
@@ -108,6 +125,8 @@ export const MarketingShowcase: React.FC = () => {
             </ul>
           </div>
         </div>
+          </CollapsibleContent>
+        </Collapsible>
       </div>
     </section>
   );
