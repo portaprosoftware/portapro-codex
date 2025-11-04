@@ -17,10 +17,13 @@ import {
   Camera,
   Smartphone,
   UserCheck,
-  CreditCard
+  CreditCard,
+  ChevronDown
 } from 'lucide-react';
 import { SchedulingGraphic } from '@/components/ui/SchedulingGraphic';
 import { TimeOffCalendarView } from '@/components/team/enhanced/TimeOffCalendarView';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { cn } from "@/lib/utils";
 
 const teamTabs = [
   { key: 'scheduling', label: 'Scheduling & Availability', icon: CalendarClock },
@@ -57,6 +60,7 @@ const mockDriverProfile = {
 
 export const TeamManagementShowcase: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('scheduling');
+  const [isOpen, setIsOpen] = useState(false);
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -428,11 +432,23 @@ export const TeamManagementShowcase: React.FC = () => {
   return (
     <section id="team-management" className="py-8 bg-white">
       <div className="container mx-auto max-w-6xl px-6">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Team Management & Scheduling</h2>
-          <p className="text-lg text-muted-foreground">Everything you need to manage people, time, and compliance</p>
-        </div>
+        <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+          <CollapsibleTrigger className="w-full group">
+            <div className="text-center mb-8">
+              <div className="flex items-center justify-center gap-4">
+                <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Team Management & Scheduling</h2>
+                <ChevronDown 
+                  className={cn(
+                    "w-8 h-8 text-primary transition-transform duration-300 ease-in-out",
+                    isOpen && "rotate-180"
+                  )}
+                />
+              </div>
+              <p className="text-lg text-muted-foreground">Everything you need to manage people, time, and compliance</p>
+            </div>
+          </CollapsibleTrigger>
 
+          <CollapsibleContent className="transition-all duration-300 ease-in-out data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
         {/* Team KPIs */}
         <div className="grid sm:grid-cols-2 gap-4 mb-8">
           <StatCard 
@@ -514,6 +530,8 @@ export const TeamManagementShowcase: React.FC = () => {
             </div>
           </div>
         </div>
+          </CollapsibleContent>
+        </Collapsible>
       </div>
     </section>
   );
