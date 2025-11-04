@@ -767,8 +767,8 @@ export const Landing: React.FC = () => {
         </div>
       </div>
 
-      {/* Marketing Tools - White */}
-      <MarketingShowcase />
+      {/* Services Hub - White */}
+      <ServicesHubShowcase />
 
       {/* Section Divider */}
       <div className="py-3 bg-white">
@@ -777,8 +777,8 @@ export const Landing: React.FC = () => {
         </div>
       </div>
 
-      {/* Services Hub - White */}
-      <ServicesHubShowcase />
+      {/* Marketing Tools - White */}
+      <MarketingShowcase />
 
       {/* Section Divider */}
       <div className="py-3 bg-white">
