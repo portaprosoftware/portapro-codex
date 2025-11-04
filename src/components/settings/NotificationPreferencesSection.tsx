@@ -8,7 +8,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormDescription } fr
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Bell, Save, Phone, Mail } from "lucide-react";
+import { Bell, Save, Phone, Mail, MessageSquare, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -32,10 +32,12 @@ type NotificationFormData = z.infer<typeof notificationSchema>;
 const notificationCategories = [
   {
     title: "General Notifications",
+    isDeliveryMethod: true,
+    description: "Choose how you want to receive notifications",
     items: [
-      { key: "email_notifications", label: "Email Notifications", description: "Receive notifications via email" },
-      { key: "sms_notifications", label: "SMS Notifications", description: "Receive notifications via text message" },
-      { key: "push_notifications", label: "Push Notifications", description: "Receive browser push notifications" },
+      { key: "email_notifications", label: "Email Notifications", description: "Receive notifications via email", icon: Mail },
+      { key: "sms_notifications", label: "SMS Notifications", description: "Receive notifications via text message", icon: MessageSquare },
+      { key: "push_notifications", label: "Push Notifications", description: "Receive browser push notifications", icon: Send },
     ]
   },
   {
@@ -253,36 +255,92 @@ export function NotificationPreferencesSection() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               {notificationCategories.map((category) => (
                 <div key={category.title} className="space-y-4">
-                  <h3 className="text-lg font-semibold text-foreground">
-                    {category.title}
-                  </h3>
-                  <div className="grid gap-4">
-                    {category.items.map((item) => (
-                      <FormField
-                        key={item.key}
-                        control={form.control}
-                        name={item.key as keyof NotificationFormData}
-                        render={({ field }) => (
-                          <FormItem className="flex items-center justify-between p-4 border border-border rounded-lg">
-                            <div className="space-y-0.5">
-                              <FormLabel className="text-base font-medium">
-                                {item.label}
-                              </FormLabel>
-                              <FormDescription>
-                                {item.description}
-                              </FormDescription>
-                            </div>
-                            <FormControl>
-                              <Switch
-                                checked={field.value as boolean}
-                                onCheckedChange={field.onChange}
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    ))}
-                  </div>
+                  {category.isDeliveryMethod ? (
+                    // Delivery Method Section - Visually Distinct
+                    <div className="bg-gradient-to-br from-primary/5 via-primary/10 to-accent/5 p-6 rounded-xl border-2 border-primary/20">
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="p-2 bg-primary/10 rounded-lg">
+                          <Bell className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-bold text-foreground">
+                            {category.title}
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            {category.description}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="grid gap-3 mt-4">
+                        {category.items.map((item) => (
+                          <FormField
+                            key={item.key}
+                            control={form.control}
+                            name={item.key as keyof NotificationFormData}
+                            render={({ field }) => (
+                              <FormItem className="flex items-center justify-between p-4 bg-background/80 backdrop-blur-sm border border-border/50 rounded-lg hover:border-primary/40 transition-colors">
+                                <div className="flex items-center gap-3">
+                                  {item.icon && (
+                                    <div className="p-2 bg-primary/10 rounded-md">
+                                      <item.icon className="h-4 w-4 text-primary" />
+                                    </div>
+                                  )}
+                                  <div className="space-y-0.5">
+                                    <FormLabel className="text-base font-medium">
+                                      {item.label}
+                                    </FormLabel>
+                                    <FormDescription>
+                                      {item.description}
+                                    </FormDescription>
+                                  </div>
+                                </div>
+                                <FormControl>
+                                  <Switch
+                                    checked={field.value as boolean}
+                                    onCheckedChange={field.onChange}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    // Standard Notification Categories
+                    <>
+                      <h3 className="text-lg font-semibold text-foreground">
+                        {category.title}
+                      </h3>
+                      <div className="grid gap-4">
+                        {category.items.map((item) => (
+                          <FormField
+                            key={item.key}
+                            control={form.control}
+                            name={item.key as keyof NotificationFormData}
+                            render={({ field }) => (
+                              <FormItem className="flex items-center justify-between p-4 border border-border rounded-lg">
+                                <div className="space-y-0.5">
+                                  <FormLabel className="text-base font-medium">
+                                    {item.label}
+                                  </FormLabel>
+                                  <FormDescription>
+                                    {item.description}
+                                  </FormDescription>
+                                </div>
+                                <FormControl>
+                                  <Switch
+                                    checked={field.value as boolean}
+                                    onCheckedChange={field.onChange}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                        ))}
+                      </div>
+                    </>
+                  )}
                 </div>
               ))}
 
