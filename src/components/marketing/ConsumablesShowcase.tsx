@@ -1,19 +1,35 @@
-import React from "react";
-import { CheckCircle } from "lucide-react";
+import React, { useState } from "react";
+import { CheckCircle, ChevronDown } from "lucide-react";
 import consumablesManagement from "@/assets/consumables-management.png";
 import consumablesInventory from "@/assets/consumables-inventory.png";
 import consumablesStats from "@/assets/consumables-stats.png";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { cn } from "@/lib/utils";
 
 export const ConsumablesShowcase: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <section id="consumables" className="py-6 md:py-8 bg-white">
       <div className="container mx-auto max-w-6xl px-4 md:px-6">
-        <header className="mb-4 md:mb-8">
-          <h2 className="text-3xl lg:text-4xl font-bold text-foreground">🧻 Consumables — Flexible & Transparent</h2>
-        </header>
+        <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+          <CollapsibleTrigger className="w-full mb-4 md:mb-8 group">
+            <div className="flex items-center justify-between">
+              <h2 className="text-3xl lg:text-4xl font-bold text-foreground text-left">
+                🧻 Consumables — Flexible & Transparent
+              </h2>
+              <ChevronDown 
+                className={cn(
+                  "w-8 h-8 text-primary transition-transform duration-300 ease-in-out",
+                  isOpen && "rotate-180"
+                )}
+              />
+            </div>
+          </CollapsibleTrigger>
 
-        {/* Content with mockup */}
-        <div className="max-w-7xl mx-auto">
+          <CollapsibleContent className="transition-all duration-300 ease-in-out data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+            {/* Content with mockup */}
+            <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-6 lg:gap-12 items-start">
             {/* Left column - Description and Features list */}
             <div className="space-y-4 md:space-y-6">
@@ -95,6 +111,8 @@ export const ConsumablesShowcase: React.FC = () => {
             </div>
           </div>
         </div>
+          </CollapsibleContent>
+        </Collapsible>
       </div>
     </section>
   );
