@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Search, Filter, Download, UserPlus, MoreHorizontal } from "lucide-react";
+import { Search, Filter, Download, UserPlus, MoreHorizontal, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface WorkOrderFiltersProps {
@@ -14,10 +14,20 @@ interface WorkOrderFiltersProps {
   onAssetTypeChange: (value: string) => void;
   selectedPriority: string;
   onPriorityChange: (value: string) => void;
+  selectedStatus: string;
+  onStatusChange: (value: string) => void;
   selectedSource: string;
   onSourceChange: (value: string) => void;
   selectedAssignee: string;
   onAssigneeChange: (value: string) => void;
+  startDate: string;
+  onStartDateChange: (value: string) => void;
+  endDate: string;
+  onEndDateChange: (value: string) => void;
+  sortBy: 'created_at' | 'due_date' | 'priority';
+  onSortByChange: (value: 'created_at' | 'due_date' | 'priority') => void;
+  sortOrder: 'asc' | 'desc';
+  onSortOrderChange: (value: 'asc' | 'desc') => void;
   activeFiltersCount: number;
   onClearFilters: () => void;
   onBulkAssign: () => void;
@@ -32,10 +42,20 @@ export const WorkOrderFilters: React.FC<WorkOrderFiltersProps> = ({
   onAssetTypeChange,
   selectedPriority,
   onPriorityChange,
+  selectedStatus,
+  onStatusChange,
   selectedSource,
   onSourceChange,
   selectedAssignee,
   onAssigneeChange,
+  startDate,
+  onStartDateChange,
+  endDate,
+  onEndDateChange,
+  sortBy,
+  onSortByChange,
+  sortOrder,
+  onSortOrderChange,
   activeFiltersCount,
   onClearFilters,
   onBulkAssign,
@@ -79,7 +99,7 @@ export const WorkOrderFilters: React.FC<WorkOrderFiltersProps> = ({
         </div>
       </div>
 
-      {/* Filter Row */}
+      {/* Filter Row 1 */}
       <div className={hideAssetTypeFilter ? "grid grid-cols-3 gap-3" : "grid grid-cols-4 gap-3"}>
         {!hideAssetTypeFilter && (
           <Select value={selectedAssetType} onValueChange={onAssetTypeChange}>
@@ -108,6 +128,22 @@ export const WorkOrderFilters: React.FC<WorkOrderFiltersProps> = ({
           </SelectContent>
         </Select>
 
+        <Select value={selectedStatus} onValueChange={onStatusChange}>
+          <SelectTrigger>
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
+          <SelectContent className="bg-background border border-border shadow-lg z-50" sideOffset={4}>
+            <SelectItem value="all">All Status</SelectItem>
+            <SelectItem value="open">Open</SelectItem>
+            <SelectItem value="awaiting_parts">Awaiting Parts</SelectItem>
+            <SelectItem value="in_progress">In Progress</SelectItem>
+            <SelectItem value="vendor">Vendor</SelectItem>
+            <SelectItem value="on_hold">On Hold</SelectItem>
+            <SelectItem value="ready_for_verification">Ready For Verification</SelectItem>
+            <SelectItem value="completed">Completed</SelectItem>
+          </SelectContent>
+        </Select>
+
         <Select value={selectedSource} onValueChange={onSourceChange}>
           <SelectTrigger>
             <SelectValue placeholder="Source" />
@@ -121,17 +157,80 @@ export const WorkOrderFilters: React.FC<WorkOrderFiltersProps> = ({
             <SelectItem value="other">Other</SelectItem>
           </SelectContent>
         </Select>
+      </div>
 
-        <Select value={selectedAssignee} onValueChange={onAssigneeChange}>
-          <SelectTrigger>
-            <SelectValue placeholder="Assignee" />
-          </SelectTrigger>
-          <SelectContent className="bg-background border border-border shadow-lg z-50" sideOffset={4}>
-            <SelectItem value="all">All Assignees</SelectItem>
-            <SelectItem value="unassigned">Unassigned</SelectItem>
-            {/* Add dynamic assignee options here */}
-          </SelectContent>
-        </Select>
+      {/* Filter Row 2: Date Range, Assignee, and Sorting */}
+      <div className="grid grid-cols-5 gap-3">
+        <div>
+          <Label htmlFor="start-date" className="text-xs text-muted-foreground mb-1 block">Start Date</Label>
+          <Input
+            id="start-date"
+            type="date"
+            value={startDate}
+            onChange={(e) => onStartDateChange(e.target.value)}
+            className="h-9"
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="end-date" className="text-xs text-muted-foreground mb-1 block">End Date</Label>
+          <Input
+            id="end-date"
+            type="date"
+            value={endDate}
+            onChange={(e) => onEndDateChange(e.target.value)}
+            className="h-9"
+          />
+        </div>
+
+        <div>
+          <Label className="text-xs text-muted-foreground mb-1 block">Assignee</Label>
+          <Select value={selectedAssignee} onValueChange={onAssigneeChange}>
+            <SelectTrigger className="h-9">
+              <SelectValue placeholder="Assignee" />
+            </SelectTrigger>
+            <SelectContent className="bg-background border border-border shadow-lg z-50" sideOffset={4}>
+              <SelectItem value="all">All Assignees</SelectItem>
+              <SelectItem value="unassigned">Unassigned</SelectItem>
+              {/* Add dynamic assignee options here */}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <Label className="text-xs text-muted-foreground mb-1 block">Sort By</Label>
+          <Select value={sortBy} onValueChange={onSortByChange}>
+            <SelectTrigger className="h-9">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent className="bg-background border border-border shadow-lg z-50" sideOffset={4}>
+              <SelectItem value="created_at">Created Date</SelectItem>
+              <SelectItem value="due_date">Due Date</SelectItem>
+              <SelectItem value="priority">Priority</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <Label className="text-xs text-muted-foreground mb-1 block">Order</Label>
+          <Button
+            variant="outline"
+            onClick={() => onSortOrderChange(sortOrder === 'asc' ? 'desc' : 'asc')}
+            className="w-full h-9"
+          >
+            {sortOrder === 'asc' ? (
+              <>
+                <ArrowUp className="h-4 w-4 mr-2" />
+                Ascending
+              </>
+            ) : (
+              <>
+                <ArrowDown className="h-4 w-4 mr-2" />
+                Descending
+              </>
+            )}
+          </Button>
+        </div>
       </div>
 
     </div>

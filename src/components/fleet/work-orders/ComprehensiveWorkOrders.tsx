@@ -45,14 +45,19 @@ export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = (
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAssetType, setSelectedAssetType] = useState('all');
   const [selectedPriority, setSelectedPriority] = useState('all');
+  const [selectedStatus, setSelectedStatus] = useState('all');
   const [selectedSource, setSelectedSource] = useState('all');
   const [selectedAssignee, setSelectedAssignee] = useState('all');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [sortBy, setSortBy] = useState<'created_at' | 'due_date' | 'priority'>('created_at');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [overdueOnly, setOverdueOnly] = useState(false);
   const [oosOnly, setOosOnly] = useState(false);
 
   // Fetch work orders with enhanced data
   const { data: workOrders, isLoading, refetch } = useQuery({
-    queryKey: ["comprehensive-work-orders", searchTerm, selectedAssetType, selectedPriority, selectedSource, selectedAssignee, overdueOnly, oosOnly, vehicleId],
+    queryKey: ["comprehensive-work-orders", searchTerm, selectedAssetType, selectedPriority, selectedStatus, selectedSource, selectedAssignee, startDate, endDate, sortBy, sortOrder, overdueOnly, oosOnly, vehicleId],
     queryFn: async () => {
       let query = supabase
         .from("work_orders")
@@ -85,9 +90,28 @@ export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = (
         filteredData = filteredData.filter(wo => wo.priority === selectedPriority);
       }
       
+      if (selectedStatus !== 'all') {
+        filteredData = filteredData.filter(wo => wo.status === selectedStatus);
+      }
+      
       if (selectedSource !== 'all') {
         const sourceValue = selectedSource === "pm_schedule" ? "pm" : selectedSource;
         filteredData = filteredData.filter(wo => wo.source === sourceValue);
+      }
+      
+      // Date range filtering
+      if (startDate) {
+        filteredData = filteredData.filter(wo => {
+          const createdDate = new Date(wo.created_at);
+          return createdDate >= new Date(startDate);
+        });
+      }
+      
+      if (endDate) {
+        filteredData = filteredData.filter(wo => {
+          const createdDate = new Date(wo.created_at);
+          return createdDate <= new Date(endDate + 'T23:59:59');
+        });
       }
       
       if (selectedAssignee === 'unassigned') {
@@ -103,6 +127,28 @@ export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = (
       if (oosOnly) {
         filteredData = filteredData.filter(wo => (wo as any).out_of_service === true);
       }
+
+      // Apply sorting
+      filteredData.sort((a, b) => {
+        let comparison = 0;
+        
+        if (sortBy === 'priority') {
+          const priorityOrder = { critical: 0, high: 1, normal: 2, low: 3 };
+          const aPriority = priorityOrder[a.priority as keyof typeof priorityOrder] ?? 999;
+          const bPriority = priorityOrder[b.priority as keyof typeof priorityOrder] ?? 999;
+          comparison = aPriority - bPriority;
+        } else if (sortBy === 'due_date') {
+          const aDate = a.due_date ? new Date(a.due_date).getTime() : Infinity;
+          const bDate = b.due_date ? new Date(b.due_date).getTime() : Infinity;
+          comparison = aDate - bDate;
+        } else { // created_at
+          const aDate = new Date(a.created_at).getTime();
+          const bDate = new Date(b.created_at).getTime();
+          comparison = aDate - bDate;
+        }
+        
+        return sortOrder === 'asc' ? comparison : -comparison;
+      });
 
       // Transform data to include asset names and assignee names
       return filteredData.map((wo: any) => ({
@@ -216,8 +262,11 @@ export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = (
     if (searchTerm) count++;
     if (selectedAssetType !== 'all') count++;
     if (selectedPriority !== 'all') count++;
+    if (selectedStatus !== 'all') count++;
     if (selectedSource !== 'all') count++;
     if (selectedAssignee !== 'all') count++;
+    if (startDate) count++;
+    if (endDate) count++;
     if (overdueOnly) count++;
     if (oosOnly) count++;
     return count;
@@ -227,8 +276,13 @@ export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = (
     setSearchTerm('');
     setSelectedAssetType('all');
     setSelectedPriority('all');
+    setSelectedStatus('all');
     setSelectedSource('all');
     setSelectedAssignee('all');
+    setStartDate('');
+    setEndDate('');
+    setSortBy('created_at');
+    setSortOrder('desc');
     setOverdueOnly(false);
     setOosOnly(false);
   };
@@ -320,10 +374,20 @@ export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = (
         onAssetTypeChange={setSelectedAssetType}
         selectedPriority={selectedPriority}
         onPriorityChange={setSelectedPriority}
+        selectedStatus={selectedStatus}
+        onStatusChange={setSelectedStatus}
         selectedSource={selectedSource}
         onSourceChange={setSelectedSource}
         selectedAssignee={selectedAssignee}
         onAssigneeChange={setSelectedAssignee}
+        startDate={startDate}
+        onStartDateChange={setStartDate}
+        endDate={endDate}
+        onEndDateChange={setEndDate}
+        sortBy={sortBy}
+        onSortByChange={setSortBy}
+        sortOrder={sortOrder}
+        onSortOrderChange={setSortOrder}
         activeFiltersCount={getActiveFiltersCount()}
         onClearFilters={handleClearFilters}
         onBulkAssign={handleBulkAssign}
