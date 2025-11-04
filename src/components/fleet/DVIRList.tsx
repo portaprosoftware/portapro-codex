@@ -6,7 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DVIRForm } from "./DVIRForm";
 import { DVIRDefectBadge } from "./dvir/DVIRDefectBadge";
-import { AlertCircle } from "lucide-react";
+import { DVIRDefectsList } from "./dvir/DVIRDefectsList";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { AlertCircle, ChevronDown, ChevronRight } from "lucide-react";
 
 interface DVIRListProps {
   vehicleId?: string;
@@ -16,6 +18,7 @@ interface DVIRListProps {
 export const DVIRList: React.FC<DVIRListProps> = ({ vehicleId, licensePlate }) => {
   const [open, setOpen] = useState(false);
   const [selectedWorkOrderId, setSelectedWorkOrderId] = useState<string | null>(null);
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["dvir-reports", vehicleId],
@@ -37,26 +40,14 @@ export const DVIRList: React.FC<DVIRListProps> = ({ vehicleId, licensePlate }) =
     }
   });
 
-  const openWOForFirstDefect = async (dvirId: string) => {
-    try {
-      const { data: defects, error } = await supabase
-        .from("dvir_defects")
-        .select("id, severity")
-        .eq("dvir_id", dvirId)
-        .neq("status", "closed")
-        .order("created_at", { ascending: true })
-        .limit(1);
-      if (error) throw error;
-      if (!defects || defects.length === 0) return;
-
-      const defectId = defects[0].id as string;
-      const { error: rpcErr } = await supabase.rpc("open_work_order_for_defect", { defect_uuid: defectId, _opened_by: null });
-      if (rpcErr) throw rpcErr;
-      alert("Work order created");
-    } catch (e) {
-      console.error(e);
-      alert("Failed to create work order");
+  const toggleRow = (dvirId: string) => {
+    const newExpanded = new Set(expandedRows);
+    if (newExpanded.has(dvirId)) {
+      newExpanded.delete(dvirId);
+    } else {
+      newExpanded.add(dvirId);
     }
+    setExpandedRows(newExpanded);
   };
 
   return (
@@ -74,67 +65,118 @@ export const DVIRList: React.FC<DVIRListProps> = ({ vehicleId, licensePlate }) =
           {isLoading ? (
             <p className="text-gray-500">Loading...</p>
           ) : data && data.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-left text-gray-600">
-                    <th className="py-2">Date</th>
-                    <th className="py-2">Asset</th>
-                    <th className="py-2">Type</th>
-                    <th className="py-2">Status</th>
-                    <th className="py-2">Defects</th>
-                    <th className="py-2">Odometer</th>
-                    <th className="py-2">OOS?</th>
-                    <th className="py-2">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data!.map((r:any) => (
-                    <tr key={r.id} className="border-t">
-                      <td className="py-2">{new Date(r.created_at).toLocaleString()}</td>
-                      <td className="py-2">{r.asset_type}:{r.asset_id?.slice(0,8)}…</td>
-                      <td className="py-2">{r.type}</td>
-                      <td className="py-2">
-                        <Badge>{r.status}</Badge>
-                      </td>
-                      <td className="py-2">
-                        {r.defects_count > 0 ? (
-                          <div className="flex items-center gap-2">
-                            <span>{r.defects_count}</span>
-                            <DVIRDefectBadge 
-                              dvirId={r.id}
-                              onWorkOrderClick={(woId) => {
-                                // Could open work order drawer here
-                                console.log('Open WO:', woId);
-                              }}
-                            />
-                          </div>
-                        ) : (
-                          <span>0</span>
+            <div className="space-y-3">
+              {data!.map((r: any) => {
+                const hasDefects = r.defects_count > 0;
+                const isExpanded = expandedRows.has(r.id);
+
+                return (
+                  <Card key={r.id} className="overflow-hidden">
+                    <div className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors">
+                      <div className="flex items-center gap-4 flex-1">
+                        {hasDefects && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0"
+                            onClick={() => toggleRow(r.id)}
+                          >
+                            {isExpanded ? (
+                              <ChevronDown className="h-4 w-4" />
+                            ) : (
+                              <ChevronRight className="h-4 w-4" />
+                            )}
+                          </Button>
                         )}
-                      </td>
-                      <td className="py-2">{r.odometer_miles ?? "-"}</td>
-                      <td className="py-2">
-                        {r.out_of_service_flag ? (
-                          <div className="flex items-center gap-1">
-                            <Badge variant="destructive" className="flex items-center gap-1">
-                              <AlertCircle className="h-3 w-3" />
-                              Yes
+                        
+                        <div className="flex-1 grid grid-cols-1 md:grid-cols-7 gap-3 items-center">
+                          <div>
+                            <p className="text-xs text-muted-foreground">Date</p>
+                            <p className="text-sm font-medium">
+                              {new Date(r.created_at).toLocaleDateString()}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {new Date(r.created_at).toLocaleTimeString()}
+                            </p>
+                          </div>
+
+                          <div>
+                            <p className="text-xs text-muted-foreground">Asset</p>
+                            <p className="text-sm">
+                              {r.asset_type}: {r.asset_id?.slice(0, 8)}…
+                            </p>
+                          </div>
+
+                          <div>
+                            <p className="text-xs text-muted-foreground">Type</p>
+                            <Badge variant="outline" className="text-xs">
+                              {r.type}
                             </Badge>
                           </div>
-                        ) : (
-                          "No"
-                        )}
-                      </td>
-                      <td className="py-2 space-x-2">
-                        {r.major_defect_present && (
-                          <Button size="sm" variant="outline" onClick={()=>openWOForFirstDefect(r.id)}>Open WO</Button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+
+                          <div>
+                            <p className="text-xs text-muted-foreground">Status</p>
+                            <Badge className="text-xs">{r.status}</Badge>
+                          </div>
+
+                          <div>
+                            <p className="text-xs text-muted-foreground">Defects</p>
+                            {r.defects_count > 0 ? (
+                              <div className="flex items-center gap-2">
+                                <Badge 
+                                  variant={r.major_defect_present ? "destructive" : "secondary"}
+                                  className="text-xs font-bold"
+                                >
+                                  {r.defects_count}
+                                </Badge>
+                                <DVIRDefectBadge 
+                                  dvirId={r.id}
+                                  onWorkOrderClick={(woId) => {
+                                    console.log('Open WO:', woId);
+                                  }}
+                                />
+                              </div>
+                            ) : (
+                              <span className="text-sm text-muted-foreground">None</span>
+                            )}
+                          </div>
+
+                          <div>
+                            <p className="text-xs text-muted-foreground">Odometer</p>
+                            <p className="text-sm">
+                              {r.odometer_miles ? `${r.odometer_miles.toLocaleString()} mi` : "-"}
+                            </p>
+                          </div>
+
+                          <div>
+                            <p className="text-xs text-muted-foreground">Out of Service</p>
+                            {r.out_of_service_flag ? (
+                              <Badge variant="destructive" className="flex items-center gap-1 w-fit">
+                                <AlertCircle className="h-3 w-3" />
+                                Yes
+                              </Badge>
+                            ) : (
+                              <span className="text-sm text-muted-foreground">No</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Expandable Defects Section */}
+                    {hasDefects && isExpanded && (
+                      <div className="border-t bg-muted/30 p-4">
+                        <DVIRDefectsList
+                          dvirId={r.id}
+                          assetId={r.asset_id}
+                          assetType={r.asset_type}
+                          onWorkOrderCreated={() => refetch()}
+                        />
+                      </div>
+                    )}
+                  </Card>
+                );
+              })}
             </div>
           ) : (
             <p className="text-gray-500">No Driver Vehicle Inspection Reports yet</p>
