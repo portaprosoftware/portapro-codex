@@ -968,26 +968,24 @@ export const Landing: React.FC = () => {
           {/* Additional Fleet & Compliance Tools - Collapsible */}
           <Collapsible open={isFleetToolsOpen} onOpenChange={setIsFleetToolsOpen} className="mt-8">
             <CollapsibleTrigger className="w-full group">
-              <div className="mb-8 text-center">
-                <div className="flex items-center justify-center gap-4">
-                  <h3 className="text-2xl lg:text-3xl font-bold text-foreground">Additional Fleet & Compliance Tools</h3>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground">Expand/Collapse</span>
-                    <ChevronDown 
-                      className={cn(
-                        "w-8 h-8 text-primary transition-transform duration-300 ease-in-out",
-                        isFleetToolsOpen && "rotate-180"
-                      )}
-                    />
-                  </div>
-                </div>
-                <p className="text-base text-muted-foreground max-w-2xl mx-auto mt-2">
+              <div className="mb-8 space-y-3 text-center">
+                <h3 className="text-2xl lg:text-3xl font-bold text-foreground">Additional Fleet & Compliance Tools</h3>
+                <p className="text-base text-muted-foreground max-w-2xl mx-auto">
                   Comprehensive maintenance, fuel tracking, driver management, and compliance features
                 </p>
+                <div className="inline-flex items-center justify-center gap-2 mt-4 px-4 py-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
+                  <span className="text-sm text-muted-foreground">Expand</span>
+                  <ChevronDown 
+                    className={cn(
+                      "w-6 h-6 text-primary transition-transform duration-300 ease-in-out",
+                      isFleetToolsOpen && "rotate-180"
+                    )}
+                  />
+                </div>
               </div>
             </CollapsibleTrigger>
 
-            <CollapsibleContent className="transition-all duration-300 ease-in-out data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+            <CollapsibleContent>
           {/* Maintenance Notifications & Scheduling */}
           <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
             <div className="space-y-6 order-1 lg:order-2">
