@@ -33,11 +33,9 @@ export const ConsumablesShowcase: React.FC = () => {
             </div>
           </CollapsibleTrigger>
 
-          <CollapsibleContent className="transition-all duration-500 ease-in-out data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+          <CollapsibleContent>
             {/* Content with mockup */}
-            <div className="max-w-7xl mx-auto animate-fade-in"
-              style={{ animationDelay: '100ms' }}
-            >
+            <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-6 lg:gap-12 items-start">
             {/* Left column - Features list */}
             <div className="space-y-4 md:space-y-6">

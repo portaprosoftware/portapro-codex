@@ -30,11 +30,9 @@ export const QuoteToJobShowcase: React.FC = () => {
         </div>
       </CollapsibleTrigger>
 
-      <CollapsibleContent className="transition-all duration-500 ease-in-out data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down space-y-6 sm:space-y-10">
+      <CollapsibleContent className="space-y-6 sm:space-y-10">
 
-      <div className="flex flex-col gap-6 sm:gap-10 lg:grid lg:grid-cols-[1fr_1.4fr] lg:items-start px-4 sm:px-0 animate-fade-in"
-        style={{ animationDelay: '100ms' }}
-      >
+      <div className="flex flex-col gap-6 sm:gap-10 lg:grid lg:grid-cols-[1fr_1.4fr] lg:items-start px-4 sm:px-0">
         {/* Left: Highlights only */}
         <aside className="space-y-4 sm:space-y-6">
           <ul className="space-y-3" aria-label="Quote-to-job highlights">
