@@ -499,7 +499,7 @@ export const Landing: React.FC = () => {
           </div>
           
             {/* Proof Bar - moved to blue background */}
-            <ParallaxWrapper speed={0.15} direction="up" className="container mx-auto max-w-6xl px-6 mt-6">
+            <div className="container mx-auto max-w-6xl px-6 mt-6">
               <div className="sr-only">Proof Bar</div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
                 <article className="rounded-2xl border bg-gradient-to-b from-muted via-muted to-muted/70 text-foreground p-6 shadow-sm h-full">
@@ -532,7 +532,7 @@ export const Landing: React.FC = () => {
                   <p className="text-sm text-muted-foreground">Complete assistance whenever you need it.</p>
                 </article>
               </div>
-            </ParallaxWrapper>
+            </div>
         </div>
       </section>
 
