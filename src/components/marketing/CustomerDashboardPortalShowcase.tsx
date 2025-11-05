@@ -73,12 +73,49 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
         </header>
 
         {/* Customer Portal Section */}
-        <div className="space-y-2 mb-8">
-          <h3 className="text-2xl font-bold text-foreground flex items-center gap-2">
-            <Monitor className="w-6 h-6 text-green-600" />
-            Customer Portal
-          </h3>
-          <p className="text-muted-foreground">Everything your customers need, in one place</p>
+        <div className="mb-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-2">
+            <div className="space-y-2">
+              <h3 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                <Monitor className="w-6 h-6 text-green-600" />
+                Customer Portal
+              </h3>
+              <p className="text-muted-foreground">Everything your customers need, in one place</p>
+            </div>
+            
+            {/* Feature Icons - Same Row */}
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 text-left">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+                  <BarChart3 className="w-4 h-4 text-white font-bold" strokeWidth={3} />
+                </div>
+                <div>
+                  <span className="text-sm font-medium text-foreground block">Real-time visibility</span>
+                  <p className="text-xs text-muted-foreground">Services, requests, and balances</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 text-left">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+                  <Camera className="w-4 h-4 text-white font-bold" strokeWidth={3} />
+                </div>
+                <div>
+                  <span className="text-sm font-medium text-foreground block">Digital proof & history</span>
+                  <p className="text-xs text-muted-foreground">Photos, GPS, and reports</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 text-left">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+                  <CreditCard className="w-4 h-4 text-white font-bold" strokeWidth={3} />
+                </div>
+                <div>
+                  <span className="text-sm font-medium text-foreground block">Self-service tools</span>
+                  <p className="text-xs text-muted-foreground">Billing, payments, quotes, and support</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Before & After Comparison Table */}
@@ -198,43 +235,6 @@ export const CustomerDashboardPortalShowcase: React.FC = () => {
 
         {/* Customer Portal Hero Section */}
         <div className="mb-4">
-          {/* Header Content - Full Width */}
-          <div className="text-center mb-2">
-            
-            {/* Feature Bullets - Responsive Grid */}
-            <div className="grid md:grid-cols-3 gap-4 md:gap-6 max-w-4xl mx-auto">
-              <div className="flex items-start gap-3 text-left md:flex-col md:items-center md:text-center">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
-                  <BarChart3 className="w-4 h-4 text-white font-bold" strokeWidth={3} />
-                </div>
-                <div>
-                  <span className="text-lg font-medium text-foreground">Real-time visibility</span>
-                  <p className="text-sm text-muted-foreground">Services, requests, and balances</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3 text-left md:flex-col md:items-center md:text-center">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
-                  <Camera className="w-4 h-4 text-white font-bold" strokeWidth={3} />
-                </div>
-                <div>
-                  <span className="text-lg font-medium text-foreground">Digital proof & history</span>
-                  <p className="text-sm text-muted-foreground">Photos, GPS, and reports</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3 text-left md:flex-col md:items-center md:text-center">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
-                  <CreditCard className="w-4 h-4 text-white font-bold" strokeWidth={3} />
-                </div>
-                <div>
-                  <span className="text-lg font-medium text-foreground">Self-service tools</span>
-                  <p className="text-sm text-muted-foreground">Billing, payments, quotes, and support</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* Mockup - Full Width */}
           <div className="w-full">
             <CustomerPortalMockup />
