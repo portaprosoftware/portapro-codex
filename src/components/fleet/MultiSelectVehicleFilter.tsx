@@ -95,6 +95,13 @@ export const MultiSelectVehicleFilter: React.FC<MultiSelectVehicleFilterProps> =
     return vehicle.license_plate || `Vehicle ${vehicle.id.slice(0, 8)}`;
   };
 
+  // Apply selected vehicles and close modal
+  const handleApply = () => {
+    // No extra action needed here because selection is lifted via onVehiclesChange
+    // Closing the modal mirrors the footer Apply behavior and triggers parent filters
+    onOpenChange(false);
+  };
+
   // Helper function to get the proper image URL from Supabase storage
   const getVehicleImageUrl = (vehicle: Vehicle) => {
     if (!vehicle.vehicle_image) return null;
@@ -159,7 +166,7 @@ export const MultiSelectVehicleFilter: React.FC<MultiSelectVehicleFilterProps> =
             <Button variant="outline" size="sm" onClick={handleClearAll}>
               Clear All
             </Button>
-            <Button size="sm" onClick={() => onOpenChange(false)}>
+            <Button size="sm" onClick={handleApply}>
               <CheckCircle className="h-4 w-4 mr-1" />
               Apply Filter
             </Button>
@@ -334,7 +341,7 @@ export const MultiSelectVehicleFilter: React.FC<MultiSelectVehicleFilterProps> =
             <Button variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button onClick={() => onOpenChange(false)}>
+            <Button onClick={handleApply}>
               Apply Filter ({selectedVehicles.length})
             </Button>
           </div>
