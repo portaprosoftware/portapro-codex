@@ -23,7 +23,8 @@ import {
   Truck, 
   Fuel, 
   Wrench, 
-  FileX 
+  FileX,
+  Toilet
 } from "lucide-react";
 
 const Dashboard = () => {
@@ -295,7 +296,7 @@ const Dashboard = () => {
           <StatCard
             title="Total Inventory"
             value={`${inventoryData?.totalProducts || 0} products`}
-            icon={Package}
+            icon={Toilet}
             gradientFrom="#3b82f6"
             gradientTo="#2563eb"
             iconBg="#3b82f6"
