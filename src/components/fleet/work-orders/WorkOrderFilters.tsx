@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Search, ArrowUp, ArrowDown } from "lucide-react";
+import { Search, ArrowUp, ArrowDown, Truck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface WorkOrderFiltersProps {
@@ -31,6 +31,9 @@ interface WorkOrderFiltersProps {
   activeFiltersCount: number;
   onClearFilters: () => void;
   hideAssetTypeFilter?: boolean;
+  // Vehicle filter
+  selectedVehicleCount?: number;
+  onOpenVehicleFilter?: () => void;
 }
 
 export const WorkOrderFilters: React.FC<WorkOrderFiltersProps> = ({
@@ -56,7 +59,9 @@ export const WorkOrderFilters: React.FC<WorkOrderFiltersProps> = ({
   onSortOrderChange,
   activeFiltersCount,
   onClearFilters,
-  hideAssetTypeFilter = false
+  hideAssetTypeFilter = false,
+  selectedVehicleCount = 0,
+  onOpenVehicleFilter
 }) => {
   return (
     <div className="space-y-4">
@@ -77,6 +82,12 @@ export const WorkOrderFilters: React.FC<WorkOrderFiltersProps> = ({
             <Badge variant="secondary" className="px-2">
               {activeFiltersCount} filters
             </Badge>
+          )}
+          {onOpenVehicleFilter && (
+            <Button variant="outline" size="sm" onClick={onOpenVehicleFilter} className="gap-1">
+              <Truck className="h-4 w-4" />
+              {selectedVehicleCount === 0 ? 'All Vehicles' : `${selectedVehicleCount} selected`}
+            </Button>
           )}
           <Button variant="outline" size="sm" onClick={onClearFilters}>
             Clear

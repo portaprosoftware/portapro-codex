@@ -30,6 +30,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { MultiSelectVehicleFilter } from "../MultiSelectVehicleFilter";
 
 interface ComprehensiveWorkOrdersProps {
   vehicleId?: string;
