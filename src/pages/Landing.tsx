@@ -346,8 +346,7 @@ export const Landing: React.FC = () => {
             <div className="flex items-center gap-4">
               <SignInButton 
                 mode="redirect" 
-                forceRedirectUrl="/dashboard"
-                fallbackRedirectUrl="/dashboard"
+                fallbackRedirectUrl="/"
               >
                 <Button variant="ghost" className="text-sm font-medium shadow-none hover:shadow-none">Sign In</Button>
               </SignInButton>
@@ -386,8 +385,7 @@ export const Landing: React.FC = () => {
               <div className="flex flex-col gap-2 pt-4 border-t">
                 <SignInButton 
                   mode="redirect" 
-                  forceRedirectUrl="/dashboard"
-                  fallbackRedirectUrl="/dashboard"
+                  fallbackRedirectUrl="/"
                 >
                   <Button variant="outline" className="w-full font-medium bg-gradient-to-b from-muted via-muted to-muted/70 border-border text-foreground shadow-none hover:shadow-none">Sign In</Button>
                 </SignInButton>

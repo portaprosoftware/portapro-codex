@@ -33,7 +33,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
         </TenantGuard>
       </SignedIn>
       <SignedOut>
-        <RedirectToSignIn redirectUrl={redirectUrl} />
+        <RedirectToSignIn redirectUrl="/" />
       </SignedOut>
     </>
   );

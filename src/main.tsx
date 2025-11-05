@@ -97,9 +97,9 @@ createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queryClient}>
       <ClerkProvider
         publishableKey={CLERK_PUBLISHABLE_KEY}
-        // When using hosted accounts, these ensure we always land in the app
-        signInFallbackRedirectUrl="/dashboard"
-        signUpFallbackRedirectUrl="/dashboard"
+        // When using hosted accounts, redirect to landing page
+        signInFallbackRedirectUrl="/"
+        signUpFallbackRedirectUrl="/"
       >
         <App />
         <Toaster />
