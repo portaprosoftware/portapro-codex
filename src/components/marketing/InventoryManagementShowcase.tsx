@@ -212,18 +212,21 @@ const AssignmentsMap = ({ assignments }: { assignments: Assignment[] }) => {
   const map = useRef<any | null>(null);
   const [mapboxgl, setMapboxgl] = useState<any>(null);
   const [isSatelliteView, setIsSatelliteView] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   // Load Mapbox library
   useEffect(() => {
+    setLoadError(null);
     loadMapboxLibs()
       .then(setMapboxgl)
       .catch((err) => {
         console.error('Failed to load Mapbox:', err);
+        setLoadError(err.message || 'Failed to load map. Mapbox token may not be configured.');
       });
   }, []);
 
   useEffect(() => {
-    if (!mapContainer.current || !mapboxgl) return;
+    if (!mapContainer.current || !mapboxgl || map.current) return;
     
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
@@ -332,17 +335,31 @@ const AssignmentsMap = ({ assignments }: { assignments: Assignment[] }) => {
 
       {/* Map Controls and Container */}
       <div className="border rounded-lg overflow-hidden relative">
-        <div className="absolute top-3 left-3 z-10">
-          <Button 
-            onClick={toggleSatelliteView}
-            variant="outline"
-            size="sm"
-            className="bg-white/90 hover:bg-white text-foreground shadow-sm"
-          >
-            {isSatelliteView ? 'Street View' : 'Satellite'}
-          </Button>
-        </div>
-        <div ref={mapContainer} className="w-full h-48 sm:h-64" />
+        {loadError ? (
+          <div className="w-full h-48 sm:h-64 flex items-center justify-center bg-muted">
+            <div className="text-center p-6">
+              <AlertTriangle className="h-12 w-12 text-orange-500 mx-auto mb-3" />
+              <p className="text-sm font-medium text-foreground mb-2">Map Unable to Load</p>
+              <p className="text-xs text-muted-foreground">
+                {loadError}
+              </p>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="absolute top-3 left-3 z-10">
+              <Button 
+                onClick={toggleSatelliteView}
+                variant="outline"
+                size="sm"
+                className="bg-white/90 hover:bg-white text-foreground shadow-sm"
+              >
+                {isSatelliteView ? 'Street View' : 'Satellite'}
+              </Button>
+            </div>
+            <div ref={mapContainer} className="w-full h-48 sm:h-64" />
+          </>
+        )}
       </div>
 
       {/* Legend */}
