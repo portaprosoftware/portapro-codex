@@ -370,13 +370,13 @@ export default function StorageSites() {
             {storageLocations?.length === 0 && !isLoading && (
               <Card className="p-8 text-center">
                 <Warehouse className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No Storage Sites</h3>
+                <h3 className="text-lg font-semibold mb-2">No Storage Garages</h3>
                 <p className="text-muted-foreground mb-4">
                   Get started by adding your first storage location
                 </p>
                 <Button onClick={() => setShowAddModal(true)} className="bg-gradient-to-r from-blue-700 to-blue-800 text-white hover:from-blue-800 hover:to-blue-900 gap-2">
                   <Plus className="h-4 w-4" />
-                  Add Storage Site
+                  Add Storage Garage
                 </Button>
               </Card>
             )}
