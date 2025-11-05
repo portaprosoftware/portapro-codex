@@ -59,9 +59,24 @@ export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = (
   const [sortBy, setSortBy] = useState<'created_at' | 'due_date' | 'priority'>('created_at');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [overdueOnly, setOverdueOnly] = useState(false);
-  const [oosOnly, setOosOnly] = useState(false);
+const [oosOnly, setOosOnly] = useState(false);
 
-  // Selection state
+// Vehicle filter state
+type VehicleForFilter = {
+  id: string;
+  license_plate: string | null;
+  vehicle_type?: string | null;
+  make?: string | null;
+  model?: string | null;
+  year?: number | null;
+  status?: string | null;
+  vehicle_image?: string | null;
+  nickname?: string | null;
+};
+const [selectedVehicles, setSelectedVehicles] = useState<VehicleForFilter[]>([]);
+const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
+
+// Selection state
   const [selectedWorkOrderIds, setSelectedWorkOrderIds] = useState<string[]>([]);
   const [bulkActionDialog, setBulkActionDialog] = useState<{
     open: boolean;
@@ -73,7 +88,23 @@ export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = (
 
   // Fetch work orders with enhanced data
   const { data: workOrders, isLoading, refetch } = useQuery({
-    queryKey: ["comprehensive-work-orders", searchTerm, selectedAssetType, selectedPriority, selectedStatus, selectedSource, selectedAssignee, startDate, endDate, sortBy, sortOrder, overdueOnly, oosOnly, vehicleId],
+    queryKey: [
+      "comprehensive-work-orders",
+      searchTerm,
+      selectedAssetType,
+      selectedPriority,
+      selectedStatus,
+      selectedSource,
+      selectedAssignee,
+      startDate,
+      endDate,
+      sortBy,
+      sortOrder,
+      overdueOnly,
+      oosOnly,
+      vehicleId,
+      selectedVehicles.map(v => v.id)
+    ],
     queryFn: async () => {
       let query = supabase
         .from("work_orders")
@@ -142,6 +173,12 @@ export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = (
       
       if (oosOnly) {
         filteredData = filteredData.filter(wo => (wo as any).out_of_service === true);
+      }
+
+      // Vehicle filter
+      if (selectedVehicles.length > 0) {
+        const vehicleIds = new Set(selectedVehicles.map(v => v.id));
+        filteredData = filteredData.filter(wo => wo.asset_type === 'vehicle' && vehicleIds.has(wo.asset_id));
       }
 
       // Apply sorting
@@ -285,6 +322,7 @@ export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = (
     if (endDate) count++;
     if (overdueOnly) count++;
     if (oosOnly) count++;
+    if (selectedVehicles.length > 0) count++;
     return count;
   };
 
@@ -301,6 +339,7 @@ export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = (
     setSortOrder('desc');
     setOverdueOnly(false);
     setOosOnly(false);
+    setSelectedVehicles([]);
   };
 
   // Bulk action handler
@@ -466,6 +505,8 @@ export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = (
         activeFiltersCount={getActiveFiltersCount()}
         onClearFilters={handleClearFilters}
         hideAssetTypeFilter={!!vehicleId}
+        selectedVehicleCount={selectedVehicles.length}
+        onOpenVehicleFilter={() => setIsVehicleModalOpen(true)}
       />
 
       {/* View Toggle */}
