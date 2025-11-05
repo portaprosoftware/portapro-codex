@@ -421,9 +421,9 @@ export const Landing: React.FC = () => {
 
       {/* Hero Section - Blue */}
       <section className="relative py-4 md:py-6 bg-gradient-blue text-white overflow-hidden">
-        <ParallaxWrapper speed={0.3} direction="down" className="absolute inset-0 pointer-events-none">
+        <div className="absolute inset-0 pointer-events-none">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-primary/10" />
-        </ParallaxWrapper>
+        </div>
         
         <div className="container relative mx-auto max-w-full px-12 lg:px-20">
           <div className="grid lg:grid-cols-2 gap-12 items-center max-w-8xl mx-auto">
@@ -493,9 +493,9 @@ export const Landing: React.FC = () => {
               </div>
             </div>
             
-            <ParallaxWrapper speed={0.2} direction="up">
+            <div>
               <img src="/lovable-uploads/0b9e4b76-5c94-4466-b77f-93a65d668f43.png" alt="PortaPro Dashboard Preview" loading="lazy" decoding="async" className="w-full max-w-3xl mx-auto lg:max-w-none transform scale-[1.0125]" />
-            </ParallaxWrapper>
+            </div>
           </div>
           
             {/* Proof Bar - moved to blue background */}
