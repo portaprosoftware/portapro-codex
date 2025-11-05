@@ -965,7 +965,7 @@ export const Landing: React.FC = () => {
                   <span className="text-sm text-muted-foreground">Expand</span>
                   <ChevronDown 
                     className={cn(
-                      "w-6 h-6 text-primary transition-transform duration-300 ease-in-out",
+                      "w-6 h-6 text-primary transition-transform duration-200 ease-out",
                       isFleetToolsOpen && "rotate-180"
                     )}
                   />
