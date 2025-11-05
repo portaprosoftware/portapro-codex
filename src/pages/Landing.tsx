@@ -721,27 +721,23 @@ export const Landing: React.FC = () => {
             <div className="bg-gray-50 border rounded-lg p-4">
               <h3 className="text-lg font-bold text-foreground mb-4">🚀 Why Teams Love PortaPro Product Inventory</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Left Column - First 4 items */}
+                {/* Left Column - First 2 items */}
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start gap-2">
                     <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
                     <span className="text-foreground">Date-range availability by location</span>
                   </li>
-                </ul>
-                
-                {/* Right Column - Last 4 items */}
-                <ul className="space-y-2 text-sm">
                   <li className="flex items-start gap-2">
                     <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
                     <span className="text-foreground">Service history & automated scheduling</span>
                   </li>
+                </ul>
+                
+                {/* Right Column - Last 2 items */}
+                <ul className="space-y-2 text-sm">
                   <li className="flex items-start gap-2">
                     <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
                     <span className="text-foreground">Padlock & zip-tie drop-off notations</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Clear status at a glance — available, assigned, service</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
