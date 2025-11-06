@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Mail, MessageSquare, Send } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 interface NewMessageModalProps {
   isOpen: boolean;
@@ -19,6 +20,7 @@ interface NewMessageModalProps {
 
 export function NewMessageModal({ isOpen, onClose, customerId }: NewMessageModalProps) {
   const queryClient = useQueryClient();
+  const { orgId } = useOrganizationId();
   const [messageType, setMessageType] = useState('email');
   const [emailSubject, setEmailSubject] = useState('');
   const [emailContent, setEmailContent] = useState('');
@@ -28,12 +30,15 @@ export function NewMessageModal({ isOpen, onClose, customerId }: NewMessageModal
 
   const sendEmailMutation = useMutation({
     mutationFn: async () => {
+      if (!orgId) throw new Error('Organization ID required');
+      
       const { data, error } = await supabase.functions.invoke('send-customer-email', {
         body: {
           customerId,
           subject: emailSubject,
           content: emailContent,
           emailAddress: emailAddress || undefined,
+          organizationId: orgId,
         },
       });
 

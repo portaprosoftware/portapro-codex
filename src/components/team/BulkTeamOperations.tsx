@@ -14,6 +14,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { CSVImportModal } from './CSVImportModal';
 import { ComplianceExportModal } from './ComplianceExportModal';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 interface TeamMember {
   id: string;
@@ -62,6 +63,7 @@ export function BulkTeamOperations() {
   const [showExportModal, setShowExportModal] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { orgId } = useOrganizationId();
 
   // Fetch all team members
   const { data: allMembers = [], isLoading } = useQuery({
@@ -109,8 +111,15 @@ export function BulkTeamOperations() {
   // Bulk reminder mutation
   const bulkReminderMutation = useMutation({
     mutationFn: async ({ memberIds, message }: { memberIds: string[], message: string }) => {
+      if (!orgId) throw new Error('Organization ID required');
+      
       const { data, error } = await supabase.functions.invoke('send-bulk-reminders', {
-        body: { memberIds, message, type: 'manual' }
+        body: { 
+          memberIds, 
+          message, 
+          type: 'manual',
+          organizationId: orgId
+        }
       });
       if (error) throw error;
       return data;

@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Bot, Send, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 interface AIEmailGeneratorModalProps {
   isOpen: boolean;
@@ -36,6 +37,7 @@ const TONE_OPTIONS = [
 
 export function AIEmailGeneratorModal({ isOpen, onClose, customerId }: AIEmailGeneratorModalProps) {
   const queryClient = useQueryClient();
+  const { orgId } = useOrganizationId();
   const [emailType, setEmailType] = useState('');
   const [tone, setTone] = useState('');
   const [subject, setSubject] = useState('');
@@ -45,11 +47,14 @@ export function AIEmailGeneratorModal({ isOpen, onClose, customerId }: AIEmailGe
 
   const sendEmailMutation = useMutation({
     mutationFn: async () => {
+      if (!orgId) throw new Error('Organization ID required');
+      
       const { data, error } = await supabase.functions.invoke('send-customer-email', {
         body: {
           customerId,
           subject,
           content,
+          organizationId: orgId,
         },
       });
 
@@ -75,6 +80,11 @@ export function AIEmailGeneratorModal({ isOpen, onClose, customerId }: AIEmailGe
       return;
     }
 
+    if (!orgId) {
+      toast.error('Organization ID required');
+      return;
+    }
+
     setIsGenerating(true);
     
     try {
@@ -82,7 +92,8 @@ export function AIEmailGeneratorModal({ isOpen, onClose, customerId }: AIEmailGe
         body: {
           emailType,
           tone,
-          customPrompt: customPrompt.trim()
+          customPrompt: customPrompt.trim(),
+          organizationId: orgId,
         }
       });
 

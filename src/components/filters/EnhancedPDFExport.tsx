@@ -5,6 +5,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useUser } from '@clerk/clerk-react';
 import { FilterData } from '@/hooks/useFilterPresets';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 interface Job {
   id: string;
@@ -56,6 +57,7 @@ export const EnhancedPDFExport: React.FC<EnhancedPDFExportProps> = ({
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
   const { user } = useUser();
+  const { orgId } = useOrganizationId();
 
   const getDriverName = (driverId: string) => {
     const driver = drivers.find(d => d.id === driverId);
@@ -85,6 +87,10 @@ export const EnhancedPDFExport: React.FC<EnhancedPDFExportProps> = ({
         presetName: undefined, // Will be set if using a saved preset
       };
 
+      if (!orgId) {
+        throw new Error('Organization ID required');
+      }
+
       console.log('Calling enhanced PDF generation with context:', filterContext);
 
       // Call the enhanced PDF generation edge function
@@ -93,7 +99,8 @@ export const EnhancedPDFExport: React.FC<EnhancedPDFExportProps> = ({
           jobs,
           filterContext,
           totalCount,
-          userEmail: user?.primaryEmailAddress?.emailAddress
+          userEmail: user?.primaryEmailAddress?.emailAddress,
+          organizationId: orgId,
         }
       });
 
