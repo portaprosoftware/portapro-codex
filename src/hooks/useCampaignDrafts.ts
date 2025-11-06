@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { useUser } from '@clerk/clerk-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useOrganizationId } from './useOrganizationId';
 
 export interface CampaignDraft {
   id: string;
@@ -13,18 +14,20 @@ export interface CampaignDraft {
 
 export const useCampaignDrafts = () => {
   const { user } = useUser();
+  const { orgId, isReady } = useOrganizationId();
   const queryClient = useQueryClient();
 
   // Simple fetch with explicit typing to avoid deep type inference
   const { data: drafts, isLoading, error } = useQuery({
-    queryKey: ['campaign-drafts', user?.id],
+    queryKey: ['campaign-drafts', orgId, user?.id],
     queryFn: async () => {
-      if (!user?.id) return [] as CampaignDraft[];
+      if (!user?.id || !orgId) return [] as CampaignDraft[];
       
       try {
         const { data, error } = await supabase
           .from('campaign_drafts')
           .select('id, name, campaign_data, created_at, updated_at')
+          .eq('organization_id', orgId)
           .eq('created_by', user.id)
           .order('updated_at', { ascending: false });
         
@@ -39,13 +42,14 @@ export const useCampaignDrafts = () => {
         return [] as CampaignDraft[];
       }
     },
-    enabled: !!user?.id,
+    enabled: isReady && !!user?.id && !!orgId,
   });
 
   // Simple save mutation
   const saveDraftMutation = useMutation({
     mutationFn: async (params: { name: string; data: any; draftId?: string }) => {
       if (!user?.id) throw new Error('User not authenticated');
+      if (!orgId) throw new Error('Organization ID not found');
 
       if (params.draftId) {
         // Update existing
@@ -56,7 +60,8 @@ export const useCampaignDrafts = () => {
             campaign_data: params.data,
           })
           .eq('id', params.draftId)
-          .eq('created_by', user.id);
+          .eq('created_by', user.id)
+          .eq('organization_id', orgId);
         
         if (error) throw error;
         return params.draftId;
@@ -65,6 +70,7 @@ export const useCampaignDrafts = () => {
         const { data: newDraft, error } = await supabase
           .from('campaign_drafts')
           .insert({
+            organization_id: orgId,
             created_by: user.id,
             name: params.name,
             campaign_data: params.data,
@@ -85,12 +91,14 @@ export const useCampaignDrafts = () => {
   const deleteDraftMutation = useMutation({
     mutationFn: async (draftId: string) => {
       if (!user?.id) throw new Error('User not authenticated');
+      if (!orgId) throw new Error('Organization ID not found');
       
       const { error } = await supabase
         .from('campaign_drafts')
         .delete()
         .eq('id', draftId)
-        .eq('created_by', user.id);
+        .eq('created_by', user.id)
+        .eq('organization_id', orgId);
       
       if (error) throw error;
     },

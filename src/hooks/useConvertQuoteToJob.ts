@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useOrganizationId } from './useOrganizationId';
 
 interface ConvertQuoteToJobParams {
   quoteId: string;
@@ -8,15 +9,19 @@ interface ConvertQuoteToJobParams {
 
 export function useConvertQuoteToJob() {
   const queryClient = useQueryClient();
+  const { orgId } = useOrganizationId();
 
   return useMutation({
     mutationFn: async ({ quoteId }: ConvertQuoteToJobParams) => {
+      if (!orgId) throw new Error('Organization ID not found');
+      
       console.log('Converting quote to job:', quoteId);
 
       // First, get the quote details
       const { data: quote, error: quoteError } = await supabase
         .from('quotes')
         .select('*')
+        .eq('organization_id', orgId)
         .eq('id', quoteId)
         .single();
 
@@ -26,6 +31,7 @@ export function useConvertQuoteToJob() {
       const { data: quoteItems, error: itemsError } = await supabase
         .from('quote_items')
         .select('*')
+        .eq('organization_id', orgId)
         .eq('quote_id', quoteId);
 
       if (itemsError) throw itemsError;
@@ -38,6 +44,7 @@ export function useConvertQuoteToJob() {
       const { data: existingJob } = await supabase
         .from('jobs')
         .select('id')
+        .eq('organization_id', orgId)
         .eq('quote_id', quoteId)
         .maybeSingle();
 
@@ -71,6 +78,7 @@ export function useConvertQuoteToJob() {
       const { data: job, error: jobError } = await supabase
         .from('jobs')
         .insert({
+          organization_id: orgId,
           customer_id: quote.customer_id,
           quote_id: quoteId,
           job_number: jobNumber,
@@ -90,6 +98,7 @@ export function useConvertQuoteToJob() {
       // Create job items for inventory
       if (inventoryItems.length > 0) {
         const jobInventoryItems = inventoryItems.map((item: any) => ({
+          organization_id: orgId,
           job_id: job.id,
           product_id: item.product_id,
           product_variation_id: item.product_variation_id,
@@ -109,6 +118,7 @@ export function useConvertQuoteToJob() {
       // Create job items for services
       if (serviceItems.length > 0) {
         const jobServiceItems = serviceItems.map((item: any) => ({
+          organization_id: orgId,
           job_id: job.id,
           service_id: item.service_id,
           quantity: item.quantity,

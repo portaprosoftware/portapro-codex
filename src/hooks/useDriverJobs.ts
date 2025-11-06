@@ -1,20 +1,27 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useUser } from '@clerk/clerk-react';
+import { useOrganizationId } from './useOrganizationId';
 
 export const useDriverJobs = () => {
   const { user } = useUser();
+  const { orgId, isReady } = useOrganizationId();
   const isDevelopment = import.meta.env.DEV;
 
   const { data: jobs, isLoading, error, refetch } = useQuery({
-    queryKey: ['driver-jobs', user?.id],
+    queryKey: ['driver-jobs', orgId, user?.id],
     queryFn: async () => {
       if (!user?.id) {
         console.log('❌ Driver Jobs: No user ID available');
         throw new Error('User not authenticated');
       }
 
-      console.log('🔍 Driver Jobs: Fetching for user:', user.id);
+      if (!orgId) {
+        console.log('❌ Driver Jobs: No organization ID available');
+        throw new Error('Organization ID not found');
+      }
+
+      console.log('🔍 Driver Jobs: Fetching for user:', user.id, 'org:', orgId);
 
       const today = new Date().toISOString().split('T')[0];
       const tomorrow = new Date();
@@ -48,6 +55,7 @@ export const useDriverJobs = () => {
             title
           )
         `)
+        .eq('organization_id', orgId)
         .eq('driver_id', user.id)
         .gte('scheduled_date', today)
         .lte('scheduled_date', tomorrowStr)
@@ -64,6 +72,7 @@ export const useDriverJobs = () => {
           .from('profiles')
           .select('id')
           .eq('clerk_user_id', user.id)
+          .eq('organization_id', orgId)
           .maybeSingle();
 
         if (profileError) {
@@ -102,6 +111,7 @@ export const useDriverJobs = () => {
               title
             )
           `)
+          .eq('organization_id', orgId)
           .eq('driver_id', profileData.id)
           .gte('scheduled_date', today)
           .lte('scheduled_date', tomorrowStr)
@@ -120,7 +130,7 @@ export const useDriverJobs = () => {
       console.log('✅ Driver Jobs: Direct query successful, found:', data?.length || 0, 'jobs');
       return data || [];
     },
-    enabled: !!user?.id,
+    enabled: isReady && !!user?.id && !!orgId,
     staleTime: isDevelopment ? 10 * 1000 : 30 * 1000, // 10s dev, 30s prod
     gcTime: isDevelopment ? 30 * 1000 : 60 * 1000, // 30s dev, 1min prod
     refetchOnMount: true,

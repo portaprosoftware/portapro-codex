@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useOrganizationId } from './useOrganizationId';
 
 export function useJobsWithDateRange(filters?: {
   startDate?: string;
@@ -9,6 +10,8 @@ export function useJobsWithDateRange(filters?: {
   job_type?: string;
   job_id?: string;
 }) {
+  const { orgId, isReady } = useOrganizationId();
+  
   // Ensure filters are serializable for React Query
   const serializedFilters = filters ? {
     startDate: filters.startDate,
@@ -20,8 +23,10 @@ export function useJobsWithDateRange(filters?: {
   } : undefined;
 
   return useQuery({
-    queryKey: ['jobs-date-range', serializedFilters],
+    queryKey: ['jobs-date-range', orgId, serializedFilters],
     queryFn: async () => {
+      if (!orgId) throw new Error('Organization ID not found');
+      
       let query = supabase
         .from('jobs')
         .select(`
@@ -35,6 +40,7 @@ export function useJobsWithDateRange(filters?: {
           profiles:driver_id(id, first_name, last_name),
           vehicles(id, license_plate, vehicle_type)
         `)
+        .eq('organization_id', orgId)
         .order('scheduled_date', { ascending: false });
 
       if (filters?.startDate && filters?.endDate) {
@@ -61,6 +67,6 @@ export function useJobsWithDateRange(filters?: {
       if (error) throw error;
       return data;
     },
-    enabled: !!(filters?.startDate && filters?.endDate), // Only run if date range is provided
+    enabled: isReady && !!orgId && !!(filters?.startDate && filters?.endDate),
   });
 }

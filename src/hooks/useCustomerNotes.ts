@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { triggerCommentMentionNotification } from '@/utils/notificationTriggers';
 import { parseUserMentions } from '@/utils/mentionParser';
+import { useOrganizationId } from './useOrganizationId';
 
 interface CustomerNote {
   id: string;
@@ -19,21 +20,25 @@ interface CustomerNote {
 
 export function useCustomerNotes(customerId: string) {
   const queryClient = useQueryClient();
+  const { orgId, isReady } = useOrganizationId();
 
   // Fetch notes
   const { data: notes = [], isLoading } = useQuery({
-    queryKey: ['customer-notes', customerId],
+    queryKey: ['customer-notes', orgId, customerId],
     queryFn: async () => {
+      if (!orgId) throw new Error('Organization ID not found');
+      
       const { data, error } = await supabase
         .from('customer_notes')
         .select('*')
+        .eq('organization_id', orgId)
         .eq('customer_id', customerId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
       return data as CustomerNote[];
     },
-    enabled: !!customerId,
+    enabled: isReady && !!orgId && !!customerId,
   });
 
   // Add note mutation
@@ -44,9 +49,12 @@ export function useCustomerNotes(customerId: string) {
       tags?: string[];
       is_important?: boolean;
     }) => {
+      if (!orgId) throw new Error('Organization ID not found');
+      
       const { data, error } = await supabase
         .from('customer_notes')
         .insert({
+          organization_id: orgId,
           customer_id: customerId,
           title: noteData.title,
           note_text: noteData.note_text,
@@ -70,7 +78,7 @@ export function useCustomerNotes(customerId: string) {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['customer-notes', customerId] });
+      queryClient.invalidateQueries({ queryKey: ['customer-notes', orgId, customerId] });
       toast({
         title: "Note added successfully",
         description: "The note has been saved to the customer profile.",
@@ -116,7 +124,7 @@ export function useCustomerNotes(customerId: string) {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['customer-notes', customerId] });
+      queryClient.invalidateQueries({ queryKey: ['customer-notes', orgId, customerId] });
       toast({
         title: "Note updated successfully",
         description: "The note has been updated.",
@@ -143,7 +151,7 @@ export function useCustomerNotes(customerId: string) {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['customer-notes', customerId] });
+      queryClient.invalidateQueries({ queryKey: ['customer-notes', orgId, customerId] });
       toast({
         title: "Note deleted successfully",
         description: "The note has been removed.",
