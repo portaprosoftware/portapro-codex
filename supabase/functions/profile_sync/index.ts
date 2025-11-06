@@ -23,7 +23,7 @@ Deno.serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const { clerkUserId, email, firstName, lastName, imageUrl, clerkRole } = await req.json();
+    const { clerkUserId, email, firstName, lastName, imageUrl, clerkRole, organizationId } = await req.json();
 
     if (!clerkUserId) {
       return new Response(
@@ -32,18 +32,26 @@ Deno.serve(async (req) => {
       );
     }
 
-    console.log('profile_sync: Starting sync', { clerkUserId, email, clerkRole });
+    console.log('profile_sync: Starting sync', { clerkUserId, email, clerkRole, organizationId });
 
     // Step 1: Upsert profile using service role (atomic operation)
+    const profileData: any = {
+      clerk_user_id: clerkUserId,
+      email: email || null,
+      first_name: firstName || null,
+      last_name: lastName || null,
+      image_url: imageUrl || null,
+    };
+
+    // Add organization_id if provided (actual Clerk organization ID)
+    if (organizationId) {
+      profileData.organization_id = organizationId;
+      console.log('profile_sync: Setting organization_id', { organizationId });
+    }
+
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .upsert({
-        clerk_user_id: clerkUserId,
-        email: email || null,
-        first_name: firstName || null,
-        last_name: lastName || null,
-        image_url: imageUrl || null,
-      }, {
+      .upsert(profileData, {
         onConflict: 'clerk_user_id'
       })
       .select('id')

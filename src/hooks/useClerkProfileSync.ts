@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import { useUser } from '@clerk/clerk-react';
+import { useUser, useOrganization } from '@clerk/clerk-react';
 import { useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export const useClerkProfileSync = () => {
   const { user, isLoaded } = useUser();
+  const { organization } = useOrganization();
   const [isSynced, setIsSynced] = useState(false);
   const hasSyncedRef = useRef(false);
   const retryCountRef = useRef(0);
@@ -19,6 +20,7 @@ export const useClerkProfileSync = () => {
       lastName: string;
       imageUrl?: string;
       clerkRole?: string;
+      organizationId?: string;
     }) => {
       // Check sessionStorage to prevent duplicate sync attempts
       const syncKey = `clerk_sync_done:${userData.clerkUserId}`;
@@ -40,6 +42,7 @@ export const useClerkProfileSync = () => {
           lastName: userData.lastName,
           imageUrl: userData.imageUrl,
           clerkRole: userData.clerkRole,
+          organizationId: userData.organizationId, // Pass actual Clerk org ID
         }
       });
 
@@ -114,7 +117,7 @@ export const useClerkProfileSync = () => {
 
   useEffect(() => {
     if (isLoaded && user && !hasSyncedRef.current) {
-      // Sync profile with role from Clerk publicMetadata
+      // Sync profile with role and organization ID from Clerk
       syncProfileMutation.mutate({
         clerkUserId: user.id,
         email: user.primaryEmailAddress?.emailAddress || '',
@@ -122,9 +125,10 @@ export const useClerkProfileSync = () => {
         lastName: user.lastName || '',
         imageUrl: user.imageUrl,
         clerkRole: user.publicMetadata?.role as string | undefined,
+        organizationId: organization?.id, // Pass actual Clerk organization ID
       });
     }
-  }, [isLoaded, user?.id]);
+  }, [isLoaded, user?.id, organization?.id]);
 
   return {
     isLoading: syncProfileMutation.isPending,
