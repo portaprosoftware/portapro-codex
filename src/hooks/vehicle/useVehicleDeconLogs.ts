@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 interface UseVehicleDeconLogsOptions {
   vehicleId: string | null;
@@ -14,15 +15,18 @@ export function useVehicleDeconLogs({
   offset = 0,
   enabled = true,
 }: UseVehicleDeconLogsOptions) {
+  const { orgId } = useOrganizationId();
+
   return useQuery({
-    queryKey: ['vehicle-decon-logs', vehicleId, limit, offset],
+    queryKey: ['vehicle-decon-logs', vehicleId, orgId, limit, offset],
     queryFn: async () => {
-      if (!vehicleId) return { items: [], total: 0 };
+      if (!vehicleId || !orgId) return { items: [], total: 0 };
 
       const { data, error, count } = await supabase
         .from('decon_logs')
         .select('*', { count: 'exact' })
         .eq('vehicle_id', vehicleId)
+        .eq('organization_id', orgId)
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1);
 
@@ -33,7 +37,7 @@ export function useVehicleDeconLogs({
         total: count || 0,
       };
     },
-    enabled: !!vehicleId && enabled,
+    enabled: !!vehicleId && !!orgId && enabled,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes cache
     refetchOnWindowFocus: false,

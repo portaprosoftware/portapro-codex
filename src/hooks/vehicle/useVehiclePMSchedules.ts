@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 interface UseVehiclePMSchedulesOptions {
   vehicleId: string | null;
@@ -10,15 +11,18 @@ export function useVehiclePMSchedules({
   vehicleId,
   activeOnly = true
 }: UseVehiclePMSchedulesOptions) {
+  const { orgId } = useOrganizationId();
+
   return useQuery({
-    queryKey: ['vehicle-pm-schedules', vehicleId, activeOnly],
+    queryKey: ['vehicle-pm-schedules', vehicleId, orgId, activeOnly],
     queryFn: async () => {
-      if (!vehicleId) return [];
+      if (!vehicleId || !orgId) return [];
 
       let query = supabase
         .from('vehicle_pm_schedules' as any)
         .select('*')
         .eq('vehicle_id', vehicleId)
+        .eq('organization_id', orgId)
         .order('next_due_date', { ascending: true });
 
       if (activeOnly) {
@@ -36,7 +40,8 @@ export function useVehiclePMSchedules({
           const { data: templates, error: templatesError } = await supabase
             .from('pm_templates' as any)
             .select('id, name, asset_type')
-            .in('id', templateIds);
+            .in('id', templateIds)
+            .eq('organization_id', orgId);
 
           if (!templatesError && templates) {
             // Merge templates into schedules
@@ -50,7 +55,7 @@ export function useVehiclePMSchedules({
 
       return data || [];
     },
-    enabled: !!vehicleId,
+    enabled: !!vehicleId && !!orgId,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes cache
   });

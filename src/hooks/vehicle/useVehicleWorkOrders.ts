@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 import type { WorkOrder } from '@/components/fleet/work-orders/types';
 
 interface UseVehicleWorkOrdersOptions {
@@ -17,16 +18,19 @@ export function useVehicleWorkOrders({
   status,
   enabled = true,
 }: UseVehicleWorkOrdersOptions) {
+  const { orgId } = useOrganizationId();
+
   return useQuery({
-    queryKey: ['vehicle-work-orders', vehicleId, limit, offset, status],
+    queryKey: ['vehicle-work-orders', vehicleId, orgId, limit, offset, status],
     queryFn: async () => {
-      if (!vehicleId) return { items: [], total: 0 };
+      if (!vehicleId || !orgId) return { items: [], total: 0 };
 
       let query = supabase
         .from('work_orders')
         .select('*', { count: 'exact' })
         .eq('asset_id', vehicleId)
         .eq('asset_type', 'vehicle')
+        .eq('organization_id', orgId)
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1);
 
@@ -43,7 +47,7 @@ export function useVehicleWorkOrders({
         total: count || 0,
       };
     },
-    enabled: !!vehicleId && enabled,
+    enabled: !!vehicleId && !!orgId && enabled,
     staleTime: 3 * 60 * 1000, // 3 minutes - work orders change frequently
     gcTime: 5 * 60 * 1000, // 5 minutes cache
     refetchOnWindowFocus: false,
