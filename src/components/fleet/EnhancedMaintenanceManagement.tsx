@@ -25,6 +25,7 @@ import { WorkOrdersBoard } from "./WorkOrdersBoard";
 import { PMSchedulesTab } from "./PMSchedulesTab";
 import { MaintenanceRecordCard } from "./maintenance/MaintenanceRecordCard";
 import { MaintenanceRecordModal } from "./maintenance/MaintenanceRecordModal";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 
 interface MaintenanceKPIs {
   past_due: number;
@@ -87,6 +88,7 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
   const [scheduleRecurringOpen, setScheduleRecurringOpen] = useState(false);
   const [technicianAssignmentOpen, setTechnicianAssignmentOpen] = useState(false);
   const [selectedMaintenanceRecord, setSelectedMaintenanceRecord] = useState<string | null>(null);
+  const { orgId } = useOrganizationId();
 
   // Fetch company settings to check if in-house features are enabled
   const { data: companySettings } = useQuery({
@@ -159,12 +161,16 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
   });
 
   const { data: kpis, isLoading: kpisLoading } = useQuery({
-    queryKey: ["maintenance-kpis"],
+    queryKey: ["maintenance-kpis", orgId],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_maintenance_kpis");
+      if (!orgId) return { past_due: 0, due_this_week: 0, in_progress: 0, ytd_spend: 0 };
+      const { data, error } = await (supabase as any).rpc("get_maintenance_kpis", {
+        org_id: orgId
+      });
       if (error) throw error;
       return data as unknown as MaintenanceKPIs;
-    }
+    },
+    enabled: !!orgId
   });
 
   // Fetch overdue maintenance records for overview

@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search, Check, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 
 interface SelectedUnit {
   unitId: string;
@@ -50,12 +51,13 @@ export function TrackedUnitsSelectionModal({
     new Set(existingSelectedUnits.filter(unit => unit.productId === productId).map(unit => unit.unitId))
   );
   const [variationFilters, setVariationFilters] = useState<Record<string, string>>({});
+  const { orgId } = useOrganizationId();
 
   // Fetch units with availability check for date range
   const { data: units = [], isLoading } = useQuery({
-    queryKey: ["tracked-units", productId, startDate, endDate],
+    queryKey: ["tracked-units", productId, startDate, endDate, orgId],
     queryFn: async () => {
-      if (!productId) return [];
+      if (!productId || !orgId) return [];
       
       let query = supabase
         .from("product_items")
@@ -76,7 +78,8 @@ export function TrackedUnitsSelectionModal({
             const { data: availabilityCheck } = await supabase.rpc('check_unit_availability', {
               unit_id: item.id,
               start_date: startDate,
-              end_date: endDate || startDate
+              end_date: endDate || startDate,
+              org_id: orgId
             });
             is_available = availabilityCheck === true;
           }
@@ -90,7 +93,7 @@ export function TrackedUnitsSelectionModal({
 
       return unitsWithAvailability;
     },
-    enabled: !!productId && open
+    enabled: !!productId && open && !!orgId
   });
 
   // Fetch item attributes for all units

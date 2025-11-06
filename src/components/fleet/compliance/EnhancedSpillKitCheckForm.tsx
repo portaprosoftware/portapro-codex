@@ -26,6 +26,7 @@ import { cn } from "@/lib/utils";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { Cloud, Loader2, HelpCircle } from "lucide-react";
 import { useSpillKitOffline } from "@/hooks/useSpillKitOffline";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 
 type Props = {
   onSaved?: () => void;
@@ -53,6 +54,7 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
   const queryClient = useQueryClient();
   const { user } = useUser();
   const { isOnline, saveToOfflineQueue, isSyncing } = useSpillKitOffline();
+  const { orgId } = useOrganizationId();
   
   const [vehicleId, setVehicleId] = useState<string>("");
   const [selectedVehicle, setSelectedVehicle] = useState<any>(null);
@@ -190,20 +192,21 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
 
   // Fetch default spill kit template for selected vehicle
   const { data: autoTemplateData, isLoading: templateLoading } = useQuery({
-    queryKey: ["spill-kit-template", vehicleId],
+    queryKey: ["spill-kit-template", vehicleId, orgId],
     queryFn: async () => {
-      if (!vehicleId) return null;
+      if (!vehicleId || !orgId) return null;
       
       const vehicle = vehicles?.find(v => v.id === vehicleId);
       if (!vehicle) return null;
 
       const { data, error } = await supabase.rpc('get_spill_kit_template_for_vehicle', {
-        vehicle_type_param: vehicle.vehicle_type || 'truck'
+        vehicle_type_param: vehicle.vehicle_type || 'truck',
+        org_id: orgId
       });
       if (error) throw error;
       return data?.[0] || null;
     },
-    enabled: !!vehicleId && !!vehicles
+    enabled: !!vehicleId && !!vehicles && !!orgId
   });
 
   const [manuallySelectedTemplateId, setManuallySelectedTemplateId] = useState<string | null>(null);
@@ -345,7 +348,8 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
         const { data: restockRequestId, error: restockError } = await supabase.rpc("generate_spill_kit_restock_request", {
           p_vehicle_id: vehicleId,
           p_missing_items: missingItems,
-          p_template_id: selectedTemplate.template_id || null
+          p_template_id: selectedTemplate.template_id || null,
+          org_id: orgId
         });
         
         if (restockError) {

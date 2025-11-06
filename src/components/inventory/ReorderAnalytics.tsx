@@ -12,7 +12,10 @@ import { Progress } from '@/components/ui/progress';
 import { ChartWrapper } from '@/components/analytics/ChartWrapper';
 import { AlertTriangle, TrendingUp, Calendar, Package, Brain, Target } from 'lucide-react';
 import { RouteStockCheck } from '@/components/fleet/RouteStockCheck';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
+
 export const ReorderAnalytics: React.FC = () => {
+  const { orgId } = useOrganizationId();
   const [analysisType, setAnalysisType] = useState('usage');
   const [timeframe, setTimeframe] = useState('30');
 
@@ -26,15 +29,18 @@ export const ReorderAnalytics: React.FC = () => {
   const endDateStr = formatDate(addDays(new Date(), parseInt(timeframe)));
 
   const { data: forecast, isLoading: forecastLoading } = useQuery({
-    queryKey: ['consumable-forecast', startDateStr, endDateStr],
+    queryKey: ['consumable-forecast', startDateStr, endDateStr, orgId],
     queryFn: async () => {
+      if (!orgId) return [];
       const { data, error } = await supabase.rpc('get_consumable_forecast', {
         start_date: startDateStr,
         end_date: endDateStr,
+        org_id: orgId
       });
       if (error) throw error;
       return data || [];
     },
+    enabled: !!orgId
   });
 
   const { data: consumables } = useQuery({

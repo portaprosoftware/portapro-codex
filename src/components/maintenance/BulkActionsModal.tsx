@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, CheckCircle, Clock, FileX } from "lucide-react";
 import { toast } from "sonner";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 
 interface BulkActionsModalProps {
   isOpen: boolean;
@@ -33,13 +34,16 @@ export const BulkActionsModal: React.FC<BulkActionsModalProps> = ({
   const [newStatus, setNewStatus] = useState<string>("");
   const { user } = useUser();
   const queryClient = useQueryClient();
+  const { orgId } = useOrganizationId();
 
   const bulkUpdateMutation = useMutation({
     mutationFn: async ({ recordIds, status }: { recordIds: string[]; status: string }) => {
+      if (!orgId) throw new Error('Organization ID required');
       const { data, error } = await supabase.rpc('bulk_update_service_status', {
         record_ids: recordIds,
         new_status: status,
         updated_by_user: user?.id || null,
+        org_id: orgId
       });
 
       if (error) throw error;

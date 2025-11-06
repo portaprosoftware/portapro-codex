@@ -13,6 +13,7 @@ import { IncidentAnalyticsCard } from "./IncidentAnalyticsCard";
 import { Plus, Calendar, MapPin, Filter, TrendingUp, Download } from "lucide-react";
 import { format } from "date-fns";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 
 interface IncidentsTabProps {
   drawerOpen?: boolean;
@@ -26,6 +27,7 @@ export const IncidentsTab: React.FC<IncidentsTabProps> = ({
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [internalDrawerOpen, setInternalDrawerOpen] = useState(false);
+  const { orgId } = useOrganizationId();
   
   const isDrawerOpen = externalDrawerOpen ?? internalDrawerOpen;
   const setIsDrawerOpen = externalSetDrawerOpen ?? setInternalDrawerOpen;
@@ -81,12 +83,14 @@ export const IncidentsTab: React.FC<IncidentsTabProps> = ({
   };
 
   const handleExport = async () => {
+    if (!orgId) return;
     try {
       const { data, error } = await supabase.rpc('export_incident_data', {
         start_date: null,
         end_date: null,
         severity_filter: severityFilter === 'all' ? null : severityFilter,
         status_filter: statusFilter === 'all' ? null : statusFilter,
+        org_id: orgId
       });
 
       if (error) throw error;

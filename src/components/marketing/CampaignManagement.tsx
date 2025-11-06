@@ -18,6 +18,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { cn } from '@/lib/utils';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 export const CampaignManagement: React.FC = () => {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -118,17 +119,23 @@ export const CampaignManagement: React.FC = () => {
 };
 
 const CustomerTypesOverview: React.FC = () => {
+  const { orgId } = useOrganizationId();
+  
   // Fetch customer type counts
   const { data: customerTypes = [] } = useQuery({
-    queryKey: ['customer-type-counts'],
+    queryKey: ['customer-type-counts', orgId],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc('get_customer_type_counts');
+      if (!orgId) return [];
+      const { data, error } = await (supabase as any).rpc('get_customer_type_counts', {
+        org_id: orgId
+      });
       if (error) {
         console.error('Error fetching customer type counts:', error);
         return [];
       }
       return data || [];
-    }
+    },
+    enabled: !!orgId
   });
 
   const getTypeGradient = (type: string) => {

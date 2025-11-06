@@ -19,6 +19,7 @@ import { UniversalJobsHeader } from './UniversalJobsHeader';
 import { FilterToggle } from './FilterToggle';
 import { MultiSelectDriverFilter } from '@/components/fleet/MultiSelectDriverFilter';
 import { MobileFilterPanel } from './MobileFilterPanel';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 interface InlineFiltersProps {
   searchTerm: string;
@@ -72,6 +73,7 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
   const [showVehicleModal, setShowVehicleModal] = useState(false);
   const [showDriverModal, setShowDriverModal] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const { orgId } = useOrganizationId();
   
   // Convert drivers array to match MultiSelectDriverFilter format
   const selectedDriversForModal = selectedDriver === 'all' 
@@ -114,17 +116,18 @@ export const InlineFilters: React.FC<InlineFiltersProps> = ({
   });
 
   const { data: routeStatus, isLoading: isLoadingRouteStatus } = useQuery({
-    queryKey: ['route-stock-status', stockVehicleId, stockServiceDate],
+    queryKey: ['route-stock-status', stockVehicleId, stockServiceDate, orgId],
     queryFn: async () => {
-      if (!stockVehicleId || !stockServiceDate) return [];
+      if (!stockVehicleId || !stockServiceDate || !orgId) return [];
       const { data, error } = await supabase.rpc('get_route_stock_status', {
         vehicle_uuid: stockVehicleId,
         service_date: stockServiceDate,
+        org_id: orgId,
       });
       if (error) throw error;
       return (data || []) as any[];
     },
-    enabled: !!stockVehicleId && !!stockServiceDate,
+    enabled: !!stockVehicleId && !!stockServiceDate && !!orgId,
     staleTime: 30000,
     refetchOnWindowFocus: false,
   });

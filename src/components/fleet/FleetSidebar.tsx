@@ -17,17 +17,22 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 
 export const FleetSidebar: React.FC = () => {
   const location = useLocation();
   const isFleetManagementActive = location.pathname === "/fleet-management" || location.pathname === "/fleet";
+  const { orgId } = useOrganizationId();
   
   // Fetch real-time compliance notification counts
   const { data: complianceCounts } = useQuery({
-    queryKey: ["compliance-notification-counts"],
+    queryKey: ["compliance-notification-counts", orgId],
     queryFn: async () => {
+      if (!orgId) return { total: 0, overdue: 0, critical: 0, warning: 0 };
       try {
-        const { data, error } = await supabase.rpc("get_compliance_notification_counts");
+        const { data, error } = await (supabase as any).rpc("get_compliance_notification_counts", {
+          org_id: orgId
+        });
         if (error) throw error;
         return data as { total: number; overdue: number; critical: number; warning: number };
       } catch (error) {
@@ -36,7 +41,8 @@ export const FleetSidebar: React.FC = () => {
       }
     },
     refetchInterval: 30000, // Refresh every 30 seconds
-    initialData: { total: 0, overdue: 0, critical: 0, warning: 0 }
+    initialData: { total: 0, overdue: 0, critical: 0, warning: 0 },
+    enabled: !!orgId
   });
 
   const navigationItems = [

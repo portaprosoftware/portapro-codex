@@ -15,6 +15,7 @@ import { useUnifiedStockManagement } from "@/hooks/useUnifiedStockManagement";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 
 interface TrackedOperationsPanelProps {
   productId: string;
@@ -36,6 +37,7 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
   const [selectedOperation, setSelectedOperation] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
   const { stockData, adjustMasterStock, addTrackedInventory } = useUnifiedStockManagement(productId);
+  const { orgId } = useOrganizationId();
 
   // Fetch product details for the default category
   const { data: productDetails } = useQuery({
@@ -56,14 +58,15 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
 
   // Fetch preview unit codes when quantity > 0 and we have a category
   const { data: previewCodes } = useQuery({
-    queryKey: ['preview-unit-codes', productDetails?.default_item_code_category, quantity],
+    queryKey: ['preview-unit-codes', productDetails?.default_item_code_category, quantity, orgId],
     queryFn: async () => {
-      if (!productDetails?.default_item_code_category) return [];
+      if (!productDetails?.default_item_code_category || !orgId) return [];
       
       const codes = [];
       for (let i = 0; i < quantity; i++) {
         const { data, error } = await supabase.rpc('preview_next_item_code', {
-          category_prefix: productDetails.default_item_code_category
+          category_prefix: productDetails.default_item_code_category,
+          org_id: orgId
         });
         
         if (error) throw error;
@@ -79,7 +82,7 @@ export const TrackedOperationsPanel: React.FC<TrackedOperationsPanelProps> = ({
       
       return codes;
     },
-    enabled: !!productDetails?.default_item_code_category && quantity > 0 && !!selectedOperation,
+    enabled: !!productDetails?.default_item_code_category && quantity > 0 && !!selectedOperation && !!orgId,
   });
 
   const operations = [

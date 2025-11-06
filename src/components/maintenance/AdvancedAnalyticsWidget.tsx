@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { TrendChart } from "@/components/analytics/TrendChart";
 import { DonutChart } from "@/components/analytics/DonutChart";
 import { BarChart3, Clock, DollarSign, Target, TrendingUp } from "lucide-react";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 
 interface AdvancedAnalyticsWidgetProps {
   dateRange?: {
@@ -17,23 +18,27 @@ interface AdvancedAnalyticsWidgetProps {
 export const AdvancedAnalyticsWidget: React.FC<AdvancedAnalyticsWidgetProps> = ({
   dateRange,
 }) => {
+  const { orgId } = useOrganizationId();
   const startDate = dateRange?.start?.toISOString().split('T')[0] || 
     new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
   const endDate = dateRange?.end?.toISOString().split('T')[0] || 
     new Date().toISOString().split('T')[0];
 
   const { data: analytics, isLoading } = useQuery({
-    queryKey: ["service-analytics", startDate, endDate],
+    queryKey: ["service-analytics", startDate, endDate, orgId],
     queryFn: async () => {
+      if (!orgId) return null;
       const { data, error } = await supabase.rpc('get_service_analytics', {
         start_date: startDate,
         end_date: endDate,
+        org_id: orgId
       });
 
       if (error) throw error;
       return data;
     },
     refetchInterval: 300000, // Refresh every 5 minutes
+    enabled: !!orgId
   });
 
   if (isLoading) {

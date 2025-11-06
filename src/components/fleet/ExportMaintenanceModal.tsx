@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { DateRange } from "react-day-picker";
 import { addDays } from "date-fns";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 
 interface ExportMaintenanceModalProps {
   open: boolean;
@@ -26,6 +27,7 @@ export function ExportMaintenanceModal({ open, onOpenChange }: ExportMaintenance
   const [includeSummary, setIncludeSummary] = useState(true);
   const [includePhotos, setIncludePhotos] = useState(false);
   const [selectedVehicles, setSelectedVehicles] = useState<string[]>([]);
+  const { orgId } = useOrganizationId();
 
   // Fetch vehicles for filtering
   const { data: vehicles = [] } = useQuery({
@@ -45,6 +47,7 @@ export function ExportMaintenanceModal({ open, onOpenChange }: ExportMaintenance
   // Export maintenance data mutation
   const exportMutation = useMutation({
     mutationFn: async () => {
+      if (!orgId) throw new Error('Organization ID required');
       const startDate = dateRange?.from?.toISOString().split('T')[0];
       const endDate = dateRange?.to?.toISOString().split('T')[0];
       
@@ -52,7 +55,8 @@ export function ExportMaintenanceModal({ open, onOpenChange }: ExportMaintenance
         start_date: startDate,
         end_date: endDate,
         vehicle_ids: selectedVehicles.length > 0 ? selectedVehicles : null,
-        export_format: 'detailed'
+        export_format: 'detailed',
+        org_id: orgId
       });
 
       if (error) throw error;

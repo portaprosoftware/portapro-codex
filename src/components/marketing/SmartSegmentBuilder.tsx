@@ -13,6 +13,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Plus, X, Users, ChevronDown, ChevronUp } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 interface SegmentRule {
   id: string;
@@ -75,6 +76,7 @@ export const SmartSegmentBuilder: React.FC<SmartSegmentBuilderProps> = ({
   const [segmentData, setSegmentData] = useState<SegmentData>(getInitialSegmentData);
   const [estimatedCount, setEstimatedCount] = useState(existingSegment?.customer_count || 0);
   const queryClient = useQueryClient();
+  const { orgId } = useOrganizationId();
 
   // Reset form data when existingSegment changes
   useEffect(() => {
@@ -239,6 +241,7 @@ export const SmartSegmentBuilder: React.FC<SmartSegmentBuilderProps> = ({
   };
 
   const estimateSegmentSize = async () => {
+    if (!orgId) return;
     try {
       // Convert rules to the expected format for the database function
       const rulesJson = {
@@ -252,7 +255,8 @@ export const SmartSegmentBuilder: React.FC<SmartSegmentBuilderProps> = ({
 
       const { data, error } = await supabase
         .rpc('calculate_smart_segment_size', { 
-          rules_json: rulesJson
+          rules_json: rulesJson,
+          org_id: orgId
         });
       
       if (error) {

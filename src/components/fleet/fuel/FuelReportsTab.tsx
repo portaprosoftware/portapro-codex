@@ -12,6 +12,7 @@ import { TrendingUp, TrendingDown, DollarSign, Fuel, Gauge } from 'lucide-react'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 interface FuelTrendData {
   month: string;
@@ -38,6 +39,7 @@ export const FuelReportsTab: React.FC = () => {
   const [reportPeriod, setReportPeriod] = useState('last_30_days');
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [selectedReport, setSelectedReport] = useState('vehicle_efficiency');
+  const { orgId } = useOrganizationId();
 
   // Fetch fuel settings for unit preference
   const { data: fuelSettings } = useQuery({
@@ -142,12 +144,14 @@ export const FuelReportsTab: React.FC = () => {
 
   // Fetch vehicle efficiency data with vehicle details
   const { data: efficiencyData, isLoading: efficiencyLoading } = useQuery({
-    queryKey: ['vehicle-efficiency', startDate, endDate],
+    queryKey: ['vehicle-efficiency', startDate, endDate, orgId],
     queryFn: async () => {
+      if (!orgId) return [];
       const { data: effData, error: effError } = await supabase
         .rpc('get_vehicle_efficiency', {
           start_date: startDate,
-          end_date: endDate
+          end_date: endDate,
+          org_id: orgId
         });
 
       if (effError) throw effError;
@@ -174,7 +178,8 @@ export const FuelReportsTab: React.FC = () => {
           vehicle_type: vehicle?.vehicle_type
         };
       }) || [];
-    }
+    },
+    enabled: !!orgId
   });
 
   // Fuel station analysis

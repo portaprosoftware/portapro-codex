@@ -21,6 +21,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { StockVehicleSelectionModal } from '@/components/fleet/StockVehicleSelectionModal';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 interface EnhancedJobFiltersProps {
   dateRange: DateRange | undefined;
@@ -65,6 +66,7 @@ export const EnhancedJobFilters: React.FC<EnhancedJobFiltersProps> = ({
   const { savePreset, isSaving } = useFilterPresets('jobs');
   const { data: jobCounts } = useJobCounts();
   const { toast } = useToast();
+  const { orgId } = useOrganizationId();
 
   // Route vs Truck Stock queries
   const { data: vehicles } = useQuery({
@@ -88,17 +90,18 @@ export const EnhancedJobFilters: React.FC<EnhancedJobFiltersProps> = ({
   });
 
   const { data: routeStatus, isLoading: isLoadingRouteStatus } = useQuery({
-    queryKey: ['route-stock-status', stockVehicleId, stockServiceDate],
+    queryKey: ['route-stock-status', stockVehicleId, stockServiceDate, orgId],
     queryFn: async () => {
-      if (!stockVehicleId || !stockServiceDate) return [];
+      if (!stockVehicleId || !stockServiceDate || !orgId) return [];
       const { data, error } = await supabase.rpc('get_route_stock_status', {
         vehicle_uuid: stockVehicleId,
         service_date: stockServiceDate,
+        org_id: orgId,
       });
       if (error) throw error;
       return (data || []) as any[];
     },
-    enabled: !!stockVehicleId && !!stockServiceDate,
+    enabled: !!stockVehicleId && !!stockServiceDate && !!orgId,
     staleTime: 30000,
     refetchOnWindowFocus: false,
   });

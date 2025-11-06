@@ -11,6 +11,7 @@ import { FileText, Download, Calendar, BarChart3, Filter, Truck } from "lucide-r
 import { format, subDays, subMonths } from "date-fns";
 import { toast } from "@/hooks/use-toast";
 import { MultiSelectVehicleFilter } from "../MultiSelectVehicleFilter";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 
 interface ComplianceReport {
   report_generated_at: string;
@@ -44,17 +45,20 @@ export const SpillKitComplianceReports: React.FC = () => {
   const [reportPeriod, setReportPeriod] = useState("30days");
   const [selectedVehicles, setSelectedVehicles] = useState<any[]>([]);
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
+  const { orgId } = useOrganizationId();
 
   // Generate compliance report
   const { data: report, isLoading: reportLoading, refetch: generateReport, error: reportError } = useQuery({
-    queryKey: ["spill-kit-compliance-report", startDate, endDate, selectedVehicles],
+    queryKey: ["spill-kit-compliance-report", startDate, endDate, selectedVehicles, orgId],
     queryFn: async () => {
+      if (!orgId) return null;
       const vehicleIds = selectedVehicles.map(v => v.id);
       const { data, error } = await supabase
         .rpc("generate_spill_kit_compliance_report", {
           p_start_date: startDate,
           p_end_date: endDate,
-          p_vehicle_ids: vehicleIds.length > 0 ? vehicleIds : null
+          p_vehicle_ids: vehicleIds.length > 0 ? vehicleIds : null,
+          org_id: orgId
         });
       
       if (error) {
@@ -74,7 +78,7 @@ export const SpillKitComplianceReports: React.FC = () => {
       
       return data as any as ComplianceReport;
     },
-    enabled: false // Don't auto-fetch, user must click generate
+    enabled: false && !!orgId // Don't auto-fetch, user must click generate
   });
 
   // Fetch vehicles for filter

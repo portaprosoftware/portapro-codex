@@ -22,6 +22,7 @@ import { format } from 'date-fns';
 import { toast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useCampaignDrafts } from '@/hooks/useCampaignDrafts';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 interface CampaignData {
   name: string;
@@ -136,6 +137,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
   
   const queryClient = useQueryClient();
   const { saveDraft, isSaving } = useCampaignDrafts();
+  const { orgId } = useOrganizationId();
 
   // Fetch templates
   const { data: templates = [] } = useQuery({
@@ -165,15 +167,19 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
 
   // Fetch customer type counts
   const { data: customerTypes = [] } = useQuery({
-    queryKey: ['customer-type-counts'],
+    queryKey: ['customer-type-counts', orgId],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc('get_customer_type_counts');
+      if (!orgId) return [];
+      const { data, error } = await (supabase as any).rpc('get_customer_type_counts', {
+        org_id: orgId
+      });
       if (error) {
         console.error('Error fetching customer type counts:', error);
         return [];
       }
       return data || [];
-    }
+    },
+    enabled: !!orgId
   });
 
   // Fetch all customers for individual selection

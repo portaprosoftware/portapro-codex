@@ -11,6 +11,7 @@ import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 
 interface VehicleLoadData {
   id: string;
@@ -33,15 +34,20 @@ export const FleetLoadManagement: React.FC = () => {
   const [editingLoad, setEditingLoad] = useState<{ vehicleId: string; productId: string } | null>(null);
   const [editValue, setEditValue] = useState<string>("");
   const queryClient = useQueryClient();
+  const { orgId } = useOrganizationId();
 
   // Fetch vehicles with their load data for the selected date
   const { data: vehicleLoads, isLoading } = useQuery({
-    queryKey: ["fleet-loads", selectedDate],
+    queryKey: ["fleet-loads", selectedDate, orgId],
     queryFn: async () => {
+      if (!orgId) return [];
       const dateStr = format(selectedDate, "yyyy-MM-dd");
       
       // Calculate daily loads for the selected date
-      await supabase.rpc("calculate_daily_vehicle_loads", { target_date: dateStr });
+      await supabase.rpc("calculate_daily_vehicle_loads", { 
+        target_date: dateStr,
+        org_id: orgId 
+      });
       
       // Fetch vehicles separately first
       const { data: vehicles, error: vehiclesError } = await supabase

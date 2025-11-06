@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TrendingUp, Trophy, AlertTriangle, BarChart3, CalendarIcon } from "lucide-react";
 import { format, subDays } from "date-fns";
 import { cn } from "@/lib/utils";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 
 interface EfficiencyTrend {
   date: string;
@@ -39,18 +40,22 @@ interface AnalyticsData {
 export const FleetAnalytics: React.FC = () => {
   const [startDate, setStartDate] = useState<Date>(subDays(new Date(), 30));
   const [endDate, setEndDate] = useState<Date>(new Date());
+  const { orgId } = useOrganizationId();
 
   const { data: analyticsData, isLoading, refetch } = useQuery({
-    queryKey: ['fleet-efficiency-trends', startDate, endDate],
+    queryKey: ['fleet-efficiency-trends', startDate, endDate, orgId],
     queryFn: async (): Promise<AnalyticsData> => {
+      if (!orgId) return { period: { start_date: '', end_date: '' }, daily_trends: [], vehicle_rankings: [], generated_at: '' };
       const { data, error } = await supabase.rpc('calculate_fleet_efficiency_trends', {
         start_date: format(startDate, 'yyyy-MM-dd'),
-        end_date: format(endDate, 'yyyy-MM-dd')
+        end_date: format(endDate, 'yyyy-MM-dd'),
+        org_id: orgId
       });
       
       if (error) throw error;
       return data as unknown as AnalyticsData;
-    }
+    },
+    enabled: !!orgId
   });
 
   const getRankBadgeVariant = (rank: number) => {
