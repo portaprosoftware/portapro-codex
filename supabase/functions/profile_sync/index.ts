@@ -34,8 +34,12 @@ Deno.serve(async (req) => {
 
     if (!organizationId) {
       return new Response(
-        JSON.stringify({ success: false, error: 'organizationId is required for multi-tenant setup' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ 
+          success: false, 
+          error: 'User must belong to a Clerk Organization to use PortaPro. Please contact your administrator or sign in through your organization subdomain.',
+          code: 'MISSING_ORGANIZATION'
+        }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 

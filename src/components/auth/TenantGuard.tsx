@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useUser, useOrganizationList, useOrganization } from '@clerk/clerk-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface TenantGuardProps {
   children: React.ReactNode;
@@ -117,12 +118,21 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
 
       if (orgError || !orgData) {
         console.error('❌ Unknown subdomain:', subdomain, orgError);
-        // Unknown subdomain → redirect to marketing site
-        if (!isLocalhost) {
-          window.location.href = 'https://portaprosoftware.com';
-        } else {
-          navigate('/unauthorized');
-        }
+        
+        // Show toast before redirect
+        toast.error('Organization Not Found', {
+          description: `The subdomain "${subdomain}" doesn't exist. Redirecting to PortaPro.com...`,
+          duration: 5000,
+        });
+        
+        // Delay redirect to let user see the message
+        setTimeout(() => {
+          if (!isLocalhost) {
+            window.location.href = 'https://portaprosoftware.com';
+          } else {
+            navigate('/unauthorized');
+          }
+        }, 1000);
         return;
       }
 
@@ -147,6 +157,12 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
             slug: m.organization.slug 
           })),
           subdomain
+        });
+        
+        // Show specific error message before redirect
+        toast.error(`Access Denied: ${orgData.name}`, {
+          description: `You don't have permission to access ${orgData.name}. Contact your administrator.`,
+          duration: 10000,
         });
         
         navigate('/unauthorized', { replace: true });

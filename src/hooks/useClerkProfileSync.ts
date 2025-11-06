@@ -48,11 +48,23 @@ export const useClerkProfileSync = () => {
 
       if (error) {
         console.error('❌ Profile sync edge function error:', error);
+        
+        // Detect 403 Forbidden (missing organization)
+        if (error.message?.includes('403')) {
+          throw new Error('MISSING_ORGANIZATION');
+        }
+        
         throw error; // Throw the actual error object to preserve type info
       }
 
       if (!data?.success) {
         console.error('❌ Profile sync failed:', data?.error);
+        
+        // Check if it's the missing organization error code
+        if (data?.code === 'MISSING_ORGANIZATION') {
+          throw new Error('MISSING_ORGANIZATION');
+        }
+        
         throw new Error(data?.error || 'Profile sync failed');
       }
 
@@ -90,6 +102,16 @@ export const useClerkProfileSync = () => {
     },
     onError: (error: any, variables, context) => {
       console.error('❌ Profile sync error after retries:', error);
+      
+      // Handle missing organization error specifically
+      if (error?.message === 'MISSING_ORGANIZATION') {
+        toast.error('Please join an organization to access PortaPro', {
+          description: 'Contact your administrator or visit your organization subdomain.',
+          duration: 10000,
+        });
+        hasSyncedRef.current = true;
+        return;
+      }
       
       // Only show toast if it's not a transient error (those are retried automatically)
       const isTransient = 
