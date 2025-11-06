@@ -15,9 +15,11 @@ import { toast } from 'sonner';
 import { SuccessMessage } from '@/components/ui/SuccessMessage';
 import type { ConsumableCategory } from '@/lib/consumableCategories';
 import { CONSUMABLE_CATEGORIES } from '@/lib/consumableCategories';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 export const ConsumableCategoryManager: React.FC = () => {
   const queryClient = useQueryClient();
+  const { orgId } = useOrganizationId();
   const { categories, needsInitialization, isLoading: categoriesLoading } = useConsumableCategories();
   const { data: companySettings } = useCompanySettings();
   const [open, setOpen] = useState(false);
@@ -43,13 +45,16 @@ export const ConsumableCategoryManager: React.FC = () => {
   // Initialize with default categories on first open if needed
   const initializeMutation = useMutation({
     mutationFn: async () => {
+      if (!orgId) throw new Error('Organization ID is required');
+      
       const settingsId =
         companySettings?.id ||
-        (await supabase.from('company_settings').select('id').single()).data?.id;
+        (await supabase.from('company_settings').select('id').eq('organization_id', orgId).single()).data?.id;
 
       const { error } = await supabase
         .from('company_settings' as any)
         .update({ consumable_categories: CONSUMABLE_CATEGORIES } as any)
+        .eq('organization_id', orgId)
         .eq('id', settingsId);
 
       if (error) throw error;
@@ -100,14 +105,17 @@ export const ConsumableCategoryManager: React.FC = () => {
 
   const updateMutation = useMutation({
     mutationFn: async (next: ConsumableCategory[]) => {
+      if (!orgId) throw new Error('Organization ID is required');
+      
       const settingsId =
         companySettings?.id ||
-        (await supabase.from('company_settings').select('id').single()).data?.id;
+        (await supabase.from('company_settings').select('id').eq('organization_id', orgId).single()).data?.id;
 
       // Cast to any to bypass generated types until Supabase types include `consumable_categories`
       const { error } = await supabase
         .from('company_settings' as any)
         .update({ consumable_categories: next } as any)
+        .eq('organization_id', orgId)
         .eq('id', settingsId);
 
       if (error) throw error;

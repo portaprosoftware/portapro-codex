@@ -10,9 +10,11 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useItemCodeCategories } from "@/hooks/useCompanySettings";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 
 export const ItemCodeCategoryManagement: React.FC = () => {
   const queryClient = useQueryClient();
+  const { orgId } = useOrganizationId();
   const { categories, isLoading } = useItemCodeCategories();
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [editingCategory, setEditingCategory] = useState<{ prefix: string; name: string } | null>(null);
@@ -21,10 +23,13 @@ export const ItemCodeCategoryManagement: React.FC = () => {
 
   const updateCategoriesMutation = useMutation({
     mutationFn: async (newCategories: Record<string, string>) => {
+      if (!orgId) throw new Error('Organization ID is required');
+      
       const { data, error } = await supabase
         .from('company_settings')
         .update({ item_code_categories: newCategories })
-        .eq('id', (await supabase.from('company_settings').select('id').single()).data?.id);
+        .eq('organization_id', orgId)
+        .eq('id', (await supabase.from('company_settings').select('id').eq('organization_id', orgId).single()).data?.id);
       
       if (error) throw error;
       return data;
