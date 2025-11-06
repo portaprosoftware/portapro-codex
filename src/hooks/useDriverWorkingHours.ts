@@ -1,8 +1,8 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect } from "react";
+import { useOrganizationId } from "./useOrganizationId";
 
 interface WorkingHour {
   driver_id: string;
@@ -13,12 +13,17 @@ interface WorkingHour {
 }
 
 export function useDriverWorkingHours(driverId?: string) {
+  const { orgId } = useOrganizationId();
+
   return useQuery({
-    queryKey: ['driver-working-hours', driverId],
+    queryKey: ['driver-working-hours', driverId, orgId],
     queryFn: async () => {
+      if (!orgId) return [];
+
       let query = supabase
         .from('driver_working_hours')
-        .select('*');
+        .select('*')
+        .eq('organization_id', orgId);
       
       if (driverId) {
         query = query.eq('driver_id', driverId);
@@ -28,16 +33,19 @@ export function useDriverWorkingHours(driverId?: string) {
       if (error) throw error;
       return data;
     },
-    enabled: !!driverId,
+    enabled: !!driverId && !!orgId,
   });
 }
 
 export function useDriversWithHours() {
   const queryClient = useQueryClient();
+  const { orgId } = useOrganizationId();
   
   const query = useQuery({
-    queryKey: ['drivers-with-hours'],
+    queryKey: ['drivers-with-hours', orgId],
     queryFn: async () => {
+      if (!orgId) return [];
+
       // Fetch all drivers
       const { data: drivers, error: driversError } = await supabase
         .from('profiles')
@@ -51,6 +59,7 @@ export function useDriversWithHours() {
       const { data: hours, error: hoursError } = await supabase
         .from('driver_working_hours')
         .select('*')
+        .eq('organization_id', orgId)
         .in('driver_id', driverIds.length ? driverIds : ['00000000-0000-0000-0000-000000000000']);
       if (hoursError) throw hoursError;
 
@@ -68,6 +77,7 @@ export function useDriversWithHours() {
         working_hours: hoursByDriver[d.id] || []
       }));
     },
+    enabled: !!orgId,
   });
 
   // Set up real-time subscriptions for automatic updates
@@ -120,19 +130,24 @@ export function useDriversWithHours() {
 export function useUpdateDriverWorkingHours() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const { orgId } = useOrganizationId();
 
   return useMutation({
     mutationFn: async ({ driverId, schedule }: { driverId: string; schedule: WorkingHour[] }) => {
+      if (!orgId) throw new Error('Organization required');
+
       // Delete existing hours
       await supabase
         .from('driver_working_hours')
         .delete()
-        .eq('driver_id', driverId);
+        .eq('driver_id', driverId)
+        .eq('organization_id', orgId);
       
-      // Insert new hours
+      // Insert new hours with organization_id
+      const scheduleWithOrg = schedule.map(s => ({ ...s, organization_id: orgId }));
       const { error } = await supabase
         .from('driver_working_hours')
-        .insert(schedule);
+        .insert(scheduleWithOrg);
       
       if (error) throw error;
     },

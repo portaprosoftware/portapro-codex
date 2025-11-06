@@ -2,14 +2,20 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { MobileFuelService } from '@/types/fuel';
 import { toast } from 'sonner';
+import { useOrganizationId } from './useOrganizationId';
 
 export const useMobileFuelServices = (vendorId?: string) => {
+  const { orgId } = useOrganizationId();
+
   return useQuery({
-    queryKey: ['mobile-fuel-services', vendorId],
+    queryKey: ['mobile-fuel-services', vendorId, orgId],
     queryFn: async () => {
-      let query = supabase
+      if (!orgId) return [];
+
+      let query = (supabase as any)
         .from('mobile_fuel_services')
         .select('*, mobile_fuel_vendors(*)')
+        .eq('organization_id', orgId)
         .order('service_date', { ascending: false });
 
       if (vendorId) {
@@ -21,23 +27,27 @@ export const useMobileFuelServices = (vendorId?: string) => {
       if (error) throw error;
       return data as MobileFuelService[];
     },
+    enabled: !!orgId,
   });
 };
 
 export const useAddMobileFuelService = () => {
   const queryClient = useQueryClient();
+  const { orgId } = useOrganizationId();
 
   return useMutation({
     mutationFn: async (params: { 
       service: any,
       vehicles?: Array<{ vehicle_id: string; gallons_dispensed: number; odometer_reading?: number; vehicle_notes?: string }>
     }) => {
+      if (!orgId) throw new Error('Organization required');
+
       const { service, vehicles } = params;
       
-      // Insert the service record
+      // Insert the service record with organization_id
       const { data: serviceData, error: serviceError } = await supabase
         .from('mobile_fuel_services')
-        .insert([service as any])
+        .insert([{ ...service, organization_id: orgId } as any])
         .select()
         .single();
 
