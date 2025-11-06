@@ -24,6 +24,7 @@ export type Database = {
           error_message: string | null
           id: string
           job_id: string
+          organization_id: string | null
           status: string
           updated_at: string
           webhook_url: string | null
@@ -37,6 +38,7 @@ export type Database = {
           error_message?: string | null
           id?: string
           job_id: string
+          organization_id?: string | null
           status?: string
           updated_at?: string
           webhook_url?: string | null
@@ -50,6 +52,7 @@ export type Database = {
           error_message?: string | null
           id?: string
           job_id?: string
+          organization_id?: string | null
           status?: string
           updated_at?: string
           webhook_url?: string | null
