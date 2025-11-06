@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { JobWizardData } from "@/contexts/JobWizardContext";
 import { triggerJobAssignmentNotification } from "@/utils/notificationTriggers";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 
 async function processJobConsumables(jobId: string, consumablesData: any) {
   const { billingMethod, items, selectedBundle, subscriptionEnabled } = consumablesData;
@@ -84,14 +85,18 @@ export function useJobs(filters?: {
   status?: string;
   driver_id?: string;
   job_type?: string;
+  organization_id?: string;
 }) {
+  const { orgId } = useOrganizationId();
+  
   // Ensure filters are serializable for React Query
   const serializedFilters = filters ? {
     date: filters.date,
     status: filters.status,
     driver_id: filters.driver_id,
-    job_type: filters.job_type
-  } : undefined;
+    job_type: filters.job_type,
+    organization_id: filters.organization_id || orgId
+  } : { organization_id: orgId };
 
   return useQuery({
     queryKey: ['jobs', serializedFilters],
@@ -110,6 +115,11 @@ export function useJobs(filters?: {
           vehicles(id, license_plate, vehicle_type)
         `)
         .order('scheduled_date', { ascending: true });
+
+      // Filter by organization_id
+      if (serializedFilters?.organization_id) {
+        query = query.eq('organization_id', serializedFilters.organization_id);
+      }
 
       if (filters?.date) {
         query = query.eq('scheduled_date', filters.date);
@@ -131,15 +141,20 @@ export function useJobs(filters?: {
       if (error) throw error;
       return data;
     },
+    enabled: !!orgId,
   });
 }
 
 export function useCreateJob() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const { orgId } = useOrganizationId();
 
   return useMutation({
     mutationFn: async (jobData: JobWizardData) => {
+      if (!orgId) {
+        throw new Error('Organization ID is required to create jobs');
+      }
       // Create properly serialized job data to avoid DataCloneError
       const serializedJobData = {
         customer_id: jobData.customer_id,
@@ -191,6 +206,7 @@ export function useCreateJob() {
       const { data: newJob, error } = await supabase
         .from('jobs')
         .insert({
+          organization_id: orgId,
           customer_id: serializedJobData.customer_id!,
           contact_id: serializedJobData.contact_id || null,
           job_type: serializedJobData.job_type!,

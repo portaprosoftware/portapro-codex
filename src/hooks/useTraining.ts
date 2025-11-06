@@ -2,6 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 
 export interface CertificationType {
   id: string;
@@ -23,25 +24,38 @@ export interface EmployeeCertification {
 }
 
 export function useCertificationTypes() {
-  return useQuery({
-    queryKey: ["certification-types"],
+  const { orgId } = useOrganizationId();
+  
+  return useQuery<CertificationType[]>({
+    queryKey: ["certification-types", orgId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      if (!orgId) return [];
+      
+      const { data, error } = await (supabase as any)
         .from("certification_types")
         .select("*")
+        .eq('organization_id', orgId)
         .order("name", { ascending: true });
       if (error) throw error;
       return (data || []) as CertificationType[];
     },
+    enabled: !!orgId,
   });
 }
 
 export function useCreateCertificationType() {
   const qc = useQueryClient();
   const { toast } = useToast();
+  const { orgId } = useOrganizationId();
+  
   return useMutation({
     mutationFn: async (payload: Omit<CertificationType, "id">) => {
-      const { error } = await supabase.from("certification_types").insert(payload as any);
+      if (!orgId) throw new Error('Organization ID required');
+      
+      const { error } = await supabase.from("certification_types").insert({
+        ...payload,
+        organization_id: orgId
+      } as any);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -55,25 +69,38 @@ export function useCreateCertificationType() {
 }
 
 export function useEmployeeCertifications() {
-  return useQuery({
-    queryKey: ["employee-certifications"],
+  const { orgId } = useOrganizationId();
+  
+  return useQuery<EmployeeCertification[]>({
+    queryKey: ["employee-certifications", orgId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      if (!orgId) return [];
+      
+      const { data, error } = await (supabase as any)
         .from("employee_certifications")
         .select("*")
+        .eq('organization_id', orgId)
         .order("created_at", { ascending: false });
       if (error) throw error;
       return (data || []) as EmployeeCertification[];
     },
+    enabled: !!orgId,
   });
 }
 
 export function useAddEmployeeCertification() {
   const qc = useQueryClient();
   const { toast } = useToast();
+  const { orgId } = useOrganizationId();
+  
   return useMutation({
     mutationFn: async (payload: Omit<EmployeeCertification, "id">) => {
-      const { error } = await supabase.from("employee_certifications").insert(payload as any);
+      if (!orgId) throw new Error('Organization ID required');
+      
+      const { error } = await supabase.from("employee_certifications").insert({
+        ...payload,
+        organization_id: orgId
+      } as any);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -112,25 +139,38 @@ export function useUpdateEmployeeCertification() {
 }
 
 export function useTrainingRequirements() {
-  return useQuery({
-    queryKey: ["training-requirements"],
+  const { orgId } = useOrganizationId();
+  
+  return useQuery<any[]>({
+    queryKey: ["training-requirements", orgId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      if (!orgId) return [];
+      
+      const { data, error } = await (supabase as any)
         .from("training_requirements")
         .select("*")
+        .eq('organization_id', orgId)
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data || [];
     },
+    enabled: !!orgId,
   });
 }
 
 export function useCreateTrainingRequirement() {
   const qc = useQueryClient();
   const { toast } = useToast();
+  const { orgId } = useOrganizationId();
+  
   return useMutation({
     mutationFn: async (payload: { role: string; certification_type_id: string; is_required?: boolean; frequency_months?: number | null; }) => {
-      const { error } = await supabase.from("training_requirements").insert(payload as any);
+      if (!orgId) throw new Error('Organization ID required');
+      
+      const { error } = await supabase.from("training_requirements").insert({
+        ...payload,
+        organization_id: orgId
+      } as any);
       if (error) throw error;
     },
     onSuccess: () => {

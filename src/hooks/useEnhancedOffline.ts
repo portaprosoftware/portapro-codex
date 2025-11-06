@@ -266,6 +266,7 @@ export function useEnhancedOffline() {
             photos: item.data.sanitationData.photos,
             technician_id: item.userId,
             notes: item.data.sanitationData.notes,
+            organization_id: item.data.organizationId || null,
           });
         }
         break;

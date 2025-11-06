@@ -269,6 +269,7 @@ export const useUnifiedStockManagement = (productId: string) => {
             quantity_change: quantityChange,
             reason,
             notes: notes || null,
+            organization_id: null, // Will be set by trigger or can be passed as param
           });
         } catch {}
 
