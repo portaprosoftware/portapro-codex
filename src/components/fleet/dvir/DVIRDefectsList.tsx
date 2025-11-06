@@ -9,6 +9,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { Wrench, AlertTriangle, CheckCircle, ExternalLink } from "lucide-react";
 import { format } from "date-fns";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 import { getDefaultDueDateForPriority } from "@/lib/workOrderRules";
 
 interface DVIRDefectsListProps {
@@ -26,6 +27,7 @@ export const DVIRDefectsList: React.FC<DVIRDefectsListProps> = ({
 }) => {
   const { toast } = useToast();
   const { user } = useUser();
+  const { orgId } = useOrganizationId();
   const queryClient = useQueryClient();
 
   // Fetch defects for this DVIR
@@ -91,8 +93,9 @@ export const DVIRDefectsList: React.FC<DVIRDefectsListProps> = ({
         from_status: null,
         to_status: 'open',
         changed_by: user?.id || 'system',
-        note: `Work order created from DVIR defect: ${defect.item_key}`
-      });
+        note: `Work order created from DVIR defect: ${defect.item_key}`,
+        organization_id: orgId
+      } as any);
 
       // If critical, mark vehicle as out of service
       if (defect.severity === 'critical' && assetType === 'vehicle') {

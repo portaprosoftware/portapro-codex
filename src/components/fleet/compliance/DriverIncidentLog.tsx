@@ -12,6 +12,7 @@ import { VehicleSelectedDisplay } from "../VehicleSelectedDisplay";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Input } from "@/components/ui/input";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 import { useOfflineSync } from "@/hooks/useOfflineSync";
 import { Badge } from "@/components/ui/badge";
 
@@ -26,6 +27,7 @@ type SpillType = { id: string; name: string; category: string; subcategory?: str
 export const DriverIncidentLog: React.FC<Props> = ({ onSaved, onCancel }) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { orgId } = useOrganizationId();
   const { userId } = useUserRole();
   const { isOnline, addToQueue, queueCount } = useOfflineSync();
   
@@ -61,9 +63,10 @@ export const DriverIncidentLog: React.FC<Props> = ({ onSaved, onCancel }) => {
 
   // Load vehicles and spill types
   useEffect(() => {
+    if (!orgId) return;
     Promise.all([
-      supabase.from("vehicles").select("id, license_plate, make, model, year"),
-      supabase.from("configurable_spill_types").select("*").eq("is_active", true)
+      (supabase as any).from("vehicles").select("id, license_plate, make, model, year").eq("organization_id", orgId),
+      (supabase as any).from("configurable_spill_types").select("*").eq("organization_id", orgId).eq("is_active", true)
     ]).then(([vehiclesRes, spillTypesRes]) => {
       if (!vehiclesRes.error) {
         setVehicles(vehiclesRes.data || []);

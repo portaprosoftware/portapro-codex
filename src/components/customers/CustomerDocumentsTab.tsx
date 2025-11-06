@@ -147,7 +147,7 @@ export const CustomerDocumentsTab: React.FC<CustomerDocumentsTabProps> = ({ cust
     mutationFn: async (row: DocRow) => {
       if (!row.file_url) {
         // Still delete the DB row if path is missing
-        const { error: delErr } = await supabase.from('customer_contracts').delete().eq('id', row.id);
+        const { error: delErr } = await supabase.from('customer_contracts').delete().eq('id', row.id).eq('organization_id', orgId);
         if (delErr) throw delErr;
         return;
       }
@@ -160,7 +160,7 @@ export const CustomerDocumentsTab: React.FC<CustomerDocumentsTabProps> = ({ cust
       });
       if (fnErr) throw fnErr;
 
-      const { error: delErr } = await supabase.from('customer_contracts').delete().eq('id', row.id);
+      const { error: delErr } = await supabase.from('customer_contracts').delete().eq('id', row.id).eq('organization_id', orgId);
       if (delErr) throw delErr;
     },
     onSuccess: () => {

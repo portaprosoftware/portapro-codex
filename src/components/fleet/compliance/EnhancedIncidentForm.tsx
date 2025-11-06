@@ -21,6 +21,7 @@ import { WeatherSelectionModal } from "./WeatherSelectionModal";
 import { SpillTypeSelectionModal } from "./SpillTypeSelectionModal";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { Cloud, Loader2, AlertOctagon } from "lucide-react";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 
 type Props = {
   onSaved?: () => void;
@@ -33,6 +34,7 @@ type Witness = { firstName: string; lastName: string; phone: string; email: stri
 
 export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => {
   const { toast } = useToast();
+  const { orgId } = useOrganizationId();
   
   // Basic incident data
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -122,9 +124,10 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
 
   useEffect(() => {
     // Load vehicles and spill types
+    if (!orgId) return;
     Promise.all([
-      supabase.from("vehicles").select("id, license_plate"),
-      supabase.from("configurable_spill_types").select("*").eq("is_active", true)
+      (supabase as any).from("vehicles").select("id, license_plate").eq("organization_id", orgId),
+      (supabase as any).from("configurable_spill_types").select("*").eq("organization_id", orgId).eq("is_active", true)
     ]).then(([vehiclesRes, spillTypesRes]) => {
       if (!vehiclesRes.error) {
         setVehicles(vehiclesRes.data || []);

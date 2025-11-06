@@ -8,6 +8,7 @@ import { formatDateSafe, addDaysToDate } from "@/lib/dateUtils";
 import { ShieldCheck, Clock, AlertTriangle, CheckCircle } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { loadPdfLibs } from "@/lib/loaders/pdf";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 
 interface ProductComplianceTabProps {
   productId: string;
@@ -32,6 +33,7 @@ type UnitStatus = "good" | "due_soon" | "overdue" | "no_record";
 
 export const ProductComplianceTab: React.FC<ProductComplianceTabProps> = ({ productId, productName }) => {
   const queryClient = useQueryClient();
+  const { orgId } = useOrganizationId();
   const DAYS_FREQUENCY = 7; // Default weekly cleaning
   const [historyOpen, setHistoryOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<{ id: string; item_code: string } | null>(null);
@@ -92,7 +94,8 @@ export const ProductComplianceTab: React.FC<ProductComplianceTabProps> = ({ prod
         notes: "Quick cleaned from Inventory > Compliance",
         photos: [],
         responses: {},
-      });
+        organization_id: orgId,
+      } as any);
       if (error) throw error;
     },
     onSuccess: () => {

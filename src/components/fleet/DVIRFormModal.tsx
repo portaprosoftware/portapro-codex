@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 import { ChevronDown, ChevronRight, Truck, Calendar, User, X, Lock } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -64,6 +65,7 @@ export const DVIRFormModal: React.FC<DVIRFormModalProps> = ({
   vehicleContextId,
   vehicleContextName
 }) => {
+  const { orgId } = useOrganizationId();
   const qc = useQueryClient();
   const [assetType, setAssetType] = useState<"vehicle"|"trailer">("vehicle");
   const [assetId, setAssetId] = useState("");
@@ -237,7 +239,8 @@ export const DVIRFormModal: React.FC<DVIRFormModalProps> = ({
             item_key: itemKey,
             severity: "major",
             status: "open",
-          });
+            organization_id: orgId,
+          } as any);
           if (defErr) throw defErr;
         }
       }

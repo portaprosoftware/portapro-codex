@@ -19,6 +19,7 @@ import { format, addDays } from 'date-fns';
 import { CalendarIcon, Plus, Trash2, Receipt, ChevronDown, ChevronUp, FileText, Eye, Send, Download, Save } from 'lucide-react';
 import { useTaxRate } from '@/hooks/useTaxRate';
 import { toast } from 'sonner';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 interface EnhancedInvoiceWizardProps {
   isOpen: boolean;
@@ -68,6 +69,7 @@ type Product = { id: string; name: string; default_price_per_day: number };
 type Service = { id: string; name: string };
 
 export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId }: EnhancedInvoiceWizardProps) {
+  const { orgId } = useOrganizationId();
   const [invoiceData, setInvoiceData] = useState<InvoiceFormData>({
     customer_id: '',
     invoice_number: '',
@@ -165,10 +167,11 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
   const { data: sourceData } = useQuery({
     queryKey: ['invoice-source', fromQuoteId || fromJobId],
     queryFn: async () => {
+      if (!orgId) return null;
       if (fromQuoteId) {
         const [quoteResponse, itemsResponse] = await Promise.all([
-          supabase.from('quotes').select('*').eq('id', fromQuoteId).single(),
-          supabase.from('quote_items').select('*').eq('quote_id', fromQuoteId)
+          (supabase as any).from('quotes').select('*').eq('id', fromQuoteId).eq('organization_id', orgId).single(),
+          (supabase as any).from('quote_items').select('*').eq('quote_id', fromQuoteId)
         ]);
         
         if (quoteResponse.error) throw quoteResponse.error;
@@ -177,8 +180,8 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
         return { source: 'quote', data: quoteResponse.data, items: itemsResponse.data };
       } else if (fromJobId) {
         const [jobResponse, itemsResponse] = await Promise.all([
-          supabase.from('jobs').select('*').eq('id', fromJobId).single(),
-          supabase.from('job_items').select('*').eq('job_id', fromJobId)
+          (supabase as any).from('jobs').select('*').eq('id', fromJobId).eq('organization_id', orgId).single(),
+          (supabase as any).from('job_items').select('*').eq('job_id', fromJobId)
         ]);
         
         if (jobResponse.error) throw jobResponse.error;

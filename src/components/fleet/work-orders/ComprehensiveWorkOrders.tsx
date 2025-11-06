@@ -20,6 +20,7 @@ import { BulkActionBar } from "./BulkActionBar";
 import { useToast } from "@/hooks/use-toast";
 import { WorkOrder } from "./types";
 import { canMoveToStatus, getStatusTransitionMessage } from "@/lib/workOrderRules";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 import { exportWorkOrderToPDF } from "@/lib/workOrderExport";
 import { exportWorkOrdersToCSV } from "@/utils/workOrderExport";
 import { useBulkWorkOrderActions } from "@/hooks/workOrders/useBulkWorkOrderActions";
@@ -40,6 +41,7 @@ interface ComprehensiveWorkOrdersProps {
 export const ComprehensiveWorkOrders: React.FC<ComprehensiveWorkOrdersProps> = ({ vehicleId, licensePlate }) => {
   const { toast } = useToast();
   const { user } = useUser();
+  const { orgId } = useOrganizationId();
   const queryClient = useQueryClient();
   
   const [view, setView] = useState<'board' | 'list' | 'calendar' | 'analytics'>('board');
@@ -252,8 +254,9 @@ const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
         from_status: workOrder.status,
         to_status: newStatus,
         changed_by: user?.id || 'unknown',
-        note: historyMessage
-      });
+        note: historyMessage,
+        organization_id: orgId
+      } as any);
 
       // Trigger notification for status change
       if (user?.id && workOrder) {

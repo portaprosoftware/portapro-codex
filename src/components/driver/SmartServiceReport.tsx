@@ -19,6 +19,7 @@ import { ValidationBlocker } from './ValidationBlocker';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useUser } from '@clerk/clerk-react';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 import { useEnhancedOffline } from '@/hooks/useEnhancedOffline';
 import { useAutomationRules } from '@/hooks/useAutomationRules';
 import { saveDraftReport, getDraftReport, savePendingReport } from '@/lib/serviceReportDB';
@@ -76,6 +77,7 @@ export const SmartServiceReport: React.FC<SmartServiceReportProps> = ({
   onComplete
 }) => {
   const { user } = useUser();
+  const { orgId } = useOrganizationId();
   const { isOnline, addOfflineData, queueCount } = useEnhancedOffline();
   const template = templates[0];
   const { data: automationRules } = useAutomationRules(template?.id || '');
@@ -473,6 +475,7 @@ export const SmartServiceReport: React.FC<SmartServiceReportProps> = ({
             uploaded_signatures: uploadedSignatures,
           } as any,
           status: 'completed',
+          organization_id: orgId,
           completed_at: new Date().toISOString(),
           created_by: user?.id || job.driver_id,
           customer_id: job.customer_id,

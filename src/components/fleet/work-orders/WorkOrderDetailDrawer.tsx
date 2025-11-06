@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@clerk/clerk-react";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 import {
   Drawer,
   DrawerContent,
@@ -54,6 +55,7 @@ export const WorkOrderDetailDrawer: React.FC<WorkOrderDetailDrawerProps> = ({
 }) => {
   const { toast } = useToast();
   const { user } = useUser();
+  const { orgId } = useOrganizationId();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("work");
 
@@ -218,8 +220,9 @@ export const WorkOrderDetailDrawer: React.FC<WorkOrderDetailDrawerProps> = ({
         from_status: workOrder.status,
         to_status: "completed",
         changed_by: user?.id,
-        note: "Work order completed"
-      });
+        note: "Work order completed",
+        organization_id: orgId
+      } as any);
     },
     onSuccess: () => {
       toast({ title: "Work order completed successfully" });

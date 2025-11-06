@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { X, MapPin, Plus, Target, Map, Satellite } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 interface ServiceLocation {
   id: string;
   location_name: string;
@@ -33,6 +34,7 @@ export function AddPinSlider({
   serviceLocation,
   onPinAdded
 }: AddPinSliderProps) {
+  const { orgId } = useOrganizationId();
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<any | null>(null);
   const currentMarker = useRef<any | null>(null);
@@ -374,8 +376,9 @@ export function AddPinSlider({
         description: formData.description || null,
         category: formData.category,
         latitude: formData.latitude,
-        longitude: formData.longitude
-      });
+        longitude: formData.longitude,
+        organization_id: orgId
+      } as any);
       if (error) throw error;
       handleClose();
       onPinAdded();

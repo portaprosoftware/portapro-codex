@@ -25,6 +25,7 @@ import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { useUser } from "@clerk/clerk-react";
 import { format } from "date-fns";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 import { WorkOrderChecklistSection } from "./WorkOrderChecklistSection";
 import { WorkOrderPartsSection } from "./WorkOrderPartsSection";
 import { WorkOrderLaborSection } from "./WorkOrderLaborSection";
@@ -114,6 +115,7 @@ export const AddWorkOrderDrawer: React.FC<AddWorkOrderDrawerProps> = ({
 }) => {
   const { toast } = useToast();
   const { user } = useUser();
+  const { orgId } = useOrganizationId();
   const queryClient = useQueryClient();
   const { trackEvent } = useAnalytics();
   const isVehicleContextLocked = !!vehicleContextId;
@@ -321,8 +323,9 @@ export const AddWorkOrderDrawer: React.FC<AddWorkOrderDrawerProps> = ({
         from_status: null,
         to_status: 'open',
         changed_by: 'system',
-        note: `Work order created from ${form.source}`
-      });
+        note: `Work order created from ${form.source}`,
+        organization_id: orgId
+      } as any);
 
       // Invalidate relevant queries
       queryClient.invalidateQueries({ queryKey: ['work-orders'] });

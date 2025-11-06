@@ -117,9 +117,10 @@ export const ServiceReportEnhanced: React.FC<ServiceReportEnhancedProps> = ({
   useEffect(() => {
     let active = true;
     const load = async () => {
+      if (!orgId) return;
       const [{ data: settingsRow }, { data: checklistRow }] = await Promise.all([
-        supabase.from('company_settings').select('enable_sanitation_compliance').limit(1).maybeSingle(),
-        supabase.from('sanitation_checklists').select('id').eq('is_active', true).order('created_at', { ascending: true }).limit(1).maybeSingle()
+        supabase.from('company_settings').select('enable_sanitation_compliance').eq('organization_id', orgId).limit(1).maybeSingle(),
+        supabase.from('sanitation_checklists').select('id').eq('organization_id', orgId).eq('is_active', true).order('created_at', { ascending: true }).limit(1).maybeSingle()
       ]);
       if (!active) return;
       setSanitationEnabled(!!settingsRow?.enable_sanitation_compliance);

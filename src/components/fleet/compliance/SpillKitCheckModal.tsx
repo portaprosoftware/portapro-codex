@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 
 type Props = {
   isOpen: boolean;
@@ -19,6 +20,7 @@ type Vehicle = { id: string; license_plate: string };
 
 export const SpillKitCheckModal: React.FC<Props> = ({ isOpen, onClose, onSaved }) => {
   const { toast } = useToast();
+  const { orgId } = useOrganizationId();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [vehicleId, setVehicleId] = useState<string>("");
   const [hasKit, setHasKit] = useState<boolean>(true);
@@ -71,7 +73,8 @@ export const SpillKitCheckModal: React.FC<Props> = ({ isOpen, onClose, onSaved }
         has_kit: hasKit,
         contents: selectedContents,
         notes,
-      });
+        organization_id: orgId,
+      } as any);
       
       if (error) {
         console.error("Failed to save spill kit check", error);
