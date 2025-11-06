@@ -26,7 +26,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useInviteUser } from "@/hooks/useInviteUser";
-import { useClerkProfileSync } from "@/hooks/useClerkProfileSync";
 import { EditUserModal } from "./EditUserModal";
 import { AddUserModal } from "./AddUserModal";
 import { InvitationStatusBadge } from "@/components/team/InvitationStatusBadge";
@@ -89,9 +88,6 @@ export function UserManagementSection() {
   const { user: clerkUser } = useUser();
   const queryClient = useQueryClient();
   const inviteUser = useInviteUser();
-  
-  // Auto-sync current user's profile from Clerk
-  useClerkProfileSync();
 
   const { data: users = [], isLoading } = useQuery({
     queryKey: ["users-with-roles"],

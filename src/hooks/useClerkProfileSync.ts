@@ -12,6 +12,20 @@ export const useClerkProfileSync = () => {
   const retryCountRef = useRef(0);
   const maxRetries = 4;
 
+  // Cleanup: Clear old sync flags when organization changes
+  useEffect(() => {
+    if (organization?.id) {
+      const allKeys = Object.keys(sessionStorage);
+      const oldSyncKeys = allKeys.filter(k => k.startsWith('clerk_sync_done:'));
+      oldSyncKeys.forEach(key => {
+        // Keep only the current user's sync flag
+        if (!key.includes(user?.id || '')) {
+          sessionStorage.removeItem(key);
+        }
+      });
+    }
+  }, [organization?.id, user?.id]);
+
   const syncProfileMutation = useMutation({
     mutationFn: async (userData: {
       clerkUserId: string;
@@ -84,6 +98,11 @@ export const useClerkProfileSync = () => {
       return data;
     },
     retry: (failureCount, error: any) => {
+      // NEVER retry 403 errors (missing organization is not transient)
+      if (error?.message === 'MISSING_ORGANIZATION' || error?.message?.includes('403')) {
+        return false;
+      }
+
       // Check if it's a transient 5xx error from edge function
       const isTransient = 
         error?.name === 'FunctionsHttpError' ||
@@ -139,6 +158,18 @@ export const useClerkProfileSync = () => {
 
   useEffect(() => {
     if (isLoaded && user && !hasSyncedRef.current) {
+      // DEFENSIVE: Only sync if we have an organization
+      if (!organization?.id) {
+        console.warn('⚠️ Profile sync skipped: No active organization yet');
+        return;
+      }
+
+      console.log('🔄 Profile sync triggered:', {
+        userId: user.id,
+        organizationId: organization.id,
+        organizationSlug: organization.slug,
+      });
+
       // Sync profile with role and organization ID from Clerk
       syncProfileMutation.mutate({
         clerkUserId: user.id,
@@ -147,7 +178,7 @@ export const useClerkProfileSync = () => {
         lastName: user.lastName || '',
         imageUrl: user.imageUrl,
         clerkRole: user.publicMetadata?.role as string | undefined,
-        organizationId: organization?.id, // Pass actual Clerk organization ID
+        organizationId: organization.id, // Pass actual Clerk organization ID
       });
     }
   }, [isLoaded, user?.id, organization?.id]);

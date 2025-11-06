@@ -4,6 +4,7 @@ import { useUser, useOrganizationList, useOrganization } from '@clerk/clerk-reac
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useOrganizationContext } from '@/contexts/OrganizationContext';
+import { useClerkProfileSync } from '@/hooks/useClerkProfileSync';
 
 interface TenantGuardProps {
   children: React.ReactNode;
@@ -44,6 +45,9 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
     isLocalhost,
     isMainDomain 
   } = useOrganizationContext();
+
+  // Profile sync - runs AFTER organization is set by TenantGuard
+  const { isLoading: isSyncingProfile } = useClerkProfileSync();
 
   // CRITICAL: Skip tenant check on public routes to prevent redirect loops
   const currentPath = window.location.pathname;
@@ -162,13 +166,17 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
   }, [user, userLoaded, orgListLoaded, userMemberships, organization, navigate, hasChecked, setActive, isPublicRoute, subdomain, orgData, orgError, isLoadingOrg, isLocalhost, isMainDomain]);
 
   // Show loading state while checking
-  if (isChecking || !userLoaded || !orgListLoaded || isLoadingOrg) {
+  if (isChecking || !userLoaded || !orgListLoaded || isLoadingOrg || isSyncingProfile) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
           <p className="text-sm text-muted-foreground">
-            {isLoadingOrg ? 'Looking up organization...' : 'Verifying membership...'}
+            {isLoadingOrg 
+              ? 'Looking up organization...' 
+              : isSyncingProfile 
+              ? 'Syncing profile...'
+              : 'Verifying membership...'}
           </p>
         </div>
       </div>

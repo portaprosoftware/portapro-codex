@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserRole } from "@/hooks/useUserRole";
-import { useClerkProfileSync } from "@/hooks/useClerkProfileSync";
 import { MinimalClock } from "@/components/ui/MinimalClock";
 import { StatCard } from "@/components/ui/StatCard";
 import { Sparkline } from "@/components/ui/Sparkline";
@@ -31,9 +30,6 @@ const Dashboard = () => {
   const { role, user } = useUserRole();
   const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState(new Date());
-  
-  // Sync Clerk profile to Supabase on dashboard mount
-  useClerkProfileSync();
   
   // Redirect drivers to the Driver app dashboard
   useEffect(() => {
