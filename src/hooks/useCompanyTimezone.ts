@@ -1,30 +1,17 @@
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { toZonedTime, format } from 'date-fns-tz';
-import { useOrganizationId } from './useOrganizationId';
+import { useCompanySettings } from './useCompanySettings';
 
 /**
  * Hook to get the company timezone from settings
+ * Uses shared cache from useCompanySettings to prevent duplicate queries
  */
 export const useCompanyTimezone = () => {
-  const { orgId } = useOrganizationId();
-  return useQuery({
-    queryKey: ['company-timezone', orgId],
-    queryFn: async () => {
-      if (!orgId) throw new Error('Organization required');
-
-      const { data, error } = await supabase
-        .from('company_settings')
-        .select('company_timezone')
-        .eq('organization_id', orgId)
-        .maybeSingle();
-      
-      if (error) throw error;
-      return data?.company_timezone || 'America/New_York'; // Default fallback
-    },
-    enabled: !!orgId,
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-  });
+  const { data: companySettings, isLoading } = useCompanySettings();
+  
+  return {
+    data: companySettings?.company_timezone || 'America/New_York',
+    isLoading,
+  };
 };
 
 /**

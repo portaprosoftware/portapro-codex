@@ -67,6 +67,7 @@ export const useCompanySettings = () => {
       } as CompanySettings;
     },
     enabled: !!orgId,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes to prevent duplicate queries
   });
 };
 

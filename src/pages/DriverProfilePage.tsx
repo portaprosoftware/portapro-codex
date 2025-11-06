@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { useUser, useClerk } from '@clerk/clerk-react';
+import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LogOut, User, Phone, Mail } from 'lucide-react';
@@ -10,6 +11,7 @@ import { SettingsSection } from '@/components/driver/SettingsSection';
 export const DriverProfilePage: React.FC = () => {
   const { user } = useUser();
   const { signOut } = useClerk();
+  const queryClient = useQueryClient();
 
   return (
     <div className="p-4 space-y-5 max-w-3xl mx-auto">
@@ -65,6 +67,10 @@ export const DriverProfilePage: React.FC = () => {
         variant="outline" 
         className="w-full"
         onClick={async () => {
+          // Clear session state before signing out
+          sessionStorage.clear();
+          queryClient.clear();
+          
           await signOut();
           window.location.href = 'https://www.portaprosoftware.com';
         }}

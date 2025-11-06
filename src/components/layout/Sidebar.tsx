@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useClerk, useUser, UserButton } from "@clerk/clerk-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Logo } from "@/components/ui/logo";
 import { useUserRole } from "@/hooks/useUserRole";
 
@@ -32,12 +33,17 @@ const Sidebar = () => {
   const { signOut } = useClerk();
   const { user } = useUser();
   const { role } = useUserRole();
+  const queryClient = useQueryClient();
 
   const isActive = (path: string) => {
     return location.pathname === path;
   };
 
   const handleSignOut = async () => {
+    // Clear session state before signing out
+    sessionStorage.clear();
+    queryClient.clear();
+    
     await signOut();
     window.location.href = 'https://www.portaprosoftware.com';
   };

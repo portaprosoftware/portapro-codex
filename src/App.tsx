@@ -5,6 +5,7 @@ import { RouterSelector } from './components/RouterSelector';
 import { useUserRole } from './hooks/useUserRole';
 import { usePWAStandalone } from './hooks/usePWAStandalone';
 import { useCompanyTitle } from './hooks/useCompanyTitle';
+import { useAuthStateListener } from './hooks/useAuthStateListener';
 import { Layout } from './components/layout/Layout';
 import { ErrorBoundary } from './components/ui/error-boundary';
 import { TenantGuard } from './components/auth/TenantGuard';
@@ -80,6 +81,9 @@ const App = () => {
   
   // Set browser tab title to company name
   useCompanyTitle();
+  
+  // Monitor auth state and clean up on sign-out
+  useAuthStateListener();
 
   return (
     <ErrorBoundary>
