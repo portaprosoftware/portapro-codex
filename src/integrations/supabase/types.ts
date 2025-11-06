@@ -65,6 +65,7 @@ export type Database = {
           created_at: string
           date: string
           id: string
+          organization_id: string | null
           resource_id: string
           resource_type: string
           status: string
@@ -75,6 +76,7 @@ export type Database = {
           created_at?: string
           date: string
           id?: string
+          organization_id?: string | null
           resource_id: string
           resource_type: string
           status: string
@@ -85,6 +87,7 @@ export type Database = {
           created_at?: string
           date?: string
           id?: string
+          organization_id?: string | null
           resource_id?: string
           resource_type?: string
           status?: string
@@ -100,6 +103,7 @@ export type Database = {
           id: string
           is_open: boolean | null
           open_time: string | null
+          organization_id: string | null
           updated_at: string | null
         }
         Insert: {
@@ -109,6 +113,7 @@ export type Database = {
           id?: string
           is_open?: boolean | null
           open_time?: string | null
+          organization_id?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -118,6 +123,7 @@ export type Database = {
           id?: string
           is_open?: boolean | null
           open_time?: string | null
+          organization_id?: string | null
           updated_at?: string | null
         }
         Relationships: []
@@ -131,6 +137,7 @@ export type Database = {
           event_type: string
           id: string
           metadata: Json | null
+          organization_id: string | null
         }
         Insert: {
           campaign_id: string
@@ -140,6 +147,7 @@ export type Database = {
           event_type: string
           id?: string
           metadata?: Json | null
+          organization_id?: string | null
         }
         Update: {
           campaign_id?: string
@@ -149,6 +157,7 @@ export type Database = {
           event_type?: string
           id?: string
           metadata?: Json | null
+          organization_id?: string | null
         }
         Relationships: []
       }
@@ -190,6 +199,7 @@ export type Database = {
           id: string
           is_mandatory: boolean
           name: string
+          organization_id: string | null
           updated_at: string
           valid_months: number | null
         }
@@ -200,6 +210,7 @@ export type Database = {
           id?: string
           is_mandatory?: boolean
           name: string
+          organization_id?: string | null
           updated_at?: string
           valid_months?: number | null
         }
@@ -210,6 +221,7 @@ export type Database = {
           id?: string
           is_mandatory?: boolean
           name?: string
+          organization_id?: string | null
           updated_at?: string
           valid_months?: number | null
         }
@@ -226,6 +238,7 @@ export type Database = {
           is_active: boolean
           is_system: boolean | null
           name: string
+          organization_id: string | null
           sms_content: string | null
           source: string | null
           subject: string | null
@@ -242,6 +255,7 @@ export type Database = {
           is_active?: boolean
           is_system?: boolean | null
           name: string
+          organization_id?: string | null
           sms_content?: string | null
           source?: string | null
           subject?: string | null
@@ -258,6 +272,7 @@ export type Database = {
           is_active?: boolean
           is_system?: boolean | null
           name?: string
+          organization_id?: string | null
           sms_content?: string | null
           source?: string | null
           subject?: string | null
@@ -276,6 +291,7 @@ export type Database = {
           notification_email: string | null
           notification_phone: string | null
           notification_send_time: string | null
+          organization_id: string | null
           updated_at: string
         }
         Insert: {
@@ -287,6 +303,7 @@ export type Database = {
           notification_email?: string | null
           notification_phone?: string | null
           notification_send_time?: string | null
+          organization_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -298,6 +315,7 @@ export type Database = {
           notification_email?: string | null
           notification_phone?: string | null
           notification_send_time?: string | null
+          organization_id?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -481,6 +499,7 @@ export type Database = {
           id: string
           is_active: boolean
           name: string
+          organization_id: string | null
           updated_at: string
         }
         Insert: {
@@ -490,6 +509,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           name: string
+          organization_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -499,6 +519,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           name?: string
+          organization_id?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -510,6 +531,7 @@ export type Database = {
           id: string
           is_active: boolean | null
           name: string
+          organization_id: string | null
           subcategory: string | null
           updated_at: string | null
         }
@@ -519,6 +541,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name: string
+          organization_id?: string | null
           subcategory?: string | null
           updated_at?: string | null
         }
@@ -528,6 +551,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name?: string
+          organization_id?: string | null
           subcategory?: string | null
           updated_at?: string | null
         }
@@ -539,6 +563,7 @@ export type Database = {
           consumable_id: string
           created_at: string
           id: string
+          organization_id: string | null
           quantity: number
         }
         Insert: {
@@ -546,6 +571,7 @@ export type Database = {
           consumable_id: string
           created_at?: string
           id?: string
+          organization_id?: string | null
           quantity?: number
         }
         Update: {
@@ -553,6 +579,7 @@ export type Database = {
           consumable_id?: string
           created_at?: string
           id?: string
+          organization_id?: string | null
           quantity?: number
         }
         Relationships: []
@@ -596,6 +623,7 @@ export type Database = {
           created_at: string
           id: string
           low_stock_threshold: number
+          organization_id: string | null
           quantity: number
           storage_location_id: string
           updated_at: string
@@ -605,6 +633,7 @@ export type Database = {
           created_at?: string
           id?: string
           low_stock_threshold?: number
+          organization_id?: string | null
           quantity?: number
           storage_location_id: string
           updated_at?: string
@@ -614,6 +643,7 @@ export type Database = {
           created_at?: string
           id?: string
           low_stock_threshold?: number
+          organization_id?: string | null
           quantity?: number
           storage_location_id?: string
           updated_at?: string
@@ -660,6 +690,7 @@ export type Database = {
           low_stock_enabled: boolean
           low_stock_threshold_days: number
           notification_frequency: string
+          organization_id: string | null
           sms_notifications: boolean
           sms_recipients: string[] | null
           updated_at: string
@@ -674,6 +705,7 @@ export type Database = {
           low_stock_enabled?: boolean
           low_stock_threshold_days?: number
           notification_frequency?: string
+          organization_id?: string | null
           sms_notifications?: boolean
           sms_recipients?: string[] | null
           updated_at?: string
@@ -688,6 +720,7 @@ export type Database = {
           low_stock_enabled?: boolean
           low_stock_threshold_days?: number
           notification_frequency?: string
+          organization_id?: string | null
           sms_notifications?: boolean
           sms_recipients?: string[] | null
           updated_at?: string
@@ -703,6 +736,7 @@ export type Database = {
           id: string
           new_quantity: number
           notes: string | null
+          organization_id: string | null
           previous_quantity: number
           quantity_change: number
           reason: string
@@ -717,6 +751,7 @@ export type Database = {
           id?: string
           new_quantity: number
           notes?: string | null
+          organization_id?: string | null
           previous_quantity: number
           quantity_change: number
           reason: string
@@ -731,6 +766,7 @@ export type Database = {
           id?: string
           new_quantity?: number
           notes?: string | null
+          organization_id?: string | null
           previous_quantity?: number
           quantity_change?: number
           reason?: string
@@ -769,6 +805,7 @@ export type Database = {
           job_id: string | null
           notes: string | null
           occurred_at: string
+          organization_id: string | null
           qty: number
           storage_location_id: string | null
           type: string
@@ -782,6 +819,7 @@ export type Database = {
           job_id?: string | null
           notes?: string | null
           occurred_at?: string
+          organization_id?: string | null
           qty: number
           storage_location_id?: string | null
           type: string
@@ -795,6 +833,7 @@ export type Database = {
           job_id?: string | null
           notes?: string | null
           occurred_at?: string
+          organization_id?: string | null
           qty?: number
           storage_location_id?: string | null
           type?: string
@@ -980,6 +1019,7 @@ export type Database = {
           equipment_assignment_id: string
           id: string
           notes: string | null
+          organization_id: string | null
           updated_at: string
         }
         Insert: {
@@ -988,6 +1028,7 @@ export type Database = {
           equipment_assignment_id: string
           id?: string
           notes?: string | null
+          organization_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -996,6 +1037,7 @@ export type Database = {
           equipment_assignment_id?: string
           id?: string
           notes?: string | null
+          organization_id?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -1014,6 +1056,7 @@ export type Database = {
           is_public: boolean | null
           is_template: boolean | null
           name: string
+          organization_id: string | null
           report_type: string
           sorting: Json | null
           updated_at: string | null
@@ -1031,6 +1074,7 @@ export type Database = {
           is_public?: boolean | null
           is_template?: boolean | null
           name: string
+          organization_id?: string | null
           report_type: string
           sorting?: Json | null
           updated_at?: string | null
@@ -1048,6 +1092,7 @@ export type Database = {
           is_public?: boolean | null
           is_template?: boolean | null
           name?: string
+          organization_id?: string | null
           report_type?: string
           sorting?: Json | null
           updated_at?: string | null
@@ -1060,6 +1105,7 @@ export type Database = {
           created_at: string
           customer_id: string
           id: string
+          organization_id: string | null
           updated_at: string
         }
         Insert: {
@@ -1067,6 +1113,7 @@ export type Database = {
           created_at?: string
           customer_id: string
           id?: string
+          organization_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -1074,6 +1121,7 @@ export type Database = {
           created_at?: string
           customer_id?: string
           id?: string
+          organization_id?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -1087,6 +1135,7 @@ export type Database = {
           email_address: string | null
           id: string
           image_url: string | null
+          organization_id: string | null
           phone_number: string | null
           resend_email_id: string | null
           sent_at: string
@@ -1104,6 +1153,7 @@ export type Database = {
           email_address?: string | null
           id?: string
           image_url?: string | null
+          organization_id?: string | null
           phone_number?: string | null
           resend_email_id?: string | null
           sent_at?: string
@@ -1121,6 +1171,7 @@ export type Database = {
           email_address?: string | null
           id?: string
           image_url?: string | null
+          organization_id?: string | null
           phone_number?: string | null
           resend_email_id?: string | null
           sent_at?: string
@@ -1196,6 +1247,7 @@ export type Database = {
           id: string
           is_active: boolean | null
           notes: string | null
+          organization_id: string | null
           updated_at: string | null
           uploaded_by: string | null
         }
@@ -1214,6 +1266,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           notes?: string | null
+          organization_id?: string | null
           updated_at?: string | null
           uploaded_by?: string | null
         }
@@ -1232,6 +1285,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           notes?: string | null
+          organization_id?: string | null
           updated_at?: string | null
           uploaded_by?: string | null
         }
@@ -1261,6 +1315,7 @@ export type Database = {
           location_lat: number | null
           location_lng: number | null
           metadata: Json | null
+          organization_id: string | null
           outcome: string | null
           subject: string | null
           updated_at: string
@@ -1281,6 +1336,7 @@ export type Database = {
           location_lat?: number | null
           location_lng?: number | null
           metadata?: Json | null
+          organization_id?: string | null
           outcome?: string | null
           subject?: string | null
           updated_at?: string
@@ -1301,6 +1357,7 @@ export type Database = {
           location_lat?: number | null
           location_lng?: number | null
           metadata?: Json | null
+          organization_id?: string | null
           outcome?: string | null
           subject?: string | null
           updated_at?: string
@@ -1317,6 +1374,7 @@ export type Database = {
           latitude: number
           longitude: number
           notes: string | null
+          organization_id: string | null
           pin_id: string
           service_location_id: string | null
           updated_at: string
@@ -1329,6 +1387,7 @@ export type Database = {
           latitude: number
           longitude: number
           notes?: string | null
+          organization_id?: string | null
           pin_id: string
           service_location_id?: string | null
           updated_at?: string
@@ -1341,6 +1400,7 @@ export type Database = {
           latitude?: number
           longitude?: number
           notes?: string | null
+          organization_id?: string | null
           pin_id?: string
           service_location_id?: string | null
           updated_at?: string
@@ -1412,6 +1472,7 @@ export type Database = {
           features: Json | null
           id: string
           one_time_use: boolean | null
+          organization_id: string | null
           revoked_at: string | null
           token: string
           usage_count: number | null
@@ -1424,6 +1485,7 @@ export type Database = {
           features?: Json | null
           id?: string
           one_time_use?: boolean | null
+          organization_id?: string | null
           revoked_at?: string | null
           token: string
           usage_count?: number | null
@@ -1436,6 +1498,7 @@ export type Database = {
           features?: Json | null
           id?: string
           one_time_use?: boolean | null
+          organization_id?: string | null
           revoked_at?: string | null
           token?: string
           usage_count?: number | null
@@ -1451,6 +1514,7 @@ export type Database = {
           id: string
           is_active: boolean | null
           name: string
+          organization_id: string | null
           rule_set: Json
           segment_type: string
           updated_at: string | null
@@ -1462,6 +1526,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name: string
+          organization_id?: string | null
           rule_set?: Json
           segment_type?: string
           updated_at?: string | null
@@ -1473,6 +1538,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name?: string
+          organization_id?: string | null
           rule_set?: Json
           segment_type?: string
           updated_at?: string | null
@@ -1499,6 +1565,7 @@ export type Database = {
           location_description: string | null
           location_name: string
           notes: string | null
+          organization_id: string | null
           state: string | null
           street: string | null
           street2: string | null
@@ -1524,6 +1591,7 @@ export type Database = {
           location_description?: string | null
           location_name: string
           notes?: string | null
+          organization_id?: string | null
           state?: string | null
           street?: string | null
           street2?: string | null
@@ -1549,6 +1617,7 @@ export type Database = {
           location_description?: string | null
           location_name?: string
           notes?: string | null
+          organization_id?: string | null
           state?: string | null
           street?: string | null
           street2?: string | null
@@ -1570,6 +1639,7 @@ export type Database = {
           created_at: string
           customer_id: string
           id: string
+          organization_id: string | null
           outstanding_balance: number
           total_jobs: number
           updated_at: string
@@ -1578,6 +1648,7 @@ export type Database = {
           created_at?: string
           customer_id: string
           id?: string
+          organization_id?: string | null
           outstanding_balance?: number
           total_jobs?: number
           updated_at?: string
@@ -1586,6 +1657,7 @@ export type Database = {
           created_at?: string
           customer_id?: string
           id?: string
+          organization_id?: string | null
           outstanding_balance?: number
           total_jobs?: number
           updated_at?: string
@@ -1776,6 +1848,7 @@ export type Database = {
           created_at: string
           id: string
           load_date: string
+          organization_id: string | null
           product_id: string
           updated_at: string
           vehicle_id: string
@@ -1785,6 +1858,7 @@ export type Database = {
           created_at?: string
           id?: string
           load_date: string
+          organization_id?: string | null
           product_id: string
           updated_at?: string
           vehicle_id: string
@@ -1794,6 +1868,7 @@ export type Database = {
           created_at?: string
           id?: string
           load_date?: string
+          organization_id?: string | null
           product_id?: string
           updated_at?: string
           vehicle_id?: string
@@ -1809,6 +1884,7 @@ export type Database = {
           is_default: boolean | null
           layout_config: Json
           name: string
+          organization_id: string | null
           permissions: Json | null
           updated_at: string | null
           widgets: Json
@@ -1821,6 +1897,7 @@ export type Database = {
           is_default?: boolean | null
           layout_config?: Json
           name: string
+          organization_id?: string | null
           permissions?: Json | null
           updated_at?: string | null
           widgets?: Json
@@ -1833,6 +1910,7 @@ export type Database = {
           is_default?: boolean | null
           layout_config?: Json
           name?: string
+          organization_id?: string | null
           permissions?: Json | null
           updated_at?: string | null
           widgets?: Json
@@ -1955,6 +2033,7 @@ export type Database = {
           id: string
           new_values: Json | null
           old_values: Json | null
+          organization_id: string | null
         }
         Insert: {
           action_type: string
@@ -1965,6 +2044,7 @@ export type Database = {
           id?: string
           new_values?: Json | null
           old_values?: Json | null
+          organization_id?: string | null
         }
         Update: {
           action_type?: string
@@ -1975,6 +2055,7 @@ export type Database = {
           id?: string
           new_values?: Json | null
           old_values?: Json | null
+          organization_id?: string | null
         }
         Relationships: [
           {
@@ -2000,6 +2081,7 @@ export type Database = {
           id: string
           manifest_document_url: string | null
           manifest_number: string
+          organization_id: string | null
           receipt_document_url: string | null
           receipt_number: string | null
           special_handling_notes: string | null
@@ -2024,6 +2106,7 @@ export type Database = {
           id?: string
           manifest_document_url?: string | null
           manifest_number: string
+          organization_id?: string | null
           receipt_document_url?: string | null
           receipt_number?: string | null
           special_handling_notes?: string | null
@@ -2048,6 +2131,7 @@ export type Database = {
           id?: string
           manifest_document_url?: string | null
           manifest_number?: string
+          organization_id?: string | null
           receipt_document_url?: string | null
           receipt_number?: string | null
           special_handling_notes?: string | null
@@ -2094,6 +2178,7 @@ export type Database = {
           id: string
           is_active: boolean | null
           name: string
+          organization_id: string | null
           parent_group: string | null
           reminder_days_before: number | null
           requires_expiration: boolean | null
@@ -2108,6 +2193,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name: string
+          organization_id?: string | null
           parent_group?: string | null
           reminder_days_before?: number | null
           requires_expiration?: boolean | null
@@ -2122,6 +2208,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name?: string
+          organization_id?: string | null
           parent_group?: string | null
           reminder_days_before?: number | null
           requires_expiration?: boolean | null
@@ -2136,6 +2223,7 @@ export type Database = {
           id: string
           notification_emails: string[] | null
           notification_phones: string[] | null
+          organization_id: string | null
           sms_notifications: boolean | null
           updated_at: string | null
         }
@@ -2146,6 +2234,7 @@ export type Database = {
           id?: string
           notification_emails?: string[] | null
           notification_phones?: string[] | null
+          organization_id?: string | null
           sms_notifications?: boolean | null
           updated_at?: string | null
         }
@@ -2156,6 +2245,7 @@ export type Database = {
           id?: string
           notification_emails?: string[] | null
           notification_phones?: string[] | null
+          organization_id?: string | null
           sms_notifications?: boolean | null
           updated_at?: string | null
         }
@@ -2169,6 +2259,7 @@ export type Database = {
           driver_id: string
           id: string
           ip_address: string | null
+          organization_id: string | null
           performed_by: string | null
           user_agent: string | null
         }
@@ -2179,6 +2270,7 @@ export type Database = {
           driver_id: string
           id?: string
           ip_address?: string | null
+          organization_id?: string | null
           performed_by?: string | null
           user_agent?: string | null
         }
@@ -2189,6 +2281,7 @@ export type Database = {
           driver_id?: string
           id?: string
           ip_address?: string | null
+          organization_id?: string | null
           performed_by?: string | null
           user_agent?: string | null
         }
@@ -2228,6 +2321,7 @@ export type Database = {
           medical_card_reference: string | null
           notes: string | null
           operating_scope: string | null
+          organization_id: string | null
           updated_at: string
         }
         Insert: {
@@ -2248,6 +2342,7 @@ export type Database = {
           medical_card_reference?: string | null
           notes?: string | null
           operating_scope?: string | null
+          organization_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -2268,6 +2363,7 @@ export type Database = {
           medical_card_reference?: string | null
           notes?: string | null
           operating_scope?: string | null
+          organization_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -2288,6 +2384,7 @@ export type Database = {
           driver_id: string
           driver_tag_id: string | null
           id: string
+          organization_id: string | null
           telematics_provider: string | null
           updated_at: string
         }
@@ -2298,6 +2395,7 @@ export type Database = {
           driver_id: string
           driver_tag_id?: string | null
           id?: string
+          organization_id?: string | null
           telematics_provider?: string | null
           updated_at?: string
         }
@@ -2308,6 +2406,7 @@ export type Database = {
           driver_id?: string
           driver_tag_id?: string | null
           id?: string
+          organization_id?: string | null
           telematics_provider?: string | null
           updated_at?: string
         }
@@ -2336,6 +2435,7 @@ export type Database = {
           id: string
           issue_date: string | null
           notes: string | null
+          organization_id: string | null
           updated_at: string
           upload_date: string | null
           uploaded_by: string | null
@@ -2354,6 +2454,7 @@ export type Database = {
           id?: string
           issue_date?: string | null
           notes?: string | null
+          organization_id?: string | null
           updated_at?: string
           upload_date?: string | null
           uploaded_by?: string | null
@@ -2372,6 +2473,7 @@ export type Database = {
           id?: string
           issue_date?: string | null
           notes?: string | null
+          organization_id?: string | null
           updated_at?: string
           upload_date?: string | null
           uploaded_by?: string | null
@@ -2393,6 +2495,7 @@ export type Database = {
           driver_id: string
           equipment_type: string
           id: string
+          organization_id: string | null
           qualification_expires: string | null
           qualified_date: string | null
           updated_at: string
@@ -2403,6 +2506,7 @@ export type Database = {
           driver_id: string
           equipment_type: string
           id?: string
+          organization_id?: string | null
           qualification_expires?: string | null
           qualified_date?: string | null
           updated_at?: string
@@ -2413,6 +2517,7 @@ export type Database = {
           driver_id?: string
           equipment_type?: string
           id?: string
+          organization_id?: string | null
           qualification_expires?: string | null
           qualified_date?: string | null
           updated_at?: string
@@ -2434,6 +2539,7 @@ export type Database = {
           glove_size: string | null
           hard_hat_size: string | null
           id: string
+          organization_id: string | null
           updated_at: string
           vest_size: string | null
         }
@@ -2443,6 +2549,7 @@ export type Database = {
           glove_size?: string | null
           hard_hat_size?: string | null
           id?: string
+          organization_id?: string | null
           updated_at?: string
           vest_size?: string | null
         }
@@ -2452,6 +2559,7 @@ export type Database = {
           glove_size?: string | null
           hard_hat_size?: string | null
           id?: string
+          organization_id?: string | null
           updated_at?: string
           vest_size?: string | null
         }
@@ -2472,6 +2580,7 @@ export type Database = {
           end_time: string
           id: string
           notes: string | null
+          organization_id: string | null
           shift_date: string
           start_time: string
           status: string
@@ -2484,6 +2593,7 @@ export type Database = {
           end_time: string
           id?: string
           notes?: string | null
+          organization_id?: string | null
           shift_date: string
           start_time: string
           status?: string
@@ -2496,6 +2606,7 @@ export type Database = {
           end_time?: string
           id?: string
           notes?: string | null
+          organization_id?: string | null
           shift_date?: string
           start_time?: string
           status?: string
@@ -2519,6 +2630,7 @@ export type Database = {
           driver_id: string
           end_time: string | null
           id: string
+          organization_id: string | null
           reason: string | null
           request_date: string
           requested_at: string
@@ -2535,6 +2647,7 @@ export type Database = {
           driver_id: string
           end_time?: string | null
           id?: string
+          organization_id?: string | null
           reason?: string | null
           request_date: string
           requested_at?: string
@@ -2551,6 +2664,7 @@ export type Database = {
           driver_id?: string
           end_time?: string | null
           id?: string
+          organization_id?: string | null
           reason?: string | null
           request_date?: string
           requested_at?: string
@@ -2581,6 +2695,7 @@ export type Database = {
           last_completed: string | null
           next_due: string | null
           notes: string | null
+          organization_id: string | null
           training_type: string
           updated_at: string
         }
@@ -2593,6 +2708,7 @@ export type Database = {
           last_completed?: string | null
           next_due?: string | null
           notes?: string | null
+          organization_id?: string | null
           training_type: string
           updated_at?: string
         }
@@ -2605,6 +2721,7 @@ export type Database = {
           last_completed?: string | null
           next_due?: string | null
           notes?: string | null
+          organization_id?: string | null
           training_type?: string
           updated_at?: string
         }
@@ -2667,6 +2784,7 @@ export type Database = {
           id: string
           item_key: string
           notes: string | null
+          organization_id: string | null
           photos: string[] | null
           severity: Database["public"]["Enums"]["defect_severity"]
           status: Database["public"]["Enums"]["defect_status"]
@@ -2684,6 +2802,7 @@ export type Database = {
           id?: string
           item_key: string
           notes?: string | null
+          organization_id?: string | null
           photos?: string[] | null
           severity: Database["public"]["Enums"]["defect_severity"]
           status?: Database["public"]["Enums"]["defect_status"]
@@ -2701,6 +2820,7 @@ export type Database = {
           id?: string
           item_key?: string
           notes?: string | null
+          organization_id?: string | null
           photos?: string[] | null
           severity?: Database["public"]["Enums"]["defect_severity"]
           status?: Database["public"]["Enums"]["defect_status"]
@@ -2800,6 +2920,7 @@ export type Database = {
           created_by: string | null
           id: string
           image_url: string | null
+          organization_id: string | null
           recipient_filters: Json | null
           status: string
           subject: string | null
@@ -2815,6 +2936,7 @@ export type Database = {
           created_by?: string | null
           id?: string
           image_url?: string | null
+          organization_id?: string | null
           recipient_filters?: Json | null
           status?: string
           subject?: string | null
@@ -2830,6 +2952,7 @@ export type Database = {
           created_by?: string | null
           id?: string
           image_url?: string | null
+          organization_id?: string | null
           recipient_filters?: Json | null
           status?: string
           subject?: string | null
@@ -2850,6 +2973,7 @@ export type Database = {
           ip_address: string | null
           link_url: string | null
           occurred_at: string
+          organization_id: string | null
           recipient_email: string
           resend_event_id: string | null
           user_agent: string | null
@@ -2864,6 +2988,7 @@ export type Database = {
           ip_address?: string | null
           link_url?: string | null
           occurred_at?: string
+          organization_id?: string | null
           recipient_email: string
           resend_event_id?: string | null
           user_agent?: string | null
@@ -2878,6 +3003,7 @@ export type Database = {
           ip_address?: string | null
           link_url?: string | null
           occurred_at?: string
+          organization_id?: string | null
           recipient_email?: string
           resend_event_id?: string | null
           user_agent?: string | null
@@ -2894,6 +3020,7 @@ export type Database = {
           expires_on: string | null
           id: string
           notes: string | null
+          organization_id: string | null
           updated_at: string
         }
         Insert: {
@@ -2905,6 +3032,7 @@ export type Database = {
           expires_on?: string | null
           id?: string
           notes?: string | null
+          organization_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -2916,6 +3044,7 @@ export type Database = {
           expires_on?: string | null
           id?: string
           notes?: string | null
+          organization_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -3008,6 +3137,7 @@ export type Database = {
           error_type: string
           id: string
           message: string
+          organization_id: string | null
           reported_at: string
           severity: string
           stack_trace: string | null
@@ -3021,6 +3151,7 @@ export type Database = {
           error_type: string
           id?: string
           message: string
+          organization_id?: string | null
           reported_at: string
           severity: string
           stack_trace?: string | null
@@ -3034,6 +3165,7 @@ export type Database = {
           error_type?: string
           id?: string
           message?: string
+          organization_id?: string | null
           reported_at?: string
           severity?: string
           stack_trace?: string | null
@@ -3047,6 +3179,7 @@ export type Database = {
         Row: {
           filter_modifications: Json | null
           id: string
+          organization_id: string | null
           preset_id: string | null
           results_count: number | null
           used_at: string
@@ -3055,6 +3188,7 @@ export type Database = {
         Insert: {
           filter_modifications?: Json | null
           id?: string
+          organization_id?: string | null
           preset_id?: string | null
           results_count?: number | null
           used_at?: string
@@ -3063,6 +3197,7 @@ export type Database = {
         Update: {
           filter_modifications?: Json | null
           id?: string
+          organization_id?: string | null
           preset_id?: string | null
           results_count?: number | null
           used_at?: string
@@ -3137,6 +3272,7 @@ export type Database = {
           engine_hours: number | null
           id: string
           odometer: number | null
+          organization_id: string | null
           receipt_url: string | null
           reference_id: string | null
           reference_type: string | null
@@ -3156,6 +3292,7 @@ export type Database = {
           engine_hours?: number | null
           id?: string
           odometer?: number | null
+          organization_id?: string | null
           receipt_url?: string | null
           reference_id?: string | null
           reference_type?: string | null
@@ -3175,6 +3312,7 @@ export type Database = {
           engine_hours?: number | null
           id?: string
           odometer?: number | null
+          organization_id?: string | null
           receipt_url?: string | null
           reference_id?: string | null
           reference_type?: string | null
@@ -3189,6 +3327,7 @@ export type Database = {
           date: string
           efficiency_score: number
           id: string
+          organization_id: string | null
           total_capacity: number
           updated_at: string
           utilization_percentage: number
@@ -3200,6 +3339,7 @@ export type Database = {
           date: string
           efficiency_score?: number
           id?: string
+          organization_id?: string | null
           total_capacity?: number
           updated_at?: string
           utilization_percentage?: number
@@ -3211,6 +3351,7 @@ export type Database = {
           date?: string
           efficiency_score?: number
           id?: string
+          organization_id?: string | null
           total_capacity?: number
           updated_at?: string
           utilization_percentage?: number
@@ -3348,6 +3489,7 @@ export type Database = {
           notification_frequency: string | null
           notification_phone: string | null
           notifications_enabled: boolean
+          organization_id: string | null
           price_spike_threshold_percent: number
           retail_enabled: boolean
           sms_notifications: boolean
@@ -3375,6 +3517,7 @@ export type Database = {
           notification_frequency?: string | null
           notification_phone?: string | null
           notifications_enabled?: boolean
+          organization_id?: string | null
           price_spike_threshold_percent?: number
           retail_enabled?: boolean
           sms_notifications?: boolean
@@ -3402,6 +3545,7 @@ export type Database = {
           notification_frequency?: string | null
           notification_phone?: string | null
           notifications_enabled?: boolean
+          organization_id?: string | null
           price_spike_threshold_percent?: number
           retail_enabled?: boolean
           sms_notifications?: boolean
@@ -3429,6 +3573,7 @@ export type Database = {
           id: string
           manager_approval_threshold: number | null
           odometer_precision: number
+          organization_id: string | null
           require_receipt: boolean
           updated_at: string
         }
@@ -3444,6 +3589,7 @@ export type Database = {
           id?: string
           manager_approval_threshold?: number | null
           odometer_precision?: number
+          organization_id?: string | null
           require_receipt?: boolean
           updated_at?: string
         }
@@ -3459,6 +3605,7 @@ export type Database = {
           id?: string
           manager_approval_threshold?: number | null
           odometer_precision?: number
+          organization_id?: string | null
           require_receipt?: boolean
           updated_at?: string
         }
@@ -3475,6 +3622,7 @@ export type Database = {
           is_active: boolean
           name: string
           notes: string | null
+          organization_id: string | null
           phone: string | null
           state: string | null
           street: string | null
@@ -3491,6 +3639,7 @@ export type Database = {
           is_active?: boolean
           name: string
           notes?: string | null
+          organization_id?: string | null
           phone?: string | null
           state?: string | null
           street?: string | null
@@ -3507,6 +3656,7 @@ export type Database = {
           is_active?: boolean
           name?: string
           notes?: string | null
+          organization_id?: string | null
           phone?: string | null
           state?: string | null
           street?: string | null
@@ -3524,6 +3674,7 @@ export type Database = {
           id: string
           is_active: boolean | null
           notes: string | null
+          organization_id: string | null
           payment_terms: string | null
           supplier_name: string
           updated_at: string | null
@@ -3536,6 +3687,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           notes?: string | null
+          organization_id?: string | null
           payment_terms?: string | null
           supplier_name: string
           updated_at?: string | null
@@ -3548,6 +3700,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           notes?: string | null
+          organization_id?: string | null
           payment_terms?: string | null
           supplier_name?: string
           updated_at?: string | null
@@ -3580,6 +3733,7 @@ export type Database = {
           locked_by: string | null
           locked_to_ledger: boolean | null
           notes: string | null
+          organization_id: string | null
           other_fees: Json | null
           partial_fill_blocked: boolean | null
           payment_method: string | null
@@ -3627,6 +3781,7 @@ export type Database = {
           locked_by?: string | null
           locked_to_ledger?: boolean | null
           notes?: string | null
+          organization_id?: string | null
           other_fees?: Json | null
           partial_fill_blocked?: boolean | null
           payment_method?: string | null
@@ -3674,6 +3829,7 @@ export type Database = {
           locked_by?: string | null
           locked_to_ledger?: boolean | null
           notes?: string | null
+          organization_id?: string | null
           other_fees?: Json | null
           partial_fill_blocked?: boolean | null
           payment_method?: string | null
@@ -3716,6 +3872,7 @@ export type Database = {
           created_at: string | null
           id: string
           message: string
+          organization_id: string | null
           resolved_at: string | null
           severity: string
           tank_id: string
@@ -3729,6 +3886,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           message: string
+          organization_id?: string | null
           resolved_at?: string | null
           severity?: string
           tank_id: string
@@ -3742,6 +3900,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           message?: string
+          organization_id?: string | null
           resolved_at?: string | null
           severity?: string
           tank_id?: string
@@ -3764,6 +3923,7 @@ export type Database = {
           id: string
           new_level_gallons: number
           notes: string | null
+          organization_id: string | null
           performed_by: string | null
           previous_level_gallons: number
           reference_id: string | null
@@ -3777,6 +3937,7 @@ export type Database = {
           id?: string
           new_level_gallons: number
           notes?: string | null
+          organization_id?: string | null
           performed_by?: string | null
           previous_level_gallons: number
           reference_id?: string | null
@@ -3790,6 +3951,7 @@ export type Database = {
           id?: string
           new_level_gallons?: number
           notes?: string | null
+          organization_id?: string | null
           performed_by?: string | null
           previous_level_gallons?: number
           reference_id?: string | null
@@ -3840,6 +4002,7 @@ export type Database = {
           notification_emails: string[] | null
           notification_sms: string[] | null
           notify_on_low_stock: boolean | null
+          organization_id: string | null
           overfill_protection_type: string | null
           photo_urls: string[] | null
           reorder_threshold_gallons: number | null
@@ -3881,6 +4044,7 @@ export type Database = {
           notification_emails?: string[] | null
           notification_sms?: string[] | null
           notify_on_low_stock?: boolean | null
+          organization_id?: string | null
           overfill_protection_type?: string | null
           photo_urls?: string[] | null
           reorder_threshold_gallons?: number | null
@@ -3922,6 +4086,7 @@ export type Database = {
           notification_emails?: string[] | null
           notification_sms?: string[] | null
           notify_on_low_stock?: boolean | null
+          organization_id?: string | null
           overfill_protection_type?: string | null
           photo_urls?: string[] | null
           reorder_threshold_gallons?: number | null
@@ -3949,6 +4114,7 @@ export type Database = {
           due_date: string | null
           id: string
           incident_id: string | null
+          organization_id: string | null
           status: string | null
           updated_at: string | null
         }
@@ -3961,6 +4127,7 @@ export type Database = {
           due_date?: string | null
           id?: string
           incident_id?: string | null
+          organization_id?: string | null
           status?: string | null
           updated_at?: string | null
         }
@@ -3973,6 +4140,7 @@ export type Database = {
           due_date?: string | null
           id?: string
           incident_id?: string | null
+          organization_id?: string | null
           status?: string | null
           updated_at?: string | null
         }
@@ -3993,6 +4161,7 @@ export type Database = {
           id: string
           incident_id: string
           notification_type: string
+          organization_id: string | null
           recipient: string
           sent_at: string
           status: string
@@ -4003,6 +4172,7 @@ export type Database = {
           id?: string
           incident_id: string
           notification_type: string
+          organization_id?: string | null
           recipient: string
           sent_at?: string
           status?: string
@@ -4013,6 +4183,7 @@ export type Database = {
           id?: string
           incident_id?: string
           notification_type?: string
+          organization_id?: string | null
           recipient?: string
           sent_at?: string
           status?: string
@@ -4035,6 +4206,7 @@ export type Database = {
           id: string
           immediate_notification_for_reportable: boolean
           notification_recipients: string[]
+          organization_id: string | null
           severity_threshold: string
           sms_notifications: boolean
           updated_at: string
@@ -4046,6 +4218,7 @@ export type Database = {
           id?: string
           immediate_notification_for_reportable?: boolean
           notification_recipients?: string[]
+          organization_id?: string | null
           severity_threshold?: string
           sms_notifications?: boolean
           updated_at?: string
@@ -4057,6 +4230,7 @@ export type Database = {
           id?: string
           immediate_notification_for_reportable?: boolean
           notification_recipients?: string[]
+          organization_id?: string | null
           severity_threshold?: string
           sms_notifications?: boolean
           updated_at?: string
@@ -4069,6 +4243,7 @@ export type Database = {
           description: string | null
           id: string
           incident_id: string | null
+          organization_id: string | null
           photo_type: string | null
           photo_url: string
         }
@@ -4077,6 +4252,7 @@ export type Database = {
           description?: string | null
           id?: string
           incident_id?: string | null
+          organization_id?: string | null
           photo_type?: string | null
           photo_url: string
         }
@@ -4085,6 +4261,7 @@ export type Database = {
           description?: string | null
           id?: string
           incident_id?: string | null
+          organization_id?: string | null
           photo_type?: string | null
           photo_url?: string
         }
@@ -4105,6 +4282,7 @@ export type Database = {
           id: string
           incident_id: string | null
           name: string
+          organization_id: string | null
         }
         Insert: {
           contact_info?: string | null
@@ -4112,6 +4290,7 @@ export type Database = {
           id?: string
           incident_id?: string | null
           name: string
+          organization_id?: string | null
         }
         Update: {
           contact_info?: string | null
@@ -4119,6 +4298,7 @@ export type Database = {
           id?: string
           incident_id?: string | null
           name?: string
+          organization_id?: string | null
         }
         Relationships: [
           {
@@ -4140,6 +4320,7 @@ export type Database = {
           deployment_url: string | null
           error_message: string | null
           id: string
+          organization_id: string | null
           status: string | null
         }
         Insert: {
@@ -4151,6 +4332,7 @@ export type Database = {
           deployment_url?: string | null
           error_message?: string | null
           id?: string
+          organization_id?: string | null
           status?: string | null
         }
         Update: {
@@ -4162,6 +4344,7 @@ export type Database = {
           deployment_url?: string | null
           error_message?: string | null
           id?: string
+          organization_id?: string | null
           status?: string | null
         }
         Relationships: []
@@ -4179,6 +4362,7 @@ export type Database = {
           metadata: Json
           org_clerk_id: string | null
           org_id: string | null
+          organization_id: string | null
           role: string | null
           status: string
           updated_at: string
@@ -4196,6 +4380,7 @@ export type Database = {
           metadata?: Json
           org_clerk_id?: string | null
           org_id?: string | null
+          organization_id?: string | null
           role?: string | null
           status?: string
           updated_at?: string
@@ -4213,6 +4398,7 @@ export type Database = {
           metadata?: Json
           org_clerk_id?: string | null
           org_id?: string | null
+          organization_id?: string | null
           role?: string | null
           status?: string
           updated_at?: string
@@ -4301,6 +4487,7 @@ export type Database = {
           dismissed_by: string | null
           id: string
           invoice_id: string
+          organization_id: string | null
           reason: string | null
         }
         Insert: {
@@ -4309,6 +4496,7 @@ export type Database = {
           dismissed_by?: string | null
           id?: string
           invoice_id: string
+          organization_id?: string | null
           reason?: string | null
         }
         Update: {
@@ -4317,6 +4505,7 @@ export type Database = {
           dismissed_by?: string | null
           id?: string
           invoice_id?: string
+          organization_id?: string | null
           reason?: string | null
         }
         Relationships: []
@@ -4457,6 +4646,7 @@ export type Database = {
           id: string
           job_id: string
           notes: string | null
+          organization_id: string | null
           updated_at: string
           verification_data: Json | null
           verification_status: string
@@ -4469,6 +4659,7 @@ export type Database = {
           id?: string
           job_id: string
           notes?: string | null
+          organization_id?: string | null
           updated_at?: string
           verification_data?: Json | null
           verification_status?: string
@@ -4481,6 +4672,7 @@ export type Database = {
           id?: string
           job_id?: string
           notes?: string | null
+          organization_id?: string | null
           updated_at?: string
           verification_data?: Json | null
           verification_status?: string
@@ -4576,6 +4768,7 @@ export type Database = {
           location_lat: number | null
           location_lng: number | null
           metadata: Json | null
+          organization_id: string | null
           user_id: string
         }
         Insert: {
@@ -4592,6 +4785,7 @@ export type Database = {
           location_lat?: number | null
           location_lng?: number | null
           metadata?: Json | null
+          organization_id?: string | null
           user_id: string
         }
         Update: {
@@ -4608,6 +4802,7 @@ export type Database = {
           location_lat?: number | null
           location_lng?: number | null
           metadata?: Json | null
+          organization_id?: string | null
           user_id?: string
         }
         Relationships: []
@@ -4619,6 +4814,7 @@ export type Database = {
           id: string
           job_data: Json
           name: string
+          organization_id: string | null
           updated_at: string
         }
         Insert: {
@@ -4627,6 +4823,7 @@ export type Database = {
           id?: string
           job_data?: Json
           name: string
+          organization_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -4635,6 +4832,7 @@ export type Database = {
           id?: string
           job_data?: Json
           name?: string
+          organization_id?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -4653,6 +4851,7 @@ export type Database = {
           id: string
           job_id: string
           notes: string | null
+          organization_id: string | null
           product_item_id: string
           updated_at: string
         }
@@ -4669,6 +4868,7 @@ export type Database = {
           id?: string
           job_id: string
           notes?: string | null
+          organization_id?: string | null
           product_item_id: string
           updated_at?: string
         }
@@ -4685,6 +4885,7 @@ export type Database = {
           id?: string
           job_id?: string
           notes?: string | null
+          organization_id?: string | null
           product_item_id?: string
           updated_at?: string
         }
@@ -4753,6 +4954,7 @@ export type Database = {
           id: string
           job_id: string
           notes: string | null
+          organization_id: string | null
           pickup_type: string
           quantity: number | null
           scheduled_date: string
@@ -4765,6 +4967,7 @@ export type Database = {
           id?: string
           job_id: string
           notes?: string | null
+          organization_id?: string | null
           pickup_type: string
           quantity?: number | null
           scheduled_date: string
@@ -4777,6 +4980,7 @@ export type Database = {
           id?: string
           job_id?: string
           notes?: string | null
+          organization_id?: string | null
           pickup_type?: string
           quantity?: number | null
           scheduled_date?: string
@@ -4801,6 +5005,7 @@ export type Database = {
           id: string
           job_type: string
           notes: string | null
+          organization_id: string | null
           quantity_per_job: number
           updated_at: string
         }
@@ -4810,6 +5015,7 @@ export type Database = {
           id?: string
           job_type: string
           notes?: string | null
+          organization_id?: string | null
           quantity_per_job?: number
           updated_at?: string
         }
@@ -4819,6 +5025,7 @@ export type Database = {
           id?: string
           job_type?: string
           notes?: string | null
+          organization_id?: string | null
           quantity_per_job?: number
           updated_at?: string
         }
@@ -5069,6 +5276,7 @@ export type Database = {
           id: string
           name: string
           notes: string | null
+          organization_id: string | null
           phone: string
           source: string
           status: string
@@ -5084,6 +5292,7 @@ export type Database = {
           id?: string
           name: string
           notes?: string | null
+          organization_id?: string | null
           phone: string
           source?: string
           status?: string
@@ -5099,6 +5308,7 @@ export type Database = {
           id?: string
           name?: string
           notes?: string | null
+          organization_id?: string | null
           phone?: string
           source?: string
           status?: string
@@ -5114,6 +5324,7 @@ export type Database = {
           efficiency_below_threshold: number | null
           generated_by: string | null
           id: string
+          organization_id: string | null
           report_data: Json
           report_date: string
           vehicle_id: string
@@ -5126,6 +5337,7 @@ export type Database = {
           efficiency_below_threshold?: number | null
           generated_by?: string | null
           id?: string
+          organization_id?: string | null
           report_data?: Json
           report_date: string
           vehicle_id: string
@@ -5138,6 +5350,7 @@ export type Database = {
           efficiency_below_threshold?: number | null
           generated_by?: string | null
           id?: string
+          organization_id?: string | null
           report_data?: Json
           report_date?: string
           vehicle_id?: string
@@ -5151,6 +5364,7 @@ export type Database = {
           device_info: Json | null
           driver_id: string
           id: string
+          organization_id: string | null
           sync_data: Json
           sync_timestamp: string
           sync_type: string
@@ -5161,6 +5375,7 @@ export type Database = {
           device_info?: Json | null
           driver_id: string
           id?: string
+          organization_id?: string | null
           sync_data?: Json
           sync_timestamp?: string
           sync_type: string
@@ -5171,6 +5386,7 @@ export type Database = {
           device_info?: Json | null
           driver_id?: string
           id?: string
+          organization_id?: string | null
           sync_data?: Json
           sync_timestamp?: string
           sync_type?: string
@@ -5190,6 +5406,7 @@ export type Database = {
           latitude: number
           location_type: string
           longitude: number
+          organization_id: string | null
           speed: number | null
           timestamp: string
           user_id: string
@@ -5205,6 +5422,7 @@ export type Database = {
           latitude: number
           location_type?: string
           longitude: number
+          organization_id?: string | null
           speed?: number | null
           timestamp?: string
           user_id: string
@@ -5220,6 +5438,7 @@ export type Database = {
           latitude?: number
           location_type?: string
           longitude?: number
+          organization_id?: string | null
           speed?: number | null
           timestamp?: string
           user_id?: string
@@ -5236,6 +5455,7 @@ export type Database = {
           location_id: string | null
           location_name: string | null
           notes: string | null
+          organization_id: string | null
           updated_at: string
           user_id: string
           work_duration: number | null
@@ -5249,6 +5469,7 @@ export type Database = {
           location_id?: string | null
           location_name?: string | null
           notes?: string | null
+          organization_id?: string | null
           updated_at?: string
           user_id: string
           work_duration?: number | null
@@ -5262,6 +5483,7 @@ export type Database = {
           location_id?: string | null
           location_name?: string | null
           notes?: string | null
+          organization_id?: string | null
           updated_at?: string
           user_id?: string
           work_duration?: number | null
@@ -5278,6 +5500,7 @@ export type Database = {
           id: string
           mileage_reminder: boolean
           notification_time: string
+          organization_id: string | null
           phone_number: string | null
           seven_day_reminder: boolean
           sms_enabled: boolean
@@ -5292,6 +5515,7 @@ export type Database = {
           id?: string
           mileage_reminder?: boolean
           notification_time?: string
+          organization_id?: string | null
           phone_number?: string | null
           seven_day_reminder?: boolean
           sms_enabled?: boolean
@@ -5306,6 +5530,7 @@ export type Database = {
           id?: string
           mileage_reminder?: boolean
           notification_time?: string
+          organization_id?: string | null
           phone_number?: string | null
           seven_day_reminder?: boolean
           sms_enabled?: boolean
@@ -5322,6 +5547,7 @@ export type Database = {
           id: string
           is_active: boolean | null
           name: string
+          organization_id: string | null
           reorder_threshold: number | null
           sku: string | null
           storage_location_id: string | null
@@ -5337,6 +5563,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name: string
+          organization_id?: string | null
           reorder_threshold?: number | null
           sku?: string | null
           storage_location_id?: string | null
@@ -5352,6 +5579,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name?: string
+          organization_id?: string | null
           reorder_threshold?: number | null
           sku?: string | null
           storage_location_id?: string | null
@@ -5367,6 +5595,7 @@ export type Database = {
           id: string
           maintenance_record_id: string
           notes: string | null
+          organization_id: string | null
           part_id: string
           quantity_used: number
           total_cost: number | null
@@ -5377,6 +5606,7 @@ export type Database = {
           id?: string
           maintenance_record_id: string
           notes?: string | null
+          organization_id?: string | null
           part_id: string
           quantity_used: number
           total_cost?: number | null
@@ -5387,6 +5617,7 @@ export type Database = {
           id?: string
           maintenance_record_id?: string
           notes?: string | null
+          organization_id?: string | null
           part_id?: string
           quantity_used?: number
           total_cost?: number | null
@@ -5525,6 +5756,7 @@ export type Database = {
           file_size: number | null
           file_type: string
           id: string
+          organization_id: string | null
           report_id: string
         }
         Insert: {
@@ -5535,6 +5767,7 @@ export type Database = {
           file_size?: number | null
           file_type: string
           id?: string
+          organization_id?: string | null
           report_id: string
         }
         Update: {
@@ -5545,6 +5778,7 @@ export type Database = {
           file_size?: number | null
           file_type?: string
           id?: string
+          organization_id?: string | null
           report_id?: string
         }
         Relationships: []
@@ -5561,6 +5795,7 @@ export type Database = {
           is_public: boolean | null
           last_used_at: string | null
           name: string
+          organization_id: string | null
           parent_template_id: string | null
           preview_image: string | null
           template_category: string | null
@@ -5584,6 +5819,7 @@ export type Database = {
           is_public?: boolean | null
           last_used_at?: string | null
           name: string
+          organization_id?: string | null
           parent_template_id?: string | null
           preview_image?: string | null
           template_category?: string | null
@@ -5607,6 +5843,7 @@ export type Database = {
           is_public?: boolean | null
           last_used_at?: string | null
           name?: string
+          organization_id?: string | null
           parent_template_id?: string | null
           preview_image?: string | null
           template_category?: string | null
@@ -5637,6 +5874,7 @@ export type Database = {
           id: string
           job_id: string | null
           location_coordinates: unknown
+          organization_id: string | null
           priority_level: string | null
           report_data: Json
           report_number: string | null
@@ -5666,6 +5904,7 @@ export type Database = {
           id?: string
           job_id?: string | null
           location_coordinates?: unknown
+          organization_id?: string | null
           priority_level?: string | null
           report_data: Json
           report_number?: string | null
@@ -5695,6 +5934,7 @@ export type Database = {
           id?: string
           job_id?: string | null
           location_coordinates?: unknown
+          organization_id?: string | null
           priority_level?: string | null
           report_data?: Json
           report_number?: string | null
@@ -5743,6 +5983,7 @@ export type Database = {
           initial_condition: string | null
           initial_photos: Json | null
           item_id: string
+          organization_id: string | null
           primary_technician: string | null
           session_number: number
           session_summary: string | null
@@ -5762,6 +6003,7 @@ export type Database = {
           initial_condition?: string | null
           initial_photos?: Json | null
           item_id: string
+          organization_id?: string | null
           primary_technician?: string | null
           session_number: number
           session_summary?: string | null
@@ -5781,6 +6023,7 @@ export type Database = {
           initial_condition?: string | null
           initial_photos?: Json | null
           item_id?: string
+          organization_id?: string | null
           primary_technician?: string | null
           session_number?: number
           session_summary?: string | null
@@ -5812,6 +6055,7 @@ export type Database = {
         Row: {
           created_at: string | null
           id: string
+          organization_id: string | null
           report_id: string
           signature_data: string
           signature_type: string
@@ -5822,6 +6066,7 @@ export type Database = {
         Insert: {
           created_at?: string | null
           id?: string
+          organization_id?: string | null
           report_id: string
           signature_data: string
           signature_type: string
@@ -5832,6 +6077,7 @@ export type Database = {
         Update: {
           created_at?: string | null
           id?: string
+          organization_id?: string | null
           report_id?: string
           signature_data?: string
           signature_type?: string
@@ -5851,6 +6097,7 @@ export type Database = {
           id: string
           is_active: boolean | null
           name: string
+          organization_id: string | null
           required_technician_role: string | null
           updated_at: string
         }
@@ -5863,6 +6110,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name: string
+          organization_id?: string | null
           required_technician_role?: string | null
           updated_at?: string
         }
@@ -5875,6 +6123,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name?: string
+          organization_id?: string | null
           required_technician_role?: string | null
           updated_at?: string
         }
@@ -5892,6 +6141,7 @@ export type Database = {
           id: string
           job_id: string | null
           metadata: Json | null
+          organization_id: string | null
           priority: string | null
           site_id: string | null
           status: string | null
@@ -5910,6 +6160,7 @@ export type Database = {
           id?: string
           job_id?: string | null
           metadata?: Json | null
+          organization_id?: string | null
           priority?: string | null
           site_id?: string | null
           status?: string | null
@@ -5928,6 +6179,7 @@ export type Database = {
           id?: string
           job_id?: string | null
           metadata?: Json | null
+          organization_id?: string | null
           priority?: string | null
           site_id?: string | null
           status?: string | null
@@ -5948,6 +6200,7 @@ export type Database = {
           id: string
           is_active: boolean | null
           last_name: string
+          organization_id: string | null
           phone: string | null
           specializations: string[] | null
           updated_at: string
@@ -5963,6 +6216,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           last_name: string
+          organization_id?: string | null
           phone?: string | null
           specializations?: string[] | null
           updated_at?: string
@@ -5978,6 +6232,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           last_name?: string
+          organization_id?: string | null
           phone?: string | null
           specializations?: string[] | null
           updated_at?: string
@@ -5998,6 +6253,7 @@ export type Database = {
           item_id: string
           labor_hours: number | null
           maintenance_session_id: string | null
+          organization_id: string | null
           parent_work_order_id: string | null
           parts_used: Json | null
           session_status: string | null
@@ -6021,6 +6277,7 @@ export type Database = {
           item_id: string
           labor_hours?: number | null
           maintenance_session_id?: string | null
+          organization_id?: string | null
           parent_work_order_id?: string | null
           parts_used?: Json | null
           session_status?: string | null
@@ -6044,6 +6301,7 @@ export type Database = {
           item_id?: string
           labor_hours?: number | null
           maintenance_session_id?: string | null
+          organization_id?: string | null
           parent_work_order_id?: string | null
           parts_used?: Json | null
           session_status?: string | null
@@ -6083,6 +6341,7 @@ export type Database = {
           id: string
           name: string
           notes: string | null
+          organization_id: string | null
           phone: string | null
           service_specialties: string[] | null
           state: string | null
@@ -6101,6 +6360,7 @@ export type Database = {
           id?: string
           name: string
           notes?: string | null
+          organization_id?: string | null
           phone?: string | null
           service_specialties?: string[] | null
           state?: string | null
@@ -6119,6 +6379,7 @@ export type Database = {
           id?: string
           name?: string
           notes?: string | null
+          organization_id?: string | null
           phone?: string | null
           service_specialties?: string[] | null
           state?: string | null
@@ -6144,6 +6405,7 @@ export type Database = {
           message_source: string | null
           name: string
           opened_count: number | null
+          organization_id: string | null
           recipient_type: string | null
           scheduled_at: string | null
           sent_at: string | null
@@ -6169,6 +6431,7 @@ export type Database = {
           message_source?: string | null
           name: string
           opened_count?: number | null
+          organization_id?: string | null
           recipient_type?: string | null
           scheduled_at?: string | null
           sent_at?: string | null
@@ -6194,6 +6457,7 @@ export type Database = {
           message_source?: string | null
           name?: string
           opened_count?: number | null
+          organization_id?: string | null
           recipient_type?: string | null
           scheduled_at?: string | null
           sent_at?: string | null
@@ -6213,6 +6477,7 @@ export type Database = {
           gallons_dispensed: number
           id: string
           odometer_reading: number | null
+          organization_id: string | null
           service_id: string
           updated_at: string
           vehicle_id: string
@@ -6223,6 +6488,7 @@ export type Database = {
           gallons_dispensed: number
           id?: string
           odometer_reading?: number | null
+          organization_id?: string | null
           service_id: string
           updated_at?: string
           vehicle_id: string
@@ -6233,6 +6499,7 @@ export type Database = {
           gallons_dispensed?: number
           id?: string
           odometer_reading?: number | null
+          organization_id?: string | null
           service_id?: string
           updated_at?: string
           vehicle_id?: string
@@ -6277,6 +6544,7 @@ export type Database = {
           location_description: string | null
           location_type: string | null
           notes: string | null
+          organization_id: string | null
           payment_method: string | null
           price_per_gallon: number | null
           reconciliation_date: string | null
@@ -6309,6 +6577,7 @@ export type Database = {
           location_description?: string | null
           location_type?: string | null
           notes?: string | null
+          organization_id?: string | null
           payment_method?: string | null
           price_per_gallon?: number | null
           reconciliation_date?: string | null
@@ -6341,6 +6610,7 @@ export type Database = {
           location_description?: string | null
           location_type?: string | null
           notes?: string | null
+          organization_id?: string | null
           payment_method?: string | null
           price_per_gallon?: number | null
           reconciliation_date?: string | null
@@ -6406,6 +6676,7 @@ export type Database = {
           last_audit_date: string | null
           min_delivery_quantity_gal: number | null
           notes: string | null
+          organization_id: string | null
           payment_terms: string | null
           phone: string | null
           preferred_contact_method: string | null
@@ -6440,6 +6711,7 @@ export type Database = {
           last_audit_date?: string | null
           min_delivery_quantity_gal?: number | null
           notes?: string | null
+          organization_id?: string | null
           payment_terms?: string | null
           phone?: string | null
           preferred_contact_method?: string | null
@@ -6474,6 +6746,7 @@ export type Database = {
           last_audit_date?: string | null
           min_delivery_quantity_gal?: number | null
           notes?: string | null
+          organization_id?: string | null
           payment_terms?: string | null
           phone?: string | null
           preferred_contact_method?: string | null
@@ -6560,6 +6833,7 @@ export type Database = {
           new_job_assigned_email: boolean | null
           new_team_members_email: boolean | null
           new_team_members_push: boolean | null
+          organization_id: string | null
           overdue_job_email: boolean | null
           overdue_job_push: boolean | null
           payment_confirmations_email: boolean | null
@@ -6596,6 +6870,7 @@ export type Database = {
           new_job_assigned_email?: boolean | null
           new_team_members_email?: boolean | null
           new_team_members_push?: boolean | null
+          organization_id?: string | null
           overdue_job_email?: boolean | null
           overdue_job_push?: boolean | null
           payment_confirmations_email?: boolean | null
@@ -6632,6 +6907,7 @@ export type Database = {
           new_job_assigned_email?: boolean | null
           new_team_members_email?: boolean | null
           new_team_members_push?: boolean | null
+          organization_id?: string | null
           overdue_job_email?: boolean | null
           overdue_job_push?: boolean | null
           payment_confirmations_email?: boolean | null
@@ -6653,6 +6929,7 @@ export type Database = {
           created_at: string | null
           id: string
           is_default: boolean | null
+          organization_id: string | null
           subject: string | null
           template_type: string
           updated_at: string | null
@@ -6662,6 +6939,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           is_default?: boolean | null
+          organization_id?: string | null
           subject?: string | null
           template_type: string
           updated_at?: string | null
@@ -6671,6 +6949,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           is_default?: boolean | null
+          organization_id?: string | null
           subject?: string | null
           template_type?: string
           updated_at?: string | null
@@ -6684,6 +6963,7 @@ export type Database = {
           id: string
           last_error: string | null
           operation: string
+          organization_id: string | null
           record_id: string | null
           retry_count: number
           sync_status: string
@@ -6697,6 +6977,7 @@ export type Database = {
           id?: string
           last_error?: string | null
           operation: string
+          organization_id?: string | null
           record_id?: string | null
           retry_count?: number
           sync_status?: string
@@ -6710,6 +6991,7 @@ export type Database = {
           id?: string
           last_error?: string | null
           operation?: string
+          organization_id?: string | null
           record_id?: string | null
           retry_count?: number
           sync_status?: string
@@ -6728,6 +7010,7 @@ export type Database = {
           org_clerk_id: string
           org_name: string | null
           org_slug: string | null
+          organization_id: string | null
           role: string
           welcome_email_sent_at: string | null
         }
@@ -6739,6 +7022,7 @@ export type Database = {
           org_clerk_id: string
           org_name?: string | null
           org_slug?: string | null
+          organization_id?: string | null
           role?: string
           welcome_email_sent_at?: string | null
         }
@@ -6750,6 +7034,7 @@ export type Database = {
           org_clerk_id?: string
           org_name?: string | null
           org_slug?: string | null
+          organization_id?: string | null
           role?: string
           welcome_email_sent_at?: string | null
         }
@@ -6764,6 +7049,7 @@ export type Database = {
           metadata: Json
           org_name: string | null
           org_slug: string | null
+          organization_id: string | null
           updated_at: string
         }
         Insert: {
@@ -6774,6 +7060,7 @@ export type Database = {
           metadata?: Json
           org_name?: string | null
           org_slug?: string | null
+          organization_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -6784,6 +7071,7 @@ export type Database = {
           metadata?: Json
           org_name?: string | null
           org_slug?: string | null
+          organization_id?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -6798,6 +7086,7 @@ export type Database = {
           invoice_id: string
           metadata: Json
           notes: string | null
+          organization_id: string | null
           original_payment_id: string | null
           payment_method: string
           reference_number: string | null
@@ -6816,6 +7105,7 @@ export type Database = {
           invoice_id: string
           metadata?: Json
           notes?: string | null
+          organization_id?: string | null
           original_payment_id?: string | null
           payment_method: string
           reference_number?: string | null
@@ -6834,6 +7124,7 @@ export type Database = {
           invoice_id?: string
           metadata?: Json
           notes?: string | null
+          organization_id?: string | null
           original_payment_id?: string | null
           payment_method?: string
           reference_number?: string | null
@@ -6868,6 +7159,7 @@ export type Database = {
           id: string
           is_default: boolean | null
           name: string
+          organization_id: string | null
           updated_at: string
         }
         Insert: {
@@ -6877,6 +7169,7 @@ export type Database = {
           id?: string
           is_default?: boolean | null
           name: string
+          organization_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -6886,6 +7179,7 @@ export type Database = {
           id?: string
           is_default?: boolean | null
           name?: string
+          organization_id?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -6897,6 +7191,7 @@ export type Database = {
           created_at: string
           id: string
           notes: string | null
+          organization_id: string | null
           product_id: string
           updated_at: string
         }
@@ -6906,6 +7201,7 @@ export type Database = {
           created_at?: string
           id?: string
           notes?: string | null
+          organization_id?: string | null
           product_id: string
           updated_at?: string
         }
@@ -6915,6 +7211,7 @@ export type Database = {
           created_at?: string
           id?: string
           notes?: string | null
+          organization_id?: string | null
           product_id?: string
           updated_at?: string
         }
@@ -6943,6 +7240,7 @@ export type Database = {
           meter_hours: number | null
           meter_miles: number | null
           notes: string | null
+          organization_id: string | null
           pm_schedule_id: string
           work_order_id: string | null
         }
@@ -6953,6 +7251,7 @@ export type Database = {
           meter_hours?: number | null
           meter_miles?: number | null
           notes?: string | null
+          organization_id?: string | null
           pm_schedule_id: string
           work_order_id?: string | null
         }
@@ -6963,6 +7262,7 @@ export type Database = {
           meter_hours?: number | null
           meter_miles?: number | null
           notes?: string | null
+          organization_id?: string | null
           pm_schedule_id?: string
           work_order_id?: string | null
         }
@@ -6998,6 +7298,7 @@ export type Database = {
           id: string
           instructions: Json
           name: string
+          organization_id: string | null
           trigger_days_every: number | null
           trigger_hours_every: number | null
           trigger_miles_every: number | null
@@ -7017,6 +7318,7 @@ export type Database = {
           id?: string
           instructions?: Json
           name: string
+          organization_id?: string | null
           trigger_days_every?: number | null
           trigger_hours_every?: number | null
           trigger_miles_every?: number | null
@@ -7036,6 +7338,7 @@ export type Database = {
           id?: string
           instructions?: Json
           name?: string
+          organization_id?: string | null
           trigger_days_every?: number | null
           trigger_hours_every?: number | null
           trigger_miles_every?: number | null
@@ -7053,6 +7356,7 @@ export type Database = {
           next_due_date: string | null
           next_due_hours: number | null
           next_due_miles: number | null
+          organization_id: string | null
           pm_schedule_id: string
           target_id: string
           target_type: Database["public"]["Enums"]["pm_target_type"]
@@ -7067,6 +7371,7 @@ export type Database = {
           next_due_date?: string | null
           next_due_hours?: number | null
           next_due_miles?: number | null
+          organization_id?: string | null
           pm_schedule_id: string
           target_id: string
           target_type: Database["public"]["Enums"]["pm_target_type"]
@@ -7081,6 +7386,7 @@ export type Database = {
           next_due_date?: string | null
           next_due_hours?: number | null
           next_due_miles?: number | null
+          organization_id?: string | null
           pm_schedule_id?: string
           target_id?: string
           target_type?: Database["public"]["Enums"]["pm_target_type"]
@@ -7107,6 +7413,7 @@ export type Database = {
           id: string
           is_active: boolean | null
           name: string
+          organization_id: string | null
           parts_list: Json | null
           trigger_config: Json | null
           trigger_interval: number | null
@@ -7123,6 +7430,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name: string
+          organization_id?: string | null
           parts_list?: Json | null
           trigger_config?: Json | null
           trigger_interval?: number | null
@@ -7139,6 +7447,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name?: string
+          organization_id?: string | null
           parts_list?: Json | null
           trigger_config?: Json | null
           trigger_interval?: number | null
@@ -7160,6 +7469,7 @@ export type Database = {
           high_vis_vest_available: boolean
           id: string
           inspection_date: string
+          organization_id: string | null
           ppe_condition_notes: string | null
           respirator_available: boolean
           safety_glasses_available: boolean
@@ -7179,6 +7489,7 @@ export type Database = {
           high_vis_vest_available?: boolean
           id?: string
           inspection_date?: string
+          organization_id?: string | null
           ppe_condition_notes?: string | null
           respirator_available?: boolean
           safety_glasses_available?: boolean
@@ -7198,6 +7509,7 @@ export type Database = {
           high_vis_vest_available?: boolean
           id?: string
           inspection_date?: string
+          organization_id?: string | null
           ppe_condition_notes?: string | null
           respirator_available?: boolean
           safety_glasses_available?: boolean
@@ -7241,6 +7553,7 @@ export type Database = {
           max_quantity: number | null
           min_quantity: number | null
           name: string
+          organization_id: string | null
           rule_type: string
           start_date: string | null
           updated_at: string | null
@@ -7256,6 +7569,7 @@ export type Database = {
           max_quantity?: number | null
           min_quantity?: number | null
           name: string
+          organization_id?: string | null
           rule_type: string
           start_date?: string | null
           updated_at?: string | null
@@ -7271,6 +7585,7 @@ export type Database = {
           max_quantity?: number | null
           min_quantity?: number | null
           name?: string
+          organization_id?: string | null
           rule_type?: string
           start_date?: string | null
           updated_at?: string | null
@@ -7282,6 +7597,7 @@ export type Database = {
           created_at: string
           id: string
           item_id: string
+          organization_id: string | null
           property_id: string
           property_value: string
           updated_at: string
@@ -7290,6 +7606,7 @@ export type Database = {
           created_at?: string
           id?: string
           item_id: string
+          organization_id?: string | null
           property_id: string
           property_value: string
           updated_at?: string
@@ -7298,6 +7615,7 @@ export type Database = {
           created_at?: string
           id?: string
           item_id?: string
+          organization_id?: string | null
           property_id?: string
           property_value?: string
           updated_at?: string
@@ -7310,6 +7628,7 @@ export type Database = {
           from_location_id: string | null
           id: string
           notes: string | null
+          organization_id: string | null
           product_id: string
           product_item_id: string
           quantity: number
@@ -7322,6 +7641,7 @@ export type Database = {
           from_location_id?: string | null
           id?: string
           notes?: string | null
+          organization_id?: string | null
           product_id: string
           product_item_id: string
           quantity?: number
@@ -7334,6 +7654,7 @@ export type Database = {
           from_location_id?: string | null
           id?: string
           notes?: string | null
+          organization_id?: string | null
           product_id?: string
           product_item_id?: string
           quantity?: number
@@ -7379,6 +7700,7 @@ export type Database = {
           display_order: number | null
           id: string
           is_primary: boolean | null
+          organization_id: string | null
           photo_url: string
           product_item_id: string
           updated_at: string
@@ -7390,6 +7712,7 @@ export type Database = {
           display_order?: number | null
           id?: string
           is_primary?: boolean | null
+          organization_id?: string | null
           photo_url: string
           product_item_id: string
           updated_at?: string
@@ -7401,6 +7724,7 @@ export type Database = {
           display_order?: number | null
           id?: string
           is_primary?: boolean | null
+          organization_id?: string | null
           photo_url?: string
           product_item_id?: string
           updated_at?: string
@@ -7560,6 +7884,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          organization_id: string | null
           product_id: string
           quantity: number
           storage_location_id: string
@@ -7568,6 +7893,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          organization_id?: string | null
           product_id: string
           quantity?: number
           storage_location_id: string
@@ -7576,6 +7902,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          organization_id?: string | null
           product_id?: string
           quantity?: number
           storage_location_id?: string
@@ -7604,6 +7931,7 @@ export type Database = {
           from_location_id: string
           id: string
           notes: string | null
+          organization_id: string | null
           product_id: string
           quantity: number
           to_location_id: string
@@ -7615,6 +7943,7 @@ export type Database = {
           from_location_id: string
           id?: string
           notes?: string | null
+          organization_id?: string | null
           product_id: string
           quantity: number
           to_location_id: string
@@ -7626,6 +7955,7 @@ export type Database = {
           from_location_id?: string
           id?: string
           notes?: string | null
+          organization_id?: string | null
           product_id?: string
           quantity?: number
           to_location_id?: string
@@ -7663,6 +7993,7 @@ export type Database = {
           created_at: string
           id: string
           is_required: boolean
+          organization_id: string | null
           product_id: string
           updated_at: string
         }
@@ -7672,6 +8003,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_required?: boolean
+          organization_id?: string | null
           product_id: string
           updated_at?: string
         }
@@ -7681,6 +8013,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_required?: boolean
+          organization_id?: string | null
           product_id?: string
           updated_at?: string
         }
@@ -7690,18 +8023,21 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          organization_id: string | null
           product_id: string
           property_variation_id: string
         }
         Insert: {
           created_at?: string
           id?: string
+          organization_id?: string | null
           product_id: string
           property_variation_id: string
         }
         Update: {
           created_at?: string
           id?: string
+          organization_id?: string | null
           product_id?: string
           property_variation_id?: string
         }
@@ -7711,6 +8047,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          organization_id: string | null
           product_id: string
           updated_at: string
           variation_image: string | null
@@ -7720,6 +8057,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          organization_id?: string | null
           product_id: string
           updated_at?: string
           variation_image?: string | null
@@ -7729,6 +8067,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          organization_id?: string | null
           product_id?: string
           updated_at?: string
           variation_image?: string | null
@@ -7924,6 +8263,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          organization_id: string | null
           price_modifier: number
           property_id: string
           stock_in_service: number
@@ -7935,6 +8275,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          organization_id?: string | null
           price_modifier?: number
           property_id: string
           stock_in_service?: number
@@ -7946,6 +8287,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          organization_id?: string | null
           price_modifier?: number
           property_id?: string
           stock_in_service?: number
@@ -7962,6 +8304,7 @@ export type Database = {
           created_at: string
           id: string
           line_total: number
+          organization_id: string | null
           purchase_order_id: string
           quantity: number
           unit_cost: number
@@ -7971,6 +8314,7 @@ export type Database = {
           created_at?: string
           id?: string
           line_total: number
+          organization_id?: string | null
           purchase_order_id: string
           quantity: number
           unit_cost: number
@@ -7980,6 +8324,7 @@ export type Database = {
           created_at?: string
           id?: string
           line_total?: number
+          organization_id?: string | null
           purchase_order_id?: string
           quantity?: number
           unit_cost?: number
@@ -7993,6 +8338,7 @@ export type Database = {
           id: string
           notes: string | null
           order_date: string
+          organization_id: string | null
           received_by: string | null
           status: string
           total_amount: number
@@ -8005,6 +8351,7 @@ export type Database = {
           id?: string
           notes?: string | null
           order_date?: string
+          organization_id?: string | null
           received_by?: string | null
           status?: string
           total_amount?: number
@@ -8017,6 +8364,7 @@ export type Database = {
           id?: string
           notes?: string | null
           order_date?: string
+          organization_id?: string | null
           received_by?: string | null
           status?: string
           total_amount?: number
@@ -8032,6 +8380,7 @@ export type Database = {
           endpoint: string
           id: string
           is_active: boolean
+          organization_id: string | null
           p256dh_key: string
           updated_at: string
           user_agent: string | null
@@ -8043,6 +8392,7 @@ export type Database = {
           endpoint: string
           id?: string
           is_active?: boolean
+          organization_id?: string | null
           p256dh_key: string
           updated_at?: string
           user_agent?: string | null
@@ -8054,6 +8404,7 @@ export type Database = {
           endpoint?: string
           id?: string
           is_active?: boolean
+          organization_id?: string | null
           p256dh_key?: string
           updated_at?: string
           user_agent?: string | null
@@ -8070,6 +8421,7 @@ export type Database = {
           customer_phone: string | null
           id: string
           is_read: boolean
+          organization_id: string | null
           photo_url: string | null
           priority: string
           processed_at: string | null
@@ -8087,6 +8439,7 @@ export type Database = {
           customer_phone?: string | null
           id?: string
           is_read?: boolean
+          organization_id?: string | null
           photo_url?: string | null
           priority?: string
           processed_at?: string | null
@@ -8104,6 +8457,7 @@ export type Database = {
           customer_phone?: string | null
           id?: string
           is_read?: boolean
+          organization_id?: string | null
           photo_url?: string | null
           priority?: string
           processed_at?: string | null
@@ -8124,6 +8478,7 @@ export type Database = {
           feedback_type: string
           id: string
           is_read: boolean | null
+          organization_id: string | null
           photo_url: string | null
           unit_id: string | null
           updated_at: string
@@ -8136,6 +8491,7 @@ export type Database = {
           feedback_type: string
           id?: string
           is_read?: boolean | null
+          organization_id?: string | null
           photo_url?: string | null
           unit_id?: string | null
           updated_at?: string
@@ -8148,6 +8504,7 @@ export type Database = {
           feedback_type?: string
           id?: string
           is_read?: boolean | null
+          organization_id?: string | null
           photo_url?: string | null
           unit_id?: string | null
           updated_at?: string
@@ -8170,6 +8527,7 @@ export type Database = {
           id: string
           new_values: Json | null
           old_values: Json | null
+          organization_id: string | null
           quote_id: string
         }
         Insert: {
@@ -8179,6 +8537,7 @@ export type Database = {
           id?: string
           new_values?: Json | null
           old_values?: Json | null
+          organization_id?: string | null
           quote_id: string
         }
         Update: {
@@ -8188,6 +8547,7 @@ export type Database = {
           id?: string
           new_values?: Json | null
           old_values?: Json | null
+          organization_id?: string | null
           quote_id?: string
         }
         Relationships: []
@@ -8198,6 +8558,7 @@ export type Database = {
           created_by: string
           id: string
           name: string
+          organization_id: string | null
           quote_data: Json
           updated_at: string
         }
@@ -8206,6 +8567,7 @@ export type Database = {
           created_by: string
           id?: string
           name: string
+          organization_id?: string | null
           quote_data?: Json
           updated_at?: string
         }
@@ -8214,6 +8576,7 @@ export type Database = {
           created_by?: string
           id?: string
           name?: string
+          organization_id?: string | null
           quote_data?: Json
           updated_at?: string
         }
@@ -8407,6 +8770,7 @@ export type Database = {
           access_type: string
           created_at: string | null
           id: string
+          organization_id: string | null
           report_id: string | null
           user_id: string | null
         }
@@ -8415,6 +8779,7 @@ export type Database = {
           access_type: string
           created_at?: string | null
           id?: string
+          organization_id?: string | null
           report_id?: string | null
           user_id?: string | null
         }
@@ -8423,6 +8788,7 @@ export type Database = {
           access_type?: string
           created_at?: string | null
           id?: string
+          organization_id?: string | null
           report_id?: string | null
           user_id?: string | null
         }
@@ -8435,6 +8801,7 @@ export type Database = {
           metric_type: string
           metric_unit: string | null
           metric_value: number
+          organization_id: string | null
           recorded_at: string | null
           report_id: string | null
         }
@@ -8444,6 +8811,7 @@ export type Database = {
           metric_type: string
           metric_unit?: string | null
           metric_value: number
+          organization_id?: string | null
           recorded_at?: string | null
           report_id?: string | null
         }
@@ -8453,6 +8821,7 @@ export type Database = {
           metric_type?: string
           metric_unit?: string | null
           metric_value?: number
+          organization_id?: string | null
           recorded_at?: string | null
           report_id?: string | null
         }
@@ -8466,6 +8835,7 @@ export type Database = {
           failure_reason: string | null
           id: string
           opened_at: string | null
+          organization_id: string | null
           recipient_email: string
           recipient_name: string | null
           report_id: string | null
@@ -8480,6 +8850,7 @@ export type Database = {
           failure_reason?: string | null
           id?: string
           opened_at?: string | null
+          organization_id?: string | null
           recipient_email: string
           recipient_name?: string | null
           report_id?: string | null
@@ -8494,6 +8865,7 @@ export type Database = {
           failure_reason?: string | null
           id?: string
           opened_at?: string | null
+          organization_id?: string | null
           recipient_email?: string
           recipient_name?: string | null
           report_id?: string | null
@@ -8509,6 +8881,7 @@ export type Database = {
           id: string
           metadata: Json | null
           notes: string | null
+          organization_id: string | null
           report_id: string
           to_status: string
           transition_date: string | null
@@ -8519,6 +8892,7 @@ export type Database = {
           id?: string
           metadata?: Json | null
           notes?: string | null
+          organization_id?: string | null
           report_id: string
           to_status: string
           transition_date?: string | null
@@ -8529,6 +8903,7 @@ export type Database = {
           id?: string
           metadata?: Json | null
           notes?: string | null
+          organization_id?: string | null
           report_id?: string
           to_status?: string
           transition_date?: string | null
@@ -8545,6 +8920,7 @@ export type Database = {
           forecast_data: Json | null
           growth_rate: number | null
           id: string
+          organization_id: string | null
           period_end: string
           period_start: string
           period_type: string
@@ -8561,6 +8937,7 @@ export type Database = {
           forecast_data?: Json | null
           growth_rate?: number | null
           id?: string
+          organization_id?: string | null
           period_end: string
           period_start: string
           period_type: string
@@ -8577,6 +8954,7 @@ export type Database = {
           forecast_data?: Json | null
           growth_rate?: number | null
           id?: string
+          organization_id?: string | null
           period_end?: string
           period_start?: string
           period_type?: string
@@ -8599,6 +8977,7 @@ export type Database = {
           id: string
           is_active: boolean | null
           name: string
+          organization_id: string | null
           per_hour_cost: number | null
           per_visit_cost: number | null
           pricing_method: string
@@ -8617,6 +8996,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name: string
+          organization_id?: string | null
           per_hour_cost?: number | null
           per_visit_cost?: number | null
           pricing_method?: string
@@ -8635,6 +9015,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name?: string
+          organization_id?: string | null
           per_hour_cost?: number | null
           per_visit_cost?: number | null
           pricing_method?: string
@@ -8659,6 +9040,7 @@ export type Database = {
           id: string
           item_key: string
           label: string
+          organization_id: string | null
           required: boolean
           sort_order: number
           updated_at: string
@@ -8669,6 +9051,7 @@ export type Database = {
           id?: string
           item_key: string
           label: string
+          organization_id?: string | null
           required?: boolean
           sort_order?: number
           updated_at?: string
@@ -8679,6 +9062,7 @@ export type Database = {
           id?: string
           item_key?: string
           label?: string
+          organization_id?: string | null
           required?: boolean
           sort_order?: number
           updated_at?: string
@@ -8700,6 +9084,7 @@ export type Database = {
           id: string
           is_active: boolean
           name: string
+          organization_id: string | null
           region: string | null
           updated_at: string
         }
@@ -8709,6 +9094,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           name: string
+          organization_id?: string | null
           region?: string | null
           updated_at?: string
         }
@@ -8718,6 +9104,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           name?: string
+          organization_id?: string | null
           region?: string | null
           updated_at?: string
         }
@@ -8731,6 +9118,7 @@ export type Database = {
           id: string
           job_id: string | null
           notes: string | null
+          organization_id: string | null
           photos: Json
           product_item_id: string | null
           responses: Json
@@ -8745,6 +9133,7 @@ export type Database = {
           id?: string
           job_id?: string | null
           notes?: string | null
+          organization_id?: string | null
           photos?: Json
           product_item_id?: string | null
           responses?: Json
@@ -8759,6 +9148,7 @@ export type Database = {
           id?: string
           job_id?: string | null
           notes?: string | null
+          organization_id?: string | null
           photos?: Json
           product_item_id?: string | null
           responses?: Json
@@ -8799,6 +9189,7 @@ export type Database = {
           id: string
           is_active: boolean
           next_run_date: string | null
+          organization_id: string | null
           scope: string
           target_id: string
           updated_at: string
@@ -8811,6 +9202,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           next_run_date?: string | null
+          organization_id?: string | null
           scope?: string
           target_id: string
           updated_at?: string
@@ -8823,6 +9215,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           next_run_date?: string | null
+          organization_id?: string | null
           scope?: string
           target_id?: string
           updated_at?: string
@@ -8847,6 +9240,7 @@ export type Database = {
           created_by: string | null
           id: string
           name: string
+          organization_id: string | null
           updated_at: string
         }
         Insert: {
@@ -8858,6 +9252,7 @@ export type Database = {
           created_by?: string | null
           id?: string
           name: string
+          organization_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -8869,6 +9264,7 @@ export type Database = {
           created_by?: string | null
           id?: string
           name?: string
+          organization_id?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -8883,6 +9279,7 @@ export type Database = {
           last_sent_at: string | null
           name: string
           next_send_at: string | null
+          organization_id: string | null
           recipients: Json
           report_id: string | null
           schedule_config: Json
@@ -8898,6 +9295,7 @@ export type Database = {
           last_sent_at?: string | null
           name: string
           next_send_at?: string | null
+          organization_id?: string | null
           recipients?: Json
           report_id?: string | null
           schedule_config?: Json
@@ -8913,6 +9311,7 @@ export type Database = {
           last_sent_at?: string | null
           name?: string
           next_send_at?: string | null
+          organization_id?: string | null
           recipients?: Json
           report_id?: string | null
           schedule_config?: Json
@@ -8932,6 +9331,7 @@ export type Database = {
           id: string
           is_active: boolean
           name: string
+          organization_id: string | null
         }
         Insert: {
           category: string
@@ -8943,6 +9343,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           name: string
+          organization_id?: string | null
         }
         Update: {
           category?: string
@@ -8954,6 +9355,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           name?: string
+          organization_id?: string | null
         }
         Relationships: []
       }
@@ -8965,6 +9367,7 @@ export type Database = {
           id: string
           is_active: boolean | null
           name: string
+          organization_id: string | null
           parent_category_id: string | null
           updated_at: string | null
         }
@@ -8975,6 +9378,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name: string
+          organization_id?: string | null
           parent_category_id?: string | null
           updated_at?: string | null
         }
@@ -8985,6 +9389,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name?: string
+          organization_id?: string | null
           parent_category_id?: string | null
           updated_at?: string | null
         }
@@ -8999,6 +9404,7 @@ export type Database = {
           is_primary: boolean | null
           latitude: number
           longitude: number
+          organization_id: string | null
           pin_color: string | null
           point_name: string
           service_location_id: string
@@ -9012,6 +9418,7 @@ export type Database = {
           is_primary?: boolean | null
           latitude: number
           longitude: number
+          organization_id?: string | null
           pin_color?: string | null
           point_name: string
           service_location_id: string
@@ -9025,6 +9432,7 @@ export type Database = {
           is_primary?: boolean | null
           latitude?: number
           longitude?: number
+          organization_id?: string | null
           pin_color?: string | null
           point_name?: string
           service_location_id?: string
@@ -9097,6 +9505,7 @@ export type Database = {
           generated_by: string | null
           id: string
           job_id: string
+          organization_id: string | null
           report_number: string | null
           updated_at: string
         }
@@ -9110,6 +9519,7 @@ export type Database = {
           generated_by?: string | null
           id?: string
           job_id: string
+          organization_id?: string | null
           report_number?: string | null
           updated_at?: string
         }
@@ -9123,6 +9533,7 @@ export type Database = {
           generated_by?: string | null
           id?: string
           job_id?: string
+          organization_id?: string | null
           report_number?: string | null
           updated_at?: string
         }
@@ -9143,6 +9554,7 @@ export type Database = {
           id: string
           internal_notes: string | null
           location_address: string | null
+          organization_id: string | null
           preferred_time: string | null
           priority: string
           requested_date: string | null
@@ -9164,6 +9576,7 @@ export type Database = {
           id?: string
           internal_notes?: string | null
           location_address?: string | null
+          organization_id?: string | null
           preferred_time?: string | null
           priority?: string
           requested_date?: string | null
@@ -9185,6 +9598,7 @@ export type Database = {
           id?: string
           internal_notes?: string | null
           location_address?: string | null
+          organization_id?: string | null
           preferred_time?: string | null
           priority?: string
           requested_date?: string | null
@@ -9270,6 +9684,7 @@ export type Database = {
           end_time: string
           id: string
           name: string
+          organization_id: string | null
           shift_type: string
           start_time: string
           updated_at: string
@@ -9281,6 +9696,7 @@ export type Database = {
           end_time: string
           id?: string
           name: string
+          organization_id?: string | null
           shift_type?: string
           start_time: string
           updated_at?: string
@@ -9292,6 +9708,7 @@ export type Database = {
           end_time?: string
           id?: string
           name?: string
+          organization_id?: string | null
           shift_type?: string
           start_time?: string
           updated_at?: string
@@ -9311,6 +9728,7 @@ export type Database = {
           id: string
           message: string
           message_type: string | null
+          organization_id: string | null
           related_entity_id: string | null
           related_entity_type: string | null
           sent_at: string | null
@@ -9332,6 +9750,7 @@ export type Database = {
           id?: string
           message: string
           message_type?: string | null
+          organization_id?: string | null
           related_entity_id?: string | null
           related_entity_type?: string | null
           sent_at?: string | null
@@ -9353,6 +9772,7 @@ export type Database = {
           id?: string
           message?: string
           message_type?: string | null
+          organization_id?: string | null
           related_entity_id?: string | null
           related_entity_type?: string | null
           sent_at?: string | null
@@ -9387,6 +9807,7 @@ export type Database = {
           incident_date: string
           incident_photos: Json | null
           location_description: string
+          organization_id: string | null
           regulatory_notification_required: boolean | null
           regulatory_notification_sent: boolean | null
           resolution_notes: string | null
@@ -9423,6 +9844,7 @@ export type Database = {
           incident_date: string
           incident_photos?: Json | null
           location_description: string
+          organization_id?: string | null
           regulatory_notification_required?: boolean | null
           regulatory_notification_sent?: boolean | null
           resolution_notes?: string | null
@@ -9459,6 +9881,7 @@ export type Database = {
           incident_date?: string
           incident_photos?: Json | null
           location_description?: string
+          organization_id?: string | null
           regulatory_notification_required?: boolean | null
           regulatory_notification_sent?: boolean | null
           resolution_notes?: string | null
@@ -9594,6 +10017,7 @@ export type Database = {
           created_at: string
           id: string
           message: string
+          organization_id: string | null
           resolved_at: string | null
           vehicle_id: string
         }
@@ -9606,6 +10030,7 @@ export type Database = {
           created_at?: string
           id?: string
           message: string
+          organization_id?: string | null
           resolved_at?: string | null
           vehicle_id: string
         }
@@ -9618,6 +10043,7 @@ export type Database = {
           created_at?: string
           id?: string
           message?: string
+          organization_id?: string | null
           resolved_at?: string | null
           vehicle_id?: string
         }
@@ -9649,6 +10075,7 @@ export type Database = {
           inspected_by_clerk: string | null
           missing_items: Json
           notes: string | null
+          organization_id: string | null
           photos: string[]
           vehicle_id: string
         }
@@ -9662,6 +10089,7 @@ export type Database = {
           inspected_by_clerk?: string | null
           missing_items?: Json
           notes?: string | null
+          organization_id?: string | null
           photos?: string[]
           vehicle_id: string
         }
@@ -9675,6 +10103,7 @@ export type Database = {
           inspected_by_clerk?: string | null
           missing_items?: Json
           notes?: string | null
+          organization_id?: string | null
           photos?: string[]
           vehicle_id?: string
         }
@@ -9695,6 +10124,7 @@ export type Database = {
           lot_batch_number: string | null
           minimum_threshold: number | null
           notes: string | null
+          organization_id: string | null
           reorder_quantity: number | null
           supplier_contact: string | null
           supplier_info: Json | null
@@ -9719,6 +10149,7 @@ export type Database = {
           lot_batch_number?: string | null
           minimum_threshold?: number | null
           notes?: string | null
+          organization_id?: string | null
           reorder_quantity?: number | null
           supplier_contact?: string | null
           supplier_info?: Json | null
@@ -9743,6 +10174,7 @@ export type Database = {
           lot_batch_number?: string | null
           minimum_threshold?: number | null
           notes?: string | null
+          organization_id?: string | null
           reorder_quantity?: number | null
           supplier_contact?: string | null
           supplier_info?: Json | null
@@ -9763,6 +10195,7 @@ export type Database = {
           last_counted_at: string | null
           last_counted_by: string | null
           low_stock_threshold: number | null
+          organization_id: string | null
           quantity: number
           storage_location_id: string
           updated_at: string | null
@@ -9774,6 +10207,7 @@ export type Database = {
           last_counted_at?: string | null
           last_counted_by?: string | null
           low_stock_threshold?: number | null
+          organization_id?: string | null
           quantity?: number
           storage_location_id: string
           updated_at?: string | null
@@ -9785,6 +10219,7 @@ export type Database = {
           last_counted_at?: string | null
           last_counted_by?: string | null
           low_stock_threshold?: number | null
+          organization_id?: string | null
           quantity?: number
           storage_location_id?: string
           updated_at?: string | null
@@ -9813,6 +10248,7 @@ export type Database = {
           email_recipients: string[]
           id: string
           notification_frequency: string
+          organization_id: string | null
           overdue_threshold_days: number
           reminder_advance_days: number
           sms_notifications: boolean
@@ -9825,6 +10261,7 @@ export type Database = {
           email_recipients?: string[]
           id?: string
           notification_frequency?: string
+          organization_id?: string | null
           overdue_threshold_days?: number
           reminder_advance_days?: number
           sms_notifications?: boolean
@@ -9837,6 +10274,7 @@ export type Database = {
           email_recipients?: string[]
           id?: string
           notification_frequency?: string
+          organization_id?: string | null
           overdue_threshold_days?: number
           reminder_advance_days?: number
           sms_notifications?: boolean
@@ -9854,6 +10292,7 @@ export type Database = {
           id: string
           missing_items: Json
           notes: string | null
+          organization_id: string | null
           priority: string
           requested_by: string | null
           status: string
@@ -9869,6 +10308,7 @@ export type Database = {
           id?: string
           missing_items?: Json
           notes?: string | null
+          organization_id?: string | null
           priority?: string
           requested_by?: string | null
           status?: string
@@ -9884,6 +10324,7 @@ export type Database = {
           id?: string
           missing_items?: Json
           notes?: string | null
+          organization_id?: string | null
           priority?: string
           requested_by?: string | null
           status?: string
@@ -9922,6 +10363,7 @@ export type Database = {
           id: string
           inventory_item_id: string
           notes: string | null
+          organization_id: string | null
           quantity: number
           to_location_id: string
           transfer_reason: string | null
@@ -9934,6 +10376,7 @@ export type Database = {
           id?: string
           inventory_item_id: string
           notes?: string | null
+          organization_id?: string | null
           quantity: number
           to_location_id: string
           transfer_reason?: string | null
@@ -9946,6 +10389,7 @@ export type Database = {
           id?: string
           inventory_item_id?: string
           notes?: string | null
+          organization_id?: string | null
           quantity?: number
           to_location_id?: string
           transfer_reason?: string | null
@@ -9975,6 +10419,7 @@ export type Database = {
           location_type: string
           name: string
           notes: string | null
+          organization_id: string | null
           updated_at: string
         }
         Insert: {
@@ -9989,6 +10434,7 @@ export type Database = {
           location_type?: string
           name: string
           notes?: string | null
+          organization_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -10003,6 +10449,7 @@ export type Database = {
           location_type?: string
           name?: string
           notes?: string | null
+          organization_id?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -10016,6 +10463,7 @@ export type Database = {
           expiration_trackable: boolean | null
           id: string
           item_name: string
+          organization_id: string | null
           required_quantity: number | null
           template_id: string
           unit_cost: number | null
@@ -10028,6 +10476,7 @@ export type Database = {
           expiration_trackable?: boolean | null
           id?: string
           item_name: string
+          organization_id?: string | null
           required_quantity?: number | null
           template_id: string
           unit_cost?: number | null
@@ -10040,6 +10489,7 @@ export type Database = {
           expiration_trackable?: boolean | null
           id?: string
           item_name?: string
+          organization_id?: string | null
           required_quantity?: number | null
           template_id?: string
           unit_cost?: number | null
@@ -10062,6 +10512,7 @@ export type Database = {
           is_active: boolean | null
           is_default: boolean | null
           name: string
+          organization_id: string | null
           updated_at: string
           vehicle_types: string[] | null
         }
@@ -10072,6 +10523,7 @@ export type Database = {
           is_active?: boolean | null
           is_default?: boolean | null
           name: string
+          organization_id?: string | null
           updated_at?: string
           vehicle_types?: string[] | null
         }
@@ -10082,6 +10534,7 @@ export type Database = {
           is_active?: boolean | null
           is_default?: boolean | null
           name?: string
+          organization_id?: string | null
           updated_at?: string
           vehicle_types?: string[] | null
         }
@@ -10095,6 +10548,7 @@ export type Database = {
           incident_id: string | null
           inventory_item_id: string
           notes: string | null
+          organization_id: string | null
           quantity_used: number
           used_at: string
           used_by_clerk: string | null
@@ -10107,6 +10561,7 @@ export type Database = {
           incident_id?: string | null
           inventory_item_id: string
           notes?: string | null
+          organization_id?: string | null
           quantity_used: number
           used_at?: string
           used_by_clerk?: string | null
@@ -10119,6 +10574,7 @@ export type Database = {
           incident_id?: string | null
           inventory_item_id?: string
           notes?: string | null
+          organization_id?: string | null
           quantity_used?: number
           used_at?: string
           used_by_clerk?: string | null
@@ -10212,6 +10668,7 @@ export type Database = {
           location_type: string | null
           name: string
           notes: string | null
+          organization_id: string | null
           updated_at: string
           vehicle_id: string | null
         }
@@ -10235,6 +10692,7 @@ export type Database = {
           location_type?: string | null
           name: string
           notes?: string | null
+          organization_id?: string | null
           updated_at?: string
           vehicle_id?: string | null
         }
@@ -10258,6 +10716,7 @@ export type Database = {
           location_type?: string | null
           name?: string
           notes?: string | null
+          organization_id?: string | null
           updated_at?: string
           vehicle_id?: string | null
         }
@@ -10283,6 +10742,7 @@ export type Database = {
           created_at: string
           email: string
           id: string
+          organization_id: string | null
           subscribed: boolean
           subscription_end: string | null
           subscription_tier: string | null
@@ -10294,6 +10754,7 @@ export type Database = {
           created_at?: string
           email: string
           id?: string
+          organization_id?: string | null
           subscribed?: boolean
           subscription_end?: string | null
           subscription_tier?: string | null
@@ -10305,6 +10766,7 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+          organization_id?: string | null
           subscribed?: boolean
           subscription_end?: string | null
           subscription_tier?: string | null
@@ -10328,6 +10790,7 @@ export type Database = {
           inspector_signature: string | null
           leak_test_passed: boolean
           next_inspection_due: string | null
+          organization_id: string | null
           overall_status: string
           pressure_test_passed: boolean | null
           pressure_test_psi: number | null
@@ -10351,6 +10814,7 @@ export type Database = {
           inspector_signature?: string | null
           leak_test_passed: boolean
           next_inspection_due?: string | null
+          organization_id?: string | null
           overall_status?: string
           pressure_test_passed?: boolean | null
           pressure_test_psi?: number | null
@@ -10374,6 +10838,7 @@ export type Database = {
           inspector_signature?: string | null
           leak_test_passed?: boolean
           next_inspection_due?: string | null
+          organization_id?: string | null
           overall_status?: string
           pressure_test_passed?: boolean | null
           pressure_test_psi?: number | null
@@ -10409,6 +10874,7 @@ export type Database = {
           description: string | null
           effective_date: string | null
           id: string
+          organization_id: string | null
           state: string | null
           tax_rate: number
           updated_at: string
@@ -10421,6 +10887,7 @@ export type Database = {
           description?: string | null
           effective_date?: string | null
           id?: string
+          organization_id?: string | null
           state?: string | null
           tax_rate?: number
           updated_at?: string
@@ -10433,6 +10900,7 @@ export type Database = {
           description?: string | null
           effective_date?: string | null
           id?: string
+          organization_id?: string | null
           state?: string | null
           tax_rate?: number
           updated_at?: string
@@ -10450,6 +10918,7 @@ export type Database = {
           id: string
           is_active: boolean | null
           name: string
+          organization_id: string | null
         }
         Insert: {
           color_code?: string | null
@@ -10460,6 +10929,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name: string
+          organization_id?: string | null
         }
         Update: {
           color_code?: string | null
@@ -10470,6 +10940,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name?: string
+          organization_id?: string | null
         }
         Relationships: []
       }
@@ -10483,6 +10954,7 @@ export type Database = {
           field_type: string
           id: string
           is_required: boolean | null
+          organization_id: string | null
           template_id: string
           validation_rules: Json | null
         }
@@ -10495,6 +10967,7 @@ export type Database = {
           field_type: string
           id?: string
           is_required?: boolean | null
+          organization_id?: string | null
           template_id: string
           validation_rules?: Json | null
         }
@@ -10507,6 +10980,7 @@ export type Database = {
           field_type?: string
           id?: string
           is_required?: boolean | null
+          organization_id?: string | null
           template_id?: string
           validation_rules?: Json | null
         }
@@ -10517,6 +10991,7 @@ export type Database = {
           created_at: string
           id: string
           is_active: boolean
+          organization_id: string | null
           position: number
           section_type: string
           settings: Json
@@ -10527,6 +11002,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_active?: boolean
+          organization_id?: string | null
           position?: number
           section_type: string
           settings?: Json
@@ -10537,6 +11013,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_active?: boolean
+          organization_id?: string | null
           position?: number
           section_type?: string
           settings?: Json
@@ -10550,6 +11027,7 @@ export type Database = {
           customer_id: string | null
           id: string
           job_id: string | null
+          organization_id: string | null
           report_id: string | null
           template_id: string
           used_at: string | null
@@ -10559,6 +11037,7 @@ export type Database = {
           customer_id?: string | null
           id?: string
           job_id?: string | null
+          organization_id?: string | null
           report_id?: string | null
           template_id: string
           used_at?: string | null
@@ -10568,6 +11047,7 @@ export type Database = {
           customer_id?: string | null
           id?: string
           job_id?: string | null
+          organization_id?: string | null
           report_id?: string | null
           template_id?: string
           used_at?: string | null
@@ -10580,6 +11060,7 @@ export type Database = {
           created_at: string
           id: string
           last_used_at: string
+          organization_id: string | null
           template_id: string
           usage_count: number
         }
@@ -10587,6 +11068,7 @@ export type Database = {
           created_at?: string
           id?: string
           last_used_at?: string
+          organization_id?: string | null
           template_id: string
           usage_count?: number
         }
@@ -10594,6 +11076,7 @@ export type Database = {
           created_at?: string
           id?: string
           last_used_at?: string
+          organization_id?: string | null
           template_id?: string
           usage_count?: number
         }
@@ -10611,6 +11094,7 @@ export type Database = {
           field_definitions: Json
           id: string
           is_current: boolean
+          organization_id: string | null
           template_data: Json
           template_id: string
           usage_impact_analysis: Json | null
@@ -10627,6 +11111,7 @@ export type Database = {
           field_definitions?: Json
           id?: string
           is_current?: boolean
+          organization_id?: string | null
           template_data: Json
           template_id: string
           usage_impact_analysis?: Json | null
@@ -10643,6 +11128,7 @@ export type Database = {
           field_definitions?: Json
           id?: string
           is_current?: boolean
+          organization_id?: string | null
           template_data?: Json
           template_id?: string
           usage_impact_analysis?: Json | null
@@ -10657,6 +11143,7 @@ export type Database = {
           id: string
           is_default: boolean | null
           name: string
+          organization_id: string | null
           updated_at: string | null
         }
         Insert: {
@@ -10665,6 +11152,7 @@ export type Database = {
           id?: string
           is_default?: boolean | null
           name: string
+          organization_id?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -10673,6 +11161,7 @@ export type Database = {
           id?: string
           is_default?: boolean | null
           name?: string
+          organization_id?: string | null
           updated_at?: string | null
         }
         Relationships: []
@@ -10684,6 +11173,7 @@ export type Database = {
           frequency_months: number | null
           id: string
           is_required: boolean
+          organization_id: string | null
           role: string
           updated_at: string
         }
@@ -10693,6 +11183,7 @@ export type Database = {
           frequency_months?: number | null
           id?: string
           is_required?: boolean
+          organization_id?: string | null
           role: string
           updated_at?: string
         }
@@ -10702,6 +11193,7 @@ export type Database = {
           frequency_months?: number | null
           id?: string
           is_required?: boolean
+          organization_id?: string | null
           role?: string
           updated_at?: string
         }
@@ -10730,6 +11222,7 @@ export type Database = {
           invited_by: string
           last_name: string | null
           metadata: Json | null
+          organization_id: string | null
           phone: string | null
           role: string | null
           sent_at: string | null
@@ -10750,6 +11243,7 @@ export type Database = {
           invited_by: string
           last_name?: string | null
           metadata?: Json | null
+          organization_id?: string | null
           phone?: string | null
           role?: string | null
           sent_at?: string | null
@@ -10770,6 +11264,7 @@ export type Database = {
           invited_by?: string
           last_name?: string | null
           metadata?: Json | null
+          organization_id?: string | null
           phone?: string | null
           role?: string | null
           sent_at?: string | null
@@ -10827,6 +11322,7 @@ export type Database = {
           inspection_date: string
           inspector_name: string | null
           notes: string | null
+          organization_id: string | null
           updated_at: string
           vehicle_id: string
         }
@@ -10840,6 +11336,7 @@ export type Database = {
           inspection_date: string
           inspector_name?: string | null
           notes?: string | null
+          organization_id?: string | null
           updated_at?: string
           vehicle_id: string
         }
@@ -10853,6 +11350,7 @@ export type Database = {
           inspection_date?: string
           inspector_name?: string | null
           notes?: string | null
+          organization_id?: string | null
           updated_at?: string
           vehicle_id?: string
         }
@@ -10907,6 +11405,7 @@ export type Database = {
           created_at: string
           id: string
           is_active: boolean | null
+          organization_id: string | null
           total_volume_capacity: number | null
           total_weight_capacity: number | null
           updated_at: string
@@ -10918,6 +11417,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_active?: boolean | null
+          organization_id?: string | null
           total_volume_capacity?: number | null
           total_weight_capacity?: number | null
           updated_at?: string
@@ -10929,6 +11429,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_active?: boolean | null
+          organization_id?: string | null
           total_volume_capacity?: number | null
           total_weight_capacity?: number | null
           updated_at?: string
@@ -10946,6 +11447,7 @@ export type Database = {
           file_size: number | null
           id: string
           notes: string | null
+          organization_id: string | null
           updated_at: string
           uploaded_by: string | null
           vehicle_id: string
@@ -10959,6 +11461,7 @@ export type Database = {
           file_size?: number | null
           id?: string
           notes?: string | null
+          organization_id?: string | null
           updated_at?: string
           uploaded_by?: string | null
           vehicle_id: string
@@ -10972,6 +11475,7 @@ export type Database = {
           file_size?: number | null
           id?: string
           notes?: string | null
+          organization_id?: string | null
           updated_at?: string
           uploaded_by?: string | null
           vehicle_id?: string
@@ -11148,6 +11652,7 @@ export type Database = {
           inspector_signature: string | null
           next_inspection_due: string | null
           odometer_reading: number | null
+          organization_id: string | null
           photos: Json | null
           status: string
           updated_at: string
@@ -11165,6 +11670,7 @@ export type Database = {
           inspector_signature?: string | null
           next_inspection_due?: string | null
           odometer_reading?: number | null
+          organization_id?: string | null
           photos?: Json | null
           status?: string
           updated_at?: string
@@ -11182,6 +11688,7 @@ export type Database = {
           inspector_signature?: string | null
           next_inspection_due?: string | null
           odometer_reading?: number | null
+          organization_id?: string | null
           photos?: Json | null
           status?: string
           updated_at?: string
@@ -11221,6 +11728,7 @@ export type Database = {
           inspector_id: string
           issues_found: string | null
           notes: string | null
+          organization_id: string | null
           passed: boolean
           photos: Json | null
           signature_data: string | null
@@ -11235,6 +11743,7 @@ export type Database = {
           inspector_id: string
           issues_found?: string | null
           notes?: string | null
+          organization_id?: string | null
           passed?: boolean
           photos?: Json | null
           signature_data?: string | null
@@ -11249,6 +11758,7 @@ export type Database = {
           inspector_id?: string
           issues_found?: string | null
           notes?: string | null
+          organization_id?: string | null
           passed?: boolean
           photos?: Json | null
           signature_data?: string | null
@@ -11261,6 +11771,7 @@ export type Database = {
           created_at: string
           id: string
           max_capacity: number
+          organization_id: string | null
           product_id: string
           updated_at: string
           vehicle_id: string
@@ -11269,6 +11780,7 @@ export type Database = {
           created_at?: string
           id?: string
           max_capacity?: number
+          organization_id?: string | null
           product_id: string
           updated_at?: string
           vehicle_id: string
@@ -11277,6 +11789,7 @@ export type Database = {
           created_at?: string
           id?: string
           max_capacity?: number
+          organization_id?: string | null
           product_id?: string
           updated_at?: string
           vehicle_id?: string
@@ -11290,6 +11803,7 @@ export type Database = {
           id: string
           is_important: boolean | null
           note_text: string
+          organization_id: string | null
           tags: string[] | null
           title: string | null
           updated_at: string
@@ -11302,6 +11816,7 @@ export type Database = {
           id?: string
           is_important?: boolean | null
           note_text: string
+          organization_id?: string | null
           tags?: string[] | null
           title?: string | null
           updated_at?: string
@@ -11314,6 +11829,7 @@ export type Database = {
           id?: string
           is_important?: boolean | null
           note_text?: string
+          organization_id?: string | null
           tags?: string[] | null
           title?: string | null
           updated_at?: string
@@ -11348,6 +11864,7 @@ export type Database = {
           id: string
           issued_on: string | null
           notes: string | null
+          organization_id: string | null
           permit_number: string | null
           permit_type: string
           updated_at: string
@@ -11363,6 +11880,7 @@ export type Database = {
           id?: string
           issued_on?: string | null
           notes?: string | null
+          organization_id?: string | null
           permit_number?: string | null
           permit_type: string
           updated_at?: string
@@ -11378,6 +11896,7 @@ export type Database = {
           id?: string
           issued_on?: string | null
           notes?: string | null
+          organization_id?: string | null
           permit_number?: string | null
           permit_type?: string
           updated_at?: string
@@ -11400,6 +11919,7 @@ export type Database = {
           next_due_engine_hours: number | null
           next_due_mileage: number | null
           notes: string | null
+          organization_id: string | null
           status: string
           template_id: string
           updated_at: string
@@ -11419,6 +11939,7 @@ export type Database = {
           next_due_engine_hours?: number | null
           next_due_mileage?: number | null
           notes?: string | null
+          organization_id?: string | null
           status?: string
           template_id: string
           updated_at?: string
@@ -11438,6 +11959,7 @@ export type Database = {
           next_due_engine_hours?: number | null
           next_due_mileage?: number | null
           notes?: string | null
+          organization_id?: string | null
           status?: string
           template_id?: string
           updated_at?: string
@@ -11456,6 +11978,7 @@ export type Database = {
           is_active: boolean
           last_verified_date: string | null
           notes: string | null
+          organization_id: string | null
           quantity_on_board: number | null
           sds_document_url: string | null
           storage_location_in_vehicle: string | null
@@ -11474,6 +11997,7 @@ export type Database = {
           is_active?: boolean
           last_verified_date?: string | null
           notes?: string | null
+          organization_id?: string | null
           quantity_on_board?: number | null
           sds_document_url?: string | null
           storage_location_in_vehicle?: string | null
@@ -11492,6 +12016,7 @@ export type Database = {
           is_active?: boolean
           last_verified_date?: string | null
           notes?: string | null
+          organization_id?: string | null
           quantity_on_board?: number | null
           sds_document_url?: string | null
           storage_location_in_vehicle?: string | null
@@ -11531,6 +12056,7 @@ export type Database = {
           item_conditions: Json | null
           next_check_due: string | null
           notes: string | null
+          organization_id: string | null
           photos: string[] | null
           template_id: string | null
           updated_at: string
@@ -11551,6 +12077,7 @@ export type Database = {
           item_conditions?: Json | null
           next_check_due?: string | null
           notes?: string | null
+          organization_id?: string | null
           photos?: string[] | null
           template_id?: string | null
           updated_at?: string
@@ -11571,6 +12098,7 @@ export type Database = {
           item_conditions?: Json | null
           next_check_due?: string | null
           notes?: string | null
+          organization_id?: string | null
           photos?: string[] | null
           template_id?: string | null
           updated_at?: string
@@ -11610,6 +12138,7 @@ export type Database = {
           created_by_clerk: string | null
           id: string
           kit_identifier: string | null
+          organization_id: string | null
           required_contents: Json
           updated_at: string
           vehicle_id: string
@@ -11621,6 +12150,7 @@ export type Database = {
           created_by_clerk?: string | null
           id?: string
           kit_identifier?: string | null
+          organization_id?: string | null
           required_contents?: Json
           updated_at?: string
           vehicle_id: string
@@ -11632,6 +12162,7 @@ export type Database = {
           created_by_clerk?: string | null
           id?: string
           kit_identifier?: string | null
+          organization_id?: string | null
           required_contents?: Json
           updated_at?: string
           vehicle_id?: string
@@ -11754,6 +12285,7 @@ export type Database = {
           id: string
           metadata: Json | null
           note: string | null
+          organization_id: string | null
           to_status: string
           work_order_id: string
         }
@@ -11764,6 +12296,7 @@ export type Database = {
           id?: string
           metadata?: Json | null
           note?: string | null
+          organization_id?: string | null
           to_status: string
           work_order_id: string
         }
@@ -11774,6 +12307,7 @@ export type Database = {
           id?: string
           metadata?: Json | null
           note?: string | null
+          organization_id?: string | null
           to_status?: string
           work_order_id?: string
         }
@@ -11794,6 +12328,7 @@ export type Database = {
           id: string
           item_name: string
           notes: string | null
+          organization_id: string | null
           photos: string[] | null
           severity: string | null
           status: string | null
@@ -11806,6 +12341,7 @@ export type Database = {
           id?: string
           item_name: string
           notes?: string | null
+          organization_id?: string | null
           photos?: string[] | null
           severity?: string | null
           status?: string | null
@@ -11818,6 +12354,7 @@ export type Database = {
           id?: string
           item_name?: string
           notes?: string | null
+          organization_id?: string | null
           photos?: string[] | null
           severity?: string | null
           status?: string | null
@@ -11843,6 +12380,7 @@ export type Database = {
           id: string
           is_active: boolean | null
           notes: string | null
+          organization_id: string | null
           start_time: string | null
           technician_name: string
           updated_at: string | null
@@ -11856,6 +12394,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           notes?: string | null
+          organization_id?: string | null
           start_time?: string | null
           technician_name: string
           updated_at?: string | null
@@ -11869,6 +12408,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           notes?: string | null
+          organization_id?: string | null
           start_time?: string | null
           technician_name?: string
           updated_at?: string | null
@@ -11890,6 +12430,7 @@ export type Database = {
           hours: number | null
           id: string
           line_type: string
+          organization_id: string | null
           qty: number | null
           sku: string | null
           total: number | null
@@ -11901,6 +12442,7 @@ export type Database = {
           hours?: number | null
           id?: string
           line_type: string
+          organization_id?: string | null
           qty?: number | null
           sku?: string | null
           total?: number | null
@@ -11912,6 +12454,7 @@ export type Database = {
           hours?: number | null
           id?: string
           line_type?: string
+          organization_id?: string | null
           qty?: number | null
           sku?: string | null
           total?: number | null
@@ -11934,6 +12477,7 @@ export type Database = {
           created_by: string | null
           id: string
           note: string
+          organization_id: string | null
           work_order_id: string
         }
         Insert: {
@@ -11941,6 +12485,7 @@ export type Database = {
           created_by?: string | null
           id?: string
           note: string
+          organization_id?: string | null
           work_order_id: string
         }
         Update: {
@@ -11948,6 +12493,7 @@ export type Database = {
           created_by?: string | null
           id?: string
           note?: string
+          organization_id?: string | null
           work_order_id?: string
         }
         Relationships: [
@@ -11966,6 +12512,7 @@ export type Database = {
           created_at: string | null
           id: string
           notes: string | null
+          organization_id: string | null
           part_name: string
           quantity: number
           source: string | null
@@ -11978,6 +12525,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           notes?: string | null
+          organization_id?: string | null
           part_name: string
           quantity?: number
           source?: string | null
@@ -11990,6 +12538,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           notes?: string | null
+          organization_id?: string | null
           part_name?: string
           quantity?: number
           source?: string | null
@@ -12034,6 +12583,7 @@ export type Database = {
           file_size: number | null
           id: string
           mime_type: string | null
+          organization_id: string | null
           photo_type: string
           storage_path: string
           uploaded_at: string | null
@@ -12045,6 +12595,7 @@ export type Database = {
           file_size?: number | null
           id?: string
           mime_type?: string | null
+          organization_id?: string | null
           photo_type: string
           storage_path: string
           uploaded_at?: string | null
@@ -12056,6 +12607,7 @@ export type Database = {
           file_size?: number | null
           id?: string
           mime_type?: string | null
+          organization_id?: string | null
           photo_type?: string
           storage_path?: string
           uploaded_at?: string | null
@@ -12077,6 +12629,7 @@ export type Database = {
           created_at: string | null
           id: string
           notes: string | null
+          organization_id: string | null
           signature_data: string
           signature_type: string
           signed_at: string | null
@@ -12087,6 +12640,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           notes?: string | null
+          organization_id?: string | null
           signature_data: string
           signature_type: string
           signed_at?: string | null
@@ -12097,6 +12651,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           notes?: string | null
+          organization_id?: string | null
           signature_data?: string
           signature_type?: string
           signed_at?: string | null
