@@ -179,6 +179,7 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
                 userButtonPopoverCard: "shadow-lg"
               }
             }}
+            afterSignOutUrl="https://www.portaprosoftware.com"
           />
           {state === "expanded" && (
             <div className="text-sm text-gray-600 truncate">

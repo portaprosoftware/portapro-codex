@@ -64,7 +64,10 @@ export const DriverProfilePage: React.FC = () => {
       <Button 
         variant="outline" 
         className="w-full"
-        onClick={() => signOut()}
+        onClick={async () => {
+          await signOut();
+          window.location.href = 'https://www.portaprosoftware.com';
+        }}
       >
         <LogOut className="w-4 h-4 mr-2" />
         Sign Out

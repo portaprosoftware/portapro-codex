@@ -39,7 +39,7 @@ const Sidebar = () => {
 
   const handleSignOut = async () => {
     await signOut();
-    navigate("/sign-in");
+    window.location.href = 'https://www.portaprosoftware.com';
   };
 
   const menuItems = [
@@ -178,6 +178,7 @@ const Sidebar = () => {
                   avatarBox: "w-8 h-8"
                 }
               }}
+              afterSignOutUrl="https://www.portaprosoftware.com"
             />
             <div className="min-w-0 flex-1">
               <p className="text-sm font-medium font-inter" style={{ color: '#09090B' }}>

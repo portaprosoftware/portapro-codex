@@ -120,7 +120,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                 userButtonPopoverCard: "shadow-lg"
               }
             }}
-            afterSignOutUrl="/"
+            afterSignOutUrl="https://www.portaprosoftware.com"
           />
         </div>
       </header>

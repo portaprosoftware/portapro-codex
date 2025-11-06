@@ -81,6 +81,7 @@ export const DriverHeader: React.FC = () => {
                   avatarBox: "w-10 h-10"
                 }
               }}
+              afterSignOutUrl="https://www.portaprosoftware.com"
             />
           </div>
         </div>
