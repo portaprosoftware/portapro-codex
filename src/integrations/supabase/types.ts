@@ -7046,10 +7046,14 @@ export type Database = {
           created_at: string
           env: string | null
           id: string
+          is_active: boolean | null
           metadata: Json
+          name: string | null
           org_name: string | null
           org_slug: string | null
           organization_id: string | null
+          settings: Json | null
+          subdomain: string | null
           updated_at: string
         }
         Insert: {
@@ -7057,10 +7061,14 @@ export type Database = {
           created_at?: string
           env?: string | null
           id?: string
+          is_active?: boolean | null
           metadata?: Json
+          name?: string | null
           org_name?: string | null
           org_slug?: string | null
           organization_id?: string | null
+          settings?: Json | null
+          subdomain?: string | null
           updated_at?: string
         }
         Update: {
@@ -7068,10 +7076,14 @@ export type Database = {
           created_at?: string
           env?: string | null
           id?: string
+          is_active?: boolean | null
           metadata?: Json
+          name?: string | null
           org_name?: string | null
           org_slug?: string | null
           organization_id?: string | null
+          settings?: Json | null
+          subdomain?: string | null
           updated_at?: string
         }
         Relationships: []
