@@ -39,16 +39,7 @@ const initDB = async (): Promise<IDBPDatabase<TemplateDB>> => {
 export const useTemplates = () => {
   const { user } = useUser();
   const queryClient = useQueryClient();
-  const { orgId, source } = useOrganizationId();
-  const fallbackWarningShown = useRef(false);
-
-  // Show fallback warning once per session
-  useEffect(() => {
-    if (source && source !== 'clerk' && !fallbackWarningShown.current) {
-      toast.warning('Using fallback organization ID. Set Clerk publicMetadata.organizationId for multi-tenant setup.');
-      fallbackWarningShown.current = true;
-    }
-  }, [source]);
+  const { orgId } = useOrganizationId();
 
   const { data: templates, isLoading } = useQuery({
     queryKey: ['service-report-templates', orgId],
