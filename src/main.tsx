@@ -10,6 +10,7 @@ import { clearClerkCache } from "./utils/authCleanup";
 import { clearAllCaches } from "./utils/devUtils";
 import { Toaster } from "@/components/ui/sonner";
 import { env } from "./env.client";
+import { OrganizationProvider } from "./contexts/OrganizationContext";
 
 // -----------------------------------------------------------------------------
 // Environment (Vite): read ONLY from env; no host-based dev/prod switching
@@ -101,8 +102,10 @@ createRoot(document.getElementById("root")!).render(
         signInFallbackRedirectUrl="/"
         signUpFallbackRedirectUrl="/"
       >
-        <App />
-        <Toaster />
+        <OrganizationProvider>
+          <App />
+          <Toaster />
+        </OrganizationProvider>
       </ClerkProvider>
     </QueryClientProvider>
   </React.StrictMode>

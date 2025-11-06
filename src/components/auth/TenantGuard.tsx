@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useUser, useOrganizationList, useOrganization } from '@clerk/clerk-react';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useSubdomainOrg } from '@/hooks/useSubdomainOrg';
+import { useOrganizationContext } from '@/contexts/OrganizationContext';
 
 interface TenantGuardProps {
   children: React.ReactNode;
@@ -35,7 +35,7 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
   const [isChecking, setIsChecking] = useState(true);
   const [hasChecked, setHasChecked] = useState(false);
 
-  // Use the subdomain/org lookup hook
+  // Use organization context (provides subdomain/org data globally)
   const { 
     subdomain, 
     organization: orgData, 
@@ -43,7 +43,7 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
     error: orgError,
     isLocalhost,
     isMainDomain 
-  } = useSubdomainOrg();
+  } = useOrganizationContext();
 
   // CRITICAL: Skip tenant check on public routes to prevent redirect loops
   const currentPath = window.location.pathname;
