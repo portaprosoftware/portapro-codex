@@ -1,83 +1,65 @@
 /**
- * Client-side environment variables (browser-safe, VITE_ prefixed)
- * Throws at runtime if required keys are missing.
+ * Client-side environment variables validation
+ * All client variables MUST use VITE_ prefix to be exposed to the browser
  */
 
-const requiredClientEnv = [
+const required = [
+  'VITE_APP_URL',
   'VITE_CLERK_PUBLISHABLE_KEY',
   'VITE_SUPABASE_URL',
   'VITE_SUPABASE_PUBLISHABLE_KEY',
 ] as const;
 
-const optionalClientEnv = [
-  'VITE_MAPBOX_TOKEN',
-  'VITE_APP_URL',
-  'VITE_POSTHOG_KEY',
-  'VITE_SENTRY_DSN',
-  'VITE_GA_MEASUREMENT_ID',
-  'VITE_ALLOWED_CLERK_ORG_SLUGS',
-  'VITE_VAPID_PUBLIC_KEY',
-] as const;
+type RequiredEnvVar = typeof required[number];
 
-type RequiredClientEnv = (typeof requiredClientEnv)[number];
-type OptionalClientEnv = (typeof optionalClientEnv)[number];
+// Validate and export environment variables
+const validateEnv = (): Record<RequiredEnvVar, string> => {
+  const missing: string[] = [];
+  const envVars: Partial<Record<RequiredEnvVar, string>> = {};
 
-// Validate required environment variables
-const missing = requiredClientEnv.filter(key => !import.meta.env[key]);
-if (missing.length > 0) {
-  throw new Error(
-    `❌ Missing required client environment variables: ${missing.join(', ')}\n` +
-    `Set these in your Vercel project settings or local .env file.`
-  );
-}
+  for (const key of required) {
+    const value = import.meta.env[key];
+    if (!value) {
+      missing.push(key);
+    } else {
+      envVars[key] = value;
+    }
+  }
 
-// Export typed environment object
+  if (missing.length > 0) {
+    throw new Error(
+      `Missing required client environment variables: ${missing.join(', ')}\n` +
+      'Please check your .env file and ensure all VITE_* variables are set.'
+    );
+  }
+
+  return envVars as Record<RequiredEnvVar, string>;
+};
+
 export const env = {
-  // Required
-  CLERK_PUBLISHABLE_KEY: import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string,
-  SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL as string,
-  SUPABASE_PUBLISHABLE_KEY: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string,
-  
-  // Optional
-  MAPBOX_TOKEN: import.meta.env.VITE_MAPBOX_TOKEN as string | undefined,
-  APP_URL: import.meta.env.VITE_APP_URL as string | undefined,
-  POSTHOG_KEY: import.meta.env.VITE_POSTHOG_KEY as string | undefined,
-  SENTRY_DSN: import.meta.env.VITE_SENTRY_DSN as string | undefined,
-  GA_MEASUREMENT_ID: import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined,
-  ALLOWED_CLERK_ORG_SLUGS: import.meta.env.VITE_ALLOWED_CLERK_ORG_SLUGS as string | undefined,
-  VAPID_PUBLIC_KEY: import.meta.env.VITE_VAPID_PUBLIC_KEY as string | undefined,
-  
-  // Special flags
+  ...validateEnv(),
+  // Optional variables
+  MAPBOX_TOKEN: import.meta.env.VITE_MAPBOX_TOKEN || '',
+  POSTHOG_KEY: import.meta.env.VITE_POSTHOG_KEY || '',
+  SENTRY_DSN: import.meta.env.VITE_SENTRY_DSN || '',
+  GA_MEASUREMENT_ID: import.meta.env.VITE_GA_MEASUREMENT_ID || '',
+  ALLOWED_CLERK_ORG_SLUGS: import.meta.env.VITE_ALLOWED_CLERK_ORG_SLUGS || '',
+  // Environment mode helpers
   isDev: import.meta.env.DEV,
   isProd: import.meta.env.PROD,
-} as const;
+};
 
-// Helper to get Mapbox token with fallback to edge function
-export async function getMapboxToken(): Promise<string> {
-  if (env.MAPBOX_TOKEN) {
-    return env.MAPBOX_TOKEN;
+// Convenience exports for backward compatibility
+export const SUPABASE_URL = env.VITE_SUPABASE_URL;
+export const SUPABASE_PUBLISHABLE_KEY = env.VITE_SUPABASE_PUBLISHABLE_KEY;
+export const CLERK_PUBLISHABLE_KEY = env.VITE_CLERK_PUBLISHABLE_KEY;
+export const APP_URL = env.VITE_APP_URL;
+
+// Mapbox token helper
+export const getMapboxToken = (): string => {
+  const token = env.MAPBOX_TOKEN;
+  if (!token) {
+    console.warn('VITE_MAPBOX_TOKEN not set - map features may be limited');
   }
-  
-  // Fallback: fetch from edge function
-  try {
-    const response = await fetch(
-      `${env.SUPABASE_URL}/functions/v1/get-mapbox-token`,
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${env.SUPABASE_PUBLISHABLE_KEY}`,
-        },
-      }
-    );
-    
-    if (!response.ok) {
-      throw new Error(`Failed to fetch Mapbox token: ${response.statusText}`);
-    }
-    
-    const data = await response.json();
-    return data.token;
-  } catch (error) {
-    console.error('Failed to get Mapbox token:', error);
-    throw new Error('Mapbox token not configured. Set VITE_MAPBOX_TOKEN or configure edge function.');
-  }
-}
+  return token;
+};

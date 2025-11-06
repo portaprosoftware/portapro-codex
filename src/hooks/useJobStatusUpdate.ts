@@ -2,6 +2,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useOfflineSync } from "./useOfflineSync";
+import { useOrganizationId } from "./useOrganizationId";
+import { createLogger } from "@/lib/logger";
 
 interface JobStatusUpdateData {
   jobId: string;
@@ -16,9 +18,16 @@ export function useJobStatusUpdate() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const { addToQueue, isOnline } = useOfflineSync();
+  const { orgId } = useOrganizationId();
+  const logger = createLogger('useJobStatusUpdate', orgId);
 
   return useMutation({
     mutationFn: async (data: JobStatusUpdateData) => {
+      if (!orgId) {
+        logger.error('Organization ID required to update job status', null, { jobId: data.jobId });
+        throw new Error('Organization ID required');
+      }
+
       if (!isOnline) {
         addToQueue({
           type: 'status_update',
@@ -36,7 +45,10 @@ export function useJobStatusUpdate() {
         })
         .eq('id', data.jobId);
 
-      if (error) throw error;
+      if (error) {
+        logger.error('Failed to update job status', error, { jobId: data.jobId, status: data.status });
+        throw error;
+      }
 
       // Log the status change with location if provided
       if (data.latitude && data.longitude) {
@@ -47,7 +59,8 @@ export function useJobStatusUpdate() {
             new_status_value: data.status,
             lat: data.latitude,
             lng: data.longitude,
-            change_notes: data.notes
+            change_notes: data.notes,
+            org_id: orgId
           });
       }
 

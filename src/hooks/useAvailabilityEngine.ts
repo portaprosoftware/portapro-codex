@@ -1,5 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useOrganizationId } from './useOrganizationId';
+import { createLogger } from '@/lib/logger';
 
 export interface AvailabilityUnit {
   item_id: string;
@@ -54,6 +56,8 @@ export function useAvailabilityEngine(
   endDate?: string | null,
   filterAttributes?: Record<string, any> | null
 ) {
+  const { orgId } = useOrganizationId();
+  const logger = createLogger('useAvailabilityEngine', orgId);
   const start = startDate || undefined;
   const end = endDate || startDate || undefined;
   const filters = filterAttributes && Object.values(filterAttributes).some((v) => v !== undefined && v !== '' && v !== null)
@@ -61,18 +65,27 @@ export function useAvailabilityEngine(
     : null;
 
   return useQuery<AvailabilityResult>({
-    queryKey: ['availability-enhanced', productId, start, end, filters],
+    queryKey: ['availability-enhanced', orgId, productId, start, end, filters],
     queryFn: async () => {
       if (!productId || !start) return { available: 0, total: 0, method: 'none', individual_items: [] };
+      
+      if (!orgId) {
+        logger.error('Organization ID required for availability check', null, { productId, start, end });
+        throw new Error('Organization ID required');
+      }
       
       const { data, error } = await supabase.rpc('get_product_availability_enhanced', {
         product_type_id: productId,
         start_date: start,
         end_date: end || start,
         filter_attributes: filters,
+        org_id: orgId,
       });
       
-      if (error) throw error;
+      if (error) {
+        logger.error('Failed to fetch product availability', error, { productId, start, end });
+        throw error;
+      }
       const avail: any = data || {};
       
       return {
@@ -84,6 +97,6 @@ export function useAvailabilityEngine(
         summary: typeof avail.summary === 'object' && avail.summary !== null ? (avail.summary as AvailabilitySummary) : undefined,
       };
     },
-    enabled: !!productId && !!start,
+    enabled: !!productId && !!start && !!orgId,
   });
 }
