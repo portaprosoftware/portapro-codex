@@ -13904,6 +13904,11 @@ export type Database = {
         | "driver"
         | "viewer"
         | "dispatcher"
+        | "org:owner"
+        | "org:admin"
+        | "org:dispatcher"
+        | "org:driver"
+        | "org:viewer"
       consumable_category:
         | "sanitizer"
         | "deodorizer"
@@ -14109,6 +14114,11 @@ export const Constants = {
         "driver",
         "viewer",
         "dispatcher",
+        "org:owner",
+        "org:admin",
+        "org:dispatcher",
+        "org:driver",
+        "org:viewer",
       ],
       consumable_category: [
         "sanitizer",
