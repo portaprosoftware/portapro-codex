@@ -14,7 +14,7 @@ import { env } from "./env.client";
 // -----------------------------------------------------------------------------
 // Environment (Vite): read ONLY from env; no host-based dev/prod switching
 // -----------------------------------------------------------------------------
-const CLERK_PUBLISHABLE_KEY = env.CLERK_PUBLISHABLE_KEY;
+const CLERK_PUBLISHABLE_KEY = env.VITE_CLERK_PUBLISHABLE_KEY;
 
 // Gentle guard to avoid accidentally shipping a test key
 if (CLERK_PUBLISHABLE_KEY.startsWith("pk_test_")) {

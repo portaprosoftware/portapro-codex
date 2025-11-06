@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { loadMapboxLibs } from '@/lib/loaders/map';
-import { env } from '@/env.client';
+import { env, SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from '@/env.client';
 import { useJobs } from '@/hooks/useJobs';
 import { JobDetailModal } from '@/components/jobs/JobDetailModal';
 import { Button } from '@/components/ui/button';
@@ -158,10 +158,10 @@ export function SimpleJobsMapView({
   useEffect(() => {
     const getToken = async () => {
       try {
-        const response = await fetch(`${env.SUPABASE_URL}/functions/v1/get-mapbox-token`, {
+        const response = await fetch(`${SUPABASE_URL}/functions/v1/get-mapbox-token`, {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${env.SUPABASE_PUBLISHABLE_KEY}`
+            'Authorization': `Bearer ${SUPABASE_PUBLISHABLE_KEY}`
           }
         });
         const data = await response.json();

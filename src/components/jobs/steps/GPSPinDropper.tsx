@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { loadMapboxLibs } from '@/lib/loaders/map';
-import { env } from '@/env.client';
+import { env, SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from '@/env.client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -133,8 +133,8 @@ export function GPSPinDropper({ pins, onPinsChange, className }: GPSPinDropperPr
 
     try {
       const token = env.MAPBOX_TOKEN || await (async () => {
-        const response = await fetch(`${env.SUPABASE_URL}/functions/v1/get-mapbox-token`, {
-          headers: { 'Authorization': `Bearer ${env.SUPABASE_PUBLISHABLE_KEY}` }
+        const response = await fetch(`${SUPABASE_URL}/functions/v1/get-mapbox-token`, {
+          headers: { 'Authorization': `Bearer ${SUPABASE_PUBLISHABLE_KEY}` }
         });
         const data = await response.json();
         return data.token;
