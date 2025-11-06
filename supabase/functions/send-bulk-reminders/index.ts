@@ -12,6 +12,7 @@ interface BulkReminderRequest {
   message: string;
   type: 'manual' | 'automated';
   reminderType?: 'license' | 'medical' | 'training' | 'general';
+  organizationId: string; // Required for multi-tenant isolation
 }
 
 const supabase = createClient(
@@ -27,11 +28,22 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { driverIds, message, type, reminderType = 'general' }: BulkReminderRequest = await req.json();
+    const { driverIds, message, type, reminderType = 'general', organizationId }: BulkReminderRequest = await req.json();
 
-    console.log(`Processing bulk reminder for ${driverIds.length} drivers`);
+    // Validate organization_id is provided
+    if (!organizationId) {
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'organizationId is required for multi-tenant data isolation'
+      }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      });
+    }
 
-    // Fetch driver information
+    console.log(`Processing bulk reminder for ${driverIds.length} drivers in org: ${organizationId}`);
+
+    // Fetch driver information - filter by organization_id for security
     const { data: drivers, error: driversError } = await supabase
       .from('profiles')
       .select(`
@@ -39,9 +51,11 @@ const handler = async (req: Request): Promise<Response> => {
         email,
         first_name,
         last_name,
-        phone
+        phone,
+        organization_id
       `)
-      .in('id', driverIds);
+      .in('id', driverIds)
+      .eq('organization_id', organizationId); // Critical: ensure drivers belong to this org
 
     if (driversError) {
       throw new Error(`Failed to fetch drivers: ${driversError.message}`);
@@ -116,17 +130,18 @@ const handler = async (req: Request): Promise<Response> => {
           throw new Error(`Email failed: ${emailResponse.error.message}`);
         }
 
-        // Log the communication
+        // Log the communication with organization_id
         await supabase.from('customer_communications').insert({
           customer_id: driver.id,
           type: 'email',
           subject: `${reminderType.charAt(0).toUpperCase() + reminderType.slice(1)} Reminder`,
           content: personalizedMessage,
           email_address: driver.email,
-          status: 'sent'
+          status: 'sent',
+          organization_id: organizationId
         });
 
-        // Log driver activity
+        // Log driver activity with organization_id
         await supabase.from('driver_activity_log').insert({
           driver_id: driver.id,
           action_type: 'reminder_sent',
@@ -134,7 +149,8 @@ const handler = async (req: Request): Promise<Response> => {
             reminder_type: reminderType,
             message_type: type,
             sent_via: 'email'
-          }
+          },
+          organization_id: organizationId
         });
 
         results.successful++;

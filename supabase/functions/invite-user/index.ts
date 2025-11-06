@@ -161,7 +161,7 @@ const handler = async (req: Request): Promise<Response> => {
     const clerkInvitation = await clerkResponse.json();
     console.log('Clerk invitation created:', clerkInvitation.id);
 
-    // Store invitation record in Supabase for tracking
+    // Store invitation record in Supabase for tracking with organization_id
     console.log('Creating invitation record in Supabase...');
     const { data: invitation, error: invitationError } = await supabase
       .from('user_invitations')
@@ -177,6 +177,7 @@ const handler = async (req: Request): Promise<Response> => {
         clerk_user_id: null, // Will be set when user accepts
         sent_at: new Date().toISOString(),
         invitation_type: isOrgInvitation ? 'clerk_org_invitation' : 'clerk_invitation',
+        organization_id: organizationId || null, // Include organization_id for multi-tenant isolation
         metadata: {
           created_via: 'admin_invite',
           clerk_invitation_id: clerkInvitation.id,
