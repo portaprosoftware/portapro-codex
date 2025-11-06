@@ -25,6 +25,7 @@ import { MultiSelectVehicleFilter } from '../MultiSelectVehicleFilter';
 import { MultiSelectDriverFilter } from '../MultiSelectDriverFilter';
 import { useUnifiedFuelConsumption, FuelSourceType } from '@/hooks/useUnifiedFuelConsumption';
 import { useFuelManagementSettings } from '@/hooks/useFuelManagementSettings';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 interface Vehicle {
   id: string;
@@ -81,6 +82,7 @@ export const FuelAllLogsTab: React.FC<{
   showExportModal: externalShowExportModal,
   setShowExportModal: externalSetShowExportModal 
 }) => {
+  const { orgId } = useOrganizationId();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedVehicles, setSelectedVehicles] = useState<Vehicle[]>([]);
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
@@ -218,7 +220,7 @@ export const FuelAllLogsTab: React.FC<{
       // Try Edge Function first, then fallback to direct delete
       try {
         const { error: fnError } = await supabase.functions.invoke('fleet-writes', {
-          body: { action: 'delete_fuel_log', payload: { id } }
+          body: { action: 'delete_fuel_log', payload: { id, organizationId: orgId } }
         });
         if (fnError) throw fnError;
         return;

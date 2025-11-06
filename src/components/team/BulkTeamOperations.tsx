@@ -115,7 +115,7 @@ export function BulkTeamOperations() {
       
       const { data, error } = await supabase.functions.invoke('send-bulk-reminders', {
         body: { 
-          memberIds, 
+          driverIds: memberIds, // Send as driverIds for compatibility
           message, 
           type: 'manual',
           organizationId: orgId

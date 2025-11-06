@@ -164,7 +164,8 @@ export const EditFuelLogModal: React.FC<EditFuelLogModalProps> = ({
               receipt_image: data.receipt_image,
               notes: data.notes,
               mpg: mpg,
-              cost_per_mile: costPerMile
+              cost_per_mile: costPerMile,
+              organizationId: data.organizationId
             }
           }
         });

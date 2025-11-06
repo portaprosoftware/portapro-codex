@@ -229,7 +229,8 @@ export const AddFuelLogModal: React.FC<AddFuelLogModalProps> = ({
               notes: data.notes,
               fuel_source: data.fuel_source,
               mpg: mpg,
-              cost_per_mile: costPerMile
+              cost_per_mile: costPerMile,
+              organizationId: data.organizationId
             }
           }
         });

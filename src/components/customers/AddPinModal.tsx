@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { MapPin, Satellite, Map } from 'lucide-react';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 interface AddPinModalProps {
   isOpen: boolean;
@@ -17,6 +18,7 @@ interface AddPinModalProps {
 }
 
 export function AddPinModal({ isOpen, onClose, serviceLocation, onPinAdded }: AddPinModalProps) {
+  const { orgId } = useOrganizationId();
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<any | null>(null);
   const currentMarker = useRef<any | null>(null);
@@ -53,7 +55,8 @@ export function AddPinModal({ isOpen, onClose, serviceLocation, onPinAdded }: Ad
         const { data } = await supabase.functions.invoke('mapbox-geocoding', {
           body: { 
             query: fullAddress,
-            limit: 1 
+            limit: 1,
+            organizationId: orgId
           }
         });
         
