@@ -5,6 +5,7 @@ import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useOrganizationContext } from '@/contexts/OrganizationContext';
 import { useClerkProfileSync } from '@/hooks/useClerkProfileSync';
+import { Button } from '@/components/ui/button';
 
 interface TenantGuardProps {
   children: React.ReactNode;
@@ -138,7 +139,23 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
           subdomain
         });
         
-        // Show specific error message before redirect
+        // If user has other organizations, redirect to their first org's subdomain
+        if (memberships.length > 0) {
+          const firstOrg = memberships[0].organization;
+          console.info('🔄 Redirecting user to their organization:', firstOrg.slug);
+          toast.info('Redirecting...', {
+            description: `Taking you to ${firstOrg.name}`,
+            duration: 3000,
+          });
+          setTimeout(() => {
+            window.location.href = `https://${firstOrg.slug}.portaprosoftware.com/dashboard`;
+          }, 1000);
+          setIsChecking(false);
+          setHasChecked(true);
+          return;
+        }
+        
+        // User has no organizations - show access denied screen
         toast.error(`Access Denied: ${orgData.name}`, {
           description: `You don't have permission to access ${orgData.name}. Contact your administrator.`,
           duration: 10000,
