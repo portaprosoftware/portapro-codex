@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { UnifiedFuelFilters } from './useUnifiedFuelConsumption';
+import { useOrganizationId } from './useOrganizationId';
 
 export interface VendorPerformance {
   vendor_name: string;
@@ -46,12 +47,17 @@ export interface SourceComparison {
 }
 
 export const useVendorPerformance = (filters?: UnifiedFuelFilters) => {
+  const { orgId } = useOrganizationId();
+
   return useQuery({
-    queryKey: ['vendor-performance', filters],
+    queryKey: ['vendor-performance', orgId, filters],
     queryFn: async () => {
+      if (!orgId) throw new Error('Organization ID required');
+
       let query = supabase
-        .from('unified_fuel_consumption')
-        .select('source_name, gallons, cost, cost_per_gallon, fuel_date, source_type');
+        .from('unified_fuel_consumption' as any)
+        .select('source_name, gallons, cost, cost_per_gallon, fuel_date, source_type')
+        .eq('organization_id', orgId);
 
       if (filters?.dateFrom) {
         query = query.gte('fuel_date', filters.dateFrom.toISOString().split('T')[0]);
@@ -66,7 +72,7 @@ export const useVendorPerformance = (filters?: UnifiedFuelFilters) => {
       // Group by vendor/source
       const vendorMap = new Map<string, VendorPerformance>();
       
-      data?.forEach(log => {
+      (data as any)?.forEach((log: any) => {
         const key = log.source_name;
         if (!vendorMap.has(key)) {
           vendorMap.set(key, {
@@ -95,18 +101,24 @@ export const useVendorPerformance = (filters?: UnifiedFuelFilters) => {
       }));
 
       return vendors.sort((a, b) => b.total_cost - a.total_cost);
-    }
+    },
+    enabled: !!orgId,
   });
 };
 
 export const useCostPerMile = (filters?: UnifiedFuelFilters) => {
+  const { orgId } = useOrganizationId();
+
   return useQuery({
-    queryKey: ['cost-per-mile', filters],
+    queryKey: ['cost-per-mile', orgId, filters],
     queryFn: async () => {
+      if (!orgId) throw new Error('Organization ID required');
+
       // Get fuel data
       let fuelQuery = supabase
-        .from('unified_fuel_consumption')
-        .select('vehicle_id, cost, fuel_date');
+        .from('unified_fuel_consumption' as any)
+        .select('vehicle_id, cost, fuel_date')
+        .eq('organization_id', orgId);
 
       if (filters?.dateFrom) {
         fuelQuery = fuelQuery.gte('fuel_date', filters.dateFrom.toISOString().split('T')[0]);
@@ -117,11 +129,13 @@ export const useCostPerMile = (filters?: UnifiedFuelFilters) => {
 
       const { data: fuelData, error: fuelError } = await fuelQuery;
       if (fuelError) throw fuelError;
+      const typedFuelData = fuelData as any[];
 
       // Get odometer data from fuel_logs to calculate miles
       let odometerQuery = supabase
         .from('fuel_logs')
         .select('vehicle_id, odometer_reading, log_date')
+        .eq('organization_id', orgId)
         .not('odometer_reading', 'is', null)
         .order('log_date', { ascending: true });
 
@@ -138,7 +152,8 @@ export const useCostPerMile = (filters?: UnifiedFuelFilters) => {
       // Get vehicle info
       const { data: vehicles } = await supabase
         .from('vehicles')
-        .select('id, license_plate');
+        .select('id, license_plate')
+        .eq('organization_id', orgId);
 
       const vehicleMap = new Map(vehicles?.map(v => [v.id, v.license_plate]) || []);
 
@@ -167,7 +182,7 @@ export const useCostPerMile = (filters?: UnifiedFuelFilters) => {
 
       // Calculate costs per vehicle
       const vehicleCosts = new Map<string, number>();
-      fuelData?.forEach(log => {
+      typedFuelData?.forEach((log: any) => {
         if (!log.vehicle_id) return;
         vehicleCosts.set(
           log.vehicle_id,
@@ -197,18 +212,24 @@ export const useCostPerMile = (filters?: UnifiedFuelFilters) => {
         cost_per_mile: totalMiles > 0 ? totalCost / totalMiles : 0,
         by_vehicle: byVehicle
       };
-    }
+    },
+    enabled: !!orgId,
   });
 };
 
 export const useFleetMPG = (filters?: UnifiedFuelFilters) => {
+  const { orgId } = useOrganizationId();
+
   return useQuery({
-    queryKey: ['fleet-mpg', filters],
+    queryKey: ['fleet-mpg', orgId, filters],
     queryFn: async () => {
+      if (!orgId) throw new Error('Organization ID required');
+
       // Get fuel consumption data
       let fuelQuery = supabase
-        .from('unified_fuel_consumption')
-        .select('vehicle_id, gallons, fuel_date');
+        .from('unified_fuel_consumption' as any)
+        .select('vehicle_id, gallons, fuel_date')
+        .eq('organization_id', orgId);
 
       if (filters?.dateFrom) {
         fuelQuery = fuelQuery.gte('fuel_date', filters.dateFrom.toISOString().split('T')[0]);
@@ -219,11 +240,13 @@ export const useFleetMPG = (filters?: UnifiedFuelFilters) => {
 
       const { data: fuelData, error: fuelError } = await fuelQuery;
       if (fuelError) throw fuelError;
+      const typedFuelData = fuelData as any[];
 
       // Get odometer readings
       let odometerQuery = supabase
         .from('fuel_logs')
         .select('vehicle_id, odometer_reading, log_date')
+        .eq('organization_id', orgId)
         .not('odometer_reading', 'is', null)
         .order('log_date', { ascending: true });
 
@@ -239,7 +262,8 @@ export const useFleetMPG = (filters?: UnifiedFuelFilters) => {
 
       const { data: vehicles } = await supabase
         .from('vehicles')
-        .select('id, license_plate');
+        .select('id, license_plate')
+        .eq('organization_id', orgId);
 
       const vehicleMap = new Map(vehicles?.map(v => [v.id, v.license_plate]) || []);
 
@@ -268,7 +292,7 @@ export const useFleetMPG = (filters?: UnifiedFuelFilters) => {
 
       // Calculate gallons per vehicle
       const vehicleGallons = new Map<string, number>();
-      fuelData?.forEach(log => {
+      typedFuelData?.forEach((log: any) => {
         if (!log.vehicle_id) return;
         vehicleGallons.set(
           log.vehicle_id,
@@ -298,17 +322,23 @@ export const useFleetMPG = (filters?: UnifiedFuelFilters) => {
         total_miles: totalMiles,
         by_vehicle: byVehicle
       };
-    }
+    },
+    enabled: !!orgId,
   });
 };
 
 export const useSourceComparison = (filters?: UnifiedFuelFilters) => {
+  const { orgId } = useOrganizationId();
+
   return useQuery({
-    queryKey: ['source-comparison', filters],
+    queryKey: ['source-comparison', orgId, filters],
     queryFn: async () => {
+      if (!orgId) throw new Error('Organization ID required');
+
       let query = supabase
-        .from('unified_fuel_consumption')
-        .select('source_type, gallons, cost, cost_per_gallon');
+        .from('unified_fuel_consumption' as any)
+        .select('source_type, gallons, cost, cost_per_gallon')
+        .eq('organization_id', orgId);
 
       if (filters?.dateFrom) {
         query = query.gte('fuel_date', filters.dateFrom.toISOString().split('T')[0]);
@@ -322,7 +352,7 @@ export const useSourceComparison = (filters?: UnifiedFuelFilters) => {
 
       const sourceMap = new Map<string, SourceComparison>();
 
-      data?.forEach(log => {
+      (data as any)?.forEach((log: any) => {
         const key = log.source_type;
         if (!sourceMap.has(key)) {
           sourceMap.set(key, {
@@ -344,6 +374,7 @@ export const useSourceComparison = (filters?: UnifiedFuelFilters) => {
         ...s,
         avg_cost_per_gallon: s.total_gallons > 0 ? s.total_cost / s.total_gallons : 0
       }));
-    }
+    },
+    enabled: !!orgId,
   });
 };

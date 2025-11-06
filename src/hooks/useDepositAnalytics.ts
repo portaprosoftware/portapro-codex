@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useOrganizationId } from './useOrganizationId';
 
 export interface DepositMetrics {
   total_deposits_collected: number;
@@ -18,9 +19,13 @@ export interface DepositBreakdown {
 }
 
 export function useDepositAnalytics(dateRange?: { from: Date; to: Date }) {
+  const { orgId } = useOrganizationId();
+
   return useQuery({
-    queryKey: ['deposit-analytics', dateRange],
+    queryKey: ['deposit-analytics', orgId, dateRange],
     queryFn: async () => {
+      if (!orgId) throw new Error('Organization ID required');
+
       const startDate = dateRange?.from?.toISOString() || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
       const endDate = dateRange?.to?.toISOString() || new Date().toISOString();
 
@@ -28,6 +33,7 @@ export function useDepositAnalytics(dateRange?: { from: Date; to: Date }) {
       const { data: quotes, error: quotesError } = await supabase
         .from('quotes')
         .select('deposit_required, deposit_amount, deposit_status, status, created_at')
+        .eq('organization_id', orgId)
         .gte('created_at', startDate)
         .lte('created_at', endDate);
 
@@ -83,5 +89,6 @@ export function useDepositAnalytics(dateRange?: { from: Date; to: Date }) {
 
       return { metrics, breakdown };
     },
+    enabled: !!orgId,
   });
 }

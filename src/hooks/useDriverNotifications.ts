@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useUser } from '@clerk/clerk-react';
+import { useOrganizationId } from './useOrganizationId';
 
 export interface DriverNotification {
   id: string;
@@ -18,16 +19,18 @@ export interface DriverNotification {
 export const useDriverNotifications = () => {
   const { user } = useUser();
   const queryClient = useQueryClient();
+  const { orgId } = useOrganizationId();
 
   const { data: notifications = [], isLoading, refetch } = useQuery({
-    queryKey: ['driver-notifications', user?.id],
+    queryKey: ['driver-notifications', orgId, user?.id],
     queryFn: async () => {
-      if (!user?.id) return [];
+      if (!user?.id || !orgId) return [];
 
       const { data, error } = await supabase
         .from('notification_logs')
         .select('*')
         .eq('user_id', user.id)
+        .eq('organization_id', orgId)
         .in('notification_type', [
           'job_assigned',
           'job_updated',
@@ -44,7 +47,7 @@ export const useDriverNotifications = () => {
       if (error) throw error;
       return data as DriverNotification[];
     },
-    enabled: !!user?.id,
+    enabled: !!orgId && !!user?.id,
     refetchInterval: 30000, // Refetch every 30 seconds
   });
 

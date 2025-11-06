@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { ConsumableCategory } from '@/lib/consumableCategories';
 import { CONSUMABLE_CATEGORIES } from '@/lib/consumableCategories';
+import { useOrganizationId } from './useOrganizationId';
 
 export interface ItemCodeCategory {
   [key: string]: string; // e.g., {"1000": "Standard Units", "2000": "ADA Units"}
@@ -22,12 +23,17 @@ export interface CompanySettings {
 }
 
 export const useCompanySettings = () => {
+  const { orgId } = useOrganizationId();
+
   return useQuery({
-    queryKey: ['company-settings'],
+    queryKey: ['company-settings', orgId],
     queryFn: async () => {
+      if (!orgId) throw new Error('Organization ID required');
+
       const { data, error } = await supabase
         .from('company_settings')
         .select('*')
+        .eq('organization_id', orgId)
         .single();
 
       if (error) throw error;
@@ -36,6 +42,7 @@ export const useCompanySettings = () => {
         consumable_categories: Array.isArray(data.consumable_categories) ? data.consumable_categories as unknown as ConsumableCategory[] : []
       } as CompanySettings;
     },
+    enabled: !!orgId,
   });
 };
 

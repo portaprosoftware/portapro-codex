@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useOrganizationId } from "./useOrganizationId";
 
 export interface EnhancedDriver {
   id: string;
@@ -23,9 +24,13 @@ export interface EnhancedDriver {
 }
 
 export function useEnhancedDrivers() {
+  const { orgId } = useOrganizationId();
+
   return useQuery({
-    queryKey: ['enhanced-drivers'],
+    queryKey: ['enhanced-drivers', orgId],
     queryFn: async () => {
+      if (!orgId) throw new Error('Organization ID required');
+
       // Get all users with driver role
       const { data: users, error: usersError } = await supabase
         .from('profiles')
@@ -41,6 +46,7 @@ export function useEnhancedDrivers() {
           created_at,
           user_roles!inner(role)
         `)
+        .eq('organization_id', orgId)
         .eq('user_roles.role', 'org:driver' as any);
 
       if (usersError) throw usersError;
@@ -52,6 +58,7 @@ export function useEnhancedDrivers() {
           const { data: credentials } = await supabase
             .from('driver_credentials')
             .select('license_expiry_date, medical_card_expiry_date')
+            .eq('organization_id', orgId)
             .eq('driver_id', user.id)
             .maybeSingle();
 
@@ -59,6 +66,7 @@ export function useEnhancedDrivers() {
           const { data: training } = await supabase
             .from('driver_training_records')
             .select('next_due')
+            .eq('organization_id', orgId)
             .eq('driver_id', user.id)
             .order('next_due', { ascending: true })
             .limit(1)
@@ -68,6 +76,7 @@ export function useEnhancedDrivers() {
           const { data: device } = await supabase
             .from('driver_devices')
             .select('app_last_login')
+            .eq('organization_id', orgId)
             .eq('driver_id', user.id)
             .maybeSingle();
 
@@ -86,14 +95,19 @@ export function useEnhancedDrivers() {
       );
 
       return enhancedDrivers;
-    }
+    },
+    enabled: !!orgId,
   });
 }
 
 export function useAllEnhancedUsers() {
+  const { orgId } = useOrganizationId();
+
   return useQuery({
-    queryKey: ['all-enhanced-users'],
+    queryKey: ['all-enhanced-users', orgId],
     queryFn: async () => {
+      if (!orgId) throw new Error('Organization ID required');
+
       // Get all users
       const { data: users, error: usersError } = await supabase
         .from('profiles')
@@ -108,7 +122,8 @@ export function useAllEnhancedUsers() {
           hire_date,
           created_at,
           user_roles!inner(role)
-        `);
+        `)
+        .eq('organization_id', orgId);
 
       if (usersError) throw usersError;
 
@@ -128,12 +143,14 @@ export function useAllEnhancedUsers() {
           const { data: credentials } = await supabase
             .from('driver_credentials')
             .select('license_expiry_date, medical_card_expiry_date')
+            .eq('organization_id', orgId)
             .eq('driver_id', user.id)
             .maybeSingle();
 
           const { data: training } = await supabase
             .from('driver_training_records')
             .select('next_due')
+            .eq('organization_id', orgId)
             .eq('driver_id', user.id)
             .order('next_due', { ascending: true })
             .limit(1)
@@ -142,6 +159,7 @@ export function useAllEnhancedUsers() {
           const { data: device } = await supabase
             .from('driver_devices')
             .select('app_last_login')
+            .eq('organization_id', orgId)
             .eq('driver_id', user.id)
             .maybeSingle();
 
@@ -160,6 +178,7 @@ export function useAllEnhancedUsers() {
       );
 
       return enhancedUsers;
-    }
+    },
+    enabled: !!orgId,
   });
 }

@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useOrganizationId } from './useOrganizationId';
 
 interface ConsumableAnalytics {
   dailyUsageRate: number;
@@ -11,14 +12,19 @@ interface ConsumableAnalytics {
 }
 
 export const useConsumableAnalytics = (consumableId: string, consumable: any) => {
+  const { orgId } = useOrganizationId();
+
   return useQuery({
-    queryKey: ['consumable-analytics', consumableId],
+    queryKey: ['consumable-analytics', orgId, consumableId],
     queryFn: async (): Promise<ConsumableAnalytics> => {
+      if (!orgId) throw new Error('Organization ID required');
+
       // Fetch consumption data from the last 90 days
       const { data: adjustments, error } = await supabase
         .from('consumable_stock_adjustments')
         .select('*')
         .eq('consumable_id', consumableId)
+        .eq('organization_id', orgId)
         .gte('created_at', new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString())
         .order('created_at', { ascending: false });
 
@@ -69,7 +75,7 @@ export const useConsumableAnalytics = (consumableId: string, consumable: any) =>
         hasRealData: true
       };
     },
-    enabled: !!consumableId && !!consumable
+    enabled: !!orgId && !!consumableId && !!consumable
   });
 };
 

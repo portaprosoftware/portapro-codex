@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useUser } from '@clerk/clerk-react';
 import { useToast } from '@/hooks/use-toast';
+import { useOrganizationId } from './useOrganizationId';
 
 export interface FilterPreset {
   id: string;
@@ -31,14 +32,18 @@ export function useFilterPresets(presetType: string = 'jobs') {
   const { user } = useUser();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { orgId } = useOrganizationId();
 
   // Fetch user's presets
   const { data: presets = [], isLoading } = useQuery({
-    queryKey: ['filter-presets', presetType, user?.id],
+    queryKey: ['filter-presets', orgId, presetType, user?.id],
     queryFn: async () => {
+      if (!orgId) throw new Error('Organization ID required');
+
       const { data, error } = await supabase
         .from('filter_presets')
         .select('*')
+        .eq('organization_id', orgId)
         .eq('preset_type', presetType)
         .or(`created_by.eq.${user?.id},is_public.eq.true`)
         .order('last_used_at', { ascending: false, nullsFirst: false })
@@ -47,7 +52,7 @@ export function useFilterPresets(presetType: string = 'jobs') {
       if (error) throw error;
       return data as FilterPreset[];
     },
-    enabled: !!user?.id,
+    enabled: !!orgId && !!user?.id,
   });
 
   // Save preset mutation
@@ -57,6 +62,8 @@ export function useFilterPresets(presetType: string = 'jobs') {
       description?: string;
       filterData: FilterData;
     }) => {
+      if (!orgId) throw new Error('Organization ID required');
+
       const { data, error } = await supabase
         .from('filter_presets')
         .insert({
@@ -65,6 +72,7 @@ export function useFilterPresets(presetType: string = 'jobs') {
           filter_data: filterData as any,
           preset_type: presetType,
           created_by: user?.id,
+          organization_id: orgId,
           is_public: false,
         })
         .select()
@@ -95,12 +103,15 @@ export function useFilterPresets(presetType: string = 'jobs') {
       presetId: string;
       resultsCount?: number;
     }) => {
+      if (!orgId) throw new Error('Organization ID required');
+
       // Track usage
       await supabase
         .from('filter_preset_usage')
         .insert({
           preset_id: presetId,
           user_id: user?.id,
+          organization_id: orgId,
           results_count: resultsCount,
         });
 
