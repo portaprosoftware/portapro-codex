@@ -2,20 +2,26 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { MobileFuelVendor } from '@/types/fuel';
 import { toast } from 'sonner';
+import { useOrganizationId } from './useOrganizationId';
 
 export const useMobileFuelVendors = () => {
+  const { orgId } = useOrganizationId();
   return useQuery({
-    queryKey: ['mobile-fuel-vendors'],
+    queryKey: ['mobile-fuel-vendors', orgId],
     queryFn: async () => {
+      if (!orgId) return [];
+
       const { data, error } = await supabase
         .from('mobile_fuel_vendors')
         .select('*')
+        .eq('organization_id', orgId)
         .eq('is_active', true)
         .order('vendor_name', { ascending: true });
 
       if (error) throw error;
       return data as MobileFuelVendor[];
     },
+    enabled: !!orgId,
   });
 };
 

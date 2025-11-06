@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useUser } from '@clerk/clerk-react';
 import { useOnlineStatus } from './useOnlineStatus';
+import { useOrganizationId } from './useOrganizationId';
 import { 
   getAllCachedWorkOrders, 
   cacheWorkOrder,
@@ -11,10 +12,12 @@ import {
 export function useTechnicianWorkOrders() {
   const { user } = useUser();
   const { isOnline } = useOnlineStatus();
+  const { orgId } = useOrganizationId();
 
   return useQuery({
-    queryKey: ['technician-work-orders', user?.id],
+    queryKey: ['technician-work-orders', orgId, user?.id],
     queryFn: async () => {
+      if (!orgId) throw new Error('Organization required');
       // Initialize IndexedDB
       await initDB();
 
@@ -24,6 +27,7 @@ export function useTechnicianWorkOrders() {
           const { data, error } = await supabase
             .from('work_orders')
             .select('*')
+            .eq('organization_id', orgId)
             .eq('assigned_to', user?.id)
             .in('status', ['open', 'in_progress', 'awaiting_parts', 'on_hold'])
             .order('priority', { ascending: false })
@@ -49,7 +53,7 @@ export function useTechnicianWorkOrders() {
       // Use cached data when offline
       return await getAllCachedWorkOrders();
     },
-    enabled: !!user?.id,
+    enabled: !!orgId && !!user?.id,
     staleTime: 30 * 1000, // 30 seconds
     gcTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: isOnline,

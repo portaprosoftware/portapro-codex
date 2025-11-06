@@ -2,23 +2,26 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { MobileFuelServiceVehicle } from '@/types/fuel';
 import { toast } from 'sonner';
+import { useOrganizationId } from './useOrganizationId';
 
 export const useMobileFuelServiceVehicles = (serviceId?: string) => {
+  const { orgId } = useOrganizationId();
   return useQuery({
-    queryKey: ['mobile-fuel-service-vehicles', serviceId],
+    queryKey: ['mobile-fuel-service-vehicles', orgId, serviceId],
     queryFn: async () => {
-      if (!serviceId) return [];
+      if (!serviceId || !orgId) return [];
       
       const { data, error } = await supabase
         .from('mobile_fuel_service_vehicles')
         .select('*, vehicles(*)')
+        .eq('organization_id', orgId)
         .eq('service_id', serviceId)
         .order('created_at', { ascending: true });
 
       if (error) throw error;
       return data as MobileFuelServiceVehicle[];
     },
-    enabled: !!serviceId,
+    enabled: !!orgId && !!serviceId,
   });
 };
 

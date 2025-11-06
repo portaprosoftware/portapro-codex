@@ -2,11 +2,14 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { formatDateForQuery } from '@/lib/dateUtils';
 import { subDays, startOfMonth, startOfQuarter, startOfYear } from 'date-fns';
+import { useOrganizationId } from './useOrganizationId';
 
 export function useJobCounts() {
+  const { orgId } = useOrganizationId();
   return useQuery({
-    queryKey: ['job-counts'],
+    queryKey: ['job-counts', orgId],
     queryFn: async () => {
+      if (!orgId) throw new Error('Organization required');
       const today = new Date();
       const last7Days = subDays(today, 7);
       const last30Days = subDays(today, 30);
@@ -17,7 +20,8 @@ export function useJobCounts() {
       // Get total jobs
       const { data: totalJobs, error: totalError } = await supabase
         .from('jobs')
-        .select('id', { count: 'exact', head: true });
+        .select('id', { count: 'exact', head: true })
+        .eq('organization_id', orgId);
 
       if (totalError) throw totalError;
 
@@ -25,6 +29,7 @@ export function useJobCounts() {
       const { data: todayJobs, error: todayError } = await supabase
         .from('jobs')
         .select('id', { count: 'exact', head: true })
+        .eq('organization_id', orgId)
         .eq('scheduled_date', formatDateForQuery(today));
 
       if (todayError) throw todayError;
@@ -33,6 +38,7 @@ export function useJobCounts() {
       const { data: last7DaysJobs, error: last7Error } = await supabase
         .from('jobs')
         .select('id', { count: 'exact', head: true })
+        .eq('organization_id', orgId)
         .gte('scheduled_date', formatDateForQuery(last7Days))
         .lte('scheduled_date', formatDateForQuery(today));
 
@@ -42,6 +48,7 @@ export function useJobCounts() {
       const { data: last30DaysJobs, error: last30Error } = await supabase
         .from('jobs')
         .select('id', { count: 'exact', head: true })
+        .eq('organization_id', orgId)
         .gte('scheduled_date', formatDateForQuery(last30Days))
         .lte('scheduled_date', formatDateForQuery(today));
 
@@ -51,6 +58,7 @@ export function useJobCounts() {
       const { data: monthToDateJobs, error: monthError } = await supabase
         .from('jobs')
         .select('id', { count: 'exact', head: true })
+        .eq('organization_id', orgId)
         .gte('scheduled_date', formatDateForQuery(monthStart))
         .lte('scheduled_date', formatDateForQuery(today));
 
@@ -60,6 +68,7 @@ export function useJobCounts() {
       const { data: quarterToDateJobs, error: quarterError } = await supabase
         .from('jobs')
         .select('id', { count: 'exact', head: true })
+        .eq('organization_id', orgId)
         .gte('scheduled_date', formatDateForQuery(quarterStart))
         .lte('scheduled_date', formatDateForQuery(today));
 
@@ -69,6 +78,7 @@ export function useJobCounts() {
       const { data: yearToDateJobs, error: yearError } = await supabase
         .from('jobs')
         .select('id', { count: 'exact', head: true })
+        .eq('organization_id', orgId)
         .gte('scheduled_date', formatDateForQuery(yearStart))
         .lte('scheduled_date', formatDateForQuery(today));
 
@@ -84,6 +94,7 @@ export function useJobCounts() {
         yearToDate: yearToDateJobs || 0,
       };
     },
+    enabled: !!orgId,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 }

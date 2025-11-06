@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { resolveTaxRate, normalizeZip, CompanySettingsTaxConfig } from '@/lib/tax';
+import { useOrganizationId } from './useOrganizationId';
 
 interface UseTaxRateParams {
   zip?: string | null;
@@ -11,14 +12,18 @@ interface UseTaxRateParams {
 export function useTaxRate({ zip, state, customerOverride }: UseTaxRateParams) {
   const zip5 = normalizeZip(zip);
   const stateUp = state || undefined;
+  const { orgId } = useOrganizationId();
 
   return useQuery({
-    queryKey: ['tax-rate', zip5, stateUp],
+    queryKey: ['tax-rate', orgId, zip5, stateUp],
     queryFn: async () => {
+      if (!orgId) throw new Error('Organization required');
+
       // Fetch company settings
       const { data: settings, error: settingsError } = await supabase
         .from('company_settings')
         .select('tax_enabled, tax_method, flat_tax_rate, state_tax_rates, zip_tax_overrides')
+        .eq('organization_id', orgId)
         .single();
       if (settingsError) throw settingsError;
 
@@ -74,5 +79,6 @@ export function useTaxRate({ zip, state, customerOverride }: UseTaxRateParams) {
 
       return { rate, settings: settings as CompanySettingsTaxConfig };
     },
+    enabled: !!orgId,
   });
 }

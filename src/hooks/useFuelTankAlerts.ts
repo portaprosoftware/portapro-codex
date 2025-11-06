@@ -2,14 +2,19 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { FuelTankAlert } from '@/types/fuel';
 import { toast } from 'sonner';
+import { useOrganizationId } from './useOrganizationId';
 
 export const useFuelTankAlerts = (tankId?: string) => {
+  const { orgId } = useOrganizationId();
   return useQuery({
-    queryKey: ['fuel-tank-alerts', tankId],
+    queryKey: ['fuel-tank-alerts', orgId, tankId],
     queryFn: async () => {
+      if (!orgId) return [];
+
       let query = supabase
         .from('fuel_tank_inventory_alerts')
         .select('*')
+        .eq('organization_id', orgId)
         .eq('acknowledged', false)
         .order('severity', { ascending: false })
         .order('created_at', { ascending: false });
@@ -23,6 +28,7 @@ export const useFuelTankAlerts = (tankId?: string) => {
       if (error) throw error;
       return data as FuelTankAlert[];
     },
+    enabled: !!orgId,
   });
 };
 
@@ -55,16 +61,22 @@ export const useAcknowledgeAlert = () => {
 };
 
 export const useUnacknowledgedAlertsCount = () => {
+  const { orgId } = useOrganizationId();
+
   return useQuery({
-    queryKey: ['fuel-tank-alerts-count'],
+    queryKey: ['fuel-tank-alerts-count', orgId],
     queryFn: async () => {
+      if (!orgId) return 0;
+
       const { count, error } = await supabase
         .from('fuel_tank_inventory_alerts')
         .select('*', { count: 'exact', head: true })
+        .eq('organization_id', orgId)
         .eq('acknowledged', false);
 
       if (error) throw error;
       return count || 0;
     },
+    enabled: !!orgId,
   });
 };
