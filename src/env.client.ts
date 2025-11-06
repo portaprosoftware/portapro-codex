@@ -4,7 +4,6 @@
  */
 
 const required = [
-  'VITE_APP_URL',
   'VITE_CLERK_PUBLISHABLE_KEY',
   'VITE_SUPABASE_URL',
   'VITE_SUPABASE_PUBLISHABLE_KEY',
@@ -38,7 +37,8 @@ const validateEnv = (): Record<RequiredEnvVar, string> => {
 
 export const env = {
   ...validateEnv(),
-  // Optional variables
+  // Optional variables with smart defaults
+  APP_URL: import.meta.env.VITE_APP_URL || 'https://app.portaprosoftware.com',
   MAPBOX_TOKEN: import.meta.env.VITE_MAPBOX_TOKEN || '',
   POSTHOG_KEY: import.meta.env.VITE_POSTHOG_KEY || '',
   SENTRY_DSN: import.meta.env.VITE_SENTRY_DSN || '',
@@ -53,7 +53,7 @@ export const env = {
 export const SUPABASE_URL = env.VITE_SUPABASE_URL;
 export const SUPABASE_PUBLISHABLE_KEY = env.VITE_SUPABASE_PUBLISHABLE_KEY;
 export const CLERK_PUBLISHABLE_KEY = env.VITE_CLERK_PUBLISHABLE_KEY;
-export const APP_URL = env.VITE_APP_URL;
+export const APP_URL = env.APP_URL;
 
 // Mapbox token helper
 export const getMapboxToken = (): string => {
