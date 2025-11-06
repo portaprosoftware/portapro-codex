@@ -22,6 +22,7 @@ import { Package, MapPin, Hash, DollarSign } from "lucide-react";
 import { ProductImageUploader } from "./ProductImageUploader";
 import { uploadProductImage } from "@/utils/imageUpload";
 import { PRODUCT_TYPES, ProductType } from "@/lib/productTypes";
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 interface AddInventoryModalProps {
   isOpen: boolean;
@@ -45,6 +46,7 @@ interface ProductFormData {
 
 export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
   const queryClient = useQueryClient();
+  const { orgId } = useOrganizationId();
   
   const [formData, setFormData] = useState<ProductFormData>({
     name: '',
@@ -121,9 +123,11 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
 
         const individualItems = [];
         for (let i = 0; i < data.locationQuantity; i++) {
+          if (!orgId) throw new Error('Organization ID required');
           const { data: itemCode, error: codeError } = await supabase
             .rpc('generate_item_code_with_category', {
-              category_prefix: data.selectedCategory
+              category_prefix: data.selectedCategory,
+              org_id: orgId
             });
           if (codeError) throw codeError;
 

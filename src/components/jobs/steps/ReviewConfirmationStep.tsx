@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { FileText, BriefcaseIcon, Package, Receipt, MapPin, User, Phone, Plus, Minus } from 'lucide-react';
 import { ReadOnlyPinsMap } from './ReadOnlyPinsMap';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 interface ReviewConfirmationStepProps {
   onCreateJob: () => void;
@@ -35,6 +36,7 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
   creatingJobAndQuote 
 }) => {
   const { state, updateData } = useJobWizard();
+  const { orgId } = useOrganizationId();
   const d = state.data;
   const [checking, setChecking] = useState(false);
   const [itemConflicts, setItemConflicts] = useState<ItemConflict[]>([]);
@@ -399,11 +401,13 @@ export const ReviewConfirmationStep: React.FC<ReviewConfirmationStepProps> = ({
           // Only check bulk strategy items for conflicts
           // Specific items (both auto-assigned and manually selected) are already validated
           if (it.strategy === 'bulk') {
+            if (!orgId) continue;
             const { data, error } = await supabase.rpc('get_product_availability_enhanced', {
               product_type_id: it.product_id,
               start_date: startDate,
               end_date: endDate,
               filter_attributes: it.attributes || null,
+              org_id: orgId
             });
             if (!error) {
               const avail: any = data || {};

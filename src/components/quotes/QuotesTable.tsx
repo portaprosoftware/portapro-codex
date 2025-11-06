@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { DateRange } from 'react-day-picker';
 import { format } from 'date-fns';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 interface QuotesTableProps {
   searchTerm: string;
@@ -20,6 +21,7 @@ interface QuotesTableProps {
 }
 
 export const QuotesTable = ({ searchTerm, dateRange }: QuotesTableProps) => {
+  const { orgId } = useOrganizationId();
   const [showCreateQuote, setShowCreateQuote] = useState(false);
   const [showCreateInvoice, setShowCreateInvoice] = useState(false);
   const [selectedQuoteForInvoice, setSelectedQuoteForInvoice] = useState<any>(null);
@@ -102,8 +104,10 @@ export const QuotesTable = ({ searchTerm, dateRange }: QuotesTableProps) => {
 
   const createInvoiceFromQuote = useMutation({
     mutationFn: async (quoteId: string) => {
+      if (!orgId) throw new Error('Organization ID required');
       const { data, error } = await supabase.rpc('generate_invoice_from_quote', {
-        quote_uuid: quoteId
+        quote_uuid: quoteId,
+        org_id: orgId
       });
       if (error) throw error;
       return data;

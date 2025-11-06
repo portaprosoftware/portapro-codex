@@ -15,6 +15,7 @@ import { Search, Package, Eye, Layers, ArrowLeft, Plus, Trash2, Calendar } from 
 import { PRODUCT_TYPES, type ProductType } from '@/lib/productTypes';
 import { TrackedUnitsPage } from './TrackedUnitsPage';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 interface Product {
   id: string;
@@ -59,6 +60,7 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
   selectedProductId,
   existingJobItems = []
 }) => {
+  const { orgId } = useOrganizationId();
   const [currentPage, setCurrentPage] = useState<'main' | 'tracked-units'>('main');
   const [selectedProductForTracking, setSelectedProductForTracking] = useState<Product | null>(null);
   const [selectedUnitsCollection, setSelectedUnitsCollection] = useState<UnitSelection[]>([]);
@@ -176,12 +178,13 @@ export const ProductSelectionModal: React.FC<ProductSelectionModalProps> = ({
       
       // Check if there are existing bulk selections for this product that need adjustment
       const existingBulk = filtered.find(s => s.productId === productId && s.unitId === 'bulk');
-      if (existingBulk) {
+      if (existingBulk && orgId) {
         // Use availability data instead of stock_total to get actual available units
         const availabilityQuery = supabase.rpc('get_product_availability_enhanced', {
           product_type_id: productId,
           start_date: startDate,
-          end_date: endDate || startDate
+          end_date: endDate || startDate,
+          org_id: orgId
         });
           
         availabilityQuery.then(({ data: availabilityData }) => {

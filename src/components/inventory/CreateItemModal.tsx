@@ -14,6 +14,7 @@ import { useItemCodeCategories } from "@/hooks/useCompanySettings";
 import { ItemCodeCategorySelect } from "@/components/ui/ItemCodeCategorySelect";
 import { ProductVariationsFields } from "./ProductVariationsFields";
 import { StorageLocationSelector } from "./StorageLocationSelector";
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 interface CreateItemModalProps {
   productId: string;
@@ -22,6 +23,7 @@ interface CreateItemModalProps {
 
 export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onClose }) => {
   const queryClient = useQueryClient();
+  const { orgId } = useOrganizationId();
   const [showOCRCapture, setShowOCRCapture] = useState(false);
   const [showCategorySelect, setShowCategorySelect] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
@@ -117,9 +119,11 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onC
         const categoryToUse = product?.default_item_code_category || selectedCategory;
         
         if (categoryToUse) {
+          if (!orgId) throw new Error('Organization ID required');
           const { data: generatedCode, error: codeError } = await supabase
             .rpc('generate_item_code_with_category', {
-              category_prefix: categoryToUse
+              category_prefix: categoryToUse,
+              org_id: orgId
             });
           
           if (codeError) throw codeError;
@@ -229,9 +233,11 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onC
     if (product?.default_item_code_category) {
       console.log('Using default category:', product.default_item_code_category);
       try {
+        if (!orgId) throw new Error('Organization ID required');
         // Use preview function - doesn't increment counter
         const { data: itemCode, error } = await supabase.rpc('preview_next_item_code', {
-          category_prefix: product.default_item_code_category
+          category_prefix: product.default_item_code_category,
+          org_id: orgId
         });
         
         if (error) {
@@ -271,9 +277,11 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({ productId, onC
       // Store the selected category for final generation
       setSelectedCategory(categoryPrefix);
       
+      if (!orgId) throw new Error('Organization ID required');
       // Use preview function - doesn't increment counter
       const { data, error } = await supabase.rpc('preview_next_item_code', {
-        category_prefix: categoryPrefix
+        category_prefix: categoryPrefix,
+        org_id: orgId
       });
 
       if (error) throw error;

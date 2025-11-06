@@ -19,6 +19,7 @@ import { ProductVariationsFields } from "./ProductVariationsFields";
 import { OCRPhotoCapture } from "./OCRPhotoCapture";
 import { toast } from "sonner";
 import { Package, ArrowRight, QrCode, Camera, AlertTriangle } from "lucide-react";
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 interface IndividualItemCreationProps {
   productId: string;
@@ -34,6 +35,7 @@ export function IndividualItemCreation({
   onClose 
 }: IndividualItemCreationProps) {
   const queryClient = useQueryClient();
+  const { orgId } = useOrganizationId();
   const [quantity, setQuantity] = useState(1);
   const [storageLocationId, setStorageLocationId] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -127,9 +129,11 @@ export function IndividualItemCreation({
 
       // Generate item codes using the actual generation function (increments counter)
       for (let i = 0; i < quantity; i++) {
+        if (!orgId) throw new Error('Organization ID required');
         const { data: generatedCode, error: codeError } = await supabase
           .rpc('generate_item_code_with_category', {
-            category_prefix: categoryToUse
+            category_prefix: categoryToUse,
+            org_id: orgId
           });
 
         if (codeError) throw codeError;

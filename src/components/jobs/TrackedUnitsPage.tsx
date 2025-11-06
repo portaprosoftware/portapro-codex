@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, Check } from 'lucide-react';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 interface Product {
   id: string;
@@ -43,6 +44,7 @@ export const TrackedUnitsPage: React.FC<TrackedUnitsPageProps> = ({
   onBack,
   existingSelectedUnits = []
 }) => {
+  const { orgId } = useOrganizationId();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   // Initialize with existing selected units for this product
@@ -97,11 +99,12 @@ export const TrackedUnitsPage: React.FC<TrackedUnitsPageProps> = ({
         items.map(async (item) => {
           let is_available = item.status === 'available';
           
-          if (startDate && is_available) {
+          if (startDate && is_available && orgId) {
             const { data: availabilityCheck } = await supabase.rpc('check_unit_availability', {
               unit_id: item.id,
               start_date: startDate,
-              end_date: endDate || startDate
+              end_date: endDate || startDate,
+              org_id: orgId
             });
             is_available = availabilityCheck === true;
           }

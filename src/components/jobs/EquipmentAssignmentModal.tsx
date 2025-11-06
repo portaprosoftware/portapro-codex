@@ -21,6 +21,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 interface EquipmentAssignmentModalProps {
   jobId: string | null;
@@ -43,6 +44,7 @@ export const EquipmentAssignmentModal: React.FC<EquipmentAssignmentModalProps> =
   open,
   onOpenChange
 }) => {
+  const { orgId } = useOrganizationId();
   const [activeTab, setActiveTab] = useState('assign');
   const [searchTerm, setSearchTerm] = useState('');
   const [equipmentItems, setEquipmentItems] = useState<EquipmentItem[]>([]);
@@ -106,6 +108,8 @@ export const EquipmentAssignmentModal: React.FC<EquipmentAssignmentModalProps> =
     mutationFn: async (assignment: EquipmentItem) => {
       if (!jobId) throw new Error('No job ID');
       
+      if (!orgId) throw new Error('Organization ID required');
+      
       if (assignment.assignmentType === 'bulk') {
         // Create bulk assignment
         const { data, error } = await supabase.rpc('reserve_equipment_for_job', {
@@ -113,7 +117,8 @@ export const EquipmentAssignmentModal: React.FC<EquipmentAssignmentModalProps> =
           product_uuid: assignment.productId,
           reserve_quantity: assignment.quantity,
           assignment_date: assignment.assignmentDate,
-          return_date: assignment.returnDate || null
+          return_date: assignment.returnDate || null,
+          org_id: orgId
         });
         
         if (error) throw error;
@@ -126,7 +131,8 @@ export const EquipmentAssignmentModal: React.FC<EquipmentAssignmentModalProps> =
             job_uuid: jobId,
             item_uuid: itemId,
             assignment_date: assignment.assignmentDate,
-            return_date: assignment.returnDate || null
+            return_date: assignment.returnDate || null,
+            org_id: orgId
           });
           
           if (error) throw error;

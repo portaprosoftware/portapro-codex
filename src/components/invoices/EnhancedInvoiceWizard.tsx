@@ -155,12 +155,16 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
 
   // Get next invoice number
   const { data: nextInvoiceNumber } = useQuery({
-    queryKey: ['next-invoice-number'],
+    queryKey: ['next-invoice-number', orgId],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc('get_next_invoice_number');
+      if (!orgId) return null;
+      const { data, error } = await supabase.rpc('get_next_invoice_number' as any, {
+        org_id: orgId
+      } as any);
       if (error) throw error;
       return data as string;
-    }
+    },
+    enabled: !!orgId
   });
 
   // Fetch source data (quote or job)

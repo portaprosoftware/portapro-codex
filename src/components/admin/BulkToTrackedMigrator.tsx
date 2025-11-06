@@ -8,6 +8,7 @@ import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Zap, Package, CheckCircle, AlertTriangle, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 interface Product {
   id: string;
@@ -28,6 +29,7 @@ interface MigrationStatus {
 }
 
 export const BulkToTrackedMigrator = () => {
+  const { orgId } = useOrganizationId();
   const queryClient = useQueryClient();
   const [migrationStatuses, setMigrationStatuses] = useState<MigrationStatus[]>([]);
   const [isMigrating, setIsMigrating] = useState(false);
@@ -89,9 +91,13 @@ export const BulkToTrackedMigrator = () => {
       const units = [];
       
       for (let i = 0; i < quantity; i++) {
+        if (!orgId) throw new Error('Organization ID required');
         const { data: itemCode, error } = await supabase.rpc(
           'generate_item_code_with_category',
-          { category_prefix: categoryPrefix || '1000' }
+          { 
+            category_prefix: categoryPrefix || '1000',
+            org_id: orgId
+          }
         );
         
         if (error) throw error;
@@ -141,10 +147,12 @@ export const BulkToTrackedMigrator = () => {
         
         // Assign specific units
         for (const unit of availableUnits || []) {
+          if (!orgId) throw new Error('Organization ID required');
           const { error: reserveError } = await supabase.rpc('reserve_specific_item_for_job', {
             job_uuid: assignment.job_id,
             item_uuid: unit.id,
-            assignment_date: new Date().toISOString().split('T')[0]
+            assignment_date: new Date().toISOString().split('T')[0],
+            org_id: orgId
           });
           
           if (!reserveError) {
