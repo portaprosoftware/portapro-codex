@@ -98,9 +98,7 @@ createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queryClient}>
       <ClerkProvider
         publishableKey={CLERK_PUBLISHABLE_KEY}
-        // When using hosted accounts, redirect to landing page
-        signInFallbackRedirectUrl="/"
-        signUpFallbackRedirectUrl="/"
+        // No fallback redirects - Marketing site handles subdomain routing after sign-in
       >
         <OrganizationProvider>
           <App />
