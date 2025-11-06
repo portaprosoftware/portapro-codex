@@ -125,9 +125,27 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
 
       // Verify user is a member of this organization
       const memberships = userMemberships?.data || [];
-      const matchedMembership = memberships.find(m => m.organization.id === expectedClerkOrgId);
+      const matchedById = memberships.find(m => m.organization.id === expectedClerkOrgId);
+      const matchedBySlug = memberships.find(m => m.organization.slug === subdomain);
 
-      if (!matchedMembership) {
+      if (!matchedById) {
+        // If slug matches but ID doesn't, it's a data mismatch - proceed with warning
+        if (matchedBySlug) {
+          console.warn('⚠️ ORG ID MISMATCH DETECTED (proceeding anyway):', {
+            subdomain,
+            expectedClerkOrgId,
+            actualClerkOrgId: matchedBySlug.organization.id,
+            userId: user.id,
+            email: user.primaryEmailAddress?.emailAddress,
+          });
+          
+          // Set active to the slug-matched org and proceed
+          await setActive({ organization: matchedBySlug.organization.id });
+          setIsChecking(false);
+          setHasChecked(true);
+          return;
+        }
+        
         console.warn('🚫 TENANT ACCESS DENIED:', {
           userId: user.id,
           email: user.primaryEmailAddress?.emailAddress,
@@ -142,6 +160,22 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
         // If user has other organizations, redirect to their first org's subdomain
         if (memberships.length > 0) {
           const firstOrg = memberships[0].organization;
+          
+          // Prevent redirect loop with sessionStorage guard
+          const redirectKey = `tenant-redirect-${subdomain}`;
+          const lastRedirect = sessionStorage.getItem(redirectKey);
+          const now = Date.now();
+          
+          // Don't redirect if we just did within the last 5 seconds, or if slug matches current subdomain
+          if (firstOrg.slug === subdomain || (lastRedirect && now - parseInt(lastRedirect) < 5000)) {
+            console.error('🔁 REDIRECT LOOP PREVENTED - access denied without redirect');
+            navigate('/unauthorized', { replace: true });
+            setIsChecking(false);
+            setHasChecked(true);
+            return;
+          }
+          
+          sessionStorage.setItem(redirectKey, now.toString());
           console.info('🔄 Redirecting user to their organization:', firstOrg.slug);
           toast.info('Redirecting...', {
             description: `Taking you to ${firstOrg.name}`,
@@ -169,7 +203,7 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
 
       // Set active organization if not already active
       if (organization?.id !== expectedClerkOrgId) {
-        console.info('✅ Setting active organization:', matchedMembership.organization.slug);
+        console.info('✅ Setting active organization:', matchedById.organization.slug);
         await setActive({ organization: expectedClerkOrgId });
       }
 

@@ -34,9 +34,33 @@ export const useCompanySettings = () => {
         .from('company_settings')
         .select('*')
         .eq('organization_id', orgId)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
+
+      // Bootstrap company_settings if missing
+      if (!data) {
+        console.info('📋 Bootstrapping company_settings for org:', orgId);
+        const { data: inserted, error: upsertErr } = await supabase
+          .from('company_settings')
+          .upsert({
+            organization_id: orgId,
+            company_name: 'Company',
+            item_code_categories: {},
+            next_item_numbers: {},
+            company_timezone: 'America/New_York',
+            consumable_categories: [],
+          }, { onConflict: 'organization_id' })
+          .select('*')
+          .single();
+        
+        if (upsertErr) throw upsertErr;
+        return {
+          ...inserted,
+          consumable_categories: Array.isArray(inserted.consumable_categories) ? inserted.consumable_categories as unknown as ConsumableCategory[] : []
+        } as CompanySettings;
+      }
+
       return {
         ...data,
         consumable_categories: Array.isArray(data.consumable_categories) ? data.consumable_categories as unknown as ConsumableCategory[] : []

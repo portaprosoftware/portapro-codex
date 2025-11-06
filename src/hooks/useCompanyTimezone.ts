@@ -17,7 +17,7 @@ export const useCompanyTimezone = () => {
         .from('company_settings')
         .select('company_timezone')
         .eq('organization_id', orgId)
-        .single();
+        .maybeSingle();
       
       if (error) throw error;
       return data?.company_timezone || 'America/New_York'; // Default fallback
