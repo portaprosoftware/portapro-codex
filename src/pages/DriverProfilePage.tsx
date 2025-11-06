@@ -67,12 +67,26 @@ export const DriverProfilePage: React.FC = () => {
         variant="outline" 
         className="w-full"
         onClick={async () => {
-          // Clear session state before signing out
-          sessionStorage.clear();
-          queryClient.clear();
-          
-          await signOut();
-          window.location.href = 'https://www.portaprosoftware.com';
+          try {
+            // Clear all app state FIRST
+            sessionStorage.clear();
+            
+            // Remove Supabase and Clerk localStorage keys
+            Object.keys(localStorage).forEach((key) => {
+              if (key.startsWith('sb-') || key.startsWith('__clerk')) {
+                localStorage.removeItem(key);
+              }
+            });
+            
+            queryClient.clear();
+            
+            // Sign out from Clerk with full cleanup
+            await signOut({ redirectUrl: 'https://www.portaprosoftware.com' });
+          } catch (error) {
+            console.error('Sign out error:', error);
+            // Ensure redirect even if sign-out fails
+            window.location.href = 'https://www.portaprosoftware.com';
+          }
         }}
       >
         <LogOut className="w-4 h-4 mr-2" />

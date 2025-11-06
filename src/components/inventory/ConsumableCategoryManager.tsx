@@ -47,15 +47,10 @@ export const ConsumableCategoryManager: React.FC = () => {
     mutationFn: async () => {
       if (!orgId) throw new Error('Organization ID is required');
       
-      const settingsId =
-        companySettings?.id ||
-        (await supabase.from('company_settings').select('id').eq('organization_id', orgId).single()).data?.id;
-
       const { error } = await supabase
         .from('company_settings' as any)
         .update({ consumable_categories: CONSUMABLE_CATEGORIES } as any)
-        .eq('organization_id', orgId)
-        .eq('id', settingsId);
+        .eq('organization_id', orgId);
 
       if (error) throw error;
     },
@@ -107,16 +102,11 @@ export const ConsumableCategoryManager: React.FC = () => {
     mutationFn: async (next: ConsumableCategory[]) => {
       if (!orgId) throw new Error('Organization ID is required');
       
-      const settingsId =
-        companySettings?.id ||
-        (await supabase.from('company_settings').select('id').eq('organization_id', orgId).single()).data?.id;
-
       // Cast to any to bypass generated types until Supabase types include `consumable_categories`
       const { error } = await supabase
         .from('company_settings' as any)
         .update({ consumable_categories: next } as any)
-        .eq('organization_id', orgId)
-        .eq('id', settingsId);
+        .eq('organization_id', orgId);
 
       if (error) throw error;
     },

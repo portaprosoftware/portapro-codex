@@ -26,7 +26,7 @@ interface TenantGuardProps {
  * 7. Localhost development → allow access with organization selector
  */
 export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
-  const { user, isLoaded: userLoaded } = useUser();
+  const { user, isLoaded: userLoaded, isSignedIn } = useUser();
   const { userMemberships, isLoaded: orgListLoaded, setActive } = useOrganizationList({
     userMemberships: {
       infinite: true,
@@ -63,13 +63,15 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
         return;
       }
 
-      // Wait for Clerk and subdomain/org lookup to complete
-      if (!userLoaded || !orgListLoaded || isLoadingOrg) return;
+      // Wait for ALL Clerk states to fully load before making any decision
+      if (!userLoaded || !orgListLoaded || isLoadingOrg) {
+        return;
+      }
 
-      // If user is not authenticated, allow normal flow (routes handle sign-in)
-      if (!user) {
-        setIsChecking(false);
-        setHasChecked(true);
+      // CRITICAL: If user is NOT signed in after Clerk loads, redirect immediately
+      if (!isSignedIn || !user) {
+        console.info('🔒 User not signed in - redirecting to marketing site');
+        window.location.href = 'https://www.portaprosoftware.com';
         return;
       }
 

@@ -38,14 +38,12 @@ export const CodeCategoriesView: React.FC = () => {
     mutationFn: async (newCategories: Record<string, string>) => {
       if (!orgId) throw new Error('Organization ID is required');
       
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('company_settings')
         .update({ item_code_categories: newCategories })
-        .eq('organization_id', orgId)
-        .eq('id', (await supabase.from('company_settings').select('id').eq('organization_id', orgId).single()).data?.id);
+        .eq('organization_id', orgId);
       
       if (error) throw error;
-      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['company-settings'] });

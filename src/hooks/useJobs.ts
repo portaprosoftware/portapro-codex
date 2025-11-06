@@ -170,29 +170,33 @@ export function useCreateJob() {
       const { data: companySettings } = await supabase
         .from('company_settings')
         .select('*')
-        .single();
+        .eq('organization_id', orgId)
+        .maybeSingle();
 
       // Generate job number based on job type
       let jobNumber = 'TEMP-001';
       let nextNumberField = '';
       
-      switch (serializedJobData.job_type) {
-        case 'delivery':
-          jobNumber = `${companySettings?.delivery_prefix || 'DEL'}-${String(companySettings?.next_delivery_number || 1).padStart(3, '0')}`;
-          nextNumberField = 'next_delivery_number';
-          break;
-        case 'pickup':
-          jobNumber = `${companySettings?.pickup_prefix || 'PKP'}-${String(companySettings?.next_pickup_number || 1).padStart(3, '0')}`;
-          nextNumberField = 'next_pickup_number';
-          break;
-        case 'service':
-          jobNumber = `${companySettings?.service_prefix || 'SVC'}-${String(companySettings?.next_service_number || 1).padStart(3, '0')}`;
-          nextNumberField = 'next_service_number';
-          break;
-        case 'on-site-survey':
-          jobNumber = `${companySettings?.survey_prefix || 'SURVEY'}-${String(companySettings?.next_survey_number || 1).padStart(3, '0')}`;
-          nextNumberField = 'next_survey_number';
-          break;
+      // Only use company settings if they exist
+      if (companySettings) {
+        switch (serializedJobData.job_type) {
+          case 'delivery':
+            jobNumber = `${companySettings.delivery_prefix || 'DEL'}-${String(companySettings.next_delivery_number || 1).padStart(3, '0')}`;
+            nextNumberField = 'next_delivery_number';
+            break;
+          case 'pickup':
+            jobNumber = `${companySettings.pickup_prefix || 'PKP'}-${String(companySettings.next_pickup_number || 1).padStart(3, '0')}`;
+            nextNumberField = 'next_pickup_number';
+            break;
+          case 'service':
+            jobNumber = `${companySettings.service_prefix || 'SVC'}-${String(companySettings.next_service_number || 1).padStart(3, '0')}`;
+            nextNumberField = 'next_service_number';
+            break;
+          case 'on-site-survey':
+            jobNumber = `${companySettings.survey_prefix || 'SURVEY'}-${String(companySettings.next_survey_number || 1).padStart(3, '0')}`;
+            nextNumberField = 'next_survey_number';
+            break;
+        }
       }
 
       console.log('Creating job with full jobData:', jobData);

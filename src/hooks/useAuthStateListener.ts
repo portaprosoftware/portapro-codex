@@ -16,10 +16,17 @@ export const useAuthStateListener = () => {
     if (previousSignedIn.current === true && isSignedIn === false) {
       console.info('🔓 Sign-out detected - cleaning up session state');
       
-      // Clear sessionStorage (org sync flags, redirect guards)
+      // Clear all session/storage
       sessionStorage.clear();
       
-      // Clear React Query cache (company settings, timezones, etc.)
+      // Remove Supabase and Clerk localStorage keys
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith('sb-') || key.startsWith('__clerk')) {
+          localStorage.removeItem(key);
+        }
+      });
+      
+      // Clear React Query cache
       queryClient.clear();
       
       // Redirect to marketing site
