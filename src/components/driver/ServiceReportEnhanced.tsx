@@ -17,6 +17,7 @@ import { toast } from 'sonner';
 import { useUser } from '@clerk/clerk-react';
 import { useEnhancedOffline } from '@/hooks/useEnhancedOffline';
 import { saveDraftReport, getDraftReport, savePendingReport } from '@/lib/serviceReportDB';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 interface FormField {
   id: string;
@@ -49,6 +50,7 @@ export const ServiceReportEnhanced: React.FC<ServiceReportEnhancedProps> = ({
 }) => {
   const { user } = useUser();
   const { isOnline, addOfflineData, queueCount, isSyncing } = useEnhancedOffline();
+  const { orgId } = useOrganizationId();
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [sections, setSections] = useState<FormSection[]>([]);
@@ -372,7 +374,8 @@ export const ServiceReportEnhanced: React.FC<ServiceReportEnhancedProps> = ({
           photos,
           technician_id: user?.id ?? null,
           notes: formData.sanitation_notes || null,
-        });
+          organization_id: orgId,
+        } as any);
       }
 
       // Update job status

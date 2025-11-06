@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 type Props = {
   onSaved?: () => void;
@@ -15,6 +16,7 @@ type Vehicle = { id: string; license_plate: string };
 
 export const SpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }) => {
   const { toast } = useToast();
+  const { orgId } = useOrganizationId();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [vehicleId, setVehicleId] = useState<string>("");
   const [hasKit, setHasKit] = useState<boolean>(true);
@@ -49,6 +51,15 @@ export const SpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }) => {
   };
 
   const handleSave = async () => {
+    if (!orgId) {
+      toast({
+        title: "Error",
+        description: "Organization ID required",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     try {
       const { error } = await supabase.from("vehicle_spill_kit_checks").insert({
         vehicle_id: vehicleId,
@@ -56,7 +67,8 @@ export const SpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }) => {
         has_kit: hasKit,
         contents: selectedContents,
         notes,
-      });
+        organization_id: orgId,
+      } as any);
       
       if (error) {
         console.error("Failed to save spill kit check", error);

@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { FileText, Download, Trash2, Upload, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { DocumentCard } from './DocumentCard';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 interface CustomerDocumentsTabProps {
   customerId: string;
@@ -35,6 +36,7 @@ export const CustomerDocumentsTab: React.FC<CustomerDocumentsTabProps> = ({ cust
   const { canViewCustomerDocs, userId } = useUserRole();
   const { getToken } = useAuth();
   const queryClient = useQueryClient();
+  const { orgId } = useOrganizationId();
 
   const fileRef = useRef<HTMLInputElement>(null);
   const [docType, setDocType] = useState<string>('contract');
@@ -43,22 +45,34 @@ export const CustomerDocumentsTab: React.FC<CustomerDocumentsTabProps> = ({ cust
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
 
-  const { data: docs, isLoading } = useQuery({
-    queryKey: ['customer-documents', customerId],
-    queryFn: async (): Promise<DocRow[]> => {
-      const { data, error } = await supabase
+  const docsQuery = useQuery({
+    queryKey: ['customer-documents', customerId, orgId],
+    queryFn: async () => {
+      if (!orgId) return [];
+      
+      const { data, error } = await (supabase as any)
         .from('customer_contracts')
-        .select('id, customer_id, document_type, document_name, file_url, file_size, created_at, updated_at')
+        .select('*')
         .eq('customer_id', customerId)
-        .order('created_at', { ascending: false });
+        .eq('organization_id', orgId)
+        .order('created_at', { ascending: false});
+        
       if (error) throw error;
-      return data || [];
+      return (data || []) as DocRow[];
     },
+    enabled: !!orgId,
   });
+  const docs = (docsQuery.data || []) as DocRow[];
+  const isLoading = docsQuery.isLoading;
 
   const sanitizedFileName = (name: string) => name.replace(/[^a-zA-Z0-9.-]/g, '_');
 
   const onUpload = async (file: File) => {
+    if (!orgId) {
+      toast({ title: 'Error', description: 'Organization ID required', variant: 'destructive' });
+      return;
+    }
+    
     setUploading(true);
     try {
       const token = await getToken();
@@ -68,7 +82,7 @@ export const CustomerDocumentsTab: React.FC<CustomerDocumentsTabProps> = ({ cust
       const path = `${customerId}/${ts}_${sanitizedFileName(file.name)}`;
 
       const { data: signedUploadRes, error: fnError } = await supabase.functions.invoke('customer-docs', {
-        body: { action: 'create_signed_upload', payload: { path } },
+        body: { action: 'create_signed_upload', payload: { path }, organizationId: orgId },
         headers: { Authorization: `Bearer ${token}` },
       });
       if (fnError) throw fnError;
@@ -89,6 +103,7 @@ export const CustomerDocumentsTab: React.FC<CustomerDocumentsTabProps> = ({ cust
         file_url: path,
         file_size: file.size,
         uploaded_by: userId,
+        organization_id: orgId,
       } as any);
       if (insertError) throw insertError;
 

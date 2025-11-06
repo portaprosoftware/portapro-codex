@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ChevronDown, ChevronRight, Truck, Calendar, User } from "lucide-react";
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 interface DVIRFormProps {
   open: boolean;
@@ -63,6 +64,7 @@ export const DVIRForm: React.FC<DVIRFormProps> = ({
   useModal = false
 }) => {
   const qc = useQueryClient();
+  const { orgId } = useOrganizationId();
   const [assetType, setAssetType] = useState<"vehicle"|"trailer">("vehicle");
   const [assetId, setAssetId] = useState("");
   const [selectedVehicle, setSelectedVehicle] = useState<any>(null);
@@ -187,6 +189,11 @@ export const DVIRForm: React.FC<DVIRFormProps> = ({
 
   const handleSubmit = async () => {
     if (!assetId || (!odometer && !engineHours)) return;
+    if (!orgId) {
+      toast.error('Organization ID required');
+      return;
+    }
+    
     try {
       setSubmitting(true);
       
@@ -215,7 +222,8 @@ export const DVIRForm: React.FC<DVIRFormProps> = ({
           major_defect_present: majorDefectPresent,
           out_of_service_flag: majorDefectPresent,
           submitted_at: new Date().toISOString(),
-        })
+          organization_id: orgId,
+        } as any)
         .select("*")
         .single();
       if (error) throw error;
@@ -232,7 +240,8 @@ export const DVIRForm: React.FC<DVIRFormProps> = ({
             item_key: itemKey,
             severity: "major",
             status: "open",
-          });
+            organization_id: orgId,
+          } as any);
           if (defErr) throw defErr;
         }
       }
