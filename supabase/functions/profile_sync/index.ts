@@ -32,6 +32,13 @@ Deno.serve(async (req) => {
       );
     }
 
+    if (!organizationId) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'organizationId is required for multi-tenant setup' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     console.log('profile_sync: Starting sync', { clerkUserId, email, clerkRole, organizationId });
 
     // Step 1: Upsert profile using service role (atomic operation)
@@ -85,7 +92,7 @@ Deno.serve(async (req) => {
       // Insert new role
       const { error: roleInsertError } = await supabase
         .from('user_roles')
-        .insert({ user_id: profileId, role: clerkRole });
+        .insert({ user_id: profileId, role: clerkRole, organization_id: organizationId });
 
       if (roleInsertError) {
         console.error('profile_sync: Role insert failed', roleInsertError);
@@ -126,7 +133,7 @@ Deno.serve(async (req) => {
           
           const { error: ownerInsertError } = await supabase
             .from('user_roles')
-            .insert({ user_id: profileId, role: 'owner' });
+            .insert({ user_id: profileId, role: 'owner', organization_id: organizationId });
 
           if (ownerInsertError) {
             console.error('profile_sync: Owner role insert failed', ownerInsertError);
