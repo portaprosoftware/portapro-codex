@@ -1,5 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { verifyOrganization } from '../_shared/auth.ts';
+import { createRemoteJWKSet, jwtVerify } from 'https://deno.land/x/jose@v4.15.4/index.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -14,6 +16,24 @@ interface ExportFilters {
   status: string;
   documentTypes: string[];
   format: 'csv' | 'pdf';
+  organizationId: string; // Required for multi-tenant isolation
+}
+
+async function verifyClerkToken(authHeader: string | null): Promise<{ ok: boolean; sub?: string; error?: string }> {
+  try {
+    if (!authHeader) return { ok: false, error: 'Missing Authorization header' };
+    const token = authHeader.replace('Bearer ', '').trim();
+    const jwksUrl = Deno.env.get('CLERK_JWKS_URL');
+    if (!jwksUrl) return { ok: false, error: 'Missing CLERK_JWKS_URL secret' };
+
+    const JWKS = createRemoteJWKSet(new URL(jwksUrl));
+    const issuer = Deno.env.get('CLERK_ISSUER');
+
+    const { payload } = await jwtVerify(token, JWKS, issuer ? { issuer } : {});
+    return { ok: true, sub: String(payload.sub) };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : 'Invalid token' };
+  }
 }
 
 const supabase = createClient(
@@ -27,12 +47,33 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    // Verify Clerk authentication
+    const auth = await verifyClerkToken(req.headers.get('Authorization'));
+    if (!auth.ok) {
+      return new Response(JSON.stringify({ error: auth.error || 'Unauthorized' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      });
+    }
+
     const { filters }: { filters: ExportFilters } = await req.json();
+
+    // Critical security check: Validate organizationId
+    if (!filters.organizationId) {
+      return new Response(JSON.stringify({ error: 'organizationId is required' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      });
+    }
+
+    // Verify user belongs to the claimed organization
+    await verifyOrganization(auth.sub!, filters.organizationId);
+
     console.log('Exporting compliance data with filters:', filters);
 
     const records: any[] = [];
 
-    // Fetch driver credentials if license type is selected
+    // Fetch driver credentials if license type is selected - filter by organization
     if (filters.documentTypes.includes('license')) {
       const { data: licenses, error: licenseError } = await supabase
         .from('driver_credentials')
@@ -42,8 +83,9 @@ const handler = async (req: Request): Promise<Response> => {
           license_state,
           license_class,
           license_expiry_date,
-          profiles!inner(first_name, last_name, email)
-        `);
+          profiles!inner(first_name, last_name, email, organization_id)
+        `)
+        .eq('profiles.organization_id', filters.organizationId);
 
       if (licenseError) throw licenseError;
 

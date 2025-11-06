@@ -1,6 +1,8 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
+import { verifyOrganization } from '../_shared/auth.ts';
+import { createRemoteJWKSet, jwtVerify } from 'https://deno.land/x/jose@v4.15.4/index.ts';
 
 const resendApiKey = Deno.env.get('RESEND_API_KEY');
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -31,6 +33,24 @@ interface EmailRequest {
   subject: string;
   content: string;
   emailAddress?: string;
+  organizationId: string;
+}
+
+async function verifyClerkToken(authHeader: string | null): Promise<{ ok: boolean; sub?: string; error?: string }> {
+  try {
+    if (!authHeader) return { ok: false, error: 'Missing Authorization header' };
+    const token = authHeader.replace('Bearer ', '').trim();
+    const jwksUrl = Deno.env.get('CLERK_JWKS_URL');
+    if (!jwksUrl) return { ok: false, error: 'Missing CLERK_JWKS_URL secret' };
+
+    const JWKS = createRemoteJWKSet(new URL(jwksUrl));
+    const issuer = Deno.env.get('CLERK_ISSUER');
+
+    const { payload } = await jwtVerify(token, JWKS, issuer ? { issuer } : {});
+    return { ok: true, sub: String(payload.sub) };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : 'Invalid token' };
+  }
 }
 
 serve(async (req) => {
@@ -40,7 +60,27 @@ serve(async (req) => {
   }
 
   try {
-    const { customerId, subject, content, emailAddress }: EmailRequest = await req.json();
+    // Verify Clerk authentication
+    const auth = await verifyClerkToken(req.headers.get('Authorization'));
+    if (!auth.ok) {
+      return new Response(JSON.stringify({ error: auth.error || 'Unauthorized' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      });
+    }
+
+    const { customerId, subject, content, emailAddress, organizationId }: EmailRequest = await req.json();
+
+    // Critical security check: Validate organizationId
+    if (!organizationId) {
+      return new Response(JSON.stringify({ error: 'organizationId is required' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      });
+    }
+
+    // Verify user belongs to the claimed organization
+    await verifyOrganization(auth.sub!, organizationId);
 
     console.log('Email request received for customer:', customerId);
 
@@ -55,13 +95,14 @@ serve(async (req) => {
     // Initialize Supabase client
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Get customer email if not provided
+    // Get customer email if not provided - verify organization ownership
     let toEmail = emailAddress;
     if (!toEmail) {
       const { data: customer, error: customerError } = await supabase
         .from('customers')
         .select('email')
         .eq('id', customerId)
+        .eq('organization_id', organizationId) // Ensure customer belongs to this org
         .single();
 
       if (customerError || !customer?.email) {
@@ -98,7 +139,7 @@ serve(async (req) => {
     const emailData = await emailResponse.json();
     console.log('Email sent successfully via Resend:', emailData.id);
 
-    // Insert communication record into database
+    // Insert communication record into database with organization_id
     const { data: commRecord, error: commError } = await supabase
       .from('customer_communications')
       .insert({
@@ -109,6 +150,7 @@ serve(async (req) => {
         status: 'sent',
         sent_at: new Date().toISOString(),
         resend_email_id: emailData.id,
+        organization_id: organizationId,
       })
       .select()
       .single();

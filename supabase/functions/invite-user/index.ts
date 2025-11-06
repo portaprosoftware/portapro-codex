@@ -1,10 +1,29 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.52.0';
+import { verifyOrganization } from '../_shared/auth.ts';
+import { createRemoteJWKSet, jwtVerify } from 'https://deno.land/x/jose@v4.15.4/index.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+async function verifyClerkToken(authHeader: string | null): Promise<{ ok: boolean; sub?: string; error?: string }> {
+  try {
+    if (!authHeader) return { ok: false, error: 'Missing Authorization header' };
+    const token = authHeader.replace('Bearer ', '').trim();
+    const jwksUrl = Deno.env.get('CLERK_JWKS_URL');
+    if (!jwksUrl) return { ok: false, error: 'Missing CLERK_JWKS_URL secret' };
+
+    const JWKS = createRemoteJWKSet(new URL(jwksUrl));
+    const issuer = Deno.env.get('CLERK_ISSUER');
+
+    const { payload } = await jwtVerify(token, JWKS, issuer ? { issuer } : {});
+    return { ok: true, sub: String(payload.sub) };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : 'Invalid token' };
+  }
+}
 
 interface InviteUserRequest {
   email: string;
@@ -41,9 +60,29 @@ const handler = async (req: Request): Promise<Response> => {
 
   try {
     console.log('Starting user invitation process...');
+
+    // Verify Clerk authentication
+    const auth = await verifyClerkToken(req.headers.get('Authorization'));
+    if (!auth.ok) {
+      return new Response(JSON.stringify({ error: auth.error || 'Unauthorized' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      });
+    }
     
     const requestBody: InviteUserRequest = await req.json();
     const { email, firstName, lastName, role, phone, invitedBy, environment, redirectBase, organizationId } = requestBody;
+
+    // Critical security check: Validate organizationId
+    if (!organizationId) {
+      return new Response(JSON.stringify({ error: 'organizationId is required' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      });
+    }
+
+    // Verify user belongs to the claimed organization (only owners can invite)
+    await verifyOrganization(auth.sub!, organizationId);
 
     // Determine which Clerk key to use
     let clerkSecretKey: string | undefined;

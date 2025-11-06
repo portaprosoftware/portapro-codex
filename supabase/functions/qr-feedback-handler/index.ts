@@ -13,6 +13,7 @@ interface FeedbackRequest {
   customer_email?: string;
   customer_phone?: string;
   photo_url?: string;
+  organizationId?: string; // Optional - will be derived from unit if not provided
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -38,7 +39,7 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Get unit information for context
+    // Get unit information for context and organization_id
     const { data: unit, error: unitError } = await supabase
       .from('product_items')
       .select(`
@@ -50,6 +51,9 @@ const handler = async (req: Request): Promise<Response> => {
       .eq('id', feedbackData.unit_id)
       .single();
 
+    // Derive organization_id from unit
+    const organizationId = feedbackData.organizationId || unit?.organization_id;
+
     if (unitError || !unit) {
       console.error('Unit not found:', unitError);
       return new Response(
@@ -58,7 +62,7 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Insert feedback into database
+    // Insert feedback into database with organization_id
     const { data: feedback, error: insertError } = await supabase
       .from('qr_feedback')
       .insert({
@@ -68,7 +72,8 @@ const handler = async (req: Request): Promise<Response> => {
         customer_email: feedbackData.customer_email,
         customer_phone: feedbackData.customer_phone,
         photo_url: feedbackData.photo_url,
-        is_read: false
+        is_read: false,
+        organization_id: organizationId, // Add organization context
       })
       .select()
       .single();

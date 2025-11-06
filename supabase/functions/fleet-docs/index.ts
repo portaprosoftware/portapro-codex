@@ -1,5 +1,6 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { createRemoteJWKSet, jwtVerify } from 'https://deno.land/x/jose@v4.15.4/index.ts';
+import { verifyOrganization } from '../_shared/auth.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -47,6 +48,18 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const action = body?.action as string;
     const payload = body?.payload ?? {};
+    const organizationId = body?.organizationId;
+
+    // Critical security check: Validate organizationId
+    if (!organizationId) {
+      return new Response(JSON.stringify({ error: 'organizationId is required' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      });
+    }
+
+    // Verify user belongs to the claimed organization
+    await verifyOrganization(auth.sub!, organizationId);
 
     const supabase = adminClient();
 
