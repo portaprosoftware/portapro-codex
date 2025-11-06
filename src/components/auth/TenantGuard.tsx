@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser, useOrganizationList, useOrganization } from '@clerk/clerk-react';
-import { env } from '@/env.client';
+import { supabase } from '@/integrations/supabase/client';
 import { Loader2 } from 'lucide-react';
 
 interface TenantGuardProps {
@@ -9,18 +9,18 @@ interface TenantGuardProps {
 }
 
 /**
- * TenantGuard: Multi-tenant login enforcement
+ * TenantGuard: Wildcard Multi-tenant Subdomain Router
  * 
- * Ensures users can only access deployments where they belong to the allowed Clerk Organization(s).
+ * Enforces multi-tenant isolation using subdomain-based organization lookup.
  * 
  * Logic:
- * - Reads VITE_ALLOWED_CLERK_ORG_SLUGS (comma-separated) from env
- * - If user is authenticated:
- *   - Checks if user belongs to any allowed organization
- *   - If yes: sets that org as active and renders children
- *   - If no: signs user out and redirects to /unauthorized
- * - In development with no ALLOWED_CLERK_ORG_SLUGS: allows access for convenience
- * - In production with no ALLOWED_CLERK_ORG_SLUGS: blocks access and logs error
+ * 1. Extract subdomain from hostname (e.g., smith-rentals.portaprosoftware.com → "smith-rentals")
+ * 2. Query organizations table in Supabase for matching subdomain → clerk_org_id
+ * 3. Verify user is a member of that Clerk organization
+ * 4. If valid → set as active organization and render children
+ * 5. If unknown subdomain → redirect to portaprosoftware.com (marketing site)
+ * 6. If valid subdomain but user not member → redirect to /unauthorized
+ * 7. Localhost development → allow access with organization selector
  */
 export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
   const { user, isLoaded: userLoaded } = useUser();
@@ -57,100 +57,108 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
         return;
       }
 
-      // Parse allowed org slugs/IDs from env (comma-separated)
-      const allowedSlugsRaw = env.ALLOWED_CLERK_ORG_SLUGS?.trim() || '';
-      const allowedValues = allowedSlugsRaw 
-        ? allowedSlugsRaw.split(',').map(s => s.trim()).filter(Boolean)
-        : [];
+      // STEP 1: Extract subdomain from hostname
+      const hostname = window.location.hostname;
+      const isLocalhost = hostname === 'localhost' || hostname.startsWith('127.0.0.1');
+      const isMainDomain = hostname === 'portaprosoftware.com' || hostname === 'www.portaprosoftware.com';
       
-      // Normalize: org IDs (org_xxx) stay as-is, slugs become lowercase
-      const normalizedAllowed = allowedValues.map(v => 
-        v.startsWith('org_') ? v : v.toLowerCase()
-      );
-
-      // DEBUG MODE: Activate with ?tenant_debug=1 (works in dev and prod)
-      const debugMode = env.isDev || new URLSearchParams(window.location.search).get('tenant_debug') === '1';
+      let subdomain: string | null = null;
       
-      if (debugMode) {
-        console.log('🔍 TENANT GUARD DEBUG:', {
-          rawEnvValue: allowedSlugsRaw,
-          parsedValues: allowedValues,
-          normalizedAllowed,
-          activeOrgId: organization?.id || null,
-          activeOrgSlug: organization?.slug || null,
-          userMemberships: (userMemberships?.data || []).map(m => ({
-            id: m.organization.id,
-            slug: m.organization.slug
-          })),
-          hostname: window.location.hostname,
-          currentPath,
-          debugModeActive: true
-        });
-      }
-
-      // PRODUCTION SAFETY: Block if no allowed orgs configured
-      if (env.isProd && normalizedAllowed.length === 0) {
-        console.error('❌ CRITICAL: VITE_ALLOWED_CLERK_ORG_SLUGS not configured in production!');
-        navigate('/unauthorized');
-        return;
-      }
-
-      // DEV CONVENIENCE: Allow access if no orgs configured in development
-      if (env.isDev && normalizedAllowed.length === 0) {
-        console.warn('⚠️ DEV MODE: No VITE_ALLOWED_CLERK_ORG_SLUGS set, allowing all users');
-        setIsChecking(false);
-        setHasChecked(true);
-        return;
-      }
-
-      // Check if user belongs to any allowed organization (match by slug OR id)
-      const memberships = userMemberships?.data || [];
-      const matchedMembership = memberships.find(membership => {
-        const orgSlugLc = membership.organization.slug?.toLowerCase() || '';
-        const orgId = membership.organization.id || '';
-        return normalizedAllowed.includes(orgSlugLc) || normalizedAllowed.includes(orgId);
-      });
-
-      // FALLBACK: If no membership found, check if active organization matches
-      // This handles cases where userMemberships might be empty but org context exists
-      let hasAccess = !!matchedMembership;
-      if (!matchedMembership && organization) {
-        const activeSlug = organization.slug?.toLowerCase() || '';
-        const activeId = organization.id || '';
-        hasAccess = normalizedAllowed.includes(activeSlug) || normalizedAllowed.includes(activeId);
+      if (isLocalhost) {
+        // Localhost development: Use query param or first available org
+        const urlParams = new URLSearchParams(window.location.search);
+        subdomain = urlParams.get('org') || null;
         
-        if (debugMode && hasAccess) {
-          console.info('✅ Access granted via active organization fallback:', {
-            activeOrgId: activeId,
-            activeOrgSlug: organization.slug
-          });
+        if (!subdomain) {
+          console.warn('⚠️ LOCALHOST DEV: No ?org= parameter. Using first available organization.');
+          // Allow access with first available org in localhost
+          if (userMemberships?.data?.[0]) {
+            const firstOrg = userMemberships.data[0].organization;
+            console.info('✅ LOCALHOST: Setting first org as active:', firstOrg.slug);
+            await setActive({ organization: firstOrg.id });
+          }
+          setIsChecking(false);
+          setHasChecked(true);
+          return;
+        }
+      } else if (isMainDomain) {
+        // Main domain: redirect authenticated users to their org subdomain
+        console.info('🔄 Main domain detected. Redirecting to organization subdomain...');
+        const firstMembership = userMemberships?.data?.[0];
+        if (firstMembership?.organization?.slug) {
+          window.location.href = `https://${firstMembership.organization.slug}.portaprosoftware.com/dashboard`;
+          return;
+        } else {
+          console.error('❌ User has no organization memberships');
+          navigate('/unauthorized');
+          return;
+        }
+      } else {
+        // Extract subdomain from production hostname
+        const parts = hostname.split('.');
+        if (parts.length >= 3) {
+          subdomain = parts[0]; // e.g., "smith-rentals" from "smith-rentals.portaprosoftware.com"
+        } else {
+          console.error('❌ Invalid hostname format:', hostname);
+          window.location.href = 'https://portaprosoftware.com';
+          return;
         }
       }
 
-      if (!hasAccess) {
-        // User doesn't belong to any allowed org - redirect to unauthorized
+      // STEP 2: Query organizations table for matching subdomain
+      console.log('🔍 Looking up organization for subdomain:', subdomain);
+      
+      const { data: orgData, error: orgError } = await supabase
+        .from('organizations')
+        .select('clerk_org_id, name, subdomain, is_active')
+        .eq('subdomain', subdomain)
+        .eq('is_active', true)
+        .single();
+
+      if (orgError || !orgData) {
+        console.error('❌ Unknown subdomain:', subdomain, orgError);
+        // Unknown subdomain → redirect to marketing site
+        if (!isLocalhost) {
+          window.location.href = 'https://portaprosoftware.com';
+        } else {
+          navigate('/unauthorized');
+        }
+        return;
+      }
+
+      const expectedClerkOrgId = orgData.clerk_org_id;
+      console.log('✅ Found organization:', {
+        name: orgData.name,
+        subdomain: orgData.subdomain,
+        clerkOrgId: expectedClerkOrgId
+      });
+
+      // STEP 3: Verify user is a member of this organization
+      const memberships = userMemberships?.data || [];
+      const matchedMembership = memberships.find(m => m.organization.id === expectedClerkOrgId);
+
+      if (!matchedMembership) {
         console.warn('🚫 TENANT ACCESS DENIED:', {
-          rawEnvValue: allowedSlugsRaw,
           userId: user.id,
           email: user.primaryEmailAddress?.emailAddress,
-          activeOrgId: organization?.id || null,
-          activeOrgSlug: organization?.slug || null,
-          userMemberships: memberships.map(m => ({ id: m.organization.id, slug: m.organization.slug })),
-          allowedNormalized: normalizedAllowed,
-          deployment: window.location.hostname
+          requiredOrgId: expectedClerkOrgId,
+          userMemberships: memberships.map(m => ({ 
+            id: m.organization.id, 
+            slug: m.organization.slug 
+          })),
+          subdomain
         });
         
-        // Redirect to unauthorized page
         navigate('/unauthorized', { replace: true });
         setIsChecking(false);
         setHasChecked(true);
         return;
       }
 
-      // User has access - set active org if not already active (only if we have a membership)
-      if (matchedMembership && organization?.id !== matchedMembership.organization.id) {
+      // STEP 4: Set active organization if not already active
+      if (organization?.id !== expectedClerkOrgId) {
         console.info('✅ Setting active organization:', matchedMembership.organization.slug);
-        await setActive({ organization: matchedMembership.organization.id });
+        await setActive({ organization: expectedClerkOrgId });
       }
 
       setIsChecking(false);
@@ -168,7 +176,7 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <p className="text-sm text-muted-foreground">Verifying access...</p>
+          <p className="text-sm text-muted-foreground">Looking up organization...</p>
         </div>
       </div>
     );
