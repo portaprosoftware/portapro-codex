@@ -11,6 +11,8 @@ import { Switch } from '@/components/ui/switch';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
+import { safeInsert } from '@/lib/supabase-helpers';
 
 const US_STATES = [
   { value: 'AL', label: 'Alabama' },
@@ -131,6 +133,7 @@ const CUSTOMER_TYPES = [
 export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { orgId } = useOrganizationId();
 
   const form = useForm<CustomerFormData>({
     resolver: zodResolver(customerSchema),
@@ -168,6 +171,10 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
 
   const createCustomerMutation = useMutation({
     mutationFn: async (customerData: CustomerFormData) => {
+      if (!orgId) {
+        throw new Error('Organization context required for multi-tenant data isolation');
+      }
+
       // Create customer - database trigger will automatically create default service location
       const customerInsertData = {
         name: customerData.name,
@@ -197,11 +204,11 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
         tax_rate_override: customerData.tax_rate_override ? (parseFloat(customerData.tax_rate_override) > 1 ? parseFloat(customerData.tax_rate_override) / 100 : parseFloat(customerData.tax_rate_override)) : null,
       };
 
-      const { data: customerData_result, error: customerError } = await supabase
-        .from('customers')
-        .insert([customerInsertData])
-        .select()
-        .single();
+      const { data: customerData_result, error: customerError } = await safeInsert(
+        'customers',
+        customerInsertData,
+        orgId
+      ).then(result => result.select().single());
 
       if (customerError) {
         console.error('❌ Customer insert error:', customerError);

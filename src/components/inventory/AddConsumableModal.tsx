@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
+import { safeInsert } from '@/lib/supabase-helpers';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -44,6 +46,7 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
 }) => {
   const [showScannerModal, setShowScannerModal] = useState(false);
   const queryClient = useQueryClient();
+  const { orgId } = useOrganizationId();
   const form = useForm<ConsumableFormData>({
     defaultValues: {
       name: '',
@@ -60,6 +63,10 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
 
   const createConsumable = useMutation({
     mutationFn: async (data: ConsumableFormData) => {
+      if (!orgId) {
+        throw new Error('Organization context required for multi-tenant data isolation');
+      }
+
       console.log('Creating consumable with data:', data);
       
       // Parse and validate cost/price
@@ -74,9 +81,9 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
       const totalOnHand = data.locationStock?.reduce((sum, loc) => sum + loc.onHand, 0) || 0;
       
       // Insert the main consumable record
-      const { data: consumableData, error: consumableError } = await supabase
-        .from('consumables')
-        .insert([{
+      const { data: consumableData, error: consumableError } = await safeInsert(
+        'consumables',
+        {
           name: data.name,
           description: data.description,
           category: data.category,
@@ -87,9 +94,9 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
           reorder_threshold: 0,
           is_active: data.is_active,
           notes: data.notes
-        }])
-        .select()
-        .maybeSingle();
+        },
+        orgId
+      ).then(result => result.select().maybeSingle());
       
       if (consumableError) {
         console.error('Error creating consumable:', consumableError);
@@ -115,9 +122,11 @@ export const AddConsumableModal: React.FC<AddConsumableModalProps> = ({
         if (validLocationStockInserts.length > 0) {
           console.log('Creating location stock records:', validLocationStockInserts);
 
-          const { error: insertError } = await supabase
-            .from('consumable_location_stock')
-            .insert(validLocationStockInserts);
+          const { error: insertError } = await safeInsert(
+            'consumable_location_stock',
+            validLocationStockInserts,
+            orgId
+          );
           
           if (insertError) {
             console.warn('Error creating location stock (non-fatal):', insertError);

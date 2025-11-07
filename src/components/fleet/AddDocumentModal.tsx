@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
+import { safeInsert } from "@/lib/supabase-helpers";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -57,11 +59,16 @@ export const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
   const [isVehicleSelectorOpen, setIsVehicleSelectorOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { orgId } = useOrganizationId();
 
   // Remove the document types query since we're using DocumentTypeSelector component
 
   const uploadMutation = useMutation({
     mutationFn: async (data: FormData) => {
+      if (!orgId) {
+        throw new Error('Organization context required for multi-tenant data isolation');
+      }
+
       let filePath = null;
       let fileName = null;
       let fileSize = null;
@@ -83,9 +90,9 @@ export const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
       }
 
       // Create document record
-      const { error: insertError } = await supabase
-        .from("vehicle_compliance_documents")
-        .insert([{
+      const { error: insertError } = await safeInsert(
+        "vehicle_compliance_documents",
+        {
           vehicle_id: data.vehicle_id,
           document_type_id: data.document_type_id,
           expiration_date: data.expiration_date?.toISOString().split('T')[0] || null,
@@ -94,7 +101,9 @@ export const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
           file_path: filePath,
           file_size: fileSize,
           source_context: isVehicleContextLocked ? 'vehicle_profile' : null,
-        }]);
+        },
+        orgId
+      );
 
       if (insertError) throw insertError;
     },

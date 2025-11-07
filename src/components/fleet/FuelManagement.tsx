@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
+import { safeInsert } from "@/lib/supabase-helpers";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -48,6 +50,7 @@ export const FuelManagement = () => {
   const [showAddLogModal, setShowAddLogModal] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState<string>("");
   const queryClient = useQueryClient();
+  const { orgId } = useOrganizationId();
 
   const { data: vehicles } = useQuery({
     queryKey: ["vehicles"],
@@ -129,11 +132,15 @@ export const FuelManagement = () => {
       fuel_station?: string;
       notes?: string;
     }) => {
-      const { data, error } = await supabase
-        .from("fuel_logs")
-        .insert([logData])
-        .select()
-        .single();
+      if (!orgId) {
+        throw new Error('Organization context required for multi-tenant data isolation');
+      }
+
+      const { data, error } = await safeInsert(
+        "fuel_logs",
+        logData,
+        orgId
+      ).then(result => result.select().single());
       
       if (error) throw error;
       return data;

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
+import { safeInsert } from '@/lib/supabase-helpers';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -90,6 +92,7 @@ export const RequestsTab: React.FC<RequestsTabProps> = ({ customerId }) => {
   });
 
   const queryClient = useQueryClient();
+  const { orgId } = useOrganizationId();
 
   // Fetch existing requests
   const { data: requests = [], isLoading } = useQuery({
@@ -126,9 +129,13 @@ export const RequestsTab: React.FC<RequestsTabProps> = ({ customerId }) => {
   // Submit new request mutation
   const submitRequestMutation = useMutation({
     mutationFn: async (requestData: any) => {
-      const { data, error } = await supabase
-        .from('service_requests')
-        .insert([{
+      if (!orgId) {
+        throw new Error('Organization context required for multi-tenant data isolation');
+      }
+
+      const { data, error } = await safeInsert(
+        'service_requests',
+        {
           customer_id: customerId,
           title: `${selectedRequestType} Request`,
           description: requestData.special_instructions || `${selectedRequestType} request`,
@@ -138,9 +145,9 @@ export const RequestsTab: React.FC<RequestsTabProps> = ({ customerId }) => {
           contact_phone: requestData.contact_phone,
           priority: requestData.urgency,
           location: requestData.location_id || null
-        }])
-        .select()
-        .single();
+        },
+        orgId
+      ).then(result => result.select().single());
 
       if (error) throw error;
       return data;
