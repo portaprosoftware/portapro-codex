@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useUser, useOrganization, useClerk } from '@clerk/clerk-react';
+import { useUser, useOrganization, useClerk, useOrganizationList } from '@clerk/clerk-react';
 import { Loader2 } from 'lucide-react';
 import { useSubdomainOrg } from '@/hooks/useSubdomainOrg';
 
@@ -21,6 +21,9 @@ interface TenantGuardProps {
 export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
   const { user, isLoaded: userLoaded } = useUser();
   const { organization, isLoaded: orgLoaded } = useOrganization();
+  const { userMemberships, isLoaded: membershipLoaded } = useOrganizationList({
+    userMemberships: { infinite: true }
+  });
   const { setActive } = useClerk();
   const navigate = useNavigate();
   const { subdomain, organization: subdomainOrg, isLoading: orgLookupLoading, isLocalhost, isMainDomain } = useSubdomainOrg();
@@ -36,7 +39,7 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
                         currentPath.startsWith('/auth/');
 
   // WAIT until everything is loaded
-  if (!userLoaded || !orgLoaded || orgLookupLoading) {
+  if (!userLoaded || !orgLoaded || !membershipLoaded || orgLookupLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
@@ -60,11 +63,14 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
 
   // Main domain: redirect to first organization's subdomain
   if (isMainDomain) {
-    if (!organization) {
+    const memberships = userMemberships?.data || [];
+    if (memberships.length === 0) {
       navigate('/no-portal-found', { replace: true });
       return null;
     }
-    window.location.href = `https://${organization.slug}.portaprosoftware.com/dashboard`;
+    // Use first organization membership to redirect
+    const primaryOrg = memberships[0].organization;
+    window.location.href = `https://${primaryOrg.slug}.portaprosoftware.com/dashboard`;
     return null;
   }
 
