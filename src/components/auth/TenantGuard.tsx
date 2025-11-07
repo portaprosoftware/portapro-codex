@@ -1,37 +1,32 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useUser, useOrganization } from '@clerk/clerk-react';
+import { useUser, useOrganization, useClerk } from '@clerk/clerk-react';
 import { Loader2 } from 'lucide-react';
+import { useSubdomainOrg } from '@/hooks/useSubdomainOrg';
 
 interface TenantGuardProps {
   children: React.ReactNode;
 }
 
 /**
- * TenantGuard: Simple subdomain-based tenant isolation
+ * TenantGuard: Multi-tenant isolation with setActive FIRST approach
  * 
- * Waits for Clerk to hydrate, then checks:
- * 1. Is user signed in?
- * 2. Does user have an active organization?
- * 3. Does organization.slug match current subdomain?
+ * Flow:
+ * 1. User signed in?
+ * 2. Look up subdomain → expected Clerk org ID
+ * 3. FAST PATH: If current org.slug === subdomain → allow immediately
+ * 4. SLOW PATH: Call setActive({ organization }) to switch context
+ * 5. Only show unauthorized if setActive fails
  */
 export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
   const { user, isLoaded: userLoaded } = useUser();
   const { organization, isLoaded: orgLoaded } = useOrganization();
+  const { setActive } = useClerk();
   const navigate = useNavigate();
-
-  // Extract subdomain from hostname
-  const hostname = window.location.hostname;
-  const parts = hostname.split('.');
-  const subdomain = parts.length > 2 ? parts[0] : null;
-
-  // Handle localhost development
-  const isLocalhost = hostname === 'localhost' || hostname.startsWith('127.0.0.1');
+  const { subdomain, organization: subdomainOrg, isLoading: orgLookupLoading, isLocalhost, isMainDomain } = useSubdomainOrg();
   
-  // Handle main domain (app.portaprosoftware.com or portaprosoftware.com)
-  const isMainDomain = hostname === 'portaprosoftware.com' || 
-                       hostname === 'app.portaprosoftware.com' ||
-                       hostname === 'www.portaprosoftware.com';
+  const [isSettingActive, setIsSettingActive] = useState(false);
+  const [hasAttemptedSetActive, setHasAttemptedSetActive] = useState(false);
 
   // Skip checks on public routes
   const currentPath = window.location.pathname;
@@ -40,8 +35,8 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
                         currentPath === '/auth' || 
                         currentPath.startsWith('/auth/');
 
-  // WAIT until Clerk is fully hydrated
-  if (!userLoaded || !orgLoaded) {
+  // WAIT until everything is loaded
+  if (!userLoaded || !orgLoaded || orgLookupLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
@@ -69,7 +64,6 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
       navigate('/no-portal-found', { replace: true });
       return null;
     }
-    // Redirect to their organization's subdomain
     window.location.href = `https://${organization.slug}.portaprosoftware.com/dashboard`;
     return null;
   }
@@ -79,23 +73,62 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
     return <>{children}</>;
   }
 
-  // If user is signed in but has no org → show no-portal-found
-  if (!organization) {
+  // If no subdomain org found → show no-portal-found
+  if (!subdomainOrg) {
     navigate('/no-portal-found', { replace: true });
     return null;
   }
 
-  // If user has an org but it doesn't match the subdomain → unauthorized
-  if (organization.slug !== subdomain) {
-    console.warn('🚫 Org slug mismatch:', {
-      expected: subdomain,
-      actual: organization.slug,
-      userId: user.id
-    });
+  // FAST PATH: If current org already matches subdomain → allow immediately
+  if (organization && organization.slug === subdomain) {
+    return <>{children}</>;
+  }
+
+  // SLOW PATH: Try to setActive to the expected org
+  // This runs when user is logged in but hasn't selected the right org yet
+  useEffect(() => {
+    if (hasAttemptedSetActive || isSettingActive || !subdomainOrg) return;
+    if (organization && organization.slug === subdomain) return; // Already correct
+
+    const switchToOrg = async () => {
+      try {
+        setIsSettingActive(true);
+        console.log('🔄 Switching to organization:', subdomainOrg.clerk_org_id);
+        
+        await setActive({ organization: subdomainOrg.clerk_org_id });
+        
+        console.log('✅ Successfully switched to organization');
+        setHasAttemptedSetActive(true);
+      } catch (error) {
+        console.error('❌ Failed to switch organization:', error);
+        setHasAttemptedSetActive(true);
+        navigate('/unauthorized', { replace: true });
+      } finally {
+        setIsSettingActive(false);
+      }
+    };
+
+    switchToOrg();
+  }, [subdomain, subdomainOrg, organization, hasAttemptedSetActive, isSettingActive, setActive, navigate]);
+
+  // Show loading while switching orgs
+  if (isSettingActive || (!hasAttemptedSetActive && organization?.slug !== subdomain)) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-sm text-muted-foreground">Switching organization...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If we've attempted setActive and still don't match → unauthorized
+  if (hasAttemptedSetActive && organization?.slug !== subdomain) {
     navigate('/unauthorized', { replace: true });
     return null;
   }
 
-  // All checks passed - render children
+  // All checks passed
   return <>{children}</>;
 };
