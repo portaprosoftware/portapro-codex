@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import type { ConsumableCategory } from '@/lib/consumableCategories';
 import { CONSUMABLE_CATEGORIES } from '@/lib/consumableCategories';
 import { useOrganizationId } from './useOrganizationId';
+import { safeInsert } from '@/lib/supabase-helpers';
 
 export interface ItemCodeCategory {
   [key: string]: string; // e.g., {"1000": "Standard Units", "2000": "ADA Units"}
@@ -41,23 +42,49 @@ export const useCompanySettings = () => {
       // Bootstrap company_settings if missing
       if (!data) {
         console.info('📋 Bootstrapping company_settings for org:', orgId);
-        const { data: inserted, error: upsertErr } = await supabase
-          .from('company_settings')
-          .upsert({
-            organization_id: orgId,
-            company_name: 'Company',
-            item_code_categories: {},
-            next_item_numbers: {},
-            company_timezone: 'America/New_York',
-            consumable_categories: [],
-          }, { onConflict: 'organization_id' })
-          .select('*')
-          .single();
         
-        if (upsertErr) throw upsertErr;
+        const bootstrapData = {
+          company_name: 'Company',
+          item_code_categories: {},
+          next_item_numbers: {},
+          company_timezone: 'America/New_York',
+          consumable_categories: [],
+        };
+        
+        const insertResult = await safeInsert('company_settings', bootstrapData, orgId);
+        
+        if (insertResult.error) {
+          // Handle unique constraint violation (record already exists)
+          if (insertResult.error.code === '23505') {
+            const { data: existing } = await supabase
+              .from('company_settings')
+              .select('*')
+              .eq('organization_id', orgId)
+              .maybeSingle();
+            
+            if (existing) {
+              return {
+                ...existing,
+                consumable_categories: Array.isArray(existing.consumable_categories) 
+                  ? existing.consumable_categories as unknown as ConsumableCategory[] 
+                  : []
+              } as CompanySettings;
+            }
+          }
+          throw insertResult.error;
+        }
+        
+        const { data: inserted } = await insertResult.select('*').maybeSingle();
+        
+        if (!inserted) {
+          throw new Error('Failed to bootstrap company_settings');
+        }
+        
         return {
           ...inserted,
-          consumable_categories: Array.isArray(inserted.consumable_categories) ? inserted.consumable_categories as unknown as ConsumableCategory[] : []
+          consumable_categories: Array.isArray(inserted.consumable_categories) 
+            ? inserted.consumable_categories as unknown as ConsumableCategory[] 
+            : []
         } as CompanySettings;
       }
 
