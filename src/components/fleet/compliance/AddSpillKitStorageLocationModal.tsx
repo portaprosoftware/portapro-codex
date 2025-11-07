@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { useOrganizationId } from "@/hooks/useOrganizationId";
+import { safeInsert, safeUpdate } from "@/lib/supabase-helpers";
 
 interface AddSpillKitStorageLocationModalProps {
   open: boolean;
@@ -101,15 +102,20 @@ export const AddSpillKitStorageLocationModal: React.FC<AddSpillKitStorageLocatio
 
       let error;
       if (location?.id) {
-        ({ error } = await supabase
-          .from('spill_kit_storage_locations')
-          .update(payload)
-          .eq('id', location.id)
-          .eq('organization_id', orgId));
+        // Use safeUpdate helper for updates
+        ({ error } = await safeUpdate(
+          'spill_kit_storage_locations',
+          payload,
+          orgId,
+          { id: location.id }
+        ));
       } else {
-        ({ error } = await supabase
-          .from('spill_kit_storage_locations')
-          .insert([{ ...payload, organization_id: orgId }]));
+        // Use safeInsert helper for inserts
+        ({ error } = await safeInsert(
+          'spill_kit_storage_locations',
+          payload,
+          orgId
+        ));
       }
 
       if (error) throw error;

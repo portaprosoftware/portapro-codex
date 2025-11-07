@@ -13,6 +13,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ChevronDown, ChevronRight, Truck, Calendar, User } from "lucide-react";
 import { useOrganizationId } from '@/hooks/useOrganizationId';
+import { safeInsert } from "@/lib/supabase-helpers";
 
 interface DVIRFormProps {
   open: boolean;
@@ -207,9 +208,10 @@ export const DVIRForm: React.FC<DVIRFormProps> = ({
         };
       });
 
-      const { data: dvir, error } = await supabase
-        .from("dvir_reports")
-        .insert({
+      // Use safeInsert helper for DVIR report, then select the inserted record
+      const insertResult = await safeInsert(
+        'dvir_reports',
+        {
           asset_type: assetType,
           asset_id: assetId,
           driver_id: driverId || null,
@@ -222,26 +224,37 @@ export const DVIRForm: React.FC<DVIRFormProps> = ({
           major_defect_present: majorDefectPresent,
           out_of_service_flag: majorDefectPresent,
           submitted_at: new Date().toISOString(),
-          organization_id: orgId,
-        } as any)
-        .select("*")
+        },
+        orgId
+      );
+      
+      if (insertResult.error) throw insertResult.error;
+      
+      // Get the inserted record
+      const { data: dvir, error } = await (supabase as any)
+        .from('dvir_reports')
+        .select('*')
+        .eq('id', insertResult.data?.[0]?.id)
         .single();
       if (error) throw error;
 
-      // Create defect records for failed items
+      // Create defect records for failed items using safeInsert
       if (majorDefectPresent && dvir) {
         const failedItems = Object.entries(inspectionItems).filter(([_, value]) => value.status === "fail");
         
         for (const [itemKey, _] of failedItems) {
-          const { error: defErr } = await supabase.from("dvir_defects").insert({
-            dvir_id: dvir.id,
-            asset_type: assetType,
-            asset_id: assetId,
-            item_key: itemKey,
-            severity: "major",
-            status: "open",
-            organization_id: orgId,
-          } as any);
+          const { error: defErr } = await safeInsert(
+            'dvir_defects',
+            {
+              dvir_id: dvir.id,
+              asset_type: assetType,
+              asset_id: assetId,
+              item_key: itemKey,
+              severity: "major",
+              status: "open",
+            },
+            orgId
+          );
           if (defErr) throw defErr;
         }
       }

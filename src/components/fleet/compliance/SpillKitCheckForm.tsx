@@ -6,6 +6,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useOrganizationId } from '@/hooks/useOrganizationId';
+import { safeInsert } from "@/lib/supabase-helpers";
 
 type Props = {
   onSaved?: () => void;
@@ -61,14 +62,18 @@ export const SpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }) => {
     }
     
     try {
-      const { error } = await supabase.from("vehicle_spill_kit_checks").insert({
-        vehicle_id: vehicleId,
-        checked_by_clerk: "dispatch", // placeholder
-        has_kit: hasKit,
-        contents: selectedContents,
-        notes,
-        organization_id: orgId,
-      } as any);
+      // Use safeInsert helper
+      const { error } = await safeInsert(
+        'vehicle_spill_kit_checks',
+        {
+          vehicle_id: vehicleId,
+          checked_by_clerk: "dispatch", // placeholder
+          has_kit: hasKit,
+          contents: selectedContents,
+          notes,
+        },
+        orgId
+      );
       
       if (error) {
         console.error("Failed to save spill kit check", error);

@@ -18,6 +18,7 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { MapPin, Building } from "lucide-react";
 import { useOrganizationId } from "@/hooks/useOrganizationId";
+import { safeInsert } from "@/lib/supabase-helpers";
 
 const US_STATES = [
   { value: 'AL', label: 'Alabama' },
@@ -156,9 +157,12 @@ export function AddStorageSiteModal({ open, onOpenChange, onClose }: AddStorageS
         }
       }
 
-      const { error } = await supabase
-        .from('storage_locations')
-        .insert([{ ...payload, organization_id: orgId }]);
+      // Use safeInsert helper
+      const { error } = await safeInsert(
+        'storage_locations',
+        payload,
+        orgId
+      );
       
       if (error) throw error;
     },
