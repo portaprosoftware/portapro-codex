@@ -18,6 +18,8 @@ import {
   DrawerHeader, 
   DrawerTitle 
 } from "@/components/ui/drawer";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
+import { safeInsert } from "@/lib/supabase-helpers";
 import { CalendarDays, Plus, X, AlertTriangle, Wrench, Package, Truck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -25,7 +27,6 @@ import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { useUser } from "@clerk/clerk-react";
 import { format } from "date-fns";
-import { useOrganizationId } from "@/hooks/useOrganizationId";
 import { WorkOrderChecklistSection } from "./WorkOrderChecklistSection";
 import { WorkOrderPartsSection } from "./WorkOrderPartsSection";
 import { WorkOrderLaborSection } from "./WorkOrderLaborSection";
@@ -318,14 +319,17 @@ export const AddWorkOrderDrawer: React.FC<AddWorkOrderDrawerProps> = ({
       }
 
       // Insert initial history record
-      await supabase.from('work_order_history').insert({
-        work_order_id: workOrder.id,
-        from_status: null,
-        to_status: 'open',
-        changed_by: 'system',
-        note: `Work order created from ${form.source}`,
-        organization_id: orgId
-      } as any);
+      await safeInsert(
+        'work_order_history',
+        {
+          work_order_id: workOrder.id,
+          from_status: null,
+          to_status: 'open',
+          changed_by: 'system',
+          note: `Work order created from ${form.source}`,
+        },
+        orgId
+      );
 
       // Invalidate relevant queries
       queryClient.invalidateQueries({ queryKey: ['work-orders'] });

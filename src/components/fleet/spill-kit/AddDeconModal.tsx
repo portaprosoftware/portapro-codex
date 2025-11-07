@@ -9,6 +9,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Badge } from '@/components/ui/badge';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
+import { safeInsert } from '@/lib/supabase-helpers';
 
 interface AddDeconModalProps {
   open: boolean;
@@ -28,6 +30,7 @@ export function AddDeconModal({
   const isVehicleContextLocked = !!vehicleContextId;
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { orgId } = useOrganizationId();
 
   const [formData, setFormData] = useState({
     vehicle_id: vehicleContextId || '',
@@ -40,9 +43,13 @@ export function AddDeconModal({
 
   const addDeconMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      const { error } = await supabase
-        .from('decon_logs')
-        .insert([{
+      if (!orgId) {
+        throw new Error('Organization context required for multi-tenant data isolation');
+      }
+
+      const { error } = await safeInsert(
+        'decon_logs',
+        {
           vehicle_id: data.vehicle_id || null,
           incident_id: data.incident_id || null,
           post_inspection_status: data.post_inspection_status,
@@ -51,7 +58,9 @@ export function AddDeconModal({
           vehicle_areas: data.vehicle_areas,
           performed_at: new Date().toISOString(),
           source_context: isVehicleContextLocked ? 'vehicle_profile' : null,
-        }]);
+        },
+        orgId
+      );
 
       if (error) throw error;
     },

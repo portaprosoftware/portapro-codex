@@ -13,6 +13,8 @@ import { useToast } from "@/hooks/use-toast";
 import { PhotoCapture } from "./PhotoCapture";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
+import { safeInsert } from "@/lib/supabase-helpers";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { X, Plus, Camera, AlertTriangle, Truck, MapPin, Info, FileText } from "lucide-react";
 import { StockVehicleSelectionModal } from "../StockVehicleSelectionModal";
@@ -21,7 +23,6 @@ import { WeatherSelectionModal } from "./WeatherSelectionModal";
 import { SpillTypeSelectionModal } from "./SpillTypeSelectionModal";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { Cloud, Loader2, AlertOctagon } from "lucide-react";
-import { useOrganizationId } from "@/hooks/useOrganizationId";
 
 type Props = {
   onSaved?: () => void;
@@ -306,13 +307,15 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
             .from('incident-photos')
             .getPublicUrl(fileName);
 
-          await supabase
-            .from("incident_photos")
-            .insert({
+          await safeInsert(
+            "incident_photos",
+            {
               incident_id: incident.id,
               photo_url: publicUrl,
               photo_type: "incident_photo",
-            });
+            },
+            orgId
+          );
         }
       }
 
@@ -335,13 +338,15 @@ export const EnhancedIncidentForm: React.FC<Props> = ({ onSaved, onCancel }) => 
             .from('incident-photos')
             .getPublicUrl(fileName);
 
-          await supabase
-            .from("incident_photos")
-            .insert({
+          await safeInsert(
+            "incident_photos",
+            {
               incident_id: incident.id,
               photo_url: publicUrl,
               photo_type: "incident_document",
-            });
+            },
+            orgId
+          );
         }
       }
 

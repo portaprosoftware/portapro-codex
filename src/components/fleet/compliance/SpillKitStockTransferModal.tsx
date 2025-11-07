@@ -10,6 +10,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { useUser } from "@clerk/clerk-react";
 import { ArrowRight } from "lucide-react";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
+import { safeInsert } from "@/lib/supabase-helpers";
 
 interface SpillKitStockTransferModalProps {
   open: boolean;
@@ -28,6 +30,7 @@ export const SpillKitStockTransferModal: React.FC<SpillKitStockTransferModalProp
 }) => {
   const { toast } = useToast();
   const { user } = useUser();
+  const { orgId } = useOrganizationId();
   const [loading, setLoading] = useState(false);
   
   const [formData, setFormData] = useState({
@@ -102,9 +105,9 @@ export const SpillKitStockTransferModal: React.FC<SpillKitStockTransferModalProp
       }
 
       // Create transfer record
-      const { error: transferError } = await supabase
-        .from('spill_kit_stock_transfers')
-        .insert([{
+      const { error: transferError } = await safeInsert(
+        'spill_kit_stock_transfers',
+        {
           inventory_item_id: formData.inventory_item_id,
           from_location_id: formData.from_location_id || null,
           to_location_id: formData.to_location_id,
@@ -112,7 +115,9 @@ export const SpillKitStockTransferModal: React.FC<SpillKitStockTransferModalProp
           transfer_reason: formData.transfer_reason || null,
           transferred_by: user?.id || null,
           notes: formData.notes || null
-        }]);
+        },
+        orgId
+      );
 
       if (transferError) throw transferError;
 
@@ -148,13 +153,15 @@ export const SpillKitStockTransferModal: React.FC<SpillKitStockTransferModalProp
 
         if (toError) throw toError;
       } else {
-        const { error: insertError } = await supabase
-          .from('spill_kit_location_stock')
-          .insert([{
+        const { error: insertError } = await safeInsert(
+          'spill_kit_location_stock',
+          {
             inventory_item_id: formData.inventory_item_id,
             storage_location_id: formData.to_location_id,
             quantity
-          }]);
+          },
+          orgId
+        );
 
         if (insertError) throw insertError;
       }

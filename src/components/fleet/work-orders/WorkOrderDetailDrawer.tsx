@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { safeInsert } from "@/lib/supabase-helpers";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
@@ -215,14 +216,17 @@ export const WorkOrderDetailDrawer: React.FC<WorkOrderDetailDrawerProps> = ({
       }
 
       // Insert history record
-      await supabase.from("work_order_history").insert({
-        work_order_id: workOrderId,
-        from_status: workOrder.status,
-        to_status: "completed",
-        changed_by: user?.id,
-        note: "Work order completed",
-        organization_id: orgId
-      } as any);
+      await safeInsert(
+        "work_order_history",
+        {
+          work_order_id: workOrderId,
+          from_status: workOrder.status,
+          to_status: "completed",
+          changed_by: user?.id,
+          note: "Work order completed",
+        },
+        orgId
+      );
     },
     onSuccess: () => {
       toast({ title: "Work order completed successfully" });

@@ -13,6 +13,7 @@ import { useGeolocation } from "@/hooks/useGeolocation";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Input } from "@/components/ui/input";
 import { useOrganizationId } from "@/hooks/useOrganizationId";
+import { safeInsert } from "@/lib/supabase-helpers";
 import { useOfflineSync } from "@/hooks/useOfflineSync";
 import { Badge } from "@/components/ui/badge";
 
@@ -271,13 +272,15 @@ export const DriverIncidentLog: React.FC<Props> = ({ onSaved, onCancel }) => {
             .from('incident-photos')
             .getPublicUrl(fileName);
 
-          await supabase
-            .from("incident_photos")
-            .insert({
+          await safeInsert(
+            "incident_photos",
+            {
               incident_id: incident.id,
               photo_url: publicUrl,
               photo_type: "incident_photo",
-            });
+            },
+            orgId
+          );
         }
       }
 

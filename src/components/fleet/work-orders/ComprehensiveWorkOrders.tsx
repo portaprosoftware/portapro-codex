@@ -18,9 +18,10 @@ import { WorkOrderDetailDrawer } from "./WorkOrderDetailDrawer";
 import { BulkActionsDialog } from "./BulkActionsDialog";
 import { BulkActionBar } from "./BulkActionBar";
 import { useToast } from "@/hooks/use-toast";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
+import { safeInsert } from "@/lib/supabase-helpers";
 import { WorkOrder } from "./types";
 import { canMoveToStatus, getStatusTransitionMessage } from "@/lib/workOrderRules";
-import { useOrganizationId } from "@/hooks/useOrganizationId";
 import { exportWorkOrderToPDF } from "@/lib/workOrderExport";
 import { exportWorkOrdersToCSV } from "@/utils/workOrderExport";
 import { useBulkWorkOrderActions } from "@/hooks/workOrders/useBulkWorkOrderActions";
@@ -249,14 +250,17 @@ const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
       
       // Insert history record
       const historyMessage = getStatusTransitionMessage(workOrder.status, newStatus);
-      await supabase.from('work_order_history').insert({
-        work_order_id: workOrderId,
-        from_status: workOrder.status,
-        to_status: newStatus,
-        changed_by: user?.id || 'unknown',
-        note: historyMessage,
-        organization_id: orgId
-      } as any);
+      await safeInsert(
+        'work_order_history',
+        {
+          work_order_id: workOrderId,
+          from_status: workOrder.status,
+          to_status: newStatus,
+          changed_by: user?.id || 'unknown',
+          note: historyMessage,
+        },
+        orgId
+      );
 
       // Trigger notification for status change
       if (user?.id && workOrder) {

@@ -14,6 +14,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Badge } from '@/components/ui/badge';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
+import { safeInsert } from '@/lib/supabase-helpers';
 
 interface AddIncidentModalProps {
   open: boolean;
@@ -31,6 +33,7 @@ export function AddIncidentModal({
   const isVehicleContextLocked = !!vehicleContextId;
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { orgId } = useOrganizationId();
 
   const [formData, setFormData] = useState({
     vehicle_id: vehicleContextId || '',
@@ -44,9 +47,13 @@ export function AddIncidentModal({
 
   const addIncidentMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      const { error } = await supabase
-        .from('spill_incidents')
-        .insert([{
+      if (!orgId) {
+        throw new Error('Organization context required for multi-tenant data isolation');
+      }
+
+      const { error } = await safeInsert(
+        'spill_incidents',
+        {
           vehicle_id: data.vehicle_id || null,
           incident_date: data.incident_date.toISOString(),
           spill_type: data.spill_type,
@@ -55,7 +62,9 @@ export function AddIncidentModal({
           description: data.description,
           immediate_actions: data.immediate_actions,
           source_context: isVehicleContextLocked ? 'vehicle_profile' : null,
-        }]);
+        },
+        orgId
+      );
 
       if (error) throw error;
     },

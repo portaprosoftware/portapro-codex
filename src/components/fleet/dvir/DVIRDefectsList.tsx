@@ -11,6 +11,7 @@ import { Wrench, AlertTriangle, CheckCircle, ExternalLink } from "lucide-react";
 import { format } from "date-fns";
 import { useOrganizationId } from "@/hooks/useOrganizationId";
 import { getDefaultDueDateForPriority } from "@/lib/workOrderRules";
+import { safeInsert } from "@/lib/supabase-helpers";
 
 interface DVIRDefectsListProps {
   dvirId: string;
@@ -88,14 +89,17 @@ export const DVIRDefectsList: React.FC<DVIRDefectsListProps> = ({
       if (error) throw error;
 
       // Insert history record
-      await supabase.from('work_order_history').insert({
-        work_order_id: workOrder.id,
-        from_status: null,
-        to_status: 'open',
-        changed_by: user?.id || 'system',
-        note: `Work order created from DVIR defect: ${defect.item_key}`,
-        organization_id: orgId
-      } as any);
+      await safeInsert(
+        'work_order_history',
+        {
+          work_order_id: workOrder.id,
+          from_status: null,
+          to_status: 'open',
+          changed_by: user?.id || 'system',
+          note: `Work order created from DVIR defect: ${defect.item_key}`,
+        },
+        orgId
+      );
 
       // If critical, mark vehicle as out of service
       if (defect.severity === 'critical' && assetType === 'vehicle') {
