@@ -17,6 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { MapPin, Building } from "lucide-react";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 
 const US_STATES = [
   { value: 'AL', label: 'Alabama' },
@@ -79,6 +80,7 @@ interface AddStorageSiteModalProps {
 
 export function AddStorageSiteModal({ open, onOpenChange, onClose }: AddStorageSiteModalProps) {
   const queryClient = useQueryClient();
+  const { orgId } = useOrganizationId();
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -127,6 +129,11 @@ export function AddStorageSiteModal({ open, onOpenChange, onClose }: AddStorageS
 
   const createMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
+      // Validate organization context
+      if (!orgId) {
+        throw new Error('Organization context is required');
+      }
+      
       const payload: any = {
         name: data.name,
         description: data.description || null,
@@ -151,7 +158,7 @@ export function AddStorageSiteModal({ open, onOpenChange, onClose }: AddStorageS
 
       const { error } = await supabase
         .from('storage_locations')
-        .insert([payload]);
+        .insert([{ ...payload, organization_id: orgId }]);
       
       if (error) throw error;
     },

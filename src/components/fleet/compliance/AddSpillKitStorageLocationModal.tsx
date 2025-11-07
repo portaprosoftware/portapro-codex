@@ -9,6 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 
 interface AddSpillKitStorageLocationModalProps {
   open: boolean;
@@ -24,6 +25,7 @@ export const AddSpillKitStorageLocationModal: React.FC<AddSpillKitStorageLocatio
   onSuccess
 }) => {
   const { toast } = useToast();
+  const { orgId } = useOrganizationId();
   const [loading, setLoading] = useState(false);
   
   const [formData, setFormData] = useState({
@@ -57,6 +59,17 @@ export const AddSpillKitStorageLocationModal: React.FC<AddSpillKitStorageLocatio
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate organization context
+    if (!orgId) {
+      toast({
+        title: "Error",
+        description: "Organization context is required",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     setLoading(true);
 
     try {
@@ -91,11 +104,12 @@ export const AddSpillKitStorageLocationModal: React.FC<AddSpillKitStorageLocatio
         ({ error } = await supabase
           .from('spill_kit_storage_locations')
           .update(payload)
-          .eq('id', location.id));
+          .eq('id', location.id)
+          .eq('organization_id', orgId));
       } else {
         ({ error } = await supabase
           .from('spill_kit_storage_locations')
-          .insert([payload]));
+          .insert([{ ...payload, organization_id: orgId }]));
       }
 
       if (error) throw error;
