@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { JobWizardData } from "@/contexts/JobWizardContext";
 import { triggerJobAssignmentNotification } from "@/utils/notificationTriggers";
 import { useOrganizationId } from "@/hooks/useOrganizationId";
+import { safeRead, safeUpdate } from "@/lib/supabase-helpers";
 
 async function processJobConsumables(jobId: string, consumablesData: any, orgId: string | null) {
   const { billingMethod, items, selectedBundle, subscriptionEnabled } = consumablesData;
@@ -169,10 +170,8 @@ export function useCreateJob() {
         special_instructions: jobData.special_instructions
       };
       // Get company settings for job numbering
-      const { data: companySettings } = await supabase
-        .from('company_settings')
+      const { data: companySettings } = await safeRead('company_settings', orgId)
         .select('*')
-        .eq('organization_id', orgId)
         .maybeSingle();
 
       // Generate job number based on job type
@@ -257,10 +256,12 @@ export function useCreateJob() {
       // Update the next number in company settings
       if (nextNumberField && companySettings) {
         const currentNumber = companySettings[nextNumberField] || 1;
-        await supabase
-          .from('company_settings')
-          .update({ [nextNumberField]: currentNumber + 1 })
-          .eq('id', companySettings.id);
+        await safeUpdate(
+          'company_settings',
+          { [nextNumberField]: currentNumber + 1 },
+          orgId,
+          {}
+        );
       }
 
       if (error) {

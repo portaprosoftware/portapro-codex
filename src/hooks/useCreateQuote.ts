@@ -3,6 +3,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { JobWizardData } from '@/contexts/JobWizardContext';
 import { resolveTaxRate, normalizeZip } from '@/lib/tax';
 import { triggerQuoteUpdateNotification } from '@/utils/notificationTriggers';
+import { safeRead, safeUpdate } from '@/lib/supabase-helpers';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 interface CreateQuoteParams {
   wizardData: JobWizardData;
@@ -11,16 +13,18 @@ interface CreateQuoteParams {
 
 export function useCreateQuote() {
   const queryClient = useQueryClient();
+  const { orgId } = useOrganizationId();
   
   return useMutation({
     mutationFn: async ({ wizardData, status = 'pending' }: CreateQuoteParams) => {
+      if (!orgId) throw new Error('Organization ID required');
+      
       console.log('Creating quote with data:', wizardData);
 
       // Get next quote number
-      const { data: companySettings } = await supabase
-        .from('company_settings')
+      const { data: companySettings } = await safeRead('company_settings', orgId)
         .select('*')
-        .single();
+        .maybeSingle();
 
       if (!companySettings) {
         throw new Error('Company settings not found');
@@ -188,10 +192,12 @@ export function useCreateQuote() {
       }
 
       // Update the next quote number
-      await supabase
-        .from('company_settings')
-        .update({ next_quote_number: nextNumber + 1 })
-        .eq('id', companySettings.id);
+      await safeUpdate(
+        'company_settings',
+        { next_quote_number: nextNumber + 1 },
+        orgId,
+        {}
+      );
 
       return quote;
     },

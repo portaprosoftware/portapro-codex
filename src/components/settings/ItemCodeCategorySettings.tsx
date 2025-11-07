@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCompanySettings } from '@/hooks/useCompanySettings';
 import { supabase } from '@/integrations/supabase/client';
+import { safeUpdate } from '@/lib/supabase-helpers';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,6 +16,7 @@ import { DeleteConfirmationDialog } from '@/components/ui/delete-confirmation-di
 
 export const ItemCodeCategorySettings: React.FC = () => {
   const { data: companySettings, isLoading } = useCompanySettings();
+  const { orgId } = useOrganizationId();
   const queryClient = useQueryClient();
   const [newCategoryPrefix, setNewCategoryPrefix] = useState('');
   const [newCategoryName, setNewCategoryName] = useState('');
@@ -23,14 +26,12 @@ export const ItemCodeCategorySettings: React.FC = () => {
 
   const updateCategoriesMutation = useMutation({
     mutationFn: async (newCategories: { [key: string]: string }) => {
-      const { error } = await supabase
-        .from('company_settings')
-        .update({ 
-          item_code_categories: newCategories,
-        })
-        .eq('id', companySettings?.id);
-
-      if (error) throw error;
+      await safeUpdate(
+        'company_settings',
+        { item_code_categories: newCategories },
+        orgId,
+        {}
+      );
     },
     onSuccess: () => {
       toast.success('Item code categories updated successfully');

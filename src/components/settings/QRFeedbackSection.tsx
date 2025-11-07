@@ -10,6 +10,8 @@ import { QrCode, Mail, Bell, AlertTriangle, MessageCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
+import { safeRead, safeUpdate } from '@/lib/supabase-helpers';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 interface QRFeedbackSettings {
   qr_feedback_email: string;
@@ -17,22 +19,22 @@ interface QRFeedbackSettings {
 }
 
 export const QRFeedbackSection: React.FC = () => {
+  const { orgId } = useOrganizationId();
   const queryClient = useQueryClient();
   const { register, handleSubmit, reset, formState: { isDirty } } = useForm<QRFeedbackSettings>();
 
   // Query for current settings
   const { data: settings, isLoading } = useQuery({
-    queryKey: ['company-settings-qr-feedback'],
+    queryKey: ['company-settings-qr-feedback', orgId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('company_settings')
+      const { data, error } = await safeRead('company_settings', orgId)
         .select('qr_feedback_email, qr_feedback_notifications_enabled')
-        .limit(1)
-        .single();
+        .maybeSingle();
       
       if (error) throw error;
       return data;
-    }
+    },
+    enabled: !!orgId,
   });
 
   // Query for recent feedback
@@ -61,15 +63,15 @@ export const QRFeedbackSection: React.FC = () => {
   // Update settings mutation
   const updateSettings = useMutation({
     mutationFn: async (data: QRFeedbackSettings) => {
-      const { error } = await supabase
-        .from('company_settings')
-        .update({
+      await safeUpdate(
+        'company_settings',
+        {
           qr_feedback_email: data.qr_feedback_email,
           qr_feedback_notifications_enabled: data.qr_feedback_notifications_enabled
-        })
-        .limit(1);
-      
-      if (error) throw error;
+        },
+        orgId,
+        {}
+      );
     },
     onSuccess: () => {
       toast.success('QR feedback settings updated successfully');

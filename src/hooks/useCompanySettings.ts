@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import type { ConsumableCategory } from '@/lib/consumableCategories';
 import { CONSUMABLE_CATEGORIES } from '@/lib/consumableCategories';
 import { useOrganizationId } from './useOrganizationId';
-import { safeInsert } from '@/lib/supabase-helpers';
+import { safeInsert, safeRead } from '@/lib/supabase-helpers';
 
 export interface ItemCodeCategory {
   [key: string]: string; // e.g., {"1000": "Standard Units", "2000": "ADA Units"}
@@ -37,10 +37,8 @@ export const useCompanySettings = () => {
     queryFn: async () => {
       if (!orgId) throw new Error('Organization ID required');
 
-      const { data, error } = await supabase
-        .from('company_settings')
+      const { data, error } = await safeRead('company_settings', orgId)
         .select('*')
-        .eq('organization_id', orgId)
         .maybeSingle();
 
       if (error) throw error;
@@ -62,10 +60,8 @@ export const useCompanySettings = () => {
         if (insertResult.error) {
           // Handle unique constraint violation (record already exists)
           if (insertResult.error.code === '23505') {
-            const { data: existing } = await supabase
-              .from('company_settings')
+            const { data: existing } = await safeRead('company_settings', orgId)
               .select('*')
-              .eq('organization_id', orgId)
               .maybeSingle();
             
             if (existing) {
