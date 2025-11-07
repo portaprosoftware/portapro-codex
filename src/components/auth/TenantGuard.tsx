@@ -1,240 +1,101 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useUser, useOrganizationList, useOrganization } from '@clerk/clerk-react';
+import { useUser, useOrganization } from '@clerk/clerk-react';
 import { Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
-import { useOrganizationContext } from '@/contexts/OrganizationContext';
-import { useClerkProfileSync } from '@/hooks/useClerkProfileSync';
-import { Button } from '@/components/ui/button';
 
 interface TenantGuardProps {
   children: React.ReactNode;
 }
 
 /**
- * TenantGuard: Wildcard Multi-tenant Subdomain Router
+ * TenantGuard: Simple subdomain-based tenant isolation
  * 
- * Enforces multi-tenant isolation using subdomain-based organization lookup.
- * 
- * Logic:
- * 1. Extract subdomain from hostname (e.g., smith-rentals.portaprosoftware.com → "smith-rentals")
- * 2. Query organizations table in Supabase for matching subdomain → clerk_org_id
- * 3. Verify user is a member of that Clerk organization
- * 4. If valid → set as active organization and render children
- * 5. If unknown subdomain → redirect to portaprosoftware.com (marketing site)
- * 6. If valid subdomain but user not member → redirect to /unauthorized
- * 7. Localhost development → allow access with organization selector
+ * Waits for Clerk to hydrate, then checks:
+ * 1. Is user signed in?
+ * 2. Does user have an active organization?
+ * 3. Does organization.slug match current subdomain?
  */
 export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
-  const { user, isLoaded: userLoaded, isSignedIn } = useUser();
-  const { userMemberships, isLoaded: orgListLoaded, setActive } = useOrganizationList({
-    userMemberships: {
-      infinite: true,
-    }
-  });
-  const { organization } = useOrganization();
+  const { user, isLoaded: userLoaded } = useUser();
+  const { organization, isLoaded: orgLoaded } = useOrganization();
   const navigate = useNavigate();
-  const [isChecking, setIsChecking] = useState(true);
-  const [hasChecked, setHasChecked] = useState(false);
 
-  // Use organization context (provides subdomain/org data globally)
-  const { 
-    subdomain, 
-    organization: orgData, 
-    isLoading: isLoadingOrg, 
-    error: orgError,
-    isLocalhost,
-    isMainDomain 
-  } = useOrganizationContext();
+  // Extract subdomain from hostname
+  const hostname = window.location.hostname;
+  const parts = hostname.split('.');
+  const subdomain = parts.length > 2 ? parts[0] : null;
 
-  // Profile sync - runs AFTER organization is set by TenantGuard
-  const { isLoading: isSyncingProfile } = useClerkProfileSync();
+  // Handle localhost development
+  const isLocalhost = hostname === 'localhost' || hostname.startsWith('127.0.0.1');
+  
+  // Handle main domain (app.portaprosoftware.com or portaprosoftware.com)
+  const isMainDomain = hostname === 'portaprosoftware.com' || 
+                       hostname === 'app.portaprosoftware.com' ||
+                       hostname === 'www.portaprosoftware.com';
 
-  // CRITICAL: Skip tenant check on public routes to prevent redirect loops
+  // Skip checks on public routes
   const currentPath = window.location.pathname;
-  const isPublicRoute = currentPath === '/unauthorized' || currentPath === '/auth' || currentPath.startsWith('/auth/');
+  const isPublicRoute = currentPath === '/unauthorized' || 
+                        currentPath === '/no-portal-found' ||
+                        currentPath === '/auth' || 
+                        currentPath.startsWith('/auth/');
 
-  useEffect(() => {
-    const checkTenantAccess = async () => {
-      // SAFETY: Don't run guard on public routes (prevents redirect loops)
-      if (isPublicRoute) {
-        setIsChecking(false);
-        setHasChecked(true);
-        return;
-      }
-
-      // Wait for ALL Clerk states to fully load before making any decision
-      if (!userLoaded || !orgListLoaded || isLoadingOrg) {
-        return;
-      }
-
-      // CRITICAL: If user is NOT signed in after Clerk loads, redirect immediately
-      if (!isSignedIn || !user) {
-        console.info('🔒 User not signed in - redirecting to marketing site');
-        window.location.href = 'https://www.portaprosoftware.com';
-        return;
-      }
-
-      // Handle main domain: redirect to user's org subdomain
-      if (isMainDomain) {
-        console.info('🔄 Main domain detected. Redirecting to organization subdomain...');
-        const firstMembership = userMemberships?.data?.[0];
-        if (firstMembership?.organization?.slug) {
-          window.location.href = `https://${firstMembership.organization.slug}.portaprosoftware.com/dashboard`;
-          return;
-        } else {
-          console.error('❌ User has no organization memberships');
-          navigate('/unauthorized');
-          return;
-        }
-      }
-
-      // Handle localhost without ?org= parameter: auto-select first org
-      if (isLocalhost && !subdomain) {
-        console.warn('⚠️ LOCALHOST DEV: No ?org= parameter. Using first available organization.');
-        if (userMemberships?.data?.[0]) {
-          const firstOrg = userMemberships.data[0].organization;
-          console.info('✅ LOCALHOST: Setting first org as active:', firstOrg.slug);
-          await setActive({ organization: firstOrg.id });
-        }
-        setIsChecking(false);
-        setHasChecked(true);
-        return;
-      }
-
-      // Handle organization lookup errors
-      if (orgError || !orgData) {
-        console.error('❌ Unknown subdomain:', subdomain, orgError);
-        
-        // Show toast before redirect
-        toast.error('Organization Not Found', {
-          description: `The subdomain "${subdomain}" doesn't exist. Redirecting to PortaPro.com...`,
-          duration: 5000,
-        });
-        
-        // Delay redirect to let user see the message
-        setTimeout(() => {
-          if (!isLocalhost) {
-            window.location.href = 'https://portaprosoftware.com';
-          } else {
-            navigate('/unauthorized');
-          }
-        }, 1000);
-        return;
-      }
-
-      const expectedClerkOrgId = orgData.clerk_org_id;
-
-      // Verify user is a member of this organization
-      const memberships = userMemberships?.data || [];
-      const matchedById = memberships.find(m => m.organization.id === expectedClerkOrgId);
-      const matchedBySlug = memberships.find(m => m.organization.slug === subdomain);
-
-      if (!matchedById) {
-        // If slug matches but ID doesn't, it's a data mismatch - proceed with warning
-        if (matchedBySlug) {
-          console.warn('⚠️ ORG ID MISMATCH DETECTED (proceeding anyway):', {
-            subdomain,
-            expectedClerkOrgId,
-            actualClerkOrgId: matchedBySlug.organization.id,
-            userId: user.id,
-            email: user.primaryEmailAddress?.emailAddress,
-          });
-          
-          // Set active to the slug-matched org and proceed
-          await setActive({ organization: matchedBySlug.organization.id });
-          setIsChecking(false);
-          setHasChecked(true);
-          return;
-        }
-        
-        console.warn('🚫 TENANT ACCESS DENIED:', {
-          userId: user.id,
-          email: user.primaryEmailAddress?.emailAddress,
-          requiredOrgId: expectedClerkOrgId,
-          userMemberships: memberships.map(m => ({ 
-            id: m.organization.id, 
-            slug: m.organization.slug 
-          })),
-          subdomain
-        });
-        
-        // If user has other organizations, redirect to their first org's subdomain
-        if (memberships.length > 0) {
-          const firstOrg = memberships[0].organization;
-          
-          // Prevent redirect loop with sessionStorage guard
-          const redirectKey = `tenant-redirect-${subdomain}`;
-          const lastRedirect = sessionStorage.getItem(redirectKey);
-          const now = Date.now();
-          
-          // Don't redirect if we just did within the last 5 seconds, or if slug matches current subdomain
-          if (firstOrg.slug === subdomain || (lastRedirect && now - parseInt(lastRedirect) < 5000)) {
-            console.error('🔁 REDIRECT LOOP PREVENTED - access denied without redirect');
-            navigate('/unauthorized', { replace: true });
-            setIsChecking(false);
-            setHasChecked(true);
-            return;
-          }
-          
-          sessionStorage.setItem(redirectKey, now.toString());
-          console.info('🔄 Redirecting user to their organization:', firstOrg.slug);
-          toast.info('Redirecting...', {
-            description: `Taking you to ${firstOrg.name}`,
-            duration: 3000,
-          });
-          setTimeout(() => {
-            window.location.href = `https://${firstOrg.slug}.portaprosoftware.com/dashboard`;
-          }, 1000);
-          setIsChecking(false);
-          setHasChecked(true);
-          return;
-        }
-        
-        // User has no organizations - show access denied screen
-        toast.error(`Access Denied: ${orgData.name}`, {
-          description: `You don't have permission to access ${orgData.name}. Contact your administrator.`,
-          duration: 10000,
-        });
-        
-        navigate('/unauthorized', { replace: true });
-        setIsChecking(false);
-        setHasChecked(true);
-        return;
-      }
-
-      // Set active organization if not already active
-      if (organization?.id !== expectedClerkOrgId) {
-        console.info('✅ Setting active organization:', matchedById.organization.slug);
-        await setActive({ organization: expectedClerkOrgId });
-      }
-
-      setIsChecking(false);
-      setHasChecked(true);
-    };
-
-    if (!hasChecked) {
-      checkTenantAccess();
-    }
-  }, [user, userLoaded, orgListLoaded, userMemberships, organization, navigate, hasChecked, setActive, isPublicRoute, subdomain, orgData, orgError, isLoadingOrg, isLocalhost, isMainDomain]);
-
-  // Show loading state while checking
-  if (isChecking || !userLoaded || !orgListLoaded || isLoadingOrg || isSyncingProfile) {
+  // WAIT until Clerk is fully hydrated
+  if (!userLoaded || !orgLoaded) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <p className="text-sm text-muted-foreground">
-            {isLoadingOrg 
-              ? 'Looking up organization...' 
-              : isSyncingProfile 
-              ? 'Syncing profile...'
-              : 'Verifying membership...'}
-          </p>
+          <p className="text-sm text-muted-foreground">Loading...</p>
         </div>
       </div>
     );
   }
 
+  // Allow public routes without checks
+  if (isPublicRoute) {
+    return <>{children}</>;
+  }
+
+  // If user is not signed in → back to marketing site
+  if (!user) {
+    window.location.href = 'https://www.portaprosoftware.com';
+    return null;
+  }
+
+  // Main domain: redirect to first organization's subdomain
+  if (isMainDomain) {
+    if (!organization) {
+      navigate('/no-portal-found', { replace: true });
+      return null;
+    }
+    // Redirect to their organization's subdomain
+    window.location.href = `https://${organization.slug}.portaprosoftware.com/dashboard`;
+    return null;
+  }
+
+  // Localhost: allow access (development mode)
+  if (isLocalhost) {
+    return <>{children}</>;
+  }
+
+  // If user is signed in but has no org → show no-portal-found
+  if (!organization) {
+    navigate('/no-portal-found', { replace: true });
+    return null;
+  }
+
+  // If user has an org but it doesn't match the subdomain → unauthorized
+  if (organization.slug !== subdomain) {
+    console.warn('🚫 Org slug mismatch:', {
+      expected: subdomain,
+      actual: organization.slug,
+      userId: user.id
+    });
+    navigate('/unauthorized', { replace: true });
+    return null;
+  }
+
+  // All checks passed - render children
   return <>{children}</>;
 };

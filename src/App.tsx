@@ -62,6 +62,7 @@ import { ComingSoon } from './pages/ComingSoon';
 import { Help } from './pages/Help';
 import CustomerPortalPage from './pages/CustomerPortalPage';
 import Unauthorized from './pages/Unauthorized';
+import NoPortalFound from './pages/NoPortalFound';
 import { TechnicianDashboard } from './pages/TechnicianDashboard';
 import { TechnicianPhotoCapture } from './pages/TechnicianPhotoCapture';
 import TechnicianWorkOrderDetail from './pages/TechnicianWorkOrderDetail';
@@ -129,6 +130,7 @@ const App = () => {
             {/* Authentication Routes */}
             <Route path="/auth" element={<Auth />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
+            <Route path="/no-portal-found" element={<NoPortalFound />} />
 
             {/* Driver routes - protected with TenantGuard */}
             <Route
