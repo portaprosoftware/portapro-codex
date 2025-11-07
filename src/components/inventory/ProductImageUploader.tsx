@@ -2,7 +2,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Package, Upload, X } from "lucide-react";
+import { Bath, Upload, X } from "lucide-react";
 
 interface ProductImageUploaderProps {
   label?: string;
@@ -60,7 +60,7 @@ export const ProductImageUploader: React.FC<ProductImageUploaderProps> = ({
               }}
             />
           ) : (
-            <Package className="h-8 w-8 text-muted-foreground" />
+            <Bath className="h-8 w-8 text-muted-foreground" />
           )}
         </div>
         <div className="flex flex-col gap-2">
