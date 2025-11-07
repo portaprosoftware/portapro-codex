@@ -84,18 +84,40 @@ export function usePushNotifications(userId?: string) {
       // Save subscription to database
       const subscriptionData = JSON.parse(JSON.stringify(subscription));
       
-      const { error } = await supabase
+      // Check if subscription exists
+      const { data: existing } = await supabase
         .from('push_subscriptions')
-        .upsert({
-          user_id: userId,
-          endpoint: subscriptionData.endpoint,
-          p256dh_key: subscriptionData.keys.p256dh,
-          auth_key: subscriptionData.keys.auth,
-          user_agent: navigator.userAgent,
-          is_active: true
-        });
+        .select('id')
+        .eq('user_id', userId)
+        .eq('endpoint', subscriptionData.endpoint)
+        .maybeSingle();
 
-      if (error) throw error;
+      if (existing) {
+        // Update existing subscription
+        const { error } = await supabase
+          .from('push_subscriptions')
+          .update({
+            p256dh_key: subscriptionData.keys.p256dh,
+            auth_key: subscriptionData.keys.auth,
+            user_agent: navigator.userAgent,
+            is_active: true
+          })
+          .eq('id', existing.id);
+        if (error) throw error;
+      } else {
+        // Insert new subscription
+        const { error } = await supabase
+          .from('push_subscriptions')
+          .insert({
+            user_id: userId,
+            endpoint: subscriptionData.endpoint,
+            p256dh_key: subscriptionData.keys.p256dh,
+            auth_key: subscriptionData.keys.auth,
+            user_agent: navigator.userAgent,
+            is_active: true
+          });
+        if (error) throw error;
+      }
 
       setSubscription(subscriptionData);
       return subscriptionData;

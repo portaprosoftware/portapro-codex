@@ -65,6 +65,7 @@ function parseCSV(text: string): ParsedRow[] {
   return rows;
 }
 
+// Tax rates are system-wide lookup data (not org-scoped), so direct upsert is appropriate here
 async function upsertInBatches(rows: ParsedRow[], batchSize = 500) {
   let total = 0;
   for (let i = 0; i < rows.length; i += batchSize) {

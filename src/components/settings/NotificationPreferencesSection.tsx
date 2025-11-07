@@ -213,47 +213,65 @@ export function NotificationPreferencesSection() {
     mutationFn: async (data: NotificationFormData) => {
       if (!user?.id) throw new Error("User not found");
 
-      const { error } = await supabase
+      const preferencesData = {
+        user_id: user.id,
+        job_status_change_email: data.email_notifications,
+        email: data.email || null,
+        
+        // Jobs & Operations
+        new_job_assigned_email: data.job_assignments_email,
+        job_assignments_push: data.job_assignments_push,
+        route_schedule_changes_email: data.route_schedule_changes_email,
+        route_schedule_changes_push: data.route_schedule_changes_push,
+        maintenance_email_7_day: data.maintenance_alerts_email,
+        maintenance_alerts_push: data.maintenance_alerts_push,
+        
+        // Financial
+        quote_invoice_email: data.quote_updates_email,
+        quote_updates_push: data.quote_updates_push,
+        invoice_reminders_email: data.invoice_reminders_email,
+        invoice_reminders_push: data.invoice_reminders_push,
+        payment_confirmations_email: data.payment_confirmations_email,
+        payment_confirmations_push: data.payment_confirmations_push,
+        
+        // Inventory & Fleet
+        low_stock_alerts_email: data.low_stock_alerts_email,
+        low_stock_alerts_push: data.low_stock_alerts_push,
+        asset_movement_email: data.asset_movement_email,
+        asset_movement_push: data.asset_movement_push,
+        vehicle_status_changes_email: data.vehicle_status_changes_email,
+        vehicle_status_changes_push: data.vehicle_status_changes_push,
+        
+        // Team & Communication
+        driver_check_ins_email: data.driver_check_ins_email,
+        driver_check_ins_push: data.driver_check_ins_push,
+        new_team_members_email: data.new_team_members_email,
+        new_team_members_push: data.new_team_members_push,
+        comment_mentions_email: data.comment_mentions_email,
+        comment_mentions_push: data.comment_mentions_push,
+      };
+
+      // Check if preferences exist
+      const { data: existing } = await supabase
         .from("notification_preferences")
-        .upsert({
-          user_id: user.id,
-          job_status_change_email: data.email_notifications,
-          email: data.email || null,
-          
-          // Jobs & Operations
-          new_job_assigned_email: data.job_assignments_email,
-          job_assignments_push: data.job_assignments_push,
-          route_schedule_changes_email: data.route_schedule_changes_email,
-          route_schedule_changes_push: data.route_schedule_changes_push,
-          maintenance_email_7_day: data.maintenance_alerts_email,
-          maintenance_alerts_push: data.maintenance_alerts_push,
-          
-          // Financial
-          quote_invoice_email: data.quote_updates_email,
-          quote_updates_push: data.quote_updates_push,
-          invoice_reminders_email: data.invoice_reminders_email,
-          invoice_reminders_push: data.invoice_reminders_push,
-          payment_confirmations_email: data.payment_confirmations_email,
-          payment_confirmations_push: data.payment_confirmations_push,
-          
-          // Inventory & Fleet
-          low_stock_alerts_email: data.low_stock_alerts_email,
-          low_stock_alerts_push: data.low_stock_alerts_push,
-          asset_movement_email: data.asset_movement_email,
-          asset_movement_push: data.asset_movement_push,
-          vehicle_status_changes_email: data.vehicle_status_changes_email,
-          vehicle_status_changes_push: data.vehicle_status_changes_push,
-          
-          // Team & Communication
-          driver_check_ins_email: data.driver_check_ins_email,
-          driver_check_ins_push: data.driver_check_ins_push,
-          new_team_members_email: data.new_team_members_email,
-          new_team_members_push: data.new_team_members_push,
-          comment_mentions_email: data.comment_mentions_email,
-          comment_mentions_push: data.comment_mentions_push,
-        }, { onConflict: "user_id" });
-      
-      if (error) throw error;
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (existing) {
+        // Update existing preferences
+        const { error } = await supabase
+          .from("notification_preferences")
+          .update(preferencesData)
+          .eq('user_id', user.id);
+        if (error) throw error;
+      } else {
+        // Insert new preferences
+        const { error } = await supabase
+          .from("notification_preferences")
+          .insert(preferencesData);
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notification-preferences"] });

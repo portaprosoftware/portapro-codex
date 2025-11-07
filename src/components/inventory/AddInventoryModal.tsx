@@ -103,16 +103,34 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
 
       // 3. Create or update location stock entry
       if (data.storageLocationId && data.locationQuantity > 0) {
-        const { error: stockError } = await supabase
+        // Check if stock entry exists
+        const { data: existingStock } = await supabase
           .from('product_location_stock')
-          .upsert({
-            product_id: product.id,
-            storage_location_id: data.storageLocationId,
-            quantity: data.locationQuantity
-          }, {
-            onConflict: 'product_id,storage_location_id'
-          });
-        if (stockError) throw stockError;
+          .select('quantity')
+          .eq('product_id', product.id)
+          .eq('storage_location_id', data.storageLocationId)
+          .maybeSingle();
+
+        if (existingStock) {
+          // Update existing stock
+          const { error: stockError } = await supabase
+            .from('product_location_stock')
+            .update({ quantity: data.locationQuantity })
+            .eq('product_id', product.id)
+            .eq('storage_location_id', data.storageLocationId);
+          if (stockError) throw stockError;
+        } else {
+          // Insert new stock entry
+          const { error: stockError } = await supabase
+            .from('product_location_stock')
+            .insert({
+              product_id: product.id,
+              storage_location_id: data.storageLocationId,
+              quantity: data.locationQuantity,
+              organization_id: orgId
+            });
+          if (stockError) throw stockError;
+        }
       }
 
       // 4. Always create individual tracked items

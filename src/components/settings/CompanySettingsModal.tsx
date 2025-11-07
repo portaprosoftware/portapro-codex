@@ -158,14 +158,15 @@ export function CompanySettingsModal({ isOpen, onClose, companySettings }: Compa
     mutationFn: async (data: CompanySettingsFormData) => {
       console.log("Updating company settings:", data);
       
-      const updatedData = {
-        id: companySettings?.id || '08751fa1-759f-4bfd-afd3-37a6d6b4f86f',
-        ...data
-      };
+      if (!companySettings?.id) {
+        throw new Error('Company settings ID is required');
+      }
       
+      // Use update instead of upsert for editing existing settings
       const { data: result, error } = await supabase
         .from("company_settings")
-        .upsert(updatedData)
+        .update(data)
+        .eq('id', companySettings.id)
         .select()
         .single();
       

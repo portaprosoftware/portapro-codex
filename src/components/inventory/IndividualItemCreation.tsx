@@ -220,15 +220,24 @@ export function IndividualItemCreation({
 
       const newQuantity = (existingStock?.quantity || 0) + quantity;
 
-      await supabase
-        .from('product_location_stock')
-        .upsert({
-          product_id: productId,
-          storage_location_id: storageLocationId,
-          quantity: newQuantity
-        }, {
-          onConflict: 'product_id,storage_location_id'
-        });
+      if (existingStock) {
+        // Update existing stock
+        await supabase
+          .from('product_location_stock')
+          .update({ quantity: newQuantity })
+          .eq('product_id', productId)
+          .eq('storage_location_id', storageLocationId);
+      } else {
+        // Insert new stock entry
+        await supabase
+          .from('product_location_stock')
+          .insert({
+            product_id: productId,
+            storage_location_id: storageLocationId,
+            quantity: newQuantity,
+            organization_id: orgId
+          });
+      }
 
       return individualItems;
     },

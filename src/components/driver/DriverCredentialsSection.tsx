@@ -152,9 +152,11 @@ export function DriverCredentialsSection({ driverId }: DriverCredentialsSectionP
 
       console.log('Final credentials data:', credentialsData);
 
+      // Use update instead of upsert since this is editing existing credentials
       const { error } = await supabase
         .from('driver_credentials')
-        .upsert(credentialsData);
+        .update(credentialsData)
+        .eq('driver_id', driverId);
 
       if (error) {
         console.error('Database error:', error);

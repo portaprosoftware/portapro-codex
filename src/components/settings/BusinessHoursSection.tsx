@@ -120,11 +120,27 @@ export function BusinessHoursSection() {
       }));
 
       for (const update of updates) {
-        const { error } = await supabase
+        // Check if record exists
+        const { data: existing } = await supabase
           .from("business_hours")
-          .upsert(update, { onConflict: "day_of_week" });
-        
-        if (error) throw error;
+          .select('id')
+          .eq("day_of_week", update.day_of_week)
+          .maybeSingle();
+
+        if (existing) {
+          // Update existing record
+          const { error } = await supabase
+            .from("business_hours")
+            .update(update)
+            .eq("id", existing.id);
+          if (error) throw error;
+        } else {
+          // Insert new record
+          const { error } = await supabase
+            .from("business_hours")
+            .insert(update);
+          if (error) throw error;
+        }
       }
     },
     onSuccess: () => {

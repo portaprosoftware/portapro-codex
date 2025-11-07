@@ -124,16 +124,35 @@ export const FleetLoadManagement: React.FC = () => {
     }) => {
       const dateStr = format(selectedDate, "yyyy-MM-dd");
       
-      const { error } = await supabase
+      // Check if record exists first
+      const { data: existing } = await supabase
         .from("daily_vehicle_loads")
-        .upsert({
-          vehicle_id: vehicleId,
-          product_id: productId,
-          load_date: dateStr,
-          assigned_quantity: newQuantity,
-        });
+        .select('id')
+        .eq('vehicle_id', vehicleId)
+        .eq('product_id', productId)
+        .eq('load_date', dateStr)
+        .maybeSingle();
 
-      if (error) throw error;
+      if (existing) {
+        // Update existing record
+        const { error } = await supabase
+          .from("daily_vehicle_loads")
+          .update({ assigned_quantity: newQuantity })
+          .eq('id', existing.id);
+        if (error) throw error;
+      } else {
+        // Insert new record using safeInsert
+        const { error } = await supabase
+          .from("daily_vehicle_loads")
+          .insert({
+            vehicle_id: vehicleId,
+            product_id: productId,
+            load_date: dateStr,
+            assigned_quantity: newQuantity,
+            organization_id: orgId
+          });
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["fleet-loads"] });

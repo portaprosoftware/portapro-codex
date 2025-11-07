@@ -47,7 +47,7 @@ export function useTaxRate({ zip, state, customerOverride }: UseTaxRateParams) {
           });
           if (!tjError && tjData?.rateDecimal != null) {
             externalZipRate = Number(tjData.rateDecimal);
-            // cache into tax_rates for future lookups
+            // cache into tax_rates for future lookups (tax_rates is system-wide, not org-scoped)
             try {
               await supabase
                 .from('tax_rates')
