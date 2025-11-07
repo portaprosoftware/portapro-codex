@@ -49,7 +49,24 @@ export default tseslint.config(
             "message": "❌ Use loadChartsLibs() from @/lib/loaders/charts instead"
           }
         ]
-      }]
+      }],
+      
+      // Prevent direct Supabase operations without multi-tenant safe helpers
+      "no-restricted-syntax": [
+        "error",
+        {
+          "selector": "CallExpression[callee.property.name='insert'][callee.object.callee.property.name='from']",
+          "message": "❌ MULTI-TENANT VIOLATION: Use safeInsert(table, data, orgId) from @/lib/supabase-helpers instead of direct .insert(). This prevents data leakage across organizations."
+        },
+        {
+          "selector": "CallExpression[callee.property.name='update'][callee.object.callee.property.name='from']",
+          "message": "❌ MULTI-TENANT VIOLATION: Use safeUpdate(table, data, orgId, matchConditions) from @/lib/supabase-helpers instead of direct .update(). This prevents cross-tenant data modification."
+        },
+        {
+          "selector": "CallExpression[callee.property.name='delete'][callee.object.callee.property.name='from']",
+          "message": "❌ MULTI-TENANT VIOLATION: Use safeDelete(table, orgId, matchConditions) from @/lib/supabase-helpers instead of direct .delete(). This prevents cross-tenant data deletion."
+        }
+      ]
     },
   }
 );
