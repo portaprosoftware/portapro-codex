@@ -26,6 +26,7 @@ import { JobExitConfirmation } from './JobExitConfirmation';
 import { QuoteExitConfirmation } from '@/components/quotes/QuoteExitConfirmation';
 import { useJobDrafts } from '@/hooks/useJobDrafts';
 import { useQuoteDrafts } from '@/hooks/useQuoteDrafts';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 interface NewJobWizardProps {
   open: boolean;
@@ -37,6 +38,7 @@ interface NewJobWizardProps {
 
 function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; wizardMode?: 'job' | 'quote' }) {
   const { state, nextStep, previousStep, validateCurrentStep, reset } = useJobWizard();
+  const { orgId } = useOrganizationId();
   const { saveDraft: saveJobDraft, isSaving: isSavingJob } = useJobDrafts();
   const { saveDraft: saveQuoteDraft, isSaving: isSavingQuote } = useQuoteDrafts();
   
@@ -228,6 +230,7 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
           unit_price: Number(s.calculated_cost || 0),
           total_price: Number(s.calculated_cost || 0),
           quantity: 1,
+          organization_id: orgId,
         }));
         const { error: svcError } = await supabase.from('job_items').insert(serviceItems);
         if (svcError) throw svcError;
@@ -251,7 +254,8 @@ function WizardContent({ onClose, wizardMode = 'job' }: { onClose: () => void; w
               vehicle_id: state.data.vehicle_id,
               assignment_date: date,
               notes: `Auto-assigned for job ${job.id}`,
-            });
+              organization_id: orgId,
+            } as any);
             if (insertError) {
               console.warn('Daily assignment insert failed:', insertError);
               toast.warning('Job created, but daily assignment could not be created.');

@@ -152,15 +152,23 @@ export function useEnhancedOffline() {
   const syncDataItem = async (item: OfflineData): Promise<void> => {
     switch (item.type) {
       case 'dvir':
+        // Ensure organization_id is included
         await supabase
           .from('dvir_reports')
-          .insert(item.data);
+          .insert({
+            ...item.data,
+            organization_id: item.data.organization_id || null
+          } as any);
         break;
         
       case 'work_order':
+        // Ensure organization_id is included
         await supabase
           .from('work_orders')
-          .insert(item.data);
+          .insert({
+            ...item.data,
+            organization_id: item.data.organization_id || null
+          } as any);
         break;
         
       case 'job_update':
@@ -171,9 +179,13 @@ export function useEnhancedOffline() {
         break;
         
       case 'maintenance':
+        // Ensure organization_id is included
         await supabase
           .from('maintenance_updates')
-          .insert(item.data);
+          .insert({
+            ...item.data,
+            organization_id: item.data.organization_id || null
+          } as any);
         break;
 
       case 'service_report':
@@ -241,7 +253,8 @@ export function useEnhancedOffline() {
             completed_at: new Date().toISOString(),
             created_by: item.userId,
             customer_id: item.data.customerId,
-          });
+            organization_id: item.data.organizationId || null,
+          } as any);
 
         if (reportError) throw reportError;
 

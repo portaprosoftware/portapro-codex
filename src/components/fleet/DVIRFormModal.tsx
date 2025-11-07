@@ -196,7 +196,14 @@ export const DVIRFormModal: React.FC<DVIRFormModalProps> = ({
 
   const handleSubmit = async () => {
     if (!assetId || (!odometer && !engineHours)) return;
-    try {
+    
+    // Validate organization context
+    if (!orgId) {
+      toast.error('Organization context is required');
+      return;
+    }
+    
+    try{
       setSubmitting(true);
       
       const itemsData: Record<string, any> = {};
@@ -223,7 +230,8 @@ export const DVIRFormModal: React.FC<DVIRFormModalProps> = ({
           major_defect_present: majorDefectPresent,
           out_of_service_flag: majorDefectPresent,
           submitted_at: new Date().toISOString(),
-        })
+          organization_id: orgId,
+        } as any)
         .select("*")
         .single();
       if (error) throw error;

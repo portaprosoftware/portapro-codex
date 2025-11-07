@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from './use-toast';
 import { useMemo, useEffect } from 'react';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 interface UnifiedStockData {
   product_id: string;
@@ -41,6 +42,7 @@ const hashStockData = (data: UnifiedStockData): string => {
 export const useUnifiedStockManagement = (productId: string) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { orgId } = useOrganizationId();
 
   // Get unified stock data with change detection
   const { data: stockData, isLoading, error } = useQuery({
@@ -252,7 +254,8 @@ export const useUnifiedStockManagement = (productId: string) => {
                 product_id: productId,
                 storage_location_id: locationId,
                 quantity: newLocQty,
-              });
+                organization_id: orgId,
+              } as any);
           }
         }
 
@@ -269,8 +272,8 @@ export const useUnifiedStockManagement = (productId: string) => {
             quantity_change: quantityChange,
             reason,
             notes: notes || null,
-            organization_id: null, // Will be set by trigger or can be passed as param
-          });
+            organization_id: orgId,
+          } as any);
         } catch {}
 
         return {

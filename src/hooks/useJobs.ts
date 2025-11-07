@@ -7,7 +7,7 @@ import { JobWizardData } from "@/contexts/JobWizardContext";
 import { triggerJobAssignmentNotification } from "@/utils/notificationTriggers";
 import { useOrganizationId } from "@/hooks/useOrganizationId";
 
-async function processJobConsumables(jobId: string, consumablesData: any) {
+async function processJobConsumables(jobId: string, consumablesData: any, orgId: string | null) {
   const { billingMethod, items, selectedBundle, subscriptionEnabled } = consumablesData;
 
   if (billingMethod === 'per-use' && items.length > 0) {
@@ -21,8 +21,9 @@ async function processJobConsumables(jobId: string, consumablesData: any) {
           quantity: item.quantity,
           unit_price: item.unitPrice,
           line_total: item.total,
-          used_by: null // Will be set when job is completed
-        });
+          used_by: null, // Will be set when job is completed
+          organization_id: orgId,
+        } as any);
 
         // Update consumable stock (prevent negative values)
         const { data: currentStock } = await supabase
@@ -54,8 +55,9 @@ async function processJobConsumables(jobId: string, consumablesData: any) {
           quantity: bundleItem.quantity,
           unit_price: (bundleItem as any)?.consumables?.unit_price || 0,
           line_total: bundleItem.quantity * ((bundleItem as any)?.consumables?.unit_price || 0),
-          used_by: null
-        });
+          used_by: null,
+          organization_id: orgId,
+        } as any);
 
         // Update stock (prevent negative values)
         const { data: currentStock } = await supabase
@@ -290,8 +292,9 @@ export function useCreateJob() {
                 quantity: 1,
                 assigned_date: serializedJobData.scheduled_date,
                 return_date: returnDateString,
-                status: 'assigned'
-              });
+                status: 'assigned',
+                organization_id: orgId,
+              } as any);
 
               // Update specific item status to assigned
               await supabase
@@ -307,8 +310,9 @@ export function useCreateJob() {
               quantity: item.quantity || 1,
               assigned_date: serializedJobData.scheduled_date,
               return_date: returnDateString,
-              status: 'assigned'
-            });
+              status: 'assigned',
+              organization_id: orgId,
+            } as any);
           }
         }
 
@@ -375,6 +379,7 @@ export function useCreateJob() {
               unit_price: 0,
               total_price: 0,
               line_item_type: 'inventory' as const,
+              organization_id: orgId,
             }));
 
             console.log('Prepared inventory items for insertion:', inventoryItems);

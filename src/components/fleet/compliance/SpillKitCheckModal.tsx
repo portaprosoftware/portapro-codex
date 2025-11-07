@@ -66,6 +66,16 @@ export const SpillKitCheckModal: React.FC<Props> = ({ isOpen, onClose, onSaved }
   };
 
   const handleSave = async () => {
+    // Validate organization context
+    if (!orgId) {
+      toast({
+        title: "Error",
+        description: "Organization context is required",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     try {
       const { error } = await supabase.from("vehicle_spill_kit_checks").insert({
         vehicle_id: vehicleId,
