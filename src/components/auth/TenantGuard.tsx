@@ -79,28 +79,35 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
     return null;
   }
 
-  // FAST PATH: If current org already matches subdomain → allow immediately
-  if (organization && organization.slug === subdomain) {
+  // FAST PATH: Current org already matches subdomain → allow immediately
+  if (organization?.slug === subdomain) {
     return <>{children}</>;
   }
 
-  // SLOW PATH: Try to setActive to the expected org
-  // This runs when user is logged in but hasn't selected the right org yet
+  // SLOW PATH: setActive is the FIRST source of truth
+  // No membership checks, no pre-validation - let Clerk decide
   useEffect(() => {
+    // Skip if already attempting/attempted or missing data
     if (hasAttemptedSetActive || isSettingActive || !subdomainOrg) return;
-    if (organization && organization.slug === subdomain) return; // Already correct
+    
+    // Fast path already handled above, but double-check
+    if (organization?.slug === subdomain) {
+      setHasAttemptedSetActive(true);
+      return;
+    }
 
     const switchToOrg = async () => {
       try {
         setIsSettingActive(true);
-        console.log('🔄 Switching to organization:', subdomainOrg.clerk_org_id);
+        console.log('🔄 setActive FIRST: Switching to org:', subdomainOrg.clerk_org_id);
         
+        // Let Clerk validate membership - it will throw if user lacks access
         await setActive({ organization: subdomainOrg.clerk_org_id });
         
-        console.log('✅ Successfully switched to organization');
+        console.log('✅ setActive succeeded - user has access');
         setHasAttemptedSetActive(true);
       } catch (error) {
-        console.error('❌ Failed to switch organization:', error);
+        console.error('❌ setActive failed - Clerk denied access:', error);
         setHasAttemptedSetActive(true);
         navigate('/unauthorized', { replace: true });
       } finally {
@@ -111,8 +118,8 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
     switchToOrg();
   }, [subdomain, subdomainOrg, organization, hasAttemptedSetActive, isSettingActive, setActive, navigate]);
 
-  // Show loading while switching orgs
-  if (isSettingActive || (!hasAttemptedSetActive && organization?.slug !== subdomain)) {
+  // Show loading while setActive is in progress
+  if (isSettingActive) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
@@ -123,12 +130,25 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
     );
   }
 
-  // If we've attempted setActive and still don't match → unauthorized
+  // Show loading while waiting for first setActive attempt
+  if (!hasAttemptedSetActive && organization?.slug !== subdomain) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-sm text-muted-foreground">Loading organization...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // After setActive attempt: if still mismatched, Clerk already navigated to /unauthorized
+  // This is redundant safety check
   if (hasAttemptedSetActive && organization?.slug !== subdomain) {
     navigate('/unauthorized', { replace: true });
     return null;
   }
 
-  // All checks passed
+  // All checks passed - allow access
   return <>{children}</>;
 };
