@@ -208,7 +208,7 @@ export function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
         'customers',
         customerInsertData,
         orgId
-      ).then(result => result.select().single());
+      ).then(result => result.select().maybeSingle());
 
       if (customerError) {
         console.error('❌ Customer insert error:', customerError);

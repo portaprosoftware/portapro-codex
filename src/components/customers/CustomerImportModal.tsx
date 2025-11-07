@@ -247,7 +247,7 @@ export function CustomerImportModal({ isOpen, onClose, onSuccess }: CustomerImpo
                 billing_differs_from_service: !!(customerData.billing_street && customerData.service_street),
               })
               .select()
-              .single();
+              .maybeSingle();
             
             if (customerError) throw customerError;
             

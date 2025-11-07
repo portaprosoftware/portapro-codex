@@ -100,3 +100,37 @@ export async function safeDelete(
 
   return query;
 }
+
+/**
+ * Safe read helper that enforces organization_id filtering
+ * Prevents cross-tenant data leakage by scoping all SELECT queries
+ * 
+ * @param table - The Supabase table name
+ * @param orgId - The organization ID (required)
+ * @param additionalFilters - Additional WHERE conditions
+ * @returns Supabase query builder
+ * 
+ * @example
+ * const { data } = await safeRead('vehicles', orgId, { status: 'active' });
+ */
+export function safeRead(
+  table: string,
+  orgId: string | null,
+  additionalFilters: Record<string, any> = {}
+) {
+  if (!orgId) {
+    throw new Error('Multi-tenant data isolation requires organization_id to be set');
+  }
+
+  let query = (supabase as any)
+    .from(table)
+    .select('*')
+    .eq('organization_id', orgId);
+
+  // Apply additional filters
+  Object.entries(additionalFilters).forEach(([key, value]) => {
+    query = query.eq(key, value);
+  });
+
+  return query;
+}

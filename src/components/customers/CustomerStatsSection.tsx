@@ -47,7 +47,7 @@ export function CustomerStatsSection({ customerId }: CustomerStatsSectionProps) 
         .gte('scheduled_date', new Date().toISOString().split('T')[0])
         .order('scheduled_date', { ascending: true })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       return {
         totalJobs: totalJobs || 0,

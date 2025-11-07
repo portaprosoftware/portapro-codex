@@ -242,7 +242,7 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
         .update(updateData)
         .eq('id', customer.id)
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Supabase update error:', {

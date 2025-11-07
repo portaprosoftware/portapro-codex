@@ -65,6 +65,10 @@ export default tseslint.config(
         {
           "selector": "CallExpression[callee.property.name='delete'][callee.object.callee.property.name='from']",
           "message": "❌ MULTI-TENANT VIOLATION: Use safeDelete(table, orgId, matchConditions) from @/lib/supabase-helpers instead of direct .delete(). This prevents cross-tenant data deletion."
+        },
+        {
+          "selector": "CallExpression[callee.property.name='single']",
+          "message": "❌ DATA SAFETY VIOLATION: Replace .single() with .maybeSingle() to prevent multi-tenant data leakage and handle missing records gracefully."
         }
       ]
     },
