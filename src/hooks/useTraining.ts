@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useOrganizationId } from "@/hooks/useOrganizationId";
+import { safeInsert } from "@/lib/supabase-helpers";
 
 export interface CertificationType {
   id: string;
@@ -50,12 +51,15 @@ export function useCreateCertificationType() {
   
   return useMutation({
     mutationFn: async (payload: Omit<CertificationType, "id">) => {
-      if (!orgId) throw new Error('Organization ID required');
+      if (!orgId) {
+        throw new Error('Organization context required for multi-tenant data isolation');
+      }
       
-      const { error } = await supabase.from("certification_types").insert({
-        ...payload,
-        organization_id: orgId
-      } as any);
+      const { error } = await safeInsert(
+        "certification_types",
+        payload,
+        orgId
+      );
       if (error) throw error;
     },
     onSuccess: () => {
@@ -95,12 +99,15 @@ export function useAddEmployeeCertification() {
   
   return useMutation({
     mutationFn: async (payload: Omit<EmployeeCertification, "id">) => {
-      if (!orgId) throw new Error('Organization ID required');
+      if (!orgId) {
+        throw new Error('Organization context required for multi-tenant data isolation');
+      }
       
-      const { error } = await supabase.from("employee_certifications").insert({
-        ...payload,
-        organization_id: orgId
-      } as any);
+      const { error } = await safeInsert(
+        "employee_certifications",
+        payload,
+        orgId
+      );
       if (error) throw error;
     },
     onSuccess: () => {
@@ -165,12 +172,15 @@ export function useCreateTrainingRequirement() {
   
   return useMutation({
     mutationFn: async (payload: { role: string; certification_type_id: string; is_required?: boolean; frequency_months?: number | null; }) => {
-      if (!orgId) throw new Error('Organization ID required');
+      if (!orgId) {
+        throw new Error('Organization context required for multi-tenant data isolation');
+      }
       
-      const { error } = await supabase.from("training_requirements").insert({
-        ...payload,
-        organization_id: orgId
-      } as any);
+      const { error } = await safeInsert(
+        "training_requirements",
+        payload,
+        orgId
+      );
       if (error) throw error;
     },
     onSuccess: () => {

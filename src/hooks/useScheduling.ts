@@ -4,6 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { startOfWeek, endOfWeek, format } from "date-fns";
 import { triggerRouteScheduleChangeNotification } from "@/utils/notificationTriggers";
 import { useOrganizationId } from "@/hooks/useOrganizationId";
+import { safeInsert } from "@/lib/supabase-helpers";
 
 export interface ShiftTemplate {
   id: string;
@@ -53,12 +54,15 @@ export function useCreateShiftTemplate() {
   
   return useMutation({
     mutationFn: async (payload: Omit<ShiftTemplate, "id">) => {
-      if (!orgId) throw new Error('Organization ID required');
+      if (!orgId) {
+        throw new Error('Organization context required for multi-tenant data isolation');
+      }
       
-      const { error } = await supabase.from("shift_templates").insert({
-        ...payload,
-        organization_id: orgId
-      } as any);
+      const { error } = await safeInsert(
+        "shift_templates",
+        payload,
+        orgId
+      );
       if (error) throw error;
     },
     onSuccess: () => {
@@ -122,7 +126,9 @@ export function useAssignShift() {
   
   return useMutation({
     mutationFn: async (args: { driver_clerk_id: string; date: string; template_id?: string }) => {
-      if (!orgId) throw new Error('Organization ID required');
+      if (!orgId) {
+        throw new Error('Organization context required for multi-tenant data isolation');
+      }
       
       let start_time = "08:00:00";
       let end_time = "16:00:00";
@@ -139,15 +145,18 @@ export function useAssignShift() {
           end_time = (tpl as any).end_time;
         }
       }
-      const { error } = await supabase.from("driver_shifts").insert({
-        organization_id: orgId,
-        driver_clerk_id: args.driver_clerk_id,
-        shift_date: args.date,
-        start_time,
-        end_time,
-        status: "scheduled",
-        template_id: args.template_id || null,
-      });
+      const { error } = await safeInsert(
+        "driver_shifts",
+        {
+          driver_clerk_id: args.driver_clerk_id,
+          shift_date: args.date,
+          start_time,
+          end_time,
+          status: "scheduled",
+          template_id: args.template_id || null,
+        },
+        orgId
+      );
       if (error) throw error;
     },
     onSuccess: () => {

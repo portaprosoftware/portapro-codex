@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
+import { safeInsert } from '@/lib/supabase-helpers';
 
 export interface OfflineSpillKitCheck {
   id: string;
@@ -27,6 +29,7 @@ export function useSpillKitOffline() {
   const [offlineQueue, setOfflineQueue] = useState<OfflineSpillKitCheck[]>([]);
   const [isSyncing, setIsSyncing] = useState(false);
   const { toast } = useToast();
+  const { orgId } = useOrganizationId();
 
   // Load queue from IndexedDB on mount
   useEffect(() => {
@@ -137,7 +140,7 @@ export function useSpillKitOffline() {
 
   // Process offline queue
   const processOfflineQueue = async () => {
-    if (isSyncing || !isOnline) return;
+    if (isSyncing || !isOnline || !orgId) return;
 
     const pendingChecks = offlineQueue.filter(check => 
       check.status === 'pending' || check.status === 'error'
@@ -152,9 +155,9 @@ export function useSpillKitOffline() {
         await updateCheckStatus(check.id, 'syncing');
 
         // Upload to Supabase
-        const { error } = await supabase
-          .from("vehicle_spill_kit_checks")
-          .insert([{
+        const { error } = await safeInsert(
+          "vehicle_spill_kit_checks",
+          {
             vehicle_id: check.vehicle_id,
             template_id: check.template_id,
             has_kit: check.has_kit,
@@ -168,7 +171,9 @@ export function useSpillKitOffline() {
             next_check_due: check.next_check_due,
             checked_at: check.checked_at,
             checked_by_clerk: check.checked_by_clerk
-          }]);
+          },
+          orgId
+        );
 
         if (error) throw error;
 
