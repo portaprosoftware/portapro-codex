@@ -12,15 +12,21 @@ export interface ItemCodeCategory {
 export interface CompanySettings {
   id: string;
   company_name?: string;
+  company_email?: string;
+  company_phone?: string;
+  company_street?: string;
+  company_city?: string;
+  company_state?: string;
+  company_zipcode?: string;
+  support_email?: string;
+  sms_from_number?: string;
   item_code_categories: ItemCodeCategory;
   next_item_numbers: { [key: string]: number };
   company_timezone?: string;
-  // Dynamic consumable categories array lives here
   consumable_categories?: ConsumableCategory[];
   default_deposit_percentage?: number;
   default_delivery_fee?: number;
   auto_enable_delivery_fee?: boolean;
-  // ... other company settings fields
 }
 
 export const useCompanySettings = () => {

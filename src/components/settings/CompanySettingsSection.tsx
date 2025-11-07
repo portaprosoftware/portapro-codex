@@ -1,39 +1,17 @@
 import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Building2, Edit, Mail, MapPin, Phone, Clock, Percent, DollarSign } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { CompanySettingsModal } from "@/components/settings/CompanySettingsModal";
 import { CustomerSupportEmailModal } from "@/components/settings/CustomerSupportEmailModal";
+import { useCompanySettings } from "@/hooks/useCompanySettings";
 
 export function CompanySettingsSection() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showSupportEmailModal, setShowSupportEmailModal] = useState(false);
 
-  const { data: companySettings, isLoading, error } = useQuery({
-    queryKey: ["company-settings"],
-    queryFn: async () => {
-      console.log("Fetching company settings with full select...");
-      const { data, error } = await supabase
-        .from("company_settings")
-        .select("*")
-        .single();
-      
-      if (error) {
-        console.error("Error fetching company settings:", error);
-        throw error;
-      }
-      console.log("Company settings fetched:", data);
-      return data;
-    },
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    gcTime: 1000 * 60 * 10, // 10 minutes (renamed from cacheTime in v5)
-    retry: 3,
-  });
-
-  console.log("CompanySettingsSection render:", { companySettings, isLoading, error });
+  const { data: companySettings, isLoading } = useCompanySettings();
 
   if (isLoading) {
     return (
