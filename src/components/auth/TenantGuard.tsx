@@ -29,7 +29,6 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
   const { subdomain, organization: subdomainOrg, isLoading: orgLookupLoading, isLocalhost, isMainDomain } = useSubdomainOrg();
   
   const [isSettingActive, setIsSettingActive] = useState(false);
-  const [hasAttemptedSetActive, setHasAttemptedSetActive] = useState(false);
 
   // Skip checks on public routes
   const currentPath = window.location.pathname;
@@ -39,7 +38,7 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
                         currentPath.startsWith('/auth/');
 
   // WAIT until everything is loaded
-  if (!userLoaded || !orgLoaded || !membershipLoaded || orgLookupLoading) {
+  if (!userLoaded || !orgLoaded || orgLookupLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
@@ -63,6 +62,9 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
 
   // Main domain: redirect to first organization's subdomain
   if (isMainDomain) {
+    if (!membershipLoaded) {
+      return null;
+    }
     const memberships = userMemberships?.data || [];
     if (memberships.length === 0) {
       navigate('/no-portal-found', { replace: true });
@@ -90,70 +92,39 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
     return <>{children}</>;
   }
 
-  // SLOW PATH: setActive is the FIRST source of truth
-  // No membership checks, no pre-validation - let Clerk decide
-  useEffect(() => {
-    // Skip if already attempting/attempted or missing data
-    if (hasAttemptedSetActive || isSettingActive || !subdomainOrg) return;
-    
-    // Fast path already handled above, but double-check
-    if (organization?.slug === subdomain) {
-      setHasAttemptedSetActive(true);
-      return;
-    }
+  // Activation: ensure Clerk active org matches subdomain BEFORE any checks
+  const needsActivation = !!subdomainOrg && organization?.id !== subdomainOrg.clerk_org_id;
 
+  useEffect(() => {
+    if (!needsActivation || isSettingActive) return;
+
+    let cancelled = false;
     const switchToOrg = async () => {
       try {
         setIsSettingActive(true);
-        console.log('🔄 setActive FIRST: Switching to org:', subdomainOrg.clerk_org_id);
-        
-        // Let Clerk validate membership - it will throw if user lacks access
-        await setActive({ organization: subdomainOrg.clerk_org_id });
-        
-        console.log('✅ setActive succeeded - user has access');
-        setHasAttemptedSetActive(true);
+        await setActive({ organization: subdomainOrg!.clerk_org_id });
       } catch (error) {
-        console.error('❌ setActive failed - Clerk denied access:', error);
-        setHasAttemptedSetActive(true);
-        navigate('/unauthorized', { replace: true });
+        if (!cancelled) {
+          navigate('/unauthorized', { replace: true });
+        }
       } finally {
-        setIsSettingActive(false);
+        if (!cancelled) setIsSettingActive(false);
       }
     };
 
     switchToOrg();
-  }, [subdomain, subdomainOrg, organization, hasAttemptedSetActive, isSettingActive, setActive, navigate]);
 
-  // Show loading while setActive is in progress
-  if (isSettingActive) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <p className="text-sm text-muted-foreground">Switching organization...</p>
-        </div>
-      </div>
-    );
-  }
+    return () => {
+      let _ = (cancelled = true);
+    };
+  }, [needsActivation, isSettingActive, setActive, subdomainOrg, navigate]);
 
-  // Show loading while waiting for first setActive attempt
-  if (!hasAttemptedSetActive && organization?.slug !== subdomain) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <p className="text-sm text-muted-foreground">Loading organization...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // After setActive attempt: if still mismatched, Clerk already navigated to /unauthorized
-  // This is redundant safety check
-  if (hasAttemptedSetActive && organization?.slug !== subdomain) {
-    navigate('/unauthorized', { replace: true });
+  // While activating, don't render or redirect
+  if (isSettingActive || needsActivation) {
     return null;
   }
+
+
 
   // All checks passed - allow access
   return <>{children}</>;
