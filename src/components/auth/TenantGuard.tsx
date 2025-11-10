@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useUser, useOrganization, useClerk, useOrganizationList } from '@clerk/clerk-react';
+import { useUser, useOrganization, useClerk } from '@clerk/clerk-react';
 import { Loader2 } from 'lucide-react';
 import { useSubdomainOrg } from '@/hooks/useSubdomainOrg';
 
@@ -9,21 +9,29 @@ interface TenantGuardProps {
 }
 
 /**
- * TenantGuard: Multi-tenant isolation with setActive FIRST approach
+ * TenantGuard: Subdomain-specific multi-tenant isolation
+ * 
+ * Responsibilities:
+ * - Validate user belongs to subdomain organization
+ * - Call setActive() FIRST to establish Clerk context
+ * - Allow access if setActive() succeeds
+ * - Redirect to /unauthorized if setActive() throws
+ * 
+ * Does NOT handle:
+ * - Main domain redirects (handled by RootRedirect)
+ * - Membership pre-validation (Clerk handles via setActive)
  * 
  * Flow:
- * 1. User signed in?
- * 2. Look up subdomain → expected Clerk org ID
- * 3. FAST PATH: If current org.slug === subdomain → allow immediately
- * 4. SLOW PATH: Call setActive({ organization }) to switch context
- * 5. Only show unauthorized if setActive fails
+ * 1. User signed in? → Yes
+ * 2. Subdomain org exists? → Yes
+ * 3. FAST PATH: org.slug === subdomain → Allow immediately
+ * 4. SLOW PATH: Call setActive({ organization: subdomainOrg.clerk_org_id })
+ * 5. If setActive() succeeds → Allow access
+ * 6. If setActive() throws → Navigate to /unauthorized
  */
 export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
   const { user, isLoaded: userLoaded } = useUser();
   const { organization, isLoaded: orgLoaded } = useOrganization();
-  const { userMemberships, isLoaded: membershipLoaded } = useOrganizationList({
-    userMemberships: { infinite: true }
-  });
   const { setActive } = useClerk();
   const navigate = useNavigate();
   const { subdomain, organization: subdomainOrg, isLoading: orgLookupLoading, isLocalhost, isMainDomain } = useSubdomainOrg();
@@ -60,19 +68,10 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
     return null;
   }
 
-  // Main domain: redirect to first organization's subdomain
+  // Main domain: should not reach here (RootRedirect handles this)
+  // If we somehow get here, redirect back to root for RootRedirect to handle
   if (isMainDomain) {
-    if (!membershipLoaded) {
-      return null;
-    }
-    const memberships = userMemberships?.data || [];
-    if (memberships.length === 0) {
-      navigate('/no-portal-found', { replace: true });
-      return null;
-    }
-    // Use first organization membership to redirect
-    const primaryOrg = memberships[0].organization;
-    window.location.href = `https://${primaryOrg.slug}.portaprosoftware.com/dashboard`;
+    navigate('/', { replace: true });
     return null;
   }
 

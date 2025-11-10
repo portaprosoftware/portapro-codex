@@ -10,6 +10,7 @@ import { Layout } from './components/layout/Layout';
 import { ErrorBoundary } from './components/ui/error-boundary';
 import { TenantGuard } from './components/auth/TenantGuard';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import { RootRedirect } from './components/auth/RootRedirect';
 import { Landing } from './pages/Landing';
 import PublicPayment from './pages/PublicPayment';
 import PaymentSuccess from './pages/PaymentSuccess';
@@ -95,14 +96,14 @@ const App = () => {
             <Route
               path="/"
               element={
-                <>
+                <RootRedirect>
                   <SignedIn>
                     <Navigate to="/dashboard" replace />
                   </SignedIn>
                   <SignedOut>
                     <Landing />
                   </SignedOut>
-                </>
+                </RootRedirect>
               }
             />
 
