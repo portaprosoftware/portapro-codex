@@ -187,41 +187,9 @@ export default function TemplatesPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-semibold font-inter">Templates Library</h2>
-          <p className="text-sm text-muted-foreground">
-            Create and manage email templates for campaigns
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="flex border rounded-lg">
-            <Button
-              variant={viewMode === 'list' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setViewMode('list')}
-            >
-              <List className="w-4 h-4" />
-            </Button>
-            <Button
-              variant={viewMode === 'grid' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setViewMode('grid')}
-            >
-              <Grid3x3 className="w-4 h-4" />
-            </Button>
-          </div>
-          <Button onClick={() => handleOpenDrawer()}>
-            <Plus className="w-4 h-4 mr-2" />
-            New Template
-          </Button>
-        </div>
-      </div>
-
       {/* Templates Display */}
       {templates.length === 0 ? (
-        <Card className="p-12 text-center">
+        <Card className="p-12 text-center rounded-2xl shadow-md">
           <div className="flex flex-col items-center gap-4">
             <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
               <Image className="w-8 h-8 text-muted-foreground" />
@@ -238,99 +206,138 @@ export default function TemplatesPage() {
             </div>
           </div>
         </Card>
-      ) : viewMode === 'list' ? (
-        <Card>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Subject</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Last Updated</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {templates.map((template) => (
-                <TableRow key={template.id}>
-                  <TableCell className="font-medium">{template.name}</TableCell>
-                  <TableCell className="max-w-xs truncate">{template.subject}</TableCell>
-                  <TableCell>
-                    <span className="px-2 py-1 bg-muted rounded text-xs">
-                      {template.category}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    {format(new Date(template.updated_at), 'MMM dd, yyyy')}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleOpenDrawer(template)}
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDelete(template.id)}
-                      >
-                        <Trash2 className="w-4 h-4 text-destructive" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {templates.map((template) => (
-            <Card key={template.id} className="p-4 space-y-3">
-              {template.preview_image_url ? (
-                <div className="aspect-video bg-muted rounded overflow-hidden">
-                  <img
-                    src={template.preview_image_url}
-                    alt={template.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ) : (
-                <div className="aspect-video bg-muted rounded flex items-center justify-center">
-                  <Image className="w-8 h-8 text-muted-foreground" />
-                </div>
-              )}
+        <Card className="rounded-2xl shadow-md">
+          {/* Header inside card */}
+          <div className="p-6 border-b">
+            <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-semibold truncate">{template.name}</h3>
-                <p className="text-sm text-muted-foreground truncate">{template.subject}</p>
+                <h2 className="text-xl font-semibold font-inter">Templates Library</h2>
+                <p className="text-sm text-muted-foreground">
+                  Create and manage email templates for campaigns
+                </p>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="px-2 py-1 bg-muted rounded text-xs">
-                  {template.category}
-                </span>
-                <div className="flex items-center gap-1">
+              <div className="flex items-center gap-2">
+                <div className="flex border rounded-lg">
                   <Button
-                    variant="ghost"
+                    variant={viewMode === 'list' ? 'default' : 'ghost'}
                     size="sm"
-                    onClick={() => handleOpenDrawer(template)}
+                    onClick={() => setViewMode('list')}
                   >
-                    <Edit className="w-4 h-4" />
+                    <List className="w-4 h-4" />
                   </Button>
                   <Button
-                    variant="ghost"
+                    variant={viewMode === 'grid' ? 'default' : 'ghost'}
                     size="sm"
-                    onClick={() => handleDelete(template.id)}
+                    onClick={() => setViewMode('grid')}
                   >
-                    <Trash2 className="w-4 h-4 text-destructive" />
+                    <Grid3x3 className="w-4 h-4" />
                   </Button>
                 </div>
+                <Button onClick={() => handleOpenDrawer()}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  New Template
+                </Button>
               </div>
-            </Card>
-          ))}
-        </div>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className={viewMode === 'list' ? '' : 'p-6'}>
+            {viewMode === 'list' ? (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Subject</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Last Updated</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {templates.map((template) => (
+                    <TableRow key={template.id}>
+                      <TableCell className="font-medium">{template.name}</TableCell>
+                      <TableCell className="max-w-xs truncate">{template.subject}</TableCell>
+                      <TableCell>
+                        <span className="px-2 py-1 bg-muted rounded text-xs">
+                          {template.category}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        {format(new Date(template.updated_at), 'MMM dd, yyyy')}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleOpenDrawer(template)}
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDelete(template.id)}
+                          >
+                            <Trash2 className="w-4 h-4 text-destructive" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {templates.map((template) => (
+                  <Card key={template.id} className="p-4 space-y-3">
+                    {template.preview_image_url ? (
+                      <div className="aspect-video bg-muted rounded overflow-hidden">
+                        <img
+                          src={template.preview_image_url}
+                          alt={template.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="aspect-video bg-muted rounded flex items-center justify-center">
+                        <Image className="w-8 h-8 text-muted-foreground" />
+                      </div>
+                    )}
+                    <div>
+                      <h3 className="font-semibold truncate">{template.name}</h3>
+                      <p className="text-sm text-muted-foreground truncate">{template.subject}</p>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="px-2 py-1 bg-muted rounded text-xs">
+                        {template.category}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleOpenDrawer(template)}
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDelete(template.id)}
+                        >
+                          <Trash2 className="w-4 h-4 text-destructive" />
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+        </Card>
       )}
 
       {/* Template Form Drawer */}
