@@ -165,22 +165,6 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
     }
   });
 
-  // Fetch customer type counts
-  const { data: customerTypes = [] } = useQuery({
-    queryKey: ['customer-type-counts', orgId],
-    queryFn: async () => {
-      if (!orgId) return [];
-      const { data, error } = await (supabase as any).rpc('get_customer_type_counts', {
-        org_id: orgId
-      });
-      if (error) {
-        console.error('Error fetching customer type counts:', error);
-        return [];
-      }
-      return data || [];
-    },
-    enabled: !!orgId
-  });
 
   // Fetch all customers for individual selection
   const { data: customers = [] } = useQuery({
@@ -358,11 +342,6 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
         const segment = segments.find(s => s.id === segmentId);
         return total + (segment?.customer_count || 0);
       }, 0);
-    } else if (campaignData.recipient_type === 'types') {
-      return campaignData.target_customer_types.reduce((total, type) => {
-        const typeData = customerTypes.find(t => t.customer_type === type);
-        return total + (typeData?.total_count || 0);
-      }, 0);
     }
     return 0;
   })();
@@ -448,7 +427,6 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
                   <SelectContent>
                     <SelectItem value="all">All Customers</SelectItem>
                     <SelectItem value="segments">Smart Segments</SelectItem>
-                    <SelectItem value="types">Select Customer Types</SelectItem>
                     <SelectItem value="individuals">Select Individual Customers</SelectItem>
                   </SelectContent>
                 </Select>
@@ -582,65 +560,6 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
                 </div>
               )}
 
-              {/* Customer Types Option */}
-              {campaignData.recipient_type === 'types' && (
-                <div className="space-y-4">
-                  <Label className="text-base font-medium font-inter">Select Customer Types:</Label>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {customerTypes.map((type) => {
-                      const getTypeGradient = (type: string) => {
-                        const typeGradients = {
-                          'events_festivals': 'bg-gradient-to-r from-purple-500 to-purple-600',
-                          'sports_recreation': 'bg-gradient-to-r from-green-500 to-green-600', 
-                          'municipal_government': 'bg-gradient-to-r from-blue-500 to-blue-600',
-                          'commercial': 'bg-gradient-to-r from-slate-600 to-slate-700',
-                          'construction': 'bg-gradient-to-r from-orange-500 to-orange-600',
-                          'emergency_disaster_relief': 'bg-gradient-to-r from-red-500 to-red-600',
-                          'private_events_weddings': 'bg-gradient-to-r from-pink-500 to-pink-600',
-                          'bars_restaurants': 'bg-gradient-to-r from-indigo-500 to-indigo-600',
-                          'retail': 'bg-gradient-to-r from-yellow-500 to-yellow-600',
-                          'other': 'bg-gradient-to-r from-gray-500 to-gray-600'
-                        } as const;
-                        return typeGradients[type as keyof typeof typeGradients] || 'bg-gradient-to-r from-gray-500 to-gray-600';
-                      };
-
-                      return (
-                        <div key={type.customer_type} className="flex items-center space-x-3">
-                          <Checkbox
-                            id={type.customer_type}
-                            checked={campaignData.target_customer_types.includes(type.customer_type)}
-                            onCheckedChange={(checked) => {
-                              if (checked) {
-                                setCampaignData({
-                                  ...campaignData,
-                                  target_customer_types: [...campaignData.target_customer_types, type.customer_type]
-                                });
-                              } else {
-                                setCampaignData({
-                                  ...campaignData,
-                                  target_customer_types: campaignData.target_customer_types.filter(t => t !== type.customer_type)
-                                });
-                              }
-                            }}
-                            className="h-5 w-5"
-                          />
-                          <label 
-                            htmlFor={type.customer_type} 
-                            className="cursor-pointer flex-1"
-                          >
-                            <Badge className={`${getTypeGradient(type.customer_type)} text-white border-0 font-bold px-3 py-1 rounded-full`}>
-                              {type.customer_type.replace(/[_-]/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                            </Badge>
-                          </label>
-                          <span className="text-sm text-gray-500 font-inter">
-                            ({type.total_count} customers)
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
 
               {/* Individual Customers Option */}
               {campaignData.recipient_type === 'individuals' && (
