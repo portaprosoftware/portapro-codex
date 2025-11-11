@@ -215,6 +215,16 @@ export const CampaignAnalytics: React.FC = () => {
                     >
                       {campaign.status}
                     </Badge>
+                    {(campaign.opened_count || 0) > 0 && (
+                      <Badge className="text-xs shrink-0 bg-gradient-to-r from-green-600 to-green-700 text-white font-bold border-0">
+                        Opened ✓
+                      </Badge>
+                    )}
+                    {(campaign.clicked_count || 0) > 0 && (
+                      <Badge className="text-xs shrink-0 bg-gradient-to-r from-green-600 to-green-700 text-white font-bold border-0">
+                        Clicked ✓
+                      </Badge>
+                    )}
                   </div>
                   <div className="flex flex-wrap items-center gap-2 md:gap-4 text-xs text-gray-500">
                     <span className="shrink-0">{campaign.campaign_type}</span>

@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useOrganizationId } from '@/hooks/useOrganizationId';
 import { safeRead } from '@/lib/supabase-helpers';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { BarChart3, TrendingUp, Mail, MousePointer } from 'lucide-react';
 import { format } from 'date-fns';
@@ -171,7 +172,21 @@ export function CampaignAnalyticsOverview() {
 
                   return (
                     <TableRow key={campaign.id} className="cursor-pointer hover:bg-muted/50" onClick={() => navigate(`/marketing/campaigns/${campaign.id}`)}>
-                      <TableCell className="font-medium hover:text-primary">{campaign.name}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-medium hover:text-primary">{campaign.name}</span>
+                          {(campaign.opened_count || 0) > 0 && (
+                            <Badge className="text-xs bg-gradient-to-r from-green-600 to-green-700 text-white font-bold border-0">
+                              Opened ✓
+                            </Badge>
+                          )}
+                          {(campaign.clicked_count || 0) > 0 && (
+                            <Badge className="text-xs bg-gradient-to-r from-green-600 to-green-700 text-white font-bold border-0">
+                              Clicked ✓
+                            </Badge>
+                          )}
+                        </div>
+                      </TableCell>
                       <TableCell>
                         {campaign.sent_at 
                           ? format(new Date(campaign.sent_at), 'MMM dd, yyyy — h:mm a')
