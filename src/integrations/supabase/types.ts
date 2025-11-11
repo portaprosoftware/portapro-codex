@@ -6390,6 +6390,44 @@ export type Database = {
         }
         Relationships: []
       }
+      marketing_campaign_events: {
+        Row: {
+          campaign_id: string
+          created_at: string | null
+          customer_id: string | null
+          event_type: string
+          id: string
+          metadata: Json | null
+          organization_id: string
+        }
+        Insert: {
+          campaign_id: string
+          created_at?: string | null
+          customer_id?: string | null
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          organization_id: string
+        }
+        Update: {
+          campaign_id?: string
+          created_at?: string | null
+          customer_id?: string | null
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          organization_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketing_campaign_events_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "marketing_campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       marketing_campaigns: {
         Row: {
           bounced_count: number | null
@@ -6505,15 +6543,7 @@ export type Database = {
           subject?: string | null
           updated_at?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "marketing_templates_organization_id_fkey"
-            columns: ["organization_id"]
-            isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       mobile_fuel_service_vehicles: {
         Row: {

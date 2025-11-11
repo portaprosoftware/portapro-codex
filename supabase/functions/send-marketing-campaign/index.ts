@@ -94,6 +94,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     let successCount = 0;
     let failureCount = 0;
+    let deliveredCount = 0;
 
     // Send emails to recipients
     for (const recipient of recipients) {
@@ -147,7 +148,20 @@ const handler = async (req: Request): Promise<Response> => {
           resend_email_id: emailResponse.data?.id,
         });
 
+        // Insert delivered event into marketing_campaign_events
+        await supabase.from("marketing_campaign_events").insert({
+          campaign_id: campaignId,
+          organization_id: campaign.organization_id,
+          customer_id: recipient.id,
+          event_type: "delivered",
+          event_data: {
+            resend_email_id: emailResponse.data?.id,
+            email_address: recipient.email,
+          },
+        });
+
         successCount++;
+        deliveredCount++;
       } catch (error) {
         console.error(`Failed to send email to ${recipient.email}:`, error);
         failureCount++;
@@ -162,6 +176,18 @@ const handler = async (req: Request): Promise<Response> => {
           email_address: recipient.email,
           status: "failed",
         });
+
+        // Insert failed event into marketing_campaign_events
+        await supabase.from("marketing_campaign_events").insert({
+          campaign_id: campaignId,
+          organization_id: campaign.organization_id,
+          customer_id: recipient.id,
+          event_type: "failed",
+          event_data: {
+            error: error.message,
+            email_address: recipient.email,
+          },
+        });
       }
     }
 
@@ -173,11 +199,12 @@ const handler = async (req: Request): Promise<Response> => {
       .update({
         status: finalStatus,
         total_recipients: recipients.length,
+        delivered_count: deliveredCount,
         sent_at: new Date().toISOString(),
       })
       .eq("id", campaignId);
 
-    console.log(`Campaign ${campaignId} completed: ${successCount} sent, ${failureCount} failed`);
+    console.log(`Campaign ${campaignId} completed: ${successCount} sent, ${deliveredCount} delivered, ${failureCount} failed`);
 
     return new Response(
       JSON.stringify({
@@ -185,6 +212,7 @@ const handler = async (req: Request): Promise<Response> => {
         campaignId,
         totalRecipients: recipients.length,
         successCount,
+        deliveredCount,
         failureCount,
         status: finalStatus,
       }),
