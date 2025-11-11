@@ -18,15 +18,16 @@ import {
   AlertDialogTitle 
 } from "@/components/ui/alert-dialog";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { useItemCodeCategories } from "@/hooks/useCompanySettings";
+import { useItemCodeCategories, useCompanySettings } from "@/hooks/useCompanySettings";
 import { useOrganizationId } from "@/hooks/useOrganizationId";
+import { safeUpdate } from "@/lib/supabase-helpers";
 
 export const CodeCategoriesView: React.FC = () => {
   const queryClient = useQueryClient();
   const { orgId } = useOrganizationId();
   const { categories, isLoading } = useItemCodeCategories();
+  const { data: companySettings } = useCompanySettings();
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState<{ prefix: string; name: string } | null>(null);
   const [newPrefix, setNewPrefix] = useState("");
@@ -37,16 +38,19 @@ export const CodeCategoriesView: React.FC = () => {
   const updateCategoriesMutation = useMutation({
     mutationFn: async (newCategories: Record<string, string>) => {
       if (!orgId) throw new Error('Organization ID is required');
+      if (!companySettings?.id) throw new Error('Company settings not loaded');
       
-      const { error } = await supabase
-        .from('company_settings')
-        .update({ item_code_categories: newCategories })
-        .eq('organization_id', orgId);
+      const result = await safeUpdate(
+        'company_settings',
+        { item_code_categories: newCategories },
+        orgId,
+        { id: companySettings.id }
+      );
       
-      if (error) throw error;
+      if (result.error) throw result.error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['company-settings'] });
+      queryClient.invalidateQueries({ queryKey: ['company-settings', orgId] });
       toast.success('Categories updated successfully', { duration: 2000 });
       setShowAddModal(false);
       setEditingCategory(null);

@@ -103,7 +103,7 @@ export function AddStorageSiteModal({ open, onOpenChange, onClose }: AddStorageS
 
   // Check if there's already a default location
   const { data: existingDefault } = useQuery({
-    queryKey: ['existing-default-location'],
+    queryKey: ['existing-default-location', orgId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('storage_locations')
@@ -115,7 +115,8 @@ export function AddStorageSiteModal({ open, onOpenChange, onClose }: AddStorageS
       // It's okay if no default exists yet
       if (error && error.code !== 'PGRST116') throw error;
       return data;
-    }
+    },
+    enabled: !!orgId
   });
 
   const createMutation = useMutation({
@@ -157,7 +158,7 @@ export function AddStorageSiteModal({ open, onOpenChange, onClose }: AddStorageS
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['storage-locations'] });
+      queryClient.invalidateQueries({ queryKey: ['storage-locations', orgId] });
       toast.success("Storage site created successfully");
       onClose();
       setFormData({

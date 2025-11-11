@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Navigate, useLocation } from "react-router-dom";
 import { useCompanySettings } from "@/hooks/useCompanySettings";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 
 interface StorageLocation {
   id: string;
@@ -38,6 +39,7 @@ interface StorageLocation {
 
 export default function StorageSites() {
   const { hasAdminAccess } = useUserRole();
+  const { orgId } = useOrganizationId();
   const queryClient = useQueryClient();
   const location = useLocation();
   const [showAddModal, setShowAddModal] = useState(false);
@@ -52,7 +54,7 @@ export default function StorageSites() {
   const activeTab = location.hash === "#reporting" ? "reporting" : "locations";
 
   const { data: storageLocations, isLoading: locationsLoading } = useQuery({
-    queryKey: ['storage-locations'],
+    queryKey: ['storage-locations', orgId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('storage_locations')
@@ -71,7 +73,8 @@ export default function StorageSites() {
       });
       
       return sortedData;
-    }
+    },
+    enabled: !!orgId
   });
 
   const { data: companySettings, isLoading: settingsLoading } = useCompanySettings();
@@ -89,7 +92,7 @@ export default function StorageSites() {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['storage-locations'] });
+      queryClient.invalidateQueries({ queryKey: ['storage-locations', orgId] });
       toast.success("Storage site deleted successfully");
     },
     onError: (error) => {

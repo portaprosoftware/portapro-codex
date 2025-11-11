@@ -12,6 +12,7 @@ import { useConsumableCategories, useCompanySettings } from '@/hooks/useCompanyS
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { safeUpdate } from '@/lib/supabase-helpers';
 import { SuccessMessage } from '@/components/ui/SuccessMessage';
 import type { ConsumableCategory } from '@/lib/consumableCategories';
 import { CONSUMABLE_CATEGORIES } from '@/lib/consumableCategories';
@@ -46,17 +47,20 @@ export const ConsumableCategoryManager: React.FC = () => {
   const initializeMutation = useMutation({
     mutationFn: async () => {
       if (!orgId) throw new Error('Organization ID is required');
+      if (!companySettings?.id) throw new Error('Company settings not loaded');
       
-      const { error } = await supabase
-        .from('company_settings' as any)
-        .update({ consumable_categories: CONSUMABLE_CATEGORIES } as any)
-        .eq('organization_id', orgId);
+      const result = await safeUpdate(
+        'company_settings',
+        { consumable_categories: CONSUMABLE_CATEGORIES },
+        orgId,
+        { id: companySettings.id }
+      );
 
-      if (error) throw error;
+      if (result.error) throw result.error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['company-settings'] });
-      queryClient.invalidateQueries({ queryKey: ['simple-consumables'] });
+      queryClient.invalidateQueries({ queryKey: ['company-settings', orgId] });
+      queryClient.invalidateQueries({ queryKey: ['simple-consumables', orgId] });
     },
     onError: (err: any) => {
       console.error(err);
@@ -101,18 +105,20 @@ export const ConsumableCategoryManager: React.FC = () => {
   const updateMutation = useMutation({
     mutationFn: async (next: ConsumableCategory[]) => {
       if (!orgId) throw new Error('Organization ID is required');
+      if (!companySettings?.id) throw new Error('Company settings not loaded');
       
-      // Cast to any to bypass generated types until Supabase types include `consumable_categories`
-      const { error } = await supabase
-        .from('company_settings' as any)
-        .update({ consumable_categories: next } as any)
-        .eq('organization_id', orgId);
+      const result = await safeUpdate(
+        'company_settings',
+        { consumable_categories: next },
+        orgId,
+        { id: companySettings.id }
+      );
 
-      if (error) throw error;
+      if (result.error) throw result.error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['company-settings'] });
-      queryClient.invalidateQueries({ queryKey: ['simple-consumables'] });
+      queryClient.invalidateQueries({ queryKey: ['company-settings', orgId] });
+      queryClient.invalidateQueries({ queryKey: ['simple-consumables', orgId] });
       setShowSuccess(true);
       setEditing(null);
       setNewLabel('');

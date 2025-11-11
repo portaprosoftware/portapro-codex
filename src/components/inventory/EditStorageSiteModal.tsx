@@ -17,6 +17,7 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { MapPin, Building } from "lucide-react";
 import { useCompanySettings } from "@/hooks/useCompanySettings";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 
 interface StorageLocation {
   id: string;
@@ -41,6 +42,7 @@ interface EditStorageSiteModalProps {
 }
 
 export function EditStorageSiteModal({ site, open, onOpenChange, onClose }: EditStorageSiteModalProps) {
+  const { orgId } = useOrganizationId();
   const queryClient = useQueryClient();
   const [formData, setFormData] = useState({
     name: "",
@@ -82,7 +84,7 @@ export function EditStorageSiteModal({ site, open, onOpenChange, onClose }: Edit
 
   // Check if there's already a default location (excluding current site)
   const { data: existingDefault } = useQuery({
-    queryKey: ['existing-default-location', site?.id],
+    queryKey: ['existing-default-location', orgId, site?.id],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('storage_locations')
@@ -96,7 +98,7 @@ export function EditStorageSiteModal({ site, open, onOpenChange, onClose }: Edit
       if (error && error.code !== 'PGRST116') throw error;
       return data;
     },
-    enabled: !!site?.id
+    enabled: !!orgId && !!site?.id
   });
 
   const updateMutation = useMutation({
@@ -139,7 +141,7 @@ export function EditStorageSiteModal({ site, open, onOpenChange, onClose }: Edit
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['storage-locations'] });
+      queryClient.invalidateQueries({ queryKey: ['storage-locations', orgId] });
       toast.success("Storage site updated successfully");
       onClose();
     },
