@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Mail, Megaphone, Clock, Users2, FileText, ChevronDown } from 'lucide-react';
+import { Mail, Megaphone, Clock, Users2, FileText, ChevronDown, BarChart3 } from 'lucide-react';
 import { TabNav } from '@/components/ui/TabNav';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
@@ -9,20 +9,23 @@ import { CampaignManagement } from './CampaignManagement';
 import { ScheduledCampaigns } from './ScheduledCampaigns';
 import { CustomerSegments } from './CustomerSegments';
 import { DraftManagement } from './DraftManagement';
+import { CampaignAnalyticsOverview } from './CampaignAnalyticsOverview';
 import { cn } from '@/lib/utils';
 
-type MarketingTab = 'templates' | 'campaigns' | 'scheduled' | 'segments' | 'drafts';
+type MarketingTab = 'overview' | 'templates' | 'campaigns' | 'scheduled' | 'segments' | 'drafts';
 
 export const MarketingDashboard: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<MarketingTab>('campaigns');
+  const [activeTab, setActiveTab] = useState<MarketingTab>('overview');
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   // Determine active tab from URL
   React.useEffect(() => {
     const path = location.pathname;
-    if (path.includes('/campaigns')) {
+    if (path === '/marketing' || path === '/marketing/') {
+      setActiveTab('overview');
+    } else if (path.includes('/campaigns')) {
       setActiveTab('campaigns');
     } else if (path.includes('/templates')) {
       setActiveTab('templates');
@@ -33,7 +36,7 @@ export const MarketingDashboard: React.FC = () => {
     } else if (path.includes('/drafts')) {
       setActiveTab('drafts');
     } else {
-      setActiveTab('campaigns');
+      setActiveTab('overview');
     }
   }, [location]);
 
@@ -42,6 +45,9 @@ export const MarketingDashboard: React.FC = () => {
     setIsSheetOpen(false);
     const basePath = '/marketing';
     switch (tab) {
+      case 'overview':
+        navigate(basePath);
+        break;
       case 'campaigns':
         navigate(`${basePath}/campaigns`);
         break;
@@ -62,28 +68,32 @@ export const MarketingDashboard: React.FC = () => {
 
   const getActiveTabTitle = () => {
     switch (activeTab) {
+      case 'overview': return 'Overview';
       case 'campaigns': return 'Campaigns';
       case 'templates': return 'Templates';
       case 'scheduled': return 'Scheduled';
       case 'segments': return 'Smart Segments';
       case 'drafts': return 'Drafts';
-      default: return 'Campaigns';
+      default: return 'Overview';
     }
   };
 
   const getActiveTabIcon = () => {
     switch (activeTab) {
+      case 'overview': return BarChart3;
       case 'campaigns': return Megaphone;
       case 'templates': return Mail;
       case 'scheduled': return Clock;
       case 'segments': return Users2;
       case 'drafts': return FileText;
-      default: return Megaphone;
+      default: return BarChart3;
     }
   };
 
   const renderContent = () => {
     switch (activeTab) {
+      case 'overview':
+        return <CampaignAnalyticsOverview />;
       case 'templates':
         return <TemplateManagement />;
       case 'campaigns':
@@ -95,7 +105,7 @@ export const MarketingDashboard: React.FC = () => {
       case 'drafts':
         return <DraftManagement />;
       default:
-        return <CampaignManagement />;
+        return <CampaignAnalyticsOverview />;
     }
   };
 
@@ -116,6 +126,14 @@ export const MarketingDashboard: React.FC = () => {
             <div className="hidden lg:flex items-center space-x-4">
               <div className="enterprise-tabs">
                 <TabNav ariaLabel="Marketing sections">
+                  <TabNav.Item 
+                    to="/marketing" 
+                    isActive={activeTab === 'overview'}
+                    onClick={() => navigateToTab('overview')}
+                  >
+                    <BarChart3 className="w-4 h-4" />
+                    Overview
+                  </TabNav.Item>
                   <TabNav.Item 
                     to="/marketing/campaigns" 
                     isActive={activeTab === 'campaigns'}
@@ -177,6 +195,21 @@ export const MarketingDashboard: React.FC = () => {
                     <SheetTitle>Marketing Sections</SheetTitle>
                   </SheetHeader>
                   <div className="space-y-2 mt-6">
+                    <button
+                      onClick={() => navigateToTab('overview')}
+                      className={cn(
+                        "w-full flex items-center justify-between px-4 py-3 rounded-lg text-left transition-all min-h-[56px]",
+                        activeTab === 'overview'
+                          ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold"
+                          : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
+                      )}
+                    >
+                      <span className="flex items-center gap-3">
+                        <BarChart3 className="w-5 h-5" />
+                        Overview
+                      </span>
+                    </button>
+
                     <button
                       onClick={() => navigateToTab('campaigns')}
                       className={cn(
