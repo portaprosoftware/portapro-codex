@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { ButtonBuilder } from './ButtonBuilder';
 import { SavedButtons } from './SavedButtons';
 import { useQuery } from '@tanstack/react-query';
+import { useCompanySettings } from '@/hooks/useCompanySettings';
 
 interface CustomButton {
   id: string;
@@ -106,18 +107,8 @@ export const MessageComposer = React.forwardRef<{
     customInstructions: ''
   });
 
-  // Fetch company logo from settings
-  const { data: companySettings } = useQuery({
-    queryKey: ['company-logo'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('company_settings')
-        .select('company_logo, company_name, default_logo_in_marketing')
-        .single();
-      if (error) throw error;
-      return data;
-    }
-  });
+  // Fetch company settings (logo, name, etc.) via shared hook
+  const { data: companySettings } = useCompanySettings();
 
   const handleAIGenerate = async () => {
     if (!aiParams.tone) {

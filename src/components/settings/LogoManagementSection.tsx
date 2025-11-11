@@ -1,28 +1,14 @@
 import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Image, Edit } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { LogoManagementModal } from "@/components/settings/LogoManagementModal";
+import { useCompanySettings } from "@/hooks/useCompanySettings";
 
 export function LogoManagementSection() {
   const [showLogoModal, setShowLogoModal] = useState(false);
 
-  const { data: companyLogo, isLoading } = useQuery({
-    queryKey: ["company-logo"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("company_settings")
-        .select("company_logo, company_name")
-        .single();
-      
-      if (error) throw error;
-      return data;
-    },
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    gcTime: 1000 * 60 * 10, // 10 minutes
-  });
+  const { data: companySettings, isLoading } = useCompanySettings();
 
   if (isLoading) {
     return (
@@ -63,9 +49,9 @@ export function LogoManagementSection() {
         <CardContent className="space-y-4">
           <div className="flex items-center space-x-4">
             <div className="w-20 h-20 border border-dashed border-muted-foreground rounded-lg flex items-center justify-center bg-muted overflow-hidden">
-              {companyLogo?.company_logo ? (
+              {companySettings?.company_logo ? (
                 <img 
-                  src={companyLogo.company_logo} 
+                  src={companySettings.company_logo} 
                   alt="Company logo" 
                   className="w-full h-full object-contain"
                 />
@@ -75,7 +61,7 @@ export function LogoManagementSection() {
             </div>
             <div className="flex-1">
               <p className="text-sm text-muted-foreground">
-                {companyLogo?.company_logo ? "Logo uploaded" : "No logo uploaded"}
+                {companySettings?.company_logo ? "Logo uploaded" : "No logo uploaded"}
               </p>
               <p className="text-xs text-muted-foreground mt-1">
                 Recommended: PNG or JPG, max 5MB
@@ -88,7 +74,7 @@ export function LogoManagementSection() {
       <LogoManagementModal 
         isOpen={showLogoModal}
         onClose={() => setShowLogoModal(false)}
-        currentLogo={companyLogo}
+        currentLogo={companySettings}
       />
     </>
   );

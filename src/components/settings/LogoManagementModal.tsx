@@ -73,17 +73,8 @@ export function LogoManagementModal({ isOpen, onClose, currentLogo }: LogoManage
 
       if (error) throw error;
 
-      // Update both cache keys properly
-      queryClient.setQueryData(["company-logo"], data);
-      
-      // Only update the logo field in company-settings cache, don't overwrite other data
-      queryClient.setQueryData(["company-settings"], (old: any) => {
-        if (!old) return old; // Don't modify if no existing data
-        return {
-          ...old,
-          company_logo: logoUrl
-        };
-      });
+      // Invalidate company settings queries so all consumers refetch with correct org-scoped key
+      queryClient.invalidateQueries({ queryKey: ["company-settings"] });
       
       setLogoFile(null);
       setLogoPreview(null);
