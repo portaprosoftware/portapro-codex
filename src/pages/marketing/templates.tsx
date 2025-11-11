@@ -1,0 +1,439 @@
+import React, { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
+import { safeRead, safeInsert, safeUpdate, safeDelete } from '@/lib/supabase-helpers';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Card } from '@/components/ui/card';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { DeleteConfirmationModal } from '@/components/ui/delete-confirmation-modal';
+import { Plus, Edit, Trash2, Grid3x3, List, Image } from 'lucide-react';
+import { toast } from 'sonner';
+import { format } from 'date-fns';
+
+interface MarketingTemplate {
+  id: string;
+  name: string;
+  subject: string;
+  content: string;
+  category: string;
+  preview_image_url?: string;
+  updated_at: string;
+  organization_id: string;
+}
+
+interface TemplateFormData {
+  name: string;
+  subject: string;
+  content: string;
+  category: string;
+  preview_image_url?: string;
+}
+
+export default function TemplatesPage() {
+  const { orgId } = useOrganizationId();
+  const queryClient = useQueryClient();
+  
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [editingTemplate, setEditingTemplate] = useState<MarketingTemplate | null>(null);
+  const [deleteTemplateId, setDeleteTemplateId] = useState<string | null>(null);
+  
+  const [formData, setFormData] = useState<TemplateFormData>({
+    name: '',
+    subject: '',
+    content: '',
+    category: 'General',
+    preview_image_url: ''
+  });
+
+  // Fetch templates
+  const { data: templates = [], isLoading } = useQuery({
+    queryKey: ['marketing-templates', orgId],
+    queryFn: async () => {
+      const { data, error } = await safeRead('marketing_templates', orgId)
+        .select('id, name, subject, content, category, preview_image_url, updated_at')
+        .order('updated_at', { ascending: false });
+      
+      if (error) throw error;
+      return data as MarketingTemplate[];
+    },
+    enabled: !!orgId,
+  });
+
+  // Create template mutation
+  const createMutation = useMutation({
+    mutationFn: async (data: TemplateFormData) => {
+      if (!orgId) throw new Error('Organization context required');
+      
+      return await safeInsert('marketing_templates', {
+        ...data,
+        organization_id: orgId
+      }, orgId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['marketing-templates', orgId] });
+      toast.success('Template created successfully');
+      handleCloseDrawer();
+    },
+    onError: () => {
+      toast.error('Failed to create template');
+    }
+  });
+
+  // Update template mutation
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: TemplateFormData }) => {
+      if (!orgId) throw new Error('Organization context required');
+      
+      return await safeUpdate('marketing_templates', data, orgId, { id });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['marketing-templates', orgId] });
+      toast.success('Template updated successfully');
+      handleCloseDrawer();
+    },
+    onError: () => {
+      toast.error('Failed to update template');
+    }
+  });
+
+  // Delete template mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      if (!orgId) throw new Error('Organization context required');
+      
+      return await safeDelete('marketing_templates', orgId, { id });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['marketing-templates', orgId] });
+      toast.success('Template deleted successfully');
+      setDeleteTemplateId(null);
+    },
+    onError: () => {
+      toast.error('Failed to delete template');
+    }
+  });
+
+  const handleOpenDrawer = (template?: MarketingTemplate) => {
+    if (template) {
+      setEditingTemplate(template);
+      setFormData({
+        name: template.name,
+        subject: template.subject,
+        content: template.content,
+        category: template.category,
+        preview_image_url: template.preview_image_url || ''
+      });
+    } else {
+      setEditingTemplate(null);
+      setFormData({
+        name: '',
+        subject: '',
+        content: '',
+        category: 'General',
+        preview_image_url: ''
+      });
+    }
+    setIsDrawerOpen(true);
+  };
+
+  const handleCloseDrawer = () => {
+    setIsDrawerOpen(false);
+    setEditingTemplate(null);
+    setFormData({
+      name: '',
+      subject: '',
+      content: '',
+      category: 'General',
+      preview_image_url: ''
+    });
+  };
+
+  const handleSave = () => {
+    if (!formData.name || !formData.content) {
+      toast.error('Name and content are required');
+      return;
+    }
+
+    if (editingTemplate) {
+      updateMutation.mutate({ id: editingTemplate.id, data: formData });
+    } else {
+      createMutation.mutate(formData);
+    }
+  };
+
+  const handleDelete = (id: string) => {
+    setDeleteTemplateId(id);
+  };
+
+  const confirmDelete = () => {
+    if (deleteTemplateId) {
+      deleteMutation.mutate(deleteTemplateId);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-muted-foreground">Loading templates...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-semibold font-inter">Templates Library</h2>
+          <p className="text-sm text-muted-foreground">
+            Create and manage email templates for campaigns
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="flex border rounded-lg">
+            <Button
+              variant={viewMode === 'list' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setViewMode('list')}
+            >
+              <List className="w-4 h-4" />
+            </Button>
+            <Button
+              variant={viewMode === 'grid' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setViewMode('grid')}
+            >
+              <Grid3x3 className="w-4 h-4" />
+            </Button>
+          </div>
+          <Button onClick={() => handleOpenDrawer()}>
+            <Plus className="w-4 h-4 mr-2" />
+            New Template
+          </Button>
+        </div>
+      </div>
+
+      {/* Templates Display */}
+      {templates.length === 0 ? (
+        <Card className="p-12 text-center">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
+              <Image className="w-8 h-8 text-muted-foreground" />
+            </div>
+            <div>
+              <h3 className="font-semibold mb-1">No templates yet</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Create your first template to get started
+              </p>
+              <Button onClick={() => handleOpenDrawer()}>
+                <Plus className="w-4 h-4 mr-2" />
+                Create Template
+              </Button>
+            </div>
+          </div>
+        </Card>
+      ) : viewMode === 'list' ? (
+        <Card>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Subject</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead>Last Updated</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {templates.map((template) => (
+                <TableRow key={template.id}>
+                  <TableCell className="font-medium">{template.name}</TableCell>
+                  <TableCell className="max-w-xs truncate">{template.subject}</TableCell>
+                  <TableCell>
+                    <span className="px-2 py-1 bg-muted rounded text-xs">
+                      {template.category}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    {format(new Date(template.updated_at), 'MMM dd, yyyy')}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleOpenDrawer(template)}
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDelete(template.id)}
+                      >
+                        <Trash2 className="w-4 h-4 text-destructive" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {templates.map((template) => (
+            <Card key={template.id} className="p-4 space-y-3">
+              {template.preview_image_url ? (
+                <div className="aspect-video bg-muted rounded overflow-hidden">
+                  <img
+                    src={template.preview_image_url}
+                    alt={template.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="aspect-video bg-muted rounded flex items-center justify-center">
+                  <Image className="w-8 h-8 text-muted-foreground" />
+                </div>
+              )}
+              <div>
+                <h3 className="font-semibold truncate">{template.name}</h3>
+                <p className="text-sm text-muted-foreground truncate">{template.subject}</p>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="px-2 py-1 bg-muted rounded text-xs">
+                  {template.category}
+                </span>
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleOpenDrawer(template)}
+                  >
+                    <Edit className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDelete(template.id)}
+                  >
+                    <Trash2 className="w-4 h-4 text-destructive" />
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {/* Template Form Drawer */}
+      <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+        <SheetContent className="sm:max-w-lg overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>
+              {editingTemplate ? 'Edit Template' : 'New Template'}
+            </SheetTitle>
+          </SheetHeader>
+          
+          <div className="space-y-4 mt-6">
+            <div>
+              <Label htmlFor="name">Template Name *</Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="e.g., Welcome Email"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="subject">Email Subject</Label>
+              <Input
+                id="subject"
+                value={formData.subject}
+                onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                placeholder="e.g., Welcome to our service!"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="category">Category</Label>
+              <Select
+                value={formData.category}
+                onValueChange={(value) => setFormData({ ...formData, category: value })}
+              >
+                <SelectTrigger id="category">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="General">General</SelectItem>
+                  <SelectItem value="Follow-up">Follow-up</SelectItem>
+                  <SelectItem value="Promotion">Promotion</SelectItem>
+                  <SelectItem value="Operations">Operations</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="content">Content *</Label>
+              <Textarea
+                id="content"
+                value={formData.content}
+                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                placeholder="Enter your email content here..."
+                rows={10}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="preview_image">Preview Image URL</Label>
+              <Input
+                id="preview_image"
+                value={formData.preview_image_url}
+                onChange={(e) => setFormData({ ...formData, preview_image_url: e.target.value })}
+                placeholder="https://example.com/image.jpg"
+              />
+            </div>
+
+            <div className="flex gap-2 pt-4">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={handleCloseDrawer}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="flex-1"
+                onClick={handleSave}
+                disabled={createMutation.isPending || updateMutation.isPending}
+              >
+                {createMutation.isPending || updateMutation.isPending
+                  ? 'Saving...'
+                  : editingTemplate
+                  ? 'Update'
+                  : 'Create'}
+              </Button>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Delete Confirmation */}
+      <DeleteConfirmationModal
+        isOpen={!!deleteTemplateId}
+        onClose={() => setDeleteTemplateId(null)}
+        onConfirm={confirmDelete}
+        title="Delete Template"
+        description="Are you sure you want to delete this template? This action cannot be undone."
+      />
+    </div>
+  );
+}

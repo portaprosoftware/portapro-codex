@@ -4,7 +4,7 @@ import { Mail, Megaphone, Clock, Users2, FileText, ChevronDown, BarChart3 } from
 import { TabNav } from '@/components/ui/TabNav';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { TemplateManagement } from './TemplateManagement';
+import TemplatesPage from '@/pages/marketing/templates';
 import { CampaignManagement } from './CampaignManagement';
 import { ScheduledCampaigns } from './ScheduledCampaigns';
 import { CustomerSegments } from './CustomerSegments';
@@ -95,7 +95,7 @@ export const MarketingDashboard: React.FC = () => {
       case 'overview':
         return <CampaignAnalyticsOverview />;
       case 'templates':
-        return <TemplateManagement />;
+        return <TemplatesPage />;
       case 'campaigns':
         return <CampaignManagement />;
       case 'scheduled':

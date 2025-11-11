@@ -6471,6 +6471,50 @@ export type Database = {
         }
         Relationships: []
       }
+      marketing_templates: {
+        Row: {
+          category: string | null
+          content: string | null
+          created_at: string | null
+          id: string
+          name: string
+          organization_id: string
+          preview_image_url: string | null
+          subject: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string | null
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          name: string
+          organization_id: string
+          preview_image_url?: string | null
+          subject?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string | null
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          organization_id?: string
+          preview_image_url?: string | null
+          subject?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketing_templates_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mobile_fuel_service_vehicles: {
         Row: {
           created_at: string
