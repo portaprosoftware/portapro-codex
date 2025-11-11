@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useCompanyTimezone } from "@/hooks/useCompanyTimezone";
 import { StatCard } from "@/components/ui/StatCard";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,24 +24,14 @@ export const VehicleMaintenanceOverviewTab: React.FC<VehicleMaintenanceOverviewT
   const [addRecordOpen, setAddRecordOpen] = useState(false);
   const [scheduleRecurringOpen, setScheduleRecurringOpen] = useState(false);
   
-  // Fetch company timezone
-  const { data: companySettings } = useQuery({
-    queryKey: ["company-timezone-settings"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("company_settings")
-        .select("company_timezone")
-        .single();
-      if (error) throw error;
-      return data;
-    }
-  });
+  // Get company timezone from shared hook
+  const { data: companyTimezone } = useCompanyTimezone();
 
   // Fetch past due maintenance for this vehicle
   const { data: pastDueCount, isLoading: pastDueLoading } = useQuery({
-    queryKey: ["vehicle-maintenance-past-due", vehicleId, companySettings?.company_timezone],
+    queryKey: ["vehicle-maintenance-past-due", vehicleId, companyTimezone],
     queryFn: async () => {
-      const today = getCurrentDateInTimezone(companySettings?.company_timezone || 'America/New_York');
+      const today = getCurrentDateInTimezone(companyTimezone || 'America/New_York');
       const { data, error } = await supabase
         .from("maintenance_records")
         .select("id")
@@ -55,10 +46,10 @@ export const VehicleMaintenanceOverviewTab: React.FC<VehicleMaintenanceOverviewT
 
   // Fetch due this week maintenance for this vehicle
   const { data: dueThisWeekCount, isLoading: dueThisWeekLoading } = useQuery({
-    queryKey: ["vehicle-maintenance-due-this-week", vehicleId, companySettings?.company_timezone],
+    queryKey: ["vehicle-maintenance-due-this-week", vehicleId, companyTimezone],
     queryFn: async () => {
-      const companyTimezone = companySettings?.company_timezone || 'America/New_York';
-      const today = getCurrentDateInTimezone(companyTimezone);
+      const tz = companyTimezone || 'America/New_York';
+      const today = getCurrentDateInTimezone(tz);
       const todayDate = new Date(today + 'T00:00:00');
       const nextWeekDate = new Date(todayDate);
       nextWeekDate.setDate(nextWeekDate.getDate() + 7);
@@ -122,7 +113,7 @@ export const VehicleMaintenanceOverviewTab: React.FC<VehicleMaintenanceOverviewT
 
   // Fetch overdue maintenance records for this vehicle
   const { data: overdueRecords } = useQuery({
-    queryKey: ["vehicle-overdue-maintenance", vehicleId, companySettings?.company_timezone],
+    queryKey: ["vehicle-overdue-maintenance", vehicleId, companyTimezone],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("maintenance_records")
@@ -133,7 +124,7 @@ export const VehicleMaintenanceOverviewTab: React.FC<VehicleMaintenanceOverviewT
           maintenance_vendors(name)
         `)
         .eq("vehicle_id", vehicleId)
-        .lt("scheduled_date", getCurrentDateInTimezone(companySettings?.company_timezone || 'America/New_York'))
+        .lt("scheduled_date", getCurrentDateInTimezone(companyTimezone || 'America/New_York'))
         .in("status", ["scheduled", "in_progress"])
         .order("scheduled_date", { ascending: true })
         .limit(10);
@@ -144,10 +135,10 @@ export const VehicleMaintenanceOverviewTab: React.FC<VehicleMaintenanceOverviewT
 
   // Fetch upcoming maintenance records for this vehicle
   const { data: upcomingRecords } = useQuery({
-    queryKey: ["vehicle-upcoming-maintenance", vehicleId, companySettings?.company_timezone],
+    queryKey: ["vehicle-upcoming-maintenance", vehicleId, companyTimezone],
     queryFn: async () => {
-      const companyTimezone = companySettings?.company_timezone || 'America/New_York';
-      const today = getCurrentDateInTimezone(companyTimezone);
+      const tz = companyTimezone || 'America/New_York';
+      const today = getCurrentDateInTimezone(tz);
       const todayDate = new Date(today + 'T00:00:00');
       const nextWeekDate = new Date(todayDate);
       nextWeekDate.setDate(nextWeekDate.getDate() + 7);

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useCompanyTimezone } from "@/hooks/useCompanyTimezone";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -43,21 +44,11 @@ export const MaintenanceAllRecordsTab: React.FC<MaintenanceAllRecordsTabProps> =
   
   const queryClient = useQueryClient();
 
-  // Fetch company timezone
-  const { data: companySettings } = useQuery({
-    queryKey: ["company-settings"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("company_settings")
-        .select("company_timezone")
-        .single();
-      if (error) throw error;
-      return data;
-    }
-  });
+  // Get company timezone from shared hook
+  const { data: companyTimezone } = useCompanyTimezone();
 
   const { data: maintenanceRecords, isLoading } = useQuery({
-    queryKey: ["maintenance-records", searchTerm, statusFilter, selectedVehicles.map(v => v.id), vehicleId, companySettings?.company_timezone],
+    queryKey: ["maintenance-records", searchTerm, statusFilter, selectedVehicles.map(v => v.id), vehicleId, companyTimezone],
     queryFn: async () => {
       let query = supabase
         .from("maintenance_records")
@@ -75,8 +66,8 @@ export const MaintenanceAllRecordsTab: React.FC<MaintenanceAllRecordsTabProps> =
       }
 
       if (statusFilter !== "all") {
-        const companyTimezone = companySettings?.company_timezone || 'America/New_York';
-        const today = getCurrentDateInTimezone(companyTimezone);
+        const tz = companyTimezone || 'America/New_York';
+        const today = getCurrentDateInTimezone(tz);
         
         if (statusFilter === "scheduled") {
           // Services scheduled for today or in the future (not completed)

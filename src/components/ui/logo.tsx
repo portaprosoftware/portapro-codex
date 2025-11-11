@@ -1,6 +1,5 @@
 import React from "react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useCompanySettings } from "@/hooks/useCompanySettings";
 
 interface LogoProps {
   className?: string;
@@ -13,17 +12,7 @@ export const Logo: React.FC<LogoProps> = ({
   showText = true,
   variant = 'header'
 }) => {
-  const { data: companySettings } = useQuery({
-    queryKey: ['company-logo'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('company_settings')
-        .select('company_logo, company_name')
-        .maybeSingle();
-      if (error) throw error;
-      return data;
-    }
-  });
+  const { data: companySettings } = useCompanySettings();
 
   return (
     <div className={`flex items-center shrink-0 ${className}`}>

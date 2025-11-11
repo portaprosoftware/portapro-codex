@@ -20,6 +20,7 @@ export interface CompanySettings {
   company_zipcode?: string;
   support_email?: string;
   sms_from_number?: string;
+  company_logo?: string;
   item_code_categories: ItemCodeCategory;
   next_item_numbers: { [key: string]: number };
   company_timezone?: string;

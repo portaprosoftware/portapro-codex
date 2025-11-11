@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserRole } from "@/hooks/useUserRole";
+import { useCompanyTimezone } from "@/hooks/useCompanyTimezone";
 import { MinimalClock } from "@/components/ui/MinimalClock";
 import { StatCard } from "@/components/ui/StatCard";
 import { Sparkline } from "@/components/ui/Sparkline";
@@ -197,28 +198,17 @@ const Dashboard = () => {
   });
 
 
-  // Fetch company settings for timezone
-  const { data: companySettings } = useQuery({
-    queryKey: ['company-settings'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('company_settings')
-        .select('company_timezone')
-        .single();
-      
-      if (error) throw error;
-      return data;
-    }
-  });
+  // Get company timezone from shared hook
+  const { data: timezone } = useCompanyTimezone();
 
   // Update time based on company timezone
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
-      const timezone = companySettings?.company_timezone || 'America/New_York';
+      const tz = timezone || 'America/New_York';
       
       // Create time in company timezone
-      const timeInTimezone = new Date(now.toLocaleString("en-US", { timeZone: timezone }));
+      const timeInTimezone = new Date(now.toLocaleString("en-US", { timeZone: tz }));
       setCurrentTime(timeInTimezone);
     };
 
@@ -226,7 +216,7 @@ const Dashboard = () => {
     const interval = setInterval(updateTime, 1000);
 
     return () => clearInterval(interval);
-  }, [companySettings?.company_timezone]);
+  }, [timezone]);
   
   return (
     <div className="px-2 md:px-4 py-3 space-y-4 font-sans">
@@ -269,12 +259,12 @@ const Dashboard = () => {
           {/* Analog Clock - smaller on mobile, hidden on very small screens */}
           <div className="hidden sm:flex flex-shrink-0">
             <MinimalClock 
-              timeZone={companySettings?.company_timezone || 'America/New_York'}
+              timeZone={timezone || 'America/New_York'}
               size={56}
               className="md:hidden"
             />
             <MinimalClock 
-              timeZone={companySettings?.company_timezone || 'America/New_York'}
+              timeZone={timezone || 'America/New_York'}
               size={80}
               className="hidden md:block"
             />

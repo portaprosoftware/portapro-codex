@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { AddMaintenanceRecordDrawer } from "./AddMaintenanceRecordDrawer";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useCompanyTimezone } from "@/hooks/useCompanyTimezone";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -103,18 +104,8 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
     }
   });
 
-  // Fetch company timezone
-  const { data: companyTimezoneSettings } = useQuery({
-    queryKey: ["company-timezone-settings"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("company_settings")
-        .select("company_timezone")
-        .single();
-      if (error) throw error;
-      return data;
-    }
-  });
+  // Get company timezone from shared hook
+  const { data: companyTimezone } = useCompanyTimezone();
 
   const inHouseEnabled = companySettings?.enable_inhouse_features || false;
 
@@ -175,7 +166,7 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
 
   // Fetch overdue maintenance records for overview
   const { data: overdueRecords } = useQuery({
-    queryKey: ["overdue-maintenance", companyTimezoneSettings?.company_timezone],
+    queryKey: ["overdue-maintenance", companyTimezone],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("maintenance_records")
@@ -185,7 +176,7 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
           maintenance_task_types(name),
           maintenance_vendors(name)
         `)
-        .lt("scheduled_date", getCurrentDateInTimezone(companyTimezoneSettings?.company_timezone || 'America/New_York'))
+        .lt("scheduled_date", getCurrentDateInTimezone(companyTimezone || 'America/New_York'))
         .in("status", ["scheduled", "in_progress"])
         .order("scheduled_date", { ascending: true })
         .limit(10);
@@ -196,10 +187,10 @@ export const EnhancedMaintenanceManagement: React.FC = () => {
 
   // Fetch upcoming maintenance records for overview
   const { data: upcomingRecords } = useQuery({
-    queryKey: ["upcoming-maintenance", companyTimezoneSettings?.company_timezone],
+    queryKey: ["upcoming-maintenance", companyTimezone],
     queryFn: async () => {
-      const companyTimezone = companyTimezoneSettings?.company_timezone || 'America/New_York';
-      const today = getCurrentDateInTimezone(companyTimezone);
+      const tz = companyTimezone || 'America/New_York';
+      const today = getCurrentDateInTimezone(tz);
       const nextWeek = getCurrentDateInTimezone(companyTimezone);
       
       // Add 7 days to today for next week calculation
