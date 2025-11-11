@@ -204,6 +204,7 @@ const App = () => {
             <Route path="/marketing" element={<ProtectedRoute><Marketing /></ProtectedRoute>} />
             <Route path="/marketing/templates" element={<ProtectedRoute><Marketing /></ProtectedRoute>} />
             <Route path="/marketing/campaigns" element={<ProtectedRoute><Marketing /></ProtectedRoute>} />
+            <Route path="/marketing/campaigns/:campaignId" element={<ProtectedRoute><Marketing /></ProtectedRoute>} />
             <Route path="/marketing/scheduled" element={<ProtectedRoute><Marketing /></ProtectedRoute>} />
             <Route path="/marketing/segments" element={<ProtectedRoute><Marketing /></ProtectedRoute>} />
             <Route path="/marketing/drafts" element={<ProtectedRoute><Marketing /></ProtectedRoute>} />

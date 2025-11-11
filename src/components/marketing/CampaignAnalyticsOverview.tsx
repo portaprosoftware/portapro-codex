@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useOrganizationId } from '@/hooks/useOrganizationId';
 import { safeRead } from '@/lib/supabase-helpers';
@@ -19,6 +20,7 @@ interface Campaign {
 }
 
 export function CampaignAnalyticsOverview() {
+  const navigate = useNavigate();
   const { orgId } = useOrganizationId();
 
   const { data: campaigns = [], isLoading } = useQuery({
@@ -168,8 +170,8 @@ export function CampaignAnalyticsOverview() {
                   const clicked = campaign.clicked_count || 0;
 
                   return (
-                    <TableRow key={campaign.id}>
-                      <TableCell className="font-medium">{campaign.name}</TableCell>
+                    <TableRow key={campaign.id} className="cursor-pointer hover:bg-muted/50" onClick={() => navigate(`/marketing/campaigns/${campaign.id}`)}>
+                      <TableCell className="font-medium hover:text-primary">{campaign.name}</TableCell>
                       <TableCell>
                         {campaign.sent_at 
                           ? format(new Date(campaign.sent_at), 'MMM dd, yyyy — h:mm a')

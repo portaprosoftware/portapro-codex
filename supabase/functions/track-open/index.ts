@@ -7,7 +7,7 @@ const corsHeaders = {
 };
 
 // 1x1 transparent PNG in base64
-const TRANSPARENT_PNG = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==";
+const transparentPixel = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
@@ -23,15 +23,18 @@ const handler = async (req: Request): Promise<Response> => {
     // Parse URL to extract campaignId and customerId
     const url = new URL(req.url);
     const pathParts = url.pathname.split('/');
-    const filename = pathParts[pathParts.length - 1]; // e.g., "customer-id.png"
-    const campaignId = pathParts[pathParts.length - 2];
-    const customerId = filename.replace('.png', '');
+    const campaignId = pathParts[pathParts.length - 1].replace('.png', '');
+    const customerId = pathParts[pathParts.length - 2];
 
     if (!campaignId || !customerId) {
-      console.error("Invalid tracking pixel URL");
-      return new Response(atob(TRANSPARENT_PNG), {
-        headers: { "Content-Type": "image/png" },
-        status: 200,
+      console.error("Invalid tracking URL - missing campaignId or customerId");
+      // Still return pixel even if tracking fails
+      return new Response(atob(transparentPixel), {
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "image/png",
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+        },
       });
     }
 
@@ -42,35 +45,38 @@ const handler = async (req: Request): Promise<Response> => {
       .from("marketing_campaigns")
       .select("organization_id")
       .eq("id", campaignId)
-      .single();
+      .maybeSingle();
 
     if (campaignError || !campaign) {
       console.error("Campaign not found:", campaignError);
       // Still return pixel even if tracking fails
-      return new Response(atob(TRANSPARENT_PNG), {
-        headers: { "Content-Type": "image/png" },
-        status: 200,
+      return new Response(atob(transparentPixel), {
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "image/png",
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+        },
       });
     }
 
-    // Check if this customer has already opened (only track first open)
+    // Check if customer has already opened this campaign
     const { data: existingOpen } = await supabase
       .from("marketing_campaign_events")
       .select("id")
       .eq("campaign_id", campaignId)
       .eq("customer_id", customerId)
-      .eq("event_type", "opened")
-      .limit(1);
+      .eq("event_type", "open")
+      .maybeSingle();
 
-    if (!existingOpen || existingOpen.length === 0) {
-      // Insert open event (first time only)
+    // Only insert if this is the first open
+    if (!existingOpen) {
       const { error: eventError } = await supabase
         .from("marketing_campaign_events")
         .insert({
           campaign_id: campaignId,
           organization_id: campaign.organization_id,
           customer_id: customerId,
-          event_type: "opened",
+          event_type: "open",
           event_data: {
             user_agent: req.headers.get("user-agent"),
             timestamp: new Date().toISOString(),
@@ -81,7 +87,7 @@ const handler = async (req: Request): Promise<Response> => {
         console.error("Failed to insert open event:", eventError);
       }
 
-      // Increment opened_count (only on first open)
+      // Increment opened_count
       const { error: updateError } = await supabase.rpc("increment_campaign_opened", {
         campaign_id_param: campaignId,
       });
@@ -91,18 +97,24 @@ const handler = async (req: Request): Promise<Response> => {
       }
     }
 
-    // Return 1x1 transparent PNG
-    return new Response(atob(TRANSPARENT_PNG), {
-      headers: { "Content-Type": "image/png", "Cache-Control": "no-cache, no-store, must-revalidate" },
-      status: 200,
+    // Return transparent pixel
+    return new Response(atob(transparentPixel), {
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "image/png",
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+      },
     });
   } catch (error: any) {
     console.error("Error in track-open function:", error);
     
-    // Always return pixel even on error
-    return new Response(atob(TRANSPARENT_PNG), {
-      headers: { "Content-Type": "image/png" },
-      status: 200,
+    // Always return pixel even if there's an error
+    return new Response(atob(transparentPixel), {
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "image/png",
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+      },
     });
   }
 };

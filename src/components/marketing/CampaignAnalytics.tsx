@@ -1,5 +1,6 @@
 
 import React, { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ChartWrapper } from '@/components/analytics/ChartWrapper';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -13,6 +14,7 @@ import { TrendingUp, Mail, MessageSquare, Users, Eye, MousePointer } from 'lucid
 import { startOfYear, startOfMonth } from 'date-fns';
 
 export const CampaignAnalytics: React.FC = () => {
+  const navigate = useNavigate();
   const [dateRange, setDateRange] = useState<'YTD' | 'MTD'>('YTD');
 
   // Fetch campaigns
@@ -199,10 +201,10 @@ export const CampaignAnalytics: React.FC = () => {
           <h3 className="text-base md:text-lg font-semibold mb-4">Recent Campaigns</h3>
           <div className="space-y-3 md:space-y-4">
             {campaigns.slice(0, 5).map((campaign) => (
-              <div key={campaign.id} className="flex items-center justify-between gap-3 min-h-[44px]">
+              <div key={campaign.id} className="flex items-center justify-between gap-3 min-h-[44px] cursor-pointer hover:bg-gray-50 rounded-lg p-2 -m-2 transition-colors" onClick={() => navigate(`/marketing/campaigns/${campaign.id}`)}>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <span className="font-medium text-sm truncate">{campaign.name}</span>
+                    <span className="font-medium text-sm truncate hover:text-primary">{campaign.name}</span>
                     <Badge 
                       variant={
                         campaign.status === 'completed' ? 'default' :

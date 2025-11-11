@@ -50,7 +50,7 @@ const handler = async (req: Request): Promise<Response> => {
         campaign_id: campaignId,
         organization_id: campaign.organization_id,
         customer_id: customerId,
-        event_type: "clicked",
+        event_type: "click",
         event_data: {
           url: decodeURIComponent(redirectUrl),
           user_agent: req.headers.get("user-agent"),
