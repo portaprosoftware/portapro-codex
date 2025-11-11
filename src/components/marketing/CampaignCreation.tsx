@@ -128,6 +128,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
   const [scheduledTime, setScheduledTime] = useState<string | null>(
     initialData?.scheduled_at ? format(new Date(initialData.scheduled_at), 'HH:mm') : null
   );
+  const [sendMode, setSendMode] = useState<'now' | 'schedule'>('now');
   const [customerSearch, setCustomerSearch] = useState('');
   const [templateSourceFilter, setTemplateSourceFilter] = useState<'system' | 'user'>('user');
   const [templateViewMode, setTemplateViewMode] = useState<'list' | 'grid'>('list');
@@ -194,9 +195,29 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
 
   // Create campaign mutation
   const createCampaignMutation = useMutation({
-    mutationFn: async (data: CampaignData) => {
+    mutationFn: async (data: CampaignData & { sendMode: 'now' | 'schedule' | 'draft' }) => {
+      if (!orgId) {
+        throw new Error('Organization context required');
+      }
+
+      // Determine status and timestamps based on send mode
+      let status: string;
+      let scheduled_at: string | null = null;
+      let sent_at: string | null = null;
+
+      if (data.sendMode === 'now') {
+        status = 'sent';
+        sent_at = new Date().toISOString();
+      } else if (data.sendMode === 'schedule') {
+        status = 'scheduled';
+        scheduled_at = getScheduledDateTime()?.toISOString() || null;
+      } else {
+        status = 'draft';
+      }
+
       // Prepare the campaign object for the database structure
       const campaignObject: any = {
+        organization_id: orgId,
         name: data.name,
         campaign_type: data.campaign_type,
         message_source: data.message_source,
@@ -204,8 +225,9 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
         target_customer_types: data.target_customer_types,
         target_customers: data.target_customers,
         recipient_type: data.recipient_type,
-        scheduled_at: getScheduledDateTime()?.toISOString(),
-        status: getScheduledDateTime() ? 'scheduled' : 'draft'
+        status,
+        scheduled_at,
+        sent_at,
       };
 
       // Add custom message fields if using custom message
@@ -220,20 +242,41 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
         campaignObject.template_id = data.template_id;
       }
 
-      const { error } = await supabase
+      const { data: insertedCampaign, error } = await supabase
         .from('marketing_campaigns')
-        .insert(campaignObject);
+        .insert(campaignObject)
+        .select()
+        .single();
       
       if (error) throw error;
+
+      // If status is "sent", trigger immediate send
+      if (status === 'sent' && insertedCampaign) {
+        const { error: sendError } = await supabase.functions.invoke('send-marketing-campaign', {
+          body: { campaignId: insertedCampaign.id }
+        });
+        
+        if (sendError) {
+          console.error('Error sending campaign:', sendError);
+          throw new Error('Campaign created but failed to send');
+        }
+      }
+
+      return { campaign: insertedCampaign, status };
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ['marketing-campaigns'] });
       queryClient.invalidateQueries({ queryKey: ['scheduled-campaigns'] });
       
-      const isScheduled = getScheduledDateTime() !== null;
-      toast({ 
-        title: isScheduled ? 'Campaign scheduled successfully!' : 'Campaign created successfully!' 
-      });
+      const { status } = result;
+      
+      if (status === 'sent') {
+        toast({ title: 'Campaign sent successfully!' });
+      } else if (status === 'scheduled') {
+        toast({ title: 'Campaign scheduled successfully!' });
+      } else {
+        toast({ title: 'Campaign saved as draft!' });
+      }
       
       // Reset form
       setCampaignData({
@@ -248,10 +291,11 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
       setCurrentStep(1);
       setScheduledDate(undefined);
       setScheduledTime(null);
+      setSendMode('now');
       onClose?.();
       
       // Navigate to scheduled tab if campaign was scheduled
-      if (isScheduled && typeof window !== 'undefined') {
+      if (status === 'scheduled' && typeof window !== 'undefined') {
         window.location.href = '/marketing/scheduled';
       }
     },
@@ -327,8 +371,8 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
 
       onUpdate(updateData);
     } else {
-      // For creating new campaigns
-      createCampaignMutation.mutate(campaignData);
+      // For creating new campaigns - pass sendMode to mutation
+      createCampaignMutation.mutate({ ...campaignData, sendMode });
       
       // Delete draft after successful campaign creation
       if (currentDraftId) {
@@ -340,6 +384,23 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
         } catch (error) {
           console.error('Error deleting draft:', error);
         }
+      }
+    }
+  };
+
+  const handleSaveDraft = async () => {
+    // Use draft mode for saving drafts
+    createCampaignMutation.mutate({ ...campaignData, sendMode: 'draft' });
+    
+    // Delete existing draft after successful save
+    if (currentDraftId) {
+      try {
+        await supabase
+          .from('campaign_drafts')
+          .delete()
+          .eq('id', currentDraftId);
+      } catch (error) {
+        console.error('Error deleting draft:', error);
       }
     }
   };
@@ -988,7 +1049,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <Label>Scheduling</Label>
-                <Tabs defaultValue="now">
+                <Tabs value={sendMode} onValueChange={(v) => setSendMode(v as 'now' | 'schedule')}>
                   <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="now">Send Now</TabsTrigger>
                     <TabsTrigger value="schedule">Schedule</TabsTrigger>
@@ -1178,10 +1239,14 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
           ) : currentStep === 4 ? (
             <Button 
               onClick={handleSubmit}
-              disabled={createCampaignMutation.isPending || !campaignData.name.trim()}
+              disabled={
+                createCampaignMutation.isPending || 
+                !campaignData.name.trim() ||
+                (sendMode === 'schedule' && !getScheduledDateTime())
+              }
               className="bg-primary text-white"
             >
-              {getScheduledDateTime() ? (
+              {sendMode === 'schedule' ? (
                 <>
                   <Clock className="w-4 h-4 mr-2" />
                   Schedule Campaign
@@ -1189,7 +1254,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
               ) : (
                 <>
                   <Send className="w-4 h-4 mr-2" />
-                  Send Campaign
+                  Send Now
                 </>
               )}
             </Button>
