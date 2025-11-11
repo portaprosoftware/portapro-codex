@@ -47,7 +47,7 @@ export const MarketingShowcase: React.FC = () => {
                   <Sparkles className="w-3 h-3" /> AI builder drafts subject + body in seconds
                 </span>
                 <span className="inline-flex items-center gap-2 rounded-md bg-secondary/10 text-secondary-foreground px-2 sm:px-3 py-1 text-xs font-medium">
-                  Schedule ahead or send now • Works with Smart Segments
+                  Schedule ahead or send immediately • Works with Segments
                 </span>
               </div>
               <div className="inline-flex items-center justify-center gap-2 mt-4 px-4 py-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">

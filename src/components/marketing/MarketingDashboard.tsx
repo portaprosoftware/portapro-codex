@@ -72,7 +72,7 @@ export const MarketingDashboard: React.FC = () => {
       case 'campaigns': return 'Campaigns';
       case 'templates': return 'Templates';
       case 'scheduled': return 'Scheduled';
-      case 'segments': return 'Smart Segments';
+      case 'segments': return 'Segments';
       case 'drafts': return 'Drafts';
       default: return 'Overview';
     }
@@ -164,7 +164,7 @@ export const MarketingDashboard: React.FC = () => {
                     onClick={() => navigateToTab('segments')}
                   >
                     <Users2 className="w-4 h-4" />
-                    Smart Segments
+                    Segments
                   </TabNav.Item>
                   <TabNav.Item 
                     to="/marketing/drafts" 
@@ -266,7 +266,7 @@ export const MarketingDashboard: React.FC = () => {
                     >
                       <span className="flex items-center gap-3">
                         <Users2 className="w-5 h-5" />
-                        Smart Segments
+                        Segments
                       </span>
                     </button>
 

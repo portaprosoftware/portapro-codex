@@ -95,7 +95,7 @@ export function CustomerEngagementTab({ customerId }: CustomerEngagementTabProps
       <div className="space-y-4">
         <div className="flex items-center gap-2 mb-4">
           <TrendingUp className="w-5 h-5 text-purple-600" />
-          <h3 className="text-lg font-semibold">Engagement History</h3>
+          <h3 className="text-lg font-semibold">Campaign Engagement</h3>
         </div>
         <Skeleton className="h-64 w-full" />
       </div>
@@ -107,7 +107,7 @@ export function CustomerEngagementTab({ customerId }: CustomerEngagementTabProps
       <div className="space-y-4">
         <div className="flex items-center gap-2 mb-4">
           <TrendingUp className="w-5 h-5 text-purple-600" />
-          <h3 className="text-lg font-semibold">Engagement History</h3>
+          <h3 className="text-lg font-semibold">Campaign Engagement</h3>
         </div>
         <div className="text-center py-12 text-muted-foreground">
           <TrendingUp className="w-12 h-12 mx-auto mb-3 opacity-20" />
@@ -121,7 +121,7 @@ export function CustomerEngagementTab({ customerId }: CustomerEngagementTabProps
     <div className="space-y-4">
       <div className="flex items-center gap-2 mb-4">
         <TrendingUp className="w-5 h-5 text-purple-600" />
-        <h3 className="text-lg font-semibold">Engagement History</h3>
+        <h3 className="text-lg font-semibold">Campaign Engagement</h3>
       </div>
       
       <div className="rounded-lg border">

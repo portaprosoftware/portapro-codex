@@ -186,7 +186,7 @@ export const SmartSegmentBuilder: React.FC<SmartSegmentBuilderProps> = ({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customer-segments'] });
       toast({ 
-        title: mode === 'edit' ? 'Segment updated successfully!' : 'Smart segment created successfully!' 
+        title: mode === 'edit' ? 'Segment updated successfully!' : 'Segment created successfully!' 
       });
       setIsOpen(false);
       if (mode === 'create') {
@@ -335,14 +335,14 @@ export const SmartSegmentBuilder: React.FC<SmartSegmentBuilderProps> = ({
         <DialogTrigger asChild>
           <Button className="bg-primary text-white">
             <Plus className="w-4 h-4 mr-2" />
-            Create Smart Segment
+            Create Segment
           </Button>
         </DialogTrigger>
       )}
       
       <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto" aria-describedby="smart-segment-description">
         <DialogHeader>
-          <DialogTitle>{mode === 'edit' ? 'Edit Smart Segment' : 'Create Smart Segment'}</DialogTitle>
+          <DialogTitle>{mode === 'edit' ? 'Edit Segment' : 'Create Segment'}</DialogTitle>
         </DialogHeader>
         
         <div id="smart-segment-description" className="sr-only">
@@ -353,7 +353,7 @@ export const SmartSegmentBuilder: React.FC<SmartSegmentBuilderProps> = ({
         <Collapsible open={isInfoExpanded} onOpenChange={setIsInfoExpanded}>
           <CollapsibleTrigger asChild>
             <Button variant="outline" className="w-full justify-between">
-              <span>How to Create a Smart Segment</span>
+              <span>How to Create a Segment</span>
               {isInfoExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
             </Button>
           </CollapsibleTrigger>
@@ -537,7 +537,7 @@ export const SmartSegmentBuilder: React.FC<SmartSegmentBuilderProps> = ({
               </Badge>
             </div>
             <Button variant="outline" onClick={estimateSegmentSize}>
-              Calculate
+              Preview Segment Size
             </Button>
           </div>
 

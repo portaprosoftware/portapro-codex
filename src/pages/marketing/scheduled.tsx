@@ -248,7 +248,7 @@ export default function ScheduledCampaignsPage() {
                           className="gap-1"
                         >
                           <Send className="h-3 w-3" />
-                          Send Now
+                          Send Immediately
                         </Button>
                         <Button
                           variant="outline"

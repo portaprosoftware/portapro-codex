@@ -128,7 +128,7 @@ export const SegmentDetailsModal: React.FC<SegmentDetailsModalProps> = ({
                 <Badge variant={segment.is_active ? 'default' : 'secondary'}>
                   {segment.is_active ? 'Active' : 'Inactive'}
                 </Badge>
-                <Badge variant="outline">Smart Segment</Badge>
+                <Badge variant="outline">Segment</Badge>
               </div>
             </CardContent>
           </Card>

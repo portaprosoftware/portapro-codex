@@ -81,9 +81,9 @@ export const CampaignManagement: React.FC = () => {
         {/* Divider */}
         <div className="border-t" />
 
-        {/* Campaign Analytics Section */}
+        {/* Performance Summary Section */}
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 font-inter mb-4">Campaign Performance</h2>
+          <h2 className="text-lg font-semibold text-gray-900 font-inter mb-4">Performance Summary</h2>
           <CampaignAnalytics />
         </div>
 

@@ -504,7 +504,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Customers</SelectItem>
-                    <SelectItem value="segments">Smart Segments</SelectItem>
+                    <SelectItem value="segments">Segments</SelectItem>
                     <SelectItem value="types">Select Customer Types</SelectItem>
                     <SelectItem value="individuals">Select Individual Customers</SelectItem>
                   </SelectContent>
@@ -520,7 +520,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
                 </div>
               )}
 
-              {/* Smart Segments Option */}
+              {/* Segments Option */}
               {campaignData.recipient_type === 'segments' && (
                 <div className="space-y-4">
                   {/* Search and View Controls */}
