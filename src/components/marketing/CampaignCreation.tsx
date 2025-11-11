@@ -23,6 +23,8 @@ import { toast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useCampaignDrafts } from '@/hooks/useCampaignDrafts';
 import { useOrganizationId } from '@/hooks/useOrganizationId';
+import { safeRead } from '@/lib/supabase-helpers';
+import { useMemo } from 'react';
 
 interface CampaignData {
   name: string;
@@ -166,18 +168,29 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
   });
 
 
-  // Fetch all customers for individual selection
-  const { data: customers = [] } = useQuery({
-    queryKey: ['customers'],
+  // Fetch all customers for individual selection AND customer type aggregation
+  const { data: customers = [], isLoading: isLoadingCustomers } = useQuery({
+    queryKey: ['customers-for-types', orgId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('customers')
-        .select('id, name, customer_type')
-        .order('name');
-      if (error) throw error;
-      return data;
-    }
+      const { data, error } = await safeRead('customers', orgId)
+        .select('id, name, customer_type');
+      return data ?? [];
+    },
+    enabled: !!orgId,
   });
+
+  // Compute customer type counts from customers (client-side aggregation)
+  const customerTypeCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const c of customers) {
+      const type = c.customer_type || 'Other';
+      counts[type] = (counts[type] || 0) + 1;
+    }
+    return Object.entries(counts).map(([type, total]) => ({
+      customer_type: type,
+      total_count: total,
+    }));
+  }, [customers]);
 
   // Create campaign mutation
   const createCampaignMutation = useMutation({
@@ -342,6 +355,11 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
         const segment = segments.find(s => s.id === segmentId);
         return total + (segment?.customer_count || 0);
       }, 0);
+    } else if (campaignData.recipient_type === 'types') {
+      return campaignData.target_customer_types.reduce((total, type) => {
+        const row = customerTypeCounts.find(t => t.customer_type === type);
+        return total + (row?.total_count || 0);
+      }, 0);
     }
     return 0;
   })();
@@ -427,6 +445,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
                   <SelectContent>
                     <SelectItem value="all">All Customers</SelectItem>
                     <SelectItem value="segments">Smart Segments</SelectItem>
+                    <SelectItem value="types">Select Customer Types</SelectItem>
                     <SelectItem value="individuals">Select Individual Customers</SelectItem>
                   </SelectContent>
                 </Select>
@@ -560,6 +579,60 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
                 </div>
               )}
 
+              {/* Customer Types Option */}
+              {campaignData.recipient_type === 'types' && (
+                <div className="space-y-4">
+                  <p className="text-sm text-gray-600 font-inter mb-4">
+                    Select customer types to target specific segments of your audience.
+                  </p>
+
+                  {isLoadingCustomers ? (
+                    <div className="flex justify-center p-8">
+                      <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
+                    </div>
+                  ) : customerTypeCounts.length === 0 ? (
+                    <div className="p-8 text-center text-gray-500">
+                      No customer types found in your database.
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {customerTypeCounts.map((typeData) => (
+                        <Card
+                          key={typeData.customer_type}
+                          className={`p-4 cursor-pointer border-2 transition-all ${
+                            campaignData.target_customer_types.includes(typeData.customer_type)
+                              ? 'border-primary bg-primary/5'
+                              : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                          onClick={() => {
+                            const isSelected = campaignData.target_customer_types.includes(typeData.customer_type);
+                            setCampaignData({
+                              ...campaignData,
+                              target_customer_types: isSelected
+                                ? campaignData.target_customer_types.filter(t => t !== typeData.customer_type)
+                                : [...campaignData.target_customer_types, typeData.customer_type]
+                            });
+                          }}
+                        >
+                          <div className="flex justify-between items-center mb-2">
+                            <Checkbox
+                              checked={campaignData.target_customer_types.includes(typeData.customer_type)}
+                              className="h-5 w-5 pointer-events-none"
+                            />
+                            <span className="font-bold text-2xl text-primary">{typeData.total_count}</span>
+                          </div>
+                          <h3 className="font-semibold text-lg font-inter capitalize">
+                            {typeData.customer_type}
+                          </h3>
+                          <p className="text-sm text-gray-600 font-inter mt-1">
+                            {typeData.total_count} {typeData.total_count === 1 ? 'customer' : 'customers'}
+                          </p>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Individual Customers Option */}
               {campaignData.recipient_type === 'individuals' && (
