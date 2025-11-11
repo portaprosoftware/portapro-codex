@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useOrganizationId } from '@/hooks/useOrganizationId';
 import { safeRead, safeUpdate } from '@/lib/supabase-helpers';
 import { supabase } from '@/integrations/supabase/client';
-import { format } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import {
   Table,
@@ -216,6 +216,7 @@ export default function ScheduledCampaignsPage() {
                 <TableRow>
                   <TableHead>Campaign Name</TableHead>
                   <TableHead>Scheduled For</TableHead>
+                  <TableHead>Time Until Send</TableHead>
                   <TableHead>Recipients</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
@@ -229,6 +230,18 @@ export default function ScheduledCampaignsPage() {
                       {campaign.scheduled_at
                         ? format(new Date(campaign.scheduled_at), 'MMM dd, yyyy — h:mm a')
                         : '—'}
+                    </TableCell>
+                    <TableCell>
+                      {campaign.scheduled_at ? (
+                        <span className="text-sm font-medium">
+                          {campaign.status === 'sent' 
+                            ? formatDistanceToNow(new Date(campaign.scheduled_at), { addSuffix: true })
+                            : `Sending ${formatDistanceToNow(new Date(campaign.scheduled_at), { addSuffix: true }).replace('in ', '')}`
+                          }
+                        </span>
+                      ) : (
+                        '—'
+                      )}
                     </TableCell>
                     <TableCell>
                       {campaign.total_recipients ?? <span className="text-muted-foreground">Calculating...</span>}
