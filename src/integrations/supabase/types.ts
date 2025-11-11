@@ -13775,6 +13775,14 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_campaign_clicked: {
+        Args: { campaign_id_param: string }
+        Returns: undefined
+      }
+      increment_campaign_opened: {
+        Args: { campaign_id_param: string }
+        Returns: undefined
+      }
       lock_delivery_to_ledger: {
         Args: { delivery_uuid: string; locked_by_user: string }
         Returns: boolean

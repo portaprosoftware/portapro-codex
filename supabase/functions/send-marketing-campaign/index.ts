@@ -26,6 +26,38 @@ interface SendCampaignRequest {
   campaignId: string;
 }
 
+// Helper function to rewrite links in HTML for click tracking
+function rewriteLinksForTracking(html: string, campaignId: string, customerId: string, appUrl: string): string {
+  const trackingBaseUrl = `${appUrl}/functions/v1/track-click/${campaignId}/${customerId}`;
+  
+  // Replace all <a href="..."> with tracking URLs
+  return html.replace(
+    /<a\s+([^>]*?)href=["']([^"']+)["']([^>]*?)>/gi,
+    (match, before, href, after) => {
+      // Skip if already a tracking URL or if it's a mailto: or tel: link
+      if (href.includes('/track-click/') || href.startsWith('mailto:') || href.startsWith('tel:')) {
+        return match;
+      }
+      
+      const trackedUrl = `${trackingBaseUrl}?url=${encodeURIComponent(href)}`;
+      return `<a ${before}href="${trackedUrl}"${after}>`;
+    }
+  );
+}
+
+// Helper function to inject tracking pixel
+function injectTrackingPixel(html: string, campaignId: string, customerId: string, appUrl: string): string {
+  const pixelUrl = `${appUrl}/functions/v1/track-open/${campaignId}/${customerId}.png`;
+  const trackingPixel = `<img src="${pixelUrl}" width="1" height="1" alt="" style="display:block;border:0;" />`;
+  
+  // Try to inject before closing </body> tag, otherwise append to end
+  if (html.toLowerCase().includes('</body>')) {
+    return html.replace(/<\/body>/i, `${trackingPixel}</body>`);
+  } else {
+    return html + trackingPixel;
+  }
+}
+
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -36,6 +68,7 @@ const handler = async (req: Request): Promise<Response> => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
+    const appUrl = Deno.env.get("VITE_APP_URL") || "https://app.portaprosoftware.com";
 
     if (!resendApiKey) {
       throw new Error("RESEND_API_KEY is not configured");
@@ -124,6 +157,10 @@ const handler = async (req: Request): Promise<Response> => {
           continue;
         }
 
+        // Rewrite links for click tracking and inject open tracking pixel
+        let trackedEmailContent = rewriteLinksForTracking(emailContent, campaignId, recipient.id, appUrl);
+        trackedEmailContent = injectTrackingPixel(trackedEmailContent, campaignId, recipient.id, appUrl);
+
         // Get company settings for from address
         const { from } = await getCompanyEmailSender(supabase);
 
@@ -131,7 +168,7 @@ const handler = async (req: Request): Promise<Response> => {
           from: from,
           to: [recipient.email],
           subject: emailSubject,
-          html: emailContent,
+          html: trackedEmailContent,
         });
 
         console.log(`Email sent to ${recipient.email}:`, emailResponse);

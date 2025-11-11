@@ -1,5 +1,11 @@
 project_id = "kbqxyotasszslacozcey"
 
+[functions.track-click]
+verify_jwt = false
+
+[functions.track-open]
+verify_jwt = false
+
 [functions.org-invite]
 verify_jwt = false
 
