@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card } from '@/components/ui/card';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { DeleteConfirmationModal } from '@/components/ui/delete-confirmation-modal';
 import { Plus, Edit, Trash2, Grid3x3, List, Image, Upload, X } from 'lucide-react';
 import { toast } from 'sonner';
@@ -409,130 +409,139 @@ export default function TemplatesPage() {
       )}
 
       {/* Template Form Drawer */}
-      <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-        <SheetContent className="sm:max-w-lg overflow-y-auto">
-          <SheetHeader>
-            <SheetTitle>
-              {editingTemplate ? 'Edit Template' : 'New Template'}
-            </SheetTitle>
-          </SheetHeader>
-          
-          <div className="space-y-4 mt-6">
-            <div>
-              <Label htmlFor="name">Template Name *</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="e.g., Welcome Email"
-              />
-            </div>
+      <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+        <DrawerContent className="h-[95vh] md:h-screen">
+          <div className="mx-auto w-full max-w-5xl h-full flex flex-col">
+            <DrawerHeader className="border-b">
+              <DrawerTitle className="text-xl">
+                {editingTemplate ? 'Edit Template' : 'New Template'}
+              </DrawerTitle>
+            </DrawerHeader>
+            
+            <div className="flex-1 overflow-y-auto p-6">
+              <div className="space-y-6 max-w-3xl mx-auto">
+                <div>
+                  <Label htmlFor="name">Template Name *</Label>
+                  <Input
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    placeholder="e.g., Welcome Email"
+                  />
+                </div>
 
-            <div>
-              <Label htmlFor="subject">Email Subject</Label>
-              <Input
-                id="subject"
-                value={formData.subject}
-                onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                placeholder="e.g., Welcome to our service!"
-              />
-            </div>
+                <div>
+                  <Label htmlFor="subject">Email Subject</Label>
+                  <Input
+                    id="subject"
+                    value={formData.subject}
+                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                    placeholder="e.g., Welcome to our service!"
+                  />
+                </div>
 
-            <div>
-              <Label htmlFor="category">Category</Label>
-              <Select
-                value={formData.category}
-                onValueChange={(value) => setFormData({ ...formData, category: value })}
-              >
-                <SelectTrigger id="category">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="General">General</SelectItem>
-                  <SelectItem value="Follow-up">Follow-up</SelectItem>
-                  <SelectItem value="Promotion">Promotion</SelectItem>
-                  <SelectItem value="Operations">Operations</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+                <div>
+                  <Label htmlFor="category">Category</Label>
+                  <Select
+                    value={formData.category}
+                    onValueChange={(value) => setFormData({ ...formData, category: value })}
+                  >
+                    <SelectTrigger id="category">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="General">General</SelectItem>
+                      <SelectItem value="Follow-up">Follow-up</SelectItem>
+                      <SelectItem value="Promotion">Promotion</SelectItem>
+                      <SelectItem value="Operations">Operations</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            <div>
-              <Label htmlFor="content">Content *</Label>
-              <Textarea
-                id="content"
-                value={formData.content}
-                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                placeholder="Enter your email content here..."
-                rows={10}
-              />
-            </div>
+                <div>
+                  <Label htmlFor="content">Content *</Label>
+                  <Textarea
+                    id="content"
+                    value={formData.content}
+                    onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                    placeholder="Enter your email content here..."
+                    rows={10}
+                  />
+                </div>
 
-            <div>
-              <Label htmlFor="preview_image">Preview Image</Label>
-              <div className="space-y-3">
-                {imagePreview ? (
-                  <div className="relative">
-                    <div className="aspect-video bg-muted rounded overflow-hidden border-2 border-border">
-                      <img
-                        src={imagePreview}
-                        alt="Preview"
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="sm"
-                      className="absolute top-2 right-2"
-                      onClick={handleRemoveImage}
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
+                <div>
+                  <Label htmlFor="preview_image">Preview Image</Label>
+                  <div className="space-y-3">
+                    {imagePreview ? (
+                      <div className="relative">
+                        <div className="aspect-video bg-muted rounded overflow-hidden border-2 border-border">
+                          <img
+                            src={imagePreview}
+                            alt="Preview"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          className="absolute top-2 right-2"
+                          onClick={handleRemoveImage}
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary transition-colors">
+                        <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+                        <Label
+                          htmlFor="image-upload"
+                          className="cursor-pointer text-sm text-muted-foreground hover:text-primary"
+                        >
+                          Click to upload an image
+                        </Label>
+                        <Input
+                          id="image-upload"
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={handleImageChange}
+                        />
+                      </div>
+                    )}
                   </div>
-                ) : (
-                  <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary transition-colors">
-                    <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                    <Label
-                      htmlFor="image-upload"
-                      className="cursor-pointer text-sm text-muted-foreground hover:text-primary"
-                    >
-                      Click to upload an image
-                    </Label>
-                    <Input
-                      id="image-upload"
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={handleImageChange}
-                    />
-                  </div>
-                )}
+                </div>
               </div>
             </div>
 
-            <div className="flex gap-2 pt-4">
-              <Button
-                variant="outline"
-                className="flex-1"
-                onClick={handleCloseDrawer}
-              >
-                Cancel
-              </Button>
-              <Button
-                className="flex-1"
-                onClick={handleSave}
-                disabled={createMutation.isPending || updateMutation.isPending}
-              >
-                {createMutation.isPending || updateMutation.isPending
-                  ? 'Saving...'
-                  : editingTemplate
-                  ? 'Update'
-                  : 'Create'}
-              </Button>
+            <div className="border-t p-6">
+              <div className="flex gap-3 max-w-3xl mx-auto">
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={handleCloseDrawer}
+                  disabled={isUploading}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold"
+                  onClick={handleSave}
+                  disabled={isUploading || createMutation.isPending || updateMutation.isPending}
+                >
+                  {isUploading 
+                    ? 'Uploading...' 
+                    : createMutation.isPending || updateMutation.isPending
+                    ? 'Saving...'
+                    : editingTemplate
+                    ? 'Update'
+                    : 'Create'}
+                </Button>
+              </div>
             </div>
           </div>
-        </SheetContent>
-      </Sheet>
+        </DrawerContent>
+      </Drawer>
 
       {/* Delete Confirmation */}
       <DeleteConfirmationModal
