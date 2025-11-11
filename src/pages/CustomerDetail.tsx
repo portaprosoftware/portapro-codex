@@ -15,6 +15,7 @@ import { CustomerJobsAndReportsTab } from '@/components/customers/CustomerJobsAn
 import { CustomerFinancialTab } from '@/components/customers/CustomerFinancialTab';
 import { CustomerCommunicationTab } from '@/components/customers/CustomerCommunicationTab';
 import { CustomerDocumentsTab } from '@/components/customers/CustomerDocumentsTab';
+import { CustomerEngagementTab } from '@/components/customers/CustomerEngagementTab';
 import { formatCategoryDisplay } from '@/lib/categoryUtils';
 import { formatPhoneNumber } from '@/lib/utils';
 
@@ -180,6 +181,7 @@ export default function CustomerDetail() {
           {activeTab === 'financial' && <CustomerFinancialTab customerId={id!} />}
           {activeTab === 'communication' && <CustomerCommunicationTab customerId={id!} />}
           {activeTab === 'documents' && <CustomerDocumentsTab customerId={id!} />}
+          {activeTab === 'engagement' && <CustomerEngagementTab customerId={id!} />}
         </div>
       </div>
     </div>

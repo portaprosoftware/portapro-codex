@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { TabNav } from '@/components/ui/TabNav';
-import { User, Users, MapPin, Briefcase, DollarSign, MessageSquare, FileText, File, Check, ChevronDown } from 'lucide-react';
+import { User, Users, MapPin, Briefcase, DollarSign, MessageSquare, FileText, File, Check, ChevronDown, TrendingUp } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,7 @@ import { CustomerFinancialTab } from './CustomerFinancialTab';
 import { CustomerCommunicationTab } from './CustomerCommunicationTab';
 import { CustomerJobsAndReportsTab } from './CustomerJobsAndReportsTab';
 import { CustomerDocumentsTab } from './CustomerDocumentsTab';
+import { CustomerEngagementTab } from './CustomerEngagementTab';
 
 interface Customer {
   id: string;
@@ -67,6 +68,8 @@ export function CustomerTabs({ customer }: CustomerTabsProps) {
         return <CustomerCommunicationTab customerId={customer.id} />;
       case 'documents':
         return <CustomerDocumentsTab customerId={customer.id} />;
+      case 'engagement':
+        return <CustomerEngagementTab customerId={customer.id} />;
       default:
         return <CustomerOverviewTab customer={customer} />;
     }
@@ -80,6 +83,7 @@ export function CustomerTabs({ customer }: CustomerTabsProps) {
     { value: 'financial', label: 'Financial', icon: DollarSign },
     { value: 'communication', label: 'Communication', icon: MessageSquare },
     { value: 'documents', label: 'Documents', icon: File },
+    { value: 'engagement', label: 'Engagement', icon: TrendingUp },
   ];
 
   return (
@@ -200,6 +204,14 @@ export function CustomerTabs({ customer }: CustomerTabsProps) {
             <File className="w-4 h-4" />
             Documents
           </TabNav.Item>
+          <TabNav.Item 
+            to="#engagement" 
+            isActive={activeTab === 'engagement'}
+            onClick={() => setActiveTab('engagement')}
+          >
+            <TrendingUp className="w-4 h-4" />
+            Engagement
+          </TabNav.Item>
         </TabNav>
       </div>
 
@@ -227,6 +239,7 @@ export function CustomerTabNavigation({
     { value: 'financial', label: 'Financial', icon: DollarSign },
     { value: 'communication', label: 'Communication', icon: MessageSquare },
     { value: 'documents', label: 'Documents', icon: File },
+    { value: 'engagement', label: 'Engagement', icon: TrendingUp },
   ];
 
   return (
@@ -342,6 +355,14 @@ export function CustomerTabNavigation({
           >
             <File className="w-4 h-4" />
             Documents
+          </TabNav.Item>
+          <TabNav.Item 
+            to="#engagement" 
+            isActive={activeTab === 'engagement'}
+            onClick={() => onTabChange('engagement')}
+          >
+            <TrendingUp className="w-4 h-4" />
+            Engagement
           </TabNav.Item>
         </TabNav>
       </div>
