@@ -4,6 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { safeUpdate } from "@/lib/supabase-helpers";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 import {
   Dialog,
   DialogContent,
@@ -47,6 +49,7 @@ export const CustomerSupportEmailModal: React.FC<CustomerSupportEmailModalProps>
 }) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { orgId } = useOrganizationId();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -67,26 +70,33 @@ export const CustomerSupportEmailModal: React.FC<CustomerSupportEmailModalProps>
 
   const updateEmailMutation = useMutation({
     mutationFn: async (data: FormData) => {
+      if (!orgId) {
+        throw new Error("Organization ID is required");
+      }
+
       const { data: settings } = await supabase
         .from("company_settings")
         .select("id")
-        .limit(1)
-        .single();
+        .eq("organization_id", orgId)
+        .maybeSingle();
 
       if (!settings) throw new Error("Company settings not found");
 
-      const { error } = await supabase
-        .from("company_settings")
-        .update({ 
+      const result = await safeUpdate(
+        "company_settings",
+        { 
           support_email: data.support_email,
           sms_from_number: data.sms_from_number,
-        })
-        .eq("id", settings.id);
+        },
+        orgId,
+        { id: settings.id }
+      );
 
-      if (error) throw error;
+      if (result.error) throw result.error;
+      return result.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["company-settings"] });
+      queryClient.invalidateQueries({ queryKey: ["company-settings", orgId] });
       toast({
         title: "Success",
         description: "Customer contact information updated successfully",

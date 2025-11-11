@@ -13,6 +13,8 @@ import { Switch } from "@/components/ui/switch";
 import { Upload, Save, Mail, MapPin, Percent } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { safeUpdate } from "@/lib/supabase-helpers";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 // LogoUploadModal import removed - logo management separated
 
 const companySettingsSchema = z.object({
@@ -113,6 +115,7 @@ interface CompanySettingsModalProps {
 export function CompanySettingsModal({ isOpen, onClose, companySettings }: CompanySettingsModalProps) {
   // Logo management removed - now handled by LogoManagementModal
   const queryClient = useQueryClient();
+  const { orgId } = useOrganizationId();
 
   const form = useForm<CompanySettingsFormData>({
     resolver: zodResolver(companySettingsSchema),
@@ -162,22 +165,21 @@ export function CompanySettingsModal({ isOpen, onClose, companySettings }: Compa
         throw new Error('Company settings ID is required');
       }
       
-      // Use update instead of upsert for editing existing settings
-      const { data: result, error } = await supabase
-        .from("company_settings")
-        .update(data)
-        .eq('id', companySettings.id)
-        .select()
-        .single();
+      if (!orgId) {
+        throw new Error('Organization ID is required');
+      }
       
-      if (error) throw error;
-      return result;
+      // Use safeUpdate to enforce organization scoping
+      const result = await safeUpdate('company_settings', data, orgId, { id: companySettings.id });
+      
+      if (result.error) throw result.error;
+      return result.data;
     },
     onSuccess: (updatedData) => {
       console.log("Company settings updated successfully:", updatedData);
       
-      // Update the company-settings cache
-      queryClient.setQueryData(["company-settings"], updatedData);
+      // Invalidate organization-scoped cache
+      queryClient.invalidateQueries({ queryKey: ['company-settings', orgId] });
       
       toast.success("Company settings updated successfully!");
       onClose();
