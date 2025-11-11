@@ -18,6 +18,7 @@ import { Plus, MapPin, Edit, Trash2, Warehouse, BarChart3, MoreHorizontal, Check
 import { toast } from "sonner";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Navigate, useLocation } from "react-router-dom";
+import { useCompanySettings } from "@/hooks/useCompanySettings";
 
 interface StorageLocation {
   id: string;
@@ -73,19 +74,7 @@ export default function StorageSites() {
     }
   });
 
-  const { data: companySettings, isLoading: settingsLoading } = useQuery({
-    queryKey: ['company-settings'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('company_settings')
-        .select('*')
-        .limit(1)
-        .maybeSingle();
-      
-      if (error) throw error;
-      return data;
-    }
-  });
+  const { data: companySettings, isLoading: settingsLoading } = useCompanySettings();
 
   // Combined loading state - wait for both queries
   const isLoading = locationsLoading || settingsLoading;
@@ -114,7 +103,6 @@ export default function StorageSites() {
         label: "Main Company Address",
         address: companySettings ? [
           companySettings.company_street,
-          companySettings.company_street2,
           companySettings.company_city,
           companySettings.company_state,
           companySettings.company_zipcode
