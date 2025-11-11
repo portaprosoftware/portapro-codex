@@ -47,6 +47,7 @@ export default function TemplatesPage() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [imageMetadata, setImageMetadata] = useState<{ size: number; width: number; height: number } | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
   
   const [formData, setFormData] = useState<TemplateFormData>({
     name: '',
@@ -162,42 +163,77 @@ export default function TemplatesPage() {
     });
     setUploadedImage(null);
     setImagePreview(null);
+    setImageMetadata(null);
+    setIsDragging(false);
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setUploadedImage(file);
-      
-      // Get file size
-      const fileSizeInBytes = file.size;
-      
-      // Get image dimensions
-      const img = document.createElement('img');
-      const reader = new FileReader();
-      
-      reader.onloadend = () => {
-        const result = reader.result as string;
-        setImagePreview(result);
-        
-        img.onload = () => {
-          setImageMetadata({
-            size: fileSizeInBytes,
-            width: img.width,
-            height: img.height
-          });
-        };
-        img.src = result;
-      };
-      
-      reader.readAsDataURL(file);
+      processImageFile(file);
     }
   };
 
   const handleRemoveImage = () => {
     setUploadedImage(null);
     setImagePreview(null);
+    setImageMetadata(null);
     setFormData({ ...formData, preview_image_url: '' });
+  };
+
+  const processImageFile = (file: File) => {
+    setUploadedImage(file);
+    
+    // Get file size
+    const fileSizeInBytes = file.size;
+    
+    // Get image dimensions
+    const img = document.createElement('img');
+    const reader = new FileReader();
+    
+    reader.onloadend = () => {
+      const result = reader.result as string;
+      setImagePreview(result);
+      
+      img.onload = () => {
+        setImageMetadata({
+          size: fileSizeInBytes,
+          width: img.width,
+          height: img.height
+        });
+      };
+      img.src = result;
+    };
+    
+    reader.readAsDataURL(file);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      if (file.type.startsWith('image/')) {
+        processImageFile(file);
+      } else {
+        toast.error('Please drop an image file');
+      }
+    }
   };
 
   const uploadImage = async (): Promise<string | null> => {
@@ -520,11 +556,29 @@ export default function TemplatesPage() {
                         </Button>
                       </div>
                     ) : (
-                      <div className="space-y-2">
+                      <div
+                        className={`border-2 border-dashed rounded-lg p-8 text-center transition-all ${
+                          isDragging
+                            ? 'border-primary bg-primary/5 scale-105'
+                            : 'border-border hover:border-primary/50'
+                        }`}
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
+                        onDrop={handleDrop}
+                      >
+                        <Upload className={`w-12 h-12 mx-auto mb-4 transition-colors ${
+                          isDragging ? 'text-primary' : 'text-muted-foreground'
+                        }`} />
+                        <p className={`text-sm mb-3 font-medium transition-colors ${
+                          isDragging ? 'text-primary' : 'text-foreground'
+                        }`}>
+                          {isDragging ? 'Drop image here' : 'Drag & drop image here'}
+                        </p>
+                        <p className="text-xs text-muted-foreground mb-4">or</p>
                         <Button
                           type="button"
                           variant="outline"
-                          className="w-full"
+                          size="sm"
                           onClick={() => document.getElementById('image-upload')?.click()}
                         >
                           <Upload className="w-4 h-4 mr-2" />
