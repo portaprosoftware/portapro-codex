@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useOrganizationId } from '@/hooks/useOrganizationId';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -29,6 +30,7 @@ interface CampaignEngagement {
 
 export function CustomerEngagementTab({ customerId }: CustomerEngagementTabProps) {
   const { orgId } = useOrganizationId();
+  const navigate = useNavigate();
 
   const { data: events, isLoading } = useQuery({
     queryKey: ['customer-engagement', customerId, orgId],
@@ -138,7 +140,14 @@ export function CustomerEngagementTab({ customerId }: CustomerEngagementTabProps
           <TableBody>
             {campaignEngagement.map((campaign) => (
               <TableRow key={campaign.campaignId}>
-                <TableCell className="font-medium">{campaign.campaignName}</TableCell>
+                <TableCell className="font-medium">
+                  <button
+                    onClick={() => navigate(`/marketing/campaigns/${campaign.campaignId}`)}
+                    className="text-blue-600 hover:text-blue-700 underline hover:no-underline transition-all cursor-pointer"
+                  >
+                    {campaign.campaignName}
+                  </button>
+                </TableCell>
                 <TableCell>
                   {campaign.sentAt 
                     ? format(new Date(campaign.sentAt), 'MMM dd, yyyy')
