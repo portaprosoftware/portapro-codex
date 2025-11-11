@@ -28,6 +28,7 @@ export interface CompanySettings {
   default_deposit_percentage?: number;
   default_delivery_fee?: number;
   auto_enable_delivery_fee?: boolean;
+  enable_sanitation_compliance?: boolean;
 }
 
 export const useCompanySettings = () => {

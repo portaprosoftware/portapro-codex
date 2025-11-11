@@ -18,6 +18,7 @@ import { useUser } from '@clerk/clerk-react';
 import { useEnhancedOffline } from '@/hooks/useEnhancedOffline';
 import { saveDraftReport, getDraftReport, savePendingReport } from '@/lib/serviceReportDB';
 import { useOrganizationId } from '@/hooks/useOrganizationId';
+import { useCompanySettings } from '@/hooks/useCompanySettings';
 
 interface FormField {
   id: string;
@@ -51,6 +52,7 @@ export const ServiceReportEnhanced: React.FC<ServiceReportEnhancedProps> = ({
   const { user } = useUser();
   const { isOnline, addOfflineData, queueCount, isSyncing } = useEnhancedOffline();
   const { orgId } = useOrganizationId();
+  const { data: companySettings } = useCompanySettings();
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [sections, setSections] = useState<FormSection[]>([]);
@@ -118,17 +120,22 @@ export const ServiceReportEnhanced: React.FC<ServiceReportEnhancedProps> = ({
     let active = true;
     const load = async () => {
       if (!orgId) return;
-      const [{ data: settingsRow }, { data: checklistRow }] = await Promise.all([
-        supabase.from('company_settings').select('enable_sanitation_compliance').eq('organization_id', orgId).limit(1).maybeSingle(),
-        supabase.from('sanitation_checklists').select('id').eq('organization_id', orgId).eq('is_active', true).order('created_at', { ascending: true }).limit(1).maybeSingle()
-      ]);
+      const { data: checklistRow } = await supabase
+        .from('sanitation_checklists')
+        .select('id')
+        .eq('organization_id', orgId)
+        .eq('is_active', true)
+        .order('created_at', { ascending: true })
+        .limit(1)
+        .maybeSingle();
+      
       if (!active) return;
-      setSanitationEnabled(!!settingsRow?.enable_sanitation_compliance);
+      setSanitationEnabled(!!(companySettings as any)?.enable_sanitation_compliance);
       if (checklistRow?.id) setSanitationChecklistId(checklistRow.id);
     };
     load();
     return () => { active = false; };
-  }, [open]);
+  }, [open, companySettings, orgId]);
 
   // Inject sanitation section dynamically when enabled
   useEffect(() => {
