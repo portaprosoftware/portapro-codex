@@ -16,6 +16,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { MapPin, Building } from "lucide-react";
+import { useCompanySettings } from "@/hooks/useCompanySettings";
 
 interface StorageLocation {
   id: string;
@@ -76,19 +77,8 @@ export function EditStorageSiteModal({ site, open, onOpenChange, onClose }: Edit
     }
   }, [site]);
 
-  // Fetch company settings for address
-  const { data: companySettings } = useQuery({
-    queryKey: ['company-settings'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('company_settings')
-        .select('*')
-        .single();
-      
-      if (error) throw error;
-      return data;
-    }
-  });
+  // Fetch company settings via shared hook
+  const { data: companySettings } = useCompanySettings();
 
   // Check if there's already a default location (excluding current site)
   const { data: existingDefault } = useQuery({
@@ -190,7 +180,6 @@ export function EditStorageSiteModal({ site, open, onOpenChange, onClose }: Edit
     
     const parts = [
       companySettings.company_street,
-      companySettings.company_street2,
       companySettings.company_city,
       companySettings.company_state,
       companySettings.company_zipcode
