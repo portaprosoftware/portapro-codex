@@ -13860,6 +13860,18 @@ export type Database = {
         }
         Returns: Json
       }
+      resolve_segment: {
+        Args: { org_id: string; segment: Json }
+        Returns: {
+          customer_id: string
+        }[]
+      }
+      resolve_segments: {
+        Args: { org_id: string; segments: Json }
+        Returns: {
+          customer_id: string
+        }[]
+      }
       rollback_template_version: {
         Args: {
           rollback_reason?: string

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useOrganizationId } from '@/hooks/useOrganizationId';
 import { safeRead, safeInsert, safeUpdate, safeDelete } from '@/lib/supabase-helpers';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Card } from '@/components/ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { DeleteConfirmationModal } from '@/components/ui/delete-confirmation-modal';
-import { Plus, Edit, Trash2, Grid3x3, List, Image } from 'lucide-react';
+import { Plus, Edit, Trash2, Grid3x3, List, Image, Upload, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
@@ -42,6 +43,9 @@ export default function TemplatesPage() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<MarketingTemplate | null>(null);
   const [deleteTemplateId, setDeleteTemplateId] = useState<string | null>(null);
+  const [uploadedImage, setUploadedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   
   const [formData, setFormData] = useState<TemplateFormData>({
     name: '',
@@ -129,6 +133,7 @@ export default function TemplatesPage() {
         category: template.category,
         preview_image_url: template.preview_image_url || ''
       });
+      setImagePreview(template.preview_image_url || null);
     } else {
       setEditingTemplate(null);
       setFormData({
@@ -138,7 +143,9 @@ export default function TemplatesPage() {
         category: 'General',
         preview_image_url: ''
       });
+      setImagePreview(null);
     }
+    setUploadedImage(null);
     setIsDrawerOpen(true);
   };
 
@@ -152,13 +159,74 @@ export default function TemplatesPage() {
       category: 'General',
       preview_image_url: ''
     });
+    setUploadedImage(null);
+    setImagePreview(null);
   };
 
-  const handleSave = () => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setUploadedImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setUploadedImage(null);
+    setImagePreview(null);
+    setFormData({ ...formData, preview_image_url: '' });
+  };
+
+  const uploadImage = async (): Promise<string | null> => {
+    if (!uploadedImage || !orgId) return null;
+
+    setIsUploading(true);
+    try {
+      const fileExt = uploadedImage.name.split('.').pop();
+      const fileName = `${orgId}/${Date.now()}.${fileExt}`;
+      
+      const { error: uploadError } = await supabase.storage
+        .from('template-images')
+        .upload(fileName, uploadedImage);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('template-images')
+        .getPublicUrl(fileName);
+
+      return publicUrl;
+    } catch (error: any) {
+      toast.error('Failed to upload image: ' + error.message);
+      return null;
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleSave = async () => {
     if (!formData.name || !formData.content) {
       toast.error('Name and content are required');
       return;
     }
+
+    // Upload image if a new one was selected
+    let imageUrl = formData.preview_image_url;
+    if (uploadedImage) {
+      const uploadedUrl = await uploadImage();
+      if (uploadedUrl) {
+        imageUrl = uploadedUrl;
+      }
+    }
+
+    const templateData = {
+      ...formData,
+      preview_image_url: imageUrl
+    };
 
     if (editingTemplate) {
       updateMutation.mutate({ id: editingTemplate.id, data: formData });
@@ -400,13 +468,46 @@ export default function TemplatesPage() {
             </div>
 
             <div>
-              <Label htmlFor="preview_image">Preview Image URL</Label>
-              <Input
-                id="preview_image"
-                value={formData.preview_image_url}
-                onChange={(e) => setFormData({ ...formData, preview_image_url: e.target.value })}
-                placeholder="https://example.com/image.jpg"
-              />
+              <Label htmlFor="preview_image">Preview Image</Label>
+              <div className="space-y-3">
+                {imagePreview ? (
+                  <div className="relative">
+                    <div className="aspect-video bg-muted rounded overflow-hidden border-2 border-border">
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      className="absolute top-2 right-2"
+                      onClick={handleRemoveImage}
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary transition-colors">
+                    <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+                    <Label
+                      htmlFor="image-upload"
+                      className="cursor-pointer text-sm text-muted-foreground hover:text-primary"
+                    >
+                      Click to upload an image
+                    </Label>
+                    <Input
+                      id="image-upload"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleImageChange}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="flex gap-2 pt-4">
