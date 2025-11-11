@@ -9,6 +9,6 @@ export const useCompanyTitle = () => {
   
   useEffect(() => {
     // Always show the standard title
-    document.title = 'PortaPro Software | Powering Portable Sanitation | Units, Fleet, Routes, Staff, Billing, Customer Portals & More';
+    document.title = 'PortaPro | Powering Portable Sanitation';
   }, []);
 };
