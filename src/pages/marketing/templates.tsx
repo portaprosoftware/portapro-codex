@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Card } from '@/components/ui/card';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { DeleteConfirmationModal } from '@/components/ui/delete-confirmation-modal';
-import { Plus, Edit, Trash2, Grid3x3, List, Image, Upload, X } from 'lucide-react';
+import { Plus, Edit, Trash2, Grid3x3, List, Image as ImageIcon, Upload, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
@@ -46,6 +46,7 @@ export default function TemplatesPage() {
   const [uploadedImage, setUploadedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [imageMetadata, setImageMetadata] = useState<{ size: number; width: number; height: number } | null>(null);
   
   const [formData, setFormData] = useState<TemplateFormData>({
     name: '',
@@ -167,10 +168,28 @@ export default function TemplatesPage() {
     const file = e.target.files?.[0];
     if (file) {
       setUploadedImage(file);
+      
+      // Get file size
+      const fileSizeInBytes = file.size;
+      
+      // Get image dimensions
+      const img = document.createElement('img');
       const reader = new FileReader();
+      
       reader.onloadend = () => {
-        setImagePreview(reader.result as string);
+        const result = reader.result as string;
+        setImagePreview(result);
+        
+        img.onload = () => {
+          setImageMetadata({
+            size: fileSizeInBytes,
+            width: img.width,
+            height: img.height
+          });
+        };
+        img.src = result;
       };
+      
       reader.readAsDataURL(file);
     }
   };
@@ -260,7 +279,7 @@ export default function TemplatesPage() {
         <Card className="p-12 text-center rounded-2xl shadow-md">
           <div className="flex flex-col items-center gap-4">
             <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
-              <Image className="w-8 h-8 text-muted-foreground" />
+              <ImageIcon className="w-8 h-8 text-muted-foreground" />
             </div>
             <div>
               <h3 className="font-semibold mb-1">No templates yet</h3>
@@ -372,7 +391,7 @@ export default function TemplatesPage() {
                       </div>
                     ) : (
                       <div className="aspect-video bg-muted rounded flex items-center justify-center">
-                        <Image className="w-8 h-8 text-muted-foreground" />
+                        <ImageIcon className="w-8 h-8 text-muted-foreground" />
                       </div>
                     )}
                     <div>
