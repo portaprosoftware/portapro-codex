@@ -412,10 +412,18 @@ export default function TemplatesPage() {
       <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
         <DrawerContent className="h-[95vh] md:h-screen">
           <div className="mx-auto w-full max-w-5xl h-full flex flex-col">
-            <DrawerHeader className="border-b">
+            <DrawerHeader className="border-b relative">
               <DrawerTitle className="text-xl">
                 {editingTemplate ? 'Edit Template' : 'New Template'}
               </DrawerTitle>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-4 top-4"
+                onClick={handleCloseDrawer}
+              >
+                <X className="w-5 h-5" />
+              </Button>
             </DrawerHeader>
             
             <div className="flex-1 overflow-y-auto p-6">
@@ -488,22 +496,26 @@ export default function TemplatesPage() {
                           className="absolute top-2 right-2"
                           onClick={handleRemoveImage}
                         >
-                          <X className="w-4 h-4" />
+                          <X className="w-4 h-4 mr-2" />
+                          Remove
                         </Button>
                       </div>
                     ) : (
-                      <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary transition-colors">
-                        <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                        <Label
-                          htmlFor="image-upload"
-                          className="cursor-pointer text-sm text-muted-foreground hover:text-primary"
+                      <div className="space-y-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="w-full"
+                          onClick={() => document.getElementById('image-upload')?.click()}
                         >
-                          Click to upload an image
-                        </Label>
+                          <Upload className="w-4 h-4 mr-2" />
+                          Upload Photo or Take Photo
+                        </Button>
                         <Input
                           id="image-upload"
                           type="file"
                           accept="image/*"
+                          capture="environment"
                           className="hidden"
                           onChange={handleImageChange}
                         />
