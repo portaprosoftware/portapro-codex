@@ -459,20 +459,32 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
           <div>
             <h2 className="text-xl font-semibold mb-4">Campaign Type</h2>
             
-            <div className="space-y-4">
-              <div>
-                <Label>Campaign Type</Label>
-                <Tabs 
-                  value={campaignData.campaign_type} 
-                  onValueChange={(value) => setCampaignData({...campaignData, campaign_type: value as any})}
-                >
-                  <TabsList className="grid w-full grid-cols-3">
-                    <TabsTrigger value="email">Email</TabsTrigger>
-                    <TabsTrigger value="sms">SMS</TabsTrigger>
-                    <TabsTrigger value="both">Both</TabsTrigger>
-                  </TabsList>
-                </Tabs>
-              </div>
+            <div className="space-y-3">
+              <Button
+                variant={campaignData.campaign_type === 'email' ? 'default' : 'outline'}
+                className="w-full h-14 text-lg"
+                onClick={() => setCampaignData({...campaignData, campaign_type: 'email'})}
+              >
+                <Mail className="w-5 h-5 mr-2" />
+                Email
+              </Button>
+              <Button
+                variant={campaignData.campaign_type === 'sms' ? 'default' : 'outline'}
+                className="w-full h-14 text-lg"
+                onClick={() => setCampaignData({...campaignData, campaign_type: 'sms'})}
+              >
+                <MessageSquare className="w-5 h-5 mr-2" />
+                SMS
+              </Button>
+              <Button
+                variant={campaignData.campaign_type === 'both' ? 'default' : 'outline'}
+                className="w-full h-14 text-lg"
+                onClick={() => setCampaignData({...campaignData, campaign_type: 'both'})}
+              >
+                <Mail className="w-5 h-5 mr-2" />
+                <MessageSquare className="w-5 h-5 mr-2" />
+                Both
+              </Button>
             </div>
           </div>
         </div>
