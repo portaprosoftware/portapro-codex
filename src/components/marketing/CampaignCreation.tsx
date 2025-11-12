@@ -430,28 +430,6 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
       
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto space-y-6">{/* Scrollable area */}
-      <div className="flex items-center justify-center mb-6 mt-2">
-        {[1, 2, 3, 4].map((step) => (
-          <div key={step} className="flex items-center">
-            <div
-              className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${
-                step <= currentStep
-                  ? 'bg-primary text-white'
-                  : 'bg-gray-200 text-gray-600'
-              }`}
-            >
-              {step}
-            </div>
-            {step < 4 && (
-              <div
-                className={`w-16 h-1 mx-2 ${
-                  step < currentStep ? 'bg-primary' : 'bg-gray-200'
-                }`}
-              />
-            )}
-          </div>
-        ))}
-      </div>
 
       {/* Step 1: Campaign Type */}
       {currentStep === 1 && (
@@ -493,6 +471,30 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
         {/* Step 2: Select Recipients and Message Source */}
         {currentStep === 2 && (
           <div className="space-y-6">
+            {/* Progress Steps */}
+            <div className="flex items-center justify-center mb-4">
+              {[1, 2, 3, 4].map((step) => (
+                <div key={step} className="flex items-center">
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${
+                      step <= currentStep
+                        ? 'bg-primary text-white'
+                        : 'bg-gray-200 text-gray-600'
+                    }`}
+                  >
+                    {step}
+                  </div>
+                  {step < 4 && (
+                    <div
+                      className={`w-16 h-1 mx-2 ${
+                        step < currentStep ? 'bg-primary' : 'bg-gray-200'
+                      }`}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+
             <h2 className="text-xl font-semibold mb-4 font-inter">Recipients & Message Source</h2>
             
             <div className="space-y-4">
