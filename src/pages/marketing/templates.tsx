@@ -546,7 +546,7 @@ export default function TemplatesPage() {
       {/* Template Form Drawer */}
       <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
         <DrawerContent className="h-[95vh] md:h-screen">
-          <div className="mx-auto w-full max-w-3xl h-full flex flex-col">
+          <div className="mx-auto w-full max-w-xl h-full flex flex-col px-4">
             <DrawerHeader className="border-b relative pb-4">
               <DrawerTitle className="text-xl">
                 {editingTemplate ? 'Edit Template' : 'New Template'}
