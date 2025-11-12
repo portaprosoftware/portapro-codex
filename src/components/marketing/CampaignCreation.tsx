@@ -462,7 +462,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
             <div className="space-y-3">
               <Button
                 variant={campaignData.campaign_type === 'email' ? 'default' : 'outline'}
-                className="w-full h-14 text-lg transition-all duration-200 hover:scale-[1.02] hover:shadow-md active:scale-[0.98]"
+                className="w-full h-16 text-lg transition-all duration-200 hover:scale-[1.02] hover:shadow-md active:scale-[0.98]"
                 onClick={() => setCampaignData({...campaignData, campaign_type: 'email'})}
               >
                 <Mail className="w-5 h-5 mr-2" />
@@ -470,7 +470,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
               </Button>
               <Button
                 variant={campaignData.campaign_type === 'sms' ? 'default' : 'outline'}
-                className="w-full h-14 text-lg transition-all duration-200 hover:scale-[1.02] hover:shadow-md active:scale-[0.98]"
+                className="w-full h-16 text-lg transition-all duration-200 hover:scale-[1.02] hover:shadow-md active:scale-[0.98]"
                 onClick={() => setCampaignData({...campaignData, campaign_type: 'sms'})}
               >
                 <MessageSquare className="w-5 h-5 mr-2" />
@@ -478,7 +478,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
               </Button>
               <Button
                 variant={campaignData.campaign_type === 'both' ? 'default' : 'outline'}
-                className="w-full h-14 text-lg transition-all duration-200 hover:scale-[1.02] hover:shadow-md active:scale-[0.98]"
+                className="w-full h-16 text-lg transition-all duration-200 hover:scale-[1.02] hover:shadow-md active:scale-[0.98]"
                 onClick={() => setCampaignData({...campaignData, campaign_type: 'both'})}
               >
                 <Mail className="w-5 h-5 mr-2" />
