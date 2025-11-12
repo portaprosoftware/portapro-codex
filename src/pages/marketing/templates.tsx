@@ -341,74 +341,80 @@ export default function TemplatesPage() {
 
   return (
     <div className="space-y-6">
-      {/* Templates Display */}
-      {filteredTemplates.length === 0 ? (
-        <Card className="p-12 text-center rounded-2xl shadow-md">
-          <div className="flex flex-col items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
-              <ImageIcon className="w-8 h-8 text-muted-foreground" />
-            </div>
+      {/* Templates Header - Always visible */}
+      <Card className="rounded-2xl shadow-md">
+        <div className="p-6 border-b">
+          <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-semibold mb-1">No templates yet</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Create your first template to get started
+              <h2 className="text-xl font-semibold font-inter">Templates Library</h2>
+              <p className="text-sm text-muted-foreground">
+                Create and manage email templates for campaigns
               </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Filter by category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  <SelectItem value="General">General</SelectItem>
+                  <SelectItem value="Follow-up">Follow-up</SelectItem>
+                  <SelectItem value="Promotion">Promotion</SelectItem>
+                  <SelectItem value="Operations">Operations</SelectItem>
+                </SelectContent>
+              </Select>
+              <div className="flex border rounded-lg">
+                <Button
+                  variant={viewMode === 'list' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setViewMode('list')}
+                >
+                  <List className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setViewMode('grid')}
+                >
+                  <Grid3x3 className="w-4 h-4" />
+                </Button>
+              </div>
               <Button onClick={() => handleOpenDrawer()}>
                 <Plus className="w-4 h-4 mr-2" />
-                Create Template
+                New Template
               </Button>
             </div>
           </div>
-        </Card>
-      ) : (
-        <Card className="rounded-2xl shadow-md">
-          {/* Header inside card */}
-          <div className="p-6 border-b">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold font-inter">Templates Library</h2>
-                <p className="text-sm text-muted-foreground">
-                  Create and manage email templates for campaigns
-                </p>
+        </div>
+
+        {/* Content - Conditional based on filtered results */}
+        {filteredTemplates.length === 0 ? (
+          <div className="p-12 text-center">
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
+                <ImageIcon className="w-8 h-8 text-muted-foreground" />
               </div>
-              <div className="flex items-center gap-2">
-                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Filter by category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Categories</SelectItem>
-                    <SelectItem value="General">General</SelectItem>
-                    <SelectItem value="Follow-up">Follow-up</SelectItem>
-                    <SelectItem value="Promotion">Promotion</SelectItem>
-                    <SelectItem value="Operations">Operations</SelectItem>
-                  </SelectContent>
-                </Select>
-                <div className="flex border rounded-lg">
-                  <Button
-                    variant={viewMode === 'list' ? 'default' : 'ghost'}
-                    size="sm"
-                    onClick={() => setViewMode('list')}
-                  >
-                    <List className="w-4 h-4" />
+              <div>
+                <h3 className="font-semibold mb-1">
+                  {templates.length === 0 ? 'No templates yet' : 'No templates found'}
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  {templates.length === 0 
+                    ? 'Create your first template to get started'
+                    : `No templates found in ${categoryFilter === 'all' ? 'any category' : categoryFilter} category`
+                  }
+                </p>
+                {templates.length === 0 && (
+                  <Button onClick={() => handleOpenDrawer()}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Create Template
                   </Button>
-                  <Button
-                    variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                    size="sm"
-                    onClick={() => setViewMode('grid')}
-                  >
-                    <Grid3x3 className="w-4 h-4" />
-                  </Button>
-                </div>
-                <Button onClick={() => handleOpenDrawer()}>
-                  <Plus className="w-4 h-4 mr-2" />
-                  New Template
-                </Button>
+                )}
               </div>
             </div>
           </div>
-
-          {/* Content */}
+        ) : (
           <div className={viewMode === 'list' ? '' : 'p-6'}>
             {viewMode === 'list' ? (
               <Table>
@@ -519,8 +525,8 @@ export default function TemplatesPage() {
               </div>
             )}
           </div>
-        </Card>
-      )}
+        )}
+      </Card>
 
       {/* Template Form Drawer */}
       <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
