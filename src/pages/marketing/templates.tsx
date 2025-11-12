@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Card } from '@/components/ui/card';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { DeleteConfirmationModal } from '@/components/ui/delete-confirmation-modal';
-import { Plus, Edit, Trash2, Grid3x3, List, Image as ImageIcon, Upload, X } from 'lucide-react';
+import { Plus, Edit, Trash2, Grid3x3, List, Image as ImageIcon, Upload, X, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
@@ -123,6 +123,31 @@ export default function TemplatesPage() {
     },
     onError: () => {
       toast.error('Failed to delete template');
+    }
+  });
+
+  // Duplicate template mutation
+  const duplicateMutation = useMutation({
+    mutationFn: async (template: MarketingTemplate) => {
+      if (!orgId) throw new Error('Organization context required');
+      
+      const duplicatedData = {
+        name: `${template.name} (Copy)`,
+        subject: template.subject,
+        content: template.content,
+        category: template.category,
+        preview_image_url: template.preview_image_url,
+        organization_id: orgId
+      };
+      
+      return await safeInsert('marketing_templates', duplicatedData, orgId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['marketing-templates', orgId] });
+      toast.success('Template duplicated successfully');
+    },
+    onError: () => {
+      toast.error('Failed to duplicate template');
     }
   });
 
@@ -414,6 +439,14 @@ export default function TemplatesPage() {
                           <Button
                             variant="ghost"
                             size="sm"
+                            onClick={() => duplicateMutation.mutate(template)}
+                            disabled={duplicateMutation.isPending}
+                          >
+                            <Copy className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
                             onClick={() => handleOpenDrawer(template)}
                           >
                             <Edit className="w-4 h-4" />
@@ -457,6 +490,14 @@ export default function TemplatesPage() {
                         {template.category}
                       </span>
                       <div className="flex items-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => duplicateMutation.mutate(template)}
+                          disabled={duplicateMutation.isPending}
+                        >
+                          <Copy className="w-4 h-4" />
+                        </Button>
                         <Button
                           variant="ghost"
                           size="sm"
