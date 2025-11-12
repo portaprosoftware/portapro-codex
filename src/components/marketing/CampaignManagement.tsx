@@ -66,7 +66,7 @@ export const CampaignManagement: React.FC = () => {
           </div>
 
           <Drawer open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-            <DrawerContent className="h-[95vh] w-full">
+            <DrawerContent className="h-screen md:h-[95vh] w-full">
               <div className="mx-auto w-full h-full flex flex-col">
                 <DrawerHeader className="border-b relative pb-4">
                   <DrawerTitle>Create New Campaign</DrawerTitle>
