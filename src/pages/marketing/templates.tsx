@@ -40,6 +40,7 @@ export default function TemplatesPage() {
   const queryClient = useQueryClient();
   
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<MarketingTemplate | null>(null);
   const [deleteTemplateId, setDeleteTemplateId] = useState<string | null>(null);
@@ -308,10 +309,15 @@ export default function TemplatesPage() {
     );
   }
 
+  // Filter templates by category
+  const filteredTemplates = categoryFilter === 'all' 
+    ? templates 
+    : templates.filter(template => template.category === categoryFilter);
+
   return (
     <div className="space-y-6">
       {/* Templates Display */}
-      {templates.length === 0 ? (
+      {filteredTemplates.length === 0 ? (
         <Card className="p-12 text-center rounded-2xl shadow-md">
           <div className="flex flex-col items-center gap-4">
             <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
@@ -334,11 +340,25 @@ export default function TemplatesPage() {
           {/* Header inside card */}
           <div className="p-6 border-b">
             <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold font-inter">Templates Library</h2>
-                <p className="text-sm text-muted-foreground">
-                  Create and manage email templates for campaigns
-                </p>
+              <div className="flex items-center gap-4">
+                <div>
+                  <h2 className="text-xl font-semibold font-inter">Templates Library</h2>
+                  <p className="text-sm text-muted-foreground">
+                    Create and manage email templates for campaigns
+                  </p>
+                </div>
+                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Filter by category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Categories</SelectItem>
+                    <SelectItem value="General">General</SelectItem>
+                    <SelectItem value="Follow-up">Follow-up</SelectItem>
+                    <SelectItem value="Promotion">Promotion</SelectItem>
+                    <SelectItem value="Operations">Operations</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="flex items-center gap-2">
                 <div className="flex border rounded-lg">
@@ -379,7 +399,7 @@ export default function TemplatesPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {templates.map((template) => (
+                  {filteredTemplates.map((template) => (
                     <TableRow key={template.id}>
                       <TableCell className="font-medium">{template.name}</TableCell>
                       <TableCell className="max-w-xs truncate">{template.subject}</TableCell>
@@ -415,7 +435,7 @@ export default function TemplatesPage() {
               </Table>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {templates.map((template) => (
+                {filteredTemplates.map((template) => (
                   <Card key={template.id} className="p-4 space-y-3">
                     {template.preview_image_url ? (
                       <div className="aspect-video bg-muted rounded overflow-hidden">
