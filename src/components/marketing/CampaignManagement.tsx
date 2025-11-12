@@ -68,7 +68,7 @@ export const CampaignManagement: React.FC = () => {
           <Drawer open={isCreateOpen} onOpenChange={setIsCreateOpen}>
             <DrawerContent className="h-screen md:h-[95vh] w-full">
               <div className="mx-auto w-full h-full flex flex-col">
-                <DrawerHeader className="border-b relative pb-4">
+                <DrawerHeader className="border-b relative pb-4 flex-shrink-0">
                   <DrawerTitle>Create New Campaign</DrawerTitle>
                   <DrawerDescription>
                     Create and configure your marketing campaign with targeted messaging.
@@ -82,7 +82,7 @@ export const CampaignManagement: React.FC = () => {
                     <X className="h-5 w-5" />
                   </Button>
                 </DrawerHeader>
-                <div className="flex-1 overflow-y-auto px-4 md:px-6 py-6" data-campaign-creation>
+                <div className="flex-1 overflow-hidden px-4 md:px-6" data-campaign-creation>
                   <CampaignCreation onClose={() => setIsCreateOpen(false)} />
                 </div>
               </div>

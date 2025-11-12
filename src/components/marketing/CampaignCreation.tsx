@@ -426,9 +426,10 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
 
   return (
     <>
-      <div className="space-y-6">
+      <div className="flex flex-col h-full">{/* Main container with flex column */}
       
-      {/* Progress Steps */}
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto space-y-6">{/* Scrollable area */}
       <div className="flex items-center justify-center mb-6">
         {[1, 2, 3, 4].map((step) => (
           <div key={step} className="flex items-center">
@@ -1098,9 +1099,11 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
             </div>
           </div>
         )}
+      </div>{/* End scrollable content */}
 
-      {/* Navigation Buttons */}
-      <div className="flex justify-between mt-8">
+      {/* Fixed Footer - Navigation Buttons */}
+      <div className="sticky bottom-0 bg-white border-t p-4 mt-auto">
+        <div className="flex justify-between">{/* Changed from mt-8 to container */}
         <Button 
           variant="outline" 
           onClick={handleBack}
@@ -1215,7 +1218,8 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
             </Button>
           ) : null}
         </div>
-      </div>
+      </div>{/* End fixed footer */}
+      </div>{/* End main flex container */}
 
       {/* Template Preview Modal */}
       <Dialog open={!!previewTemplate} onOpenChange={() => setPreviewTemplate(null)}>
