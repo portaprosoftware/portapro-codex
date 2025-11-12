@@ -486,15 +486,15 @@ export default function TemplatesPage() {
       {/* Template Form Drawer */}
       <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
         <DrawerContent className="h-[95vh] md:h-screen">
-          <div className="mx-auto w-full max-w-5xl h-full flex flex-col">
-            <DrawerHeader className="border-b relative">
+          <div className="mx-auto w-full max-w-3xl h-full flex flex-col">
+            <DrawerHeader className="border-b relative pb-4">
               <DrawerTitle className="text-xl">
                 {editingTemplate ? 'Edit Template' : 'New Template'}
               </DrawerTitle>
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute right-4 top-4"
+                className="absolute right-4 top-3"
                 onClick={handleCloseDrawer}
               >
                 <X className="w-5 h-5" />
@@ -502,7 +502,7 @@ export default function TemplatesPage() {
             </DrawerHeader>
             
             <div className="flex-1 overflow-y-auto p-6">
-              <div className="space-y-6 max-w-3xl mx-auto">
+              <div className="space-y-6">
                 <div>
                   <Label htmlFor="name">Template Name *</Label>
                   <Input
@@ -620,7 +620,7 @@ export default function TemplatesPage() {
             </div>
 
             <div className="border-t p-6">
-              <div className="flex gap-3 max-w-3xl mx-auto">
+              <div className="flex gap-3">
                 <Button
                   variant="outline"
                   className="flex-1"
