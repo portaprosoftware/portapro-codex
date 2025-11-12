@@ -364,6 +364,16 @@ export default function TemplatesPage() {
                   <SelectItem value="Operations">Operations</SelectItem>
                 </SelectContent>
               </Select>
+              {categoryFilter !== 'all' && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCategoryFilter('all')}
+                >
+                  <X className="w-4 h-4 mr-2" />
+                  Clear Filter
+                </Button>
+              )}
               <div className="flex border rounded-lg">
                 <Button
                   variant={viewMode === 'list' ? 'default' : 'ghost'}
