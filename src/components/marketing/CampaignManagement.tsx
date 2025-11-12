@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { CampaignCreation } from './CampaignCreation';
 import { CampaignAnalytics } from './CampaignAnalytics';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Plus, X } from 'lucide-react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
 import {
   AlertDialog,
@@ -68,11 +68,19 @@ export const CampaignManagement: React.FC = () => {
           <Drawer open={isCreateOpen} onOpenChange={setIsCreateOpen}>
             <DrawerContent className="h-[95vh] w-full">
               <div className="mx-auto w-full h-full flex flex-col">
-                <DrawerHeader className="border-b">
+                <DrawerHeader className="border-b relative pb-4">
                   <DrawerTitle>Create New Campaign</DrawerTitle>
                   <DrawerDescription>
                     Create and configure your marketing campaign with targeted messaging.
                   </DrawerDescription>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-4 top-3"
+                    onClick={handleClose}
+                  >
+                    <X className="h-5 w-5" />
+                  </Button>
                 </DrawerHeader>
                 <div className="flex-1 overflow-y-auto" data-campaign-creation>
                   <CampaignCreation onClose={() => setIsCreateOpen(false)} />
