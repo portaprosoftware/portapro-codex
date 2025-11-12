@@ -427,10 +427,6 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
   return (
     <>
       <div className="space-y-6">
-      {/* Header */}
-      <div className="mb-2">
-        <h1 className="text-2xl font-semibold font-inter">Create New Campaign</h1>
-      </div>
       
       {/* Progress Steps */}
       <div className="flex items-center justify-center mb-6">
