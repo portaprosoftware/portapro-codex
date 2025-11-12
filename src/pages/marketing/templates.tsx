@@ -340,13 +340,13 @@ export default function TemplatesPage() {
           {/* Header inside card */}
           <div className="p-6 border-b">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div>
-                  <h2 className="text-xl font-semibold font-inter">Templates Library</h2>
-                  <p className="text-sm text-muted-foreground">
-                    Create and manage email templates for campaigns
-                  </p>
-                </div>
+              <div>
+                <h2 className="text-xl font-semibold font-inter">Templates Library</h2>
+                <p className="text-sm text-muted-foreground">
+                  Create and manage email templates for campaigns
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
                 <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Filter by category" />
@@ -359,8 +359,6 @@ export default function TemplatesPage() {
                     <SelectItem value="Operations">Operations</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
-              <div className="flex items-center gap-2">
                 <div className="flex border rounded-lg">
                   <Button
                     variant={viewMode === 'list' ? 'default' : 'ghost'}
