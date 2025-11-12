@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card } from '@/components/ui/card';
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { DeleteConfirmationModal } from '@/components/ui/delete-confirmation-modal';
 import { Plus, Edit, Trash2, Grid3x3, List, Image as ImageIcon, Upload, X, Copy } from 'lucide-react';
 import { toast } from 'sonner';
@@ -543,26 +543,17 @@ export default function TemplatesPage() {
         )}
       </Card>
 
-      {/* Template Form Drawer */}
-      <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-        <DrawerContent className="h-[95vh] md:h-screen">
-          <div className="mx-auto w-full max-w-xl h-full flex flex-col px-4">
-            <DrawerHeader className="border-b relative pb-4">
-              <DrawerTitle className="text-xl">
-                {editingTemplate ? 'Edit Template' : 'New Template'}
-              </DrawerTitle>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute right-4 top-3"
-                onClick={handleCloseDrawer}
-              >
-                <X className="w-5 h-5" />
-              </Button>
-            </DrawerHeader>
-            
-            <div className="flex-1 overflow-y-auto p-6">
-              <div className="space-y-6">
+      {/* Template Form Modal */}
+      <Dialog open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+          <DialogHeader className="border-b pb-4">
+            <DialogTitle className="text-xl">
+              {editingTemplate ? 'Edit Template' : 'New Template'}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="flex-1 overflow-y-auto p-6">
+            <div className="space-y-6">
                 <div>
                   <Label htmlFor="name">Template Name *</Label>
                   <Input
@@ -704,9 +695,8 @@ export default function TemplatesPage() {
                 </Button>
               </div>
             </div>
-          </div>
-        </DrawerContent>
-      </Drawer>
+        </DialogContent>
+      </Dialog>
 
       {/* Delete Confirmation */}
       <DeleteConfirmationModal
