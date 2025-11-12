@@ -1102,7 +1102,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
       </div>{/* End scrollable content */}
 
       {/* Fixed Footer - Navigation Buttons */}
-      <div className="sticky bottom-0 bg-white border-t p-4 mt-auto">
+      <div className="sticky bottom-0 bg-white border-t shadow-lg p-4 mt-auto">
         <div className="flex justify-between">{/* Changed from mt-8 to container */}
         <Button 
           variant="outline" 
