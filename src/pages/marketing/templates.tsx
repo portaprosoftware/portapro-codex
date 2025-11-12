@@ -346,7 +346,12 @@ export default function TemplatesPage() {
         <div className="p-6 border-b">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-semibold font-inter">Templates Library</h2>
+              <div className="flex items-center gap-2">
+                <h2 className="text-xl font-semibold font-inter">Templates Library</h2>
+                <span className="px-2 py-0.5 bg-primary/10 text-primary rounded-full text-sm font-medium">
+                  {templates.length}
+                </span>
+              </div>
               <p className="text-sm text-muted-foreground">
                 Create and manage email templates for campaigns
               </p>
