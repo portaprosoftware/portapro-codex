@@ -430,11 +430,11 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
       
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto space-y-6">{/* Scrollable area */}
-      <div className="flex items-center justify-center mb-6">
+      <div className="flex items-center justify-center mb-6 mt-2">
         {[1, 2, 3, 4].map((step) => (
           <div key={step} className="flex items-center">
             <div
-              className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+              className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${
                 step <= currentStep
                   ? 'bg-primary text-white'
                   : 'bg-gray-200 text-gray-600'
@@ -1114,7 +1114,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
       </div>{/* End scrollable content */}
 
       {/* Fixed Footer - Navigation Buttons */}
-      <div className="sticky bottom-0 bg-white border-t shadow-lg p-3 md:p-4 mt-auto">
+      <div className="sticky bottom-0 bg-white border-t shadow-lg p-3 md:p-4 pb-6 md:pb-6 mt-auto">
         <div className="flex flex-col-reverse md:flex-row md:justify-between gap-3">{/* Changed for mobile stacking */}
         <Button 
           variant="outline" 
