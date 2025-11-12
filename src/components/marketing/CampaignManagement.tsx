@@ -3,7 +3,7 @@ import { CampaignCreation } from './CampaignCreation';
 import { CampaignAnalytics } from './CampaignAnalytics';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
-import { CustomModal } from '@/components/ui/custom-modal';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -65,17 +65,21 @@ export const CampaignManagement: React.FC = () => {
             </Button>
           </div>
 
-          <CustomModal
-            isOpen={isCreateOpen}
-            onClose={handleClose}
-            title="Create New Campaign"
-            description="Create and configure your marketing campaign with targeted messaging."
-            className="max-w-4xl max-h-[90vh] overflow-y-auto"
-          >
-            <div data-campaign-creation>
-              <CampaignCreation onClose={() => setIsCreateOpen(false)} />
-            </div>
-          </CustomModal>
+          <Drawer open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+            <DrawerContent className="h-[95vh] w-full">
+              <div className="mx-auto w-full h-full flex flex-col">
+                <DrawerHeader className="border-b">
+                  <DrawerTitle>Create New Campaign</DrawerTitle>
+                  <DrawerDescription>
+                    Create and configure your marketing campaign with targeted messaging.
+                  </DrawerDescription>
+                </DrawerHeader>
+                <div className="flex-1 overflow-y-auto" data-campaign-creation>
+                  <CampaignCreation onClose={() => setIsCreateOpen(false)} />
+                </div>
+              </div>
+            </DrawerContent>
+          </Drawer>
         </div>
 
         {/* Divider */}
