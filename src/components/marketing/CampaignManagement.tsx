@@ -82,7 +82,7 @@ export const CampaignManagement: React.FC = () => {
                     <X className="h-5 w-5" />
                   </Button>
                 </DrawerHeader>
-                <div className="flex-1 overflow-y-auto px-4 md:px-6" data-campaign-creation>
+                <div className="flex-1 overflow-y-auto px-4 md:px-6 py-6" data-campaign-creation>
                   <CampaignCreation onClose={() => setIsCreateOpen(false)} />
                 </div>
               </div>
