@@ -1103,7 +1103,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
 
       {/* Fixed Footer - Navigation Buttons */}
       <div className="sticky bottom-0 bg-white border-t shadow-lg p-3 md:p-4 mt-auto">
-        <div className="flex justify-between">{/* Changed from mt-8 to container */}
+        <div className="flex flex-col-reverse md:flex-row md:justify-between gap-3">{/* Changed for mobile stacking */}
         <Button 
           variant="outline" 
           onClick={handleBack}
@@ -1112,7 +1112,7 @@ export const CampaignCreation: React.FC<CampaignCreationProps> = ({
           Back
         </Button>
         
-        <div className="flex gap-3">
+        <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">{/* Stack actions on mobile */}
           {/* Save as Draft button - Show on steps 3 and 4 only */}
           {(currentStep === 3 || currentStep === 4) && (
             <Button
