@@ -44,6 +44,7 @@ export const env = {
   SENTRY_DSN: import.meta.env.VITE_SENTRY_DSN || '',
   GA_MEASUREMENT_ID: import.meta.env.VITE_GA_MEASUREMENT_ID || '',
   ALLOWED_CLERK_ORG_SLUGS: import.meta.env.VITE_ALLOWED_CLERK_ORG_SLUGS || '',
+  VITE_ENABLE_SERVICE_WORKER: import.meta.env.VITE_ENABLE_SERVICE_WORKER || 'false',
   // Environment mode helpers
   isDev: import.meta.env.DEV,
   isProd: import.meta.env.PROD,

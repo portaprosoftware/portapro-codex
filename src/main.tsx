@@ -11,6 +11,7 @@ import { clearAllCaches } from "./utils/devUtils";
 import { Toaster } from "@/components/ui/sonner";
 import { env } from "./env.client";
 import { OrganizationProvider } from "./contexts/OrganizationContext";
+import { ClerkGate } from "./components/auth/ClerkGate";
 
 // -----------------------------------------------------------------------------
 // Environment (Vite): read ONLY from env; no host-based dev/prod switching
@@ -77,7 +78,10 @@ const queryClient = new QueryClient({
 // -----------------------------------------------------------------------------
 // Service Worker Registration (for push notifications and offline support)
 // -----------------------------------------------------------------------------
-if ('serviceWorker' in navigator) {
+const serviceWorkerEnabled =
+  env.isProd && env.VITE_ENABLE_SERVICE_WORKER?.toLowerCase() === "true";
+
+if ('serviceWorker' in navigator && serviceWorkerEnabled) {
   window.addEventListener('load', () => {
     navigator.serviceWorker
       .register('/sw.js')
@@ -87,6 +91,10 @@ if ('serviceWorker' in navigator) {
       .catch((error) => {
         console.error('❌ Service Worker registration failed:', error);
       });
+  });
+} else if ('serviceWorker' in navigator && !serviceWorkerEnabled) {
+  navigator.serviceWorker.getRegistrations().then((registrations) => {
+    registrations.forEach((registration) => registration.unregister());
   });
 }
 
@@ -100,10 +108,12 @@ createRoot(document.getElementById("root")!).render(
         publishableKey={CLERK_PUBLISHABLE_KEY}
         // No fallback redirects - Marketing site handles subdomain routing after sign-in
       >
-        <OrganizationProvider>
-          <App />
-          <Toaster />
-        </OrganizationProvider>
+        <ClerkGate>
+          <OrganizationProvider>
+            <App />
+            <Toaster />
+          </OrganizationProvider>
+        </ClerkGate>
       </ClerkProvider>
     </QueryClientProvider>
   </React.StrictMode>
