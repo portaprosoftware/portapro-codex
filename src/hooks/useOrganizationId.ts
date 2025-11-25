@@ -1,4 +1,5 @@
 import { useOrganization } from '@clerk/clerk-react';
+import { useOrganizationContext } from '@/contexts/OrganizationContext';
 
 /**
  * Hook to resolve organization ID from Clerk's native organization context.
@@ -12,11 +13,12 @@ import { useOrganization } from '@clerk/clerk-react';
  */
 export function useOrganizationId() {
   const { organization, isLoaded } = useOrganization();
+  const { organization: tenantOrganization, isLoading } = useOrganizationContext();
 
   return {
-    orgId: organization?.id || null,
-    orgSlug: organization?.slug || null,
-    orgName: organization?.name || null,
-    isReady: isLoaded,
+    orgId: tenantOrganization?.id || null,
+    orgSlug: tenantOrganization?.subdomain || organization?.slug || null,
+    orgName: tenantOrganization?.name || organization?.name || null,
+    isReady: isLoaded && !isLoading,
   };
 }

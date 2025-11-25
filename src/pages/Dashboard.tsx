@@ -15,6 +15,7 @@ import { DriverComplianceCard } from "@/components/dashboard/DriverComplianceCar
 import { StaffCertificationsCard } from "@/components/dashboard/StaffCertificationsCard";
 import { CompactConsumablesCard } from "@/components/dashboard/CompactConsumablesCard";
 import { SpillKitExpirationsCard } from "@/components/dashboard/SpillKitExpirationsCard";
+import { useTenantId } from "@/lib/tenantQuery";
 import {
   Package, 
   Users, 
@@ -31,6 +32,7 @@ const Dashboard = () => {
   const { role, user } = useUserRole();
   const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState(new Date());
+  const tenantId = useTenantId();
   
   // Redirect drivers to the Driver app dashboard
   useEffect(() => {
@@ -44,12 +46,13 @@ const Dashboard = () => {
 
   // Fetch inventory data for total units card
   const { data: inventoryData } = useQuery({
-    queryKey: ['dashboard-inventory'],
+    queryKey: ['dashboard-inventory', tenantId],
     queryFn: async () => {
+      // TENANT-SCOPED
       const [productsResult, itemsResult, maintenanceItemsResult] = await Promise.all([
-        supabase.from('products').select('id, stock_total'),
-        supabase.from('product_items').select('id'),
-        supabase.from('product_items').select('id').eq('status', 'maintenance')
+        supabase.from('products').select('id, stock_total').eq('organization_id', tenantId!),
+        supabase.from('product_items').select('id').eq('organization_id', tenantId!),
+        supabase.from('product_items').select('id').eq('status', 'maintenance').eq('organization_id', tenantId!)
       ]);
       
       if (productsResult.error) throw productsResult.error;
@@ -61,17 +64,20 @@ const Dashboard = () => {
       const maintenanceItems = maintenanceItemsResult.data?.length || 0;
       
       return { totalProducts, totalUnits, maintenanceItems };
-    }
+    },
+    enabled: !!tenantId
   });
 
   // Fetch jobs data for jobs today card
   const { data: jobsData } = useQuery({
-    queryKey: ['dashboard-jobs-today'],
+    queryKey: ['dashboard-jobs-today', tenantId],
     queryFn: async () => {
       const today = new Date().toISOString().split('T')[0];
       const { data, error } = await supabase
         .from('jobs')
         .select('job_type')
+        // TENANT-SCOPED
+        .eq('organization_id', tenantId!)
         .eq('scheduled_date', today);
       
       if (error) throw error;
@@ -88,16 +94,19 @@ const Dashboard = () => {
         services: jobsByType.service || 0,
         surveys: jobsByType['on_site_survey'] || 0
       };
-    }
+    },
+    enabled: !!tenantId
   });
 
   // Fetch customers data
   const { data: customersData } = useQuery({
-    queryKey: ['dashboard-customers'],
+    queryKey: ['dashboard-customers', tenantId],
     queryFn: async () => {
       const { data, error, count } = await supabase
         .from('customers')
-        .select('*', { count: 'exact' });
+        .select('*', { count: 'exact' })
+        // TENANT-SCOPED
+        .eq('organization_id', tenantId!);
       
       if (error) throw error;
       
@@ -108,6 +117,8 @@ const Dashboard = () => {
       const { data: activeCustomers, error: activeError } = await supabase
         .from('jobs')
         .select('customer_id')
+        // TENANT-SCOPED
+        .eq('organization_id', tenantId!)
         .gte('created_at', sixtyDaysAgo.toISOString());
       
       if (activeError) throw activeError;
@@ -118,16 +129,19 @@ const Dashboard = () => {
         total: count || 0,
         active: uniqueActiveCustomers.size
       };
-    }
+    },
+    enabled: !!tenantId
   });
 
   // Fetch vehicles data
   const { data: vehiclesData } = useQuery({
-    queryKey: ['dashboard-vehicles'],
+    queryKey: ['dashboard-vehicles', tenantId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('vehicles')
-        .select('id, status');
+        .select('id, status')
+        // TENANT-SCOPED
+        .eq('organization_id', tenantId!);
       
       if (error) throw error;
       
@@ -136,19 +150,22 @@ const Dashboard = () => {
       const maintenance = data?.filter(v => v.status === 'maintenance').length || 0;
       
       return { total, active, maintenance };
-    }
+    },
+    enabled: !!tenantId
   });
 
   // Fetch revenue data (last 30 days)
   const { data: revenueData } = useQuery({
-    queryKey: ['dashboard-revenue'],
+    queryKey: ['dashboard-revenue', tenantId],
     queryFn: async () => {
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      
+
       const { data, error } = await supabase
         .from('invoices')
         .select('amount')
+        // TENANT-SCOPED
+        .eq('organization_id', tenantId!)
         .eq('status', 'paid')
         .gte('created_at', thirtyDaysAgo.toISOString());
       
@@ -156,45 +173,52 @@ const Dashboard = () => {
       
       const total = data?.reduce((sum, invoice) => sum + (invoice.amount || 0), 0) || 0;
       return { total };
-    }
+    },
+    enabled: !!tenantId
   });
 
   // Fetch fuel costs (last 30 days)
   const { data: fuelData } = useQuery({
-    queryKey: ['dashboard-fuel'],
+    queryKey: ['dashboard-fuel', tenantId],
     queryFn: async () => {
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      
+
       const { data, error } = await supabase
         .from('fuel_logs')
         .select('total_cost')
+        // TENANT-SCOPED
+        .eq('organization_id', tenantId!)
         .gte('log_date', thirtyDaysAgo.toISOString().split('T')[0]);
       
       if (error) throw error;
       
       const total = data?.reduce((sum, log) => sum + (log.total_cost || 0), 0) || 0;
       return { total };
-    }
+    },
+    enabled: !!tenantId
   });
 
   // Fetch maintenance alerts
   const { data: maintenanceData } = useQuery({
-    queryKey: ['dashboard-maintenance'],
+    queryKey: ['dashboard-maintenance', tenantId],
     queryFn: async () => {
       const sevenDaysFromNow = new Date();
       sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7);
-      
+
       const { data, error } = await supabase
         .from('maintenance_records')
         .select('vehicle_id')
+        // TENANT-SCOPED
+        .eq('organization_id', tenantId!)
         .eq('status', 'scheduled')
         .lte('scheduled_date', sevenDaysFromNow.toISOString().split('T')[0]);
       
       if (error) throw error;
       
       return { count: data?.length || 0 };
-    }
+    },
+    enabled: !!tenantId
   });
 
 

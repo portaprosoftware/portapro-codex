@@ -6,18 +6,24 @@ import { useUser } from '@clerk/clerk-react';
 import { CustomerPortal } from '@/components/communications/CustomerPortal';
 import { AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useTenantId } from '@/lib/tenantQuery';
 
 export default function CustomerPortalPage() {
   const { user } = useUser();
   const { customerId } = useParams<{ customerId: string }>();
+  const tenantId = useTenantId();
 
   // Find customer by Clerk user ID if no customerId in URL
   const { data: customer, isLoading, error } = useQuery({
-    queryKey: ['customer-portal', user?.id, customerId],
+    queryKey: ['customer-portal', tenantId, user?.id, customerId],
     queryFn: async () => {
-      if (!user?.id) throw new Error('User not authenticated');
-      
-      let query = supabase.from('customers').select('*');
+      if (!user?.id || !tenantId) throw new Error('User not authenticated');
+
+      let query = supabase
+        .from('customers')
+        .select('*')
+        // TENANT-SCOPED
+        .eq('organization_id', tenantId);
       
       if (customerId) {
         // Direct customer ID provided in URL
@@ -28,11 +34,11 @@ export default function CustomerPortalPage() {
       }
       
       const { data, error } = await query.single();
-      
+
       if (error) throw error;
       return data;
     },
-    enabled: !!user?.id,
+    enabled: !!user?.id && !!tenantId,
   });
 
   if (isLoading) {

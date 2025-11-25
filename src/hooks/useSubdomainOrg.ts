@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 interface OrganizationData {
+  id: string;
   clerk_org_id: string;
   name: string;
   subdomain: string;
@@ -90,7 +91,7 @@ export const useSubdomainOrg = (): UseSubdomainOrgReturn => {
 
           const { data: orgData, error: orgError } = await supabase
             .from('organizations')
-            .select('clerk_org_id, name, subdomain, is_active')
+            .select('id, clerk_org_id, name, subdomain, is_active')
             .eq('subdomain', extractedSubdomain)
             .eq('is_active', true)
             .maybeSingle();
