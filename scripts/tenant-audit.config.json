@@ -1,0 +1,6 @@
+{
+  "globalTables": ["organizations"],
+  "tenantColumn": "organization_id",
+  "tenantColumnByTable": {},
+  "strictQueryKeys": false
+}
