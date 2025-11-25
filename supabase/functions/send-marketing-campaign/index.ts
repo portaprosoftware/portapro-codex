@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { Resend } from "npm:resend@2.0.0";
+
+const resendApiKey = Deno.env.get('RESEND_API_KEY');
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -164,14 +165,27 @@ const handler = async (req: Request): Promise<Response> => {
         // Get company settings for from address
         const { from } = await getCompanyEmailSender(supabase);
 
-        const emailResponse = await resend.emails.send({
-          from: from,
-          to: [recipient.email],
-          subject: emailSubject,
-          html: trackedEmailContent,
+        const emailResponse = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${resendApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            from: from,
+            to: [recipient.email],
+            subject: emailSubject,
+            html: trackedEmailContent,
+          }),
         });
 
-        console.log(`Email sent to ${recipient.email}:`, emailResponse);
+        if (!emailResponse.ok) {
+          const errorData = await emailResponse.json();
+          throw new Error(`Resend API error: ${errorData.message || 'Unknown error'}`);
+        }
+
+        const emailResult = await emailResponse.json();
+        console.log(`Email sent to ${recipient.email}:`, emailResult);
 
         // Log the communication
         await supabase.from("customer_communications").insert({
@@ -182,7 +196,7 @@ const handler = async (req: Request): Promise<Response> => {
           content: emailContent,
           email_address: recipient.email,
           status: "sent",
-          resend_email_id: emailResponse.data?.id,
+          resend_email_id: emailResult.id,
         });
 
         // Insert delivered event into marketing_campaign_events

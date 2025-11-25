@@ -1,7 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { Resend } from "npm:resend@2.0.0";
 
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+const resendApiKey = Deno.env.get("RESEND_API_KEY");
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -52,29 +51,42 @@ const handler = async (req: Request): Promise<Response> => {
       `;
     }
 
-    const emailResponse = await resend.emails.send({
-      from: "PortaPro Feature Ideas <onboarding@resend.dev>",
-      to: ["roadmap@portaprosoftware.com"],
-      subject: `Feature Idea: ${title}`,
-      html: `
-        <h1>New Feature Idea Submission</h1>
-        
-        <h2>Feature Title:</h2>
-        <p><strong>${title}</strong></p>
-        
-        <h2>Description:</h2>
-        <p>${content.replace(/\n/g, "<br>")}</p>
-        
-        ${contactInfo}
-        
-        <hr>
-        <p style="color: #666; font-size: 12px;">
-          Submitted via PortaPro Community Feature Request Form
-        </p>
-      `,
+    const emailResponse = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${resendApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: "PortaPro Feature Ideas <onboarding@resend.dev>",
+        to: ["roadmap@portaprosoftware.com"],
+        subject: `Feature Idea: ${title}`,
+        html: `
+          <h1>New Feature Idea Submission</h1>
+          
+          <h2>Feature Title:</h2>
+          <p><strong>${title}</strong></p>
+          
+          <h2>Description:</h2>
+          <p>${content.replace(/\n/g, "<br>")}</p>
+          
+          ${contactInfo}
+          
+          <hr>
+          <p style="color: #666; font-size: 12px;">
+            Submitted via PortaPro Community Feature Request Form
+          </p>
+        `,
+      }),
     });
 
-    console.log("Email sent successfully:", emailResponse);
+    if (!emailResponse.ok) {
+      const errorData = await emailResponse.json();
+      throw new Error(`Resend API error: ${errorData.message || 'Unknown error'}`);
+    }
+
+    const emailResult = await emailResponse.json();
+    console.log("Email sent successfully:", emailResult);
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,

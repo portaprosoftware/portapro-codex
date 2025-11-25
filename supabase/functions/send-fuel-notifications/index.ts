@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { Resend } from 'npm:resend@2.0.0';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -55,7 +54,6 @@ serve(async (req) => {
     }
 
     const supabase = createClient(supabaseUrl, supabaseKey);
-    const resend = new Resend(resendApiKey);
 
     // Get fuel management settings
     const { data: settings, error: settingsError } = await supabase
@@ -139,25 +137,34 @@ serve(async (req) => {
     // Send email
     console.log(`Sending email to: ${settings.notification_email}`);
     
-    const { data: emailResult, error: emailError } = await resend.emails.send({
-      from: from,
-      to: [settings.notification_email],
-      subject: `Fuel Management Alert: ${criticalAlerts.length} Critical, ${warningAlerts.length} Warnings`,
-      html: emailHtml,
+    const emailResponse = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${resendApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: from,
+        to: [settings.notification_email],
+        subject: `Fuel Management Alert: ${criticalAlerts.length} Critical, ${warningAlerts.length} Warnings`,
+        html: emailHtml,
+      }),
     });
 
-    if (emailError) {
-      console.error('Error sending email:', emailError);
-      throw emailError;
+    if (!emailResponse.ok) {
+      const errorData = await emailResponse.json();
+      console.error('Error sending email:', errorData);
+      throw new Error(`Resend API error: ${errorData.message || 'Unknown error'}`);
     }
 
+    const emailResult = await emailResponse.json();
     console.log('Email sent successfully:', emailResult);
 
     return new Response(
       JSON.stringify({
         success: true,
         message: 'Notifications sent',
-        emailId: emailResult?.id,
+        emailId: emailResult.id,
         alertCount: alerts.length,
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
