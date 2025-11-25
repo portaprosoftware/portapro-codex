@@ -54,7 +54,7 @@ const handler = async (req: Request): Promise<Response> => {
             invoiceId: invoice.id,
             invoiceNumber: invoice.invoice_number,
             customerId: invoice.customer_id,
-            customerName: invoice.customers?.name || 'Customer',
+            customerName: (invoice.customers as any)?.name || 'Customer',
             amount: invoice.total_amount,
             dueDate: invoice.due_date,
             isOverdue,
@@ -87,7 +87,7 @@ const handler = async (req: Request): Promise<Response> => {
 
   } catch (error) {
     console.error('[Invoice Reminders] Fatal error:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 500
     });

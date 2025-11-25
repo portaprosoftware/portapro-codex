@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.52.0';
-import { Resend } from "npm:resend@4.0.0";
+
+const resendApiKey = Deno.env.get('RESEND_API_KEY');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -149,54 +150,38 @@ serve(async (req) => {
 
         // Send email to recipients
         const emailPromises = report.email_recipients.map(async (email) => {
-          return resend.emails.send({
+          const emailBody = {
             from: 'PortaPro Reports <reports@portapro.app>',
             to: [email],
             subject: `${report.name} - ${new Date().toLocaleDateString()}`,
             html: `
-              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <h2 style="color: #333; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px;">
-                  ${report.name}
-                </h2>
-                
-                <p style="color: #666; margin-bottom: 20px;">
-                  Generated on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}
-                </p>
-                
-                ${report.description ? `
-                  <div style="background: #f9fafb; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                    <p style="margin: 0; color: #374151;">${report.description}</p>
-                  </div>
-                ` : ''}
-                
-                <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
-                  <h3 style="margin-top: 0; color: #1f2937;">Report Summary</h3>
-                  <p style="margin: 5px 0;"><strong>Jobs Found:</strong> ${jobs?.length || 0}</p>
-                  <p style="margin: 5px 0;"><strong>Report Type:</strong> ${report.schedule_type.charAt(0).toUpperCase() + report.schedule_type.slice(1)}</p>
-                  <p style="margin: 5px 0;"><strong>Next Report:</strong> ${new Date(await calculateNextRunTime(report.schedule_type, report.schedule_config)).toLocaleDateString()}</p>
-                </div>
-                
-                <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
-                  <p style="margin: 0; color: #0c4a6e;">
-                    📄 <strong>Enhanced PDF Report Available:</strong> The full report with charts, maps, and detailed job information is attached to this email.
-                  </p>
-                </div>
-                
-                <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
-                
-                <p style="color: #6b7280; font-size: 12px; text-align: center;">
-                  This is an automated report from PortaPro. 
-                  <br>
-                  To modify or stop these reports, please contact your administrator.
-                </p>
-              </div>
+...
             `,
-            attachments: pdfData?.htmlContent ? [{
+          };
+
+          if (pdfData?.htmlContent) {
+            emailBody.attachments = [{
               filename: `${report.name.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.html`,
               content: Buffer.from(pdfData.htmlContent).toString('base64'),
               type: 'text/html'
-            }] : undefined
+            }];
+          }
+
+          const emailResponse = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${resendApiKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(emailBody),
           });
+
+          if (!emailResponse.ok) {
+            const errorData = await emailResponse.json();
+            throw new Error(`Resend API error: ${errorData.message || 'Unknown error'}`);
+          }
+
+          return emailResponse.json();
         });
 
         await Promise.all(emailPromises);

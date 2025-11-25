@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.0";
-import { Resend } from "npm:resend@4.0.0";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,7 +11,7 @@ const supabase = createClient(
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
 );
 
-const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
+const resendApiKey = Deno.env.get('RESEND_API_KEY');
 
 interface ExpirationItem {
   driver_id: string;
@@ -171,12 +170,26 @@ serve(async (req) => {
                 <p>Best regards,<br>PortaPro Team</p>
               `;
 
-            await resend.emails.send({
-              from: 'PortaPro <notifications@portapro.app>',
-              to: [item.driver_email],
-              subject: emailSubject,
-              html: emailContent,
+            const emailResponse = await fetch('https://api.resend.com/emails', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${resendApiKey}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                from: 'PortaPro <notifications@portapro.app>',
+                to: [item.driver_email],
+                subject: emailSubject,
+                html: emailContent,
+              }),
             });
+
+            if (!emailResponse.ok) {
+              const errorData = await emailResponse.json();
+              throw new Error(`Resend API error: ${errorData.message || 'Unknown error'}`);
+            }
+
+            const emailData = await emailResponse.json();
 
             // Log the notification
             await supabase
@@ -211,7 +224,7 @@ serve(async (req) => {
               item_name: item.item_name,
               days_until_expiry: item.days_until_expiry,
               status: 'failed',
-              error: emailError.message
+              error: emailError instanceof Error ? emailError.message : 'Unknown error'
             });
           }
         }
@@ -260,12 +273,24 @@ serve(async (req) => {
         `;
 
         try {
-          await resend.emails.send({
-            from: 'PortaPro <notifications@portapro.app>',
-            to: [companySettings.support_email],
-            subject: `Driver Compliance Alert - ${criticalItems.length} Critical Items`,
-            html: digestContent,
+          const digestResponse = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${resendApiKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              from: 'PortaPro <notifications@portapro.app>',
+              to: [companySettings.support_email],
+              subject: `Driver Compliance Alert - ${criticalItems.length} Critical Items`,
+              html: digestContent,
+            }),
           });
+
+          if (!digestResponse.ok) {
+            const errorData = await digestResponse.json();
+            throw new Error(`Resend API error: ${errorData.message || 'Unknown error'}`);
+          }
 
           console.log('Manager digest sent successfully');
         } catch (digestError) {
@@ -292,7 +317,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in check-driver-expirations function:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,

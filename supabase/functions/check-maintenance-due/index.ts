@@ -47,7 +47,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Send alerts for each maintenance record
     for (const record of maintenanceRecords || []) {
       try {
-        const vehicle = record.vehicles;
+        const vehicle = Array.isArray(record.vehicles) ? record.vehicles[0] : record.vehicles;
         const vehicleName = vehicle 
           ? `${vehicle.make} ${vehicle.model} (${vehicle.license_plate})`
           : 'Unknown Vehicle';
@@ -97,7 +97,7 @@ const handler = async (req: Request): Promise<Response> => {
 
   } catch (error) {
     console.error('[Maintenance Alerts] Fatal error:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 500
     });

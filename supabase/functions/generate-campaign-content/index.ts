@@ -129,9 +129,9 @@ Keep it under 120 characters to allow room for a "read more" link. Focus on the 
         }
       } catch (error) {
         console.error('JSON parsing error for email:', error);
-        const lines = emailContent.split('\n').filter(line => line.trim());
+        const lines = emailContent.split('\n').filter((line: string) => line.trim());
         emailResult = {
-          subject: lines.find(line => line.toLowerCase().includes('subject')) || 'Important Update from Our Team',
+          subject: lines.find((line: string) => line.toLowerCase().includes('subject')) || 'Important Update from Our Team',
           content: emailContent
         };
       }
@@ -218,9 +218,9 @@ Keep it brief, engaging, and include a clear call-to-action.`;
       } catch (error) {
         console.error('JSON parsing error:', error);
         // Improved fallback parsing
-        const lines = generatedContent.split('\n').filter(line => line.trim());
+        const lines = generatedContent.split('\n').filter((line: string) => line.trim());
         result = {
-          subject: lines.find(line => line.toLowerCase().includes('subject')) || 'Important Update from Our Team',
+          subject: lines.find((line: string) => line.toLowerCase().includes('subject')) || 'Important Update from Our Team',
           content: generatedContent
         };
       }
@@ -233,7 +233,7 @@ Keep it brief, engaging, and include a clear call-to-action.`;
     });
   } catch (error) {
     console.error('Error in generate-campaign-content function:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

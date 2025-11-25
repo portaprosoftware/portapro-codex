@@ -1,8 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { Resend } from "npm:resend@2.0.0";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+const resendApiKey = Deno.env.get("RESEND_API_KEY");
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -243,15 +242,28 @@ const handler = async (req: Request): Promise<Response> => {
         throw new Error('RESEND_API_KEY is not configured. Add it in Supabase Edge Functions secrets.');
       }
 
-      emailResponse = await resend.emails.send({
-        from: fromAddress,
-        to: [customerEmail],
-        reply_to: companyEmail ? [companyEmail] : undefined,
-        subject: `Quote ${quote.quote_number} from ${companyName}`,
-        html: emailHTML,
+      const emailResponse = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${resendApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: fromAddress,
+          to: [customerEmail],
+          reply_to: companyEmail ? [companyEmail] : undefined,
+          subject: `Quote ${quote.quote_number} from ${companyName}`,
+          html: emailHTML,
+        }),
       });
 
-      console.log("Quote email sent successfully:", emailResponse);
+      if (!emailResponse.ok) {
+        const errorData = await emailResponse.json();
+        throw new Error(`Resend API error: ${errorData.message || 'Unknown error'}`);
+      }
+
+      const emailResult = await emailResponse.json();
+      console.log("Quote email sent successfully:", emailResult);
     }
     
     // Send SMS if required

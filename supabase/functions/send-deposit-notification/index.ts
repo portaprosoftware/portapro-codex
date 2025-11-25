@@ -1,8 +1,7 @@
 import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { Resend } from 'npm:resend@2.0.0';
 
-const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
+const resendApiKey = Deno.env.get('RESEND_API_KEY');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -165,18 +164,27 @@ serve(async (req) => {
 
     const { from } = await getCompanyEmailSender(supabase);
 
-    const { data, error } = await resend.emails.send({
-      from: from,
-      to: [to],
-      subject,
-      html,
+    const emailResponse = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${resendApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: from,
+        to: [to],
+        subject,
+        html,
+      }),
     });
 
-    if (error) {
-      console.error('Email send error:', error);
-      throw error;
+    if (!emailResponse.ok) {
+      const errorData = await emailResponse.json();
+      console.error('Email send error:', errorData);
+      throw new Error(`Resend API error: ${errorData.message || 'Unknown error'}`);
     }
 
+    const data = await emailResponse.json();
     console.log('Email sent successfully:', data);
 
     return new Response(
