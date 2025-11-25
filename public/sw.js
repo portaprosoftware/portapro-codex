@@ -43,6 +43,25 @@ self.addEventListener('install', event => {
 self.addEventListener('fetch', event => {
   const { request } = event;
   const requestUrl = new URL(request.url);
+
+  // Always go network-first for navigations to avoid stale SPA fallbacks
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request)
+        .then(response => {
+          if (response.status === 200) {
+            const responseClone = response.clone();
+            caches.open(DYNAMIC_CACHE).then(cache => cache.put(request, responseClone));
+          }
+          return response;
+        })
+        .catch(async () => {
+          const cached = await caches.match(request);
+          return cached || new Response('Offline', { status: 503, statusText: 'Offline' });
+        })
+    );
+    return;
+  }
   
   // Icons and manifest - network first to ensure fresh assets
   if (requestUrl.href.includes('apple-touch-icon') || 
@@ -86,10 +105,7 @@ self.addEventListener('fetch', event => {
               if (cachedResponse) {
                 return cachedResponse;
               }
-              // Return offline page for navigation requests
-              if (request.mode === 'navigate') {
-                return caches.match('/');
-              }
+              return new Response('Offline', { status: 503, statusText: 'Offline' });
             });
         })
     );
@@ -115,10 +131,9 @@ self.addEventListener('fetch', event => {
             return response;
           })
           .catch(() => {
-            // Offline fallback for navigation
-            if (request.mode === 'navigate') {
-              return caches.match('/');
-            }
+            return caches.match(request).then((cachedResponse) =>
+              cachedResponse || new Response('Offline', { status: 503, statusText: 'Offline' })
+            );
           });
       })
   );

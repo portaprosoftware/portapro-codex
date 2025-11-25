@@ -93,13 +93,19 @@ export const useSubdomainOrg = (): UseSubdomainOrgReturn => {
             .select('clerk_org_id, name, subdomain, is_active')
             .eq('subdomain', extractedSubdomain)
             .eq('is_active', true)
-            .single();
+            .maybeSingle();
 
           if (orgError) {
+            // Supabase returns an error if multiple rows match even with maybeSingle
+            if (orgError.code === 'PGRST116') {
+              throw new Error(`Multiple organizations found for subdomain: ${extractedSubdomain}`);
+            }
+
             throw new Error(`Organization lookup failed: ${orgError.message}`);
           }
 
           if (!orgData) {
+            setOrganization(null);
             throw new Error(`No active organization found for subdomain: ${extractedSubdomain}`);
           }
 

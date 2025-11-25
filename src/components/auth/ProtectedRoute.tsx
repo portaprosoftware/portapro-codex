@@ -1,7 +1,10 @@
 import React from 'react';
-import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
+import { useAuth } from '@clerk/clerk-react';
+import { Navigate, useLocation } from 'react-router-dom';
+import { Loader2 } from 'lucide-react';
 import { TenantGuard } from './TenantGuard';
 import { Layout } from '../layout/Layout';
+import { useOrganizationContext } from '@/contexts/OrganizationContext';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -19,22 +22,44 @@ interface ProtectedRouteProps {
  * Usage:
  * <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
  */
-export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
-  children, 
-  redirectUrl 
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
+  children,
+  redirectUrl
 }) => {
+  const { isLoaded, isSignedIn } = useAuth();
+  const { organization, isLoading: orgIsLoading, isMainDomain, isLocalhost } = useOrganizationContext();
+  const location = useLocation();
+
+  const returnUrl =
+    redirectUrl || `${location.pathname}${location.search}${location.hash}`;
+
+  if (!isLoaded || orgIsLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-3 text-center">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-sm text-muted-foreground">Loading your workspace…</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isSignedIn) {
+    const target = `/auth?redirect_url=${encodeURIComponent(returnUrl)}`;
+    return <Navigate to={target} replace />;
+  }
+
+  const onTenantSubdomain = !isMainDomain && !isLocalhost;
+
+  if (onTenantSubdomain && !organization) {
+    return <Navigate to="/no-portal-found" replace />;
+  }
+
   return (
-    <>
-      <SignedIn>
-        <TenantGuard>
-          <Layout>
-            {children}
-          </Layout>
-        </TenantGuard>
-      </SignedIn>
-      <SignedOut>
-        <RedirectToSignIn redirectUrl="/" />
-      </SignedOut>
-    </>
+    <TenantGuard>
+      <Layout>
+        {children}
+      </Layout>
+    </TenantGuard>
   );
 };
