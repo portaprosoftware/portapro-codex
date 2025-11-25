@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useUser, useOrganization, useClerk } from '@clerk/clerk-react';
+import { useUser, useOrganization } from '@clerk/clerk-react';
 import { Loader2 } from 'lucide-react';
-import { useSubdomainOrg } from '@/hooks/useSubdomainOrg';
+import { useOrganizationContext } from '@/contexts/OrganizationContext';
+import { EnsureActiveOrg } from './EnsureActiveOrg';
 
 interface TenantGuardProps {
   children: React.ReactNode;
@@ -13,9 +14,8 @@ interface TenantGuardProps {
  * 
  * Responsibilities:
  * - Validate user belongs to subdomain organization
- * - Call setActive() FIRST to establish Clerk context
- * - Allow access if setActive() succeeds
- * - Redirect to /unauthorized if setActive() throws
+ * - Enforce Clerk active organization via EnsureActiveOrg
+ * - Redirect to /unauthorized if tenant resolution fails
  * 
  * Does NOT handle:
  * - Main domain redirects (handled by RootRedirect)
@@ -25,19 +25,15 @@ interface TenantGuardProps {
  * 1. User signed in? → Yes
  * 2. Subdomain org exists? → Yes
  * 3. FAST PATH: org.slug === subdomain → Allow immediately
- * 4. SLOW PATH: Call setActive({ organization: subdomainOrg.clerk_org_id })
- * 5. If setActive() succeeds → Allow access
- * 6. If setActive() throws → Navigate to /unauthorized
+ * 4. Ensure Clerk active org matches tenant (EnsureActiveOrg)
+ * 5. If activation fails → Navigate to /unauthorized
  */
 export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
   const { user, isLoaded: userLoaded } = useUser();
   const { organization, isLoaded: orgLoaded } = useOrganization();
-  const { setActive } = useClerk();
   const navigate = useNavigate();
-  const { subdomain, organization: subdomainOrg, isLoading: orgLookupLoading, isLocalhost, isMainDomain } = useSubdomainOrg();
+  const { subdomain, organization: subdomainOrg, isLoading: orgLookupLoading, isLocalhost, isMainDomain } = useOrganizationContext();
   
-  const [isSettingActive, setIsSettingActive] = useState(false);
-
   // Skip checks on public routes
   const currentPath = window.location.pathname;
   const isPublicRoute = currentPath === '/unauthorized' || 
@@ -86,45 +82,10 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
     return null;
   }
 
-  // FAST PATH: Current org already matches subdomain → allow immediately
-  if (organization?.slug === subdomain) {
-    return <>{children}</>;
-  }
-
-  // Activation: ensure Clerk active org matches subdomain BEFORE any checks
-  const needsActivation = !!subdomainOrg && organization?.id !== subdomainOrg.clerk_org_id;
-
-  useEffect(() => {
-    if (!needsActivation || isSettingActive) return;
-
-    let cancelled = false;
-    const switchToOrg = async () => {
-      try {
-        setIsSettingActive(true);
-        await setActive({ organization: subdomainOrg!.clerk_org_id });
-      } catch (error) {
-        if (!cancelled) {
-          navigate('/unauthorized', { replace: true });
-        }
-      } finally {
-        if (!cancelled) setIsSettingActive(false);
-      }
-    };
-
-    switchToOrg();
-
-    return () => {
-      let _ = (cancelled = true);
-    };
-  }, [needsActivation, isSettingActive, setActive, subdomainOrg, navigate]);
-
-  // While activating, don't render or redirect
-  if (isSettingActive || needsActivation) {
-    return null;
-  }
-
-
-
-  // All checks passed - allow access
-  return <>{children}</>;
+  // All checks passed - allow access with enforced Clerk context
+  return (
+    <EnsureActiveOrg>
+      {children}
+    </EnsureActiveOrg>
+  );
 };

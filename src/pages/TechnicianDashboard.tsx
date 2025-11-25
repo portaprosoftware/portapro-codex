@@ -15,9 +15,11 @@ import { useNavigate } from 'react-router-dom';
 import { useTechnicianWorkOrders } from '@/hooks/useTechnicianWorkOrders';
 import { useOnlineStatus } from '@/hooks/useOnlineStatus';
 import { queueOperation } from '@/utils/indexedDB';
+import { useTenantId } from '@/lib/tenantQuery';
 
 export const TechnicianDashboard: React.FC = () => {
   const { user } = useUser();
+  const tenantId = useTenantId();
   const { toast } = useToast();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -50,10 +52,12 @@ export const TechnicianDashboard: React.FC = () => {
       
       const { error } = await supabase
         .from('work_orders')
-        .update({ 
+        .update({
           status: validStatus,
           updated_at: new Date().toISOString()
         })
+        // TENANT-SCOPED
+        .eq('organization_id', tenantId!)
         .eq('id', workOrderId);
 
       if (error) throw error;
@@ -64,6 +68,7 @@ export const TechnicianDashboard: React.FC = () => {
         from_status: null,
         to_status: newStatus,
         changed_by: 'technician',
+        organization_id: tenantId!,
         note: `Status changed to ${newStatus} via swipe gesture`
       });
     },

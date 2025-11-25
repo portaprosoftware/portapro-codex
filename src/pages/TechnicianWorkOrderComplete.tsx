@@ -28,6 +28,7 @@ import { MobileCamera } from '@/components/technician/MobileCamera';
 import { VoiceRecorder } from '@/components/shared/VoiceRecorder';
 import { uploadWorkOrderPhoto, fetchWorkOrderPhotos, deleteWorkOrderPhoto } from '@/utils/photoUpload';
 import { useUser } from '@clerk/clerk-react';
+import { useTenantId } from '@/lib/tenantQuery';
 
 interface Part {
   id: string;
@@ -49,6 +50,7 @@ export default function TechnicianWorkOrderComplete() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useUser();
+  const tenantId = useTenantId();
   const signatureRef = useRef<SignatureCanvas>(null);
   
   const [currentStep, setCurrentStep] = useState<CompletionStep>('photos');
@@ -243,6 +245,8 @@ export default function TechnicianWorkOrderComplete() {
           technician_signature_id: signatureRecord.id,
           updated_at: new Date().toISOString()
         })
+        // TENANT-SCOPED
+        .eq('organization_id', tenantId!)
         .eq('id', id);
 
       if (updateError) throw updateError;
@@ -253,6 +257,7 @@ export default function TechnicianWorkOrderComplete() {
         from_status: workOrder?.status || 'in_progress',
         to_status: 'completed',
         changed_by: user?.id,
+        organization_id: tenantId!,
         note: `Work order completed via mobile. Labor: ${totalLaborHours}hrs, Parts: $${totalPartsCost.toFixed(2)}`
       });
 

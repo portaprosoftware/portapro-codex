@@ -16,6 +16,7 @@ import { RouteStockCheck } from "@/components/fleet/RouteStockCheck";
 import { StockVehicleSelectionModal } from "@/components/fleet/StockVehicleSelectionModal";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useSearchParams } from "react-router-dom";
+import { useTenantId } from "@/lib/tenantQuery";
 
 interface Vehicle { id: string; license_plate: string | null; vehicle_type?: string | null; make?: string | null; model?: string | null; year?: number | null; vehicle_image?: string | null }
 interface BalanceRow { consumable_id: string; balance_qty: number }
@@ -26,6 +27,7 @@ const FleetTruckStock: React.FC = () => {
   const { toast } = useToast();
   const qc = useQueryClient();
   const [searchParams] = useSearchParams();
+  const tenantId = useTenantId();
   
   // Get vehicle ID from URL or default to empty string
   const urlVehicleId = searchParams.get('vehicle') || "";
@@ -48,29 +50,39 @@ const FleetTruckStock: React.FC = () => {
 
   // Fetch all vehicles
   const { data: vehicles = [] } = useQuery({
-    queryKey: ["vehicles"],
+    queryKey: ["vehicles", tenantId],
     queryFn: async () => {
-      const { data, error } = await supabase.from("vehicles").select("id, license_plate, vehicle_type, make, model, year, vehicle_image");
+      const { data, error } = await supabase
+        .from("vehicles")
+        .select("id, license_plate, vehicle_type, make, model, year, vehicle_image")
+        // TENANT-SCOPED
+        .eq('organization_id', tenantId!);
       if (error) throw error;
       return data as Vehicle[];
-    }
+    },
+    enabled: !!tenantId
   });
 
   // Fetch all consumables
   const { data: allConsumables = [] } = useQuery({
-    queryKey: ["consumables"],
+    queryKey: ["consumables", tenantId],
     queryFn: async () => {
-      const { data, error } = await supabase.from("consumables").select("id, name, base_unit, unit_price");
+      const { data, error } = await supabase
+        .from("consumables")
+        .select("id, name, base_unit, unit_price")
+        // TENANT-SCOPED
+        .eq('organization_id', tenantId!);
       if (error) throw error;
       return data as Consumable[];
-    }
+    },
+    enabled: !!tenantId
   });
 
   // Fetch inventory for selected vehicle
   const { data: inventoryData } = useQuery({
-    queryKey: ["vehicle-inventory", vehicleId],
+    queryKey: ["vehicle-inventory", tenantId, vehicleId],
     queryFn: async () => {
-      if (!vehicleId) return [];
+      if (!vehicleId || !tenantId) return [];
       const { data, error } = await supabase
         .from("vehicle_consumable_balances")
         .select(`
@@ -78,6 +90,8 @@ const FleetTruckStock: React.FC = () => {
           balance_qty,
           consumables!inner(name, base_unit)
         `)
+        // TENANT-SCOPED
+        .eq('organization_id', tenantId)
         .eq("vehicle_id", vehicleId)
         .gt("balance_qty", 0);
       
@@ -89,7 +103,7 @@ const FleetTruckStock: React.FC = () => {
         unit: item.consumables.base_unit
       })) || [];
     },
-    enabled: !!vehicleId
+    enabled: !!vehicleId && !!tenantId
   });
 
   // Load/Unload mutation

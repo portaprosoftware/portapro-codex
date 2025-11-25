@@ -38,6 +38,7 @@ import { ConsolidatedFleetCard } from '@/components/marketing/ConsolidatedFleetC
 import { CompanyAnalyticsShowcase } from '@/components/marketing/CompanyAnalyticsShowcase';
 import { TeamManagementShowcase } from '@/components/marketing/TeamManagementShowcase';
 import { ScrollAnimationWrapper } from '@/components/ui/ScrollAnimationWrapper';
+import { useTenantId } from '@/lib/tenantQuery';
 import { ParallaxWrapper } from '@/components/ui/ParallaxWrapper';
 import { AlertTriangle, Package, SoapDispenserDroplet, ClipboardCheck, Megaphone } from 'lucide-react';
 import { FeaturesMegaMenu } from '@/components/marketing/FeaturesMegaMenu';
@@ -239,6 +240,7 @@ export const Landing: React.FC = () => {
 
   // Date string used across sections
   const todayStr = new Date().toISOString().split('T')[0];
+  const tenantId = useTenantId();
 
   // Handle questions form
   const handleRequestInfo = () => {
@@ -291,25 +293,36 @@ export const Landing: React.FC = () => {
   const {
     data: timeOffTodayCount = 0
   } = useQuery({
-    queryKey: ['timeoff-today', todayStr],
+    queryKey: ['timeoff-today', tenantId, todayStr],
     queryFn: async () => {
       const {
         data,
         error
-      } = await supabase.from('driver_time_off_requests').select('id').eq('status', 'approved').eq('request_date', todayStr);
+      } = await supabase
+        .from('driver_time_off_requests')
+        .select('id')
+        // TENANT-SCOPED
+        .eq('organization_id', tenantId!)
+        .eq('status', 'approved')
+        .eq('request_date', todayStr);
       if (error) throw error;
       return (data || []).length;
-    }
+    },
+    enabled: !!tenantId
   });
   const {
     data: expiringCredsCount = 0
   } = useQuery({
-    queryKey: ['expiring-creds', todayStr],
+    queryKey: ['expiring-creds', tenantId, todayStr],
     queryFn: async () => {
       const {
         data,
         error
-      } = await supabase.from('driver_credentials').select('license_expiry_date, medical_card_expiry_date');
+      } = await supabase
+        .from('driver_credentials')
+        .select('license_expiry_date, medical_card_expiry_date')
+        // TENANT-SCOPED
+        .eq('organization_id', tenantId!);
       if (error) throw error;
       const today = new Date(todayStr);
       const end = new Date(todayStr);
@@ -320,7 +333,8 @@ export const Landing: React.FC = () => {
         return dt >= today && dt <= end;
       };
       return (data || []).filter((row: any) => inWindow(row.license_expiry_date) || inWindow(row.medical_card_expiry_date)).length;
-    }
+    },
+    enabled: !!tenantId
   });
   return <div id="top" className="min-h-screen bg-background">
       {/* Sticky Header */}
