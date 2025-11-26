@@ -235,7 +235,7 @@ Deno.serve(async (req) => {
       });
     }
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error generating enhanced PDF:', error);
     return new Response(
       JSON.stringify({ 

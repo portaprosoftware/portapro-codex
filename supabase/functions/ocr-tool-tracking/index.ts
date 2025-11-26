@@ -96,7 +96,7 @@ serve(async (req) => {
           } else {
             throw new Error(`API returned ${visionResponse.status}: ${visionResponse.statusText}`);
           }
-        } catch (error) {
+        } catch (error: any) {
           console.log(`Vision API attempt ${retryCount + 1} failed:`, error.message);
           retryCount++;
           
@@ -165,7 +165,7 @@ serve(async (req) => {
           
           if (textAnnotations.length > 0) {
             console.log('First 5 text annotations:');
-            textAnnotations.slice(0, 5).forEach((annotation, i) => {
+            textAnnotations.slice(0, 5).forEach((annotation: any, i: number) => {
               console.log(`  ${i + 1}:`, {
                 text: annotation.description?.substring(0, 50),
                 confidence: annotation.score,
@@ -175,7 +175,7 @@ serve(async (req) => {
           }
 
           // Extract all detected text with preference for document text
-          const fullText = documentText || textAnnotations.map(annotation => annotation.description).join(' ');
+          const fullText = documentText || textAnnotations.map((annotation: any) => annotation.description).join(' ');
 
           console.log('=== TEXT EXTRACTION ===');
           console.log('Full detected text length:', fullText.length);
@@ -208,11 +208,11 @@ serve(async (req) => {
 
           // Calculate confidence score (average of all text confidences)
           const confidenceScores = textAnnotations
-            .filter(t => t.score !== undefined)
-            .map(t => t.score || 0);
+            .filter((t: any) => t.score !== undefined)
+            .map((t: any) => t.score || 0);
           
           avgConfidence = confidenceScores.length > 0 
-            ? confidenceScores.reduce((a, b) => a + b, 0) / confidenceScores.length
+            ? confidenceScores.reduce((a: number, b: number) => a + b, 0) / confidenceScores.length
             : (fullText.length > 0 ? 0.5 : 0); // Assign medium confidence if text found but no scores
             
           console.log(`=== FINAL RESULTS ===`);
@@ -274,7 +274,7 @@ serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('OCR processing error:', error);
     return new Response(JSON.stringify({ 
       error: error.message,
@@ -293,7 +293,7 @@ async function preprocessImage(imageBase64: string): Promise<string> {
     // In future, could implement contrast/brightness enhancement here
     console.log('Image preprocessing: Using original image (enhancement not implemented)');
     return imageBase64;
-  } catch (error) {
+  } catch (error: any) {
     console.log('Image preprocessing failed, using original:', error.message);
     return imageBase64;
   }

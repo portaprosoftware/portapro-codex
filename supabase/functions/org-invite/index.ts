@@ -10,7 +10,7 @@ const jsonHeaders = {
   "Content-Type": "application/json",
 };
 
-async function createClerkInvite(organizationId, payload) {
+async function createClerkInvite(organizationId: string, payload: any) {
   const res = await fetch(
     `https://api.clerk.com/v1/organizations/${organizationId}/invitations`,
     {
@@ -91,7 +91,7 @@ Deno.serve(async (req) => {
       JSON.stringify({ success: true, data: result.data }),
       { status: 200, headers: jsonHeaders }
     );
-  } catch (e) {
+  } catch (e: any) {
     console.error("❌ org-invite unhandled error", {
       message: e?.message,
       stack: e?.stack,

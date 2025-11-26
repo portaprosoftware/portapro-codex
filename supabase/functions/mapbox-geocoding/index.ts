@@ -138,7 +138,7 @@ serve(async (req) => {
       }
     );
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in mapbox-geocoding function:', error);
     return new Response(
       JSON.stringify({ error: 'Internal server error', details: error.message }),

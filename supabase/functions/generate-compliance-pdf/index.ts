@@ -105,7 +105,7 @@ const handler = async (req: Request): Promise<Response> => {
     // In production, you'd want to use a proper PDF library like Puppeteer
     const pdfContent = await generatePDF(htmlTemplate);
     
-    return new Response(pdfContent, {
+    return new Response(new Blob([pdfContent], { type: 'application/pdf' }), {
       status: 200,
       headers: {
         ...corsHeaders,
