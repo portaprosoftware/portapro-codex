@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { ROLE_OPTIONS } from "@/lib/roles";
 
 
 const editUserFormSchema = z.object({
@@ -17,7 +18,7 @@ const editUserFormSchema = z.object({
   last_name: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email address"),
   phone: z.string().optional(),
-  role: z.enum(["admin", "dispatcher", "driver", "owner"]),
+  role: z.enum(["admin", "dispatcher", "driver", "customer"]),
 });
 
 type EditUserFormData = z.infer<typeof editUserFormSchema>;
@@ -237,10 +238,11 @@ export function EditUserModal({ user, open, onOpenChange }: EditUserModalProps) 
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="driver">Driver</SelectItem>
-                      <SelectItem value="dispatcher">Dispatcher</SelectItem>
-                      <SelectItem value="admin">Admin</SelectItem>
-                      <SelectItem value="owner">Owner</SelectItem>
+                      {ROLE_OPTIONS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />

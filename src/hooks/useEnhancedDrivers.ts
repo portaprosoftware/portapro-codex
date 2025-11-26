@@ -47,7 +47,7 @@ export function useEnhancedDrivers() {
           user_roles!inner(role)
         `)
         .eq('organization_id', orgId)
-        .eq('user_roles.role', 'org:driver' as any);
+        .eq('user_roles.role', 'driver' as any);
 
       if (usersError) throw usersError;
 
@@ -130,7 +130,7 @@ export function useAllEnhancedUsers() {
       // For each user, if they're a driver, get their additional info
       const enhancedUsers: EnhancedDriver[] = await Promise.all(
         (users || []).map(async (user: any) => {
-          const isDriver = user.user_roles.role === 'org:driver';
+          const isDriver = user.user_roles.role === 'driver';
           
           if (!isDriver) {
             return {

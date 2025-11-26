@@ -50,7 +50,7 @@ export function useDriversWithHours() {
       const { data: drivers, error: driversError } = await supabase
         .from('profiles')
         .select(`id, first_name, last_name, email, is_active, user_roles!inner(role)`) 
-        .eq('user_roles.role', 'org:driver' as any);
+        .eq('user_roles.role', 'driver' as any);
       if (driversError) throw driversError;
 
       const driverIds = (drivers || []).map((d: any) => d.id);
@@ -182,7 +182,7 @@ export function useDrivers() {
           last_name,
           user_roles!inner(role)
         `)
-        .eq('user_roles.role', 'org:driver' as any);
+        .eq('user_roles.role', 'driver' as any);
       
       if (error) throw error;
       return data;

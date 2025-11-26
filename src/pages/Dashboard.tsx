@@ -16,6 +16,7 @@ import { StaffCertificationsCard } from "@/components/dashboard/StaffCertificati
 import { CompactConsumablesCard } from "@/components/dashboard/CompactConsumablesCard";
 import { SpillKitExpirationsCard } from "@/components/dashboard/SpillKitExpirationsCard";
 import { useTenantId } from "@/lib/tenantQuery";
+import { getRoleLabel } from "@/lib/roles";
 import { DashboardKpis } from "@/types/rpc";
 import {
   Package,
@@ -37,7 +38,7 @@ const Dashboard = () => {
   
   // Redirect drivers to the Driver app dashboard
   useEffect(() => {
-    if (role === 'org:driver') {
+    if (role === 'driver') {
       navigate('/driver', { replace: true });
     }
   }, [role, navigate]);
@@ -111,7 +112,7 @@ const Dashboard = () => {
             </p>
             {role && (
               <Badge className="bg-gradient-blue text-white font-bold text-xs">
-                Role: {role === 'org:owner' ? 'Admin' : role.replace('org:', '').charAt(0).toUpperCase() + role.replace('org:', '').slice(1)}
+                Role: {getRoleLabel(role)}
               </Badge>
             )}
           </div>

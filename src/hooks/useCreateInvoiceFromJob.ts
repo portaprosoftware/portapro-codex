@@ -213,7 +213,7 @@ export function useCreateInvoiceFromJob() {
 
           // Only send notification if due within 7 days or overdue
           if (daysUntilDue <= 7) {
-            // Note: userId should be dynamically fetched from profiles with role org:admin
+            // Note: userId should be dynamically fetched from profiles with the admin role
             // For now, notifications will be sent to user IDs configured in notification_preferences
             await triggerInvoiceReminderNotification({
               invoiceId: invoice.id,

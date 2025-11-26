@@ -5,13 +5,14 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { 
-  Crown, Headphones, Truck, User, Shield, 
+import {
+  Shield, Headphones, Truck, User,
   MoreVertical, Edit, Trash2, UserCheck, UserX,
   Phone, Mail, Calendar, ChevronUp, ChevronDown, ChevronsUpDown,
   ExternalLink, AlertTriangle, Clock, FileText, Navigation
 } from 'lucide-react';
 import { format, differenceInDays } from 'date-fns';
+import { getRoleLabel, normalizeRoleValue } from '@/lib/roles';
 
 interface User {
   id: string;
@@ -51,19 +52,10 @@ interface UserListViewProps {
 }
 
 const roleIcons = {
-  'org:owner': Crown,
-  'org:dispatcher': Headphones,
-  'org:driver': Truck,
-  'org:customer': User,
-  'org:admin': Shield,
-};
-
-const roleLabels = {
-  'org:owner': "Admin",
-  'org:dispatcher': "Dispatcher",
-  'org:driver': "Driver", 
-  'org:customer': "Customer",
-  'org:admin': "Admin",
+  admin: Shield,
+  dispatcher: Headphones,
+  driver: Truck,
+  customer: User,
 };
 
 export function UserListView({ 
@@ -201,9 +193,9 @@ export function UserListView({
         </TableHeader>
         <TableBody>
           {users.map((user) => {
-            // Normalize legacy "owner" to "org:owner" for display
-            const normalizedRole = user.current_role === 'owner' ? 'org:owner' : user.current_role;
+            const normalizedRole = normalizeRoleValue(user.current_role || '');
             const RoleIcon = roleIcons[normalizedRole as keyof typeof roleIcons] || User;
+            const isDriver = normalizedRole === 'driver';
             const initials = `${user.first_name?.[0] || ''}${user.last_name?.[0] || ''}`.toUpperCase();
             
             return (
@@ -245,17 +237,16 @@ export function UserListView({
                 <TableCell>
                   <Badge 
                     className={`text-white font-bold ${!user.is_active ? 'bg-gray-400' : ''}`}
-                    style={user.is_active ? { 
-                      background: normalizedRole === 'org:owner' ? 'linear-gradient(135deg, #8B5CF6, #A855F7)' :
-                                 normalizedRole === 'org:dispatcher' ? 'linear-gradient(135deg, #3B82F6, #2563EB)' :
-                                 normalizedRole === 'org:admin' ? 'linear-gradient(135deg, #F59E0B, #D97706)' :
-                                 normalizedRole === 'org:driver' ? 'linear-gradient(135deg, #10B981, #059669)' :
-                                 normalizedRole === 'org:customer' ? 'linear-gradient(135deg, #EF4444, #DC2626)' : 
+                    style={user.is_active ? {
+                      background: normalizedRole === 'admin' ? 'linear-gradient(135deg, #F59E0B, #D97706)' :
+                                 normalizedRole === 'dispatcher' ? 'linear-gradient(135deg, #3B82F6, #2563EB)' :
+                                 normalizedRole === 'driver' ? 'linear-gradient(135deg, #10B981, #059669)' :
+                                 normalizedRole === 'customer' ? 'linear-gradient(135deg, #6366F1, #4338CA)' :
                                  'linear-gradient(135deg, #6B7280, #4B5563)'
                     } : {}}
                   >
                     <RoleIcon className={`w-3 h-3 mr-1 ${!user.is_active ? 'text-gray-600' : ''}`} />
-                    {roleLabels[normalizedRole as keyof typeof roleLabels] || "No Role"}
+                    {normalizedRole === 'unknown' ? 'No Role' : getRoleLabel(normalizedRole)}
                   </Badge>
                 </TableCell>
                 
@@ -324,7 +315,7 @@ export function UserListView({
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      {user.current_role === 'org:driver' && (
+                      {isDriver && (
                         <DropdownMenuItem asChild>
                           <Link to={`/team-management/driver/${user.id}`}>
                             <Truck className="w-4 h-4 mr-2" />
