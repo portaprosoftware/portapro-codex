@@ -1,8 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.52.0';
 
-const resendApiKey = Deno.env.get('RESEND_API_KEY');
-
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -37,7 +35,6 @@ serve(async (req) => {
     }
 
     const supabase = createClient(supabaseUrl, supabaseKey);
-    const resend = new Resend(resendApiKey);
 
     console.log('Running scheduled reports...');
 
@@ -149,24 +146,20 @@ serve(async (req) => {
         }
 
         // Send email to recipients
-        const emailPromises = report.email_recipients.map(async (email) => {
-          const emailBody = {
+        const emailPromises = report.email_recipients.map(async (email: string) => {
+          const emailBody: any = {
             from: 'PortaPro Reports <reports@portapro.app>',
             to: [email],
             subject: `${report.name} - ${new Date().toLocaleDateString()}`,
             html: `
-...
+              <h2>${report.name}</h2>
+              <p>Your scheduled report has been generated.</p>
+              <p><strong>Report Date:</strong> ${new Date().toLocaleDateString()}</p>
+              <p><strong>Total Records:</strong> ${jobs?.length || 0}</p>
             `,
           };
 
-          if (pdfData?.htmlContent) {
-            emailBody.attachments = [{
-              filename: `${report.name.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.html`,
-              content: Buffer.from(pdfData.htmlContent).toString('base64'),
-              type: 'text/html'
-            }];
-          }
-
+          // Note: Resend API removed - using simple fetch
           const emailResponse = await fetch('https://api.resend.com/emails', {
             method: 'POST',
             headers: {
@@ -219,7 +212,7 @@ serve(async (req) => {
 
         console.log(`Successfully processed report: ${report.name}`);
 
-      } catch (reportError) {
+      } catch (reportError: any) {
         console.error(`Failed to process report ${report.name}:`, reportError);
         
         // Update execution record with error
@@ -253,7 +246,7 @@ serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in scheduled reports execution:', error);
     return new Response(
       JSON.stringify({ 

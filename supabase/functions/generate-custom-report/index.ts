@@ -60,7 +60,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log('Generating custom report with config:', config);
 
-    let query = supabase.from('profiles');
+    let query: any = supabase.from('profiles');
     let records: any[] = [];
 
     // Apply data source specific queries
@@ -190,7 +190,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Process and transform data based on data source
     switch (config.dataSource) {
       case 'team_members':
-        records = data?.map(member => ({
+        records = data?.map((member: any) => ({
           member_name: `${member.first_name} ${member.last_name}`,
           email: member.email,
           phone: member.phone,
@@ -205,7 +205,7 @@ const handler = async (req: Request): Promise<Response> => {
         break;
 
       case 'compliance':
-        records = data?.map(cred => {
+        records = data?.map((cred: any) => {
           const profile = Array.isArray(cred.profiles) ? cred.profiles[0] : cred.profiles;
           const licenseExpiry = cred.license_expiry_date ? new Date(cred.license_expiry_date) : null;
           const medicalExpiry = cred.medical_card_expiry_date ? new Date(cred.medical_card_expiry_date) : null;
@@ -226,7 +226,7 @@ const handler = async (req: Request): Promise<Response> => {
         break;
 
       case 'training':
-        records = data?.map(training => {
+        records = data?.map((training: any) => {
           const profile = Array.isArray(training.profiles) ? training.profiles[0] : training.profiles;
           return {
             driver_name: `${profile?.first_name || ''} ${profile?.last_name || ''}`.trim(),
@@ -240,7 +240,7 @@ const handler = async (req: Request): Promise<Response> => {
         break;
 
       case 'equipment':
-        records = data?.map(assignment => ({
+        records = data?.map((assignment: any) => ({
           assignment_id: assignment.id,
           equipment_type: assignment.products?.name || 'Unknown',
           item_code: assignment.product_items?.item_code || 'Bulk assignment',
@@ -253,7 +253,7 @@ const handler = async (req: Request): Promise<Response> => {
         break;
 
       case 'maintenance':
-        records = data?.map(report => ({
+        records = data?.map((report: any) => ({
           report_number: report.report_number,
           vehicle: report.vehicles?.license_plate || 'Unknown',
           vehicle_type: report.vehicles?.vehicle_type || 'Unknown',
