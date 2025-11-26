@@ -21,12 +21,12 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({ dateRange }) => {
     queryFn: async () => {
       if (!orgId) throw new Error('Organization ID is required');
 
-      const { data, error } = await supabase.rpc('pp_get_activity_feed', {
+      const { data, error } = await supabase.rpc('get_activity_feed', {
         p_organization_id: orgId,
       });
 
       if (error) throw error;
-      return (data || []) as ActivityFeedEntry[];
+      return (data ?? []) as ActivityFeedEntry[];
     },
     enabled: !!orgId,
   });
