@@ -136,17 +136,21 @@ export const SavedButtons: React.FC<SavedButtonsProps> = ({ onSelectButton }) =>
   };
 
   const formatButtonValue = (type: string, value: string) => {
+    const safeValue = String(value ?? "");
+
     if (type === 'phone') {
-      return formatPhoneNumber(value);
+      return formatPhoneNumber(safeValue);
     } else if (type === 'email') {
-      return value;
+      return safeValue;
     } else {
       // For URLs, show a shortened version
+      if (!safeValue) return safeValue;
+
       try {
-        const url = new URL(value);
+        const url = new URL(safeValue);
         return url.hostname;
       } catch {
-        return value.length > 30 ? value.substring(0, 30) + '...' : value;
+        return safeValue.length > 30 ? safeValue.substring(0, 30) + '...' : safeValue;
       }
     }
   };
