@@ -33,7 +33,6 @@ export const useClerkProfileSync = () => {
       firstName: string;
       lastName: string;
       imageUrl?: string;
-      clerkRole?: string;
       organizationId?: string;
     }) => {
       // Check sessionStorage to prevent duplicate sync attempts
@@ -55,7 +54,7 @@ export const useClerkProfileSync = () => {
           firstName: userData.firstName,
           lastName: userData.lastName,
           imageUrl: userData.imageUrl,
-          clerkRole: userData.clerkRole,
+          // TODO: Replace with Supabase role lookup in next phase
           organizationId: userData.organizationId, // Pass actual Clerk org ID
         }
       });
@@ -177,7 +176,7 @@ export const useClerkProfileSync = () => {
         firstName: user.firstName || '',
         lastName: user.lastName || '',
         imageUrl: user.imageUrl,
-        clerkRole: user.publicMetadata?.role as string | undefined,
+        // TODO: Replace with Supabase role lookup in next phase
         organizationId: organization.id, // Pass actual Clerk organization ID
       });
     }

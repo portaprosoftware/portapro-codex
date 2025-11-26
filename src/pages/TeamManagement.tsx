@@ -32,7 +32,7 @@ export default function TeamManagement() {
       console.log('TeamManagement - Redirecting driver to /driver:', {
         userId: user.id,
         firstName: user.firstName,
-        role: user.publicMetadata?.role
+        // TODO: Replace with Supabase role lookup in next phase
       });
       navigate('/driver', { replace: true });
     }

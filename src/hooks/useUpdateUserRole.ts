@@ -36,10 +36,8 @@ export function useUpdateUserRole() {
         throw roleError;
       }
 
-      // 4. Also update Clerk's publicMetadata
-      // Note: This would ideally be done via an edge function for security
-      // For now, the role sync happens when users log in
-      
+      // TODO: Replace with Supabase role lookup in next phase
+
       return { clerkUserId, role };
     },
     onSuccess: () => {

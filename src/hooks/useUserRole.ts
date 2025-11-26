@@ -75,8 +75,8 @@ export function useUserRole() {
     retryDelay: 1000,
   });
 
-  // Priority: Supabase role > Clerk publicMetadata role > unknown
-  const role: AppRole = supabaseRole || (user?.publicMetadata?.role as AppRole) || 'unknown';
+  // TODO: Replace with Supabase role lookup in next phase
+  const role: AppRole = supabaseRole || 'unknown';
 
   // Log current user info in development for debugging
   const hasLoggedRef = React.useRef(false);
@@ -85,7 +85,6 @@ export function useUserRole() {
       userId: user?.id,
       firstName: user?.firstName,
       lastName: user?.lastName,
-      clerkRole: user?.publicMetadata?.role,
       supabaseRole,
       finalRole: role,
       isLoaded,
