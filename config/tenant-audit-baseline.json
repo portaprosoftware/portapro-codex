@@ -1,0 +1,122 @@
+[
+  {
+    "file": "src/components/fleet/PMSchedulesTab.tsx",
+    "line": 62,
+    "rule": "missing-tenant-wrapper",
+    "detail": "Query on tenant table \"pm_templates\" should use tenantTable() or include organization_id filter."
+  },
+  {
+    "file": "src/components/fleet/PMSchedulesTab.tsx",
+    "line": 62,
+    "rule": "id-without-org",
+    "detail": "ID-based query on \"pm_templates\" missing organization_id guard."
+  },
+  {
+    "file": "src/components/fleet/pm/ActivePMSchedulesList.tsx",
+    "line": 61,
+    "rule": "missing-tenant-wrapper",
+    "detail": "Query on tenant table \"pm_templates\" should use tenantTable() or include organization_id filter."
+  },
+  {
+    "file": "src/components/settings/DriverTimeOffSection.tsx",
+    "line": 27,
+    "rule": "missing-tenant-wrapper",
+    "detail": "Query on tenant table \"driver_time_off_requests\" should use tenantTable() or include organization_id filter."
+  },
+  {
+    "file": "src/components/settings/DriverTimeOffSection.tsx",
+    "line": 67,
+    "rule": "missing-tenant-wrapper",
+    "detail": "Query on tenant table \"driver_time_off_requests\" should use tenantTable() or include organization_id filter."
+  },
+  {
+    "file": "src/components/settings/DriverTimeOffSection.tsx",
+    "line": 67,
+    "rule": "id-without-org",
+    "detail": "ID-based query on \"driver_time_off_requests\" missing organization_id guard."
+  },
+  {
+    "file": "src/components/settings/DriverTimeOffSection.tsx",
+    "line": 80,
+    "rule": "missing-tenant-wrapper",
+    "detail": "Query on tenant table \"driver_time_off_requests\" should use tenantTable() or include organization_id filter."
+  },
+  {
+    "file": "src/components/settings/DriverTimeOffSection.tsx",
+    "line": 80,
+    "rule": "id-without-org",
+    "detail": "ID-based query on \"driver_time_off_requests\" missing organization_id guard."
+  },
+  {
+    "file": "src/hooks/useJobs.ts",
+    "line": 38,
+    "rule": "missing-tenant-wrapper",
+    "detail": "Query on tenant table \"consumables\" should use tenantTable() or include organization_id filter."
+  },
+  {
+    "file": "src/hooks/useJobs.ts",
+    "line": 38,
+    "rule": "id-without-org",
+    "detail": "ID-based query on \"consumables\" missing organization_id guard."
+  },
+  {
+    "file": "src/hooks/useJobs.ts",
+    "line": 72,
+    "rule": "missing-tenant-wrapper",
+    "detail": "Query on tenant table \"consumables\" should use tenantTable() or include organization_id filter."
+  },
+  {
+    "file": "src/hooks/useJobs.ts",
+    "line": 72,
+    "rule": "id-without-org",
+    "detail": "ID-based query on \"consumables\" missing organization_id guard."
+  },
+  {
+    "file": "src/hooks/useJobs.ts",
+    "line": 290,
+    "rule": "missing-tenant-wrapper",
+    "detail": "Query on tenant table \"equipment_assignments\" should use tenantTable() or include organization_id filter."
+  },
+  {
+    "file": "src/hooks/useJobs.ts",
+    "line": 290,
+    "rule": "insert-missing-org",
+    "detail": "Insert into \"equipment_assignments\" should include organization_id in payload or tenantTable() wrapper."
+  },
+  {
+    "file": "src/hooks/useJobs.ts",
+    "line": 308,
+    "rule": "missing-tenant-wrapper",
+    "detail": "Query on tenant table \"equipment_assignments\" should use tenantTable() or include organization_id filter."
+  },
+  {
+    "file": "src/hooks/useJobs.ts",
+    "line": 308,
+    "rule": "insert-missing-org",
+    "detail": "Insert into \"equipment_assignments\" should include organization_id in payload or tenantTable() wrapper."
+  },
+  {
+    "file": "src/hooks/useScheduling.ts",
+    "line": 83,
+    "rule": "missing-tenant-wrapper",
+    "detail": "Query on tenant table \"shift_templates\" should use tenantTable() or include organization_id filter."
+  },
+  {
+    "file": "src/hooks/useScheduling.ts",
+    "line": 83,
+    "rule": "id-without-org",
+    "detail": "ID-based query on \"shift_templates\" missing organization_id guard."
+  },
+  {
+    "file": "src/hooks/useScheduling.ts",
+    "line": 180,
+    "rule": "missing-tenant-wrapper",
+    "detail": "Query on tenant table \"driver_shifts\" should use tenantTable() or include organization_id filter."
+  },
+  {
+    "file": "src/hooks/useScheduling.ts",
+    "line": 180,
+    "rule": "id-without-org",
+    "detail": "ID-based query on \"driver_shifts\" missing organization_id guard."
+  }
+]
