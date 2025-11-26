@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Package, AlertTriangle, Clock, DollarSign, TrendingUp, ShoppingCart } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 type InventoryItem = {
   id: string;
@@ -20,17 +21,22 @@ type InventoryItem = {
 };
 
 export function SpillKitInventoryDashboard() {
+  const { orgId, isReady } = useOrganizationId();
+
   const { data: inventoryItems } = useQuery({
-    queryKey: ['spill-kit-inventory'],
+    queryKey: ['spill-kit-inventory', orgId],
     queryFn: async () => {
+      if (!orgId) return [];
       const { data, error } = await supabase
         .from('spill_kit_inventory')
         .select('*')
+        .eq('organization_id', orgId)
         .order('item_name');
-      
+
       if (error) throw error;
       return data as InventoryItem[];
     },
+    enabled: isReady && !!orgId,
   });
 
   // Calculate dashboard metrics

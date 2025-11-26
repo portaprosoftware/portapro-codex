@@ -2,6 +2,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { parseUserMentions } from '@/utils/mentionParser';
+import { useOrganizationId } from './useOrganizationId';
+import { safeDelete, safeInsert, safeUpdate } from '@/lib/supabase-helpers';
 
 interface VehicleNote {
   id: string;
@@ -18,21 +20,23 @@ interface VehicleNote {
 
 export function useVehicleNotes(vehicleId: string) {
   const queryClient = useQueryClient();
+  const { orgId, isReady } = useOrganizationId();
 
   // Fetch notes
   const { data: notes = [], isLoading } = useQuery({
-    queryKey: ['vehicle-notes', vehicleId],
+    queryKey: ['vehicle-notes', vehicleId, orgId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('vehicle_notes')
         .select('*')
         .eq('vehicle_id', vehicleId)
+        .eq('organization_id', orgId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
       return data as VehicleNote[];
     },
-    enabled: !!vehicleId,
+    enabled: isReady && !!vehicleId && !!orgId,
   });
 
   // Add note mutation
@@ -43,15 +47,19 @@ export function useVehicleNotes(vehicleId: string) {
       tags?: string[];
       is_important?: boolean;
     }) => {
-      const { data, error } = await supabase
-        .from('vehicle_notes')
-        .insert({
+      if (!orgId) throw new Error('Organization context is required');
+
+      const { data, error } = await safeInsert(
+        'vehicle_notes',
+        {
           vehicle_id: vehicleId,
           title: noteData.title,
           note_text: noteData.note_text,
           tags: noteData.tags || [],
           is_important: noteData.is_important || false,
-        })
+        },
+        orgId
+      )
         .select()
         .single();
 
@@ -67,7 +75,7 @@ export function useVehicleNotes(vehicleId: string) {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['vehicle-notes', vehicleId] });
+      queryClient.invalidateQueries({ queryKey: ['vehicle-notes', vehicleId, orgId] });
       toast({
         title: "Note added successfully",
         description: "The note has been saved to the vehicle profile.",
@@ -85,9 +93,9 @@ export function useVehicleNotes(vehicleId: string) {
 
   // Update note mutation
   const updateNoteMutation = useMutation({
-    mutationFn: async ({ 
-      noteId, 
-      noteData 
+    mutationFn: async ({
+      noteId,
+      noteData
     }: { 
       noteId: string; 
       noteData: {
@@ -97,15 +105,17 @@ export function useVehicleNotes(vehicleId: string) {
         is_important?: boolean;
       }
     }) => {
-      const { data, error } = await supabase
-        .from('vehicle_notes')
-        .update({
+      const { data, error } = await safeUpdate(
+        'vehicle_notes',
+        {
           title: noteData.title,
           note_text: noteData.note_text,
           tags: noteData.tags || [],
           is_important: noteData.is_important || false,
-        })
-        .eq('id', noteId)
+        },
+        orgId,
+        { id: noteId }
+      )
         .select()
         .single();
 
@@ -113,7 +123,7 @@ export function useVehicleNotes(vehicleId: string) {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['vehicle-notes', vehicleId] });
+      queryClient.invalidateQueries({ queryKey: ['vehicle-notes', vehicleId, orgId] });
       toast({
         title: "Note updated successfully",
         description: "The note has been updated.",
@@ -132,15 +142,12 @@ export function useVehicleNotes(vehicleId: string) {
   // Delete note mutation
   const deleteNoteMutation = useMutation({
     mutationFn: async (noteId: string) => {
-      const { error } = await supabase
-        .from('vehicle_notes')
-        .delete()
-        .eq('id', noteId);
+      const { error } = await safeDelete('vehicle_notes', orgId, { id: noteId });
 
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['vehicle-notes', vehicleId] });
+      queryClient.invalidateQueries({ queryKey: ['vehicle-notes', vehicleId, orgId] });
       toast({
         title: "Note deleted successfully",
         description: "The note has been removed.",

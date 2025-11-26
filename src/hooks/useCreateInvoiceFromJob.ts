@@ -3,6 +3,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { resolveTaxRate, normalizeZip } from '@/lib/tax';
 import { triggerInvoiceReminderNotification } from '@/utils/notificationTriggers';
+import { useOrganizationId } from './useOrganizationId';
+import { safeInsert } from '@/lib/supabase-helpers';
 
 interface CreateInvoiceFromJobParams {
   jobId: string;
@@ -13,10 +15,13 @@ interface CreateInvoiceFromJobParams {
 
 export function useCreateInvoiceFromJob() {
   const queryClient = useQueryClient();
+  const { orgId } = useOrganizationId();
 
   return useMutation({
     mutationFn: async ({ jobId, dueDate, notes, terms }: CreateInvoiceFromJobParams) => {
       console.log('Creating invoice from job:', jobId);
+
+      if (!orgId) throw new Error('Organization context is required');
 
       // Get the job details with customer information
       const { data: job, error: jobError } = await supabase
@@ -45,6 +50,7 @@ export function useCreateInvoiceFromJob() {
           )
         `)
         .eq('id', jobId)
+        .eq('organization_id', orgId)
         .single();
 
       if (jobError) throw jobError;
@@ -54,6 +60,7 @@ export function useCreateInvoiceFromJob() {
         .from('invoices')
         .select('id')
         .eq('job_id', jobId)
+        .eq('organization_id', orgId)
         .maybeSingle();
 
       if (existingInvoice) {
@@ -64,13 +71,14 @@ export function useCreateInvoiceFromJob() {
       const { data: jobItems, error: itemsError } = await supabase
         .from('job_items')
         .select('*')
-        .eq('job_id', jobId);
+        .eq('job_id', jobId)
+        .eq('organization_id', orgId);
 
       if (itemsError) throw itemsError;
 
       // Generate invoice number
       const { data: invoiceNumber, error: numberError } = await supabase
-        .rpc('get_next_invoice_number');
+        .rpc('get_next_invoice_number' as any, { org_id: orgId });
 
       if (numberError) throw numberError;
 
@@ -83,12 +91,14 @@ export function useCreateInvoiceFromJob() {
       const { data: companySettings } = await supabase
         .from('company_settings')
         .select('tax_enabled, tax_method, flat_tax_rate, state_tax_rates, zip_tax_overrides')
+        .eq('organization_id', orgId)
         .single();
 
       const { data: customer } = await supabase
         .from('customers')
         .select('service_zip, default_service_zip, billing_zip, service_state, default_service_state, billing_state')
         .eq('id', job.customer_id)
+        .eq('organization_id', orgId)
         .maybeSingle();
 
       const zip = customer?.service_zip || customer?.default_service_zip || customer?.billing_zip || '';
@@ -101,6 +111,7 @@ export function useCreateInvoiceFromJob() {
           .from('tax_rates')
           .select('tax_rate')
           .eq('zip_code', zip5)
+          .eq('organization_id', orgId)
           .maybeSingle();
         tableZipRate = tr ? Number(tr.tax_rate) : null;
       }
@@ -130,9 +141,9 @@ export function useCreateInvoiceFromJob() {
         .toISOString().split('T')[0];
 
       // Create the invoice
-      const { data: invoice, error: invoiceError } = await supabase
-        .from('invoices')
-        .insert({
+      const { data: invoice, error: invoiceError } = await safeInsert(
+        'invoices',
+        {
           customer_id: job.customer_id,
           job_id: jobId,
           invoice_number: invoiceNumber,
@@ -147,7 +158,7 @@ export function useCreateInvoiceFromJob() {
           customer_name: job.customers?.name || '',
           customer_email: job.customers?.email || '',
           customer_phone: job.customers?.phone || '',
-          billing_address: job.customers?.billing_differs_from_service 
+          billing_address: job.customers?.billing_differs_from_service
             ? [job.customers?.billing_street, job.customers?.billing_street2, job.customers?.billing_city, job.customers?.billing_state, job.customers?.billing_zip].filter(Boolean).join(', ')
             : [job.customers?.service_street || job.customers?.default_service_street, job.customers?.service_street2, job.customers?.service_city || job.customers?.default_service_city, job.customers?.service_state || job.customers?.default_service_state, job.customers?.service_zip || job.customers?.default_service_zip].filter(Boolean).join(', '),
           service_address: [job.customers?.service_street || job.customers?.default_service_street, job.customers?.service_street2, job.customers?.service_city || job.customers?.default_service_city, job.customers?.service_state || job.customers?.default_service_state, job.customers?.service_zip || job.customers?.default_service_zip].filter(Boolean).join(', '),
@@ -157,7 +168,9 @@ export function useCreateInvoiceFromJob() {
           deposit_type: job.deposit_type || null,
           deposit_percentage: job.deposit_percentage || null,
           deposit_status: job.deposit_required ? 'pending' : null,
-        })
+        },
+        orgId
+      )
         .select()
         .single();
 
@@ -173,14 +186,13 @@ export function useCreateInvoiceFromJob() {
           quantity: item.quantity,
           unit_price: item.unit_price,
           line_total: item.total_price,
-          description: item.line_item_type === 'inventory' ? 
+          description: item.line_item_type === 'inventory' ?
             'Product rental' :
-            `Service - ${item.service_frequency || 'one-time'}`
+            `Service - ${item.service_frequency || 'one-time'}`,
+          organization_id: orgId
         }));
 
-        const { error: invoiceItemsError } = await supabase
-          .from('invoice_items')
-          .insert(invoiceItems);
+        const { error: invoiceItemsError } = await safeInsert('invoice_items', invoiceItems, orgId);
 
         if (invoiceItemsError) throw invoiceItemsError;
       }
@@ -188,8 +200,8 @@ export function useCreateInvoiceFromJob() {
       return invoice;
     },
     onSuccess: async (invoice) => {
-      queryClient.invalidateQueries({ queryKey: ['invoices'] });
-      queryClient.invalidateQueries({ queryKey: ['jobs'] });
+      queryClient.invalidateQueries({ queryKey: ['invoices', orgId] });
+      queryClient.invalidateQueries({ queryKey: ['jobs', orgId] });
       toast.success(`Invoice ${invoice.invoice_number} created successfully from job!`);
 
       // Trigger invoice reminder notification (async, don't block on error)

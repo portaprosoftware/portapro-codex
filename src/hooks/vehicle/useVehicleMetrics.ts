@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 export interface VehicleMetrics {
   vehicle_id: string;
@@ -14,13 +15,15 @@ export interface VehicleMetrics {
 }
 
 export function useVehicleMetrics(vehicleId: string | null, enabled: boolean = true) {
+  const { orgId, isReady } = useOrganizationId();
+
   return useQuery({
-    queryKey: ['vehicle-metrics', vehicleId],
+    queryKey: ['vehicle-metrics', vehicleId, orgId],
     queryFn: async () => {
-      if (!vehicleId) return null;
+      if (!vehicleId || !orgId) return null;
 
       const { data, error } = await supabase
-        .rpc('get_vehicle_metrics', { p_vehicle_id: vehicleId });
+        .rpc('get_vehicle_metrics', { p_vehicle_id: vehicleId, org_id: orgId });
 
       if (error) throw error;
       
@@ -28,7 +31,7 @@ export function useVehicleMetrics(vehicleId: string | null, enabled: boolean = t
       const result = Array.isArray(data) && data.length > 0 ? data[0] : null;
       return result as VehicleMetrics | null;
     },
-    enabled: !!vehicleId && enabled,
+    enabled: !!vehicleId && enabled && isReady && !!orgId,
     staleTime: 5 * 60 * 1000, // 5 minutes - metrics don't change frequently
     gcTime: 10 * 60 * 1000, // 10 minutes cache
     refetchOnWindowFocus: false,

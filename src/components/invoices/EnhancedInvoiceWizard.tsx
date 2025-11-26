@@ -141,16 +141,19 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
 
   // Fetch services
   const { data: services = [] } = useQuery({
-    queryKey: ['services'],
+    queryKey: ['services', orgId],
     queryFn: async () => {
+      if (!orgId) return [];
       const { data, error } = await supabase
         .from('services')
         .select('id, name')
+        .eq('organization_id', orgId)
         .order('name');
-      
+
       if (error) throw error;
       return data as Service[];
-    }
+    },
+    enabled: !!orgId
   });
 
   // Get next invoice number
@@ -169,13 +172,13 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
 
   // Fetch source data (quote or job)
   const { data: sourceData } = useQuery({
-    queryKey: ['invoice-source', fromQuoteId || fromJobId],
+    queryKey: ['invoice-source', fromQuoteId || fromJobId, orgId],
     queryFn: async () => {
       if (!orgId) return null;
       if (fromQuoteId) {
         const [quoteResponse, itemsResponse] = await Promise.all([
           (supabase as any).from('quotes').select('*').eq('id', fromQuoteId).eq('organization_id', orgId).single(),
-          (supabase as any).from('quote_items').select('*').eq('quote_id', fromQuoteId)
+          (supabase as any).from('quote_items').select('*').eq('quote_id', fromQuoteId).eq('organization_id', orgId)
         ]);
         
         if (quoteResponse.error) throw quoteResponse.error;
@@ -185,7 +188,7 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
       } else if (fromJobId) {
         const [jobResponse, itemsResponse] = await Promise.all([
           (supabase as any).from('jobs').select('*').eq('id', fromJobId).eq('organization_id', orgId).single(),
-          (supabase as any).from('job_items').select('*').eq('job_id', fromJobId)
+          (supabase as any).from('job_items').select('*').eq('job_id', fromJobId).eq('organization_id', orgId)
         ]);
         
         if (jobResponse.error) throw jobResponse.error;
@@ -195,7 +198,7 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
       }
       return null;
     },
-    enabled: !!(fromQuoteId || fromJobId)
+    enabled: !!(fromQuoteId || fromJobId) && !!orgId
   });
 
   // Set initial invoice number

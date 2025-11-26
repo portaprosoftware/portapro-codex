@@ -15,6 +15,8 @@ import { Separator } from '@/components/ui/separator';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
+import { safeInsert, safeUpdate } from '@/lib/supabase-helpers';
 
 interface ReversePaymentModalProps {
   isOpen: boolean;
@@ -26,13 +28,15 @@ interface ReversePaymentModalProps {
 export function ReversePaymentModal({ isOpen, onClose, payment, invoice }: ReversePaymentModalProps) {
   const [reversalReason, setReversalReason] = useState('');
   const queryClient = useQueryClient();
+  const { orgId } = useOrganizationId();
 
   const reversePaymentMutation = useMutation({
     mutationFn: async (reason: string) => {
+      if (!orgId) throw new Error('Organization context is required');
       // Create reversal payment record
-      const { error: reversalError } = await supabase
-        .from('payments')
-        .insert({
+      const { error: reversalError } = await safeInsert(
+        'payments',
+        {
           invoice_id: payment.invoice_id,
           amount: payment.amount,
           payment_method: payment.payment_method,
@@ -42,13 +46,15 @@ export function ReversePaymentModal({ isOpen, onClose, payment, invoice }: Rever
           created_by: 'current_user', // Will be replaced with actual Clerk user ID
           reversed_at: new Date().toISOString(),
           reversed_by: 'current_user'
-        });
+        },
+        orgId
+      );
 
       if (reversalError) throw reversalError;
 
       // Get payment totals to determine new invoice status
       const { data: totalsData, error: totalsError } = await supabase
-        .rpc('get_invoice_payment_totals', { invoice_uuid: invoice.id });
+        .rpc('get_invoice_payment_totals', { invoice_uuid: invoice.id, org_id: orgId });
 
       if (totalsError) throw totalsError;
 
@@ -60,13 +66,15 @@ export function ReversePaymentModal({ isOpen, onClose, payment, invoice }: Rever
       }
 
       // Update invoice status
-      const { error: invoiceError } = await supabase
-        .from('invoices')
-        .update({
+      const { error: invoiceError } = await safeUpdate(
+        'invoices',
+        {
           status: newStatus,
           updated_at: new Date().toISOString()
-        })
-        .eq('id', invoice.id);
+        },
+        orgId,
+        { id: invoice.id }
+      );
 
       if (invoiceError) throw invoiceError;
 
@@ -74,8 +82,8 @@ export function ReversePaymentModal({ isOpen, onClose, payment, invoice }: Rever
     },
     onSuccess: () => {
       toast.success('Payment reversed successfully!');
-      queryClient.invalidateQueries({ queryKey: ['invoices'] });
-      queryClient.invalidateQueries({ queryKey: ['payments'] });
+      queryClient.invalidateQueries({ queryKey: ['invoices', orgId] });
+      queryClient.invalidateQueries({ queryKey: ['payments', orgId] });
       onClose();
     },
     onError: (error: any) => {

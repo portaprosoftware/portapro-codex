@@ -13,9 +13,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { DollarSign, Plus, Edit, Trash2, Calendar, Percent, TrendingDown } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useUserRole } from "@/hooks/useUserRole";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
+import { safeDelete, safeInsert, safeRead, safeUpdate } from "@/lib/supabase-helpers";
 
 const pricingRuleSchema = z.object({
   rule_name: z.string().min(1, "Rule name is required"),
@@ -48,18 +49,18 @@ export function PricingRulesSection() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const { isOwner, user } = useUserRole();
   const queryClient = useQueryClient();
+  const { orgId, isReady } = useOrganizationId();
 
   const { data: pricingRules = [], isLoading } = useQuery({
-    queryKey: ["pricing-rules"],
+    queryKey: ["pricing-rules", orgId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("pricing_rules")
-        .select("*")
+      const { data, error } = await safeRead("pricing_rules", orgId)
         .order("created_at", { ascending: false });
-      
+
       if (error) throw error;
       return data;
     },
+    enabled: isReady && !!orgId,
   });
 
   const form = useForm<PricingRuleFormData>({
@@ -78,9 +79,11 @@ export function PricingRulesSection() {
 
   const createPricingRule = useMutation({
     mutationFn: async (data: PricingRuleFormData) => {
-      const { error } = await supabase
-        .from("pricing_rules")
-        .insert({
+      if (!orgId) throw new Error("Organization context is required");
+
+      const { error } = await safeInsert(
+        "pricing_rules",
+        {
           name: data.rule_name,
           rule_type: data.rule_type,
           adjustment_type: data.discount_type,
@@ -88,12 +91,14 @@ export function PricingRulesSection() {
           start_date: data.start_date || null,
           end_date: data.end_date || null,
           is_active: data.is_active,
-        });
+        },
+        orgId
+      );
 
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["pricing-rules"] });
+      queryClient.invalidateQueries({ queryKey: ["pricing-rules", orgId] });
       toast.success("Pricing rule created successfully");
       setIsCreateModalOpen(false);
       form.reset();
@@ -106,15 +111,17 @@ export function PricingRulesSection() {
 
   const toggleRuleStatus = useMutation({
     mutationFn: async ({ id, is_active }: { id: string; is_active: boolean }) => {
-      const { error } = await supabase
-        .from("pricing_rules")
-        .update({ is_active })
-        .eq("id", id);
+      const { error } = await safeUpdate(
+        "pricing_rules",
+        { is_active },
+        orgId,
+        { id }
+      );
 
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["pricing-rules"] });
+      queryClient.invalidateQueries({ queryKey: ["pricing-rules", orgId] });
       toast.success("Pricing rule updated successfully");
     },
     onError: (error) => {
@@ -125,15 +132,12 @@ export function PricingRulesSection() {
 
   const deletePricingRule = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from("pricing_rules")
-        .delete()
-        .eq("id", id);
+      const { error } = await safeDelete("pricing_rules", orgId, { id });
 
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["pricing-rules"] });
+      queryClient.invalidateQueries({ queryKey: ["pricing-rules", orgId] });
       toast.success("Pricing rule deleted successfully");
     },
     onError: (error) => {

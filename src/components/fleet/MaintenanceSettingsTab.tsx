@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
@@ -14,6 +13,8 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Edit, Trash2, Settings, Users, Package } from "lucide-react";
 import { VendorManagementModal } from "./VendorManagementModal";
 import { toast } from "sonner";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
+import { safeDelete, safeRead, safeUpdate } from "@/lib/supabase-helpers";
 
 export const MaintenanceSettingsTab: React.FC = () => {
   const [inHouseEnabled, setInHouseEnabled] = useState(false);
@@ -21,18 +22,17 @@ export const MaintenanceSettingsTab: React.FC = () => {
   const [editingVendor, setEditingVendor] = useState<Database['public']['Tables']['maintenance_vendors']['Row'] | null>(null);
   const [vendorModalMode, setVendorModalMode] = useState<"create" | "edit">("create");
   const queryClient = useQueryClient();
+  const { orgId, isReady } = useOrganizationId();
 
   // Fetch company settings
   const { data: companySettings } = useQuery({
-    queryKey: ["company-maintenance-settings"],
+    queryKey: ["company-maintenance-settings", orgId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("company_maintenance_settings")
-        .select("*")
-        .single();
+      const { data, error } = await safeRead("company_maintenance_settings", orgId).single();
       if (error) throw error;
       return data;
-    }
+    },
+    enabled: isReady && !!orgId
   });
 
   // Update state when data changes
@@ -45,29 +45,34 @@ export const MaintenanceSettingsTab: React.FC = () => {
 
   // Fetch vendors
   const { data: vendors } = useQuery({
-    queryKey: ["maintenance-vendors"],
+    queryKey: ["maintenance-vendors", orgId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("maintenance_vendors")
-        .select("*")
+      const { data, error } = await safeRead("maintenance_vendors", orgId)
         .order("name");
       if (error) throw error;
       return data;
-    }
+    },
+    enabled: isReady && !!orgId
   });
 
   // Update in-house features setting
   const updateInHouseFeatures = useMutation({
     mutationFn: async (enabled: boolean) => {
-      const { data, error } = await supabase
-        .from("company_maintenance_settings")
-        .update({ enable_inhouse_features: enabled })
-        .eq("id", companySettings?.id);
+      if (!companySettings?.id) {
+        throw new Error("No company maintenance settings found");
+      }
+
+      const { data, error } = await safeUpdate(
+        "company_maintenance_settings",
+        { enable_inhouse_features: enabled },
+        orgId,
+        { id: companySettings.id }
+      );
       if (error) throw error;
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["company-maintenance-settings"] });
+      queryClient.invalidateQueries({ queryKey: ["company-maintenance-settings", orgId] });
       toast.success("Settings updated successfully");
     },
     onError: () => {
@@ -78,14 +83,11 @@ export const MaintenanceSettingsTab: React.FC = () => {
   // Delete vendor mutation
   const deleteVendor = useMutation({
     mutationFn: async (vendorId: string) => {
-      const { error } = await supabase
-        .from("maintenance_vendors")
-        .delete()
-        .eq("id", vendorId);
+      const { error } = await safeDelete("maintenance_vendors", orgId, { id: vendorId });
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["maintenance-vendors"] });
+      queryClient.invalidateQueries({ queryKey: ["maintenance-vendors", orgId] });
       toast.success("Vendor deleted successfully");
     },
     onError: () => {

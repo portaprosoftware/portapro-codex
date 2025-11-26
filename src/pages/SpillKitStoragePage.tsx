@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -14,6 +14,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { MoreVertical, Edit, Trash2, Warehouse, Truck, Building2, MapPin, Package } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLocation } from "react-router-dom";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
+import { safeDelete } from "@/lib/supabase-helpers";
 
 export default function SpillKitStoragePage() {
   const { toast } = useToast();
@@ -22,31 +24,32 @@ export default function SpillKitStoragePage() {
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [editingLocation, setEditingLocation] = useState<any>(null);
   const [deletingLocation, setDeletingLocation] = useState<any>(null);
+  const { orgId, isReady } = useOrganizationId();
 
   const showStockView = location.hash === "#stock";
 
   const { data: locations, isLoading } = useQuery({
-    queryKey: ['spill_kit_storage_locations'],
+    queryKey: ['spill_kit_storage_locations', orgId],
     queryFn: async () => {
+      if (!orgId) return [];
       const { data, error } = await supabase
         .from('spill_kit_storage_locations')
         .select('*, vehicles(license_plate)')
+        .eq('organization_id', orgId)
         .order('name');
       if (error) throw error;
       return data;
-    }
+    },
+    enabled: isReady && !!orgId
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('spill_kit_storage_locations')
-        .delete()
-        .eq('id', id);
+      const { error } = await safeDelete('spill_kit_storage_locations', orgId, { id });
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['spill_kit_storage_locations'] });
+      queryClient.invalidateQueries({ queryKey: ['spill_kit_storage_locations', orgId] });
       toast({
         title: "Success",
         description: "Location deleted successfully"
@@ -186,7 +189,7 @@ export default function SpillKitStoragePage() {
           }}
           location={editingLocation}
           onSuccess={() => {
-            queryClient.invalidateQueries({ queryKey: ['spill_kit_storage_locations'] });
+            queryClient.invalidateQueries({ queryKey: ['spill_kit_storage_locations', orgId] });
             setEditingLocation(null);
           }}
         />
