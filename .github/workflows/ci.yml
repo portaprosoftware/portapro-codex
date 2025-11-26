@@ -21,8 +21,17 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
       - name: Install dependencies
         run: npm ci
+
+      - name: Run tenant isolation audit
+        run: pnpm tenant:audit
 
       - name: Type check
         run: npm run type-check

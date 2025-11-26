@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "typecheck": "tsc -p tsconfig.app.json --noEmit",
     "type-check": "npm run typecheck",
-    "tenant:audit": "node scripts/tenant-audit.mjs --config config/tenant-audit.config.json",
+    "tenant:audit": "node ./scripts/tenant-audit.js",
     "audit:tenant": "npm run tenant:audit"
   },
   "dependencies": {
