@@ -12,6 +12,8 @@ import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useMutation } from '@tanstack/react-query';
+import { tenantTable } from '@/lib/db/tenant';
+import { useTenantId } from '@/lib/tenantQuery';
 
 interface InvoicesExportModalProps {
   isOpen: boolean;
@@ -42,12 +44,14 @@ export function InvoicesExportModal({ isOpen, onClose }: InvoicesExportModalProp
     includePayments: false
   });
   const { toast } = useToast();
+  const tenantId = useTenantId();
 
   const exportMutation = useMutation({
     mutationFn: async (exportFilters: ExportFilters) => {
+      if (!tenantId) throw new Error('Organization context is required');
+
       // Build query based on filters
-      let query = supabase
-        .from('invoices')
+      let query = tenantTable(supabase, tenantId, 'invoices')
         .select(`
           *,
           customer:customers(name, email, phone),

@@ -111,10 +111,9 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ customerId }) =>
   const { data: invoices = [], isLoading: invoicesLoading } = useQuery({
     queryKey: ['customer-invoices', customerId],
     queryFn: async () => {
-      if (!customerId) return [];
-      
-      const { data, error } = await supabase
-        .from('invoices')
+      if (!customerId || !tenantId) return [];
+
+      const { data, error } = await tenantTable(supabase, tenantId, 'invoices')
         .select('*')
         .eq('customer_id', customerId)
         .order('created_at', { ascending: false })

@@ -14,6 +14,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { getInvoiceStatusBadgeVariant } from "@/lib/statusBadgeUtils";
 import { DateRange } from 'react-day-picker';
+import { tenantTable } from '@/lib/db/tenant';
+import { useTenantId } from '@/lib/tenantQuery';
 
 interface InvoicesTableProps {
   searchTerm: string;
@@ -27,13 +29,15 @@ export const InvoicesTable = ({ searchTerm, dateRange }: InvoicesTableProps) => 
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 25;
   const queryClient = useQueryClient();
+  const tenantId = useTenantId();
 
   // Fetch total count for pagination
   const { data: totalCount = 0 } = useQuery({
     queryKey: ['invoices-count', searchTerm, dateRange],
     queryFn: async () => {
-      let query = supabase
-        .from('invoices')
+      if (!tenantId) return 0;
+
+      let query = tenantTable(supabase, tenantId, 'invoices')
         .select('*', { count: 'exact', head: true });
 
       if (searchTerm) {
@@ -57,10 +61,11 @@ export const InvoicesTable = ({ searchTerm, dateRange }: InvoicesTableProps) => 
   const { data: invoices = [], isLoading, error } = useQuery({
     queryKey: ['invoices', searchTerm, dateRange, currentPage],
     queryFn: async () => {
+      if (!tenantId) return [];
+
       const offset = (currentPage - 1) * ITEMS_PER_PAGE;
-      
-      let query = supabase
-        .from('invoices')
+
+      let query = tenantTable(supabase, tenantId, 'invoices')
         .select(`
           *,
           customers:customer_id (

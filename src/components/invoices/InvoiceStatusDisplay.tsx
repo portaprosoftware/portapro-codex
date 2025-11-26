@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Receipt, Eye, Download, Send } from 'lucide-react';
+import { tenantTable } from '@/lib/db/tenant';
+import { useTenantId } from '@/lib/tenantQuery';
 
 interface InvoiceStatusDisplayProps {
   jobId?: string;
@@ -14,13 +16,13 @@ interface InvoiceStatusDisplayProps {
 }
 
 export function InvoiceStatusDisplay({ jobId, quoteId, showCreateButton = true, onCreateInvoice }: InvoiceStatusDisplayProps) {
+  const tenantId = useTenantId();
   const { data: invoices = [], isLoading } = useQuery({
     queryKey: ['related-invoices', jobId || quoteId],
     queryFn: async () => {
-      if (!jobId && !quoteId) return [];
-      
-      let query = supabase
-        .from('invoices')
+      if (!tenantId || (!jobId && !quoteId)) return [];
+
+      let query = tenantTable(supabase, tenantId, 'invoices')
         .select('id, invoice_number, amount, status, created_at, due_date');
       
       if (jobId) {

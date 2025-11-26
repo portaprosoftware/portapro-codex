@@ -36,6 +36,8 @@ export function DeleteCustomerDrawer({ isOpen, onClose, customer }: DeleteCustom
 
   const deleteCustomerMutation = useMutation({
     mutationFn: async () => {
+      if (!tenantId) throw new Error('Organization context is required');
+
       // Perform cascading deletion of all related records
       
       // Delete customer contacts first
@@ -83,8 +85,7 @@ export function DeleteCustomerDrawer({ isOpen, onClose, customer }: DeleteCustom
       }
 
       // Delete invoices associated with this customer
-      const { error: invoicesError } = await supabase
-        .from('invoices')
+      const { error: invoicesError } = await tenantTable(supabase, tenantId, 'invoices')
         .delete()
         .eq('customer_id', customer.id);
       

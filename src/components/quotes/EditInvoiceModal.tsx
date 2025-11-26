@@ -17,6 +17,8 @@ import { Separator } from '@/components/ui/separator';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
+import { tenantTable } from '@/lib/db/tenant';
+import { useTenantId } from '@/lib/tenantQuery';
 
 interface EditInvoiceModalProps {
   isOpen: boolean;
@@ -48,8 +50,9 @@ export function EditInvoiceModal({ isOpen, onClose, invoice }: EditInvoiceModalP
     discount_value: 0,
     discount_type: 'percentage'
   });
-  
+
   const queryClient = useQueryClient();
+  const tenantId = useTenantId();
 
   useEffect(() => {
     if (invoice) {
@@ -69,8 +72,9 @@ export function EditInvoiceModal({ isOpen, onClose, invoice }: EditInvoiceModalP
 
   const updateInvoiceMutation = useMutation({
     mutationFn: async (data: InvoiceFormData) => {
-      const { error } = await supabase
-        .from('invoices')
+      if (!tenantId) throw new Error('Organization context is required');
+
+      const { error } = await tenantTable(supabase, tenantId, 'invoices')
         .update({
           amount: data.amount,
           due_date: data.due_date,

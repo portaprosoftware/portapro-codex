@@ -5,6 +5,7 @@ import { resolveTaxRate, normalizeZip } from '@/lib/tax';
 import { triggerInvoiceReminderNotification } from '@/utils/notificationTriggers';
 import { useOrganizationId } from './useOrganizationId';
 import { safeInsert } from '@/lib/supabase-helpers';
+import { tenantTable } from '@/lib/db/tenant';
 
 interface CreateInvoiceFromJobParams {
   jobId: string;
@@ -56,11 +57,9 @@ export function useCreateInvoiceFromJob() {
       if (jobError) throw jobError;
 
       // Check if an invoice already exists
-      const { data: existingInvoice } = await supabase
-        .from('invoices')
+      const { data: existingInvoice } = await tenantTable(supabase, orgId, 'invoices')
         .select('id')
         .eq('job_id', jobId)
-        .eq('organization_id', orgId)
         .maybeSingle();
 
       if (existingInvoice) {

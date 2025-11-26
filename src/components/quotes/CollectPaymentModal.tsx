@@ -17,6 +17,8 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
+import { tenantTable } from '@/lib/db/tenant';
+import { useTenantId } from '@/lib/tenantQuery';
 
 interface CollectPaymentModalProps {
   isOpen: boolean;
@@ -38,11 +40,14 @@ export function CollectPaymentModal({ isOpen, onClose, invoice }: CollectPayment
     referenceNumber: '',
     notes: ''
   });
-  
+
   const queryClient = useQueryClient();
+  const tenantId = useTenantId();
 
   const processPaymentMutation = useMutation({
     mutationFn: async (data: PaymentData) => {
+      if (!tenantId) throw new Error('Organization context is required');
+
       // Handle credit card payments through Stripe
       if (data.paymentMethod === 'credit_card') {
         const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke(
@@ -68,8 +73,8 @@ export function CollectPaymentModal({ isOpen, onClose, invoice }: CollectPayment
       }
 
       // Handle non-credit card payments (cash, check, bank transfer)
-      const { error: paymentError } = await supabase
-        .from('payments')
+      const orgTable = tenantTable(supabase, tenantId, 'payments');
+      const { error: paymentError } = await orgTable
         .insert({
           invoice_id: invoice.id,
           amount: data.amount,
@@ -84,8 +89,7 @@ export function CollectPaymentModal({ isOpen, onClose, invoice }: CollectPayment
 
       // Update invoice status
       const newStatus = data.amount >= invoice.amount ? 'paid' : 'partial';
-      const { error: invoiceError } = await supabase
-        .from('invoices')
+      const { error: invoiceError } = await tenantTable(supabase, tenantId, 'invoices')
         .update({
           status: newStatus,
           updated_at: new Date().toISOString()

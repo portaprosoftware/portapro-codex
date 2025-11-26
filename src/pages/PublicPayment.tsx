@@ -7,10 +7,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2, CreditCard, XCircle, ArrowLeft, DollarSign } from 'lucide-react';
 import { toast } from 'sonner';
+import { tenantTable } from '@/lib/db/tenant';
+import { useTenantId } from '@/lib/tenantQuery';
 
 export default function PublicPayment() {
   const { invoiceId } = useParams<{ invoiceId: string }>();
   const navigate = useNavigate();
+  const tenantId = useTenantId();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [invoice, setInvoice] = useState<any>(null);
@@ -25,9 +28,12 @@ export default function PublicPayment() {
         return;
       }
 
+      if (!tenantId) {
+        return;
+      }
+
       try {
-        const { data, error: fetchError } = await supabase
-          .from('invoices')
+        const { data, error: fetchError } = await tenantTable(supabase, tenantId, 'invoices')
           .select('*, customers(name, email)')
           .eq('id', invoiceId)
           .single();
@@ -47,7 +53,7 @@ export default function PublicPayment() {
     };
 
     loadInvoice();
-  }, [invoiceId]);
+  }, [invoiceId, tenantId]);
 
   const handlePayment = async () => {
     if (amount <= 0 || amount > invoice.amount) {

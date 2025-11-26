@@ -8,7 +8,7 @@ import { getStatusBadgeVariant } from '@/lib/statusBadgeUtils';
 import { formatBadgeText } from '@/lib/textUtils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { 
+import {
   DollarSign,
   Calendar,
   Download,
@@ -24,6 +24,8 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { tenantTable } from '@/lib/db/tenant';
+import { useTenantId } from '@/lib/tenantQuery';
 
 interface BillingTabProps {
   customerId: string;
@@ -31,13 +33,15 @@ interface BillingTabProps {
 
 export const BillingTab: React.FC<BillingTabProps> = ({ customerId }) => {
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
+  const tenantId = useTenantId();
 
   // Fetch invoices data
   const { data: invoices = [], isLoading: invoicesLoading } = useQuery({
     queryKey: ['customer-invoices', customerId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('invoices')
+      if (!tenantId) return [];
+
+      const { data, error } = await tenantTable(supabase, tenantId, 'invoices')
         .select(`
           *,
           customer:customers(name)
