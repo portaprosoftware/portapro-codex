@@ -44,12 +44,9 @@ export async function POST(req: Request) {
   const token = authHeader.replace("Bearer", "").trim();
 
   let userId: string;
-  let sessionClaims: Record<string, unknown> | null = null;
-
   try {
     const verified = await verifyClerkSessionToken(token);
     userId = verified.userId;
-    sessionClaims = (verified.session?.response?.claims as Record<string, unknown>) || null;
   } catch (error) {
     const message = error instanceof Error ? error.message : "Invalid session";
     return formatError(message, 401);
@@ -69,14 +66,7 @@ export async function POST(req: Request) {
     return formatError("Organization mismatch", 403);
   }
 
-  const actingOrgIdClaim =
-    (sessionClaims?.publicMetadata as Record<string, unknown> | undefined)?.organization_id ||
-    (sessionClaims?.metadata as Record<string, unknown> | undefined)?.organization_id ||
-    null;
-
-  if (actingOrgIdClaim && actingOrgIdClaim !== org.id) {
-    return formatError("Cross-tenant access denied", 403);
-  }
+  // TODO: Replace with Supabase role lookup in next phase
 
   const { data: actingProfile } = await supabase
     .from("profiles")
@@ -95,12 +85,6 @@ export async function POST(req: Request) {
   const redirectBase = payload.redirectBase ?? buildTenantUrl(org.subdomain);
   const redirectUrl = `${redirectBase}/sign-in`;
 
-  const publicMetadata = {
-    role: payload.role,
-    organization_id: org.id,
-    organization_slug: org.subdomain,
-  } as const;
-
   let createdUserId: string | null = null;
   let invitationId: string | null = null;
 
@@ -110,14 +94,12 @@ export async function POST(req: Request) {
       firstName: payload.firstName,
       lastName: payload.lastName,
       phoneNumbers: payload.phone ? [{ phoneNumber: payload.phone }] : undefined,
-      publicMetadata,
     });
 
     createdUserId = createdUser.id;
 
     const invitation = await clerkClient.invitations.createInvitation({
       emailAddress: payload.email,
-      publicMetadata,
       redirectUrl,
     });
 

@@ -36,7 +36,6 @@ export const clerkClient = {
       firstName: string;
       lastName: string;
       phoneNumbers?: { phoneNumber: string }[];
-      publicMetadata?: Record<string, unknown>;
     }) {
       const response = await fetch(`${CLERK_API_BASE}/users`, {
         method: "POST",
@@ -46,7 +45,6 @@ export const clerkClient = {
           first_name: params.firstName,
           last_name: params.lastName,
           phone_numbers: params.phoneNumbers?.map((phone) => phone.phoneNumber),
-          public_metadata: params.publicMetadata,
         }),
       });
 
@@ -69,7 +67,6 @@ export const clerkClient = {
   invitations: {
     async createInvitation(params: {
       emailAddress: string;
-      publicMetadata?: Record<string, unknown>;
       redirectUrl?: string;
     }) {
       const response = await fetch(`${CLERK_API_BASE}/invitations`, {
@@ -77,7 +74,6 @@ export const clerkClient = {
         headers: buildHeaders(),
         body: JSON.stringify({
           email_address: params.emailAddress,
-          public_metadata: params.publicMetadata,
           redirect_url: params.redirectUrl,
         }),
       });

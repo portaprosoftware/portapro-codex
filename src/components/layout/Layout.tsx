@@ -63,9 +63,9 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       <div className="min-h-screen flex items-center justify-center p-6" style={{ backgroundColor: '#f9fafb' }}>
         <div className="bg-white rounded-lg shadow-lg p-6 text-center space-y-4">
           <h2 className="text-2xl font-bold">Welcome {roleUser.firstName}!</h2>
-          <p>Please contact your administrator to set your role, or go to your Clerk dashboard and add:</p>
-          <code className="block bg-gray-100 p-4 rounded">publicMetadata: {`{"role": "owner"}`}</code>
+          <p>Please contact your administrator to set your role so we can finalize your access.</p>
           <p className="text-sm text-gray-500">Valid roles: owner, dispatch, driver, customer</p>
+          {/* TODO: Replace with Supabase role lookup in next phase */}
         </div>
       </div>
     );
