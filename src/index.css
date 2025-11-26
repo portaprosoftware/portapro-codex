@@ -295,6 +295,51 @@
     scrollbar-width: none;
   }
 
+  /* Form responsiveness */
+  form {
+    @apply space-y-6;
+  }
+
+  @media (max-width: 639px) {
+    form .grid {
+      @apply gap-4;
+    }
+
+    form .grid-cols-2,
+    form .grid-cols-3,
+    form .grid-cols-4 {
+      @apply grid-cols-1;
+    }
+
+    form button[type="submit"],
+    form .form-action,
+    form .form-button,
+    form .w-full-mobile {
+      @apply w-full;
+    }
+
+    form .flex.items-center,
+    form .flex.gap-4,
+    form .flex.gap-6 {
+      @apply flex-col items-stretch gap-3;
+    }
+
+    form input[type="file"],
+    form .file-upload,
+    form .upload-area,
+    form .signature-pad,
+    form .select-trigger,
+    form .dropdown-trigger,
+    form .date-picker,
+    form .time-picker,
+    form .textarea,
+    form textarea,
+    form select,
+    form input {
+      @apply w-full max-w-full;
+    }
+  }
+
   /* Calendly Widget Overrides - Force proper sizing and visibility */
   .calendly-inline-widget,
   .calendly-inline-widget iframe {

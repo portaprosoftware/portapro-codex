@@ -6,14 +6,11 @@ import { useTodayInCompanyTimezone } from '@/hooks/useCompanyTimezone';
 import { AlignLeft } from 'lucide-react';
 import { useUserRole } from '@/hooks/useUserRole';
 import { cn } from "@/lib/utils";
-import { Logo } from "@/components/ui/logo";
 import { useOrganizationId } from '@/hooks/useOrganizationId';
 import { tenantTable } from '@/lib/db/tenant';
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
-  DrawerDescription,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
@@ -105,9 +102,9 @@ export function MobileNavDrawer() {
   };
 
   const NavSection: React.FC<{ title?: string; items: NavigationItem[] }> = ({ title, items }) => (
-    <div className="mb-4">
-      {title && <h3 className="nav-section-header text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-4">{title}</h3>}
-      <div className="space-y-0.5">
+    <div className="mb-5">
+      {title && <h3 className="nav-section-header text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-5">{title}</h3>}
+      <div className="space-y-1">
         {items.map((item) => {
           const active = isActive(item.url);
           return (
@@ -119,17 +116,17 @@ export function MobileNavDrawer() {
                 setOpen(false);
               }}
               className={cn(
-                "nav-list-item flex items-center gap-3 px-4 py-3 text-sm font-medium transition-all",
-                active 
-                  ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white shadow-sm" 
-                  : "text-gray-700 active:bg-gray-100"
+                "nav-list-item group flex min-w-0 items-center gap-3 rounded-2xl px-5 py-3.5 text-base font-semibold transition-all duration-200", 
+                active
+                  ? "bg-gradient-to-r from-blue-700 to-blue-800 text-white shadow-sm"
+                  : "text-gray-700 hover:bg-gray-50 active:bg-gray-100"
               )}
             >
-              <item.icon className={cn("icon h-5.5 w-5.5 flex-shrink-0", active && "text-white")} />
-              <span className="flex-1">{item.title}</span>
+              <item.icon className={cn("icon h-6 w-6 flex-shrink-0", active ? "text-white" : "text-gray-700")}/>
+              <span className="flex-1 truncate text-left">{item.title}</span>
               {item.badge && (
                 <span className={cn(
-                  "px-2 py-0.5 text-xs font-bold rounded-full bg-gradient-to-r from-blue-600 to-blue-700 text-white"
+                  "min-w-[2.25rem] px-2.5 py-1 text-xs font-bold rounded-full bg-gradient-to-r from-blue-600 to-blue-700 text-white text-center"
                 )}>
                   {item.badge}
                 </span>
@@ -144,17 +141,17 @@ export function MobileNavDrawer() {
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-          <AlignLeft className="h-7 w-7 text-gray-700" />
+        <button className="flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-white/90 text-gray-700 shadow-sm transition hover:bg-gray-50">
+          <AlignLeft className="h-6 w-6" />
         </button>
       </DrawerTrigger>
-      <DrawerContent className="ios-sheet h-[85vh] max-h-[85vh] flex flex-col z-[60] bg-white/95">
-        <DrawerHeader className="pb-0 pt-0">
+      <DrawerContent className="ios-sheet z-[60] h-screen max-h-screen !mt-0 flex flex-col rounded-none bg-white/95 shadow-2xl transition-transform duration-300 ease-out data-[state=closed]:translate-y-full data-[state=open]:translate-y-0">
+        <DrawerHeader className="sticky top-0 z-10 bg-white/95 pb-2 pt-3 shadow-sm">
           <div className="ios-sheet__grabber" />
           <DrawerTitle className="sr-only">Navigation Menu</DrawerTitle>
         </DrawerHeader>
-        
-        <nav className="ios-sheet__content flex-1 overflow-y-auto pt-2">
+
+        <nav className="ios-sheet__content flex-1 overflow-y-auto px-2 pb-8 pt-3">
           {visibleCoreItems.length > 0 && <NavSection items={visibleCoreItems} />}
           {visibleDayToDayItems.length > 0 && <NavSection title="DAY-TO-DAY" items={visibleDayToDayItems} />}
           {visibleInventoryItems.length > 0 && <NavSection title="INVENTORY" items={visibleInventoryItems} />}

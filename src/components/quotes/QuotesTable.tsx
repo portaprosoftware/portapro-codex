@@ -181,8 +181,8 @@ export const QuotesTable = ({ searchTerm, dateRange }: QuotesTableProps) => {
   return (
     <>
       {/* Desktop Table View - hidden on mobile */}
-      <div className="hidden lg:block rounded-lg border border-border bg-card">
-        <Table>
+      <div className="hidden lg:block rounded-lg border border-border bg-card overflow-x-auto">
+        <Table className="min-w-[960px]">
           <TableHeader>
             <TableRow className="border-b border-border bg-muted/50">
               <TableHead className="font-medium text-sm text-foreground">Quote #</TableHead>
