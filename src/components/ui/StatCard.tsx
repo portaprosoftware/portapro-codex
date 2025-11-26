@@ -66,7 +66,7 @@ export const StatCard: React.FC<StatCardProps> = ({
         "bg-gradient-to-b from-[#F6F9FF] to-white",
         "rounded-xl border border-gray-200 shadow-sm",
         "hover:shadow-md hover:-translate-y-1",
-        "p-5 md:p-4 min-h-[140px] md:h-32", // Mobile optimized padding and height
+        "w-full p-4 sm:p-5 min-h-[150px] sm:min-h-[136px]", // Mobile optimized padding and height
         clickable && "cursor-pointer hover:shadow-lg hover:-translate-y-2",
         className
       )}
@@ -81,7 +81,7 @@ export const StatCard: React.FC<StatCardProps> = ({
       />
       
       {/* Main content in horizontal layout */}
-      <div className="flex items-center justify-between h-full">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between h-full">
         {/* Left side - Value and title */}
         <div className="flex-1 min-w-0">
           {/* Value - larger on mobile for better readability */}
@@ -99,16 +99,16 @@ export const StatCard: React.FC<StatCardProps> = ({
           
           {/* Subtitle - more readable on mobile */}
           {subtitle && (
-            <div className={cn("text-sm md:text-xs font-medium font-sans truncate", subtitleColor)}>
+            <div className={cn("text-sm md:text-xs font-medium font-sans leading-snug", subtitleColor)}>
               {subtitle}
             </div>
           )}
         </div>
-        
+
         {/* Right side - Icon or Emoji */}
-        <div 
-          className="w-12 h-12 rounded-lg flex items-center justify-center shadow-md transition-all duration-200 flex-shrink-0 ml-3"
-          style={{ 
+        <div
+          className="w-12 h-12 rounded-lg flex items-center justify-center shadow-md transition-all duration-200 flex-shrink-0 sm:ml-4 self-start sm:self-center"
+          style={{
             background: `linear-gradient(135deg, ${gradientFrom}, ${gradientTo})`,
             animationDelay: `${delay}ms`,
             boxShadow: `0 4px 12px -4px ${gradientFrom}40`
