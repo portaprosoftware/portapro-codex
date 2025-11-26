@@ -88,6 +88,15 @@ export function getAppRootUrl(): string {
   return resolved;
 }
 
+export const clientEnv = {
+  SUPABASE_URL: readValue('SUPABASE_URL', ['VITE_SUPABASE_URL']),
+  SUPABASE_ANON_KEY: readValue('SUPABASE_ANON_KEY', ['VITE_SUPABASE_PUBLISHABLE_KEY', 'VITE_SUPABASE_ANON_KEY']),
+  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: readValue('NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY', ['VITE_CLERK_PUBLISHABLE_KEY']),
+  NEXT_PUBLIC_APP_ROOT_URL: getAppRootUrl(),
+  VITE_ROOT_DOMAIN: getRootDomain(),
+  VITE_MARKETING_URL: getMarketingUrl(),
+};
+
 let serverEnvCache: ServerEnv | null = null;
 
 export const loadServerEnv = (): ServerEnv => {
