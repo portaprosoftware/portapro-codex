@@ -13,7 +13,8 @@
     "type-check": "npm run typecheck",
     "tenant:audit": "node scripts/tenant-audit.mjs",
     "audit:tenant": "npm run tenant:audit",
-    "smoke:tenant": "node scripts/smoke-tenant.js"
+    "smoke:tenant": "node scripts/smoke-tenant.js",
+    "test:tenant": "vitest run src/test/tenant-smoke"
   },
   "dependencies": {
     "@capacitor-community/barcode-scanner": "^4.0.1",

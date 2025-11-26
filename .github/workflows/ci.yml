@@ -40,6 +40,12 @@ jobs:
       - name: Check forbidden patterns
         run: node scripts/check-forbidden-patterns.js
 
+      - name: Run Tenant Smoke Suite
+        run: npm run test:tenant
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
       - name: Build application
         run: npm run build
         env:
