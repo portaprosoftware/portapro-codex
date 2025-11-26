@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useDriverNotifications } from '@/hooks/useDriverNotifications';
 import { DriverNotificationDropdown } from './DriverNotificationDropdown';
+import { getMarketingUrl } from '@/lib/config/domains';
 
 export const DriverHeader: React.FC = () => {
   const { user } = useUser();
@@ -75,13 +76,13 @@ export const DriverHeader: React.FC = () => {
               )}
             </Button>
             
-            <UserButton 
+            <UserButton
               appearance={{
                 elements: {
                   avatarBox: "w-10 h-10"
                 }
               }}
-              afterSignOutUrl="https://www.portaprosoftware.com"
+              afterSignOutUrl={getMarketingUrl()}
             />
           </div>
         </div>

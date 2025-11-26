@@ -7,6 +7,7 @@ import { useUserRole } from '@/hooks/useUserRole';
 import { UserButton, useUser } from '@clerk/clerk-react';
 import { Logo } from '@/components/ui/logo';
 import { cn } from "@/lib/utils";
+import { getMarketingUrl } from '@/lib/config/domains';
 import {
   Sidebar,
   SidebarContent,
@@ -172,14 +173,14 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
 
       <SidebarFooter className="p-4 border-t border-gray-200 mt-auto">
         <div className="flex items-center gap-3">
-          <UserButton 
+          <UserButton
             appearance={{
               elements: {
                 userButtonAvatarBox: "w-8 h-8",
                 userButtonPopoverCard: "shadow-lg"
               }
             }}
-            afterSignOutUrl="https://www.portaprosoftware.com"
+            afterSignOutUrl={getMarketingUrl()}
           />
           {state === "expanded" && (
             <div className="text-sm text-gray-600 truncate">

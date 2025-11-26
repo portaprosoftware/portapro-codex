@@ -4,6 +4,7 @@ import { useUser, useOrganization } from '@clerk/clerk-react';
 import { Loader2 } from 'lucide-react';
 import { useOrganizationContext } from '@/contexts/OrganizationContext';
 import { EnsureActiveOrg } from './EnsureActiveOrg';
+import { getMarketingUrl } from '@/lib/config/domains';
 
 interface TenantGuardProps {
   children: React.ReactNode;
@@ -62,7 +63,7 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
 
   // If user is not signed in → back to marketing site
   if (!user) {
-    window.location.href = 'https://www.portaprosoftware.com';
+    window.location.href = getMarketingUrl();
     return null;
   }
 

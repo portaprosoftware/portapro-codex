@@ -1,8 +1,10 @@
-const WILDCARD_DOMAIN = "portaprosoftware.com";
-const APP_HOST = `app.${WILDCARD_DOMAIN}`;
+import { getAppRootUrl, getRootDomain } from '@/lib/config/domains';
+
+const rootDomain = getRootDomain();
+const APP_HOST = new URL(getAppRootUrl()).hostname;
 const MARKETING_HOSTS = new Set([
-  WILDCARD_DOMAIN,
-  `www.${WILDCARD_DOMAIN}`,
+  rootDomain,
+  `www.${rootDomain}`,
 ]);
 
 const SLUG_PATTERN = /^[a-z0-9-]+$/;
@@ -21,7 +23,7 @@ export function extractOrgSlug(host?: string | null): string | null {
     return null;
   }
 
-  if (!normalizedHost.endsWith(WILDCARD_DOMAIN)) {
+  if (!normalizedHost.endsWith(rootDomain)) {
     return null;
   }
 

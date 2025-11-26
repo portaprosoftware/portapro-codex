@@ -20,6 +20,7 @@ import { useClerk, useUser, UserButton } from "@clerk/clerk-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Logo } from "@/components/ui/logo";
 import { useUserRole } from "@/hooks/useUserRole";
+import { getMarketingUrl } from "@/lib/config/domains";
 
 interface MenuItem {
   icon: React.ComponentType<any> | string;
@@ -34,6 +35,7 @@ const Sidebar = () => {
   const { user } = useUser();
   const { role } = useUserRole();
   const queryClient = useQueryClient();
+  const marketingUrl = getMarketingUrl();
 
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -52,13 +54,13 @@ const Sidebar = () => {
       });
       
       queryClient.clear();
-      
+
       // Sign out from Clerk with full cleanup
-      await signOut({ redirectUrl: 'https://www.portaprosoftware.com' });
+      await signOut({ redirectUrl: marketingUrl });
     } catch (error) {
       console.error('Sign out error:', error);
       // Ensure redirect even if sign-out fails
-      window.location.href = 'https://www.portaprosoftware.com';
+      window.location.href = marketingUrl;
     }
   };
 
@@ -192,13 +194,13 @@ const Sidebar = () => {
       <div className="px-6 py-4 border-t border-gray-200 flex-shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <UserButton 
+            <UserButton
               appearance={{
                 elements: {
                   avatarBox: "w-8 h-8"
                 }
               }}
-              afterSignOutUrl="https://www.portaprosoftware.com"
+              afterSignOutUrl={marketingUrl}
             />
             <div className="min-w-0 flex-1">
               <p className="text-sm font-medium font-inter" style={{ color: '#09090B' }}>

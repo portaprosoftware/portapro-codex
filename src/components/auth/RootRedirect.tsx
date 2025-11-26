@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useOrganizationList } from '@clerk/clerk-react';
 import { useSubdomainOrg } from '@/hooks/useSubdomainOrg';
+import { buildTenantUrl } from '@/lib/config/domains';
 
 interface RootRedirectProps {
   children: React.ReactNode;
@@ -50,6 +51,6 @@ export const RootRedirect: React.FC<RootRedirectProps> = ({ children }) => {
 
   // Redirect to first organization's subdomain
   const primaryOrg = memberships[0].organization;
-  window.location.href = `https://${primaryOrg.slug}.portaprosoftware.com/dashboard`;
+  window.location.href = `${buildTenantUrl(primaryOrg.slug)}/dashboard`;
   return null;
 };

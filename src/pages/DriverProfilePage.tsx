@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LogOut, User, Phone, Mail } from 'lucide-react';
 import { TimeOffSection } from '@/components/driver/TimeOffSection';
 import { SettingsSection } from '@/components/driver/SettingsSection';
+import { getMarketingUrl } from "@/lib/config/domains";
 
 export const DriverProfilePage: React.FC = () => {
   const { user } = useUser();
@@ -79,13 +80,13 @@ export const DriverProfilePage: React.FC = () => {
             });
             
             queryClient.clear();
-            
+
             // Sign out from Clerk with full cleanup
-            await signOut({ redirectUrl: 'https://www.portaprosoftware.com' });
+            await signOut({ redirectUrl: getMarketingUrl() });
           } catch (error) {
             console.error('Sign out error:', error);
             // Ensure redirect even if sign-out fails
-            window.location.href = 'https://www.portaprosoftware.com';
+            window.location.href = getMarketingUrl();
           }
         }}
       >

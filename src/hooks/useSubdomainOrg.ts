@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { extractOrgSlug } from '../../lib/getOrgFromHost';
+import { getAppRootUrl, getMarketingUrl, getRootDomain } from '@/lib/config/domains';
 
 interface OrganizationData {
   id: string;
@@ -25,7 +26,7 @@ interface UseSubdomainOrgReturn {
  * Handles:
  * - Subdomain extraction from hostname
  * - Localhost detection with ?org= query param support
- * - Main domain detection (portaprosoftware.com)
+ * - Main domain detection (marketing + app hostnames)
  * - Organization lookup in Supabase
  * 
  * @returns {UseSubdomainOrgReturn} Organization data, subdomain, loading state, and error
@@ -55,8 +56,19 @@ export const useSubdomainOrg = (): UseSubdomainOrgReturn => {
         // STEP 1: Extract subdomain from hostname
         const hostname = window.location.hostname;
         const localhostDetected = hostname === 'localhost' || hostname.startsWith('127.0.0.1');
-        const mainDomainDetected = hostname === 'portaprosoftware.com' || hostname === 'www.portaprosoftware.com';
-        const appDomainDetected = hostname === 'app.portaprosoftware.com';
+
+        const rootDomain = getRootDomain();
+        const marketingHostname = new URL(getMarketingUrl()).hostname;
+        const appHostname = new URL(getAppRootUrl()).hostname;
+
+        const marketingHosts = new Set([
+          rootDomain,
+          `www.${rootDomain}`,
+          marketingHostname,
+        ]);
+
+        const mainDomainDetected = marketingHosts.has(hostname);
+        const appDomainDetected = hostname === appHostname;
         
         setIsLocalhost(localhostDetected);
         setIsMainDomain(mainDomainDetected || appDomainDetected);
