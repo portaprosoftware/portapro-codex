@@ -37,15 +37,12 @@ export const BillingTab: React.FC<BillingTabProps> = ({ customerId }) => {
 
   // Fetch invoices data
   const { data: invoices = [], isLoading: invoicesLoading } = useQuery({
-    queryKey: ['customer-invoices', customerId],
+    queryKey: ['customer-invoices', customerId, tenantId],
     queryFn: async () => {
       if (!tenantId) return [];
 
       const { data, error } = await tenantTable(supabase, tenantId, 'invoices')
-        .select(`
-          *,
-          customer:customers(name)
-        `)
+        .select('*')
         .eq('customer_id', customerId)
         .order('created_at', { ascending: false });
 

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -28,6 +27,8 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { tenantTable } from '@/lib/db/tenant';
+import { useTenantId } from '@/lib/tenantQuery';
 
 interface UsersTabProps {
   customerId: string;
@@ -79,13 +80,15 @@ export const UsersTab: React.FC<UsersTabProps> = ({ customerId }) => {
     role: '',
     locations: [] as string[]
   });
+  const tenantId = useTenantId();
 
   // Fetch customer contacts/users (using customer_contacts as user data)
   const { data: users = [], isLoading: usersLoading } = useQuery({
-    queryKey: ['customer-users', customerId],
+    queryKey: ['customer-users', customerId, tenantId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('customer_contacts')
+      if (!tenantId) return [];
+
+      const { data, error } = await tenantTable(supabase, tenantId, 'customer_contacts')
         .select('*')
         .eq('customer_id', customerId)
         .order('created_at', { ascending: false });
@@ -114,10 +117,11 @@ export const UsersTab: React.FC<UsersTabProps> = ({ customerId }) => {
 
   // Fetch customer locations for site contact assignment
   const { data: locations = [] } = useQuery({
-    queryKey: ['customer-locations', customerId],
+    queryKey: ['customer-locations', customerId, tenantId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('customer_service_locations')
+      if (!tenantId) return [];
+
+      const { data, error } = await tenantTable(supabase, tenantId, 'customer_service_locations')
         .select('id, location_name, street, city, state')
         .eq('customer_id', customerId)
         .eq('is_active', true);

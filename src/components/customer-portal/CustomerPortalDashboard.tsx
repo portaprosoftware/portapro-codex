@@ -25,10 +25,11 @@ export const CustomerPortalDashboard: React.FC<CustomerPortalDashboardProps> = (
   const tenantId = useTenantId();
   // Fetch units on site (from equipment_assignments)
   const { data: unitsOnSite = 0 } = useQuery({
-    queryKey: ['customer-units-onsite', customerId],
+    queryKey: ['customer-units-onsite', customerId, tenantId],
     queryFn: async () => {
-      const { count } = await supabase
-        .from('equipment_assignments')
+      if (!tenantId) return 0;
+
+      const { count } = await tenantTable(supabase, tenantId, 'equipment_assignments')
         .select('*', { count: 'exact', head: true })
         .eq('status', 'in_service')
         .eq('job_id', customerId); // This would need proper job linking
@@ -38,10 +39,11 @@ export const CustomerPortalDashboard: React.FC<CustomerPortalDashboardProps> = (
 
   // Fetch next service date (from jobs table)
   const { data: nextService } = useQuery({
-    queryKey: ['customer-next-service', customerId],
+    queryKey: ['customer-next-service', customerId, tenantId],
     queryFn: async () => {
-      const { data } = await supabase
-        .from('jobs')
+      if (!tenantId) return null;
+
+      const { data } = await tenantTable(supabase, tenantId, 'jobs')
         .select('scheduled_date, job_type')
         .eq('customer_id', customerId)
         .gte('scheduled_date', new Date().toISOString().split('T')[0])
@@ -55,10 +57,11 @@ export const CustomerPortalDashboard: React.FC<CustomerPortalDashboardProps> = (
 
   // Fetch open requests (pending/in_progress jobs)
   const { data: openRequests = 0 } = useQuery({
-    queryKey: ['customer-open-requests', customerId],
+    queryKey: ['customer-open-requests', customerId, tenantId],
     queryFn: async () => {
-      const { count } = await supabase
-        .from('jobs')
+      if (!tenantId) return 0;
+
+      const { count } = await tenantTable(supabase, tenantId, 'jobs')
         .select('*', { count: 'exact', head: true })
         .eq('customer_id', customerId)
         .in('status', ['scheduled', 'in_progress', 'pending']);
@@ -68,7 +71,7 @@ export const CustomerPortalDashboard: React.FC<CustomerPortalDashboardProps> = (
 
   // Fetch balance due (from unpaid invoices)
   const { data: balanceDue = 0 } = useQuery({
-    queryKey: ['customer-balance-due', customerId],
+    queryKey: ['customer-balance-due', customerId, tenantId],
     queryFn: async () => {
       if (!tenantId) return 0;
 
@@ -83,11 +86,12 @@ export const CustomerPortalDashboard: React.FC<CustomerPortalDashboardProps> = (
 
   // Fetch overdue jobs for alerts
   const { data: overdueJobs = 0 } = useQuery({
-    queryKey: ['customer-overdue-jobs', customerId],
+    queryKey: ['customer-overdue-jobs', customerId, tenantId],
     queryFn: async () => {
       const today = new Date().toISOString().split('T')[0];
-      const { count } = await supabase
-        .from('jobs')
+      if (!tenantId) return 0;
+
+      const { count } = await tenantTable(supabase, tenantId, 'jobs')
         .select('*', { count: 'exact', head: true })
         .eq('customer_id', customerId)
         .lt('scheduled_date', today)
@@ -98,10 +102,11 @@ export const CustomerPortalDashboard: React.FC<CustomerPortalDashboardProps> = (
 
   // Fetch recent jobs for activity feed
   const { data: recentJobs = [] } = useQuery({
-    queryKey: ['customer-recent-jobs', customerId],
+    queryKey: ['customer-recent-jobs', customerId, tenantId],
     queryFn: async () => {
-      const { data } = await supabase
-        .from('jobs')
+      if (!tenantId) return [];
+
+      const { data } = await tenantTable(supabase, tenantId, 'jobs')
         .select('id, job_type, status, scheduled_date, actual_completion_time, job_number')
         .eq('customer_id', customerId)
         .order('created_at', { ascending: false })

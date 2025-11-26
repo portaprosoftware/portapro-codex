@@ -9,6 +9,7 @@ import { Loader2, FileText, DollarSign, Calendar, ExternalLink } from 'lucide-re
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { tenantTable } from '@/lib/db/tenant';
+import { useTenantId } from '@/lib/tenantQuery';
 
 interface PortalData {
   customer: any;
@@ -20,22 +21,26 @@ interface PortalData {
 export default function CustomerPortal() {
   const { token } = useParams<{ token: string }>();
   const navigate = useNavigate();
+  const tenantId = useTenantId();
   const [portalData, setPortalData] = useState<PortalData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchPortalData = async () => {
-      if (!token) {
+      if (!token || !tenantId) {
         setError('Invalid portal link');
         setLoading(false);
         return;
       }
 
       try {
-        // Verify token and get customer ID
-        const { data: tokenData, error: tokenError } = await supabase
-          .from('customer_portal_tokens')
+        // Verify token and get customer ID within tenant scope
+        const { data: tokenData, error: tokenError } = await tenantTable(
+          supabase,
+          tenantId,
+          'customer_portal_tokens'
+        )
           .select('*')
           .eq('token', token)
           .single();
@@ -53,22 +58,19 @@ export default function CustomerPortal() {
         }
 
         // Update token usage
-        await supabase
-          .from('customer_portal_tokens')
+        await tenantTable(
+          supabase,
+          tenantId,
+          'customer_portal_tokens'
+        )
           .update({
             used_at: new Date().toISOString(),
             usage_count: (tokenData.usage_count || 0) + 1,
           })
           .eq('id', tokenData.id);
 
-        const orgId = tokenData.organization_id;
-
         // Fetch customer data
-        const { data: customer, error: customerError } = await tenantTable(
-          supabase,
-          orgId,
-          'customers'
-        )
+        const { data: customer, error: customerError } = await tenantTable(supabase, tenantId, 'customers')
           .select('*')
           .eq('id', tokenData.customer_id)
           .single();
@@ -76,8 +78,7 @@ export default function CustomerPortal() {
         if (customerError) throw customerError;
 
         // Fetch quotes with deposit information
-        const { data: quotes, error: quotesError } = await supabase
-          .from('quotes')
+        const { data: quotes, error: quotesError } = await tenantTable(supabase, tenantId, 'quotes')
           .select('*')
           .eq('customer_id', tokenData.customer_id)
           .order('created_at', { ascending: false });
@@ -85,8 +86,7 @@ export default function CustomerPortal() {
         if (quotesError) throw quotesError;
 
         // Fetch invoices with payment information
-        const { data: invoices, error: invoicesError } = await supabase
-          .from('invoices')
+        const { data: invoices, error: invoicesError } = await tenantTable(supabase, tenantId, 'invoices')
           .select('*')
           .eq('customer_id', tokenData.customer_id)
           .order('created_at', { ascending: false });
@@ -94,8 +94,7 @@ export default function CustomerPortal() {
         if (invoicesError) throw invoicesError;
 
         // Fetch jobs
-        const { data: jobs, error: jobsError } = await supabase
-          .from('jobs')
+        const { data: jobs, error: jobsError } = await tenantTable(supabase, tenantId, 'jobs')
           .select('*')
           .eq('customer_id', tokenData.customer_id)
           .order('created_at', { ascending: false });
@@ -118,7 +117,7 @@ export default function CustomerPortal() {
     };
 
     fetchPortalData();
-  }, [token]);
+  }, [token, tenantId]);
 
   const handlePayDeposit = async (quoteId: string, depositAmount: number) => {
     try {
