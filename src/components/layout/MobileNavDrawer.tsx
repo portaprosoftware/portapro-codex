@@ -88,19 +88,20 @@ export function MobileNavDrawer() {
   const visibleAdminItems = getVisibleItems(adminItems);
 
   const isActive = (url: string) => {
-    return location.pathname === url || 
-      (url === '/fleet' && location.pathname.startsWith('/fleet')) ||
-      (url === '/team-management' && location.pathname.startsWith('/team-management')) ||
-      (url === '/inventory' && location.pathname.startsWith('/inventory')) ||
-      (url === '/consumables' && location.pathname.startsWith('/consumables')) ||
-      (url === '/jobs' && location.pathname.startsWith('/jobs')) ||
-      (url === '/customers' && (location.pathname === '/customer-hub' || location.pathname.startsWith('/customers'))) ||
-      (url === '/quotes-invoices' && location.pathname.startsWith('/quotes-invoices')) ||
-      (url === '/analytics' && location.pathname.startsWith('/analytics')) ||
-      (url === '/settings' && location.pathname.startsWith('/settings')) ||
-      (url === '/maintenance-hub' && location.pathname.startsWith('/maintenance-hub')) ||
-      (url === '/marketing' && location.pathname.startsWith('/marketing')) ||
-      (url === '/storage-sites' && location.pathname.startsWith('/storage-sites'));
+    const pathname = String(location?.pathname ?? "");
+    return pathname === url ||
+      (url === '/fleet' && pathname.startsWith('/fleet')) ||
+      (url === '/team-management' && pathname.startsWith('/team-management')) ||
+      (url === '/inventory' && pathname.startsWith('/inventory')) ||
+      (url === '/consumables' && pathname.startsWith('/consumables')) ||
+      (url === '/jobs' && pathname.startsWith('/jobs')) ||
+      (url === '/customers' && (pathname === '/customer-hub' || pathname.startsWith('/customers'))) ||
+      (url === '/quotes-invoices' && pathname.startsWith('/quotes-invoices')) ||
+      (url === '/analytics' && pathname.startsWith('/analytics')) ||
+      (url === '/settings' && pathname.startsWith('/settings')) ||
+      (url === '/maintenance-hub' && pathname.startsWith('/maintenance-hub')) ||
+      (url === '/marketing' && pathname.startsWith('/marketing')) ||
+      (url === '/storage-sites' && pathname.startsWith('/storage-sites'));
   };
 
   const NavSection: React.FC<{ title?: string; items: NavigationItem[] }> = ({ title, items }) => (
