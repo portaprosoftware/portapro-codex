@@ -1,18 +1,18 @@
 # HTTP surface hardening
 
-This release adds strict defaults for headers, CORS, and webhook verification across the app router.
+This release adds strict defaults for headers, CORS, and webhook verification across the app server.
 
 ## Default security headers
 
-All responses now include a shared set of headers applied in `middleware.ts`:
+All responses should include a shared set of headers applied at the HTTP gateway (app server or proxy):
 
 - `X-Content-Type-Options: nosniff` – prevent MIME sniffing.
 - `Referrer-Policy: strict-origin-when-cross-origin` – limit downstream leakage of URLs.
-- `X-Frame-Options: DENY` – block clickjacking. If an embed is required later, switch to `SAMEORIGIN` in the middleware.
+- `X-Frame-Options: DENY` – block clickjacking. If an embed is required later, switch to `SAMEORIGIN` in the server-level header configuration.
 - `Permissions-Policy` – camera, microphone, payment request, and related sensors are disabled by default. Expand only when a route genuinely needs hardware access.
 - `Strict-Transport-Security` – enabled only in production to enforce HTTPS for a year (with subdomains). Disabled locally to avoid conflicts with plain HTTP dev servers.
 
-These headers are set for every matched route; asset paths under `/_next`, `/favicon.ico`, and `/robots.txt` remain untouched.
+These headers should be set for every HTML/API response; static assets can be exempted if needed.
 
 ## CORS rules
 
@@ -28,7 +28,7 @@ Behavior:
 - Allowed origins receive `Access-Control-Allow-Origin` echoing the origin plus explicit method/header lists. Wildcards are never used.
 - Requests without an `Origin` header proceed as same-origin.
 
-To extend the allowlist, update `isAllowedCorsOrigin` in `middleware.ts` with the new hostname(s).
+To extend the allowlist, update the CORS helper that validates origins in the HTTP layer with the new hostname(s).
 
 ## Webhook verification
 
