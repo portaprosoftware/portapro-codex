@@ -10,6 +10,8 @@ import { Upload, Download, FileText, CheckCircle, AlertCircle, X } from 'lucide-
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { createServiceLocationWithGeocoding } from '@/utils/geocoding';
+import { useTenantId } from '@/lib/tenantQuery';
+import { tenantTable, requireOrgId } from '@/lib/db/tenant';
 
 interface CustomerImportModalProps {
   isOpen: boolean;
@@ -70,6 +72,7 @@ const CONTACT_TYPES = ['primary', 'billing', 'service', 'emergency', 'manager', 
 export function CustomerImportModal({ isOpen, onClose, onSuccess }: CustomerImportModalProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const tenantId = useTenantId();
   
   const [file, setFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -77,6 +80,7 @@ export function CustomerImportModal({ isOpen, onClose, onSuccess }: CustomerImpo
 
   const importMutation = useMutation({
     mutationFn: async (csvData: string) => {
+      const orgId = requireOrgId(tenantId);
       const rows = csvData.trim().split('\n');
       const headers = rows[0].split(',').map(h => h.trim().replace(/"/g, ''));
       
@@ -224,8 +228,11 @@ export function CustomerImportModal({ isOpen, onClose, onSuccess }: CustomerImpo
         for (const customerData of batch) {
           try {
             // Create customer
-            const { data: insertedCustomer, error: customerError } = await supabase
-              .from('customers')
+            const { data: insertedCustomer, error: customerError } = await tenantTable(
+              supabase,
+              orgId,
+              'customers'
+            )
               .insert({
                 name: customerData.name,
                 customer_type: customerData.customer_type as any,
