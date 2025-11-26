@@ -1,183 +1,92 @@
-import { z } from 'zod';
+import { getHostnameSafe } from './getHostnameSafe';
 
-const readEnvValue = (key: string): string | undefined => {
-  if (typeof process !== 'undefined' && process.env?.[key]) {
-    return process.env[key];
-  }
-
-  // Vite/browser runtime fallback
-  if (typeof import.meta !== 'undefined') {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const metaEnv = (import.meta as any).env as Record<string, string | undefined> | undefined;
-
-    if (metaEnv && metaEnv[key]) {
-      return metaEnv[key];
-    }
-  }
-
-  return undefined;
+type ServerEnv = {
+  SUPABASE_URL: string;
+  SUPABASE_ANON_KEY: string;
+  SUPABASE_SERVICE_ROLE_KEY: string;
+  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: string;
+  CLERK_SECRET_KEY: string;
+  STRIPE_WEBHOOK_SECRET: string;
+  CLERK_WEBHOOK_SECRET: string;
+  VITE_ROOT_DOMAIN: string;
+  VITE_MARKETING_URL: string;
+  NEXT_PUBLIC_APP_ROOT_URL: string;
 };
 
-const resolveEnvValue = (key: string, aliases: string[] = []) => {
+const fromEnv = (k: string) => (import.meta as any).env?.[k] as string | undefined;
+
+const readValue = (key: string, aliases: string[] = []): string => {
   for (const candidate of [key, ...aliases]) {
-    const value = readEnvValue(candidate);
-    if (value !== undefined) {
-      return value;
-    }
+    const fromProcess = typeof process !== 'undefined' ? process.env?.[candidate] : undefined;
+    if (fromProcess) return fromProcess;
+
+    const fromMeta = fromEnv(candidate);
+    if (fromMeta) return fromMeta;
   }
 
-  return undefined;
+  return '';
 };
 
-const clientEnvSchema = z.object({
-  SUPABASE_URL: z.string().url({ message: 'SUPABASE_URL must be a valid URL' }),
-  SUPABASE_ANON_KEY: z.string().min(1, { message: 'SUPABASE_ANON_KEY is required' }),
-  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z
-    .string()
-    .min(1, { message: 'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY is required' }),
-  VITE_ROOT_DOMAIN: z
-    .string()
-    .min(1, { message: 'VITE_ROOT_DOMAIN is required' })
-    .regex(/^[a-z0-9.-]+$/i, { message: 'VITE_ROOT_DOMAIN should be a bare domain (no protocol)' }),
-  VITE_MARKETING_URL: z.string().url({ message: 'VITE_MARKETING_URL must be a valid URL' }),
-  NEXT_PUBLIC_APP_ROOT_URL: z.string().url({ message: 'NEXT_PUBLIC_APP_ROOT_URL must be a valid URL' }),
-});
+const normalizeRootDomain = (value: string): string => {
+  if (!value) return '';
 
-const serverEnvSchema = clientEnvSchema.extend({
-  SUPABASE_SERVICE_ROLE_KEY: z
-    .string()
-    .min(1, { message: 'SUPABASE_SERVICE_ROLE_KEY is required (server-only)' }),
-  CLERK_SECRET_KEY: z.string().min(1, { message: 'CLERK_SECRET_KEY is required (server-only)' }),
-  STRIPE_WEBHOOK_SECRET: z.string().optional(),
-  CLERK_WEBHOOK_SECRET: z.string().optional(),
-});
-
-type ClientEnv = z.infer<typeof clientEnvSchema>;
-type ServerEnv = z.infer<typeof serverEnvSchema>;
-
-type EnvKeyAliases<T extends Record<string, unknown>> = {
-  [K in keyof T]: string[];
+  const withoutProtocol = value.replace(/^https?:\/\//i, '');
+  const withoutPath = withoutProtocol.split('/')[0] ?? '';
+  return withoutPath.replace(/^\.+/, '').trim();
 };
 
-const clientEnvAliases: EnvKeyAliases<ClientEnv> = {
-  SUPABASE_URL: ['VITE_SUPABASE_URL'],
-  SUPABASE_ANON_KEY: ['VITE_SUPABASE_PUBLISHABLE_KEY', 'VITE_SUPABASE_ANON_KEY'],
-  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ['VITE_CLERK_PUBLISHABLE_KEY'],
-  VITE_ROOT_DOMAIN: ['NEXT_PUBLIC_ROOT_DOMAIN'],
-  VITE_MARKETING_URL: ['NEXT_PUBLIC_MARKETING_URL'],
-  NEXT_PUBLIC_APP_ROOT_URL: ['VITE_APP_URL', 'VITE_APP_ROOT_URL'],
-};
+const inferRootDomainFromHostname = (hostname: string): string => {
+  const normalizedHost = normalizeRootDomain(hostname.toLowerCase());
+  if (!normalizedHost) return '';
 
-const serverEnvAliases: EnvKeyAliases<ServerEnv> = {
-  ...clientEnvAliases,
-  SUPABASE_SERVICE_ROLE_KEY: [],
-  CLERK_SECRET_KEY: [],
-  STRIPE_WEBHOOK_SECRET: [],
-  CLERK_WEBHOOK_SECRET: [],
-};
-
-const formatZodErrors = (error: z.ZodError) => {
-  const fields = error.flatten().fieldErrors;
-  return Object.entries(fields)
-    .map(([key, messages]) => `${key}: ${(messages || []).join(', ')}`)
-    .join('\n');
-};
-
-const buildRawEnv = <T extends Record<string, unknown>>(aliases: EnvKeyAliases<T>) =>
-  Object.fromEntries(
-    Object.entries(aliases).map(([key, fallbackKeys]) => [key, resolveEnvValue(key, fallbackKeys)])
-  ) as Partial<T>;
-
-const inferRootDomainFromHostname = (hostname?: string): string | undefined => {
-  if (!hostname) return undefined;
-
-  const normalized = hostname.toLowerCase();
-
-  if (normalized === 'portaprosoftware.com' || normalized.endsWith('.portaprosoftware.com')) {
-    return 'portaprosoftware.com';
-  }
-
-  if (normalized.includes('localhost')) {
+  if (normalizedHost.includes('localhost')) {
     return 'localhost';
   }
 
-  const parts = normalized.split('.').filter(Boolean);
-
+  const parts = normalizedHost.split('.').filter(Boolean);
   if (parts.length >= 2) {
     return parts.slice(-2).join('.');
   }
 
-  return parts[0];
+  return parts[0] ?? '';
 };
 
-const inferRootDomain = (marketingUrl?: string): string | undefined => {
-  if (marketingUrl) {
-    try {
-      const inferredFromMarketing = inferRootDomainFromHostname(new URL(marketingUrl).hostname);
-      if (inferredFromMarketing) {
-        return inferredFromMarketing;
-      }
-    } catch {
-      // ignore invalid marketing URL, validation will handle it later
-    }
-  }
+let cachedRootDomain: string | null = null;
 
-  if (typeof window !== 'undefined' && window.location?.hostname) {
-    return inferRootDomainFromHostname(window.location.hostname);
-  }
+export function getRootDomain(): string {
+  if (cachedRootDomain) return cachedRootDomain;
 
-  return undefined;
-};
+  const envRootDomain = normalizeRootDomain(readValue('VITE_ROOT_DOMAIN', ['NEXT_PUBLIC_ROOT_DOMAIN']));
+  const inferredRoot = inferRootDomainFromHostname(getHostnameSafe());
+  const resolved = envRootDomain || inferredRoot || 'portaprosoftware.com';
 
-const parseEnv = <T extends z.ZodTypeAny>(
-  schema: T,
-  aliases: EnvKeyAliases<z.infer<T>>,
-  label: 'Client' | 'Server'
-): z.infer<T> => {
-  const rawEnv = buildRawEnv<z.infer<T>>(aliases);
+  cachedRootDomain = resolved;
+  return resolved;
+}
 
-  const result = schema.safeParse(rawEnv);
+let cachedMarketingUrl: string | null = null;
 
-  if (!result.success) {
-    throw new Error(
-      `❌ ${label} environment validation failed. Please set the following variables:\n${formatZodErrors(result.error)}`
-    );
-  }
+export function getMarketingUrl(): string {
+  if (cachedMarketingUrl) return cachedMarketingUrl;
 
-  return result.data;
-};
+  const envMarketingUrl = readValue('VITE_MARKETING_URL', ['NEXT_PUBLIC_MARKETING_URL']).trim();
+  const resolved = envMarketingUrl || `https://${getRootDomain()}`;
 
-const parseClientEnv = (): ClientEnv => {
-  const rawEnv = buildRawEnv<ClientEnv>(clientEnvAliases);
+  cachedMarketingUrl = resolved;
+  return resolved;
+}
 
-  const marketingUrl = rawEnv.VITE_MARKETING_URL;
-  const rootDomain = rawEnv.VITE_ROOT_DOMAIN ?? inferRootDomain(marketingUrl);
-  const resolvedMarketingUrl = marketingUrl ?? (rootDomain ? `https://${rootDomain}` : undefined);
+let cachedAppRootUrl: string | null = null;
 
-  const result = clientEnvSchema.safeParse({
-    ...rawEnv,
-    VITE_ROOT_DOMAIN: rootDomain,
-    VITE_MARKETING_URL: resolvedMarketingUrl,
-  });
+export function getAppRootUrl(): string {
+  if (cachedAppRootUrl) return cachedAppRootUrl;
 
-  if (!result.success) {
-    const shouldFailHard = !rootDomain && !resolvedMarketingUrl;
+  const appUrl = readValue('NEXT_PUBLIC_APP_ROOT_URL', ['VITE_APP_URL', 'VITE_APP_ROOT_URL']).trim();
+  const resolved = appUrl || `https://${getRootDomain()}`;
 
-    if (shouldFailHard) {
-      throw new Error(
-        `❌ Client environment validation failed. Please set the following variables:\n${formatZodErrors(result.error)}`
-      );
-    }
-
-    throw new Error(
-      `❌ Client environment validation failed. Please set the following variables:\n${formatZodErrors(result.error)}`
-    );
-  }
-
-  return result.data;
-};
-
-export const clientEnv = parseClientEnv();
+  cachedAppRootUrl = resolved;
+  return resolved;
+}
 
 let serverEnvCache: ServerEnv | null = null;
 
@@ -186,9 +95,22 @@ export const loadServerEnv = (): ServerEnv => {
     throw new Error('loadServerEnv should only be called on the server');
   }
 
-  if (!serverEnvCache) {
-    serverEnvCache = parseEnv(serverEnvSchema, serverEnvAliases, 'Server');
+  if (serverEnvCache) {
+    return serverEnvCache;
   }
+
+  serverEnvCache = {
+    SUPABASE_URL: readValue('SUPABASE_URL', ['VITE_SUPABASE_URL']),
+    SUPABASE_ANON_KEY: readValue('SUPABASE_ANON_KEY', ['VITE_SUPABASE_PUBLISHABLE_KEY', 'VITE_SUPABASE_ANON_KEY']),
+    SUPABASE_SERVICE_ROLE_KEY: readValue('SUPABASE_SERVICE_ROLE_KEY'),
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: readValue('NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY', ['VITE_CLERK_PUBLISHABLE_KEY']),
+    CLERK_SECRET_KEY: readValue('CLERK_SECRET_KEY'),
+    STRIPE_WEBHOOK_SECRET: readValue('STRIPE_WEBHOOK_SECRET'),
+    CLERK_WEBHOOK_SECRET: readValue('CLERK_WEBHOOK_SECRET'),
+    VITE_ROOT_DOMAIN: getRootDomain(),
+    VITE_MARKETING_URL: getMarketingUrl(),
+    NEXT_PUBLIC_APP_ROOT_URL: getAppRootUrl(),
+  };
 
   return serverEnvCache;
 };
