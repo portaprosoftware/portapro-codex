@@ -7,11 +7,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useUserRole } from '@/hooks/useUserRole';
 import { ChevronDown, ChevronUp, User, Database, CheckCircle } from 'lucide-react';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
+import { DriverDebugInfoRow } from '@/types/rpc';
 
 export const DriverDebugInfo: React.FC = () => {
   const { user } = useUser();
   const { role, userId } = useUserRole();
   const [isExpanded, setIsExpanded] = useState(false);
+  const { orgId } = useOrganizationId();
 
   // Check profiles table
   const { data: profileData } = useQuery({
@@ -30,39 +33,29 @@ export const DriverDebugInfo: React.FC = () => {
     enabled: !!user?.id
   });
 
-  // Check jobs with direct Clerk ID
-  const { data: directJobs } = useQuery({
-    queryKey: ['debug-direct-jobs', user?.id],
+  // Tenant-safe driver jobs with customer context
+  const {
+    data: driverJobs,
+    error: driverJobsError,
+  } = useQuery({
+    queryKey: ['debug-driver-jobs', orgId],
     queryFn: async () => {
-      if (!user?.id) return null;
-      
-      const { data, error } = await supabase
-        .from('jobs')
-        .select('*, customers(name)')
-        .eq('driver_id', user.id)
-        .limit(5);
-      
-      return { data, error };
+      if (!orgId) throw new Error('Organization ID is required');
+
+      const { data, error } = await supabase.rpc('pp_get_driver_debug_info', {
+        p_organization_id: orgId,
+      });
+
+      if (error) throw error;
+      return (data || []) as DriverDebugInfoRow[];
     },
-    enabled: !!user?.id
+    enabled: !!orgId,
   });
 
-  // Check jobs with profile ID
-  const { data: profileJobs } = useQuery({
-    queryKey: ['debug-profile-jobs', profileData?.data?.id],
-    queryFn: async () => {
-      if (!profileData?.data?.id) return null;
-      
-      const { data, error } = await supabase
-        .from('jobs')
-        .select('*, customers(name)')
-        .eq('driver_id', profileData.data.id)
-        .limit(5);
-      
-      return { data, error };
-    },
-    enabled: !!profileData?.data?.id
-  });
+  const directDriverJobs = (driverJobs || []).filter((job) => job.driver_id === user?.id);
+  const profileDriverJobs = profileData?.data
+    ? (driverJobs || []).filter((job) => job.driver_id === profileData.data.id)
+    : [];
 
   if (!isExpanded) {
     return (
@@ -138,14 +131,14 @@ export const DriverDebugInfo: React.FC = () => {
               <span className="font-medium">Jobs (Direct Clerk ID)</span>
             </div>
             <div className="pl-4">
-              {directJobs?.error ? (
-                <div className="text-red-600">Error: {directJobs.error.message}</div>
-              ) : directJobs?.data && directJobs.data.length > 0 ? (
+              {driverJobsError ? (
+                <div className="text-red-600">Error: {driverJobsError.message}</div>
+              ) : directDriverJobs.length > 0 ? (
                 <div>
-                  <div className="font-medium text-green-600">{directJobs.data.length} jobs found</div>
-                  {directJobs.data.slice(0, 2).map(job => (
-                    <div key={job.id} className="text-xs">
-                      {job.job_number} - {job.customers?.name}
+                  <div className="font-medium text-green-600">{directDriverJobs.length} jobs found</div>
+                  {directDriverJobs.slice(0, 2).map(job => (
+                    <div key={job.job_id} className="text-xs">
+                      {job.job_number} - {job.customer_name || 'Unknown customer'}
                     </div>
                   ))}
                 </div>
@@ -163,14 +156,14 @@ export const DriverDebugInfo: React.FC = () => {
                 <span className="font-medium">Jobs (Profile ID)</span>
               </div>
               <div className="pl-4">
-                {profileJobs?.error ? (
-                  <div className="text-red-600">Error: {profileJobs.error.message}</div>
-                ) : profileJobs?.data && profileJobs.data.length > 0 ? (
+                {driverJobsError ? (
+                  <div className="text-red-600">Error: {driverJobsError.message}</div>
+                ) : profileDriverJobs.length > 0 ? (
                   <div>
-                    <div className="font-medium text-green-600">{profileJobs.data.length} jobs found</div>
-                    {profileJobs.data.slice(0, 2).map(job => (
-                      <div key={job.id} className="text-xs">
-                        {job.job_number} - {job.customers?.name}
+                    <div className="font-medium text-green-600">{profileDriverJobs.length} jobs found</div>
+                    {profileDriverJobs.slice(0, 2).map(job => (
+                      <div key={job.job_id} className="text-xs">
+                        {job.job_number} - {job.customer_name || 'Unknown customer'}
                       </div>
                     ))}
                   </div>

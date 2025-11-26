@@ -1,63 +1,62 @@
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Briefcase, DollarSign, Users, Truck } from 'lucide-react';
-import { format, formatDistanceToNow } from 'date-fns';
+import { Briefcase, DollarSign } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
+import { ActivityFeedEntry } from '@/types/rpc';
 
 interface ActivityFeedProps {
   dateRange: { from: Date; to: Date };
 }
 
 export const ActivityFeed: React.FC<ActivityFeedProps> = ({ dateRange }) => {
-  const { data: activities, isLoading } = useQuery({
-    queryKey: ['recent-activities', dateRange],
+  const { orgId } = useOrganizationId();
+
+  const { data: activityRows, isLoading } = useQuery({
+    queryKey: ['recent-activities', dateRange, orgId],
     queryFn: async () => {
-      // Fetch recent jobs
-      const { data: jobs } = await supabase
-        .from('jobs')
-        .select('id, job_type, status, created_at, customers(name)')
-        .gte('created_at', format(dateRange.from, 'yyyy-MM-dd'))
-        .order('created_at', { ascending: false })
-        .limit(5);
+      if (!orgId) throw new Error('Organization ID is required');
 
-      // Fetch recent invoices
-      const { data: invoices } = await supabase
-        .from('invoices')
-        .select('id, amount, status, created_at, customers(name)')
-        .gte('created_at', format(dateRange.from, 'yyyy-MM-dd'))
-        .order('created_at', { ascending: false })
-        .limit(5);
+      const { data, error } = await supabase.rpc('pp_get_activity_feed', {
+        p_organization_id: orgId,
+      });
 
-      // Combine and sort activities
-      const allActivities = [
-        ...(jobs || []).map(job => ({
-          id: job.id,
-          type: 'job',
-          title: `New ${job.job_type} job`,
-          description: `Customer: ${job.customers?.name || 'Unknown'}`,
-          status: job.status,
-          timestamp: job.created_at,
-          icon: Briefcase
-        })),
-        ...(invoices || []).map(invoice => ({
-          id: invoice.id,
-          type: 'invoice',
-          title: `Invoice ${invoice.status}`,
-          description: `$${invoice.amount.toLocaleString()} - ${invoice.customers?.name || 'Unknown'}`,
-          status: invoice.status,
-          timestamp: invoice.created_at,
-          icon: DollarSign
-        }))
-      ];
-
-      return allActivities
-        .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-        .slice(0, 10);
-    }
+      if (error) throw error;
+      return (data || []) as ActivityFeedEntry[];
+    },
+    enabled: !!orgId,
   });
+
+  const activities = useMemo(() => {
+    if (!activityRows) return [];
+
+    const withinRange = activityRows.filter((row) => {
+      const createdDate = new Date(row.created_at);
+      return createdDate >= dateRange.from && createdDate <= dateRange.to;
+    });
+
+    return withinRange
+      .map((row) => ({
+        id: row.entity_id,
+        type: row.entry_type,
+        title: row.entry_type === 'job'
+          ? `New ${row.job_type || 'job'}`
+          : `Invoice ${row.status}`,
+        description:
+          row.entry_type === 'invoice'
+            ? `$${(row.amount || 0).toLocaleString()} - ${row.customer_name || 'Unknown'}`
+            : `Customer: ${row.customer_name || 'Unknown'}`,
+        status: row.status,
+        timestamp: row.created_at,
+        icon: row.entry_type === 'invoice' ? DollarSign : Briefcase
+      }))
+      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      .slice(0, 10);
+  }, [activityRows, dateRange.from, dateRange.to]);
 
   const getStatusColor = (status: string) => {
     switch (status) {

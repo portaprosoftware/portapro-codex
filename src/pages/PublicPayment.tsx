@@ -33,17 +33,32 @@ export default function PublicPayment() {
       }
 
       try {
-        const { data, error: fetchError } = await tenantTable(supabase, tenantId, 'invoices')
-          .select('*, customers(name, email)')
+        const { data: invoiceRecord, error: fetchError } = await tenantTable(supabase, tenantId, 'invoices')
+          .select('id, invoice_number, amount, status, customer_id')
           .eq('id', invoiceId)
           .single();
 
-        if (fetchError || !data) {
+        if (fetchError || !invoiceRecord) {
           throw new Error('Invoice not found');
         }
 
-        setInvoice(data);
-        setAmount(data.amount);
+        let customer = null;
+
+        if (invoiceRecord.customer_id) {
+          const { data: customerData, error: customerError } = await tenantTable(supabase, tenantId, 'customers')
+            .select('id, name, email')
+            .eq('id', invoiceRecord.customer_id)
+            .maybeSingle();
+
+          if (customerError) {
+            console.error('Error loading customer:', customerError);
+          } else {
+            customer = customerData;
+          }
+        }
+
+        setInvoice({ ...invoiceRecord, customer });
+        setAmount(invoiceRecord.amount);
         setLoading(false);
       } catch (err: any) {
         console.error('Error loading invoice:', err);
@@ -146,7 +161,7 @@ export default function PublicPayment() {
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">Customer:</span>
-                <span className="text-sm font-medium">{invoice.customers?.name}</span>
+                <span className="text-sm font-medium">{invoice.customer?.name || 'Unknown customer'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">Total Amount:</span>
