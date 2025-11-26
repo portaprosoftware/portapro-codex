@@ -17,7 +17,7 @@ type MutationOperation = "insert" | "update" | "delete";
 
 type MutationPayload<T> = T & { id?: string };
 
-const MUTATION_ROLES = ["org:owner", "org:admin", "org:dispatcher"];
+const MUTATION_ROLES = ["admin", "dispatcher"] as const;
 
 const createServiceRoleClient = () => {
   const env = loadServerEnv();
