@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useUser } from '@clerk/clerk-react';
@@ -10,18 +10,8 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format, isSameDay, parseISO } from 'date-fns';
 import { formatDateForQuery } from '@/lib/dateUtils';
-
-interface Job {
-  id: string;
-  job_number: string;
-  job_type: string;
-  status: string;
-  scheduled_date: string;
-  scheduled_time?: string;
-  customers: {
-    name?: string;
-  } | null;
-}
+import { RouteManifestStop } from '@/types/rpc';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 const TIME_SLOTS = [
   '6:00 AM', '7:00 AM', '8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM',
@@ -31,110 +21,40 @@ const TIME_SLOTS = [
 
 export const DailySchedule: React.FC = () => {
   const { user } = useUser();
+  const { orgId } = useOrganizationId();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [calendarOpen, setCalendarOpen] = useState(false);
 
-  // Fetch jobs for the selected date
-  const { data: jobs, isLoading } = useQuery({
-    queryKey: ['driver-daily-jobs', user?.id, selectedDate],
+  const { data: routeManifest, isLoading } = useQuery({
+    queryKey: ['driver-route-manifest', user?.id, orgId],
     queryFn: async () => {
       if (!user?.id) throw new Error('User not authenticated');
+      if (!orgId) throw new Error('Organization ID required');
 
-      const dateStr = formatDateForQuery(selectedDate);
-      
-      // First, try to find jobs directly with Clerk user ID
-      let { data, error } = await supabase
-        .from('jobs')
-        .select(`
-          *,
-          customers (
-            name
-          )
-        `)
-        .eq('driver_id', user.id)
-        .eq('scheduled_date', dateStr)
-        .order('scheduled_time', { ascending: true });
-
-      // If no jobs found, try to find jobs through profiles table
-      if (!error && (!data || data.length === 0)) {
-        const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('clerk_user_id', user.id)
-          .maybeSingle();
-
-        if (!profileError && profileData) {
-          const result = await supabase
-            .from('jobs')
-            .select(`
-              *,
-              customers (
-                name
-              )
-            `)
-            .eq('driver_id', profileData.id)
-            .eq('scheduled_date', dateStr)
-            .order('scheduled_time', { ascending: true });
-          
-          data = result.data;
-          error = result.error;
-        }
-      }
+      const { data, error } = await supabase.rpc('pp_get_route_manifest', {
+        p_organization_id: orgId,
+        p_route_id: user.id,
+      });
 
       if (error) throw error;
-      return (data || []) as Job[];
+      return (Array.isArray(data) ? data : []) as RouteManifestStop[];
     },
-    enabled: !!user?.id
+    enabled: !!user?.id && !!orgId,
   });
 
-  // Fetch jobs for calendar dots (current month)
-  const { data: monthJobs } = useQuery({
-    queryKey: ['driver-month-jobs', user?.id, selectedDate.getMonth(), selectedDate.getFullYear()],
-    queryFn: async () => {
-      if (!user?.id) throw new Error('User not authenticated');
+  const jobs = useMemo(() => {
+    if (!routeManifest) return [] as RouteManifestStop[];
+    return routeManifest
+      .filter((stop) => stop.scheduled_date && isSameDay(parseISO(stop.scheduled_date), selectedDate))
+      .sort((a, b) => (a.stop_order || 0) - (b.stop_order || 0));
+  }, [routeManifest, selectedDate]);
 
-      const startOfMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
-      const endOfMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0);
-      
-      // First, try to find jobs directly with Clerk user ID
-      let { data, error } = await supabase
-        .from('jobs')
-        .select('scheduled_date')
-        .eq('driver_id', user.id)
-        .gte('scheduled_date', formatDateForQuery(startOfMonth))
-        .lte('scheduled_date', formatDateForQuery(endOfMonth));
-
-      // If no jobs found, try to find jobs through profiles table
-      if (!error && (!data || data.length === 0)) {
-        const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('clerk_user_id', user.id)
-          .maybeSingle();
-
-        if (!profileError && profileData) {
-          const result = await supabase
-            .from('jobs')
-            .select('scheduled_date')
-            .eq('driver_id', profileData.id)
-            .gte('scheduled_date', formatDateForQuery(startOfMonth))
-            .lte('scheduled_date', formatDateForQuery(endOfMonth));
-          
-          data = result.data;
-          error = result.error;
-        }
-      }
-
-      if (error) throw error;
-      return data || [];
-    },
-    enabled: !!user?.id
-  });
+  const monthJobs = useMemo(() => routeManifest || [], [routeManifest]);
 
   const getJobTypeColor = (jobType: string) => {
     const colors: Record<string, string> = {
       'delivery': 'bg-blue-500 text-white',
-      'pickup': 'bg-green-500 text-white', 
+      'pickup': 'bg-green-500 text-white',
       'service': 'bg-orange-500 text-white',
       'on-site-survey': 'bg-red-800 text-white',
       'estimate': 'bg-purple-500 text-white'
@@ -163,7 +83,7 @@ export const DailySchedule: React.FC = () => {
   const hasJobsOnDate = (date: Date) => {
     if (!monthJobs) return false;
     const dateStr = formatDateForQuery(date);
-    return monthJobs.some(job => job.scheduled_date === dateStr);
+    return monthJobs.some(job => job.scheduled_date && formatDateForQuery(parseISO(job.scheduled_date)) === dateStr);
   };
 
   const handleDateSelect = (date: Date | undefined) => {
@@ -260,14 +180,14 @@ export const DailySchedule: React.FC = () => {
                         <Card key={job.id} className="cursor-pointer hover:shadow-md transition-shadow">
                           <CardContent className="p-3">
                             <div className="flex items-center justify-between mb-2">
-                              <Badge className={`${getJobTypeColor(job.job_type)} text-xs px-2 py-1 rounded-full`}>
-                                {job.job_type}
+                              <Badge className={`${getJobTypeColor(job.job_type || 'delivery')} text-xs px-2 py-1 rounded-full`}>
+                                {job.job_type || 'delivery'}
                               </Badge>
                               <span className="text-xs text-gray-400">{job.job_number}</span>
                             </div>
-                            
+
                             <div className="text-sm font-medium text-gray-900 mb-1">
-                              {job.customers?.name || 'Unknown Customer'}
+                              {job.customer_name || 'Unknown Customer'}
                             </div>
                             
                             {job.scheduled_time && (
@@ -280,7 +200,7 @@ export const DailySchedule: React.FC = () => {
                         </Card>
                       ))
                     ) : (
-                      <div className="h-8"></div> // Placeholder for empty time slots
+                      <div className="h-8"></div>
                     )}
                   </div>
                 </div>
