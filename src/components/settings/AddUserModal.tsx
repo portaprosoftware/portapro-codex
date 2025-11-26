@@ -10,13 +10,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useInviteUser } from '@/hooks/useInviteUser';
 import { useUserRole } from '@/hooks/useUserRole';
+import { ROLE_OPTIONS } from '@/lib/roles';
 
 const addUserFormSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
   email: z.string().email('Please enter a valid email address'),
   phone: z.string().optional(),
-  role: z.enum(['org:driver', 'org:dispatcher', 'org:admin', 'org:owner']),
+  role: z.enum(['driver', 'dispatcher', 'admin', 'customer']),
 });
 
 type AddUserFormData = z.infer<typeof addUserFormSchema>;
@@ -37,7 +38,7 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({ open, onOpenChange }
       lastName: '',
       email: '',
       phone: '',
-      role: 'org:driver',
+      role: 'driver',
     },
   });
 
@@ -152,10 +153,11 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({ open, onOpenChange }
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="org:driver">Driver</SelectItem>
-                      <SelectItem value="org:dispatcher">Dispatcher</SelectItem>
-                      <SelectItem value="org:admin">Admin</SelectItem>
-                      <SelectItem value="org:owner">Owner</SelectItem>
+                      {ROLE_OPTIONS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />

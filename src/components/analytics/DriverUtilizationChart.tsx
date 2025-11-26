@@ -32,7 +32,7 @@ export const DriverUtilizationChart: React.FC<DriverUtilizationChartProps> = ({ 
       const { data: allDrivers, error: driversError } = await supabase
         .from('user_roles')
         .select('user_id')
-        .eq('role', 'org:driver' as any);
+        .eq('role', 'driver' as any);
 
       if (driversError) throw driversError;
 

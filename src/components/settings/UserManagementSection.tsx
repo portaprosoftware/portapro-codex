@@ -31,36 +31,30 @@ import { AddUserModal } from "./AddUserModal";
 import { InvitationStatusBadge } from "@/components/team/InvitationStatusBadge";
 import { useUser } from "@clerk/clerk-react";
 import { cn } from "@/lib/utils";
+import { ROLE_OPTIONS, getRoleLabel, normalizeRoleValue } from "@/lib/roles";
 
 const userFormSchema = z.object({
   first_name: z.string().min(1, "First name is required"),
   last_name: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email address"),
   phone: z.string().optional(),
-  role: z.enum(["org:admin", "org:dispatcher", "org:driver", "org:owner"]),
+  role: z.enum(["admin", "dispatcher", "driver", "customer"]),
 });
 
 type UserFormData = z.infer<typeof userFormSchema>;
 
 const roleColors = {
-  'org:admin': "bg-gradient-gold",
-  'org:dispatcher': "bg-gradient-secondary", 
-  'org:driver': "bg-gradient-green",
-  'org:owner': "bg-gradient-gold",
-};
-
-const roleLabels = {
-  'org:admin': "Admin",
-  'org:dispatcher': "Dispatcher",
-  'org:driver': "Driver",
-  'org:owner': "Admin",
+  admin: "bg-gradient-gold",
+  dispatcher: "bg-gradient-secondary",
+  driver: "bg-gradient-green",
+  customer: "bg-gradient-blue",
 };
 
 const roleIcons = {
-  'org:admin': Crown,
-  'org:dispatcher': Headphones,
-  'org:driver': Truck,
-  'org:owner': Crown,
+  admin: Crown,
+  dispatcher: Headphones,
+  driver: Truck,
+  customer: Crown,
 };
 
 // Define sort types
@@ -108,14 +102,11 @@ export function UserManagementSection() {
         console.log('UserManagementSection - Processing user:', user.first_name, user.last_name);
         console.log('UserManagementSection - User roles data:', user.user_roles);
         
-        let current_role = Array.isArray(user.user_roles) 
-          ? user.user_roles[0]?.role 
+        let current_role = Array.isArray(user.user_roles)
+          ? user.user_roles[0]?.role
           : user.user_roles?.role || null;
-        
-        // Normalize legacy "owner" to "org:owner" for display
-        if (current_role === 'owner') {
-          current_role = 'org:owner';
-        }
+
+        current_role = current_role ? normalizeRoleValue(current_role) : null;
           
         console.log('UserManagementSection - Assigned current_role:', current_role);
         
@@ -159,7 +150,7 @@ export function UserManagementSection() {
       last_name: "",
       email: "",
       phone: "",
-      role: "org:driver",
+      role: "driver",
     },
   });
 
@@ -202,7 +193,7 @@ export function UserManagementSection() {
         .from("user_roles")
         .insert({
           user_id: profileId,
-          role: data.role as any, // Cast needed until Supabase types are regenerated with org: prefix
+          role: data.role,
         });
 
       if (roleError) throw roleError;
@@ -395,7 +386,7 @@ export function UserManagementSection() {
             break;
           case 'role':
             // Sort order: admin/owner → dispatcher → driver
-            const roleOrder = { 'org:admin': 1, 'org:owner': 1, 'org:dispatcher': 2, 'org:driver': 3 };
+            const roleOrder = { admin: 1, dispatcher: 2, driver: 3, customer: 4 } as const;
             const roleA = roleOrder[a.current_role as keyof typeof roleOrder] || 999;
             const roleB = roleOrder[b.current_role as keyof typeof roleOrder] || 999;
             comparison = roleA - roleB;
@@ -574,9 +565,11 @@ export function UserManagementSection() {
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="all">All Roles</SelectItem>
-                            <SelectItem value="admin">Admin</SelectItem>
-                            <SelectItem value="dispatcher">Dispatcher</SelectItem>
-                            <SelectItem value="driver">Driver</SelectItem>
+                            {ROLE_OPTIONS.map((option) => (
+                              <SelectItem key={option.value} value={option.value}>
+                                {option.label}
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       </div>
@@ -633,9 +626,11 @@ export function UserManagementSection() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Roles</SelectItem>
-                      <SelectItem value="admin">Admin</SelectItem>
-                      <SelectItem value="dispatcher">Dispatcher</SelectItem>
-                      <SelectItem value="driver">Driver</SelectItem>
+                      {ROLE_OPTIONS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
 

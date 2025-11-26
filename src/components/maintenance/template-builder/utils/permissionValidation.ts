@@ -20,8 +20,8 @@ export function canEditField({
   permissions,
   reportStatus,
 }: CanEditFieldParams): boolean {
-  // Admin-level users (owner, dispatcher, admin) have full access
-  const isAdminLevel = userRole === 'org:owner' || userRole === 'org:dispatcher' || userRole === 'org:admin';
+  // Admin-level users (admin, dispatcher) have full access
+  const isAdminLevel = userRole === 'admin' || userRole === 'dispatcher';
   
   if (isAdminLevel) {
     return true;
@@ -41,7 +41,7 @@ export function canEditField({
   }
 
   // Check role-based field permissions for drivers
-  if (userRole === 'org:driver') {
+  if (userRole === 'driver') {
     const techFields = permissions.tech_editable_fields;
     
     // Empty array or ['*'] means all fields are editable
@@ -73,7 +73,7 @@ export function canEditFee({
   action,
 }: CanEditFeeParams): boolean {
   // Admin-level users have full fee access
-  const isAdminLevel = userRole === 'org:owner' || userRole === 'org:dispatcher' || userRole === 'org:admin';
+  const isAdminLevel = userRole === 'admin' || userRole === 'dispatcher';
   
   if (isAdminLevel) {
     return true;
@@ -93,7 +93,7 @@ export function canEditFee({
   }
 
   // Check action-specific permissions for drivers
-  if (userRole === 'org:driver') {
+  if (userRole === 'driver') {
     switch (action) {
       case 'view':
         return permissions.fee_permissions.tech_can_see_suggestions;
@@ -127,7 +127,7 @@ export function canPerformAction({
   action,
 }: CanPerformActionParams): boolean {
   // Admin-level users have elevated access
-  const isAdmin = userRole === 'org:owner' || userRole === 'org:dispatcher' || userRole === 'org:admin';
+  const isAdmin = userRole === 'admin' || userRole === 'dispatcher';
 
   switch (action) {
     case 'delete_report':
@@ -165,7 +165,7 @@ export function getFieldLockReason(
   reportStatus: ReportStatus,
   permissions: Permissions
 ): string | null {
-  const isAdminLevel = userRole === 'org:owner' || userRole === 'org:dispatcher' || userRole === 'org:admin';
+  const isAdminLevel = userRole === 'admin' || userRole === 'dispatcher';
   
   if (isAdminLevel) {
     return null; // Never locked for admin-level users

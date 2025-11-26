@@ -3,8 +3,9 @@ import React from 'react';
 import { useUser } from '@clerk/clerk-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { AppRole, normalizeRoleValue } from '@/lib/roles';
 
-export type AppRole = 'org:owner' | 'org:dispatcher' | 'org:admin' | 'org:driver' | 'org:viewer' | 'unknown';
+export type { AppRole } from '@/lib/roles';
 
 export function useUserRole() {
   const { user, isLoaded } = useUser();
@@ -34,7 +35,7 @@ export function useUserRole() {
             if (import.meta.env.DEV) {
               console.info('useUserRole: Edge function success', data.role);
             }
-            return data.role as AppRole;
+            return data.role as string;
           }
         } catch (edgeError) {
           if (attempt === 2) {
@@ -68,15 +69,14 @@ export function useUserRole() {
         console.info('useUserRole: Direct DB lookup', { profileId: profile.id, role: roleData?.role });
       }
       
-      return roleData?.role as AppRole | null;
+      return roleData?.role as string | null;
     },
     enabled: isLoaded && !!user,
     retry: 1,
     retryDelay: 1000,
   });
 
-  // TODO: Replace with Supabase role lookup in next phase
-  const role: AppRole = supabaseRole || 'unknown';
+  const role: AppRole = supabaseRole ? normalizeRoleValue(supabaseRole) : 'unknown';
 
   // Log current user info in development for debugging
   const hasLoggedRef = React.useRef(false);
@@ -93,15 +93,16 @@ export function useUserRole() {
     hasLoggedRef.current = true;
   }
 
-  const isOwner = role === 'org:owner';
-  const isDispatcher = role === 'org:dispatcher';
-  const isAdmin = role === 'org:admin';
-  const isDriver = role === 'org:driver';
+  const isAdmin = role === 'admin';
+  const isDispatcher = role === 'dispatcher';
+  const isDriver = role === 'driver';
+  const isCustomer = role === 'customer';
+  const isOwner = isAdmin; // Legacy alias for UI conditions that previously checked for owners
   
   const isLoggedIn = !!user;
   // TEMP OVERRIDE: unlock admin access while profile sync stabilizes
-  const canViewCustomerDocs = isOwner || isDispatcher || isAdmin; // keep strict
-  const hasAdminAccess = isOwner || isDispatcher || isAdmin || isLoggedIn; // temporary: any logged-in user
+  const canViewCustomerDocs = isAdmin || isDispatcher; // keep strict
+  const hasAdminAccess = isAdmin || isDispatcher || isLoggedIn; // temporary: any logged-in user
   const hasStaffAccess = isLoggedIn; // temporary: any logged-in user
 
   return {
@@ -110,6 +111,7 @@ export function useUserRole() {
     isDispatcher,
     isAdmin,
     isDriver,
+    isCustomer,
     canViewCustomerDocs,
     hasAdminAccess,
     hasStaffAccess,

@@ -16,7 +16,7 @@ export function useDriverDirectory() {
         .from("profiles")
         .select("id, first_name, last_name, email, clerk_user_id, organization_id, user_roles!inner(role)")
         .eq("organization_id", orgId)
-        .eq("user_roles.role", "org:driver" as any);
+        .eq("user_roles.role", "driver" as any);
       if (error) throw error;
       // Ensure a consistent shape
       return (data || []).map((d: any) => ({

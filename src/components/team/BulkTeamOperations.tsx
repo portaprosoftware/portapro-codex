@@ -15,6 +15,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { CSVImportModal } from './CSVImportModal';
 import { ComplianceExportModal } from './ComplianceExportModal';
 import { useOrganizationId } from '@/hooks/useOrganizationId';
+import { getRoleLabel, normalizeRoleValue, ROLE_OPTIONS } from '@/lib/roles';
 
 interface TeamMember {
   id: string;
@@ -26,28 +27,32 @@ interface TeamMember {
 }
 
 const getRoleIcon = (role: string) => {
-  switch (role) {
-    case 'org:admin':
-    case 'org:owner':
+  const normalized = normalizeRoleValue(role);
+  switch (normalized) {
+    case 'admin':
       return Crown;
-    case 'org:dispatcher':
+    case 'dispatcher':
       return Headphones;
-    case 'org:driver':
+    case 'driver':
       return Truck;
+    case 'customer':
+      return Shield;
     default:
       return Shield;
   }
 };
 
 const getRoleColor = (role: string) => {
-  switch (role) {
-    case 'org:admin':
-    case 'org:owner':
+  const normalized = normalizeRoleValue(role);
+  switch (normalized) {
+    case 'admin':
       return { background: 'linear-gradient(135deg, #10B981, #059669)' }; // Green gradient
-    case 'org:dispatcher':
+    case 'dispatcher':
       return { background: 'linear-gradient(135deg, #3B82F6, #2563EB)' }; // Blue gradient
-    case 'org:driver':
+    case 'driver':
       return { background: 'linear-gradient(135deg, #F59E0B, #D97706)' }; // Orange gradient
+    case 'customer':
+      return { background: 'linear-gradient(135deg, #6366F1, #4338CA)' }; // Indigo gradient
     default:
       return { background: 'linear-gradient(135deg, #6B7280, #4B5563)' }; // Gray gradient
   }
@@ -96,16 +101,16 @@ export function BulkTeamOperations() {
   });
 
   // Filter members based on selected role
-  const filteredMembers = selectedRole === 'all' 
-    ? allMembers 
-    : allMembers.filter(member => member.role === selectedRole);
+  const filteredMembers = selectedRole === 'all'
+    ? allMembers
+    : allMembers.filter(member => normalizeRoleValue(member.role) === selectedRole);
 
   // Group members by role for display
   const membersByRole = {
-    'org:admin': allMembers.filter(m => m.role === 'org:admin'),
-    'org:dispatcher': allMembers.filter(m => m.role === 'org:dispatcher'),
-    'org:driver': allMembers.filter(m => m.role === 'org:driver'),
-    'org:owner': allMembers.filter(m => m.role === 'org:owner')
+    admin: allMembers.filter(m => normalizeRoleValue(m.role) === 'admin'),
+    dispatcher: allMembers.filter(m => normalizeRoleValue(m.role) === 'dispatcher'),
+    driver: allMembers.filter(m => normalizeRoleValue(m.role) === 'driver'),
+    customer: allMembers.filter(m => normalizeRoleValue(m.role) === 'customer')
   };
 
   // Bulk reminder mutation
@@ -243,10 +248,11 @@ Bob,Johnson,bob.johnson@example.com,555-0125,admin,Main Office,2024-03-10`;
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Roles</SelectItem>
-                    <SelectItem value="org:admin">Admins</SelectItem>
-                    <SelectItem value="org:dispatcher">Dispatchers</SelectItem>
-                    <SelectItem value="org:driver">Drivers</SelectItem>
-                    <SelectItem value="org:owner">Owners</SelectItem>
+                    {ROLE_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}s
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -279,7 +285,7 @@ Bob,Johnson,bob.johnson@example.com,555-0125,admin,Main Office,2024-03-10`;
                                 style={getRoleColor(member.role)}
                               >
                                 <RoleIcon className="h-3 w-3 mr-1" />
-                                {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
+                                {getRoleLabel(member.role)}
                               </Badge>
                               {isSelected && <CheckCircle className="h-3 w-3 text-green-600" />}
                             </div>

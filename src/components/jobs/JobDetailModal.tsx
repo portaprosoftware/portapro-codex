@@ -156,7 +156,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
           last_name,
           user_roles!inner(role)
         `)
-        .eq('user_roles.role', 'org:driver' as any)
+        .eq('user_roles.role', 'driver' as any)
         .order('first_name');
       if (error) throw error;
       return data;

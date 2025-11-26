@@ -34,7 +34,7 @@ export const DriverPerformanceChart: React.FC<DriverPerformanceChartProps> = ({ 
       const { data: drivers, error: driversError } = await supabase
         .from('user_roles')
         .select('user_id, clerk_user_id')
-        .eq('role', 'org:driver' as any);
+        .eq('role', 'driver' as any);
 
       if (driversError) throw driversError;
 
