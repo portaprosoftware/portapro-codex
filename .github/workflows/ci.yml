@@ -30,8 +30,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run tenant isolation audit
-        run: pnpm tenant:audit
+      - name: Run Tenant Audit
+        run: npm run tenant:audit
 
       - name: Type check
         run: npm run type-check
