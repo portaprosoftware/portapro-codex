@@ -87,35 +87,37 @@ const QuotesInvoices: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-none px-6 py-6 space-y-6">
+      <div className="mx-auto w-full max-w-6xl px-3 sm:px-4 md:px-6 py-6 space-y-6">
         {/* Page Header */}
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-          <h1 className="text-3xl font-bold text-gray-900">Quotes & Invoices Management</h1>
-          <p className="text-base text-gray-600 mt-1">Create and manage quotes and invoices with inventory and maintenance services</p>
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-6">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Quotes & Invoices Management</h1>
+          <p className="text-sm sm:text-base text-gray-600 mt-1">Create and manage quotes and invoices with inventory and maintenance services</p>
         </div>
 
         {/* Main Content Card */}
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-6">
           {/* Quotes & Invoices Sub-Navigation Pills */}
-          <div className="mb-6">
-            <TabNav ariaLabel="Quotes and Invoices">
-              <TabNav.Item 
-                to="#" 
-                isActive={activeTab === 'quotes'}
-                onClick={() => setActiveTab('quotes')}
-              >
-                <FileText className="w-4 h-4" />
-                Quotes
-              </TabNav.Item>
-              <TabNav.Item 
-                to="#" 
-                isActive={activeTab === 'invoices'}
-                onClick={() => setActiveTab('invoices')}
-              >
-                <DollarSign className="w-4 h-4" />
-                Invoices
-              </TabNav.Item>
-            </TabNav>
+          <div className="mb-6 overflow-x-auto -mx-2 sm:mx-0">
+            <div className="min-w-fit px-2 sm:px-0">
+              <TabNav ariaLabel="Quotes and Invoices">
+                <TabNav.Item
+                  to="#"
+                  isActive={activeTab === 'quotes'}
+                  onClick={() => setActiveTab('quotes')}
+                >
+                  <FileText className="w-4 h-4" />
+                  Quotes
+                </TabNav.Item>
+                <TabNav.Item
+                  to="#"
+                  isActive={activeTab === 'invoices'}
+                  onClick={() => setActiveTab('invoices')}
+                >
+                  <DollarSign className="w-4 h-4" />
+                  Invoices
+                </TabNav.Item>
+              </TabNav>
+            </div>
           </div>
 
           {/* Conditional Content Based on Active Tab */}

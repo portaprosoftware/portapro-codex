@@ -98,13 +98,13 @@ const Dashboard = () => {
   }, [timezone]);
   
   return (
-    <div className="px-2 md:px-4 py-3 space-y-4 font-sans">
+    <div className="mx-auto w-full max-w-6xl px-3 sm:px-4 md:px-6 py-3 space-y-4 font-sans">
       {/* Hero Banner - Mobile Optimized */}
-      <div className="bg-gradient-to-b from-[#F6F9FF] to-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-4 transition-all duration-300 hover:shadow-md">
-        <div className="flex flex-col md:flex-row items-center md:justify-between gap-2 md:gap-0">
+      <div className="bg-gradient-to-b from-[#F6F9FF] to-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-5 md:p-6 transition-all duration-300 hover:shadow-md">
+        <div className="flex flex-col md:flex-row items-start md:items-center md:justify-between gap-3 md:gap-4">
           {/* Welcome text - centered on mobile */}
           <div className="space-y-2 text-center md:text-left w-full md:w-auto">
-            <h1 className="text-2xl font-bold text-gray-900 font-sans">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 font-sans">
               Welcome back, {user?.firstName || 'User'}!
             </h1>
             <p className="text-base text-gray-600 font-sans">
