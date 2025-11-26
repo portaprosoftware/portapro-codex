@@ -190,8 +190,8 @@ export const InvoicesTable = ({ searchTerm, dateRange }: InvoicesTableProps) => 
   return (
     <>
       {/* Desktop Table View - hidden on mobile */}
-      <div className="hidden lg:block bg-card rounded-2xl border shadow-sm">
-        <Table>
+      <div className="hidden lg:block bg-card rounded-2xl border shadow-sm overflow-x-auto">
+        <Table className="min-w-[960px]">
           <TableHeader>
             <TableRow className="border-border">
               <TableHead className="font-medium text-foreground">Invoice #</TableHead>
