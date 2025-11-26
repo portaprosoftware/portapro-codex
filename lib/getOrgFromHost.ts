@@ -1,7 +1,6 @@
-import { getAppRootUrl, getRootDomain } from '@/lib/config/domains';
+import { getRootDomain } from '@/lib/config/domains';
 
 const rootDomain = getRootDomain();
-const APP_HOST = new URL(getAppRootUrl()).hostname;
 const MARKETING_HOSTS = new Set([
   rootDomain,
   `www.${rootDomain}`,
@@ -19,7 +18,7 @@ export function extractOrgSlug(host?: string | null): string | null {
     return null;
   }
 
-  if (normalizedHost === APP_HOST || MARKETING_HOSTS.has(normalizedHost)) {
+  if (MARKETING_HOSTS.has(normalizedHost) || normalizedHost === rootDomain) {
     return null;
   }
 
@@ -33,7 +32,7 @@ export function extractOrgSlug(host?: string | null): string | null {
   }
 
   const slug = parts[0];
-  if (!slug || !SLUG_PATTERN.test(slug) || slug === "app") {
+  if (!slug || !SLUG_PATTERN.test(slug)) {
     return null;
   }
 
