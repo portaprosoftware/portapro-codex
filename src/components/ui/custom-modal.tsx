@@ -51,16 +51,16 @@ export const CustomModal: React.FC<CustomModalProps> = ({
   if (!isOpen) return null;
 
   return createPortal(
-    <div 
-      className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+    <div
+      className="fixed inset-0 z-50 bg-black/50 flex items-start justify-center p-0 sm:p-4"
       onClick={handleBackdropClick}
     >
-      <div 
+      <div
         ref={modalRef}
-        className={`bg-background border rounded-lg shadow-lg w-full ${className}`}
+        className={`bg-background border rounded-none sm:rounded-lg shadow-lg w-full h-full sm:h-auto sm:max-w-3xl overflow-y-auto ${className}`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between p-6 border-b">
+        <div className="flex items-center justify-between p-6 border-b sticky top-0 bg-background/95 backdrop-blur">
           <div>
             <h2 className="text-lg font-semibold">{title}</h2>
             {description && (
