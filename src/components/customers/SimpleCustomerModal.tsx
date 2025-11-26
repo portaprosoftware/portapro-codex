@@ -9,6 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { createServiceLocationWithGeocoding } from '@/utils/geocoding';
+import { tenantTable } from '@/lib/db/tenant';
+import { useTenantId } from '@/lib/tenantQuery';
 
 interface SimpleCustomerModalProps {
   isOpen: boolean;
@@ -83,6 +85,7 @@ const US_STATES = [
 export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const tenantId = useTenantId();
   
   const [formData, setFormData] = useState({
     name: '',
@@ -114,8 +117,11 @@ export function SimpleCustomerModal({ isOpen, onClose }: SimpleCustomerModalProp
       
       console.log('Inserting customer data:', insertData);
 
-      const { data: insertedCustomer, error } = await supabase
-        .from('customers')
+      const { data: insertedCustomer, error } = await tenantTable(
+        supabase,
+        tenantId,
+        'customers'
+      )
         .insert(insertData)
         .select();
 

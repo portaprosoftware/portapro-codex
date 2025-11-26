@@ -7,6 +7,7 @@ import { CustomerPortal } from '@/components/communications/CustomerPortal';
 import { AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useTenantId } from '@/lib/tenantQuery';
+import { tenantTable } from '@/lib/db/tenant';
 
 export default function CustomerPortalPage() {
   const { user } = useUser();
@@ -19,21 +20,18 @@ export default function CustomerPortalPage() {
     queryFn: async () => {
       if (!user?.id || !tenantId) throw new Error('User not authenticated');
 
-      let query = supabase
-        .from('customers')
-        .select('*')
-        // TENANT-SCOPED
-        .eq('organization_id', tenantId);
-      
-      if (customerId) {
-        // Direct customer ID provided in URL
-        query = query.eq('id', customerId);
-      } else {
-        // Find customer by Clerk user ID
-        query = query.eq('clerk_user_id', user.id);
-      }
-      
-      const { data, error } = await query.single();
+      const query = tenantTable(
+        supabase,
+        tenantId,
+        'customers'
+      )
+        .select('*');
+
+      const filterQuery = customerId
+        ? query.eq('id', customerId)
+        : query.eq('clerk_user_id', user.id);
+
+      const { data, error } = await filterQuery.single();
 
       if (error) throw error;
       return data;

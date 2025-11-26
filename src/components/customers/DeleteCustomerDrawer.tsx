@@ -15,6 +15,8 @@ import { AlertTriangle, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { tenantTable } from '@/lib/db/tenant';
+import { useTenantId } from '@/lib/tenantQuery';
 
 interface DeleteCustomerDrawerProps {
   isOpen: boolean;
@@ -30,6 +32,7 @@ export function DeleteCustomerDrawer({ isOpen, onClose, customer }: DeleteCustom
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const tenantId = useTenantId();
 
   const deleteCustomerMutation = useMutation({
     mutationFn: async () => {
@@ -102,8 +105,11 @@ export function DeleteCustomerDrawer({ isOpen, onClose, customer }: DeleteCustom
       }
 
       // Finally, delete the customer record
-      const { error: customerError } = await supabase
-        .from('customers')
+      const { error: customerError } = await tenantTable(
+        supabase,
+        tenantId,
+        'customers'
+      )
         .delete()
         .eq('id', customer.id);
 

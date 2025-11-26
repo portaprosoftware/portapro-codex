@@ -36,6 +36,8 @@ import { BillingTab } from '@/components/customer-portal/BillingTab';
 import { QuotesTab } from '@/components/customer-portal/QuotesTab';
 import { UsersTab } from '@/components/customer-portal/UsersTab';
 import { SupportTab } from '@/components/customer-portal/SupportTab';
+import { tenantTable } from '@/lib/db/tenant';
+import { useTenantId } from '@/lib/tenantQuery';
 
 const TABS = [
   { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
@@ -55,23 +57,27 @@ interface CustomerPortalProps {
 export const CustomerPortal: React.FC<CustomerPortalProps> = ({ customerId }) => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [supportMessage, setSupportMessage] = useState('');
+  const tenantId = useTenantId();
 
   // Fetch real customer data
   const { data: customer, isLoading: customerLoading } = useQuery({
-    queryKey: ['customer-portal', customerId],
+    queryKey: ['customer-portal', customerId, tenantId],
     queryFn: async () => {
       if (!customerId) throw new Error('Customer ID required');
-      
-      const { data, error } = await supabase
-        .from('customers')
+
+      const { data, error } = await tenantTable(
+        supabase,
+        tenantId,
+        'customers'
+      )
         .select('*')
         .eq('id', customerId)
         .single();
-      
+
       if (error) throw error;
       return data;
     },
-    enabled: !!customerId,
+    enabled: !!customerId && !!tenantId,
   });
 
   // Fetch real jobs data

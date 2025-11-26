@@ -18,6 +18,8 @@ import { formatPhoneNumber } from "@/lib/utils";
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { tenantTable } from "@/lib/db/tenant";
+import { useTenantId } from "@/lib/tenantQuery";
 
 const CUSTOMER_TYPES = {
   "bars_restaurants": { label: "Bars & Restaurants", color: "#EAB308" },
@@ -60,6 +62,7 @@ const CustomerHub: React.FC = () => {
   const [sortDirection, setSortDirection] = useState<SortDirection>('default');
   const [showLastDelivery, setShowLastDelivery] = useState(true);
   const [showInfoPopover, setShowInfoPopover] = useState(false);
+  const tenantId = useTenantId();
 
   // Handle column sorting
   const handleSort = (column: SortColumn) => {
@@ -80,16 +83,20 @@ const CustomerHub: React.FC = () => {
 
   // Fetch customers data
   const { data: customersData = [], isLoading, error } = useQuery({
-    queryKey: ['customers'],
+    queryKey: ['customers', tenantId],
     queryFn: async () => {
-      const { data: customers, error: customerError } = await supabase
-        .from('customers')
+      const { data: customers, error: customerError } = await tenantTable(
+        supabase,
+        tenantId,
+        'customers'
+      )
         .select('*')
         .order('name');
-      
+
       if (customerError) throw customerError;
       return customers || [];
     },
+    enabled: !!tenantId,
   });
 
   // Fetch last delivery date for each customer

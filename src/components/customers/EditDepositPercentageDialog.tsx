@@ -7,6 +7,8 @@ import { Percent } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
+import { tenantTable } from '@/lib/db/tenant';
+import { useTenantId } from '@/lib/tenantQuery';
 
 interface EditDepositPercentageDialogProps {
   isOpen: boolean;
@@ -26,6 +28,7 @@ export function EditDepositPercentageDialog({
   const [percentage, setPercentage] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
+  const tenantId = useTenantId();
 
   useEffect(() => {
     if (isOpen) {
@@ -47,10 +50,13 @@ export function EditDepositPercentageDialog({
 
     setIsLoading(true);
     try {
-      const { error } = await supabase
-        .from('customers')
-        .update({ 
-          custom_deposit_percentage: percentage === '' ? null : numValue 
+      const { error } = await tenantTable(
+        supabase,
+        tenantId,
+        'customers'
+      )
+        .update({
+          custom_deposit_percentage: percentage === '' ? null : numValue
         })
         .eq('id', customerId);
 

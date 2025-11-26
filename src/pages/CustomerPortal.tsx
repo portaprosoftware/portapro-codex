@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Loader2, FileText, DollarSign, Calendar, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
+import { tenantTable } from '@/lib/db/tenant';
 
 interface PortalData {
   customer: any;
@@ -60,9 +61,14 @@ export default function CustomerPortal() {
           })
           .eq('id', tokenData.id);
 
+        const orgId = tokenData.organization_id;
+
         // Fetch customer data
-        const { data: customer, error: customerError } = await supabase
-          .from('customers')
+        const { data: customer, error: customerError } = await tenantTable(
+          supabase,
+          orgId,
+          'customers'
+        )
           .select('*')
           .eq('id', tokenData.customer_id)
           .single();
