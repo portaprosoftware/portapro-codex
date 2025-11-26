@@ -54,3 +54,24 @@ export interface DashboardKpis {
     count: number;
   };
 }
+
+export interface ActivityFeedEntry {
+  entry_type: 'job' | 'invoice';
+  entity_id: string;
+  job_type: string | null;
+  amount: number | null;
+  status: string;
+  created_at: string;
+  customer_name: string | null;
+}
+
+export interface DriverDebugInfoRow {
+  job_id: string;
+  job_number: string | null;
+  driver_id: string | null;
+  job_type: string | null;
+  status: string | null;
+  scheduled_date: string | null;
+  created_at: string;
+  customer_name: string | null;
+}
