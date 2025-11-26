@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { tenantTable } from "@/lib/db/tenant";
+import { useTenantId } from "@/lib/tenantQuery";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,6 +41,7 @@ export const ScheduleServiceModal: React.FC<ScheduleServiceModalProps> = ({
   onClose,
 }) => {
   const queryClient = useQueryClient();
+  const orgId = useTenantId();
   const [step, setStep] = useState(1);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [selectedCustomer, setSelectedCustomer] = useState("");
@@ -117,8 +120,7 @@ export const ScheduleServiceModal: React.FC<ScheduleServiceModalProps> = ({
         service_id: selectedService.id,
       };
 
-      const { data: job, error: jobError } = await supabase
-        .from('jobs')
+      const { data: job, error: jobError } = await tenantTable(supabase, orgId, 'jobs')
         .insert([jobData])
         .select()
         .single();

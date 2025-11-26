@@ -18,6 +18,7 @@ import { FeeSuggestionsPanel, SuggestedFee } from './FeeSuggestionsPanel';
 import { ValidationBlocker } from './ValidationBlocker';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { tenantTable } from '@/lib/db/tenant';
 import { useUser } from '@clerk/clerk-react';
 import { useOrganizationId } from '@/hooks/useOrganizationId';
 import { useEnhancedOffline } from '@/hooks/useEnhancedOffline';
@@ -484,9 +485,8 @@ export const SmartServiceReport: React.FC<SmartServiceReportProps> = ({
         if (reportError) throw reportError;
 
         // Update job status
-        await supabase
-          .from('jobs')
-          .update({ 
+        await tenantTable(supabase, orgId, 'jobs')
+          .update({
             status: 'completed',
             actual_completion_time: new Date().toISOString()
           })
