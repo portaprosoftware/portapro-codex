@@ -88,7 +88,7 @@ export function getAppRootUrl(): string {
   return resolved;
 }
 
-export const clientEnv = {
+const clientEnvBase = {
   SUPABASE_URL: readValue('SUPABASE_URL', ['VITE_SUPABASE_URL']),
   SUPABASE_ANON_KEY: readValue('SUPABASE_ANON_KEY', ['VITE_SUPABASE_PUBLISHABLE_KEY', 'VITE_SUPABASE_ANON_KEY']),
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: readValue('NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY', ['VITE_CLERK_PUBLISHABLE_KEY']),
@@ -96,6 +96,10 @@ export const clientEnv = {
   VITE_ROOT_DOMAIN: getRootDomain(),
   VITE_MARKETING_URL: getMarketingUrl(),
 };
+
+export const clientEnv: Record<keyof typeof clientEnvBase, string> = Object.fromEntries(
+  Object.entries(clientEnvBase).map(([key, value]) => [key, String(value ?? '')])
+) as Record<keyof typeof clientEnvBase, string>;
 
 let serverEnvCache: ServerEnv | null = null;
 

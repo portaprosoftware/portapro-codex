@@ -314,13 +314,14 @@ export const MessageComposer = React.forwardRef<{
       return safeValue;
     } else {
       // For URLs, show a shortened version
-      if (!safeValue) return safeValue;
+      const trimmed = safeValue.trim();
+      if (!trimmed) return trimmed;
 
       try {
-        const url = new URL(safeValue);
+        const url = new URL(trimmed);
         return url.hostname;
       } catch {
-        return safeValue.length > 30 ? safeValue.substring(0, 30) + '...' : safeValue;
+        return trimmed.length > 30 ? trimmed.substring(0, 30) + '...' : trimmed;
       }
     }
   };

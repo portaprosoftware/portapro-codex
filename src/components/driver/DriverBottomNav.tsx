@@ -47,9 +47,10 @@ export const DriverBottomNav: React.FC = () => {
     >
       <div className="flex items-center justify-around h-full">
         {navItems.map((item) => {
-          const isActive = item.end 
-            ? location.pathname === item.to
-            : location.pathname.startsWith(item.to);
+          const pathname = String(location?.pathname ?? "");
+          const isActive = item.end
+            ? pathname === item.to
+            : pathname.startsWith(item.to);
 
           return (
             <NavLink

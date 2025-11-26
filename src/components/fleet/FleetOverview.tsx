@@ -468,10 +468,11 @@ export const FleetOverview: React.FC = () => {
             
             // Clear URL parameter
             const currentUrl = String(window.location?.href ?? "");
-            if (!currentUrl) return;
+            const trimmed = currentUrl.trim();
+            if (!trimmed) return;
 
             try {
-              const url = new URL(currentUrl);
+              const url = new URL(trimmed);
               url.searchParams.delete('vehicle');
               window.history.pushState({}, '', url.toString());
             } catch (error) {

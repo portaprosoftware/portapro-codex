@@ -101,19 +101,20 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
       <SidebarGroupContent>
         <SidebarMenu>
           {items.map((item) => {
-            const isActive = location.pathname === item.url || 
-              (item.url === '/fleet' && location.pathname.startsWith('/fleet')) ||
-              (item.url === '/team-management' && location.pathname.startsWith('/team-management')) ||
-              (item.url === '/inventory' && location.pathname.startsWith('/inventory')) ||
-              (item.url === '/consumables' && location.pathname.startsWith('/consumables')) ||
-              (item.url === '/jobs' && location.pathname.startsWith('/jobs')) ||
-              (item.url === '/customers' && (location.pathname === '/customer-hub' || location.pathname.startsWith('/customers'))) ||
-              (item.url === '/quotes-invoices' && location.pathname.startsWith('/quotes-invoices')) ||
-              (item.url === '/analytics' && location.pathname.startsWith('/analytics')) ||
-              (item.url === '/settings' && location.pathname.startsWith('/settings')) ||
-              (item.url === '/maintenance-hub' && location.pathname.startsWith('/maintenance-hub')) ||
-              (item.url === '/marketing' && location.pathname.startsWith('/marketing')) ||
-              (item.url === '/storage-sites' && location.pathname.startsWith('/storage-sites'));
+            const pathname = String(location?.pathname ?? "");
+            const isActive = pathname === item.url ||
+              (item.url === '/fleet' && pathname.startsWith('/fleet')) ||
+              (item.url === '/team-management' && pathname.startsWith('/team-management')) ||
+              (item.url === '/inventory' && pathname.startsWith('/inventory')) ||
+              (item.url === '/consumables' && pathname.startsWith('/consumables')) ||
+              (item.url === '/jobs' && pathname.startsWith('/jobs')) ||
+              (item.url === '/customers' && (pathname === '/customer-hub' || pathname.startsWith('/customers'))) ||
+              (item.url === '/quotes-invoices' && pathname.startsWith('/quotes-invoices')) ||
+              (item.url === '/analytics' && pathname.startsWith('/analytics')) ||
+              (item.url === '/settings' && pathname.startsWith('/settings')) ||
+              (item.url === '/maintenance-hub' && pathname.startsWith('/maintenance-hub')) ||
+              (item.url === '/marketing' && pathname.startsWith('/marketing')) ||
+              (item.url === '/storage-sites' && pathname.startsWith('/storage-sites'));
             return (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton 
