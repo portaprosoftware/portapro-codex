@@ -2,6 +2,7 @@ import crypto from "crypto";
 import { NextResponse } from "next/server";
 import { loadServerEnv } from "@/lib/config/env";
 import { createStructuredLogger, getRequestContext, logUnhandledError } from "@/lib/observability/logger";
+import { logAction, logSecurityEvent } from "@/lib/audit";
 
 const SIGNATURE_TOLERANCE_SECONDS = 300;
 
@@ -70,6 +71,11 @@ export async function POST(request: Request) {
 
     if (!signatureHeader) {
       logger.warn("Missing Stripe signature header");
+      await logSecurityEvent({
+        type: "invalid_token",
+        source: "stripe_webhook",
+        metadata: { reason: "missing_signature" },
+      });
       return NextResponse.json({ error: "Signature required" }, { status: 401 });
     }
 
@@ -77,12 +83,36 @@ export async function POST(request: Request) {
 
     if (!isVerified) {
       logger.warn("Stripe signature verification failed");
+      await logSecurityEvent({
+        type: "invalid_token",
+        source: "stripe_webhook",
+        metadata: { reason: "bad_signature" },
+      });
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
 
     const payload = JSON.parse(rawBody);
 
     logger.info("Stripe webhook received", { eventType: payload.type, eventId: payload.id });
+
+    const orgId = payload.data?.object?.metadata?.organization_id as string | undefined;
+
+    if (orgId) {
+      await logAction({
+        orgId,
+        action: `stripe_${payload.type}`,
+        entityType: payload.data?.object?.object ?? "stripe_event",
+        entityId: payload.data?.object?.id,
+        metadata: { eventId: payload.id },
+        request,
+      });
+    } else {
+      await logSecurityEvent({
+        type: "tenant_leak_attempt",
+        source: "stripe_webhook",
+        metadata: { eventId: payload.id, reason: "missing_org_metadata" },
+      });
+    }
 
     const response = NextResponse.json({ received: true, requestId: context.requestId }, { status: 200 });
 
