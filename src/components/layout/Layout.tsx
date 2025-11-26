@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
@@ -7,12 +8,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { UserButton, useUser } from "@clerk/clerk-react";
 import { ArrowUp, Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-} from "@/components/ui/drawer";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import "@/utils/authCleanup"; // Load auth cleanup utilities
 import { getMarketingUrl } from "@/lib/config/domains";
 
@@ -22,71 +18,52 @@ interface LayoutProps {
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [mounted, setMounted] = useState(false);
-  const [activeSection, setActiveSection] = useState<string>("/");
+  const [activeSection, setActiveSection] = useState<string>('/');
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const { user } = useUser();
   const navigate = useNavigate();
-
-  const { role, user: roleUser, isLoaded } = useUserRole();
-  const [isDesktop, setIsDesktop] = useState(false);
-
+  
   useEffect(() => {
     setMounted(true);
   }, []);
-
+  
+  const { role, user: roleUser, isLoaded } = useUserRole();
+  const [isDesktop, setIsDesktop] = useState(false);
+  
   useEffect(() => {
     const checkIsDesktop = () => {
-      // Desktop when >= 1024px, otherwise mobile+tablet
-      if (typeof window !== "undefined") {
-        setIsDesktop(window.innerWidth >= 1024);
-      }
+      setIsDesktop(window.innerWidth >= 1024); // Show header on screens < 1024px (mobile + tablet)
     };
-
+    
     checkIsDesktop();
-    window.addEventListener("resize", checkIsDesktop);
-    return () => window.removeEventListener("resize", checkIsDesktop);
+    window.addEventListener('resize', checkIsDesktop);
+    return () => window.removeEventListener('resize', checkIsDesktop);
   }, []);
 
   if (!mounted) {
     return (
-      <div
-        className="min-h-screen flex items-center justify-center"
-        style={{ backgroundColor: "#f9fafb" }}
-      >
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600" />
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#f9fafb' }}>
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
       </div>
     );
   }
-
+  
   // Show loading while Clerk is initializing
   if (!isLoaded) {
     return (
-      <div
-        className="min-h-screen flex items-center justify-center"
-        style={{ backgroundColor: "#f9fafb" }}
-      >
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600" />
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#f9fafb' }}>
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
       </div>
     );
   }
 
   if (!role && roleUser) {
     return (
-      <div
-        className="min-h-screen flex items-center justify-center p-6"
-        style={{ backgroundColor: "#f9fafb" }}
-      >
+      <div className="min-h-screen flex items-center justify-center p-6" style={{ backgroundColor: '#f9fafb' }}>
         <div className="bg-white rounded-lg shadow-lg p-6 text-center space-y-4">
-          <h2 className="text-2xl font-bold">
-            Welcome {roleUser.firstName}!
-          </h2>
-          <p>
-            Please contact your administrator to set your role so we can
-            finalize your access.
-          </p>
-          <p className="text-sm text-gray-500">
-            Valid roles: owner, dispatch, driver, customer
-          </p>
+          <h2 className="text-2xl font-bold">Welcome {roleUser.firstName}!</h2>
+          <p>Please contact your administrator to set your role so we can finalize your access.</p>
+          <p className="text-sm text-gray-500">Valid roles: owner, dispatch, driver, customer</p>
           {/* TODO: Replace with Supabase role lookup in next phase */}
         </div>
       </div>
@@ -95,11 +72,8 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   if (!role) {
     return (
-      <div
-        className="min-h-screen flex items-center justify-center"
-        style={{ backgroundColor: "#f9fafb" }}
-      >
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600" />
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#f9fafb' }}>
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
       </div>
     );
   }
@@ -123,9 +97,9 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
     );
   }
 
-  // Mobile / tablet layout with fixed header + bottom scroll-to-top
+  // Mobile layout with bottom-up drawer
   return (
-    <div className="min-h-screen flex flex-col w-full bg-gray-50">
+    <div className="min-h-screen flex flex-col w-full bg-[#f9fafb]">
       <header className="fixed top-0 left-0 right-0 z-50 flex h-16 items-center justify-between border-b bg-gray-50 px-4">
         <div className="flex items-center gap-3">
           <MobileNavDrawer />
@@ -134,34 +108,30 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         <div className="flex items-center gap-3">
           <button
             onClick={() => setNotificationsOpen(true)}
-            className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900"
+            className="flex items-center justify-center text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors"
           >
-            <Bell className="w-[22px] h-[22px]" />
+            <Bell className="w-6 h-6" />
           </button>
           <UserButton
             appearance={{
               elements: {
                 userButtonAvatarBox: "w-10 h-10",
-                userButtonPopoverCard: "shadow-lg",
-              },
+                userButtonPopoverCard: "shadow-lg"
+              }
             }}
             afterSignOutUrl={getMarketingUrl()}
           />
         </div>
       </header>
-
       <main className="flex-1 overflow-y-auto px-4 pt-20 pb-24 sm:pb-20">
         {children}
       </main>
-
       <footer className="fixed bottom-0 left-0 right-0 z-50 flex h-12 items-center justify-center border-t bg-gray-50 px-4">
         <button
-          onClick={() =>
-            window.scrollTo({ top: 0, behavior: "smooth" })
-          }
-          className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="flex items-center justify-center text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors"
         >
-          <ArrowUp className="w-5 h-5" />
+          <ArrowUp className="w-6 h-6" />
         </button>
       </footer>
 

@@ -567,7 +567,7 @@ const JobsPage: React.FC = () => {
         />
       )}
       
-      <div className={cn("mx-auto w-full max-w-6xl px-3 sm:px-4 md:px-6 py-3 md:py-4 space-y-3 md:space-y-6", activeTab === "dispatch" && "md:space-y-3")}>
+      <div className={cn("max-w-none px-2 md:px-4 py-3 md:py-4 space-y-3 md:space-y-6", activeTab === "dispatch" && "md:space-y-3")}>
         {/* Page Header with Navigation Pills */}
         <div className="bg-white rounded-lg border shadow-sm p-4 md:p-6">
           <div className="flex flex-col h-full">

@@ -77,16 +77,16 @@ export default function Settings() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 py-6 space-y-6">
-        <div className="bg-white rounded-lg border shadow-sm p-4 sm:p-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="max-w-none px-6 py-6 space-y-6">
+        <div className="bg-white rounded-lg border shadow-sm p-6">
+          <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 font-inter">Settings</h1>
-              <p className="text-sm sm:text-base text-gray-600 font-inter mt-1">Configure your application settings</p>
+              <h1 className="text-2xl font-semibold text-gray-900 font-inter">Settings</h1>
+              <p className="text-base text-gray-600 font-inter mt-1">Configure your application settings</p>
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="flex items-center gap-2 w-full sm:w-auto min-h-[44px]">
+              <Button variant="outline" className="flex items-center gap-2">
                 {currentSection && <currentSection.icon className="h-4 w-4" />}
                 {currentSection?.label || 'Select Section'}
                 <ChevronDown className="h-4 w-4" />

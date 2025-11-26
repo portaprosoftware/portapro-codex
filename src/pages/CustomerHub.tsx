@@ -224,7 +224,7 @@ const CustomerHub: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="mx-auto w-full max-w-6xl px-3 sm:px-4 md:px-6 py-4 space-y-6">
+      <div className="max-w-none px-2 md:px-4 py-4 space-y-6">
         {/* Page Header */}
         <div className="bg-white rounded-lg border shadow-sm p-4 md:p-6 mb-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -233,18 +233,18 @@ const CustomerHub: React.FC = () => {
               <p className="text-base text-gray-600 font-inter mt-1">Manage all your customer data in one place</p>
             </div>
             <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3">
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-2 w-full md:w-auto min-h-[44px]"
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="gap-2 w-full md:w-auto"
                 onClick={() => setIsImportModalOpen(true)}
               >
                 <Upload className="w-4 h-4" />
                 Import CSV
               </Button>
-              <Button
+              <Button 
                 onClick={() => setIsAddModalOpen(true)}
-                className="gap-2 bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold px-4 py-2 rounded-md border-0 w-full md:w-auto min-h-[44px]"
+                className="gap-2 bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 text-white font-bold px-4 py-2 rounded-md border-0 w-full md:w-auto"
               >
                 <Plus className="w-4 h-4" />
                 Add Customer

@@ -8,7 +8,7 @@ interface FleetLayoutProps {
 export const FleetLayout: React.FC<FleetLayoutProps> = ({ children }) => {
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="mx-auto w-full max-w-6xl px-4 py-6 space-y-6 sm:px-6">
+      <div className="max-w-none px-6 py-6 space-y-6">
         <FleetNavigation />
         {children}
       </div>
