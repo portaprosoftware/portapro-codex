@@ -14,7 +14,10 @@
     "tenant:audit": "node scripts/tenant-audit.mjs",
     "audit:tenant": "npm run tenant:audit",
     "smoke:tenant": "node scripts/smoke-tenant.js",
-    "test:tenant": "vitest run src/test/tenant-smoke"
+    "test:tenant": "vitest run src/test/tenant-smoke",
+    "jobs:run": "node src/lib/jobs/executor.ts",
+    "jobs:enqueue": "node src/lib/jobs/queue.ts",
+    "jobs:dev": "nodemon src/lib/jobs/executor.ts"
   },
   "dependencies": {
     "@capacitor-community/barcode-scanner": "^4.0.1",
@@ -114,6 +117,7 @@
     "eslint-plugin-react-refresh": "^0.4.9",
     "globals": "^15.9.0",
     "lovable-tagger": "^1.1.7",
+    "nodemon": "^3.1.4",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.11",
     "typescript": "^5.5.3",
