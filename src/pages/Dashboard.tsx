@@ -16,11 +16,12 @@ import { StaffCertificationsCard } from "@/components/dashboard/StaffCertificati
 import { CompactConsumablesCard } from "@/components/dashboard/CompactConsumablesCard";
 import { SpillKitExpirationsCard } from "@/components/dashboard/SpillKitExpirationsCard";
 import { useTenantId } from "@/lib/tenantQuery";
+import { DashboardKpis } from "@/types/rpc";
 import {
-  Package, 
-  Users, 
-  Calendar, 
-  DollarSign, 
+  Package,
+  Users,
+  Calendar,
+  DollarSign,
   Truck, 
   Fuel, 
   Wrench, 
@@ -43,182 +44,35 @@ const Dashboard = () => {
   
   // Mock data for sparkline (jobs over the past week)
   const jobsSparklineData = [2, 3, 1, 4, 2, 5, 3];
+  const { data: kpis } = useQuery({
+    queryKey: ['dashboard-kpis', tenantId],
+    queryFn: async (): Promise<DashboardKpis> => {
+      if (!tenantId) throw new Error('Tenant ID required for KPI rollup');
 
-  // Fetch inventory data for total units card
-  const { data: inventoryData } = useQuery({
-    queryKey: ['dashboard-inventory', tenantId],
-    queryFn: async () => {
-      // TENANT-SCOPED
-      const [productsResult, itemsResult, maintenanceItemsResult] = await Promise.all([
-        supabase.from('products').select('id, stock_total').eq('organization_id', tenantId!),
-        supabase.from('product_items').select('id').eq('organization_id', tenantId!),
-        supabase.from('product_items').select('id').eq('status', 'maintenance').eq('organization_id', tenantId!)
-      ]);
-      
-      if (productsResult.error) throw productsResult.error;
-      if (itemsResult.error) throw itemsResult.error;
-      if (maintenanceItemsResult.error) throw maintenanceItemsResult.error;
-      
-      const totalProducts = productsResult.data?.length || 0;
-      const totalUnits = productsResult.data?.reduce((sum, product) => sum + (product.stock_total || 0), 0) || 0;
-      const maintenanceItems = maintenanceItemsResult.data?.length || 0;
-      
-      return { totalProducts, totalUnits, maintenanceItems };
-    },
-    enabled: !!tenantId
-  });
+      const end = new Date();
+      const start = new Date();
+      start.setDate(end.getDate() - 30);
 
-  // Fetch jobs data for jobs today card
-  const { data: jobsData } = useQuery({
-    queryKey: ['dashboard-jobs-today', tenantId],
-    queryFn: async () => {
-      const today = new Date().toISOString().split('T')[0];
-      const { data, error } = await supabase
-        .from('jobs')
-        .select('job_type')
-        // TENANT-SCOPED
-        .eq('organization_id', tenantId!)
-        .eq('scheduled_date', today);
-      
+      const { data, error } = await supabase.rpc('pp_get_dashboard_kpis', {
+        p_organization_id: tenantId,
+        p_start: start.toISOString(),
+        p_end: end.toISOString(),
+      });
+
       if (error) throw error;
-      
-      const jobsByType = data?.reduce((acc, job) => {
-        acc[job.job_type] = (acc[job.job_type] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>) || {};
-      
-      return {
-        total: data?.length || 0,
-        deliveries: jobsByType.delivery || 0,
-        pickups: (jobsByType.pickup || 0) + (jobsByType.partial_pickup || 0),
-        services: jobsByType.service || 0,
-        surveys: jobsByType['on_site_survey'] || 0
-      };
+
+      const payload = Array.isArray(data) ? data[0] : data;
+
+      return (payload || {
+        inventory: { totalProducts: 0, totalUnits: 0, maintenanceItems: 0 },
+        jobs: { total: 0, deliveries: 0, pickups: 0, services: 0, surveys: 0 },
+        customers: { total: 0, active: 0 },
+        revenue: { total: 0 },
+        fuel: { total: 0 },
+      }) as DashboardKpis;
     },
-    enabled: !!tenantId
-  });
-
-  // Fetch customers data
-  const { data: customersData } = useQuery({
-    queryKey: ['dashboard-customers', tenantId],
-    queryFn: async () => {
-      const { data, error, count } = await supabase
-        .from('customers')
-        .select('*', { count: 'exact' })
-        // TENANT-SCOPED
-        .eq('organization_id', tenantId!);
-      
-      if (error) throw error;
-      
-      // Calculate active customers (those with jobs in the last 60 days)
-      const sixtyDaysAgo = new Date();
-      sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
-      
-      const { data: activeCustomers, error: activeError } = await supabase
-        .from('jobs')
-        .select('customer_id')
-        // TENANT-SCOPED
-        .eq('organization_id', tenantId!)
-        .gte('created_at', sixtyDaysAgo.toISOString());
-      
-      if (activeError) throw activeError;
-      
-      const uniqueActiveCustomers = new Set(activeCustomers?.map(job => job.customer_id));
-      
-      return {
-        total: count || 0,
-        active: uniqueActiveCustomers.size
-      };
-    },
-    enabled: !!tenantId
-  });
-
-  // Fetch vehicles data
-  const { data: vehiclesData } = useQuery({
-    queryKey: ['dashboard-vehicles', tenantId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('vehicles')
-        .select('id, status')
-        // TENANT-SCOPED
-        .eq('organization_id', tenantId!);
-      
-      if (error) throw error;
-      
-      const total = data?.length || 0;
-      const active = data?.filter(v => v.status === 'active').length || 0;
-      const maintenance = data?.filter(v => v.status === 'maintenance').length || 0;
-      
-      return { total, active, maintenance };
-    },
-    enabled: !!tenantId
-  });
-
-  // Fetch revenue data (last 30 days)
-  const { data: revenueData } = useQuery({
-    queryKey: ['dashboard-revenue', tenantId],
-    queryFn: async () => {
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-      const { data, error } = await supabase
-        .from('invoices')
-        .select('amount')
-        // TENANT-SCOPED
-        .eq('organization_id', tenantId!)
-        .eq('status', 'paid')
-        .gte('created_at', thirtyDaysAgo.toISOString());
-      
-      if (error) throw error;
-      
-      const total = data?.reduce((sum, invoice) => sum + (invoice.amount || 0), 0) || 0;
-      return { total };
-    },
-    enabled: !!tenantId
-  });
-
-  // Fetch fuel costs (last 30 days)
-  const { data: fuelData } = useQuery({
-    queryKey: ['dashboard-fuel', tenantId],
-    queryFn: async () => {
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-      const { data, error } = await supabase
-        .from('fuel_logs')
-        .select('total_cost')
-        // TENANT-SCOPED
-        .eq('organization_id', tenantId!)
-        .gte('log_date', thirtyDaysAgo.toISOString().split('T')[0]);
-      
-      if (error) throw error;
-      
-      const total = data?.reduce((sum, log) => sum + (log.total_cost || 0), 0) || 0;
-      return { total };
-    },
-    enabled: !!tenantId
-  });
-
-  // Fetch maintenance alerts
-  const { data: maintenanceData } = useQuery({
-    queryKey: ['dashboard-maintenance', tenantId],
-    queryFn: async () => {
-      const sevenDaysFromNow = new Date();
-      sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7);
-
-      const { data, error } = await supabase
-        .from('maintenance_records')
-        .select('vehicle_id')
-        // TENANT-SCOPED
-        .eq('organization_id', tenantId!)
-        .eq('status', 'scheduled')
-        .lte('scheduled_date', sevenDaysFromNow.toISOString().split('T')[0]);
-      
-      if (error) throw error;
-      
-      return { count: data?.length || 0 };
-    },
-    enabled: !!tenantId
+    enabled: !!tenantId,
+    staleTime: 30000,
   });
 
 
@@ -305,12 +159,12 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
           <StatCard
             title="Total Inventory"
-            value={`${inventoryData?.totalProducts || 0} products`}
+            value={`${kpis?.inventory.totalProducts || 0} products`}
             icon={Toilet}
             gradientFrom="#3b82f6"
             gradientTo="#2563eb"
             iconBg="#3b82f6"
-            subtitle={`${inventoryData?.totalUnits || 0} total units, ${inventoryData?.maintenanceItems || 0} in maintenance`}
+            subtitle={`${kpis?.inventory.totalUnits || 0} total units, ${kpis?.inventory.maintenanceItems || 0} in maintenance`}
             subtitleColor="text-gray-600"
             delay={0}
             clickable
@@ -319,12 +173,12 @@ const Dashboard = () => {
           
           <StatCard
             title="Active Customers"
-            value={customersData?.active || 0}
+            value={kpis?.customers.active || 0}
             icon={Users}
             gradientFrom="#8b5cf6"
             gradientTo="#7c3aed"
             iconBg="#8b5cf6"
-            subtitle={`${customersData?.total || 0} total customers`}
+            subtitle={`${kpis?.customers.total || 0} total customers`}
             subtitleColor="text-gray-600"
             delay={100}
             clickable
@@ -333,7 +187,7 @@ const Dashboard = () => {
           
           <StatCard
             title="Jobs Today"
-            value={jobsData?.total || 0}
+            value={kpis?.jobs.total || 0}
             icon={Calendar}
             gradientFrom="#3b82f6"
             gradientTo="#2563eb"
@@ -341,12 +195,12 @@ const Dashboard = () => {
             subtitle={
               <div className="space-y-1">
                 <div className="flex justify-between">
-                  <span>{jobsData?.deliveries || 0} deliveries</span>
-                  <span>{jobsData?.pickups || 0} pickups</span>
+                  <span>{kpis?.jobs.deliveries || 0} deliveries</span>
+                  <span>{kpis?.jobs.pickups || 0} pickups</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>{jobsData?.services || 0} services</span>
-                  <span>{jobsData?.surveys || 0} surveys</span>
+                  <span>{kpis?.jobs.services || 0} services</span>
+                  <span>{kpis?.jobs.surveys || 0} surveys</span>
                 </div>
               </div>
             }
@@ -358,7 +212,7 @@ const Dashboard = () => {
           
           <StatCard
             title="Monthly Revenue"
-            value={`$${(revenueData?.total || 0).toLocaleString()}`}
+            value={`$${(kpis?.revenue.total || 0).toLocaleString()}`}
             icon={DollarSign}
             gradientFrom="#22c55e"
             gradientTo="#16a34a"
@@ -372,14 +226,14 @@ const Dashboard = () => {
           
           <StatCard
             title="Fleet Vehicles"
-            value={vehiclesData?.total || 0}
+            value={kpis?.vehicles.total || 0}
             icon={Truck}
             gradientFrom="#6366f1"
             gradientTo="#4f46e5"
             iconBg="#6366f1"
-            subtitle={`${vehiclesData?.active || 0} active, ${vehiclesData?.maintenance || 0} maintenance`}
+            subtitle={`${kpis?.vehicles.active || 0} active, ${kpis?.vehicles.maintenance || 0} maintenance`}
             subtitleColor="text-gray-600"
-            chart={<DonutChart active={vehiclesData?.active || 0} maintenance={vehiclesData?.maintenance || 0} />}
+            chart={<DonutChart active={kpis?.vehicles.active || 0} maintenance={kpis?.vehicles.maintenance || 0} />}
             delay={400}
             clickable
             onClick={() => navigate('/fleet')}
@@ -387,7 +241,7 @@ const Dashboard = () => {
           
           <StatCard
             title="Fuel Cost"
-            value={`$${(fuelData?.total || 0).toLocaleString()}`}
+            value={`$${(kpis?.fuel.total || 0).toLocaleString()}`}
             icon={Fuel}
             gradientFrom="#eab308"
             gradientTo="#ca8a04"
@@ -407,7 +261,7 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
           <StatCard
             title="Vehicle Maintenance"
-            value={maintenanceData?.count || 0}
+            value={kpis?.maintenance.count || 0}
             icon={Wrench}
             gradientFrom="#fb7c1f"
             gradientTo="#f97316"

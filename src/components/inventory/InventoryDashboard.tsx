@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Package, TrendingUp, AlertTriangle, Clock, DollarSign, Activity, Calendar } from "lucide-react";
+import { Package, TrendingUp, AlertTriangle, Clock, DollarSign, Calendar } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -9,6 +9,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { AvailabilityCalendar } from "./AvailabilityCalendar";
 import { DateRangeAvailabilityChecker } from "./DateRangeAvailabilityChecker";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
+import { InventoryAvailabilityRow } from "@/types/rpc";
 
 interface InventoryMetrics {
   totalItems: number;
@@ -23,52 +25,43 @@ interface InventoryMetrics {
 
 export const InventoryDashboard: React.FC = () => {
   const [showAvailabilityTools, setShowAvailabilityTools] = useState(false);
-  
+  const { orgId } = useOrganizationId();
+  const snapshotDate = new Date().toISOString().split("T")[0];
+
   const { data: metrics, isLoading } = useQuery({
-    queryKey: ["inventory-metrics"],
+    queryKey: ["inventory-metrics", orgId, snapshotDate],
     queryFn: async (): Promise<InventoryMetrics> => {
-      // Get total products and stock
-      const { data: products } = await supabase
-        .from("products")
-        .select("stock_total, stock_in_service, default_price_per_day, low_stock_threshold");
+      if (!orgId) throw new Error("Organization ID required for inventory metrics");
 
-      // Get individual items
-      const { data: items } = await supabase
-        .from("product_items")
-        .select("status");
+      const { data, error } = await supabase.rpc("pp_get_inventory_availability", {
+        p_organization_id: orgId,
+        p_date: snapshotDate,
+        p_location_id: null,
+      });
 
-      // Get recent adjustments (last 7 days)
-      const { data: adjustments } = await supabase
-        .from("stock_adjustments")
-        .select("id")
-        .gte("created_at", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
+      if (error) throw error;
 
-      if (!products || !items) {
-        throw new Error("Failed to fetch inventory data");
-      }
+      const rows = (data || []) as InventoryAvailabilityRow[];
 
-      // Old stock calculations removed - will be replaced with unified stock system
-      const totalItems = products.reduce((sum, p) => sum + p.stock_total, 0);
-      const assignedItems = products.reduce((sum, p) => sum + p.stock_in_service, 0);
-      const availableItems = totalItems - assignedItems;
-      
-      const maintenanceItems = items.filter(item => item.status === "maintenance").length;
-      const lowStockCount = 0; // Will be calculated using unified stock system
-      
+      const totalItems = rows.reduce((sum, row) => sum + (row.total_count || 0), 0);
+      const availableItems = rows.reduce((sum, row) => sum + (row.available_count || 0), 0);
+      const assignedItems = rows.reduce((sum, row) => sum + (row.assigned_count || 0), 0);
+      const maintenanceItems = rows.reduce((sum, row) => sum + (row.maintenance_count || 0), 0);
+
       const utilizationRate = totalItems > 0 ? (assignedItems / totalItems) * 100 : 0;
-      const totalValue = products.reduce((sum, p) => sum + (p.stock_total * (p.default_price_per_day || 0)), 0);
 
       return {
         totalItems,
         availableItems,
         assignedItems,
         maintenanceItems,
-        lowStockCount,
+        lowStockCount: rows.filter(row => row.available_count <= 1).length,
         utilizationRate,
-        totalValue,
-        recentAdjustments: adjustments?.length || 0,
+        totalValue: 0,
+        recentAdjustments: 0,
       };
     },
+    enabled: !!orgId,
   });
 
   if (isLoading) {
