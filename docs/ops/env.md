@@ -11,11 +11,13 @@ The app validates required environment variables at boot using `zod`. Missing or
 | `SUPABASE_SERVICE_ROLE_KEY` | server-only | `service-role-key` |
 | `CLERK_SECRET_KEY` | server-only | `sk_test_xxx` |
 | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | client | `pk_test_xxx` |
-| `NEXT_PUBLIC_ROOT_DOMAIN` | client | `portaprosoftware.com` |
-| `NEXT_PUBLIC_MARKETING_URL` | client | `https://portaprosoftware.com` |
+| `VITE_ROOT_DOMAIN` | client | `portaprosoftware.com` |
+| `VITE_MARKETING_URL` | client | `https://portaprosoftware.com` |
 | `NEXT_PUBLIC_APP_ROOT_URL` | client | `https://app.portaprosoftware.com` |
 
 > **Note:** `SUPABASE_SERVICE_ROLE_KEY` and `CLERK_SECRET_KEY` must never be exposed to the browser. Keep them in server-only runtime configuration.
+
+`VITE_ROOT_DOMAIN` and `VITE_MARKETING_URL` can be omitted in browser deployments that run on wildcard subdomains; the client will infer sensible defaults from `window.location.hostname`.
 
 ## Optional variables
 
@@ -36,7 +38,7 @@ SUPABASE_ANON_KEY=public-anon-key
 SUPABASE_SERVICE_ROLE_KEY=service-role-key
 CLERK_SECRET_KEY=sk_test_xxx
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_xxx
-NEXT_PUBLIC_ROOT_DOMAIN=portaprosoftware.com
-NEXT_PUBLIC_MARKETING_URL=https://portaprosoftware.com
+VITE_ROOT_DOMAIN=portaprosoftware.com
+VITE_MARKETING_URL=https://portaprosoftware.com
 NEXT_PUBLIC_APP_ROOT_URL=https://app.portaprosoftware.com
 ```
