@@ -1,13 +1,12 @@
 
 import React, { useState, useEffect } from "react";
-import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
 import { MobileNavDrawer } from "./MobileNavDrawer";
 import { Logo } from "@/components/ui/logo";
-import { Button } from "@/components/ui/button";
 import { useUserRole } from "@/hooks/useUserRole";
 import { UserButton, useUser } from "@clerk/clerk-react";
-import { Settings, ArrowUp, Bell } from "lucide-react";
+import { ArrowUp, Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import "@/utils/authCleanup"; // Load auth cleanup utilities
@@ -83,13 +82,13 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   if (isDesktop) {
     return (
       <SidebarProvider defaultOpen={true}>
-        <div className="min-h-screen flex w-full" style={{ backgroundColor: '#f9fafb' }}>
-          <AppSidebar 
-            activeSection={activeSection} 
-            onSectionChange={setActiveSection} 
+        <div className="min-h-screen flex w-full bg-[#f9fafb]">
+          <AppSidebar
+            activeSection={activeSection}
+            onSectionChange={setActiveSection}
           />
           <SidebarInset className="flex-1">
-            <main className="flex-1 overflow-y-auto p-2 md:p-4">
+            <main className="flex-1 overflow-y-auto px-4 py-4 md:px-6 md:py-6">
               {children}
             </main>
           </SidebarInset>
@@ -100,19 +99,18 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   // Mobile layout with bottom-up drawer
   return (
-    <div className="min-h-screen flex flex-col w-full" style={{ backgroundColor: '#f9fafb' }}>
-      <header className="flex h-16 shrink-0 items-center justify-between border-b bg-gray-50 pl-2 fixed top-0 left-0 right-0 z-50" style={{ paddingRight: '5%' }}>
-        <div className="flex items-center gap-2">
+    <div className="min-h-screen flex flex-col w-full bg-[#f9fafb]">
+      <header className="fixed top-0 left-0 right-0 z-50 flex h-16 items-center justify-between border-b bg-gray-50 px-4">
+        <div className="flex items-center gap-3">
           <MobileNavDrawer />
           <Logo showText={true} />
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <button
             onClick={() => setNotificationsOpen(true)}
-            className="flex items-center justify-center text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors bg-transparent border-0 cursor-pointer"
-            style={{ marginRight: '10%' }}
+            className="flex items-center justify-center text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors"
           >
-            <Bell className="w-[26px] h-[26px]" />
+            <Bell className="w-6 h-6" />
           </button>
           <UserButton
             appearance={{
@@ -125,13 +123,13 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           />
         </div>
       </header>
-      <main className="flex-1 overflow-y-auto p-2 pt-20 pb-20">
+      <main className="flex-1 overflow-y-auto px-4 pt-20 pb-24 sm:pb-20">
         {children}
       </main>
-      <footer className="flex h-12 shrink-0 items-center border-t bg-gray-50 fixed bottom-0 left-0 right-0 z-50" style={{ paddingLeft: '20%' }}>
+      <footer className="fixed bottom-0 left-0 right-0 z-50 flex h-12 items-center justify-center border-t bg-gray-50 px-4">
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="flex items-center justify-center text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors bg-transparent border-0 cursor-pointer"
+          className="flex items-center justify-center text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors"
         >
           <ArrowUp className="w-6 h-6" />
         </button>
