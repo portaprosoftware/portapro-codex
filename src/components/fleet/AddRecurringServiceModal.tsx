@@ -155,7 +155,7 @@ export const AddRecurringServiceModal: React.FC<AddRecurringServiceModalProps> =
 
   const getVehicleImageUrl = (vehicle: any) => {
     if (!vehicle.vehicle_image) return null;
-    if (vehicle.vehicle_image.startsWith('http')) return vehicle.vehicle_image;
+    if (String(vehicle.vehicle_image ?? '').startsWith('http')) return vehicle.vehicle_image;
     const { data } = supabase.storage.from('vehicle-images').getPublicUrl(vehicle.vehicle_image);
     return data.publicUrl;
   };

@@ -54,12 +54,22 @@ export const useSubdomainOrg = (): UseSubdomainOrgReturn => {
         setError(null);
 
         // STEP 1: Extract subdomain from hostname
-        const hostname = window.location.hostname;
+        const parseHostname = (value: string) => {
+          const safeValue = String(value ?? "");
+          if (!safeValue) return "";
+          try {
+            return new URL(safeValue).hostname;
+          } catch {
+            return "";
+          }
+        };
+
+        const hostname = String(window.location?.hostname ?? "");
         const localhostDetected = hostname === 'localhost' || hostname.startsWith('127.0.0.1');
 
         const rootDomain = getRootDomain();
-        const marketingHostname = new URL(getMarketingUrl()).hostname;
-        const appHostname = new URL(getAppRootUrl()).hostname;
+        const marketingHostname = parseHostname(getMarketingUrl());
+        const appHostname = parseHostname(getAppRootUrl());
 
         const marketingHosts = new Set([
           rootDomain,

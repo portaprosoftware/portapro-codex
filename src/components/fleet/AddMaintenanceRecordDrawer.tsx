@@ -250,7 +250,7 @@ export const AddMaintenanceRecordDrawer: React.FC<AddMaintenanceRecordDrawerProp
   const getVehicleImageUrl = (vehicle: any) => {
     if (!vehicle.vehicle_image) return null;
     // If it's already a full URL, return as is
-    if (vehicle.vehicle_image.startsWith('http')) return vehicle.vehicle_image;
+    if (String(vehicle.vehicle_image ?? '').startsWith('http')) return vehicle.vehicle_image;
     // Otherwise, use Supabase storage API to get the public URL
     const { data } = supabase.storage.from('vehicle-images').getPublicUrl(vehicle.vehicle_image);
     return data.publicUrl;

@@ -467,9 +467,16 @@ export const FleetOverview: React.FC = () => {
             setSelectedVehicle(null);
             
             // Clear URL parameter
-            const url = new URL(window.location.href);
-            url.searchParams.delete('vehicle');
-            window.history.pushState({}, '', url.toString());
+            const currentUrl = String(window.location?.href ?? "");
+            if (!currentUrl) return;
+
+            try {
+              const url = new URL(currentUrl);
+              url.searchParams.delete('vehicle');
+              window.history.pushState({}, '', url.toString());
+            } catch (error) {
+              console.error('Failed to update vehicle query param', error);
+            }
           }}
         />
       )}

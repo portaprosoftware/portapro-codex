@@ -1,3 +1,11 @@
+window.onerror = (message, source, lineno, colno, error) => {
+  console.error("BOOT_CRASH window.onerror", { message, source, lineno, colno, error });
+};
+
+window.addEventListener("unhandledrejection", (event) => {
+  console.error("BOOT_CRASH unhandledrejection", event.reason ?? event);
+});
+
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { ClerkProvider } from "@clerk/clerk-react";
@@ -19,7 +27,7 @@ import { ClerkGate } from "./components/auth/ClerkGate";
 const CLERK_PUBLISHABLE_KEY = env.VITE_CLERK_PUBLISHABLE_KEY;
 
 // Gentle guard to avoid accidentally shipping a test key
-if (CLERK_PUBLISHABLE_KEY.startsWith("pk_test_")) {
+if (String(CLERK_PUBLISHABLE_KEY ?? "").startsWith("pk_test_")) {
   // eslint-disable-next-line no-console
   console.warn(
     "⚠️ Using a Clerk TEST key (pk_test_…). Set VITE_CLERK_PUBLISHABLE_KEY=pk_live_… for production tenants."
