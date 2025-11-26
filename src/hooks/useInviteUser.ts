@@ -4,11 +4,13 @@ import { useUserRole } from './useUserRole';
 import { useAuth, useOrganization } from '@clerk/clerk-react';
 import { triggerNewTeamMemberNotification } from '@/utils/notificationTriggers';
 
+type InviteUserRole = 'admin' | 'dispatcher' | 'driver' | 'customer';
+
 interface InviteUserData {
   email: string;
   firstName: string;
   lastName: string;
-  role: string;
+  role: InviteUserRole;
   phone?: string;
   organizationId?: string;
   organizationSlug?: string;
@@ -25,7 +27,7 @@ interface InviteUserResponse {
     redirectUrl?: string;
     organizationId?: string;
     email?: string;
-    role?: string;
+    role?: InviteUserRole;
   };
   error?: string;
 }

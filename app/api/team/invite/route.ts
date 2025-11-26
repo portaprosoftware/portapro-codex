@@ -13,7 +13,7 @@ const requestSchema = z.object({
   email: z.string().email(),
   firstName: z.string().min(1),
   lastName: z.string().min(1),
-  role: z.enum(["org:owner", "org:admin", "org:dispatcher", "org:driver"]),
+  role: z.enum(["admin", "dispatcher", "driver", "customer"]),
   phone: z.string().optional(),
   organizationId: z.string().optional(),
   organizationSlug: z.string().optional(),
@@ -66,8 +66,6 @@ export async function POST(req: Request) {
     return formatError("Organization mismatch", 403);
   }
 
-  // TODO: Replace with Supabase role lookup in next phase
-
   const { data: actingProfile } = await supabase
     .from("profiles")
     .select("id")
@@ -76,9 +74,9 @@ export async function POST(req: Request) {
     .maybeSingle();
 
   await requireRole({
-    userId: actingProfile?.id ?? null,
+    userId: actingProfile?.id ?? userId,
     orgId: org.id,
-    requiredRoles: ["org:owner", "org:admin"],
+    requiredRoles: ["admin"],
     supabase,
   });
 
