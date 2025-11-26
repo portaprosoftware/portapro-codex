@@ -50,6 +50,8 @@ const serverEnvSchema = clientEnvSchema.extend({
     .string()
     .min(1, { message: 'SUPABASE_SERVICE_ROLE_KEY is required (server-only)' }),
   CLERK_SECRET_KEY: z.string().min(1, { message: 'CLERK_SECRET_KEY is required (server-only)' }),
+  STRIPE_WEBHOOK_SECRET: z.string().optional(),
+  CLERK_WEBHOOK_SECRET: z.string().optional(),
 });
 
 type ClientEnv = z.infer<typeof clientEnvSchema>;
@@ -72,6 +74,8 @@ const serverEnvAliases: EnvKeyAliases<ServerEnv> = {
   ...clientEnvAliases,
   SUPABASE_SERVICE_ROLE_KEY: [],
   CLERK_SECRET_KEY: [],
+  STRIPE_WEBHOOK_SECRET: [],
+  CLERK_WEBHOOK_SECRET: [],
 };
 
 const formatZodErrors = (error: z.ZodError) => {
