@@ -1,0 +1,9 @@
+{
+  "paths": [
+    "src/pages/PublicPayment.tsx",
+    "src/pages/public/*.tsx"
+  ],
+  "patterns": [
+    "supabase.from('invoices')"
+  ]
+}
