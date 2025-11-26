@@ -327,6 +327,7 @@ export const UsersTab: React.FC<UsersTabProps> = ({ customerId }) => {
                         <div>
                           <div className="flex items-center gap-2">
                             <h5 className="font-medium">{user.first_name} {user.last_name}</h5>
+                            {/* TODO: Align displayed role labels with internal Supabase roles once UI copy is updated. */}
                             <Badge className={cn("text-xs", getRoleColor(user.role))}>
                               {USER_ROLES.find(r => r.value === user.role)?.label || user.role}
                             </Badge>

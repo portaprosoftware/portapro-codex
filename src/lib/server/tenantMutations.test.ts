@@ -27,7 +27,7 @@ const createSupabaseMock = () => {
     Promise.resolve({
       data:
         roleContext.orgId === "org-1"
-          ? { role: "org:admin", organization_id: "org-1" }
+          ? { id: "user-1", organization_id: "org-1", user_roles: [{ role: "admin" }] }
           : null,
       error: null,
     })
@@ -38,11 +38,11 @@ const createSupabaseMock = () => {
     }
     return { eq: eqRole, maybeSingle: roleMaybeSingle };
   });
+  const selectProfile = vi.fn(() => ({ eq: eqRole }));
 
   const from = vi.fn((table: string) => {
-    if (table === "user_roles") {
-      const select = vi.fn(() => ({ eq: eqRole }));
-      return { select } as any;
+    if (table === "profiles") {
+      return { select: selectProfile } as any;
     }
 
     return {
