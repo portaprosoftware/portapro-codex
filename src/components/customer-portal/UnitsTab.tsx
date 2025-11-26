@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { getStatusBadgeVariant } from '@/lib/statusBadgeUtils';
@@ -24,74 +24,107 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { tenantTable } from '@/lib/db/tenant';
+import { useTenantId } from '@/lib/tenantQuery';
 
 interface UnitsTabProps {
   customerId: string;
 }
 
 export const UnitsTab: React.FC<UnitsTabProps> = ({ customerId }) => {
+  const tenantId = useTenantId();
   const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid');
   const [selectedUnit, setSelectedUnit] = useState<any>(null);
 
   // Fetch units data from equipment assignments and product items
   const { data: unitsData = [], isLoading } = useQuery({
-    queryKey: ['customer-units', customerId],
+    queryKey: ['customer-units', customerId, tenantId],
     queryFn: async () => {
-      // Get equipment assignments for this customer
-      const { data: assignments, error: assignmentsError } = await supabase
-        .from('equipment_assignments')
-        .select(`
-          *,
-          job:jobs(customer_id, job_type, scheduled_date, status, actual_completion_time),
-          product_item:product_items(
-            id,
-            item_code,
-            status,
-            condition,
-            last_known_location,
-            product:products(name)
-          )
-        `)
-        .eq('jobs.customer_id', customerId)
+      if (!tenantId) return [];
+
+      const { data: jobs, error: jobsError } = await tenantTable(supabase, tenantId, 'jobs')
+        .select('id, customer_id, job_type, scheduled_date, status, actual_completion_time, job_number')
+        .eq('customer_id', customerId);
+
+      if (jobsError) throw jobsError;
+
+      const jobIds = jobs?.map((job) => job.id) || [];
+      if (jobIds.length === 0) return [];
+
+      const { data: assignments, error: assignmentsError } = await tenantTable(
+        supabase,
+        tenantId,
+        'equipment_assignments'
+      )
+        .select('id, job_id, product_item_id, assigned_date, status')
+        .in('job_id', jobIds)
         .eq('status', 'in_service');
 
       if (assignmentsError) throw assignmentsError;
 
-      // Get service locations
-      const { data: locations, error: locationsError } = await supabase
-        .from('customer_service_locations')
+      const productItemIds = assignments?.map((assignment) => assignment.product_item_id).filter(Boolean) || [];
+
+      const { data: productItems = [] } = productItemIds.length
+        ? await tenantTable(supabase, tenantId, 'product_items')
+            .select('id, item_code, status, condition, last_known_location, product_id')
+            .in('id', productItemIds)
+        : { data: [] };
+
+      const productIds = productItems.map((item) => item.product_id).filter(Boolean);
+      const { data: products = [] } = productIds.length
+        ? await tenantTable(supabase, tenantId, 'products')
+            .select('id, name')
+            .in('id', productIds)
+        : { data: [] };
+
+      const { data: locations, error: locationsError } = await tenantTable(
+        supabase,
+        tenantId,
+        'customer_service_locations'
+      )
         .select('*')
         .eq('customer_id', customerId)
         .eq('is_active', true);
 
       if (locationsError) throw locationsError;
 
-      // Mock enhanced unit data with service history
-      const enhancedUnits = assignments?.map(assignment => ({
-        id: assignment.product_item?.id || assignment.id,
-        unitCode: assignment.product_item?.item_code || `UNIT-${assignment.id.slice(0, 8)}`,
-        type: assignment.product_item?.product?.name || 'Portable Toilet',
-        category: 'standard',
-        status: assignment.product_item?.status || 'in_service',
-        condition: assignment.product_item?.condition || 'good',
-        location: locations?.find(l => l.id === assignment.job?.customer_id) || locations?.[0],
-        lastCleaned: assignment.job?.actual_completion_time || assignment.job?.scheduled_date,
-        nextDue: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-        frequency: 'Weekly',
-        assignedDate: assignment.assigned_date,
-        specialInstructions: ['Gate code: 1234', 'Behind main building'],
-        hazardFlags: assignment.product_item?.condition === 'needs_repair' ? ['Maintenance Required'] : [],
-        serviceHistory: [
-          {
-            date: assignment.job?.actual_completion_time || assignment.job?.scheduled_date,
-            type: assignment.job?.job_type || 'service',
-            technician: 'John Smith',
-            notes: 'Regular maintenance completed'
-          }
-        ]
-      })) || [];
+      const productLookup = Object.fromEntries(productItems.map((item) => [item.id, item]));
+      const productNameLookup = Object.fromEntries(products.map((product) => [product.id, product.name]));
+      const jobLookup = Object.fromEntries((jobs || []).map((job) => [job.id, job]));
 
-      return enhancedUnits;
+      return (
+        assignments?.map((assignment) => {
+          const job = jobLookup[assignment.job_id];
+          const productItem = assignment.product_item_id ? productLookup[assignment.product_item_id] : undefined;
+          const productName = productItem?.product_id ? productNameLookup[productItem.product_id] : undefined;
+
+          return {
+            id: productItem?.id || assignment.id,
+            unitCode: productItem?.item_code || `UNIT-${assignment.id.slice(0, 8)}`,
+            type: productName || 'Portable Toilet',
+            category: 'standard',
+            status: productItem?.status || assignment.status,
+            condition: productItem?.condition || 'good',
+            location: locations?.[0],
+            lastCleaned: job?.actual_completion_time || job?.scheduled_date,
+            nextDue: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+            frequency: 'Weekly',
+            assignedDate: assignment.assigned_date,
+            specialInstructions: ['Gate code: 1234', 'Behind main building'],
+            hazardFlags: productItem?.condition === 'needs_repair' ? ['Maintenance Required'] : [],
+            serviceHistory: job
+              ? [
+                  {
+                    date: job.actual_completion_time || job.scheduled_date,
+                    type: job.job_type || 'service',
+                    technician: 'John Smith',
+                    notes: 'Regular maintenance completed',
+                  },
+                ]
+              : [],
+          };
+        }) || []
+      );
     },
     enabled: !!customerId,
   });

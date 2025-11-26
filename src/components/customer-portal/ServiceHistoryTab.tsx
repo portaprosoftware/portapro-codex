@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { getStatusBadgeVariant } from '@/lib/statusBadgeUtils';
@@ -29,6 +29,8 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { tenantTable } from '@/lib/db/tenant';
+import { useTenantId } from '@/lib/tenantQuery';
 
 interface ServiceHistoryTabProps {
   customerId: string;
@@ -57,13 +59,15 @@ export const ServiceHistoryTab: React.FC<ServiceHistoryTabProps> = ({ customerId
   const [selectedLocation, setSelectedLocation] = useState<string>('all');
   const [selectedServiceType, setSelectedServiceType] = useState<string>('all');
   const [showFilters, setShowFilters] = useState(false);
+  const tenantId = useTenantId();
 
   // Fetch service history with related data
   const { data: serviceHistory = [], isLoading } = useQuery({
-    queryKey: ['service-history', customerId, searchTerm, dateRange, selectedLocation, selectedServiceType],
+    queryKey: ['service-history', customerId, tenantId, searchTerm, dateRange, selectedLocation, selectedServiceType],
     queryFn: async () => {
-      let query = supabase
-        .from('jobs')
+      if (!tenantId) return [];
+
+      let query = tenantTable(supabase, tenantId, 'jobs')
         .select(`
           id,
           job_number,
@@ -118,10 +122,11 @@ export const ServiceHistoryTab: React.FC<ServiceHistoryTabProps> = ({ customerId
 
   // Fetch service locations for filter
   const { data: serviceLocations = [] } = useQuery({
-    queryKey: ['service-locations', customerId],
+    queryKey: ['service-locations', customerId, tenantId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('customer_service_locations')
+      if (!tenantId) return [];
+
+      const { data, error } = await tenantTable(supabase, tenantId, 'customer_service_locations')
         .select('id, location_name')
         .eq('customer_id', customerId);
       

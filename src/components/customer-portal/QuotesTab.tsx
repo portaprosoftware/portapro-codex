@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -25,6 +24,8 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { tenantTable } from '@/lib/db/tenant';
+import { useTenantId } from '@/lib/tenantQuery';
 
 interface QuotesTabProps {
   customerId: string;
@@ -32,13 +33,15 @@ interface QuotesTabProps {
 
 export const QuotesTab: React.FC<QuotesTabProps> = ({ customerId }) => {
   const [selectedQuote, setSelectedQuote] = useState<any>(null);
+  const tenantId = useTenantId();
 
   // Fetch quotes data
   const { data: quotes = [], isLoading: quotesLoading } = useQuery({
-    queryKey: ['customer-quotes', customerId],
+    queryKey: ['customer-quotes', customerId, tenantId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('quotes')
+      if (!tenantId) return [];
+
+      const { data, error } = await tenantTable(supabase, tenantId, 'quotes')
         .select('*')
         .eq('customer_id', customerId)
         .order('created_at', { ascending: false });
@@ -51,10 +54,11 @@ export const QuotesTab: React.FC<QuotesTabProps> = ({ customerId }) => {
 
   // Fetch customer contracts
   const { data: contracts = [], isLoading: contractsLoading } = useQuery({
-    queryKey: ['customer-contracts', customerId],
+    queryKey: ['customer-contracts', customerId, tenantId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('customer_contracts')
+      if (!tenantId) return [];
+
+      const { data, error } = await tenantTable(supabase, tenantId, 'customer_contracts')
         .select('*')
         .eq('customer_id', customerId)
         .order('created_at', { ascending: false });

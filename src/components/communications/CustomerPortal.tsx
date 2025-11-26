@@ -82,12 +82,11 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ customerId }) =>
 
   // Fetch real jobs data
   const { data: jobs = [], isLoading: jobsLoading } = useQuery({
-    queryKey: ['customer-jobs', customerId],
+    queryKey: ['customer-jobs', customerId, tenantId],
     queryFn: async () => {
-      if (!customerId) return [];
-      
-      const { data, error } = await supabase
-        .from('jobs')
+      if (!customerId || !tenantId) return [];
+
+      const { data, error } = await tenantTable(supabase, tenantId, 'jobs')
         .select(`
           id,
           job_number,
@@ -109,7 +108,7 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ customerId }) =>
 
   // Fetch real invoices data
   const { data: invoices = [], isLoading: invoicesLoading } = useQuery({
-    queryKey: ['customer-invoices', customerId],
+    queryKey: ['customer-invoices', customerId, tenantId],
     queryFn: async () => {
       if (!customerId || !tenantId) return [];
 

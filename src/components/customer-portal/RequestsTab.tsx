@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { useOrganizationId } from '@/hooks/useOrganizationId';
+import { tenantTable } from '@/lib/db/tenant';
+import { useTenantId } from '@/lib/tenantQuery';
 import { safeInsert } from '@/lib/supabase-helpers';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -93,13 +94,15 @@ export const RequestsTab: React.FC<RequestsTabProps> = ({ customerId }) => {
 
   const queryClient = useQueryClient();
   const { orgId } = useOrganizationId();
+  const tenantId = useTenantId();
 
   // Fetch existing requests
   const { data: requests = [], isLoading } = useQuery({
-    queryKey: ['service-requests', customerId],
+    queryKey: ['service-requests', customerId, tenantId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('service_requests')
+      if (!tenantId) return [];
+
+      const { data, error } = await tenantTable(supabase, tenantId, 'service_requests')
         .select('*')
         .eq('customer_id', customerId)
         .order('created_at', { ascending: false });
@@ -112,10 +115,11 @@ export const RequestsTab: React.FC<RequestsTabProps> = ({ customerId }) => {
 
   // Fetch customer locations
   const { data: locations = [] } = useQuery({
-    queryKey: ['customer-locations', customerId],
+    queryKey: ['customer-locations', customerId, tenantId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('customer_service_locations')
+      if (!tenantId) return [];
+
+      const { data, error } = await tenantTable(supabase, tenantId, 'customer_service_locations')
         .select('id, location_name, street, city, state')
         .eq('customer_id', customerId)
         .eq('is_active', true);
