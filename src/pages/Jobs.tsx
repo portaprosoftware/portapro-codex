@@ -32,6 +32,7 @@ import { MobileStickyHeader } from '@/components/jobs/MobileStickyHeader';
 import { useJobs, useUpdateJobStatus, useCreateJob } from '@/hooks/useJobs';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { tenantTable } from '@/lib/db/tenant';
 import { toast } from 'sonner';
 import { useToast } from '@/hooks/use-toast';
 import { isJobOverdue, isJobCompletedLate, shouldShowWasOverdueBadge, shouldShowPriorityBadge } from '@/lib/jobStatusUtils';
@@ -47,6 +48,7 @@ import { MapLegend } from '@/components/maps/MapLegend';
 import { JobDraftManagement } from '@/components/jobs/JobDraftManagement';
 import { useJobDrafts } from '@/hooks/useJobDrafts';
 import { FilterToggle } from '@/components/jobs/FilterToggle';
+import { useTenantId } from '@/lib/tenantQuery';
 
 
 
@@ -55,12 +57,13 @@ const JobsPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<'calendar' | 'dispatch' | 'map' | 'custom' | 'drafts'>('calendar');
-  
+
   // Check if dispatch fullscreen mode is requested
   const dispatchFullscreen = searchParams.get('dispatch') === 'fullscreen';
   // Unified date state for all views - using Date objects (converted to string at query boundary)
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const { isLoaded, isSignedIn } = useUser();
+  const orgId = useTenantId();
   
   // Modal state
   const [isJobWizardOpen, setIsJobWizardOpen] = useState(false);
@@ -192,8 +195,7 @@ const JobsPage: React.FC = () => {
         }
       }
 
-      const { error } = await supabase
-        .from('jobs')
+      const { error } = await tenantTable(supabase, orgId, 'jobs')
         .update(updateData)
         .eq('id', jobId);
       

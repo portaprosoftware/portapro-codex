@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { tenantTable } from '@/lib/db/tenant';
+import { useTenantId } from '@/lib/tenantQuery';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -76,6 +78,7 @@ const [incidentOpen, setIncidentOpen] = useState(false);
 const [spillKitOpen, setSpillKitOpen] = useState(false);
 
 const queryClient = useQueryClient();
+  const orgId = useTenantId();
 
   // Fetch jobs for the current week
   const { data: jobs, isLoading: jobsLoading, refetch: refetchJobs } = useQuery({
@@ -83,9 +86,8 @@ const queryClient = useQueryClient();
     queryFn: async () => {
       const weekStart = startOfWeek(currentWeek);
       const weekEnd = endOfWeek(currentWeek);
-      
-      const { data, error } = await supabase
-        .from('jobs')
+
+      const { data, error } = await tenantTable(supabase, orgId, 'jobs')
         .select(`
           *,
           customers:customer_id (name, phone, email),
@@ -136,8 +138,7 @@ const queryClient = useQueryClient();
   // Update job mutation
   const updateJobMutation = useMutation({
     mutationFn: async ({ jobId, updates }: { jobId: string; updates: Partial<Job> }) => {
-      const { data, error } = await supabase
-        .from('jobs')
+      const { data, error } = await tenantTable(supabase, orgId, 'jobs')
         .update(updates)
         .eq('id', jobId)
         .select()
@@ -159,8 +160,7 @@ const queryClient = useQueryClient();
   const autoAssignMutation = useMutation({
     mutationFn: async () => {
       // Mock auto-assignment for demo
-      const unassignedJobs = await supabase
-        .from('jobs')
+      const unassignedJobs = await tenantTable(supabase, orgId, 'jobs')
         .select('*')
         .is('driver_id', null)
         .eq('status', 'assigned');

@@ -4,6 +4,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { supabase } from '@/integrations/supabase/client';
+import { tenantTable } from '@/lib/db/tenant';
+import { useTenantId } from '@/lib/tenantQuery';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -63,6 +65,7 @@ interface JobDetailModalProps {
 export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProps) {
   const queryClient = useQueryClient();
   const { user } = useUser();
+  const orgId = useTenantId();
   const [isEditing, setIsEditing] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showTimeSelector, setShowTimeSelector] = useState(false);
@@ -72,9 +75,8 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
     queryKey: ['job-detail', jobId],
     queryFn: async () => {
       if (!jobId) return null;
-      
-      const { data, error } = await supabase
-        .from('jobs')
+
+      const { data, error } = await tenantTable(supabase, orgId, 'jobs')
         .select(`
           *,
           customer:customers!inner(id, name, email, phone, service_street, service_city, service_state, service_zip),
@@ -220,9 +222,8 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
   const updateJobMutation = useMutation({
     mutationFn: async (data: JobEditForm) => {
       if (!jobId) throw new Error('No job ID');
-      
-      const { error } = await supabase
-        .from('jobs')
+
+      const { error } = await tenantTable(supabase, orgId, 'jobs')
         .update({
           job_type: data.job_type,
           scheduled_date: data.scheduled_date,
@@ -264,8 +265,7 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
         updateData.actual_completion_time = new Date().toISOString();
       }
 
-      const { error } = await supabase
-        .from('jobs')
+      const { error } = await tenantTable(supabase, orgId, 'jobs')
         .update(updateData)
         .eq('id', jobId);
 
@@ -286,9 +286,8 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
   const priorityMutation = useMutation({
     mutationFn: async ({ is_priority }: { is_priority: boolean }) => {
       if (!jobId) throw new Error('No job ID');
-      
-      const { error } = await supabase
-        .from('jobs')
+
+      const { error } = await tenantTable(supabase, orgId, 'jobs')
         .update({ is_priority } as any)
         .eq('id', jobId);
 
@@ -330,9 +329,8 @@ export function JobDetailModal({ jobId, open, onOpenChange }: JobDetailModalProp
 
   const handleCancelJob = async (reason: string) => {
     try {
-      const { error } = await supabase
-        .from('jobs')
-        .update({ 
+      const { error } = await tenantTable(supabase, orgId, 'jobs')
+        .update({
           status: 'cancelled',
           cancelled_by: user?.id || null,
           cancellation_reason: reason,

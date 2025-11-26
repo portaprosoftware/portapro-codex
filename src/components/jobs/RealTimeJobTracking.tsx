@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { tenantTable } from '@/lib/db/tenant';
+import { useTenantId } from '@/lib/tenantQuery';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -62,13 +64,13 @@ export const RealTimeJobTracking: React.FC = () => {
   const [realTimeUpdates, setRealTimeUpdates] = useState<JobUpdate[]>([]);
 
   const queryClient = useQueryClient();
+  const orgId = useTenantId();
 
   // Fetch jobs with real-time updates
   const { data: jobs, isLoading } = useQuery({
     queryKey: ['jobs-tracking', activeTab],
     queryFn: async () => {
-      let query = supabase
-        .from('jobs')
+      let query = tenantTable(supabase, orgId, 'jobs')
         .select(`
           *,
           customers:customer_id (name, phone, email),
@@ -100,9 +102,8 @@ export const RealTimeJobTracking: React.FC = () => {
   // Update job status mutation
   const updateJobStatusMutation = useMutation({
     mutationFn: async ({ jobId, status, notes }: { jobId: string; status: string; notes?: string }) => {
-      const { data, error } = await supabase
-        .from('jobs')
-        .update({ 
+      const { data, error } = await tenantTable(supabase, orgId, 'jobs')
+        .update({
           status,
           updated_at: new Date().toISOString(),
           ...(notes && { notes })
