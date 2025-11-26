@@ -1,14 +1,16 @@
 import { createClient } from '@supabase/supabase-js';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { envServer } from '@/env.server';
+import { getMarketingUrl } from '@/lib/config/domains';
+import { loadServerEnv } from '@/lib/config/env';
 import type { Database } from '@/integrations/supabase/types';
 import { setOrgContext } from '@/lib/orgContext';
 
-const MARKETING_SITE = 'https://portaprosoftware.com';
+const MARKETING_SITE = getMarketingUrl();
+const serverEnv = loadServerEnv();
 
 const resolveSupabaseUrl = () => {
-  const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+  const url = serverEnv.SUPABASE_URL;
   if (!url) {
     throw new Error('Supabase URL is not configured');
   }
@@ -17,7 +19,7 @@ const resolveSupabaseUrl = () => {
 
 const createServiceRoleClient = () => {
   const supabaseUrl = resolveSupabaseUrl();
-  return createClient<Database>(supabaseUrl, envServer.SUPABASE_SERVICE_ROLE_KEY, {
+  return createClient<Database>(supabaseUrl, serverEnv.SUPABASE_SERVICE_ROLE_KEY, {
     auth: {
       autoRefreshToken: false,
       persistSession: false,

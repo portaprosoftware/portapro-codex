@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useAuth } from '@clerk/clerk-react';
 import { useQueryClient } from '@tanstack/react-query';
+import { getMarketingUrl } from '@/lib/config/domains';
 
 /**
  * Global auth state listener that monitors Clerk sign-in/sign-out events
@@ -30,7 +31,7 @@ export const useAuthStateListener = () => {
       queryClient.clear();
       
       // Redirect to marketing site
-      window.location.href = 'https://www.portaprosoftware.com';
+      window.location.href = getMarketingUrl();
     }
     
     // Update the ref to track current state

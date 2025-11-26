@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Building2 } from "lucide-react";
+import { getMarketingUrl } from "@/lib/config/domains";
 
 export default function NoPortalFound() {
   return (
@@ -10,7 +11,7 @@ export default function NoPortalFound() {
         <p className="text-muted-foreground">
           Your account is not associated with any organization. Please contact support.
         </p>
-        <Button onClick={() => window.location.href = 'https://www.portaprosoftware.com'}>
+        <Button onClick={() => window.location.href = getMarketingUrl()}>
           Return to PortaPro
         </Button>
       </div>

@@ -11,6 +11,7 @@ import { Settings, ArrowUp, Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import "@/utils/authCleanup"; // Load auth cleanup utilities
+import { getMarketingUrl } from "@/lib/config/domains";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -113,14 +114,14 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           >
             <Bell className="w-[26px] h-[26px]" />
           </button>
-          <UserButton 
+          <UserButton
             appearance={{
               elements: {
                 userButtonAvatarBox: "w-10 h-10",
                 userButtonPopoverCard: "shadow-lg"
               }
             }}
-            afterSignOutUrl="https://www.portaprosoftware.com"
+            afterSignOutUrl={getMarketingUrl()}
           />
         </div>
       </header>
