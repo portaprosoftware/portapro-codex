@@ -27,7 +27,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   redirectUrl
 }) => {
   const { isLoaded, isSignedIn } = useAuth();
-  const { organization, isLoading: orgIsLoading, isMainDomain, isLocalhost } = useOrganizationContext();
+  const { organization, subdomain, isLoading: orgIsLoading, isMainDomain, isLocalhost } = useOrganizationContext();
   const location = useLocation();
 
   const returnUrl =
@@ -51,7 +51,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   const onTenantSubdomain = !isMainDomain && !isLocalhost;
 
-  if (onTenantSubdomain && !organization) {
+  if (onTenantSubdomain && (!organization || !subdomain)) {
     return <Navigate to="/no-portal-found" replace />;
   }
 

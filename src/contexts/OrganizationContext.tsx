@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSubdomainOrg } from '@/hooks/useSubdomainOrg';
+import { clearOrgContext, setOrgContext } from '@/lib/orgContext';
 
 interface OrganizationData {
   id: string;
@@ -58,6 +59,17 @@ export const OrganizationProvider: React.FC<OrganizationProviderProps> = ({ chil
       previousOrgId.current = nextOrgId;
     }
   }, [orgData.organization?.id, queryClient]);
+
+  useEffect(() => {
+    if (orgData.organization?.id) {
+      setOrgContext({
+        organizationId: orgData.organization.id,
+        orgSlug: orgData.organization.subdomain,
+      });
+    } else {
+      clearOrgContext();
+    }
+  }, [orgData.organization?.id, orgData.organization?.subdomain]);
 
   return (
     <OrganizationContext.Provider value={orgData}>

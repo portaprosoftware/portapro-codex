@@ -1,9 +1,11 @@
 import { SupabaseClient } from "@supabase/supabase-js";
+import { resolveOrgId } from "../orgContext";
 
 type InsertPayload = Record<string, any> | Record<string, any>[];
 
 export function requireOrgId(orgId?: string | null): string {
-  const trimmed = orgId?.toString().trim();
+  const resolvedOrgId = resolveOrgId(orgId);
+  const trimmed = resolvedOrgId?.toString().trim();
   if (!trimmed) {
     throw new Error("Organization ID required");
   }
