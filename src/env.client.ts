@@ -16,11 +16,12 @@ export const env = {
   ...clientEnv,
   ...optionalEnv,
   APP_URL: clientEnv.NEXT_PUBLIC_APP_ROOT_URL,
+  VITE_CLERK_PUBLISHABLE_KEY: clientEnv.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
 };
 
 export const SUPABASE_URL = env.SUPABASE_URL;
 export const SUPABASE_PUBLISHABLE_KEY = env.SUPABASE_ANON_KEY;
-export const CLERK_PUBLISHABLE_KEY = env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+export const CLERK_PUBLISHABLE_KEY = env.VITE_CLERK_PUBLISHABLE_KEY;
 export const APP_URL = env.APP_URL;
 
 // Mapbox token helper

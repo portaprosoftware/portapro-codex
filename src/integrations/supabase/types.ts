@@ -13991,7 +13991,18 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "dispatcher" | "driver" | "customer"
+      app_role:
+        | "owner"
+        | "admin"
+        | "dispatch"
+        | "driver"
+        | "viewer"
+        | "dispatcher"
+        | "org:owner"
+        | "org:admin"
+        | "org:dispatcher"
+        | "org:driver"
+        | "org:viewer"
       consumable_category:
         | "sanitizer"
         | "deodorizer"
