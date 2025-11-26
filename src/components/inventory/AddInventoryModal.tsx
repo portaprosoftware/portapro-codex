@@ -66,6 +66,10 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
   const createProductMutation = useMutation({
     mutationFn: async (data: ProductFormData) => {
       // 1. Create the product (image_url set later if image uploaded)
+      if (!orgId) {
+        throw new Error('Organization ID required');
+      }
+
       const { data: product, error: productError } = await supabase
         .from('products')
         .insert({
@@ -80,7 +84,8 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
           default_item_code_category: data.selectedCategory || null,
           product_type: data.productType,
           product_variant: data.productVariant || null,
-          image_url: null
+          image_url: null,
+          organization_id: orgId
         })
         .select()
         .single();
