@@ -45,6 +45,17 @@ jobs:
         env:
           NODE_OPTIONS: --max_old_space_size=4096
 
+      - name: Tenant smoke test (non-blocking)
+        run: npm run smoke:tenant
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SMOKE_ORG_A_ID: ${{ secrets.SMOKE_ORG_A_ID }}
+          SMOKE_ORG_B_ID: ${{ secrets.SMOKE_ORG_B_ID }}
+          SMOKE_ROUTE_A_ID: ${{ secrets.SMOKE_ROUTE_A_ID }}
+          SMOKE_ROUTE_B_ID: ${{ secrets.SMOKE_ROUTE_B_ID }}
+        continue-on-error: true
+
       - name: Check bundle size
         run: node scripts/check-bundle-size.js
 

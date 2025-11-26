@@ -12,7 +12,8 @@
     "typecheck": "tsc -p tsconfig.app.json --noEmit",
     "type-check": "npm run typecheck",
     "tenant:audit": "node ./scripts/tenant-audit.js",
-    "audit:tenant": "npm run tenant:audit"
+    "audit:tenant": "npm run tenant:audit",
+    "smoke:tenant": "node scripts/smoke-tenant.js"
   },
   "dependencies": {
     "@capacitor-community/barcode-scanner": "^4.0.1",
