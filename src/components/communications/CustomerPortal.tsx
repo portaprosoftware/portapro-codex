@@ -36,6 +36,8 @@ import { BillingTab } from '@/components/customer-portal/BillingTab';
 import { QuotesTab } from '@/components/customer-portal/QuotesTab';
 import { UsersTab } from '@/components/customer-portal/UsersTab';
 import { SupportTab } from '@/components/customer-portal/SupportTab';
+import { tenantTable } from '@/lib/db/tenant';
+import { useTenantId } from '@/lib/tenantQuery';
 
 const TABS = [
   { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
@@ -55,6 +57,7 @@ interface CustomerPortalProps {
 export const CustomerPortal: React.FC<CustomerPortalProps> = ({ customerId }) => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [supportMessage, setSupportMessage] = useState('');
+  const tenantId = useTenantId();
 
   // Fetch real customer data
   const { data: customer, isLoading: customerLoading } = useQuery({
@@ -105,10 +108,9 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({ customerId }) =>
   const { data: invoices = [], isLoading: invoicesLoading } = useQuery({
     queryKey: ['customer-invoices', customerId],
     queryFn: async () => {
-      if (!customerId) return [];
-      
-      const { data, error } = await supabase
-        .from('invoices')
+      if (!customerId || !tenantId) return [];
+
+      const { data, error } = await tenantTable(supabase, tenantId, 'invoices')
         .select('*')
         .eq('customer_id', customerId)
         .order('created_at', { ascending: false })

@@ -16,6 +16,8 @@ import { NumberInput } from '@/components/ui/number-input';
 import { format, addDays } from 'date-fns';
 import { CalendarIcon, Plus, Trash2, Receipt } from 'lucide-react';
 import { toast } from 'sonner';
+import { tenantTable } from '@/lib/db/tenant';
+import { useTenantId } from '@/lib/tenantQuery';
 
 interface InvoiceCreationWizardProps {
   isOpen: boolean;
@@ -65,6 +67,7 @@ export function InvoiceCreationWizard({ isOpen, onClose, fromQuoteId, fromJobId 
   });
 
   const queryClient = useQueryClient();
+  const tenantId = useTenantId();
 
   // Fetch customers
   const { data: customers = [] } = useQuery({
@@ -254,15 +257,16 @@ export function InvoiceCreationWizard({ isOpen, onClose, fromQuoteId, fromJobId 
 
   const createInvoiceMutation = useMutation({
     mutationFn: async () => {
+      if (!tenantId) throw new Error('Organization context is required');
+
       const subtotal = invoiceItems.reduce((sum, item) => sum + item.line_total, 0);
-      const discountAmount = invoiceData.discount_type === 'percentage' 
+      const discountAmount = invoiceData.discount_type === 'percentage'
         ? (subtotal * invoiceData.discount_value / 100)
         : invoiceData.discount_value;
       const tax_amount = (subtotal - discountAmount + invoiceData.additional_fees) * 0.08;
       const amount = subtotal - discountAmount + invoiceData.additional_fees + tax_amount;
 
-      const invoiceResponse = await supabase
-        .from('invoices')
+      const invoiceResponse = await tenantTable(supabase, tenantId, 'invoices')
         .insert({
           customer_id: invoiceData.customer_id,
           invoice_number: invoiceData.invoice_number,

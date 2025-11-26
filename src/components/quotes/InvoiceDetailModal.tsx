@@ -11,6 +11,8 @@ import { format } from 'date-fns';
 import { SendInvoiceModal } from './SendInvoiceModal';
 import { EditInvoiceModal } from './EditInvoiceModal';
 import { ReversePaymentModal } from './ReversePaymentModal';
+import { tenantTable } from '@/lib/db/tenant';
+import { useTenantId } from '@/lib/tenantQuery';
 
 interface InvoiceDetailModalProps {
   isOpen: boolean;
@@ -24,14 +26,14 @@ export function InvoiceDetailModal({ isOpen, onClose, invoice }: InvoiceDetailMo
   const [isReverseModalOpen, setIsReverseModalOpen] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState<any>(null);
   const queryClient = useQueryClient();
+  const tenantId = useTenantId();
 
   // Fetch payments for this invoice
   const { data: payments = [] } = useQuery({
     queryKey: ['payments', invoice?.id],
     queryFn: async () => {
-      if (!invoice?.id) return [];
-      const { data, error } = await supabase
-        .from('payments')
+      if (!invoice?.id || !tenantId) return [];
+      const { data, error } = await tenantTable(supabase, tenantId, 'payments')
         .select('*')
         .eq('invoice_id', invoice.id)
         .order('created_at', { ascending: false });

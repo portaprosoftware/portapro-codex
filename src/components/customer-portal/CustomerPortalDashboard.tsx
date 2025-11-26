@@ -3,9 +3,9 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Calendar, 
-  CreditCard, 
+import {
+  Calendar,
+  CreditCard,
   AlertCircle,
   Clock,
   CheckCircle,
@@ -14,12 +14,15 @@ import {
 } from 'lucide-react';
 import { getStatusBadgeVariant } from '@/lib/statusBadgeUtils';
 import { formatBadgeText } from '@/lib/textUtils';
+import { tenantTable } from '@/lib/db/tenant';
+import { useTenantId } from '@/lib/tenantQuery';
 
 interface CustomerPortalDashboardProps {
   customerId: string;
 }
 
 export const CustomerPortalDashboard: React.FC<CustomerPortalDashboardProps> = ({ customerId }) => {
+  const tenantId = useTenantId();
   // Fetch units on site (from equipment_assignments)
   const { data: unitsOnSite = 0 } = useQuery({
     queryKey: ['customer-units-onsite', customerId],
@@ -67,8 +70,9 @@ export const CustomerPortalDashboard: React.FC<CustomerPortalDashboardProps> = (
   const { data: balanceDue = 0 } = useQuery({
     queryKey: ['customer-balance-due', customerId],
     queryFn: async () => {
-      const { data: invoices } = await supabase
-        .from('invoices')
+      if (!tenantId) return 0;
+
+      const { data: invoices } = await tenantTable(supabase, tenantId, 'invoices')
         .select('amount')
         .eq('customer_id', customerId)
         .eq('status', 'unpaid');

@@ -15,6 +15,8 @@ import { AlertTriangle, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { tenantTable } from '@/lib/db/tenant';
+import { useTenantId } from '@/lib/tenantQuery';
 
 interface DeleteCustomerDrawerProps {
   isOpen: boolean;
@@ -30,9 +32,12 @@ export function DeleteCustomerDrawer({ isOpen, onClose, customer }: DeleteCustom
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const tenantId = useTenantId();
 
   const deleteCustomerMutation = useMutation({
     mutationFn: async () => {
+      if (!tenantId) throw new Error('Organization context is required');
+
       // Perform cascading deletion of all related records
       
       // Delete customer contacts first
@@ -80,8 +85,7 @@ export function DeleteCustomerDrawer({ isOpen, onClose, customer }: DeleteCustom
       }
 
       // Delete invoices associated with this customer
-      const { error: invoicesError } = await supabase
-        .from('invoices')
+      const { error: invoicesError } = await tenantTable(supabase, tenantId, 'invoices')
         .delete()
         .eq('customer_id', customer.id);
       

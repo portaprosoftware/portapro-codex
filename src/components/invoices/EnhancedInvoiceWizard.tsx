@@ -20,6 +20,7 @@ import { CalendarIcon, Plus, Trash2, Receipt, ChevronDown, ChevronUp, FileText, 
 import { useTaxRate } from '@/hooks/useTaxRate';
 import { toast } from 'sonner';
 import { useOrganizationId } from '@/hooks/useOrganizationId';
+import { tenantTable } from '@/lib/db/tenant';
 
 interface EnhancedInvoiceWizardProps {
   isOpen: boolean;
@@ -257,8 +258,7 @@ export function EnhancedInvoiceWizard({ isOpen, onClose, fromQuoteId, fromJobId 
       const tax_amount = taxableAmount * (invoiceData.tax_rate / 100);
       const amount = taxableAmount + tax_amount;
 
-      const invoiceResponse = await supabase
-        .from('invoices')
+      const invoiceResponse = await tenantTable(supabase, orgId, 'invoices')
         .insert({
           customer_id: invoiceData.customer_id,
           invoice_number: invoiceData.invoice_number,
