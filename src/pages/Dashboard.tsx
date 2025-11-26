@@ -100,8 +100,8 @@ const Dashboard = () => {
   return (
     <div className="px-2 md:px-4 py-3 space-y-4 font-sans">
       {/* Hero Banner - Mobile Optimized */}
-      <div className="bg-gradient-to-b from-[#F6F9FF] to-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-4 transition-all duration-300 hover:shadow-md">
-        <div className="flex flex-col md:flex-row items-center md:justify-between gap-2 md:gap-0">
+      <div className="bg-gradient-to-b from-[#F6F9FF] to-white rounded-xl shadow-sm border border-gray-200 p-5 sm:p-6 transition-all duration-300 hover:shadow-md">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           {/* Welcome text - centered on mobile */}
           <div className="space-y-2 text-center md:text-left w-full md:w-auto">
             <h1 className="text-2xl font-bold text-gray-900 font-sans">
@@ -116,37 +116,39 @@ const Dashboard = () => {
               </Badge>
             )}
           </div>
-          
+
           {/* Digital Date and Time - centered on mobile */}
-          <div className="text-center flex-shrink-0 order-first md:order-none">
-            <div className="text-xl font-bold text-gray-900 font-sans">
-              {currentTime.toLocaleTimeString([], { 
-                hour: '2-digit', 
-                minute: '2-digit',
-                hour12: true 
-              })}
+          <div className="order-first md:order-none flex flex-col items-center md:items-end gap-3 w-full md:w-auto">
+            <div className="text-center">
+              <div className="text-xl font-bold text-gray-900 font-sans">
+                {currentTime.toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: true
+                })}
+              </div>
+              <div className="text-sm text-gray-600 font-sans">
+                {currentTime.toLocaleDateString([], {
+                  weekday: 'short',
+                  month: 'short',
+                  day: 'numeric'
+                })}
+              </div>
             </div>
-            <div className="text-sm text-gray-600 font-sans">
-              {currentTime.toLocaleDateString([], { 
-                weekday: 'short',
-                month: 'short', 
-                day: 'numeric'
-              })}
+
+            {/* Analog Clock - smaller on mobile, hidden on very small screens */}
+            <div className="hidden sm:flex flex-shrink-0 md:justify-end">
+              <MinimalClock
+                timeZone={timezone || 'America/New_York'}
+                size={56}
+                className="md:hidden"
+              />
+              <MinimalClock
+                timeZone={timezone || 'America/New_York'}
+                size={80}
+                className="hidden md:block"
+              />
             </div>
-          </div>
-          
-          {/* Analog Clock - smaller on mobile, hidden on very small screens */}
-          <div className="hidden sm:flex flex-shrink-0">
-            <MinimalClock 
-              timeZone={timezone || 'America/New_York'}
-              size={56}
-              className="md:hidden"
-            />
-            <MinimalClock 
-              timeZone={timezone || 'America/New_York'}
-              size={80}
-              className="hidden md:block"
-            />
           </div>
         </div>
       </div>
@@ -157,7 +159,7 @@ const Dashboard = () => {
           <h2 className="text-base font-semibold text-gray-900 font-sans">Company Overview</h2>
           <p className="hidden sm:block text-sm text-gray-600 font-sans">Select any card to explore corresponding section</p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <StatCard
             title="Total Inventory"
             value={`${kpis?.inventory.totalProducts || 0} products`}
@@ -259,7 +261,7 @@ const Dashboard = () => {
       {/* Alerts & Expiring Documents Section */}
       <div className="space-y-4">
         <h2 className="text-base font-semibold text-gray-900 font-sans">Alerts & Expiring Documents</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <StatCard
             title="Vehicle Maintenance"
             value={kpis?.maintenance.count || 0}
