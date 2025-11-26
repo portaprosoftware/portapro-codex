@@ -11,6 +11,8 @@ import { Separator } from '@/components/ui/separator';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
+import { safeDelete, safeInsert, safeUpdate } from '@/lib/supabase-helpers';
 import { 
   History, 
   Copy, 
@@ -57,13 +59,14 @@ export const TemplateVersioningModal: React.FC<TemplateVersioningModalProps> = (
     description: '',
     changeSummary: ''
   });
+  const { orgId, isReady } = useOrganizationId();
 
   // Fetch template versions
   const { data: versions = [], isLoading } = useQuery({
-    queryKey: ['template-versions', templateId],
+    queryKey: ['template-versions', templateId, orgId],
     queryFn: async () => {
-      if (!templateId) return [];
-      
+      if (!templateId || !orgId) return [];
+
       const { data, error } = await supabase
         .from('maintenance_report_templates')
         .select(`
@@ -77,6 +80,7 @@ export const TemplateVersioningModal: React.FC<TemplateVersioningModalProps> = (
           change_summary,
           parent_template_id
         `)
+        .eq('organization_id', orgId)
         .or(`id.eq.${templateId},parent_template_id.eq.${templateId}`)
         .order('version', { ascending: false });
       
@@ -89,27 +93,28 @@ export const TemplateVersioningModal: React.FC<TemplateVersioningModalProps> = (
         version: template.version || template.current_version || (data.length - index)
       })) as TemplateVersion[];
     },
-    enabled: !!templateId
+    enabled: isReady && !!templateId && !!orgId
   });
 
   // Create new version mutation
   const createVersionMutation = useMutation({
     mutationFn: async (data: { name: string; description: string; changeSummary: string }) => {
-      if (!templateId) throw new Error('No template selected');
+      if (!templateId || !orgId) throw new Error('No template selected');
 
       // Get current template data
       const { data: currentTemplate, error: fetchError } = await supabase
         .from('maintenance_report_templates')
         .select('*')
         .eq('id', templateId)
+        .eq('organization_id', orgId)
         .single();
 
       if (fetchError) throw fetchError;
 
       // Create new version
-      const { data: newVersion, error: createError } = await supabase
-        .from('maintenance_report_templates')
-        .insert({
+      const { data: newVersion, error: createError } = await safeInsert(
+        'maintenance_report_templates',
+        {
           name: data.name,
           description: data.description,
           template_type: currentTemplate.template_type,
@@ -122,7 +127,9 @@ export const TemplateVersioningModal: React.FC<TemplateVersioningModalProps> = (
           company_logo_url: (currentTemplate as any).company_logo_url,
           color_accent: (currentTemplate as any).color_accent,
           category: (currentTemplate as any).category
-        })
+        },
+        orgId
+      )
         .select()
         .single();
 
@@ -132,7 +139,8 @@ export const TemplateVersioningModal: React.FC<TemplateVersioningModalProps> = (
       const { data: sections, error: sectionsError } = await supabase
         .from('template_sections')
         .select('*')
-        .eq('template_id', templateId);
+        .eq('template_id', templateId)
+        .eq('organization_id', orgId);
 
       if (sectionsError) throw sectionsError;
 
@@ -145,9 +153,7 @@ export const TemplateVersioningModal: React.FC<TemplateVersioningModalProps> = (
           is_active: section.is_active
         }));
 
-        const { error: insertSectionsError } = await supabase
-          .from('template_sections')
-          .insert(newSections);
+        const { error: insertSectionsError } = await safeInsert('template_sections', newSections, orgId);
 
         if (insertSectionsError) throw insertSectionsError;
       }
@@ -155,8 +161,8 @@ export const TemplateVersioningModal: React.FC<TemplateVersioningModalProps> = (
       return newVersion;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['template-versions', templateId] });
-      queryClient.invalidateQueries({ queryKey: ['maintenance-report-templates'] });
+      queryClient.invalidateQueries({ queryKey: ['template-versions', templateId, orgId] });
+      queryClient.invalidateQueries({ queryKey: ['maintenance-report-templates', orgId] });
       setIsCreatingVersion(false);
       setVersionData({ name: '', description: '', changeSummary: '' });
       toast({
@@ -176,42 +182,43 @@ export const TemplateVersioningModal: React.FC<TemplateVersioningModalProps> = (
   // Restore version mutation
   const restoreVersionMutation = useMutation({
     mutationFn: async (versionId: string) => {
-      if (!templateId) throw new Error('No template selected');
+      if (!templateId || !orgId) throw new Error('No template selected');
 
       // Get version data
       const { data: versionTemplate, error: fetchError } = await supabase
         .from('maintenance_report_templates')
         .select('*')
         .eq('id', versionId)
+        .eq('organization_id', orgId)
         .single();
 
       if (fetchError) throw fetchError;
 
       // Update current template with version data
-      const { error: updateError } = await supabase
-        .from('maintenance_report_templates')
-        .update({
+      const { error: updateError } = await safeUpdate(
+        'maintenance_report_templates',
+        {
           template_data: versionTemplate.template_data,
           name: versionTemplate.name,
           description: versionTemplate.description,
           version: ((versionTemplate as any).version || (versionTemplate as any).current_version || 1) + 1,
           change_summary: `Restored from version ${(versionTemplate as any).version || (versionTemplate as any).current_version || 1}`
-        })
-        .eq('id', templateId);
+        },
+        orgId,
+        { id: templateId }
+      );
 
       if (updateError) throw updateError;
 
       // Delete current sections
-      await supabase
-        .from('template_sections')
-        .delete()
-        .eq('template_id', templateId);
+      await safeDelete('template_sections', orgId, { template_id: templateId });
 
       // Copy sections from version
       const { data: versionSections, error: sectionsError } = await supabase
         .from('template_sections')
         .select('*')
-        .eq('template_id', versionId);
+        .eq('template_id', versionId)
+        .eq('organization_id', orgId);
 
       if (sectionsError) throw sectionsError;
 
@@ -224,17 +231,15 @@ export const TemplateVersioningModal: React.FC<TemplateVersioningModalProps> = (
           is_active: section.is_active
         }));
 
-        const { error: insertSectionsError } = await supabase
-          .from('template_sections')
-          .insert(newSections);
+        const { error: insertSectionsError } = await safeInsert('template_sections', newSections, orgId);
 
         if (insertSectionsError) throw insertSectionsError;
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['template-versions', templateId] });
-      queryClient.invalidateQueries({ queryKey: ['maintenance-report-templates'] });
-      queryClient.invalidateQueries({ queryKey: ['template', templateId] });
+      queryClient.invalidateQueries({ queryKey: ['template-versions', templateId, orgId] });
+      queryClient.invalidateQueries({ queryKey: ['maintenance-report-templates', orgId] });
+      queryClient.invalidateQueries({ queryKey: ['template', templateId, orgId] });
       toast({
         title: 'Version Restored',
         description: 'Template restored to selected version'

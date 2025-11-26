@@ -70,7 +70,7 @@ export function useConvertQuoteToJob() {
       
       // Generate job number
       const { data: jobNumber, error: numberError } = await supabase
-        .rpc('get_next_job_number', { job_type_param: jobType });
+        .rpc('get_next_job_number', { job_type_param: jobType, org_id: orgId });
 
       if (numberError) throw numberError;
 

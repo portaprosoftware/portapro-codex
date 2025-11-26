@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useOrganizationId } from '../useOrganizationId';
 
 export interface VehicleSummaryData {
   maintenance: {
@@ -40,7 +41,7 @@ export interface VehicleSummaryData {
   };
 }
 
-async function computeFuelSummary(vehicleId: string) {
+async function computeFuelSummary(vehicleId: string, orgId: string) {
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
@@ -49,6 +50,7 @@ async function computeFuelSummary(vehicleId: string) {
     .from('unified_fuel_consumption')
     .select('fuel_date, gallons, cost, odometer_reading, created_at')
     .eq('vehicle_id', vehicleId)
+    .eq('organization_id', orgId)
     .order('fuel_date', { ascending: false });
 
   if (!fuelLogs || fuelLogs.length === 0) {
@@ -108,7 +110,7 @@ async function computeFuelSummary(vehicleId: string) {
   };
 }
 
-async function computeMaintenanceSummary(vehicleId: string) {
+async function computeMaintenanceSummary(vehicleId: string, orgId: string) {
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
@@ -119,6 +121,7 @@ async function computeMaintenanceSummary(vehicleId: string) {
       .select('*', { count: 'exact', head: true })
       .eq('asset_id', vehicleId)
       .eq('asset_type', 'vehicle')
+      .eq('organization_id', orgId)
       .in('status', ['open', 'in_progress']);
 
     // DVIRs - skip for now as table schema is not in types
@@ -131,6 +134,7 @@ async function computeMaintenanceSummary(vehicleId: string) {
       .select('*, pm_templates(name)')
       .eq('vehicle_id', vehicleId)
       .eq('active', true)
+      .eq('organization_id', orgId)
       .order('next_due_date', { ascending: true, nullsFirst: false })
       .limit(1);
 
@@ -166,14 +170,16 @@ async function computeMaintenanceSummary(vehicleId: string) {
 }
 
 export function useVehicleSummary(vehicleId: string | null) {
+  const { orgId, isReady } = useOrganizationId();
+
   return useQuery({
-    queryKey: ['vehicle-summary', vehicleId],
+    queryKey: ['vehicle-summary', vehicleId, orgId],
     queryFn: async () => {
-      if (!vehicleId) return null;
+      if (!vehicleId || !orgId) return null;
 
       try {
         const { data, error } = await supabase
-          .rpc('get_vehicle_summary', { p_vehicle_id: vehicleId });
+          .rpc('get_vehicle_summary', { p_vehicle_id: vehicleId, org_id: orgId });
 
         if (error) throw error;
 
@@ -191,8 +197,8 @@ export function useVehicleSummary(vehicleId: string | null) {
 
         if (needsFuelFallback || needsMaintenanceFallback) {
           const [fuelSummary, maintenanceSummary] = await Promise.all([
-            needsFuelFallback ? computeFuelSummary(vehicleId) : Promise.resolve(rpcData.fuel),
-            needsMaintenanceFallback ? computeMaintenanceSummary(vehicleId) : Promise.resolve(rpcData.maintenance)
+            needsFuelFallback ? computeFuelSummary(vehicleId, orgId) : Promise.resolve(rpcData.fuel),
+            needsMaintenanceFallback ? computeMaintenanceSummary(vehicleId, orgId) : Promise.resolve(rpcData.maintenance)
           ]);
           
           return {
@@ -208,8 +214,8 @@ export function useVehicleSummary(vehicleId: string | null) {
         
         // If RPC completely fails, compute both fuel and maintenance summaries as fallback
         const [fuelSummary, maintenanceSummary] = await Promise.all([
-          computeFuelSummary(vehicleId),
-          computeMaintenanceSummary(vehicleId)
+          computeFuelSummary(vehicleId, orgId),
+          computeMaintenanceSummary(vehicleId, orgId)
         ]);
         
         return {
@@ -235,7 +241,7 @@ export function useVehicleSummary(vehicleId: string | null) {
         } as VehicleSummaryData;
       }
     },
-    enabled: !!vehicleId,
+    enabled: !!vehicleId && isReady && !!orgId,
     staleTime: 2 * 60 * 1000, // 2 minutes
     gcTime: 5 * 60 * 1000, // 5 minutes cache
   });
