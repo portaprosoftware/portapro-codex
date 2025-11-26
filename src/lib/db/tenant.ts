@@ -3,36 +3,43 @@ import { SupabaseClient } from "@supabase/supabase-js";
 type InsertPayload = Record<string, any> | Record<string, any>[];
 
 export function requireOrgId(orgId?: string | null): string {
-  const trimmed = orgId?.trim();
-
+  const trimmed = orgId?.toString().trim();
   if (!trimmed) {
     throw new Error("Organization ID required");
   }
-
   return trimmed;
 }
 
 export function tenantTable(
   client: SupabaseClient,
   orgId: string | null | undefined,
-  table: string
+  tableName: string
 ) {
   const tenantId = requireOrgId(orgId);
-  const baseTable = client.from(table as any);
+  const table = client.from(tableName as any);
 
-  const withOrganizationId = (payload: InsertPayload) => {
+  // Ensures organization_id is always injected server-side
+  const withOrgId = (payload: InsertPayload) => {
     const records = Array.isArray(payload) ? payload : [payload];
-    const sanitized = records.map(record => {
-      const { organization_id: _ignored, ...rest } = record as Record<string, any>;
+
+    const sanitized = records.map((record) => {
+      const { organization_id: _ignored, ...rest } = record;
       return { ...rest, organization_id: tenantId };
     });
 
     return Array.isArray(payload) ? sanitized : sanitized[0];
   };
 
-  return Object.assign(baseTable, {
-    insert(payload: InsertPayload) {
-      return baseTable.insert(withOrganizationId(payload));
-    },
-  });
+  return {
+    select: (...args: any[]) => table.select(...args).eq("organization_id", tenantId),
+
+    insert: (values: InsertPayload, options?: any) =>
+      table.insert(withOrgId(values), options),
+
+    update: (values: any) =>
+      table.update(values).eq("organization_id", tenantId),
+
+    delete: () =>
+      table.delete().eq("organization_id", tenantId),
+  };
 }
