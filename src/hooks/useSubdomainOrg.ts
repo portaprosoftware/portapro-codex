@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { extractOrgSlug } from '../../lib/getOrgFromHost';
 
 interface OrganizationData {
   id: string;
@@ -55,9 +56,10 @@ export const useSubdomainOrg = (): UseSubdomainOrgReturn => {
         const hostname = window.location.hostname;
         const localhostDetected = hostname === 'localhost' || hostname.startsWith('127.0.0.1');
         const mainDomainDetected = hostname === 'portaprosoftware.com' || hostname === 'www.portaprosoftware.com';
+        const appDomainDetected = hostname === 'app.portaprosoftware.com';
         
         setIsLocalhost(localhostDetected);
-        setIsMainDomain(mainDomainDetected);
+        setIsMainDomain(mainDomainDetected || appDomainDetected);
 
         let extractedSubdomain: string | null = null;
 
@@ -65,20 +67,19 @@ export const useSubdomainOrg = (): UseSubdomainOrgReturn => {
           // Localhost development: Check for ?org= query parameter
           const urlParams = new URLSearchParams(window.location.search);
           extractedSubdomain = urlParams.get('org') || null;
-          
+
           console.info('🔧 LOCALHOST DEV:', { subdomain: extractedSubdomain });
-        } else if (mainDomainDetected) {
+        } else if (mainDomainDetected || appDomainDetected) {
           // Main domain: No subdomain extraction needed
           console.info('🏠 MAIN DOMAIN detected');
           setSubdomain(null);
           setIsLoading(false);
           return;
         } else {
-          // Production: Extract subdomain from hostname
-          const parts = hostname.split('.');
-          if (parts.length >= 3) {
-            extractedSubdomain = parts[0]; // e.g., "smith-rentals" from "smith-rentals.portaprosoftware.com"
-          } else {
+          // Production: Extract subdomain from hostname using shared utility
+          extractedSubdomain = extractOrgSlug(hostname);
+
+          if (!extractedSubdomain) {
             throw new Error(`Invalid hostname format: ${hostname}`);
           }
         }

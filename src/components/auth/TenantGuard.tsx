@@ -36,10 +36,12 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
   
   // Skip checks on public routes
   const currentPath = window.location.pathname;
-  const isPublicRoute = currentPath === '/unauthorized' || 
+  const isPublicRoute = currentPath === '/unauthorized' ||
                         currentPath === '/no-portal-found' ||
-                        currentPath === '/auth' || 
-                        currentPath.startsWith('/auth/');
+                        currentPath === '/auth' ||
+                        currentPath.startsWith('/auth/') ||
+                        currentPath.startsWith('/public') ||
+                        currentPath.startsWith('/onboarding');
 
   // WAIT until everything is loaded
   if (!userLoaded || !orgLoaded || orgLookupLoading) {
@@ -77,7 +79,12 @@ export const TenantGuard: React.FC<TenantGuardProps> = ({ children }) => {
   }
 
   // If no subdomain org found → show no-portal-found
-  if (!subdomainOrg) {
+  if (
+    !subdomain ||
+    !subdomainOrg ||
+    !subdomainOrg.id ||
+    subdomainOrg.subdomain !== subdomain
+  ) {
     navigate('/no-portal-found', { replace: true });
     return null;
   }
