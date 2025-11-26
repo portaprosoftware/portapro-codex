@@ -7,6 +7,7 @@ declare module "next/server" {
   export const NextResponse: {
     next: (init?: { request?: { headers?: Headers } }) => Response;
     redirect: (url: string | URL, status?: number) => Response;
+    json: (body: unknown, init?: ResponseInit) => Response;
   };
 }
 
