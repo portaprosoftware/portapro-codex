@@ -1,0 +1,10 @@
+{
+  "rootDirs": ["src", "supabase"],
+  "includeExtensions": [".ts", ".tsx"],
+  "skipPaths": ["node_modules", "dist", "build", ".next", ".vercel", ".git", "coverage", "storybook-static", "scripts/legacy"],
+  "systemTables": ["tax_rates", "storage.buckets", "storage.objects"],
+  "userScopedTables": ["notification_preferences", "push_subscriptions", "user_roles"],
+  "ignoreFiles": ["supabase-helpers.ts"],
+  "requireOrgHook": true,
+  "rpcOrgKeys": ["org_id", "organizationId", "organization_id"]
+}
