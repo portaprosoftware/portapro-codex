@@ -1,8 +1,8 @@
 import { clientEnv } from './env';
 
-export const getRootDomain = () => clientEnv.NEXT_PUBLIC_ROOT_DOMAIN;
+export const getRootDomain = () => clientEnv.VITE_ROOT_DOMAIN;
 
-export const getMarketingUrl = () => clientEnv.NEXT_PUBLIC_MARKETING_URL;
+export const getMarketingUrl = () => clientEnv.VITE_MARKETING_URL;
 
 export const getAppRootUrl = () => clientEnv.NEXT_PUBLIC_APP_ROOT_URL;
 

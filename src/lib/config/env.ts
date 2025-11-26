@@ -35,13 +35,11 @@ const clientEnvSchema = z.object({
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z
     .string()
     .min(1, { message: 'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY is required' }),
-  NEXT_PUBLIC_ROOT_DOMAIN: z
+  VITE_ROOT_DOMAIN: z
     .string()
-    .min(1, { message: 'NEXT_PUBLIC_ROOT_DOMAIN is required' })
-    .regex(/^[a-z0-9.-]+$/i, { message: 'NEXT_PUBLIC_ROOT_DOMAIN should be a bare domain (no protocol)' }),
-  NEXT_PUBLIC_MARKETING_URL: z
-    .string()
-    .url({ message: 'NEXT_PUBLIC_MARKETING_URL must be a valid URL' }),
+    .min(1, { message: 'VITE_ROOT_DOMAIN is required' })
+    .regex(/^[a-z0-9.-]+$/i, { message: 'VITE_ROOT_DOMAIN should be a bare domain (no protocol)' }),
+  VITE_MARKETING_URL: z.string().url({ message: 'VITE_MARKETING_URL must be a valid URL' }),
   NEXT_PUBLIC_APP_ROOT_URL: z.string().url({ message: 'NEXT_PUBLIC_APP_ROOT_URL must be a valid URL' }),
 });
 
@@ -65,8 +63,8 @@ const clientEnvAliases: EnvKeyAliases<ClientEnv> = {
   SUPABASE_URL: ['VITE_SUPABASE_URL'],
   SUPABASE_ANON_KEY: ['VITE_SUPABASE_PUBLISHABLE_KEY', 'VITE_SUPABASE_ANON_KEY'],
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ['VITE_CLERK_PUBLISHABLE_KEY'],
-  NEXT_PUBLIC_ROOT_DOMAIN: ['VITE_ROOT_DOMAIN'],
-  NEXT_PUBLIC_MARKETING_URL: ['VITE_MARKETING_URL'],
+  VITE_ROOT_DOMAIN: ['NEXT_PUBLIC_ROOT_DOMAIN'],
+  VITE_MARKETING_URL: ['NEXT_PUBLIC_MARKETING_URL'],
   NEXT_PUBLIC_APP_ROOT_URL: ['VITE_APP_URL', 'VITE_APP_ROOT_URL'],
 };
 
@@ -85,14 +83,58 @@ const formatZodErrors = (error: z.ZodError) => {
     .join('\n');
 };
 
+const buildRawEnv = <T extends Record<string, unknown>>(aliases: EnvKeyAliases<T>) =>
+  Object.fromEntries(
+    Object.entries(aliases).map(([key, fallbackKeys]) => [key, resolveEnvValue(key, fallbackKeys)])
+  ) as Partial<T>;
+
+const inferRootDomainFromHostname = (hostname?: string): string | undefined => {
+  if (!hostname) return undefined;
+
+  const normalized = hostname.toLowerCase();
+
+  if (normalized === 'portaprosoftware.com' || normalized.endsWith('.portaprosoftware.com')) {
+    return 'portaprosoftware.com';
+  }
+
+  if (normalized.includes('localhost')) {
+    return 'localhost';
+  }
+
+  const parts = normalized.split('.').filter(Boolean);
+
+  if (parts.length >= 2) {
+    return parts.slice(-2).join('.');
+  }
+
+  return parts[0];
+};
+
+const inferRootDomain = (marketingUrl?: string): string | undefined => {
+  if (marketingUrl) {
+    try {
+      const inferredFromMarketing = inferRootDomainFromHostname(new URL(marketingUrl).hostname);
+      if (inferredFromMarketing) {
+        return inferredFromMarketing;
+      }
+    } catch {
+      // ignore invalid marketing URL, validation will handle it later
+    }
+  }
+
+  if (typeof window !== 'undefined' && window.location?.hostname) {
+    return inferRootDomainFromHostname(window.location.hostname);
+  }
+
+  return undefined;
+};
+
 const parseEnv = <T extends z.ZodTypeAny>(
   schema: T,
   aliases: EnvKeyAliases<z.infer<T>>,
   label: 'Client' | 'Server'
 ): z.infer<T> => {
-  const rawEnv = Object.fromEntries(
-    Object.entries(aliases).map(([key, fallbackKeys]) => [key, resolveEnvValue(key, fallbackKeys)])
-  );
+  const rawEnv = buildRawEnv<z.infer<T>>(aliases);
 
   const result = schema.safeParse(rawEnv);
 
@@ -105,7 +147,37 @@ const parseEnv = <T extends z.ZodTypeAny>(
   return result.data;
 };
 
-export const clientEnv = parseEnv(clientEnvSchema, clientEnvAliases, 'Client');
+const parseClientEnv = (): ClientEnv => {
+  const rawEnv = buildRawEnv<ClientEnv>(clientEnvAliases);
+
+  const marketingUrl = rawEnv.VITE_MARKETING_URL;
+  const rootDomain = rawEnv.VITE_ROOT_DOMAIN ?? inferRootDomain(marketingUrl);
+  const resolvedMarketingUrl = marketingUrl ?? (rootDomain ? `https://${rootDomain}` : undefined);
+
+  const result = clientEnvSchema.safeParse({
+    ...rawEnv,
+    VITE_ROOT_DOMAIN: rootDomain,
+    VITE_MARKETING_URL: resolvedMarketingUrl,
+  });
+
+  if (!result.success) {
+    const shouldFailHard = !rootDomain && !resolvedMarketingUrl;
+
+    if (shouldFailHard) {
+      throw new Error(
+        `❌ Client environment validation failed. Please set the following variables:\n${formatZodErrors(result.error)}`
+      );
+    }
+
+    throw new Error(
+      `❌ Client environment validation failed. Please set the following variables:\n${formatZodErrors(result.error)}`
+    );
+  }
+
+  return result.data;
+};
+
+export const clientEnv = parseClientEnv();
 
 let serverEnvCache: ServerEnv | null = null;
 
