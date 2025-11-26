@@ -16,6 +16,8 @@ import { formatDateForQuery, formatDateSafe } from '@/lib/dateUtils';
 import { useDriverWorkingHours } from '@/hooks/useDriverWorkingHours';
 import { FileUploadButton } from './FileUploadButton';
 import { WeeklyScheduleGrid } from './WeeklyScheduleGrid';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
+import { tenantTable } from '@/lib/db/tenant';
 
 interface MobileTimeOffRequestSliderProps {
   isOpen: boolean;
@@ -43,6 +45,7 @@ export const MobileTimeOffRequestSlider: React.FC<MobileTimeOffRequestSliderProp
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [reason, setReason] = useState('');
   const [attachmentUrl, setAttachmentUrl] = useState<string | null>(null);
+  const { orgId, isReady: isOrgReady } = useOrganizationId();
 
   // Fetch driver's working hours
   const { data: workingHours } = useDriverWorkingHours(user?.id);
@@ -69,12 +72,11 @@ export const MobileTimeOffRequestSlider: React.FC<MobileTimeOffRequestSliderProp
 
   // Fetch scheduled jobs for the date range
   const { data: scheduledJobs } = useQuery({
-    queryKey: ['driver-jobs-range', user?.id, dateRange?.from, dateRange?.to],
+    queryKey: ['driver-jobs-range', user?.id, dateRange?.from, dateRange?.to, orgId],
     queryFn: async () => {
-      if (!user?.id || !dateRange?.from || !dateRange?.to) return [];
+      if (!user?.id || !dateRange?.from || !dateRange?.to || !orgId) return [];
 
-      const { data, error } = await supabase
-        .from('jobs')
+      const { data, error } = await tenantTable(supabase, orgId, 'jobs')
         .select('*')
         .eq('driver_id', user.id)
         .gte('scheduled_date', formatDateForQuery(dateRange.from))
@@ -83,7 +85,7 @@ export const MobileTimeOffRequestSlider: React.FC<MobileTimeOffRequestSliderProp
       if (error) throw error;
       return data;
     },
-    enabled: !!user?.id && !!dateRange?.from && !!dateRange?.to
+    enabled: !!user?.id && !!dateRange?.from && !!dateRange?.to && !!orgId && isOrgReady
   });
 
   const createTimeOffMutation = useMutation({

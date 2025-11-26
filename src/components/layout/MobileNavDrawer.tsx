@@ -7,6 +7,8 @@ import { AlignLeft } from 'lucide-react';
 import { useUserRole } from '@/hooks/useUserRole';
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/ui/logo";
+import { useOrganizationId } from '@/hooks/useOrganizationId';
+import { tenantTable } from '@/lib/db/tenant';
 import {
   Drawer,
   DrawerClose,
@@ -29,6 +31,7 @@ export function MobileNavDrawer() {
   const { hasStaffAccess, hasAdminAccess, isOwner } = useUserRole();
   const location = useLocation();
   const [open, setOpen] = React.useState(false);
+  const { orgId, isReady: isOrgReady } = useOrganizationId();
   
   // Haptic feedback for iOS native feel
   const haptic = (type: 'light' | 'medium' | 'heavy' = 'light') => {
@@ -48,17 +51,18 @@ export function MobileNavDrawer() {
 
   // Fetch today's jobs count for badge
   const { data: todaysJobsCount } = useQuery({
-    queryKey: ['todays-jobs-count', todayInCompanyTZ],
+    queryKey: ['todays-jobs-count', todayInCompanyTZ, orgId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('jobs')
+      if (!orgId) return 0;
+
+      const { data, error } = await tenantTable(supabase, orgId, 'jobs')
         .select('id', { count: 'exact' })
         .eq('scheduled_date', todayInCompanyTZ);
       
       if (error) throw error;
       return data?.length || 0;
     },
-    enabled: !!todayInCompanyTZ,
+    enabled: !!todayInCompanyTZ && !!orgId && isOrgReady,
   });
 
   const getVisibleItems = (items: NavigationItem[]) => {

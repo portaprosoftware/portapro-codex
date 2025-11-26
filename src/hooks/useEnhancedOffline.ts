@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { tenantTable, requireOrgId } from '@/lib/db/tenant';
 
 interface OfflineData {
   id: string;
@@ -171,12 +172,13 @@ export function useEnhancedOffline() {
           } as any);
         break;
         
-      case 'job_update':
-        await supabase
-          .from('jobs')
+      case 'job_update': {
+        const orgId = requireOrgId(item.data.organizationId || item.data.organization_id);
+        await tenantTable(supabase, orgId, 'jobs')
           .update(item.data.updates)
           .eq('id', item.data.jobId);
         break;
+      }
         
       case 'maintenance':
         // Ensure organization_id is included
@@ -238,6 +240,7 @@ export function useEnhancedOffline() {
         }
 
         // Create maintenance report
+        const orgId = requireOrgId(item.data.organizationId || item.data.organization_id);
         const { error: reportError } = await supabase
           .from('maintenance_reports')
           .insert({
@@ -253,15 +256,18 @@ export function useEnhancedOffline() {
             completed_at: new Date().toISOString(),
             created_by: item.userId,
             customer_id: item.data.customerId,
-            organization_id: item.data.organizationId || null,
+            organization_id: orgId,
           } as any);
 
         if (reportError) throw reportError;
 
         // Update job status
-        const { error: jobUpdateError } = await supabase
-          .from('jobs')
-          .update({ 
+        const { error: jobUpdateError } = await tenantTable(
+          supabase,
+          orgId,
+          'jobs'
+        )
+          .update({
             status: 'completed',
             actual_completion_time: new Date().toISOString()
           })
@@ -279,7 +285,7 @@ export function useEnhancedOffline() {
             photos: item.data.sanitationData.photos,
             technician_id: item.userId,
             notes: item.data.sanitationData.notes,
-            organization_id: item.data.organizationId || null,
+            organization_id: orgId,
           });
         }
         break;

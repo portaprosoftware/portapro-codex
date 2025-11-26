@@ -53,7 +53,7 @@ Tests the core `safeInsert()`, `safeUpdate()`, and `safeDelete()` functions:
 **Example:**
 ```typescript
 // ❌ BAD - Will fail tests
-await supabase.from('jobs').insert({ title: 'Test Job' });
+await supabase.from('orders').insert({ title: 'Test Job' });
 
 // ✅ GOOD - Passes tests
 await safeInsert('jobs', { title: 'Test Job' }, orgId);
@@ -139,7 +139,7 @@ await safeInsert('products', { name: 'Product' }, orgId);
 
 ❌ **Before:**
 ```typescript
-await supabase.from('jobs').update({ status: 'completed' }).eq('id', jobId);
+await supabase.from('orders').update({ status: 'completed' }).eq('id', orderId);
 ```
 
 ✅ **After (Option 1 - safeUpdate):**
@@ -151,10 +151,8 @@ await safeUpdate('jobs', { status: 'completed' }, orgId, { id: jobId });
 ✅ **After (Option 2 - Manual Filter):**
 ```typescript
 const { orgId } = useOrganizationId();
-await supabase
-  .from('jobs')
+await tenantTable(supabase, orgId, 'jobs')
   .update({ status: 'completed' })
-  .eq('organization_id', orgId)
   .eq('id', jobId);
 ```
 
@@ -175,16 +173,14 @@ await safeDelete('customers', orgId, { id: customerId });
 
 ❌ **Before:**
 ```typescript
-const { data } = await supabase.from('jobs').select('*');
+const { data } = await supabase.from('orders').select('*');
 ```
 
 ✅ **After:**
 ```typescript
 const { orgId } = useOrganizationId();
-const { data } = await supabase
-  .from('jobs')
-  .select('*')
-  .eq('organization_id', orgId);
+const { data } = await tenantTable(supabase, orgId, 'jobs')
+  .select('*');
 ```
 
 ## 🔍 Exceptions
