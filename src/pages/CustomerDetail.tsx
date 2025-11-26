@@ -18,26 +18,32 @@ import { CustomerDocumentsTab } from '@/components/customers/CustomerDocumentsTa
 import { CustomerEngagementTab } from '@/components/customers/CustomerEngagementTab';
 import { formatCategoryDisplay } from '@/lib/categoryUtils';
 import { formatPhoneNumber } from '@/lib/utils';
+import { tenantTable } from '@/lib/db/tenant';
+import { useTenantId } from '@/lib/tenantQuery';
 
 export default function CustomerDetail() {
   const { id } = useParams<{ id: string }>();
+  const tenantId = useTenantId();
   const [activeTab, setActiveTab] = useState('overview');
 
   const { data: customer, isLoading } = useQuery({
-    queryKey: ['customer', id],
+    queryKey: ['customer', id, tenantId],
     queryFn: async () => {
       if (!id) throw new Error('Customer ID is required');
-      
-      const { data, error } = await supabase
-        .from('customers')
+
+      const { data, error } = await tenantTable(
+        supabase,
+        tenantId,
+        'customers'
+      )
         .select('*')
         .eq('id', id)
         .single();
-      
+
       if (error) throw error;
       return data;
     },
-    enabled: !!id,
+    enabled: !!id && !!tenantId,
   });
 
   if (isLoading) {

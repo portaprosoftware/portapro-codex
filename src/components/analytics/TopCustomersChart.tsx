@@ -3,17 +3,23 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { Crown, TrendingUp, Calendar } from 'lucide-react';
+import { tenantTable } from '@/lib/db/tenant';
+import { useTenantId } from '@/lib/tenantQuery';
 
 interface TopCustomersChartProps {
   dateRange: { from: Date; to: Date };
 }
 
 export const TopCustomersChart: React.FC<TopCustomersChartProps> = ({ dateRange }) => {
+  const tenantId = useTenantId();
   const { data: topCustomers, isLoading } = useQuery({
-    queryKey: ['top-customers', dateRange],
+    queryKey: ['top-customers', dateRange, tenantId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('customers')
+      const { data, error } = await tenantTable(
+        supabase,
+        tenantId,
+        'customers'
+      )
         .select(`
           id,
           name,
@@ -61,7 +67,8 @@ export const TopCustomersChart: React.FC<TopCustomersChartProps> = ({ dateRange 
           return b.totalJobs - a.totalJobs;
         })
         .slice(0, 8); // Top 8 customers
-    }
+    },
+    enabled: !!tenantId
   });
 
   if (isLoading) {

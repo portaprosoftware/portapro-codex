@@ -2,18 +2,24 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { format, startOfMonth, subMonths } from 'date-fns';
+import { tenantTable } from '@/lib/db/tenant';
+import { useTenantId } from '@/lib/tenantQuery';
 
 interface CohortAnalysisChartProps {
   dateRange: { from: Date; to: Date };
 }
 
 export const CohortAnalysisChart: React.FC<CohortAnalysisChartProps> = ({ dateRange }) => {
+  const tenantId = useTenantId();
   const { data: cohortData, isLoading } = useQuery({
-    queryKey: ['cohort-analysis', dateRange],
+    queryKey: ['cohort-analysis', dateRange, tenantId],
     queryFn: async () => {
       // Get cohort data for the last 6 months
-      const { data: customers, error } = await supabase
-        .from('customers')
+      const { data: customers, error } = await tenantTable(
+        supabase,
+        tenantId,
+        'customers'
+      )
         .select(`
           id,
           created_at,
@@ -64,7 +70,8 @@ export const CohortAnalysisChart: React.FC<CohortAnalysisChartProps> = ({ dateRa
       });
 
       return Object.values(cohorts).reverse(); // Most recent first
-    }
+    },
+    enabled: !!tenantId
   });
 
   if (isLoading) {

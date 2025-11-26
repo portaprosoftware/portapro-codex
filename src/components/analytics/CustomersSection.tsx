@@ -8,14 +8,17 @@ import { format, subDays } from 'date-fns';
 import type { CustomerAnalytics } from '@/types/analytics';
 import { CohortAnalysisChart } from './CohortAnalysisChart';
 import { TopCustomersChart } from './TopCustomersChart';
+import { tenantTable } from '@/lib/db/tenant';
+import { useTenantId } from '@/lib/tenantQuery';
 
 interface CustomersSectionProps {
   dateRange: { from: Date; to: Date };
 }
 
 export const CustomersSection: React.FC<CustomersSectionProps> = ({ dateRange }) => {
+  const tenantId = useTenantId();
   const { data: customers, isLoading } = useQuery({
-    queryKey: ['analytics-customers', dateRange],
+    queryKey: ['analytics-customers', dateRange, tenantId],
     queryFn: async () => {
       // Get customer data with real calculations
       const currentPeriodStart = format(dateRange.from, 'yyyy-MM-dd');
@@ -25,8 +28,11 @@ export const CustomersSection: React.FC<CustomersSectionProps> = ({ dateRange })
       const previousPeriodEnd = format(subDays(dateRange.to, daysDiff), 'yyyy-MM-dd');
 
       // Get all customers for comprehensive analysis
-      const { data: allCustomers, error: allError } = await supabase
-        .from('customers')
+      const { data: allCustomers, error: allError } = await tenantTable(
+        supabase,
+        tenantId,
+        'customers'
+      )
         .select(`
           id, created_at,
           jobs(id, customer_id, scheduled_date),
@@ -73,7 +79,8 @@ export const CustomersSection: React.FC<CustomersSectionProps> = ({ dateRange })
       };
 
       return customerAnalytics;
-    }
+    },
+    enabled: !!tenantId
   });
 
   // Calculate percentage changes (mock for now)

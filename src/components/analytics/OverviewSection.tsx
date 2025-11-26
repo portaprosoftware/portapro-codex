@@ -10,14 +10,17 @@ import { DepositAnalyticsCard } from './DepositAnalyticsCard';
 import { Briefcase, DollarSign, Truck, Users } from 'lucide-react';
 import { format } from 'date-fns';
 import type { AnalyticsOverview } from '@/types/analytics';
+import { tenantTable } from '@/lib/db/tenant';
+import { useTenantId } from '@/lib/tenantQuery';
 
 interface OverviewSectionProps {
   dateRange: { from: Date; to: Date };
 }
 
 export const OverviewSection: React.FC<OverviewSectionProps> = ({ dateRange }) => {
+  const tenantId = useTenantId();
   const { data: overview, isLoading } = useQuery({
-    queryKey: ['analytics-overview', dateRange],
+    queryKey: ['analytics-overview', dateRange, tenantId],
     queryFn: async () => {
       // Fetch real job data for overview
       const { data: jobs, error: jobsError } = await supabase
@@ -38,8 +41,11 @@ export const OverviewSection: React.FC<OverviewSectionProps> = ({ dateRange }) =
       if (invoicesError) throw invoicesError;
 
       // Fetch customer growth data
-      const { data: customers, error: customersError } = await supabase
-        .from('customers')
+      const { data: customers, error: customersError } = await tenantTable(
+        supabase,
+        tenantId,
+        'customers'
+      )
         .select('id, created_at')
         .gte('created_at', format(dateRange.from, 'yyyy-MM-dd'))
         .lte('created_at', format(dateRange.to, 'yyyy-MM-dd'));
@@ -87,7 +93,8 @@ export const OverviewSection: React.FC<OverviewSectionProps> = ({ dateRange }) =
         fleet_utilization: Math.min(fleetUtilization, 100), // Cap at 100%
         customer_growth: newCustomers
       };
-    }
+    },
+    enabled: !!tenantId
   });
 
   const { data: jobTrends } = useQuery({

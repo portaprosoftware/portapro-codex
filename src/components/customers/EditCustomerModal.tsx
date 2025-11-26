@@ -13,6 +13,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { CheckCircle2 } from 'lucide-react';
+import { tenantTable } from '@/lib/db/tenant';
+import { useTenantId } from '@/lib/tenantQuery';
 
 const US_STATES = [
   { value: 'AL', label: 'Alabama' },
@@ -159,6 +161,7 @@ const CUSTOMER_TYPES = [
 export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerModalProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const tenantId = useTenantId();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [showDepositConfirm, setShowDepositConfirm] = useState(false);
@@ -237,8 +240,11 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
       console.log('Update data:', updateData);
       console.log('Customer ID for update:', customer.id);
 
-      const { data: result, error } = await supabase
-        .from('customers')
+      const { data: result, error } = await tenantTable(
+        supabase,
+        tenantId,
+        'customers'
+      )
         .update(updateData)
         .eq('id', customer.id)
         .select()
@@ -385,8 +391,11 @@ export function EditCustomerModal({ isOpen, onClose, customer }: EditCustomerMod
       }
 
       // Finally, delete the customer record
-      const { error: customerError } = await supabase
-        .from('customers')
+      const { error: customerError } = await tenantTable(
+        supabase,
+        tenantId,
+        'customers'
+      )
         .delete()
         .eq('id', customer.id);
 
