@@ -1,8 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useUserRole } from './useUserRole';
-import { useOrganization } from '@clerk/clerk-react';
+import { useAuth, useOrganization } from '@clerk/clerk-react';
 import { triggerNewTeamMemberNotification } from '@/utils/notificationTriggers';
 
 interface InviteUserData {
@@ -12,6 +11,7 @@ interface InviteUserData {
   role: string;
   phone?: string;
   organizationId?: string;
+  organizationSlug?: string;
   redirectBase?: string;
 }
 
@@ -19,13 +19,13 @@ interface InviteUserResponse {
   success: boolean;
   message?: string;
   data?: {
-    id?: string;
-    email_address?: string;
+    userId?: string;
+    profileId?: string;
+    invitationId?: string;
+    redirectUrl?: string;
+    organizationId?: string;
     email?: string;
     role?: string;
-    role_name?: string;
-    organization_id?: string;
-    status?: string;
   };
   error?: string;
 }
@@ -34,6 +34,7 @@ export const useInviteUser = () => {
   const queryClient = useQueryClient();
   const { user } = useUserRole();
   const { organization } = useOrganization();
+  const { getToken } = useAuth();
 
   return useMutation({
     mutationFn: async (userData: InviteUserData): Promise<InviteUserResponse> => {
@@ -41,59 +42,57 @@ export const useInviteUser = () => {
         throw new Error('User not authenticated');
       }
 
-      // Automatically include organizationId from Clerk context if available
       const invitePayload = {
         email: userData.email,
-        organizationId: userData.organizationId || organization?.id,
-        org_slug: organization?.slug || organization?.name?.toLowerCase().replace(/\s+/g, '-') || 'default',
-        org_name: organization?.name || 'Default Organization',
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        phone: userData.phone,
         role: userData.role,
-        env: import.meta.env.DEV ? 'dev' : 'prod'
+        organizationId: userData.organizationId || organization?.id,
+        organizationSlug: userData.organizationSlug || organization?.slug,
+        redirectBase: userData.redirectBase || (typeof window !== 'undefined' ? window.location.origin : undefined),
       };
 
-      const { data, error } = await supabase.functions.invoke('org-invite', {
-        body: invitePayload
-      });
+      const sessionToken = await getToken();
 
-      if (error) {
-        console.error('Edge Function error:', error);
-        // Throw the actual error object to preserve type info for retry logic
-        throw error;
+      if (!sessionToken) {
+        throw new Error('Unable to authenticate request');
       }
 
-      // Normalize response (handle cases where Supabase client doesn't auto-parse JSON)
-      const response = typeof data === 'string' ? JSON.parse(data) : data;
+      const response = await fetch('/api/team/invite', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${sessionToken}`,
+        },
+        body: JSON.stringify(invitePayload),
+      });
 
-      if (!response.success) {
-        const errorMsg = response.error || response.detail?.body || 'Failed to invite user';
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        const errorMsg = result.error || 'Failed to invite user';
         throw new Error(errorMsg);
       }
 
-      console.log('✅ org-invite success:', response);
-      return response;
+      console.log('✅ team invite success:', result);
+      return result;
     },
     retry: (failureCount, error: any) => {
-      // Only retry on network/transient 5xx errors, not 400/404
-      const isNetworkError = 
-        error?.name === 'FunctionsFetchError' || 
-        error?.message?.includes('Failed to send a request to the Edge Function');
-      
-      const is5xxError = error?.context?.statusCode >= 500;
-      
+      const isNetworkError = error?.name === 'TypeError' || error?.message?.includes('Failed to fetch');
+      const is5xxError = error?.status >= 500;
+
       return (isNetworkError || is5xxError) && failureCount < 3;
     },
-    retryDelay: (attemptIndex) => {
-      // Exponential backoff: 1s, 2s, 4s
-      return Math.pow(2, attemptIndex) * 1000;
-    },
+    retryDelay: (attemptIndex) => Math.pow(2, attemptIndex) * 1000,
     onSuccess: async (data, variables) => {
-      const email = data.data?.email_address || data.data?.email;
+      const email = data.data?.email || variables.email;
       toast.success(`Invitation sent successfully to ${email}`);
       
       // Trigger new team member notification
-      if (data.data?.id) {
+      if (data.data?.userId) {
         await triggerNewTeamMemberNotification({
-          newUserId: data.data.id,
+          newUserId: data.data.userId,
           newUserName: `${variables.firstName} ${variables.lastName}`,
           newUserEmail: variables.email,
           role: variables.role,
@@ -109,35 +108,8 @@ export const useInviteUser = () => {
       queryClient.invalidateQueries({ queryKey: ['profiles'] });
     },
     onError: (error: any) => {
-      // Parse the Edge Function's JSON error message if available
-      let errorMessage = 'Failed to invite user';
-      
-      if (error?.context?.body) {
-        // FunctionsHttpError includes the response body in context
-        try {
-          const body = typeof error.context.body === 'string' 
-            ? JSON.parse(error.context.body) 
-            : error.context.body;
-          
-          // Extract Clerk error details if present
-          if (body?.detail?.body) {
-            const detail = typeof body.detail.body === 'string' 
-              ? JSON.parse(body.detail.body) 
-              : body.detail.body;
-            errorMessage = detail?.errors?.[0]?.long_message || detail?.errors?.[0]?.message || body.error || errorMessage;
-          } else {
-            errorMessage = body?.message || body?.error || errorMessage;
-          }
-        } catch (e) {
-          // Fall back to default message
-        }
-      } else if (error?.message) {
-        errorMessage = error.message;
-      }
-
+      const errorMessage = error?.message || 'Failed to invite user';
       console.error('❌ Invite user failed after retries:', errorMessage, error);
-      
-      // Show single toast with the actual error from the Edge Function
       toast.error(errorMessage);
     }
   });
