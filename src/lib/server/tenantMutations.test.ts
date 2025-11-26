@@ -6,6 +6,14 @@ import {
   updateCustomer,
 } from "./tenantMutations";
 
+vi.mock("@/lib/audit/logger", () => ({
+  logAction: vi.fn().mockResolvedValue(undefined),
+}));
+
+vi.mock("@/lib/audit/securityLogger", () => ({
+  logSecurityEvent: vi.fn().mockResolvedValue(undefined),
+}));
+
 const createSupabaseMock = () => {
   const insert = vi.fn().mockResolvedValue({ data: { id: "cust-1" }, error: null });
   const eqUpdate = vi.fn().mockResolvedValue({ data: { id: "cust-1" }, error: null });

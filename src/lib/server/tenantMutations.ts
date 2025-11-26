@@ -3,11 +3,14 @@ import type { Database } from "@/integrations/supabase/types";
 import { loadServerEnv } from "@/lib/config/env";
 import { requireRole } from "@/lib/authz/requireRole";
 import { tenantTable, requireOrgId } from "@/lib/db/tenant";
+import { logAction } from "@/lib/audit/logger";
+import { logSecurityEvent } from "@/lib/audit/securityLogger";
 
 export type MutationContext = {
   userId?: string | null;
   orgId?: string | null;
   supabase?: SupabaseClient<Database>;
+  request?: Request | null;
 };
 
 type MutationOperation = "insert" | "update" | "delete";
@@ -33,7 +36,20 @@ const withAuthorization = async <TReturn>(
   handler: (client: SupabaseClient<Database>, orgId: string) => Promise<TReturn>
 ) => {
   const client = context.supabase ?? createServiceRoleClient();
-  const orgId = requireOrgId(context.orgId);
+  let orgId: string;
+
+  try {
+    orgId = requireOrgId(context.orgId);
+  } catch (error) {
+    await logSecurityEvent({
+      orgId: context.orgId,
+      type: "missing_org_id",
+      source: "api",
+      metadata: { tableName, operation },
+      supabase: client,
+    });
+    throw error;
+  }
 
   await requireRole({
     userId: context.userId,
@@ -56,11 +72,55 @@ const performMutation = async <TPayload extends Record<string, any>>(
 
     switch (operation) {
       case "insert":
-        return table.insert(payload).select().single();
+        return table.insert(payload).select().single().then(async (result) => {
+          await logAction({
+            orgId,
+            userId: context.userId,
+            action: `${operation}_${tableName}`,
+            entityType: tableName as string,
+            entityId: result.data?.id ?? payload.id ?? null,
+            metadata: { operation, payload: { ...payload, id: payload.id } },
+            request: context.request,
+            supabase: client,
+          });
+          return result;
+        });
       case "update":
-        return table.update(payload).eq("id", payload.id).select().single();
+        return table
+          .update(payload)
+          .eq("id", payload.id)
+          .select()
+          .single()
+          .then(async (result) => {
+            await logAction({
+              orgId,
+              userId: context.userId,
+              action: `${operation}_${tableName}`,
+              entityType: tableName as string,
+              entityId: result.data?.id ?? payload.id ?? null,
+              metadata: { operation, payload: { ...payload, id: payload.id } },
+              request: context.request,
+              supabase: client,
+            });
+            return result;
+          });
       case "delete":
-        return table.delete().eq("id", payload.id);
+        return table
+          .delete()
+          .eq("id", payload.id)
+          .then(async (result) => {
+            await logAction({
+              orgId,
+              userId: context.userId,
+              action: `${operation}_${tableName}`,
+              entityType: tableName as string,
+              entityId: payload.id ?? null,
+              metadata: { operation, payload: { ...payload, id: payload.id } },
+              request: context.request,
+              supabase: client,
+            });
+            return result;
+          });
     }
   });
 };

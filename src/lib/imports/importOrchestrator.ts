@@ -5,6 +5,7 @@ import { loadServerEnv } from "@/lib/config/env";
 import { tenantTable, requireOrgId } from "@/lib/db/tenant";
 import { ImportError, ImportFieldError } from "./errors";
 import { ImportType, getValidator } from "./validators";
+import { logAction } from "@/lib/audit";
 
 export type ImportRequest<TRecord = Record<string, any>> = {
   type: ImportType;
@@ -132,6 +133,14 @@ export const runImport = async (request: ImportRequest): Promise<ImportResponse>
       success: 0,
       errors,
     });
+    await logAction({
+      orgId,
+      userId: request.userId,
+      action: "import_failed",
+      entityType: request.type,
+      metadata: { totalRows: request.rows.length, successRows: 0, failedRows: errors.length },
+      supabase: client,
+    });
     return {
       ok: false,
       message: "Import failed",
@@ -165,6 +174,14 @@ export const runImport = async (request: ImportRequest): Promise<ImportResponse>
       success: 0,
       errors,
     });
+    await logAction({
+      orgId,
+      userId: request.userId,
+      action: "import_failed",
+      entityType: request.type,
+      metadata: { totalRows: request.rows.length, successRows: 0, failedRows: errors.length },
+      supabase: client,
+    });
     return {
       ok: false,
       message: "Import failed",
@@ -183,6 +200,14 @@ export const runImport = async (request: ImportRequest): Promise<ImportResponse>
       success: sanitizedRecords.length,
       errors: [],
     });
+    await logAction({
+      orgId,
+      userId: request.userId,
+      action: "import_success",
+      entityType: request.type,
+      metadata: { totalRows: request.rows.length, successRows: sanitizedRecords.length, failedRows: 0 },
+      supabase: client,
+    });
     return {
       ok: true,
       message: "Import completed",
@@ -197,6 +222,18 @@ export const runImport = async (request: ImportRequest): Promise<ImportResponse>
       total: request.rows.length,
       success: 0,
       errors: formatted.details ?? [],
+    });
+    await logAction({
+      orgId,
+      userId: request.userId,
+      action: "import_failed",
+      entityType: request.type,
+      metadata: {
+        totalRows: request.rows.length,
+        successRows: 0,
+        failedRows: formatted.details?.length ?? request.rows.length,
+      },
+      supabase: client,
     });
     return {
       ok: false,
