@@ -1,4 +1,4 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import React, { Component, ReactNode } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, AlertTriangle } from 'lucide-react';
@@ -22,14 +22,14 @@ export class JobsMapErrorBoundary extends Component<Props, State> {
     retryAttempts: 0
   };
 
-  public static getDerivedStateFromError(error: Error): State {
+  public static getDerivedStateFromError(error: Error): Partial<State> {
     console.error('JobsMapErrorBoundary caught an error:', error);
     
     // Increment retry attempts
     return { hasError: true, error, retryAttempts: 0 };
   }
 
-  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  public componentDidCatch(error: Error, errorInfo: { componentStack: string }) {
     console.error('Map component error:', error, errorInfo);
     
     // Log specific DataCloneError information
@@ -45,11 +45,11 @@ export class JobsMapErrorBoundary extends Component<Props, State> {
         (window as any).queryClient.clear();
       }
       
-      this.setState(prevState => ({
+      this.setState({
         hasError: false,
         error: undefined,
-        retryAttempts: prevState.retryAttempts + 1
-      }));
+        retryAttempts: this.state.retryAttempts + 1
+      });
       
       // Call the optional retry callback
       this.props.onRetry?.();
