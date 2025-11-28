@@ -4,31 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { 
-  LineChart, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  AreaChart,
-  Area,
-  ComposedChart,
-  PieChart,
-  Pie,
-  Cell,
-  ScatterChart,
-  Scatter,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Radar,
-  Treemap
-} from 'recharts';
+import { ChartWrapper } from '@/components/analytics/ChartWrapper';
 import { 
   TrendingUp, 
   BarChart3, 
@@ -114,7 +90,14 @@ export const AdvancedCharts: React.FC<AdvancedChartsProps> = ({
     { id: 'multidimensional', label: 'Multi-dimensional', icon: Zap }
   ];
 
-  const renderChart = () => {
+  const renderChart = (Recharts: any) => {
+    const { 
+      LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+      BarChart, Bar, AreaChart, Area, ComposedChart, PieChart, Pie, Cell,
+      ScatterChart, Scatter, RadarChart, PolarGrid, PolarAngleAxis, 
+      PolarRadiusAxis, Radar
+    } = Recharts;
+
     switch (selectedChart) {
       case 'trend':
         return (
@@ -245,9 +228,16 @@ export const AdvancedCharts: React.FC<AdvancedChartsProps> = ({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={400}>
-            {renderChart()}
-          </ResponsiveContainer>
+          <ChartWrapper>
+            {(Recharts) => {
+              const { ResponsiveContainer } = Recharts;
+              return (
+                <ResponsiveContainer width="100%" height={400}>
+                  {renderChart(Recharts)}
+                </ResponsiveContainer>
+              );
+            }}
+          </ChartWrapper>
         </CardContent>
       </Card>
 
