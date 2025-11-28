@@ -2,16 +2,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
-import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend
-} from 'recharts';
+import { ChartWrapper } from '@/components/analytics/ChartWrapper';
 import { Clock, TrendingUp, Users } from 'lucide-react';
 
 interface WorkloadInsightsChartProps {

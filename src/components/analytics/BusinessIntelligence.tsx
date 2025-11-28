@@ -17,22 +17,7 @@ import {
   AlertCircle,
   CheckCircle
 } from 'lucide-react';
-import { 
-  LineChart, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer, 
-  BarChart, 
-  Bar, 
-  PieChart as RechartsPieChart, 
-  Pie, 
-  Cell,
-  AreaChart,
-  Area
-} from 'recharts';
+import { ChartWrapper } from '@/components/analytics/ChartWrapper';
 
 interface BusinessIntelligenceProps {
   data: any;
@@ -254,17 +239,24 @@ export const BusinessIntelligence: React.FC<BusinessIntelligenceProps> = ({
                 <CardTitle>Revenue Trends & Forecasting</CardTitle>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <AreaChart data={revenueData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    <Tooltip />
-                    <Area type="monotone" dataKey="revenue" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.2} name="Actual" />
-                    <Area type="monotone" dataKey="forecast" stroke="#10B981" fill="#10B981" fillOpacity={0.2} name="Forecast" />
-                    <Area type="monotone" dataKey="target" stroke="#F59E0B" fill="#F59E0B" fillOpacity={0.1} name="Target" />
-                  </AreaChart>
-                </ResponsiveContainer>
+              <ChartWrapper>
+                {(Recharts) => {
+                  const { ResponsiveContainer, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip, Area } = Recharts;
+                  return (
+                    <ResponsiveContainer width="100%" height={300}>
+                      <AreaChart data={revenueData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="month" />
+                        <YAxis />
+                        <Tooltip />
+                        <Area type="monotone" dataKey="revenue" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.2} name="Actual" />
+                        <Area type="monotone" dataKey="forecast" stroke="#10B981" fill="#10B981" fillOpacity={0.2} name="Forecast" />
+                        <Area type="monotone" dataKey="target" stroke="#F59E0B" fill="#F59E0B" fillOpacity={0.1} name="Target" />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  );
+                }}
+              </ChartWrapper>
               </CardContent>
             </Card>
 
@@ -273,24 +265,31 @@ export const BusinessIntelligence: React.FC<BusinessIntelligenceProps> = ({
                 <CardTitle>Customer Segments</CardTitle>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <RechartsPieChart>
-                    <Pie
-                      data={customerSegments}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={100}
-                      paddingAngle={5}
-                      dataKey="value"
-                    >
-                      {customerSegments.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </RechartsPieChart>
-                </ResponsiveContainer>
+              <ChartWrapper>
+                {(Recharts) => {
+                  const { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } = Recharts;
+                  return (
+                    <ResponsiveContainer width="100%" height={300}>
+                      <PieChart>
+                        <Pie
+                          data={customerSegments}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={60}
+                          outerRadius={100}
+                          paddingAngle={5}
+                          dataKey="value"
+                        >
+                          {customerSegments.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  );
+                }}
+              </ChartWrapper>
                 <div className="flex justify-center gap-4 mt-4">
                   {customerSegments.map((segment) => (
                     <div key={segment.name} className="flex items-center gap-2">

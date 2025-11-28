@@ -23,7 +23,7 @@ import {
   AlertTriangle,
   Upload,
   ExternalLink,
-  HelpCircle,
+  AlertCircle,
   BookOpen,
   Video,
   Phone,
@@ -445,7 +445,7 @@ export const SupportTab: React.FC<SupportTabProps> = ({ customerId }) => {
           {filteredFAQs.length === 0 && (
             <Card>
               <CardContent className="p-6 text-center">
-                <HelpCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <h5 className="font-medium mb-2">No Results Found</h5>
                 <p className="text-muted-foreground">
                   Try searching with different keywords or submit a support ticket.
