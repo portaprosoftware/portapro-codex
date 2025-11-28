@@ -7,7 +7,7 @@ import { usePWAStandalone } from './hooks/usePWAStandalone';
 import { useCompanyTitle } from './hooks/useCompanyTitle';
 import { useAuthStateListener } from './hooks/useAuthStateListener';
 import { Layout } from './components/layout/Layout';
-import { ErrorBoundary } from './components/ui/error-boundary';
+import ErrorBoundary from './components/ui/error-boundary';
 import { TenantGuard } from './components/auth/TenantGuard';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { RootRedirect } from './components/auth/RootRedirect';

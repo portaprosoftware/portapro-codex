@@ -17,22 +17,7 @@ import {
   CheckCircle,
   AlertTriangle
 } from 'lucide-react';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Radar,
-  LineChart,
-  Line
-} from 'recharts';
+import { ChartWrapper } from '@/components/analytics/ChartWrapper';
 
 interface PerformanceMetricsProps {
   data: any;
@@ -203,15 +188,22 @@ export const PerformanceMetrics: React.FC<PerformanceMetricsProps> = ({
             <CardTitle className="text-lg">Performance Radar</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={200}>
-              <RadarChart data={performanceRadarData}>
-                <PolarGrid />
-                <PolarAngleAxis dataKey="subject" />
-                <PolarRadiusAxis />
-                <Radar name="Current" dataKey="A" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.2} />
-                <Radar name="Target" dataKey="B" stroke="#10B981" fill="#10B981" fillOpacity={0.1} />
-              </RadarChart>
-            </ResponsiveContainer>
+            <ChartWrapper>
+              {(Recharts) => {
+                const { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } = Recharts;
+                return (
+                  <ResponsiveContainer width="100%" height={200}>
+                    <RadarChart data={performanceRadarData}>
+                      <PolarGrid />
+                      <PolarAngleAxis dataKey="subject" />
+                      <PolarRadiusAxis />
+                      <Radar name="Current" dataKey="A" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.2} />
+                      <Radar name="Target" dataKey="B" stroke="#10B981" fill="#10B981" fillOpacity={0.1} />
+                    </RadarChart>
+                  </ResponsiveContainer>
+                );
+              }}
+            </ChartWrapper>
           </CardContent>
         </Card>
 
@@ -220,16 +212,23 @@ export const PerformanceMetrics: React.FC<PerformanceMetricsProps> = ({
             <CardTitle className="text-lg">Weekly Trends</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={200}>
-              <LineChart data={weeklyTrends}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="week" />
-                <YAxis />
-                <Tooltip />
-                <Line type="monotone" dataKey="completions" stroke="#3B82F6" name="Completions" />
-                <Line type="monotone" dataKey="efficiency" stroke="#10B981" name="Efficiency" />
-              </LineChart>
-            </ResponsiveContainer>
+            <ChartWrapper>
+              {(Recharts) => {
+                const { ResponsiveContainer, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line } = Recharts;
+                return (
+                  <ResponsiveContainer width="100%" height={200}>
+                    <LineChart data={weeklyTrends}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="week" />
+                      <YAxis />
+                      <Tooltip />
+                      <Line type="monotone" dataKey="completions" stroke="#3B82F6" name="Completions" />
+                      <Line type="monotone" dataKey="efficiency" stroke="#10B981" name="Efficiency" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                );
+              }}
+            </ChartWrapper>
           </CardContent>
         </Card>
       </div>
@@ -290,16 +289,23 @@ export const PerformanceMetrics: React.FC<PerformanceMetricsProps> = ({
             <CardTitle>Driver Efficiency Comparison</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={driverPerformance}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="completionRate" fill="#3B82F6" name="Completion Rate %" />
-                <Bar dataKey="efficiency" fill="#10B981" name="Efficiency %" />
-              </BarChart>
-            </ResponsiveContainer>
+            <ChartWrapper>
+              {(Recharts) => {
+                const { ResponsiveContainer, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Bar } = Recharts;
+                return (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={driverPerformance}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Bar dataKey="completionRate" fill="#3B82F6" name="Completion Rate %" />
+                      <Bar dataKey="efficiency" fill="#10B981" name="Efficiency %" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                );
+              }}
+            </ChartWrapper>
           </CardContent>
         </Card>
 

@@ -25,7 +25,6 @@ import {
   CreditCard,
   FileText,
   Users,
-  HelpCircle,
   Phone,
   CheckCircle,
   Clock,
@@ -47,7 +46,7 @@ const TABS = [
   { id: 'billing', label: 'Billing', icon: CreditCard },
   { id: 'quotes', label: 'Quotes', icon: FileText },
   { id: 'users', label: 'Users', icon: Users },
-  { id: 'support', label: 'Support', icon: HelpCircle },
+  { id: 'support', label: 'Support', icon: AlertCircle },
 ];
 
 interface CustomerPortalProps {
