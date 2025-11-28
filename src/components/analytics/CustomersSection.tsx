@@ -3,7 +3,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { StatCard } from '@/components/ui/StatCard';
-import { UserPlus, Users, Heart as HeartIcon, DollarSign } from 'lucide-react';
+import { UserPlus, Users, DollarSign } from 'lucide-react';
 import { format, subDays } from 'date-fns';
 import type { CustomerAnalytics } from '@/types/analytics';
 import { CohortAnalysisChart } from './CohortAnalysisChart';
@@ -133,7 +133,7 @@ export const CustomersSection: React.FC<CustomersSectionProps> = ({ dateRange })
         <StatCard
           title="Retention Rate"
           value={`${(customers?.retention_rate || 0).toFixed(1)}%`}
-          icon={Heart}
+          icon={Users}
           gradientFrom="#f59e0b"
           gradientTo="#d97706"
           iconBg="#FF9933"

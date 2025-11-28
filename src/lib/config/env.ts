@@ -26,3 +26,38 @@ export const getMapboxToken = (): string => clientEnv.MAPBOX_TOKEN;
 
 // App URL helper
 export const getAppUrl = (): string => clientEnv.APP_URL || 'http://localhost:8080';
+
+// Domain helpers for backwards compatibility with domains.ts
+export function getAppRootUrl(): string {
+  if (clientEnv.APP_URL) {
+    return clientEnv.APP_URL;
+  }
+  if (typeof window !== 'undefined') {
+    return `${window.location.protocol}//${window.location.host}`;
+  }
+  return 'https://app.portaprosoftware.com';
+}
+
+export function getRootDomain(): string {
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    const parts = hostname.split('.');
+    if (parts.length >= 2) {
+      return parts.slice(-2).join('.');
+    }
+    return hostname;
+  }
+  return 'portaprosoftware.com';
+}
+
+export function getMarketingUrl(): string {
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    const parts = hostname.split('.');
+    if (parts.length >= 2) {
+      const domain = parts.slice(-2).join('.');
+      return `https://${domain}`;
+    }
+  }
+  return 'https://portaprosoftware.com';
+}
