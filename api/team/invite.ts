@@ -89,7 +89,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       { clerkClient, verifyClerkSessionToken },
     ] = await Promise.all([
       import("./organization-loader.js"),
-      import("../../src/lib/config/env"),
+      import(process.cwd() + "/src/lib/config/env"),
       import("../../src/lib/config/domains"),
       import("../../src/lib/db/tenant"),
       import("../../src/lib/authz/requireRole"),
