@@ -5,7 +5,7 @@
 
 import { formatInTimeZone, toZonedTime } from 'date-fns-tz';
 import { isSameDay, differenceInDays, addDays } from 'date-fns';
-import { getCompanyTimezone } from '@/lib/timezoneUtils';
+import { getCompanyTimezone } from '@/lib/timezoneUtils.js';
 
 /**
  * Formats a Date object to YYYY-MM-DD string using local date components

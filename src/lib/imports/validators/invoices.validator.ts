@@ -1,4 +1,4 @@
-import { createValidator, ForeignKeyRule } from "./baseValidator";
+import { createValidator, ForeignKeyRule } from "./baseValidator.js";
 
 export type InvoiceImport = {
   id?: string;

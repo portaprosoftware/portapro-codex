@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import type { Database } from "../../src/integrations/supabase/types";
+import type { Database } from "../../src/integrations/supabase/types.js";
 
 const loadEnv = () => {
   const { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, VITE_SUPABASE_URL, VITE_SUPABASE_SERVICE_ROLE_KEY } = process.env;

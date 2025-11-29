@@ -1,16 +1,16 @@
 import { describe, expect, it, vi, afterEach } from "vitest";
-import { AuthorizationError, requireRole as originalRequireRole } from "@/lib/authz/requireRole";
+import { AuthorizationError, requireRole as originalRequireRole } from "@/lib/authz/requireRole.js";
 import {
   createCustomer,
   deleteCustomer,
   updateCustomer,
-} from "./tenantMutations";
+} from "./tenantMutations.js";
 
-vi.mock("@/lib/audit/logger", () => ({
+vi.mock("@/lib/audit/logger.js", () => ({
   logAction: vi.fn().mockResolvedValue(undefined),
 }));
 
-vi.mock("@/lib/audit/securityLogger", () => ({
+vi.mock("@/lib/audit/securityLogger.js", () => ({
   logSecurityEvent: vi.fn().mockResolvedValue(undefined),
 }));
 

@@ -1,4 +1,4 @@
-import { getAppRootUrl, getMarketingUrl, getRootDomain } from './env';
+import { getAppRootUrl, getMarketingUrl, getRootDomain } from './env.js';
 
 export { getRootDomain, getMarketingUrl, getAppRootUrl };
 

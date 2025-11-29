@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
-import type { Database } from '@/integrations/supabase/types';
-import { loadServerEnv } from '@/lib/config/env';
-import type { JobResult } from './types';
+import type { Database } from '@/integrations/supabase/types.js';
+import { loadServerEnv } from '@/lib/config/env.js';
+import type { JobResult } from './types.js';
 
 const memoryRuns = new Set<string>();
 

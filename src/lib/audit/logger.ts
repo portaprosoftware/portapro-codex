@@ -1,9 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@/integrations/supabase/types";
-import { loadServerEnv } from "@/lib/config/env";
-import { buildAuditContext } from "./context";
-import type { AuditActionPayload } from "./types";
+import type { Database } from "@/integrations/supabase/types.js";
+import { loadServerEnv } from "@/lib/config/env.js";
+import { buildAuditContext } from "./context.js";
+import type { AuditActionPayload } from "./types.js";
 
 const getAuditClient = (client?: SupabaseClient<Database>) => {
   if (client) return client;

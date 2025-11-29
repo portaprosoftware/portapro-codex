@@ -1,4 +1,4 @@
-import { ImportFieldError } from "../errors";
+import { ImportFieldError } from "../errors.js";
 
 const UUID_REGEX = /^[0-9a-fA-F-]{36}$/;
 const PROHIBITED_PREFIXES = ["=", "+", "-", "@"]; 

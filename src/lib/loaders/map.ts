@@ -3,7 +3,7 @@
  * Prevents mapbox-gl from landing in main bundle
  */
 
-import { getMapboxToken } from '@/env.client';
+import { getMapboxToken } from '@/env.client.js';
 
 export async function loadMapboxLibs() {
   const [mapboxMod] = await Promise.all([

@@ -1,4 +1,4 @@
-import { exportTenantRows, ExportOptions } from "./baseExport";
+import { exportTenantRows, ExportOptions } from "./baseExport.js";
 
 const INVOICE_FIELDS = [
   "id",

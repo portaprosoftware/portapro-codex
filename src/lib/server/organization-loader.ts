@@ -1,10 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { getMarketingUrl } from '@/lib/config/domains';
-import { loadServerEnv } from '@/lib/config/env';
-import type { Database } from '@/integrations/supabase/types';
-import { setOrgContext } from '@/lib/orgContext';
+import { getMarketingUrl } from '@/lib/config/domains.js';
+import { loadServerEnv } from '@/lib/config/env.js';
+import type { Database } from '@/integrations/supabase/types.js';
+import { setOrgContext } from '@/lib/orgContext.js';
 
 const MARKETING_SITE = getMarketingUrl();
 const serverEnv = loadServerEnv();

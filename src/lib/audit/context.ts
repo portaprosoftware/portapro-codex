@@ -1,5 +1,5 @@
-import { resolveOrgId } from "../orgContext";
-import type { AuditActionPayload, AuditContext, AuditRequestLike } from "./types";
+import { resolveOrgId } from "../orgContext.js";
+import type { AuditActionPayload, AuditContext, AuditRequestLike } from "./types.js";
 
 const normalizeHeader = (request?: Request | AuditRequestLike | null, key?: string) => {
   if (!request || !key) return null;

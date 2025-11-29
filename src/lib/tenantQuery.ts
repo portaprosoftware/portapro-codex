@@ -1,7 +1,7 @@
-import { supabase } from '@/integrations/supabase/client';
-import { useOrganizationContext } from '@/contexts/OrganizationContext';
+import { supabase } from '@/integrations/supabase/client.js';
+import { useOrganizationContext } from '@/contexts/OrganizationContext.js';
 import type { PostgrestFilterBuilder } from '@supabase/postgrest-js';
-import type { Database } from '@/integrations/supabase/types';
+import type { Database } from '@/integrations/supabase/types.js';
 
 export const useTenantId = () => {
   const { organization } = useOrganizationContext();

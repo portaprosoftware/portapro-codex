@@ -1,7 +1,7 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@/integrations/supabase/types";
-import { tenantTable, requireOrgId } from "@/lib/db/tenant";
-import { loadServerEnv } from "@/lib/config/env";
+import type { Database } from "@/integrations/supabase/types.js";
+import { tenantTable, requireOrgId } from "@/lib/db/tenant.js";
+import { loadServerEnv } from "@/lib/config/env.js";
 
 const BOM = "\ufeff";
 

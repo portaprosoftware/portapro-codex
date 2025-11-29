@@ -1,4 +1,4 @@
-import { createValidator } from "./baseValidator";
+import { createValidator } from "./baseValidator.js";
 
 export type CustomerImport = {
   id?: string;

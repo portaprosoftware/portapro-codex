@@ -1,10 +1,10 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@/integrations/supabase/types";
-import { loadServerEnv } from "@/lib/config/env";
-import { requireRole } from "@/lib/authz/requireRole";
-import { tenantTable, requireOrgId } from "@/lib/db/tenant";
-import { logAction } from "@/lib/audit/logger";
-import { logSecurityEvent } from "@/lib/audit/securityLogger";
+import type { Database } from "@/integrations/supabase/types.js";
+import { loadServerEnv } from "@/lib/config/env.js";
+import { requireRole } from "@/lib/authz/requireRole.js";
+import { tenantTable, requireOrgId } from "@/lib/db/tenant.js";
+import { logAction } from "@/lib/audit/logger.js";
+import { logSecurityEvent } from "@/lib/audit/securityLogger.js";
 
 export type MutationContext = {
   userId?: string | null;

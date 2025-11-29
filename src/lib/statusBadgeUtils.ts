@@ -1,5 +1,5 @@
 // Centralized utility for getting status badge variants
-import { JobStatus } from '@/types';
+import { JobStatus } from '@/types.js';
 
 export type StatusBadgeVariant = 
   | 'pending' 
