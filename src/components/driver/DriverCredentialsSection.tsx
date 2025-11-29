@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import * as z from 'zod';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,7 +19,7 @@ import { Separator } from '@/components/ui/separator';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Loader2, Edit, Calendar, AlertTriangle, HelpCircle, CreditCard, FileText } from 'lucide-react';
+import { Loader2, Edit, Calendar, AlertTriangle, Info, CreditCard, FileText } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 
@@ -264,7 +264,7 @@ export function DriverCredentialsSection({ driverId }: DriverCredentialsSectionP
                           <Popover>
                             <PopoverTrigger asChild>
                               <Button variant="ghost" size="sm" className="h-4 w-4 p-0">
-                                <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                                <Info className="h-4 w-4 text-muted-foreground" />
                               </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-80" side="bottom" align="start">
@@ -315,7 +315,7 @@ export function DriverCredentialsSection({ driverId }: DriverCredentialsSectionP
                               <Popover>
                                 <PopoverTrigger asChild>
                                   <Button variant="ghost" size="sm" className="h-4 w-4 p-0">
-                                    <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                                  <Info className="h-4 w-4 text-muted-foreground" />
                                   </Button>
                                 </PopoverTrigger>
                                 <PopoverContent className="w-80" side="bottom" align="start">
@@ -462,7 +462,7 @@ export function DriverCredentialsSection({ driverId }: DriverCredentialsSectionP
                           <Popover>
                             <PopoverTrigger asChild>
                               <Button variant="ghost" size="sm" className="h-4 w-4 p-0">
-                                <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                                <Info className="h-4 w-4 text-muted-foreground" />
                               </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-80" side="bottom" align="start">
@@ -536,7 +536,7 @@ export function DriverCredentialsSection({ driverId }: DriverCredentialsSectionP
                           <Popover>
                             <PopoverTrigger asChild>
                               <Button variant="ghost" size="sm" className="h-4 w-4 p-0">
-                                <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                                <Info className="h-4 w-4 text-muted-foreground" />
                               </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-80" side="bottom" align="start">

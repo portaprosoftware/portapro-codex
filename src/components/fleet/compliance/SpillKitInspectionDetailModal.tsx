@@ -24,7 +24,7 @@ import {
   ThermometerSun,
   ThermometerSnowflake,
   Droplets,
-  HelpCircle,
+  Info,
   CloudDrizzle
 } from 'lucide-react';
 import { WeatherSelectionModal } from './WeatherSelectionModal';
@@ -238,14 +238,14 @@ export function SpillKitInspectionDetailModal({
     const normalizedCondition = condition.toLowerCase().trim();
     // Check if it's "other: description" format
     if (normalizedCondition.startsWith("other")) {
-      return <HelpCircle className="h-4 w-4" />;
+      return <Info className="h-4 w-4" />;
     }
     // Check if it has intensity (e.g., "rainy - light")
     if (normalizedCondition.includes(" - ")) {
       const baseCondition = normalizedCondition.split(" - ")[0].trim();
-      return iconMap[baseCondition] || <HelpCircle className="h-4 w-4" />;
+      return iconMap[baseCondition] || <Info className="h-4 w-4" />;
     }
-    return iconMap[normalizedCondition] || <HelpCircle className="h-4 w-4" />;
+    return iconMap[normalizedCondition] || <Info className="h-4 w-4" />;
   };
 
   // Format weather condition text for display

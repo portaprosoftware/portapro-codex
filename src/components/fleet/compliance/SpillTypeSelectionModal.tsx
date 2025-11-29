@@ -13,7 +13,7 @@ import {
   Battery,
   Utensils,
   Waves,
-  HelpCircle,
+  Info,
   Search,
   Check
 } from "lucide-react";
@@ -102,7 +102,7 @@ const spillCategories: SpillCategory[] = [
   {
     id: "other-unknown",
     label: "Other / Unknown",
-    icon: <HelpCircle className="h-5 w-5" />,
+    icon: <Info className="h-5 w-5" />,
     options: [
       { value: "mixed-spill", label: "Mixed Spill (multiple substances)", classification: "Various", color: "text-gray-600" },
       { value: "unknown-substance", label: "Unknown Substance", classification: "Unknown", color: "text-gray-700" },

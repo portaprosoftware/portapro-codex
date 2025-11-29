@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import * as z from 'zod';
 import { supabase } from '@/integrations/supabase/client';
 import { tenantTable } from '@/lib/db/tenant';
 import { useTenantId } from '@/lib/tenantQuery';
