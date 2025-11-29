@@ -17,7 +17,7 @@ import {
   ThermometerSun, 
   ThermometerSnowflake, 
   CloudLightning,
-  HelpCircle,
+  Info,
   Search,
   Check,
   CloudDrizzle
@@ -84,9 +84,9 @@ const weatherCategories: WeatherCategory[] = [
   {
     id: "other",
     label: "Other",
-    icon: <HelpCircle className="h-5 w-5" />,
+    icon: <Info className="h-5 w-5" />,
     options: [
-      { value: "other", label: "Other", icon: <HelpCircle className="h-5 w-5" />, color: "text-gray-600" },
+      { value: "other", label: "Other", icon: <Info className="h-5 w-5" />, color: "text-gray-600" },
     ]
   }
 ];

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, FileText, Hash, StickyNote, Download, ExternalLink, Loader2 } from "lucide-react";
+import { Calendar, FileText, Tag, StickyNote, Download, ExternalLink, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@clerk/clerk-react";
@@ -274,7 +274,7 @@ export function DocumentViewModal({ isOpen, onClose, document, categoryInfo }: D
 
               {document.document_number && (
                 <div className="flex items-start gap-2">
-                  <Hash className="w-4 h-4 text-gray-500 mt-0.5" />
+                  <Tag className="w-4 h-4 text-gray-500 mt-0.5" />
                   <div>
                     <span className="text-gray-600 block">Document Number</span>
                     <p className="font-medium">{document.document_number}</p>

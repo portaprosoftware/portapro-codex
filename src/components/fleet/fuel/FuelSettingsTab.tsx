@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
-import { Save, Plus, Edit, Trash2, MapPin, Loader2, Locate, ChevronDown } from 'lucide-react';
+import { Save, Plus, Edit, Trash2, MapPin, Loader2, Navigation, ChevronDown } from 'lucide-react';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -1045,7 +1045,7 @@ export const FuelSettingsTab: React.FC = () => {
                     </>
                   ) : (
                     <>
-                      <Locate className="h-4 w-4" />
+                      <Navigation className="h-4 w-4" />
                       Use Current Location
                     </>
                   )}

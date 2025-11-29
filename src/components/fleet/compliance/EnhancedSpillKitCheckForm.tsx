@@ -24,7 +24,7 @@ import { WeatherSelectionModal } from "./WeatherSelectionModal";
 import { format, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useGeolocation } from "@/hooks/useGeolocation";
-import { Cloud, Loader2, HelpCircle } from "lucide-react";
+import { Cloud, Loader2, Info } from "lucide-react";
 import { useSpillKitOffline } from "@/hooks/useSpillKitOffline";
 import { useOrganizationId } from "@/hooks/useOrganizationId";
 
@@ -726,7 +726,7 @@ export const EnhancedSpillKitCheckForm: React.FC<Props> = ({ onSaved, onCancel }
                 <Popover>
                   <PopoverTrigger asChild>
                     <button type="button" className="text-muted-foreground hover:text-foreground transition-colors">
-                      <HelpCircle className="h-4 w-4" />
+                      <Info className="h-4 w-4" />
                     </button>
                   </PopoverTrigger>
                   <PopoverContent className="w-80">

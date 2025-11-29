@@ -156,33 +156,40 @@ export const WorkloadInsightsChart: React.FC<WorkloadInsightsChartProps> = ({ da
       {(insights.jobsWithSpecificTimes || 0) > 0 ? (
         <div className="h-64">
           <h4 className="text-sm font-medium text-gray-700 mb-3">Hourly Job Distribution</h4>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={hourlyDistribution}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis 
-                dataKey="hour" 
-                tick={{ fontSize: 11 }}
-              />
-              <YAxis tick={{ fontSize: 11 }} />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: 'white', 
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '8px'
-                }}
-                formatter={(value: any, name: string) => [
-                  value,
-                  name === 'jobs' ? 'Jobs' : 'Jobs'
-                ]}
-              />
-              <Bar 
-                dataKey="jobs" 
-                fill="#3b82f6" 
-                radius={[4, 4, 0, 0]}
-                name="Jobs"
-              />
-            </BarChart>
-          </ResponsiveContainer>
+          <ChartWrapper>
+            {(Recharts) => {
+              const { ResponsiveContainer, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Bar } = Recharts;
+              return (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={hourlyDistribution}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis 
+                      dataKey="hour" 
+                      tick={{ fontSize: 11 }}
+                    />
+                    <YAxis tick={{ fontSize: 11 }} />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'white', 
+                        border: '1px solid #e5e7eb',
+                        borderRadius: '8px'
+                      }}
+                      formatter={(value: any, name: string) => [
+                        value,
+                        name === 'jobs' ? 'Jobs' : 'Jobs'
+                      ]}
+                    />
+                    <Bar 
+                      dataKey="jobs" 
+                      fill="#3b82f6" 
+                      radius={[4, 4, 0, 0]}
+                      name="Jobs"
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              );
+            }}
+          </ChartWrapper>
         </div>
       ) : (
         <div className="h-32 flex items-center justify-center bg-gray-50 rounded-lg">

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Plus, Kanban, List, Calendar, Eye, FileDown, FileText, BarChart3 } from "lucide-react";
+import { Plus, Grid3x3, List, Calendar, Eye, FileDown, FileText, BarChart3 } from "lucide-react";
 import { WorkOrderMetrics } from "./WorkOrderMetrics";
 import { WorkOrderFilters } from "./WorkOrderFilters";
 import { WorkOrderKanbanBoard } from "./WorkOrderKanbanBoard";
@@ -521,7 +521,7 @@ const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
         <Tabs value={view} onValueChange={(value) => setView(value as any)}>
           <TabsList>
             <TabsTrigger value="board" className="flex items-center gap-2">
-              <Kanban className="h-4 w-4" />
+              <Grid3x3 className="h-4 w-4" />
               Board
             </TabsTrigger>
             <TabsTrigger value="list" className="flex items-center gap-2">

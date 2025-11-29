@@ -1,6 +1,6 @@
 import React from 'react';
 import { format } from 'date-fns';
-import { AlertTriangle, CheckCircle, GripVertical, MapPin, Clock } from 'lucide-react';
+import { AlertTriangle, CheckCircle, Move, MapPin, Clock } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -93,7 +93,7 @@ export const TimelineJobCard: React.FC<TimelineJobCardProps> = ({
           className="absolute top-1 right-1 cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded opacity-80 hover:opacity-100 transition-all border border-transparent hover:border-gray-300"
           title="Drag to move job"
         >
-          <GripVertical className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+          <Move className="h-4 w-4 text-muted-foreground hover:text-foreground" />
         </div>
       )}
       
