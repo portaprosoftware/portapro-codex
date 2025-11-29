@@ -5,7 +5,7 @@ import type {
 } from "http";
 import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
-import { loadServerEnv } from "../../src/lib/config/server-env.js";
+import { loadServerEnv } from "@/lib/config/server-env.js";
 import type { Database } from "../../src/integrations/supabase/types.js";
 
 const requestSchema = z.object({
@@ -96,9 +96,9 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     ]);
 
     const createServiceRoleClient = () => {
-      const env = loadServerEnv();
+      const { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } = loadServerEnv();
 
-      return createClient<Database>(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
+      return createClient<Database>(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
         auth: {
           autoRefreshToken: false,
           persistSession: false,
