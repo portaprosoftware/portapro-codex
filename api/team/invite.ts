@@ -1,12 +1,11 @@
-import type { IncomingHttpHeaders, IncomingMessage, ServerResponse } from "http";
+import type {
+  IncomingHttpHeaders,
+  IncomingMessage,
+  ServerResponse,
+} from "http";
 import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
-import { loadOrganizationFromRequest } from "./organization-loader.js";
-import { loadServerEnv } from "../src/lib/config/env";
-import { buildTenantUrl, getAppRootUrl } from "../src/lib/config/domains";
-import { tenantTable } from "../src/lib/db/tenant";
-// Removed Database + requireRole/AuthorizationError to avoid TS / runtime issues
-import { clerkClient, verifyClerkSessionToken } from "../src/lib/server/clerkClient";
+import type { Database } from "../src/integrations/supabase/types";
 
 const requestSchema = z.object({
   email: z.string().email(),
@@ -19,25 +18,12 @@ const requestSchema = z.object({
   redirectBase: z.string().url().optional(),
 });
 
-const createServiceRoleClient = () => {
-  const env = loadServerEnv();
-
-  // Drop the generic here to avoid "Cannot use namespace 'Database' as a type"
-  return createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  });
-};
-
 type ApiRequest = IncomingMessage & {
   body?: unknown;
   method?: string;
   headers: IncomingHttpHeaders;
 };
 
-// NOTE: At runtime this is just a plain ServerResponse from Node/Vercel.
 type ApiResponse = ServerResponse;
 
 const sendJson = (res: ApiResponse, status: number, body: unknown) => {
@@ -54,6 +40,7 @@ const formatError = (
   status = 400,
   details?: unknown
 ) => {
+  console.error("[invite] error:", message, details);
   sendJson(res, status, { success: false, error: message, details });
 };
 
@@ -91,6 +78,35 @@ const parseJsonBody = async (req: ApiRequest): Promise<unknown> => {
 
 export default async function handler(req: ApiRequest, res: ApiResponse) {
   try {
+    // 🔁 Lazy-load everything that can possibly throw at module load time,
+    // so any failure is caught and turned into JSON instead of Vercel HTML.
+    const [
+      { loadOrganizationFromRequest },
+      { loadServerEnv },
+      { buildTenantUrl, getAppRootUrl },
+      { tenantTable },
+      { AuthorizationError, requireRole },
+      { clerkClient, verifyClerkSessionToken },
+    ] = await Promise.all([
+      import("./organization-loader.js"),
+      import("../src/lib/config/env"),
+      import("../src/lib/config/domains"),
+      import("../src/lib/db/tenant"),
+      import("../src/lib/authz/requireRole"),
+      import("../src/lib/server/clerkClient"),
+    ]);
+
+    const createServiceRoleClient = () => {
+      const env = loadServerEnv();
+
+      return createClient<Database>(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
+        },
+      });
+    };
+
     if (req.method !== "POST") {
       res.setHeader("Allow", "POST");
       return formatError(res, "Method not allowed", 405);
@@ -132,9 +148,8 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     }
 
     const payload = parsedBody.data;
-
-    // Resolve org from slug (subdomain)
     let org;
+
     try {
       org = await loadOrganizationFromRequest(payload.organizationSlug ?? null);
     } catch (error) {
@@ -148,33 +163,19 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       return formatError(res, "Organization mismatch", 403);
     }
 
-    // Look up acting profile in this org
-    const { data: actingProfile, error: actingProfileError } = await supabase
+    const { data: actingProfile } = await supabase
       .from("profiles")
       .select("id")
       .eq("clerk_user_id", userId)
       .eq("organization_id", org.id)
       .maybeSingle();
 
-    if (actingProfileError) {
-      return formatError(res, "Failed to resolve acting profile", 500, actingProfileError.message);
-    }
-
-    // 🔐 Simple admin check instead of requireRole()
-    const { data: roleRow, error: roleCheckError } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("organization_id", org.id)
-      .eq("clerk_user_id", userId)
-      .maybeSingle();
-
-    if (roleCheckError) {
-      return formatError(res, "Failed to check user role", 500, roleCheckError.message);
-    }
-
-    if (!roleRow || roleRow.role !== "admin") {
-      return formatError(res, "Admin access required to invite users", 403);
-    }
+    await requireRole({
+      userId: actingProfile?.id ?? userId,
+      orgId: org.id,
+      requiredRoles: ["admin"],
+      supabase,
+    });
 
     const redirectBase = payload.redirectBase ?? buildTenantUrl(org.subdomain);
     const redirectUrl = `${redirectBase}/sign-in`;
@@ -269,11 +270,16 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
         },
       });
     } catch (error) {
+      if (error instanceof AuthorizationError) {
+        return formatError(res, error.message, error.status);
+      }
+
       const message = error instanceof Error ? error.message : "Failed to invite user";
 
-      // Cleanup Clerk artifacts on failure
+      // Best-effort cleanup
       if (createdUserId) {
         try {
+          const { clerkClient } = await import("../src/lib/server/clerkClient");
           await clerkClient.users.deleteUser(createdUserId);
         } catch (cleanupError) {
           console.error("Failed to clean up Clerk user", cleanupError);
@@ -282,6 +288,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
 
       if (invitationId) {
         try {
+          const { clerkClient } = await import("../src/lib/server/clerkClient");
           await clerkClient.invitations.revokeInvitation(invitationId);
         } catch (cleanupError) {
           console.error("Failed to clean up Clerk invitation", cleanupError);
@@ -291,7 +298,9 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       return formatError(res, message, 500);
     }
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unexpected server error";
+    console.error("[invite] UNCAUGHT handler error:", error);
+    const message =
+      error instanceof Error ? error.message : "Unexpected server error";
     return formatError(res, message, 500);
   }
 }
