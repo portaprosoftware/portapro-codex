@@ -14,11 +14,13 @@ import {
 } from '@/utils/indexedDB';
 import { uploadWorkOrderPhoto } from '@/utils/photoUpload';
 import { useOnlineStatus } from './useOnlineStatus';
+import { useOrganizationId } from './useOrganizationId';
 
 const MAX_RETRIES = 3;
 
 export function useOfflineSync() {
   const { isOnline, wasOffline } = useOnlineStatus();
+  const { orgId, isReady } = useOrganizationId();
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncProgress, setSyncProgress] = useState({ current: 0, total: 0 });
   const [stats, setStats] = useState({
@@ -34,7 +36,7 @@ export function useOfflineSync() {
   const updateStats = useCallback(async () => {
     const newStats = await getCacheStats();
     setStats(newStats);
-  }, []);
+  }, [orgId]);
 
   useEffect(() => {
     updateStats();
@@ -43,6 +45,8 @@ export function useOfflineSync() {
   }, [updateStats]);
 
   const syncPhotos = useCallback(async () => {
+    if (!orgId) return 0;
+
     const unsyncedPhotos = await getUnsyncedPhotos();
     if (unsyncedPhotos.length === 0) return 0;
 
@@ -54,6 +58,7 @@ export function useOfflineSync() {
           photoType: photo.type,
           caption: photo.caption,
           uploadedBy: photo.uploadedBy,
+          organizationId: orgId,
         });
 
         if (result.success) {
@@ -66,9 +71,11 @@ export function useOfflineSync() {
     }
 
     return synced;
-  }, []);
+  }, [orgId]);
 
   const syncQueuedOperations = useCallback(async () => {
+    if (!orgId) return 0;
+
     const operations = await getQueuedOperations();
     if (operations.length === 0) return 0;
 
@@ -81,11 +88,12 @@ export function useOfflineSync() {
             const { workOrderId, status } = operation.payload;
             const { error } = await supabase
               .from('work_orders')
-              .update({ 
+              .update({
                 status,
                 updated_at: new Date().toISOString()
               })
-              .eq('id', workOrderId);
+              .eq('id', workOrderId)
+              .eq('organization_id', orgId!);
 
             if (error) throw error;
             break;
@@ -96,7 +104,8 @@ export function useOfflineSync() {
             const { error } = await supabase
               .from('work_orders')
               .update(updates)
-              .eq('id', workOrderId);
+              .eq('id', workOrderId)
+              .eq('organization_id', orgId!);
 
             if (error) throw error;
             break;
@@ -104,7 +113,10 @@ export function useOfflineSync() {
 
           case 'photo_upload': {
             const { dataUrl, options } = operation.payload;
-            const result = await uploadWorkOrderPhoto(dataUrl, options);
+            const result = await uploadWorkOrderPhoto(dataUrl, {
+              ...options,
+              organizationId: orgId,
+            });
             if (!result.success) throw new Error(result.error);
             break;
           }
@@ -126,10 +138,10 @@ export function useOfflineSync() {
     }
 
     return processed;
-  }, []);
+  }, [orgId]);
 
   const performSync = useCallback(async () => {
-    if (!isOnline || isSyncing) return;
+    if (!isOnline || isSyncing || !isReady || !orgId) return;
 
     setIsSyncing(true);
 
@@ -184,7 +196,7 @@ export function useOfflineSync() {
       setIsSyncing(false);
       setSyncProgress({ current: 0, total: 0 });
     }
-  }, [isOnline, isSyncing, syncPhotos, syncQueuedOperations, queryClient, toast, updateStats]);
+  }, [isOnline, isSyncing, isReady, orgId, syncPhotos, syncQueuedOperations, queryClient, toast, updateStats]);
 
   // Auto-sync when coming back online
   useEffect(() => {

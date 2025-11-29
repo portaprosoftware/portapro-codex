@@ -11,12 +11,14 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Camera, CheckCircle2, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { uploadWorkOrderPhoto, deleteWorkOrderPhoto, fetchWorkOrderPhotos } from '@/utils/photoUpload';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 export const TechnicianPhotoCapture: React.FC = () => {
   const { workOrderId } = useParams<{ workOrderId: string }>();
   const { user } = useUser();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { orgId, isReady } = useOrganizationId();
 
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [photoType, setPhotoType] = useState<'before' | 'after' | 'progress' | 'issue'>('progress');
@@ -36,21 +38,21 @@ export const TechnicianPhotoCapture: React.FC = () => {
       if (error) throw error;
       return data;
     },
-    enabled: !!workOrderId,
+    enabled: !!workOrderId && !!orgId && isReady,
   });
 
   // Fetch photos
   const { data: photos, refetch: refetchPhotos, isLoading: isLoadingPhotos } = useQuery({
     queryKey: ['work-order-photos', workOrderId],
     queryFn: async () => {
-      if (!workOrderId) return [];
-      return await fetchWorkOrderPhotos(workOrderId);
+      if (!workOrderId || !orgId) return [];
+      return await fetchWorkOrderPhotos(workOrderId, orgId);
     },
-    enabled: !!workOrderId,
+    enabled: !!workOrderId && !!orgId && isReady,
   });
 
   const handleCapturePhoto = async (photoDataUrl: string) => {
-    if (!workOrderId) return;
+    if (!workOrderId || !orgId) return;
 
     setIsUploading(true);
     setIsCameraOpen(false);
@@ -60,6 +62,7 @@ export const TechnicianPhotoCapture: React.FC = () => {
         workOrderId,
         photoType,
         uploadedBy: user?.id,
+        organizationId: orgId,
       });
 
       if (result.success) {
@@ -88,7 +91,9 @@ export const TechnicianPhotoCapture: React.FC = () => {
   };
 
   const handleDeletePhoto = async (photoId: string) => {
-    const success = await deleteWorkOrderPhoto(photoId);
+    if (!orgId) return;
+
+    const success = await deleteWorkOrderPhoto(photoId, orgId);
     
     if (success) {
       toast({

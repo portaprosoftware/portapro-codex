@@ -26,6 +26,7 @@ import { PhotoGallery } from '@/components/technician/PhotoGallery';
 import { MobileCamera } from '@/components/technician/MobileCamera';
 import { uploadWorkOrderPhoto, fetchWorkOrderPhotos, deleteWorkOrderPhoto } from '@/utils/photoUpload';
 import { useUser } from '@clerk/clerk-react';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 interface Task {
   id: string;
@@ -52,6 +53,7 @@ export default function TechnicianWorkOrderDetail() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { user } = useUser();
+  const { orgId, isReady } = useOrganizationId();
   
   const [showCamera, setShowCamera] = useState(false);
   const [photoType, setPhotoType] = useState<'before' | 'after' | 'progress' | 'issue'>('progress');
@@ -64,10 +66,12 @@ export default function TechnicianWorkOrderDetail() {
   const { data: workOrder, isLoading } = useQuery({
     queryKey: ['work-order-detail', id],
     queryFn: async () => {
+      if (!id || !orgId) return null;
       const { data, error } = await supabase
         .from('work_orders')
         .select('*')
         .eq('id', id)
+        .eq('organization_id', orgId)
         .single();
       
       if (error) throw error;
@@ -89,23 +93,26 @@ export default function TechnicianWorkOrderDetail() {
       
       return data;
     },
-    enabled: !!id
+    enabled: !!id && !!orgId && isReady
   });
 
   // Fetch photos
   const { data: photos = [], refetch: refetchPhotos } = useQuery({
     queryKey: ['work-order-photos', id],
-    queryFn: () => fetchWorkOrderPhotos(id!),
-    enabled: !!id
+    queryFn: () => fetchWorkOrderPhotos(id!, orgId!),
+    enabled: !!id && !!orgId && isReady
   });
 
   // Upload photo mutation
   const uploadMutation = useMutation({
     mutationFn: async (photoDataUrl: string) => {
+      if (!orgId) throw new Error('Organization ID required');
+
       return uploadWorkOrderPhoto(photoDataUrl, {
         workOrderId: id!,
         photoType,
-        uploadedBy: user?.id
+        uploadedBy: user?.id,
+        organizationId: orgId,
       });
     },
     onSuccess: (result) => {
@@ -128,7 +135,7 @@ export default function TechnicianWorkOrderDetail() {
 
   // Delete photo mutation
   const deleteMutation = useMutation({
-    mutationFn: deleteWorkOrderPhoto,
+    mutationFn: (photoId: string) => deleteWorkOrderPhoto(photoId, orgId!),
     onSuccess: () => {
       toast({
         title: 'Photo deleted',
