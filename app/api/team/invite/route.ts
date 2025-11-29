@@ -52,7 +52,14 @@ export async function POST(req: Request) {
     return formatError(message, 401);
   }
 
-  const parsedBody = requestSchema.safeParse(await req.json());
+  let json: unknown;
+  try {
+    json = await req.json();
+  } catch {
+    return formatError("Invalid JSON body", 400);
+  }
+
+  const parsedBody = requestSchema.safeParse(json);
 
   if (!parsedBody.success) {
     return formatError("Invalid request payload", 400, parsedBody.error.flatten().fieldErrors);
@@ -115,6 +122,7 @@ export async function POST(req: Request) {
         last_name: payload.lastName,
         email: payload.email,
         phone: payload.phone ?? null,
+        organization_id: org.id,
         is_active: true,
         status: "invited",
         status_effective_date: new Date().toISOString(),
@@ -129,6 +137,7 @@ export async function POST(req: Request) {
     const { error: roleError } = await tenantTable(supabase, org.id, "user_roles").insert({
       user_id: profile?.id ?? createdUser.id,
       clerk_user_id: createdUser.id,
+      organization_id: org.id,
       role: payload.role,
     });
 
@@ -147,6 +156,7 @@ export async function POST(req: Request) {
       invitation_type: "clerk_invitation",
       invited_by: userId,
       clerk_user_id: createdUser.id,
+      organization_id: org.id,
       sent_at: new Date().toISOString(),
       metadata: {
         redirect_url: redirectUrl,
