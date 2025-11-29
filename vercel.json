@@ -1,32 +1,15 @@
 {
-  "buildCommand": "npm run build",
-  "devCommand": "npm run dev",
-  "framework": "vite",
-  "installCommand": "npm ci",
-  "outputDirectory": "dist",
-  "env": {
-    "NODE_OPTIONS": "--max_old_space_size=4096"
-  },
-  "build": {
-    "env": {
-      "NODE_OPTIONS": "--max_old_space_size=4096"
+  "functions": {
+    "api/**/*.{ts,js}": {
+      "runtime": "nodejs18.x",
+      "memory": 1024,
+      "maxDuration": 10
     }
   },
-  "headers": [
+  "routes": [
     {
-      "source": "/assets/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
     }
   ]
 }
