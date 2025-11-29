@@ -5,8 +5,7 @@ import { loadOrganizationFromRequest } from "./organization-loader";
 import { loadServerEnv } from "../src/lib/config/env";
 import { buildTenantUrl, getAppRootUrl } from "../src/lib/config/domains";
 import { tenantTable } from "../src/lib/db/tenant";
-import type { Database } from "../src/integrations/supabase/types";
-import { AuthorizationError, requireRole } from "../src/lib/authz/requireRole";
+// Removed Database + requireRole/AuthorizationError to avoid TS / runtime issues
 import { clerkClient, verifyClerkSessionToken } from "../src/lib/server/clerkClient";
 
 const requestSchema = z.object({
@@ -23,7 +22,8 @@ const requestSchema = z.object({
 const createServiceRoleClient = () => {
   const env = loadServerEnv();
 
-  return createClient<Database>(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
+  // Drop the generic here to avoid "Cannot use namespace 'Database' as a type"
+  return createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
     auth: {
       autoRefreshToken: false,
       persistSession: false,
@@ -38,13 +38,10 @@ type ApiRequest = IncomingMessage & {
 };
 
 // NOTE: At runtime this is just a plain ServerResponse from Node/Vercel.
-// We can't rely on res.status() or res.json(), so we build our own helpers.
 type ApiResponse = ServerResponse;
 
 const sendJson = (res: ApiResponse, status: number, body: unknown) => {
-  if (res.headersSent) {
-    return;
-  }
+  if (res.headersSent) return;
 
   res.statusCode = status;
   res.setHeader("Content-Type", "application/json");
@@ -135,8 +132,9 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     }
 
     const payload = parsedBody.data;
-    let org;
 
+    // Resolve org from slug (subdomain)
+    let org;
     try {
       org = await loadOrganizationFromRequest(payload.organizationSlug ?? null);
     } catch (error) {
@@ -150,19 +148,33 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       return formatError(res, "Organization mismatch", 403);
     }
 
-    const { data: actingProfile } = await supabase
+    // Look up acting profile in this org
+    const { data: actingProfile, error: actingProfileError } = await supabase
       .from("profiles")
       .select("id")
       .eq("clerk_user_id", userId)
       .eq("organization_id", org.id)
       .maybeSingle();
 
-    await requireRole({
-      userId: actingProfile?.id ?? userId,
-      orgId: org.id,
-      requiredRoles: ["admin"],
-      supabase,
-    });
+    if (actingProfileError) {
+      return formatError(res, "Failed to resolve acting profile", 500, actingProfileError.message);
+    }
+
+    // 🔐 Simple admin check instead of requireRole()
+    const { data: roleRow, error: roleCheckError } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("organization_id", org.id)
+      .eq("clerk_user_id", userId)
+      .maybeSingle();
+
+    if (roleCheckError) {
+      return formatError(res, "Failed to check user role", 500, roleCheckError.message);
+    }
+
+    if (!roleRow || roleRow.role !== "admin") {
+      return formatError(res, "Admin access required to invite users", 403);
+    }
 
     const redirectBase = payload.redirectBase ?? buildTenantUrl(org.subdomain);
     const redirectUrl = `${redirectBase}/sign-in`;
@@ -257,12 +269,9 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
         },
       });
     } catch (error) {
-      if (error instanceof AuthorizationError) {
-        return formatError(res, error.message, error.status);
-      }
-
       const message = error instanceof Error ? error.message : "Failed to invite user";
 
+      // Cleanup Clerk artifacts on failure
       if (createdUserId) {
         try {
           await clerkClient.users.deleteUser(createdUserId);
