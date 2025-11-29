@@ -5,7 +5,7 @@ import type {
 } from "http";
 import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
-import type { Database } from "../src/integrations/supabase/types";
+import type { Database } from "../../src/integrations/supabase/types";
 
 const requestSchema = z.object({
   email: z.string().email(),
@@ -89,11 +89,11 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       { clerkClient, verifyClerkSessionToken },
     ] = await Promise.all([
       import("./organization-loader.js"),
-      import("../src/lib/config/env"),
-      import("../src/lib/config/domains"),
-      import("../src/lib/db/tenant"),
-      import("../src/lib/authz/requireRole"),
-      import("../src/lib/server/clerkClient"),
+      import("../../src/lib/config/env"),
+      import("../../src/lib/config/domains"),
+      import("../../src/lib/db/tenant"),
+      import("../../src/lib/authz/requireRole"),
+      import("../../src/lib/server/clerkClient"),
     ]);
 
     const createServiceRoleClient = () => {
@@ -279,7 +279,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       // Best-effort cleanup
       if (createdUserId) {
         try {
-          const { clerkClient } = await import("../src/lib/server/clerkClient");
+          const { clerkClient } = await import("../../src/lib/server/clerkClient");
           await clerkClient.users.deleteUser(createdUserId);
         } catch (cleanupError) {
           console.error("Failed to clean up Clerk user", cleanupError);
@@ -288,7 +288,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
 
       if (invitationId) {
         try {
-          const { clerkClient } = await import("../src/lib/server/clerkClient");
+          const { clerkClient } = await import("../../src/lib/server/clerkClient");
           await clerkClient.invitations.revokeInvitation(invitationId);
         } catch (cleanupError) {
           console.error("Failed to clean up Clerk invitation", cleanupError);
