@@ -1,7 +1,7 @@
 import type { IncomingHttpHeaders, IncomingMessage, ServerResponse } from "http";
 import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
-import { loadOrganizationFromRequest } from "./organization-loader";
+import { loadOrganizationFromRequest } from "./organization-loader.js";
 import { loadServerEnv } from "../src/lib/config/env";
 import { buildTenantUrl, getAppRootUrl } from "../src/lib/config/domains";
 import { tenantTable } from "../src/lib/db/tenant";
