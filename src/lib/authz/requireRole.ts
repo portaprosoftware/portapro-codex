@@ -1,6 +1,6 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "../../integrations/supabase/types.js";
-import { loadServerEnv } from "../config/server-env.js";
+import { loadServerEnv } from "../config/server-env";
 
 export const INTERNAL_ROLES = ["admin", "dispatcher", "driver", "customer"] as const;
 export type InternalRole = (typeof INTERNAL_ROLES)[number];
