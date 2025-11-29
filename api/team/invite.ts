@@ -1,7 +1,7 @@
 import type { IncomingHttpHeaders, IncomingMessage, ServerResponse } from "http";
 import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
-import { loadOrganizationFromRequest } from "../../src/lib/server/organization-loader";
+import { loadOrganizationFromRequest } from "./organization-loader";
 import { loadServerEnv } from "../../src/lib/config/env";
 import { buildTenantUrl, getAppRootUrl } from "../../src/lib/config/domains";
 import { tenantTable } from "../../src/lib/db/tenant";
@@ -121,7 +121,14 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
   }
 
   const payload = parsedBody.data;
-  const org = await loadOrganizationFromRequest(payload.organizationSlug ?? null);
+  let org;
+
+  try {
+    org = await loadOrganizationFromRequest(payload.organizationSlug ?? null);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Organization lookup failed";
+    return formatError(res, message, 404);
+  }
   const supabase = createServiceRoleClient();
 
   if (payload.organizationId && payload.organizationId !== org.id) {
