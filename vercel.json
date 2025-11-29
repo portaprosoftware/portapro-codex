@@ -1,15 +1,14 @@
 {
+  "version": 2,
   "functions": {
     "api/**/*.{ts,js}": {
-      "runtime": "nodejs18.x",
-      "memory": 1024,
-      "maxDuration": 10
+      "runtime": "nodejs18.x"
     }
   },
-  "routes": [
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
     }
   ]
 }
