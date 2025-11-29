@@ -5,7 +5,7 @@ import type {
 } from "http";
 import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
-import { loadServerEnv } from "../../src/lib/config/server-env";
+import { loadServerEnv } from "../../src/lib/config/server-env.js";
 import type { Database } from "../../src/integrations/supabase/types.js";
 
 const requestSchema = z.object({
