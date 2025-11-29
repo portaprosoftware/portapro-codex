@@ -185,7 +185,7 @@ export function DocumentUploadModal({
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const newFiles = Array.from(e.target.files);
+      const newFiles = Array.from(e.target.files) as File[];
       setFiles(newFiles);
       
       // Get AI suggestion for the first file

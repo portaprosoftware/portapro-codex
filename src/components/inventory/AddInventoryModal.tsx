@@ -18,7 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { StorageLocationSelector } from "./StorageLocationSelector";
 import { ItemCodeCategorySelect } from "@/components/ui/ItemCodeCategorySelect";
 import { toast } from "sonner";
-import { Package, MapPin, Hash, DollarSign } from "lucide-react";
+import { Package, MapPin, Tag, DollarSign } from "lucide-react";
 import { ProductImageUploader } from "./ProductImageUploader";
 import { uploadProductImage } from "@/utils/imageUpload";
 import { PRODUCT_TYPES, ProductType } from "@/lib/productTypes";
@@ -400,7 +400,7 @@ export function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
           {/* Item Code Category */}
           <div className="space-y-4">
             <h3 className="text-sm font-medium text-foreground flex items-center gap-2">
-              <Hash className="h-4 w-4" />
+              <Tag className="h-4 w-4" />
               Item Code Category
             </h3>
             

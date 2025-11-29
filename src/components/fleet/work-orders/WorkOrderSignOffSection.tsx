@@ -29,8 +29,8 @@ export const WorkOrderSignOffSection: React.FC<WorkOrderSignOffSectionProps> = (
   outOfService,
   hasFailedItems
 }) => {
-  const techSigRef = useRef<SignatureCanvas>(null);
-  const reviewSigRef = useRef<SignatureCanvas>(null);
+  const techSigRef = useRef<typeof SignatureCanvas | null>(null);
+  const reviewSigRef = useRef<typeof SignatureCanvas | null>(null);
 
   const handleTechClear = () => {
     techSigRef.current?.clear();

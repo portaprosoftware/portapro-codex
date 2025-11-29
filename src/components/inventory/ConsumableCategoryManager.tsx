@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { Plus, Edit, Save, Trash, X, Settings2, AlertCircle, Loader } from 'lucide-react';
+import { Plus, Edit, Save, Trash, X, Settings2, AlertCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -339,7 +339,7 @@ export const ConsumableCategoryManager: React.FC = () => {
                 >
                   {updateMutation.isPending ? (
                     <>
-                      <Loader className="w-4 h-4 mr-2 animate-spin" />
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                       Adding...
                     </>
                   ) : (
@@ -363,7 +363,7 @@ export const ConsumableCategoryManager: React.FC = () => {
               <CardContent>
                 {(categoriesLoading || initializeMutation.isPending) ? (
                   <div className="flex items-center justify-center py-8">
-                    <Loader className="w-6 h-6 animate-spin mr-2" />
+                    <Loader2 className="w-6 h-6 animate-spin mr-2" />
                     <span className="text-muted-foreground">
                       {initializeMutation.isPending ? 'Setting up default categories...' : 'Loading categories...'}
                     </span>
@@ -487,7 +487,7 @@ export const ConsumableCategoryManager: React.FC = () => {
               <div className="space-y-4">
                 {loadingUsage ? (
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Loader className="w-4 h-4 animate-spin" />
+                    <Loader2 className="w-4 h-4 animate-spin" />
                     Checking category usage...
                   </div>
                 ) : (
@@ -563,7 +563,7 @@ export const ConsumableCategoryManager: React.FC = () => {
                 >
                   {processingDelete ? (
                     <>
-                      <Loader className="w-4 h-4 mr-2 animate-spin" />
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                       Deleting...
                     </>
                   ) : (

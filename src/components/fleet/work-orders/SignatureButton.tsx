@@ -28,7 +28,7 @@ export const SignatureButton: React.FC<SignatureButtonProps> = ({
   disabled = false
 }) => {
   const [open, setOpen] = useState(false);
-  const sigRef = useRef<SignatureCanvas>(null);
+  const sigRef = useRef<typeof SignatureCanvas | null>(null);
   const [hasDrawn, setHasDrawn] = useState(false);
 
   const handleClear = () => {
