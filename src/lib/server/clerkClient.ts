@@ -1,4 +1,4 @@
-import { loadServerEnv } from "../config/env.js";
+import { loadServerEnv } from "../config/server-env.js";
 
 const CLERK_API_BASE = "https://api.clerk.com/v1";
 
