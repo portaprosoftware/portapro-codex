@@ -1,6 +1,4 @@
 // src/lib/config/server-env.ts
-// Server-side environment loader for API routes (Vercel)
-
 export function loadServerEnv() {
   const {
     SUPABASE_URL,
