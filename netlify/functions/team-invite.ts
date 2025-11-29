@@ -1,11 +1,7 @@
-import type {
-  IncomingHttpHeaders,
-  IncomingMessage,
-  ServerResponse,
-} from "http";
+import type { Handler } from "@netlify/functions";
 import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
-import { loadServerEnv } from "@/lib/config/server-env.js";
+import { loadServerEnv } from "@/lib/config/netlify-env.js";
 import type { Database } from "../../src/integrations/supabase/types.js";
 
 const requestSchema = z.object({
@@ -19,30 +15,35 @@ const requestSchema = z.object({
   redirectBase: z.string().url().optional(),
 });
 
-type ApiRequest = IncomingMessage & {
+type ApiRequest = {
   body?: unknown;
   method?: string;
-  headers: IncomingHttpHeaders;
+  headers: Record<string, string>;
 };
 
-type ApiResponse = ServerResponse;
-
-const sendJson = (res: ApiResponse, status: number, body: unknown) => {
-  if (res.headersSent) return;
-
-  res.statusCode = status;
-  res.setHeader("Content-Type", "application/json");
-  res.end(JSON.stringify(body));
+type HandlerResponse = {
+  statusCode: number;
+  headers: Record<string, string>;
+  body: string;
 };
+
+const sendJson = (
+  status: number,
+  body: unknown,
+  headers: Record<string, string> = {}
+): HandlerResponse => ({
+  statusCode: status,
+  headers: { "Content-Type": "application/json", ...headers },
+  body: JSON.stringify(body),
+});
 
 const formatError = (
-  res: ApiResponse,
   message: string,
   status = 400,
   details?: unknown
 ) => {
   console.error("[invite] error:", message, details);
-  sendJson(res, status, { success: false, error: message, details });
+  return sendJson(status, { success: false, error: message, details });
 };
 
 const parseJsonBody = async (req: ApiRequest): Promise<unknown> => {
@@ -58,26 +59,18 @@ const parseJsonBody = async (req: ApiRequest): Promise<unknown> => {
     return JSON.parse(req.body.toString("utf8"));
   }
 
-  return new Promise((resolve, reject) => {
-    let data = "";
-
-    req.on("data", (chunk) => {
-      data += chunk;
-    });
-
-    req.on("end", () => {
-      try {
-        resolve(data ? JSON.parse(data) : {});
-      } catch (error) {
-        reject(error);
-      }
-    });
-
-    req.on("error", reject);
-  });
+  return {};
 };
 
-export default async function handler(req: ApiRequest, res: ApiResponse) {
+export const handler: Handler = async (event) => {
+  const req: ApiRequest = {
+    method: event.httpMethod,
+    headers: Object.fromEntries(
+      Object.entries(event.headers).map(([key, value]) => [key, value ?? ""])
+    ),
+    body: event.body,
+  };
+
   try {
     // 🔁 Lazy-load everything that can possibly throw at module load time,
     // so any failure is caught and turned into JSON instead of Vercel HTML.
@@ -88,7 +81,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       { AuthorizationError, requireRole },
       { clerkClient, verifyClerkSessionToken },
     ] = await Promise.all([
-      import("./organization-loader.js"),
+      import("./team-organization-loader.js"),
       import("../../src/lib/config/domains.js"),
       import("../../src/lib/db/tenant.js"),
       import("../../src/lib/authz/requireRole.js"),
@@ -107,14 +100,20 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     };
 
     if (req.method !== "POST") {
-      res.setHeader("Allow", "POST");
-      return formatError(res, "Method not allowed", 405);
+      return sendJson(
+        405,
+        { success: false, error: "Method not allowed" },
+        { Allow: "POST" }
+      );
     }
 
-    const authHeader = (req.headers.authorization as string | undefined) ?? undefined;
+    const authHeader =
+      ((req.headers.authorization ?? req.headers.Authorization) as
+        | string
+        | undefined) ?? undefined;
 
     if (!authHeader?.startsWith("Bearer ")) {
-      return formatError(res, "User authentication required", 401);
+      return formatError("User authentication required", 401);
     }
 
     const token = authHeader.replace("Bearer", "").trim();
@@ -125,21 +124,20 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       userId = verified.userId;
     } catch (error) {
       const message = error instanceof Error ? error.message : "Invalid session";
-      return formatError(res, message, 401);
+      return formatError(message, 401);
     }
 
     let json: unknown;
     try {
       json = await parseJsonBody(req);
     } catch {
-      return formatError(res, "Invalid JSON body", 400);
+      return formatError("Invalid JSON body", 400);
     }
 
     const parsedBody = requestSchema.safeParse(json);
 
     if (!parsedBody.success) {
       return formatError(
-        res,
         "Invalid request payload",
         400,
         parsedBody.error.flatten().fieldErrors
@@ -153,13 +151,13 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       org = await loadOrganizationFromRequest(payload.organizationSlug ?? null);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Organization lookup failed";
-      return formatError(res, message, 404);
+      return formatError(message, 404);
     }
 
     const supabase = createServiceRoleClient();
 
     if (payload.organizationId && payload.organizationId !== org.id) {
-      return formatError(res, "Organization mismatch", 403);
+      return formatError("Organization mismatch", 403);
     }
 
     const { data: actingProfile } = await supabase
@@ -256,7 +254,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
         },
       });
 
-      return sendJson(res, 200, {
+      return sendJson(200, {
         success: true,
         data: {
           userId: createdUser.id,
@@ -270,7 +268,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       });
     } catch (error) {
       if (error instanceof AuthorizationError) {
-        return formatError(res, error.message, error.status);
+        return formatError(error.message, error.status);
       }
 
       const message = error instanceof Error ? error.message : "Failed to invite user";
@@ -278,7 +276,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       // Best-effort cleanup
       if (createdUserId) {
         try {
-          const { clerkClient } = await import("../../src/lib/server/clerkClient");
+          const { clerkClient } = await import("../../src/lib/server/clerkClient.js");
           await clerkClient.users.deleteUser(createdUserId);
         } catch (cleanupError) {
           console.error("Failed to clean up Clerk user", cleanupError);
@@ -287,19 +285,19 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
 
       if (invitationId) {
         try {
-          const { clerkClient } = await import("../../src/lib/server/clerkClient");
+          const { clerkClient } = await import("../../src/lib/server/clerkClient.js");
           await clerkClient.invitations.revokeInvitation(invitationId);
         } catch (cleanupError) {
           console.error("Failed to clean up Clerk invitation", cleanupError);
         }
       }
 
-      return formatError(res, message, 500);
+      return formatError(message, 500);
     }
   } catch (error) {
     console.error("[invite] UNCAUGHT handler error:", error);
     const message =
       error instanceof Error ? error.message : "Unexpected server error";
-    return formatError(res, message, 500);
+    return formatError(message, 500);
   }
-}
+};
