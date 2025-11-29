@@ -15,8 +15,8 @@ const optionalEnv = {
 export const env = {
   ...clientEnv,
   ...optionalEnv,
-  APP_URL: clientEnv.NEXT_PUBLIC_APP_ROOT_URL,
-  VITE_CLERK_PUBLISHABLE_KEY: clientEnv.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+  APP_URL: clientEnv.APP_URL,
+  VITE_CLERK_PUBLISHABLE_KEY: clientEnv.CLERK_PUBLISHABLE_KEY,
 };
 
 export const SUPABASE_URL = env.SUPABASE_URL;
