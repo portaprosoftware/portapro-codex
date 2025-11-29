@@ -5,6 +5,7 @@ import type {
 } from "http";
 import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
+import { loadServerEnv } from "../../src/lib/config/server-env";
 import type { Database } from "../../src/integrations/supabase/types.js";
 
 const requestSchema = z.object({
@@ -82,14 +83,12 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     // so any failure is caught and turned into JSON instead of Vercel HTML.
     const [
       { loadOrganizationFromRequest },
-      { loadServerEnv },
       { buildTenantUrl, getAppRootUrl },
       { tenantTable },
       { AuthorizationError, requireRole },
       { clerkClient, verifyClerkSessionToken },
     ] = await Promise.all([
       import("./organization-loader.js"),
-      import("../../src/lib/config/server-env.js"),
       import("../../src/lib/config/domains.js"),
       import("../../src/lib/db/tenant.js"),
       import("../../src/lib/authz/requireRole.js"),
