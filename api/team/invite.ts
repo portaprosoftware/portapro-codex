@@ -1,13 +1,13 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import type { IncomingHttpHeaders, IncomingMessage, ServerResponse } from "http";
 import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
-import { loadOrganizationFromRequest } from "@/lib/server/organization-loader";
-import { loadServerEnv } from "@/lib/config/env";
-import { buildTenantUrl, getAppRootUrl } from "@/lib/config/domains";
-import { tenantTable } from "@/lib/db/tenant";
-import type { Database } from "@/integrations/supabase/types";
-import { AuthorizationError, requireRole } from "@/lib/authz/requireRole";
-import { clerkClient, verifyClerkSessionToken } from "@/lib/server/clerkClient";
+import { loadOrganizationFromRequest } from "../../src/lib/server/organization-loader";
+import { loadServerEnv } from "../../src/lib/config/env";
+import { buildTenantUrl, getAppRootUrl } from "../../src/lib/config/domains";
+import { tenantTable } from "../../src/lib/db/tenant";
+import type { Database } from "../../src/integrations/supabase/types";
+import { AuthorizationError, requireRole } from "../../src/lib/authz/requireRole";
+import { clerkClient, verifyClerkSessionToken } from "../../src/lib/server/clerkClient";
 
 const requestSchema = z.object({
   email: z.string().email(),
@@ -31,8 +31,20 @@ const createServiceRoleClient = () => {
   });
 };
 
+type ApiRequest = IncomingMessage & {
+  body?: unknown;
+  method?: string;
+  headers: IncomingHttpHeaders;
+};
+
+type ApiResponse = ServerResponse & {
+  status: (statusCode: number) => ApiResponse;
+  json: (body: unknown) => void;
+  setHeader: (name: string, value: string) => void;
+};
+
 const formatError = (
-  res: NextApiResponse,
+  res: ApiResponse,
   message: string,
   status = 400,
   details?: unknown
@@ -40,7 +52,7 @@ const formatError = (
   res.status(status).json({ success: false, error: message, details });
 };
 
-const parseJsonBody = async (req: NextApiRequest): Promise<unknown> => {
+const parseJsonBody = async (req: ApiRequest): Promise<unknown> => {
   if (req.body && typeof req.body === "object" && !(req.body instanceof Buffer)) {
     return req.body;
   }
@@ -72,7 +84,7 @@ const parseJsonBody = async (req: NextApiRequest): Promise<unknown> => {
   });
 };
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(req: ApiRequest, res: ApiResponse) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
     return formatError(res, "Method not allowed", 405);
