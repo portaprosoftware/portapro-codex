@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import type { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
 import { loadOrganizationFromRequest } from "@/lib/server/organization-loader";
@@ -31,14 +31,57 @@ const createServiceRoleClient = () => {
   });
 };
 
-const formatError = (message: string, status = 400, details?: unknown) =>
-  NextResponse.json({ success: false, error: message, details }, { status });
+const formatError = (
+  res: NextApiResponse,
+  message: string,
+  status = 400,
+  details?: unknown
+) => {
+  res.status(status).json({ success: false, error: message, details });
+};
 
-export async function POST(req: Request) {
-  const authHeader = req.headers.get("authorization");
+const parseJsonBody = async (req: NextApiRequest): Promise<unknown> => {
+  if (req.body && typeof req.body === "object" && !(req.body instanceof Buffer)) {
+    return req.body;
+  }
+
+  if (typeof req.body === "string") {
+    return JSON.parse(req.body);
+  }
+
+  if (Buffer.isBuffer(req.body)) {
+    return JSON.parse(req.body.toString("utf8"));
+  }
+
+  return new Promise((resolve, reject) => {
+    let data = "";
+
+    req.on("data", (chunk) => {
+      data += chunk;
+    });
+
+    req.on("end", () => {
+      try {
+        resolve(data ? JSON.parse(data) : {});
+      } catch (error) {
+        reject(error);
+      }
+    });
+
+    req.on("error", reject);
+  });
+};
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== "POST") {
+    res.setHeader("Allow", "POST");
+    return formatError(res, "Method not allowed", 405);
+  }
+
+  const authHeader = (req.headers.authorization as string | undefined) ?? undefined;
 
   if (!authHeader?.startsWith("Bearer ")) {
-    return formatError("User authentication required", 401);
+    return formatError(res, "User authentication required", 401);
   }
 
   const token = authHeader.replace("Bearer", "").trim();
@@ -49,20 +92,20 @@ export async function POST(req: Request) {
     userId = verified.userId;
   } catch (error) {
     const message = error instanceof Error ? error.message : "Invalid session";
-    return formatError(message, 401);
+    return formatError(res, message, 401);
   }
 
   let json: unknown;
   try {
-    json = await req.json();
+    json = await parseJsonBody(req);
   } catch {
-    return formatError("Invalid JSON body", 400);
+    return formatError(res, "Invalid JSON body", 400);
   }
 
   const parsedBody = requestSchema.safeParse(json);
 
   if (!parsedBody.success) {
-    return formatError("Invalid request payload", 400, parsedBody.error.flatten().fieldErrors);
+    return formatError(res, "Invalid request payload", 400, parsedBody.error.flatten().fieldErrors);
   }
 
   const payload = parsedBody.data;
@@ -70,7 +113,7 @@ export async function POST(req: Request) {
   const supabase = createServiceRoleClient();
 
   if (payload.organizationId && payload.organizationId !== org.id) {
-    return formatError("Organization mismatch", 403);
+    return formatError(res, "Organization mismatch", 403);
   }
 
   const { data: actingProfile } = await supabase
@@ -167,7 +210,7 @@ export async function POST(req: Request) {
       },
     });
 
-    return NextResponse.json({
+    return res.status(200).json({
       success: true,
       data: {
         userId: createdUser.id,
@@ -181,7 +224,7 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     if (error instanceof AuthorizationError) {
-      return formatError(error.message, error.status);
+      return formatError(res, error.message, error.status);
     }
 
     const message = error instanceof Error ? error.message : "Failed to invite user";
@@ -202,6 +245,6 @@ export async function POST(req: Request) {
       }
     }
 
-    return formatError(message, 500);
+    return formatError(res, message, 500);
   }
 }
