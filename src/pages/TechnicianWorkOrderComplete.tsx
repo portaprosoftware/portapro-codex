@@ -28,7 +28,7 @@ import { MobileCamera } from '@/components/technician/MobileCamera';
 import { VoiceRecorder } from '@/components/shared/VoiceRecorder';
 import { uploadWorkOrderPhoto, fetchWorkOrderPhotos, deleteWorkOrderPhoto } from '@/utils/photoUpload';
 import { useUser } from '@clerk/clerk-react';
-import { useTenantId } from '@/lib/tenantQuery';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 interface Part {
   id: string;
@@ -50,7 +50,7 @@ export default function TechnicianWorkOrderComplete() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useUser();
-  const tenantId = useTenantId();
+  const { orgId, isReady } = useOrganizationId();
   const signatureRef = useRef<SignatureCanvas>(null);
   
   const [currentStep, setCurrentStep] = useState<CompletionStep>('photos');
@@ -69,32 +69,37 @@ export default function TechnicianWorkOrderComplete() {
   const { data: workOrder, isLoading } = useQuery({
     queryKey: ['work-order-complete', id],
     queryFn: async () => {
+      if (!id || !orgId) return null;
       const { data, error } = await supabase
         .from('work_orders')
         .select('*')
         .eq('id', id)
+        .eq('organization_id', orgId)
         .single();
-      
+
       if (error) throw error;
       return data;
     },
-    enabled: !!id
+    enabled: !!id && !!orgId && isReady
   });
 
   // Fetch photos
   const { data: photos = [], refetch: refetchPhotos } = useQuery({
     queryKey: ['work-order-photos', id],
-    queryFn: () => fetchWorkOrderPhotos(id!),
-    enabled: !!id
+    queryFn: () => fetchWorkOrderPhotos(id!, orgId!),
+    enabled: !!id && !!orgId && isReady
   });
 
   // Upload photo mutation
   const uploadMutation = useMutation({
     mutationFn: async (photoDataUrl: string) => {
+      if (!orgId) throw new Error('Organization ID required');
+
       return uploadWorkOrderPhoto(photoDataUrl, {
         workOrderId: id!,
         photoType,
-        uploadedBy: user?.id
+        uploadedBy: user?.id,
+        organizationId: orgId,
       });
     },
     onSuccess: (result) => {
@@ -117,7 +122,7 @@ export default function TechnicianWorkOrderComplete() {
 
   // Delete photo mutation
   const deleteMutation = useMutation({
-    mutationFn: deleteWorkOrderPhoto,
+    mutationFn: (photoId: string) => deleteWorkOrderPhoto(photoId, orgId!),
     onSuccess: () => {
       toast({
         title: 'Photo deleted',
@@ -192,6 +197,15 @@ export default function TechnicianWorkOrderComplete() {
   };
 
   const handleComplete = async () => {
+    if (!orgId) {
+      toast({
+        title: 'Organization not ready',
+        description: 'Please wait for your organization to load before completing the work order.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     if (!signatureData) {
       toast({
         title: 'Signature required',
@@ -224,7 +238,8 @@ export default function TechnicianWorkOrderComplete() {
           work_order_id: id!,
           signature_type: 'technician',
           signed_by: user?.id || 'unknown',
-          signature_data: signatureData
+          signature_data: signatureData,
+          organization_id: orgId,
         })
         .select()
         .single();
@@ -246,7 +261,7 @@ export default function TechnicianWorkOrderComplete() {
           updated_at: new Date().toISOString()
         })
         // TENANT-SCOPED
-        .eq('organization_id', tenantId!)
+        .eq('organization_id', orgId)
         .eq('id', id);
 
       if (updateError) throw updateError;
@@ -257,7 +272,7 @@ export default function TechnicianWorkOrderComplete() {
         from_status: workOrder?.status || 'in_progress',
         to_status: 'completed',
         changed_by: user?.id,
-        organization_id: tenantId!,
+        organization_id: orgId,
         note: `Work order completed via mobile. Labor: ${totalLaborHours}hrs, Parts: $${totalPartsCost.toFixed(2)}`
       });
 

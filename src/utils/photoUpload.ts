@@ -5,6 +5,7 @@ export interface PhotoUploadOptions {
   photoType: 'before' | 'after' | 'progress' | 'issue';
   caption?: string;
   uploadedBy?: string;
+  organizationId: string;
 }
 
 export interface PhotoUploadResult {
@@ -37,7 +38,14 @@ export async function uploadWorkOrderPhoto(
   options: PhotoUploadOptions
 ): Promise<PhotoUploadResult> {
   try {
-    const { workOrderId, photoType, caption, uploadedBy } = options;
+    const { workOrderId, photoType, caption, uploadedBy, organizationId } = options;
+
+    if (!organizationId) {
+      return {
+        success: false,
+        error: 'Organization ID is required to upload photos'
+      };
+    }
 
     // Convert data URL to blob
     const blob = dataURLtoBlob(photoDataUrl);
@@ -81,7 +89,8 @@ export async function uploadWorkOrderPhoto(
         caption,
         uploaded_by: uploadedBy,
         file_size: fileSize,
-        mime_type: mimeType
+        mime_type: mimeType,
+        organization_id: organizationId
       })
       .select()
       .single();
@@ -116,13 +125,16 @@ export async function uploadWorkOrderPhoto(
 /**
  * Delete photo from storage and database
  */
-export async function deleteWorkOrderPhoto(photoId: string): Promise<boolean> {
+export async function deleteWorkOrderPhoto(photoId: string, organizationId: string): Promise<boolean> {
   try {
+    if (!organizationId) return false;
+
     // Get photo metadata
     const { data: photo, error: fetchError } = await supabase
       .from('work_order_photos')
       .select('storage_path')
       .eq('id', photoId)
+      .eq('organization_id', organizationId)
       .single();
 
     if (fetchError || !photo) {
@@ -143,7 +155,8 @@ export async function deleteWorkOrderPhoto(photoId: string): Promise<boolean> {
     const { error: dbError } = await supabase
       .from('work_order_photos')
       .delete()
-      .eq('id', photoId);
+      .eq('id', photoId)
+      .eq('organization_id', organizationId);
 
     if (dbError) {
       console.error('Failed to delete from database:', dbError);
@@ -160,12 +173,15 @@ export async function deleteWorkOrderPhoto(photoId: string): Promise<boolean> {
 /**
  * Fetch all photos for a work order
  */
-export async function fetchWorkOrderPhotos(workOrderId: string) {
+export async function fetchWorkOrderPhotos(workOrderId: string, organizationId: string) {
   try {
+    if (!organizationId) return [];
+
     const { data, error } = await supabase
       .from('work_order_photos')
       .select('*')
       .eq('work_order_id', workOrderId)
+      .eq('organization_id', organizationId)
       .order('uploaded_at', { ascending: false });
 
     if (error) {
