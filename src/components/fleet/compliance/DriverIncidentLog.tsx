@@ -171,7 +171,7 @@ export const DriverIncidentLog: React.FC<Props> = ({ onSaved, onCancel }) => {
     for (const file of files) {
       if (file.type.startsWith("image/")) {
         // Compress image
-        const compressedFile = await compressImage(file);
+        const compressedFile = await compressImage(file as File);
         setPhotoFiles((prev) => [...prev, compressedFile]);
         
         // Create preview

@@ -208,7 +208,7 @@ export const AddMobileFuelServiceDialog: React.FC<AddMobileFuelServiceDialogProp
 
   const handleTicketUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setDeliveryTickets([...deliveryTickets, ...Array.from(e.target.files)]);
+      setDeliveryTickets([...deliveryTickets, ...(Array.from(e.target.files) as File[])]);
     }
   };
 

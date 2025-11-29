@@ -5,7 +5,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, Package, MapPin, Hash, BarChart3 } from "lucide-react";
+import { ChevronDown, Package, MapPin, Tag, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUnifiedStockManagement } from "@/hooks/useUnifiedStockManagement";
 
@@ -213,7 +213,7 @@ export const AvailableNowSlider: React.FC<AvailableNowSliderProps> = ({ isOpen, 
                           <div className="flex items-start justify-between">
                             <div className="space-y-1">
                               <div className="flex items-center gap-2">
-                                <Hash className="w-4 h-4 text-gray-400" />
+                                <Tag className="w-4 h-4 text-gray-400" />
                                 <span className="font-medium text-gray-900">{item.item_code}</span>
                                 {getStatusBadge(item.status)}
                               </div>

@@ -13458,7 +13458,9 @@ export type Database = {
           vehicle_type: string
         }[]
       }
-      get_compliance_notification_counts: { Args: never; Returns: Json }
+      get_compliance_notification_counts:
+        | { Args: { org_id: string }; Returns: Json }
+        | { Args: never; Returns: Json }
       get_comprehensive_stock_breakdown: {
         Args: { product_uuid?: string }
         Returns: {
