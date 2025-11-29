@@ -1,5 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import { resolveOrgId } from "../orgContext";
+import { resolveOrgId } from "../orgContext.js";
 
 type InsertPayload = Record<string, any> | Record<string, any>[];
 

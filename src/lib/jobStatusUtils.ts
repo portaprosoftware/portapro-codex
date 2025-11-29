@@ -4,7 +4,7 @@
  */
 
 import { toZonedTime, formatInTimeZone } from 'date-fns-tz';
-import { getCompanyTimezone } from '@/lib/timezoneUtils';
+import { getCompanyTimezone } from '@/lib/timezoneUtils.js';
 
 export interface Job {
   id: string;

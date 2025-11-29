@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import crypto from 'crypto';
-import { loadServerEnv } from '@/lib/config/env';
-import type { Database } from '@/integrations/supabase/types';
-import type { JobPayload, JobResult } from './types';
+import { loadServerEnv } from '@/lib/config/env.js';
+import type { Database } from '@/integrations/supabase/types.js';
+import type { JobPayload, JobResult } from './types.js';
 
 type QueueBackend = 'table' | 'cron';
 

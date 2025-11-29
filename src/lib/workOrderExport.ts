@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
-import type { WorkOrder } from '@/components/fleet/work-orders/types';
-import { loadPdfLibs } from './loaders/pdf';
+import type { WorkOrder } from '@/components/fleet/work-orders/types.js';
+import { loadPdfLibs } from './loaders/pdf.js';
 
 /**
  * Export work orders to CSV format

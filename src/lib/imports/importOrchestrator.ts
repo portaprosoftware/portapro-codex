@@ -1,11 +1,11 @@
 import { randomUUID } from "crypto";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@/integrations/supabase/types";
-import { loadServerEnv } from "@/lib/config/env";
-import { tenantTable, requireOrgId } from "@/lib/db/tenant";
-import { ImportError, ImportFieldError } from "./errors";
-import { ImportType, getValidator } from "./validators";
-import { logAction } from "@/lib/audit";
+import type { Database } from "@/integrations/supabase/types.js";
+import { loadServerEnv } from "@/lib/config/env.js";
+import { tenantTable, requireOrgId } from "@/lib/db/tenant.js";
+import { ImportError, ImportFieldError } from "./errors.js";
+import { ImportType, getValidator } from "./validators.js";
+import { logAction } from "@/lib/audit/index.js";
 
 export type ImportRequest<TRecord = Record<string, any>> = {
   type: ImportType;

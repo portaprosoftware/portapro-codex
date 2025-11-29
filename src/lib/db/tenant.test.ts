@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { tenantTable, requireOrgId } from "./tenant";
+import { tenantTable, requireOrgId } from "./tenant.js";
 
 describe("requireOrgId", () => {
   it("throws when orgId is missing", () => {

@@ -10,7 +10,7 @@ import {
   Briefcase,
   LucideIcon 
 } from 'lucide-react';
-import { CustomerType } from '@/types';
+import { CustomerType } from '@/types.js';
 
 const customerTypeIconMap: Record<CustomerType, LucideIcon> = {
   bars_restaurants: Utensils,

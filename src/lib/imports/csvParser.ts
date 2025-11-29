@@ -1,4 +1,4 @@
-import { ImportError } from "./errors";
+import { ImportError } from "./errors.js";
 
 export type ParsedCsvResult = {
   rows: Record<string, string>[];

@@ -1,10 +1,10 @@
-import { customerValidator } from "./customers.validator";
-import { invoiceValidator } from "./invoices.validator";
-import { jobValidator } from "./jobs.validator";
-import { productValidator } from "./products.validator";
-import { unitValidator } from "./units.validator";
-import { vehicleValidator } from "./vehicles.validator";
-import { ForeignKeyRule, ValidationResult } from "./baseValidator";
+import { customerValidator } from "./customers.validator.js";
+import { invoiceValidator } from "./invoices.validator.js";
+import { jobValidator } from "./jobs.validator.js";
+import { productValidator } from "./products.validator.js";
+import { unitValidator } from "./units.validator.js";
+import { vehicleValidator } from "./vehicles.validator.js";
+import { ForeignKeyRule, ValidationResult } from "./baseValidator.js";
 
 export type ImportType = "customers" | "invoices" | "vehicles" | "units" | "jobs" | "products";
 

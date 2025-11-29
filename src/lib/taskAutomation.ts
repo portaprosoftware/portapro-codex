@@ -1,5 +1,5 @@
-import { supabase } from '@/integrations/supabase/client';
-import { AutoRequirement } from '@/components/maintenance/template-builder/types';
+import { supabase } from '@/integrations/supabase/client.js';
+import { AutoRequirement } from '@/components/maintenance/template-builder/types.js';
 
 interface TaskCreationData {
   jobId: string;

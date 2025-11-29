@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { safeInsert, safeUpdate, safeDelete } from './supabase-helpers';
-import { supabase } from '@/integrations/supabase/client';
+import { safeInsert, safeUpdate, safeDelete } from './supabase-helpers.js';
+import { supabase } from '@/integrations/supabase/client.js';
 
 describe('safeInsert', () => {
   beforeEach(() => {

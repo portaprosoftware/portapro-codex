@@ -1,4 +1,4 @@
-import { JobHandler } from './types';
+import { JobHandler } from './types.js';
 
 type Registry = Map<string, JobHandler>;
 

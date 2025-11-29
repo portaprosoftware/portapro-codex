@@ -1,4 +1,4 @@
-import type { JobHandler } from '../types';
+import type { JobHandler } from '../types.js';
 
 export const maintenanceCheckJob: JobHandler = async ({ orgId }) => {
   if (!orgId) {

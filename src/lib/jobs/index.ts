@@ -1,7 +1,7 @@
-import { maintenanceCheckJob } from './handlers/maintenanceCheck';
-import { routePrebuildJob } from './handlers/routePrebuild';
-import { sendInvoiceReminderJob } from './handlers/sendInvoiceReminder';
-import { registerJob } from './registry';
+import { maintenanceCheckJob } from './handlers/maintenanceCheck.js';
+import { routePrebuildJob } from './handlers/routePrebuild.js';
+import { sendInvoiceReminderJob } from './handlers/sendInvoiceReminder.js';
+import { registerJob } from './registry.js';
 
 registerJob('sendInvoiceReminder', sendInvoiceReminderJob);
 registerJob('maintenanceCheck', maintenanceCheckJob);

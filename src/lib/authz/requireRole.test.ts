@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { AuthorizationError, requireRole } from "./requireRole";
+import { AuthorizationError, requireRole } from "./requireRole.js";
 
 const mockRoleClient = (role: string | null, orgId = "org-1") => {
   const maybeSingle = () =>

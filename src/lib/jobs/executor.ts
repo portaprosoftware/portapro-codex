@@ -1,12 +1,12 @@
 import crypto from 'crypto';
 import path from 'path';
 import { pathToFileURL } from 'url';
-import { dequeue, markComplete, markFailed, QueuedJob } from './queue';
-import { getJobHandler } from './registry';
-import { hasRunBefore, markRun } from './idempotency';
-import type { JobPayload, JobResult } from './types';
-import { logAction } from '../audit/logger';
-import { logSecurityEvent } from '../audit/securityLogger';
+import { dequeue, markComplete, markFailed, QueuedJob } from './queue.js';
+import { getJobHandler } from './registry.js';
+import { hasRunBefore, markRun } from './idempotency.js';
+import type { JobPayload, JobResult } from './types.js';
+import { logAction } from '../audit/logger.js';
+import { logSecurityEvent } from '../audit/securityLogger.js';
 
 type ExecutorStatus =
   | { status: 'completed'; result: JobResult }
