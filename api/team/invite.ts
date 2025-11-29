@@ -37,10 +37,18 @@ type ApiRequest = IncomingMessage & {
   headers: IncomingHttpHeaders;
 };
 
-type ApiResponse = ServerResponse & {
-  status: (statusCode: number) => ApiResponse;
-  json: (body: unknown) => void;
-  setHeader: (name: string, value: string) => void;
+// NOTE: At runtime this is just a plain ServerResponse from Node/Vercel.
+// We can't rely on res.status() or res.json(), so we build our own helpers.
+type ApiResponse = ServerResponse;
+
+const sendJson = (res: ApiResponse, status: number, body: unknown) => {
+  if (res.headersSent) {
+    return;
+  }
+
+  res.statusCode = status;
+  res.setHeader("Content-Type", "application/json");
+  res.end(JSON.stringify(body));
 };
 
 const formatError = (
@@ -49,7 +57,7 @@ const formatError = (
   status = 400,
   details?: unknown
 ) => {
-  res.status(status).json({ success: false, error: message, details });
+  sendJson(res, status, { success: false, error: message, details });
 };
 
 const parseJsonBody = async (req: ApiRequest): Promise<unknown> => {
@@ -85,185 +93,196 @@ const parseJsonBody = async (req: ApiRequest): Promise<unknown> => {
 };
 
 export default async function handler(req: ApiRequest, res: ApiResponse) {
-  if (req.method !== "POST") {
-    res.setHeader("Allow", "POST");
-    return formatError(res, "Method not allowed", 405);
-  }
-
-  const authHeader = (req.headers.authorization as string | undefined) ?? undefined;
-
-  if (!authHeader?.startsWith("Bearer ")) {
-    return formatError(res, "User authentication required", 401);
-  }
-
-  const token = authHeader.replace("Bearer", "").trim();
-
-  let userId: string;
   try {
-    const verified = await verifyClerkSessionToken(token);
-    userId = verified.userId;
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Invalid session";
-    return formatError(res, message, 401);
-  }
+    if (req.method !== "POST") {
+      res.setHeader("Allow", "POST");
+      return formatError(res, "Method not allowed", 405);
+    }
 
-  let json: unknown;
-  try {
-    json = await parseJsonBody(req);
-  } catch {
-    return formatError(res, "Invalid JSON body", 400);
-  }
+    const authHeader = (req.headers.authorization as string | undefined) ?? undefined;
 
-  const parsedBody = requestSchema.safeParse(json);
+    if (!authHeader?.startsWith("Bearer ")) {
+      return formatError(res, "User authentication required", 401);
+    }
 
-  if (!parsedBody.success) {
-    return formatError(res, "Invalid request payload", 400, parsedBody.error.flatten().fieldErrors);
-  }
+    const token = authHeader.replace("Bearer", "").trim();
 
-  const payload = parsedBody.data;
-  let org;
+    let userId: string;
+    try {
+      const verified = await verifyClerkSessionToken(token);
+      userId = verified.userId;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Invalid session";
+      return formatError(res, message, 401);
+    }
 
-  try {
-    org = await loadOrganizationFromRequest(payload.organizationSlug ?? null);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Organization lookup failed";
-    return formatError(res, message, 404);
-  }
-  const supabase = createServiceRoleClient();
+    let json: unknown;
+    try {
+      json = await parseJsonBody(req);
+    } catch {
+      return formatError(res, "Invalid JSON body", 400);
+    }
 
-  if (payload.organizationId && payload.organizationId !== org.id) {
-    return formatError(res, "Organization mismatch", 403);
-  }
+    const parsedBody = requestSchema.safeParse(json);
 
-  const { data: actingProfile } = await supabase
-    .from("profiles")
-    .select("id")
-    .eq("clerk_user_id", userId)
-    .eq("organization_id", org.id)
-    .maybeSingle();
+    if (!parsedBody.success) {
+      return formatError(
+        res,
+        "Invalid request payload",
+        400,
+        parsedBody.error.flatten().fieldErrors
+      );
+    }
 
-  await requireRole({
-    userId: actingProfile?.id ?? userId,
-    orgId: org.id,
-    requiredRoles: ["admin"],
-    supabase,
-  });
+    const payload = parsedBody.data;
+    let org;
 
-  const redirectBase = payload.redirectBase ?? buildTenantUrl(org.subdomain);
-  const redirectUrl = `${redirectBase}/sign-in`;
+    try {
+      org = await loadOrganizationFromRequest(payload.organizationSlug ?? null);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Organization lookup failed";
+      return formatError(res, message, 404);
+    }
 
-  let createdUserId: string | null = null;
-  let invitationId: string | null = null;
+    const supabase = createServiceRoleClient();
 
-  try {
-    const createdUser = await clerkClient.users.createUser({
-      emailAddress: [payload.email],
-      firstName: payload.firstName,
-      lastName: payload.lastName,
-      phoneNumbers: payload.phone ? [{ phoneNumber: payload.phone }] : undefined,
-    });
+    if (payload.organizationId && payload.organizationId !== org.id) {
+      return formatError(res, "Organization mismatch", 403);
+    }
 
-    createdUserId = createdUser.id;
-
-    const invitation = await clerkClient.invitations.createInvitation({
-      emailAddress: payload.email,
-      redirectUrl,
-    });
-
-    invitationId = invitation.id;
-
-    const { data: profile, error: profileError } = await tenantTable(
-      supabase,
-      org.id,
-      "profiles"
-    )
-      .insert({
-        id: createdUser.id,
-        clerk_user_id: createdUser.id,
-        first_name: payload.firstName,
-        last_name: payload.lastName,
-        email: payload.email,
-        phone: payload.phone ?? null,
-        organization_id: org.id,
-        is_active: true,
-        status: "invited",
-        status_effective_date: new Date().toISOString(),
-      })
-      .select()
+    const { data: actingProfile } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("clerk_user_id", userId)
+      .eq("organization_id", org.id)
       .maybeSingle();
 
-    if (profileError) {
-      throw new Error(`Failed to create profile: ${profileError.message}`);
-    }
-
-    const { error: roleError } = await tenantTable(supabase, org.id, "user_roles").insert({
-      user_id: profile?.id ?? createdUser.id,
-      clerk_user_id: createdUser.id,
-      organization_id: org.id,
-      role: payload.role,
+    await requireRole({
+      userId: actingProfile?.id ?? userId,
+      orgId: org.id,
+      requiredRoles: ["admin"],
+      supabase,
     });
 
-    if (roleError) {
-      throw new Error(`Failed to assign role: ${roleError.message}`);
-    }
+    const redirectBase = payload.redirectBase ?? buildTenantUrl(org.subdomain);
+    const redirectUrl = `${redirectBase}/sign-in`;
 
-    await tenantTable(supabase, org.id, "user_invitations").insert({
-      email: payload.email,
-      first_name: payload.firstName,
-      last_name: payload.lastName,
-      phone: payload.phone ?? null,
-      role: payload.role,
-      status: "pending",
-      invitation_token: invitation.id,
-      invitation_type: "clerk_invitation",
-      invited_by: userId,
-      clerk_user_id: createdUser.id,
-      organization_id: org.id,
-      sent_at: new Date().toISOString(),
-      metadata: {
-        redirect_url: redirectUrl,
-        organization_id: org.id,
-        organization_slug: org.subdomain,
-        source: "app_route",
-        app_root: getAppRootUrl(),
-      },
-    });
+    let createdUserId: string | null = null;
+    let invitationId: string | null = null;
 
-    return res.status(200).json({
-      success: true,
-      data: {
-        userId: createdUser.id,
-        profileId: profile?.id ?? createdUser.id,
-        invitationId,
+    try {
+      const createdUser = await clerkClient.users.createUser({
+        emailAddress: [payload.email],
+        firstName: payload.firstName,
+        lastName: payload.lastName,
+        phoneNumbers: payload.phone ? [{ phoneNumber: payload.phone }] : undefined,
+      });
+
+      createdUserId = createdUser.id;
+
+      const invitation = await clerkClient.invitations.createInvitation({
+        emailAddress: payload.email,
         redirectUrl,
-        organizationId: org.id,
-        email: payload.email,
+      });
+
+      invitationId = invitation.id;
+
+      const { data: profile, error: profileError } = await tenantTable(
+        supabase,
+        org.id,
+        "profiles"
+      )
+        .insert({
+          id: createdUser.id,
+          clerk_user_id: createdUser.id,
+          first_name: payload.firstName,
+          last_name: payload.lastName,
+          email: payload.email,
+          phone: payload.phone ?? null,
+          organization_id: org.id,
+          is_active: true,
+          status: "invited",
+          status_effective_date: new Date().toISOString(),
+        })
+        .select()
+        .maybeSingle();
+
+      if (profileError) {
+        throw new Error(`Failed to create profile: ${profileError.message}`);
+      }
+
+      const { error: roleError } = await tenantTable(supabase, org.id, "user_roles").insert({
+        user_id: profile?.id ?? createdUser.id,
+        clerk_user_id: createdUser.id,
+        organization_id: org.id,
         role: payload.role,
-      },
-    });
+      });
+
+      if (roleError) {
+        throw new Error(`Failed to assign role: ${roleError.message}`);
+      }
+
+      await tenantTable(supabase, org.id, "user_invitations").insert({
+        email: payload.email,
+        first_name: payload.firstName,
+        last_name: payload.lastName,
+        phone: payload.phone ?? null,
+        role: payload.role,
+        status: "pending",
+        invitation_token: invitation.id,
+        invitation_type: "clerk_invitation",
+        invited_by: userId,
+        clerk_user_id: createdUser.id,
+        organization_id: org.id,
+        sent_at: new Date().toISOString(),
+        metadata: {
+          redirect_url: redirectUrl,
+          organization_id: org.id,
+          organization_slug: org.subdomain,
+          source: "app_route",
+          app_root: getAppRootUrl(),
+        },
+      });
+
+      return sendJson(res, 200, {
+        success: true,
+        data: {
+          userId: createdUser.id,
+          profileId: profile?.id ?? createdUser.id,
+          invitationId,
+          redirectUrl,
+          organizationId: org.id,
+          email: payload.email,
+          role: payload.role,
+        },
+      });
+    } catch (error) {
+      if (error instanceof AuthorizationError) {
+        return formatError(res, error.message, error.status);
+      }
+
+      const message = error instanceof Error ? error.message : "Failed to invite user";
+
+      if (createdUserId) {
+        try {
+          await clerkClient.users.deleteUser(createdUserId);
+        } catch (cleanupError) {
+          console.error("Failed to clean up Clerk user", cleanupError);
+        }
+      }
+
+      if (invitationId) {
+        try {
+          await clerkClient.invitations.revokeInvitation(invitationId);
+        } catch (cleanupError) {
+          console.error("Failed to clean up Clerk invitation", cleanupError);
+        }
+      }
+
+      return formatError(res, message, 500);
+    }
   } catch (error) {
-    if (error instanceof AuthorizationError) {
-      return formatError(res, error.message, error.status);
-    }
-
-    const message = error instanceof Error ? error.message : "Failed to invite user";
-
-    if (createdUserId) {
-      try {
-        await clerkClient.users.deleteUser(createdUserId);
-      } catch (cleanupError) {
-        console.error("Failed to clean up Clerk user", cleanupError);
-      }
-    }
-
-    if (invitationId) {
-      try {
-        await clerkClient.invitations.revokeInvitation(invitationId);
-      } catch (cleanupError) {
-        console.error("Failed to clean up Clerk invitation", cleanupError);
-      }
-    }
-
+    const message = error instanceof Error ? error.message : "Unexpected server error";
     return formatError(res, message, 500);
   }
 }
