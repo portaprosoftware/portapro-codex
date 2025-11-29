@@ -7,7 +7,7 @@ This backend-only import/export framework is designed to keep every bulk data op
 1. Create a validator in `src/lib/imports/validators/` that lists **allowed** fields, **required** fields, UUID fields, and numeric fields. Use `createValidator` to reject unknown columns and normalize values.
 2. If the entity references other tenant-scoped tables, add `foreignKeys` pointing at those tables so cross-tenant references are rejected before insert.
 3. Add the validator to `validators/index.ts` and update `ImportType` so the orchestrator can discover it.
-4. Expose an API route under `src/pages/api/import/<entity>.ts` by calling `createImportHandler` with the new import type.
+4. Expose an API route under `api/import/<entity>.ts` by calling `createImportHandler` with the new import type.
 5. Update tests in `src/test/imports/imports.test.ts` to cover success, validation failure, and cross-tenant rejection scenarios.
 
 ## Import Flow and Validators
