@@ -2,12 +2,12 @@ import type { IncomingHttpHeaders, IncomingMessage, ServerResponse } from "http"
 import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
 import { loadOrganizationFromRequest } from "./organization-loader";
-import { loadServerEnv } from "../../src/lib/config/env";
-import { buildTenantUrl, getAppRootUrl } from "../../src/lib/config/domains";
-import { tenantTable } from "../../src/lib/db/tenant";
-import type { Database } from "../../src/integrations/supabase/types";
-import { AuthorizationError, requireRole } from "../../src/lib/authz/requireRole";
-import { clerkClient, verifyClerkSessionToken } from "../../src/lib/server/clerkClient";
+import { loadServerEnv } from "../src/lib/config/env";
+import { buildTenantUrl, getAppRootUrl } from "../src/lib/config/domains";
+import { tenantTable } from "../src/lib/db/tenant";
+import type { Database } from "../src/integrations/supabase/types";
+import { AuthorizationError, requireRole } from "../src/lib/authz/requireRole";
+import { clerkClient, verifyClerkSessionToken } from "../src/lib/server/clerkClient";
 
 const requestSchema = z.object({
   email: z.string().email(),
